@@ -32,14 +32,13 @@ npx skills add cyberuni/agent-helmsman --skill init -a claude-code -g
 
 ## Skill kinds
 
-Skills in this repo come in two flavors:
+The `create-skill` skill helps you create three kinds of skills depending on your use case:
 
-| Kind | Location | Who uses it |
-|------|----------|-------------|
-| **Public** | `skills/<name>/` | Anyone — installable via `npx skills add` |
-| **Repo internal** | `.agents/skills/<name>/` | Contributors to this repo only |
-
-Public skills carry no `metadata.internal` and are the installable artifact. Internal skills (e.g. `fix-security-pr`) are contributor tooling and not published.
+| Kind | Location | Use case |
+|------|----------|----------|
+| **Global** | `~/.agents/skills/<name>/` | Personal skills available across all your projects |
+| **Repo internal** | `.agents/skills/<name>/` | Contributor tooling scoped to one repo (e.g. release helpers, SDK updaters) |
+| **Repo public** | `skills/<name>/` | Skills shipped with a package — users install via `npx skills add <owner>/<repo>` |
 
 ## Quality
 
