@@ -6,12 +6,10 @@ on:
     paths:
       - 'skills/**'
       - '.agents/skills/**'
-      - 'scripts/validate-skills.sh'
   pull_request:
     paths:
       - 'skills/**'
       - '.agents/skills/**'
-      - 'scripts/validate-skills.sh'
 
 jobs:
   validate:
@@ -20,4 +18,4 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Validate skills
-        run: bash scripts/validate-skills.sh
+        run: npx tsx skills/validate-skill/scripts/validate-skills.mts
