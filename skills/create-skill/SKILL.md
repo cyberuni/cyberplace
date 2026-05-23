@@ -138,6 +138,55 @@ Adjust the target path for other agents as needed (e.g., `~/.cursor/skills/`, `~
 - **Decisions over documentation.** Encode what to decide and how — don't repeat reference material the model already knows.
 - **Narrow and composable.** One workflow per skill. Skills can be triggered by situation (user-facing) or called by other skills (sub-skills). Sub-skills have no situational trigger — their `description` should say "Internal skill: called by X" to avoid accidental activation. Neither type should be loaded as ambient context.
 - **No baked-in opinions.** Detect the user's setup (package manager, monorepo shape, tooling) at runtime rather than assuming a specific stack.
+- **Extract deterministic tasks into scripts.** When a skill step is purely mechanical — parsing, file generation, validation, transformation — extract it into a script rather than prompting the model to do it step by step. Scripts are reproducible, testable, and faster than model reasoning.
+
+## Scripts
+
+Deterministic tasks (file generation, parsing, validation, transformation) should live in the skill's `scripts/` folder rather than being performed inline by the model.
+
+### When to extract
+
+Extract a step into a script when it:
+- Produces the same output given the same input (no judgment needed)
+- Involves text manipulation, file I/O, or structured data processing
+- Would require many inline model steps that a ten-line program handles better
+
+### File format and execution
+
+Write scripts as `.mts` (TypeScript ES modules). Execute with:
+
+```bash
+# Default: use npx tsx (works on any Node version)
+npx tsx scripts/<script-name>.mts
+
+# If Node ≥ 22.6 with --experimental-strip-types (or Node 23+ with native TS support):
+node --experimental-strip-types scripts/<script-name>.mts
+```
+
+Detect Node version at runtime to pick the right runner:
+
+```bash
+node_major=$(node -e "process.stdout.write(String(process.versions.node.split('.')[0]))")
+if [ "$node_major" -ge 23 ]; then
+  node scripts/<script-name>.mts
+else
+  npx tsx scripts/<script-name>.mts
+fi
+```
+
+### Structure
+
+Place scripts alongside `SKILL.md`:
+
+```
+skills/<name>/
+  SKILL.md
+  scripts/
+    generate-foo.mts
+    validate-bar.mts
+```
+
+Reference scripts in `SKILL.md` with a `bash` block showing the exact invocation so the model knows to run the script rather than re-implement the logic inline.
 
 ## Notes
 
