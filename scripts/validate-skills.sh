@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Mechanically validates SKILL.md files for structure and security.
-# Covers: S1, S2, S3 (structure), Q1 (trigger language), E1 (dangerous commands), E2 (prompt injection).
-# Quality checks Q2–Q8 and nuanced security checks require LLM review (run validate-skill skill).
+# Mechanically validates SKILL.md files for structure, quality, and security.
+# Covers: S1–S5 (structure), Q1–Q4 (quality), E1, E2, E6 (security).
+# Q5–Q8 and nuanced security checks (E3–E5, E7) require LLM review (run validate-skill skill).
 set -euo pipefail
 
 CRITICAL_FAILURES=0
@@ -29,6 +29,11 @@ extract_frontmatter_field() {
     | grep "^${field}:" | head -1 | sed "s/^${field}: *//"
 }
 
+extract_body() {
+  # Everything after the closing --- of the frontmatter
+  awk '/^---/{n++; if(n==2){found=1; next}} found{print}' "$1"
+}
+
 # Extract only content inside fenced code blocks (``` ... ```)
 extract_code_blocks() {
   awk '/^```/{in_block=!in_block; next} in_block{print NR": "$0}' "$1"
@@ -48,6 +53,8 @@ validate_skill() {
 
   echo ""
   echo "── $dir_name ─────────────────────────"
+
+  # ── Structure ──────────────────────────────────────────────────────────────
 
   # S1: SKILL.md must be at <dir>/<name>/SKILL.md
   local parent
@@ -83,6 +90,51 @@ validate_skill() {
       "Set name: to '$dir_name'"
   fi
 
+  # S4: Referenced files/subdirs must exist within the skill directory.
+  # Only checks paths inside fenced code blocks (prose examples like "e.g., x.sh" are docs).
+  # Excludes: template placeholders (<...>), globs (*), absolute/home/repo-root paths.
+  local s4_refs
+  mapfile -t s4_refs < <(
+    extract_code_blocks "$real_path" \
+      | grep -oE '[a-zA-Z0-9_.-]+/[a-zA-Z0-9_./-]+' \
+      | grep -vE '[<>*]' \
+      | grep -vE '^(https?://|~|/)' \
+      | grep -E '\.(md|sh|js|ts|py|json|yaml|yml)$' \
+      || true
+  )
+  for ref in "${s4_refs[@]}"; do
+    local target="$skill_dir/$ref"
+    if [[ ! -e "$target" ]]; then
+      warn "HIGH" "S4" "Referenced file does not exist in skill directory" \
+        "$ref (looked for $target)" \
+        "Create the file inside the skill directory or remove the reference"
+    fi
+  done
+
+  # S5: Internal markdown anchor links must resolve to real headings.
+  # Checked on stripped content so backtick-wrapped syntax examples don't trigger.
+  local s5_anchors
+  mapfile -t s5_anchors < <(
+    strip_examples "$real_path" \
+      | grep -oE '\[([^]]+)\]\(#([^)]+)\)' \
+      | sed 's/.*](#//' | sed 's/)//' \
+      || true
+  )
+  for anchor in "${s5_anchors[@]}"; do
+    local heading_pat
+    heading_pat=$(echo "$anchor" | sed 's/-/ /g')
+    if ! grep -qi "^#.*${heading_pat}" "$real_path"; then
+      warn "MEDIUM" "S5" "Internal anchor link does not resolve" \
+        "#$anchor" \
+        "Add a heading matching '$heading_pat' or fix the link target"
+    fi
+  done
+
+  # ── Quality ────────────────────────────────────────────────────────────────
+
+  local body
+  body=$(extract_body "$real_path")
+
   # Q1: description must include trigger language
   if [[ -n "$fm_desc" ]]; then
     if ! echo "$fm_desc" | grep -qi "use this skill when\|when to use"; then
@@ -92,8 +144,60 @@ validate_skill() {
     fi
   fi
 
+  # Q2: description must be specific (word count and generic phrase check)
+  if [[ -n "$fm_desc" ]]; then
+    local word_count
+    # Strip leading/trailing quotes before counting
+    word_count=$(echo "$fm_desc" | tr -d '"' | wc -w)
+    if [[ $word_count -lt 12 ]]; then
+      warn "HIGH" "Q2" "Description too short (specificity)" \
+        "${word_count} words: $fm_desc" \
+        "Expand the description to at least 12 words with specific trigger conditions"
+    fi
+    local generic_patterns=(
+      'helps with'
+      'general purpose'
+      'handles tasks'
+      'use this skill when the user asks anything'
+      'does things'
+    )
+    for pat in "${generic_patterns[@]}"; do
+      if echo "$fm_desc" | grep -qi "$pat"; then
+        warn "HIGH" "Q2" "Description uses vague generic phrase" \
+          "matched '$pat' in: $fm_desc" \
+          "Replace with specific trigger conditions and outcomes"
+        break
+      fi
+    done
+  fi
+
+  # Q3: apparent sub-skills must carry "Internal skill:" prefix
+  if [[ -n "$fm_desc" ]]; then
+    if echo "$fm_desc" | grep -qi "called by\b\|^internal\b"; then
+      if ! echo "$fm_desc" | grep -qi "^Internal skill:"; then
+        warn "MEDIUM" "Q3" "Sub-skill missing 'Internal skill:' prefix" \
+          "description: $fm_desc" \
+          "Prefix description with 'Internal skill: ' to prevent unintended activation"
+      fi
+    fi
+  fi
+
+  # Q4: body must contain actionable instructions (numbered steps or decision headers)
+  if [[ -n "$body" ]]; then
+    if ! echo "$body" | grep -qE '^[0-9]+\.|^#{1,4} ' ; then
+      warn "MEDIUM" "Q4" "No actionable instruction body" \
+        "body has no numbered steps or section headers" \
+        "Add numbered steps, decision logic, or ## section headers"
+    fi
+  else
+    warn "MEDIUM" "Q4" "No actionable instruction body" \
+      "body is empty after frontmatter" \
+      "Add numbered steps, decision logic, or ## section headers"
+  fi
+
+  # ── Security ───────────────────────────────────────────────────────────────
+
   # E1: Dangerous shell commands — checked in fenced code blocks only.
-  # Patterns in prose/bullet lists are documentation, not instructions.
   local code_content
   code_content=$(extract_code_blocks "$real_path")
   local e1_patterns=(
@@ -119,7 +223,6 @@ validate_skill() {
   done
 
   # E2: Prompt injection — checked on prose with inline examples stripped.
-  # Inline backtick- or quote-wrapped examples are documentation, not instructions.
   local stripped_content
   stripped_content=$(strip_examples "$real_path")
   local e2_patterns=(
@@ -142,7 +245,6 @@ validate_skill() {
   done
 
   # E6: git push --force to main/master without a confirmation step.
-  # Use stripped content so backtick-wrapped examples in docs don't trigger.
   local e6_match
   e6_match=$(echo "$stripped_content" | grep -nE 'git push.*(--force|-f )' \
     | grep -E '(main|master)' | head -1 || true)
@@ -188,5 +290,5 @@ if [[ $CRITICAL_FAILURES -gt 0 ]]; then
   exit 1
 fi
 
-echo "✅ All structural and security checks passed."
-echo "   Run the validate-skill agent skill for full quality review."
+echo "✅ All checks passed (S1–S5, Q1–Q4, E1–E2, E6)."
+echo "   Run the validate-skill agent skill for full quality review (Q5–Q8, E3–E5, E7)."
