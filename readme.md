@@ -1,7 +1,6 @@
 # agent-helmsman
 
 [![validate-skills](https://github.com/cyberuni/agent-helmsman/actions/workflows/validate-skills.yml/badge.svg)](https://github.com/cyberuni/agent-helmsman/actions/workflows/validate-skills.yml)
-[![npm](https://img.shields.io/npm/v/agent-helmsman?label=npx%20skills)](https://www.npmjs.com/package/agent-helmsman)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 Opinionated skills, personas, workflows, and roles for AI agents — Claude Code, Cursor, Codex, and others.
