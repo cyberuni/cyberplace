@@ -30,7 +30,16 @@ Usage notes:
 This file provides guidance to AI coding assistants when working with code in this repository.
 ```
 
-After writing AGENTS.md, create the CLAUDE.md symlink. Detect the platform first:
+After writing AGENTS.md, scan for repo-internal skills and mark them. For each `SKILL.md` found under `.agents/skills/`, ensure the frontmatter includes:
+
+```yaml
+metadata:
+  internal: true
+```
+
+Add it if missing. This prevents these skills from being accidentally surfaced as public or globally available.
+
+Then create the CLAUDE.md symlink. Detect the platform first:
 
 **Unix / macOS / Linux:**
 ```bash

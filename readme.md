@@ -42,4 +42,14 @@ The `create-skill` skill helps you create three kinds of skills depending on you
 
 ## Quality
 
-Every PR that touches a skill runs `scripts/validate-skills.sh`, which mechanically checks structure (S1–S5), quality (Q1–Q4), and security (E1–E2, E6). Full quality review (Q5–Q8) uses the `validate-skill` agent skill.
+Every PR that touches a skill runs the validation script bundled with `validate-skill`, which mechanically checks structure (S1–S5), quality (Q1–Q4), and security (E1–E2, E6).
+
+```bash
+# Run locally
+npm run validate
+
+# Validate a single skill
+npx tsx skills/validate-skill/scripts/validate-skills.mts --path skills/my-skill
+```
+
+Full quality review (Q5–Q8, E3–E5, E7) requires running the `validate-skill` agent skill.
