@@ -13,6 +13,20 @@ Full validation of a SKILL.md file covering structure, content quality, and secu
 - Before installing a third-party skill locally
 - When reviewing a skill for publication to skills.sh
 
+## Automated checks
+
+The mechanical subset of checks (S1–S5, Q1–Q4, E1–E2, E6) can be run without an LLM:
+
+```bash
+# Validate all skills in the repo
+npx tsx skills/validate-skill/scripts/validate-skills.mts
+
+# Validate a single skill
+npx tsx skills/validate-skill/scripts/validate-skills.mts --path skills/my-skill
+```
+
+This script is also wired into CI (`validate-skills` workflow). Full quality review (Q5–Q8, E3–E5, E7) still requires running this agent skill.
+
 ## Instructions
 
 ### 1. Identify target

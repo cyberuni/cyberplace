@@ -12,5 +12,8 @@
     "cursor",
     "codex"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "validate": "npx tsx skills/validate-skill/scripts/validate-skills.mts"
+  }
 }
