@@ -13,6 +13,15 @@ test('formatCommitDisciplineSection includes skill name', () => {
 	expect(section).toContain('Conventional Commits')
 })
 
+test('formatCommitDisciplineSection uses agent-compatible staging guidance', () => {
+	const section = formatCommitDisciplineSection('commit')
+	expect(section).toContain('Unit of work')
+	expect(section).toContain('git add <files>')
+	expect(section).toContain('git diff --cached')
+	expect(section).toContain('git add -p')
+	expect(section).not.toMatch(/Use `git add -p`/)
+})
+
 test('mergeCommitDisciplineIntoAgentsMd appends when section missing', () => {
 	const agents = '# AGENTS.md\n\nSome intro.\n'
 	const merged = mergeCommitDisciplineIntoAgentsMd(agents, 'commit')
