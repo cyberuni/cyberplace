@@ -6,12 +6,28 @@ on:
     paths:
       - 'skills/**'
       - '.agents/skills/**'
-      - 'tests/**'
+      - 'src/**'
+      - 'bin/**'
+      - 'hooks/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'tsconfig.json'
+      - 'tsdown.config.ts'
+      - 'biome.jsonc'
+      - '.github/workflows/validate-skills.yml'
   pull_request:
     paths:
       - 'skills/**'
       - '.agents/skills/**'
-      - 'tests/**'
+      - 'src/**'
+      - 'bin/**'
+      - 'hooks/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'tsconfig.json'
+      - 'tsdown.config.ts'
+      - 'biome.jsonc'
+      - '.github/workflows/validate-skills.yml'
 
 jobs:
   validate:
@@ -23,13 +39,10 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: lts/*
+          node-version: 22
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Test
-        run: pnpm test
-
-      - name: Audit skills
-        run: pnpm test:audit
+      - name: Verify
+        run: pnpm verify

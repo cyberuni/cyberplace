@@ -77,7 +77,7 @@ This repo is a skill library and CLI tool for AI agents (Claude Code, Cursor, Co
 pnpm verify   # runs typecheck + lint + test + test:audit
 ```
 
-This is required — CI runs `validate` on every PR that touches `skills/` or `.agents/skills/`.
+This is required — CI runs `pnpm verify` on every PR that touches `skills/`, `.agents/skills/`, `src/`, or package build config.
 
 ## Commit Discipline
 
