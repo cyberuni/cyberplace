@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { findAwesomeSkills } from './awesome-lib.mts'
+import { findAwesomeSkills } from './awesome-lib.js'
 
 function parseArgs(argv: string[]): { query: string; limit: number; json: boolean } {
 	const args = argv.slice(2)

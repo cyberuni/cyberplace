@@ -164,18 +164,18 @@ function getResolvedSources(cwd: string): Array<SourceRef & { sourceClass: Sourc
 
 function printUsage(): void {
 	console.log('Usage:')
-	console.log('  tsx skills/configure-awesome-sources/scripts/configure-awesome-sources.mts list')
+	console.log('  node skills/configure-awesome-sources/scripts/configure-awesome-sources.mjs list')
 	console.log(
-		'  tsx skills/configure-awesome-sources/scripts/configure-awesome-sources.mts add --layer local|repo|global --repo owner/name [--path awesome-skills.json]',
+		'  node skills/configure-awesome-sources/scripts/configure-awesome-sources.mjs add --layer local|repo|global --repo owner/name [--path awesome-skills.json]',
 	)
 	console.log(
-		'  tsx skills/configure-awesome-sources/scripts/configure-awesome-sources.mts remove --layer local|repo|global --repo owner/name [--path awesome-skills.json]',
+		'  node skills/configure-awesome-sources/scripts/configure-awesome-sources.mjs remove --layer local|repo|global --repo owner/name [--path awesome-skills.json]',
 	)
 	console.log(
-		'  tsx skills/configure-awesome-sources/scripts/configure-awesome-sources.mts disable --layer local|repo|global --repo owner/name [--path awesome-skills.json]',
+		'  node skills/configure-awesome-sources/scripts/configure-awesome-sources.mjs disable --layer local|repo|global --repo owner/name [--path awesome-skills.json]',
 	)
 	console.log(
-		'  tsx skills/configure-awesome-sources/scripts/configure-awesome-sources.mts enable --layer local|repo|global --repo owner/name [--path awesome-skills.json]',
+		'  node skills/configure-awesome-sources/scripts/configure-awesome-sources.mjs enable --layer local|repo|global --repo owner/name [--path awesome-skills.json]',
 	)
 }
 

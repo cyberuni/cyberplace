@@ -35,7 +35,7 @@ Audit all skills (runs S1–S5, Q1–Q5, Q10–Q11, E1–E2, E6 checks mechanica
 pnpm test:audit
 
 # Audit a single skill:
-npx tsx skills/audit-skill/scripts/validate-skills.mts --path skills/my-skill
+node skills/audit-skill/scripts/validate-skills.mjs --path skills/my-skill
 ```
 
 Full quality review (Q6–Q12, E3–E5, E7–E8, P1–P3) requires running the `audit-skill` agent skill.
@@ -43,7 +43,7 @@ Full quality review (Q6–Q12, E3–E5, E7–E8, P1–P3) requires running the `
 Run a single test file:
 
 ```bash
-pnpm vitest run tests/audit-skill/scripts/validate-skills.test.mts
+pnpm vitest run src/skills/audit-skill/scripts/validate-skills.test.ts
 ```
 
 Regenerate the README awesome-skills section after editing `awesome-skills.json`:
@@ -60,14 +60,14 @@ This repo is a skill library and CLI tool for AI agents (Claude Code, Cursor, Co
 
 - `skills/` — public skills shipped with the package; users install via `npx skills add cyberuni/cyber-skills`
 - `.agents/skills/` — repo-internal skills for contributor workflows (changesets, security PRs, repo renames); all must have `metadata: internal: true`
-- `hooks/` — runtime hook scripts and the `register-agent-hooks.mts` logic used by the `cyber-skills` CLI
-- `hooks/definitions/` — hook set definitions (`init.mts`, `commit-discipline.mts`) that describe which hooks to register per agent
-- `bin/cyber-skills.mts` — CLI entry point; supports `run-hook`, `register-hooks --set <set>`, and `inject-commit-discipline`
-- `tests/` — Vitest test files, mirroring the structure of `skills/`
+- `src/` — TypeScript source for the CLI, hooks, skill scripts, and co-located tests
+- `hooks/` — built runtime hook scripts published with the package
+- `bin/cyber-skills.mjs` — built CLI entry point; supports `run-hook`, `register-hooks --set <set>`, and `inject-commit-discipline`
+- `skills/` — public skills shipped with the package, including built helper scripts under `skills/*/scripts/`
 
 **Skill lifecycle:** Skills are authored in `skills/<name>/SKILL.md`, validated by `audit-skill`, and surfaced to agents via the `skills` CLI or `npx skills add`. Runtime behavior (local augmentations, marking internal skills) is handled by hooks registered in `.claude/settings.json` and `.cursor/settings.json`.
 
-**`cyber-skills` CLI:** Used to register agent hooks into agent settings files without adding it as a devDependency. In other repos, invoke via pinned npx with an exact version from `npm view cyber-skills version`. In this repo, use the local bin: `node --experimental-strip-types bin/cyber-skills.mts register-hooks --set init`. Idempotent.
+**`cyber-skills` CLI:** Used to register agent hooks into agent settings files without adding it as a devDependency. In other repos, invoke via pinned npx with an exact version from `npm view cyber-skills version`. In this repo, build first, then use the local bin: `node bin/cyber-skills.mjs register-hooks --set init`. Idempotent.
 
 ## Validation After Changes
 
@@ -131,7 +131,8 @@ When reading any `SKILL.md` file, always check whether a `SKILL.local.md` exists
 **Runtime hooks (this repo):** registered in `.claude/settings.json`. To re-register after changes, from the repo root:
 
 ```bash
-node --experimental-strip-types bin/cyber-skills.mts register-hooks --set init
+pnpm build
+node bin/cyber-skills.mjs register-hooks --set init
 ```
 
 That registers:

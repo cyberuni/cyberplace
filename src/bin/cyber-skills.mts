@@ -1,4 +1,4 @@
-#!/usr/bin/env node --experimental-strip-types
+#!/usr/bin/env node
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
@@ -46,7 +46,7 @@ if (command === 'run-hook') {
 		process.exit(1)
 	}
 
-	const hookFile = path.join(packageRoot, 'hooks', 'runtime', `${hookName}.mts`)
+	const hookFile = path.join(packageRoot, 'hooks', 'runtime', `${hookName}.mjs`)
 	if (!fs.existsSync(hookFile)) {
 		process.stderr.write(`Hook not found: ${hookName}\n`)
 		process.exit(1)
@@ -65,7 +65,7 @@ if (command === 'run-hook') {
 	}
 
 	const { registerHooksForSet } = await import(
-		pathToFileURL(path.join(packageRoot, 'hooks', 'register-agent-hooks.mts')).href
+		pathToFileURL(path.join(packageRoot, 'hooks', 'register-agent-hooks.mjs')).href
 	)
 	const results = registerHooksForSet(set, { root, dryRun })
 
@@ -86,7 +86,7 @@ if (command === 'run-hook') {
 	}
 
 	const { injectCommitDiscipline } = await import(
-		pathToFileURL(path.join(packageRoot, 'hooks', 'inject-commit-discipline.mts')).href
+		pathToFileURL(path.join(packageRoot, 'hooks', 'inject-commit-discipline.mjs')).href
 	)
 	try {
 		const result = injectCommitDiscipline({ root, commitSkill, dryRun, verbose })

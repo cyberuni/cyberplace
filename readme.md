@@ -54,7 +54,7 @@ Every PR that touches a skill runs the audit script bundled with `audit-skill`, 
 pnpm test:audit
 
 # Audit a single skill
-npx tsx skills/audit-skill/scripts/validate-skills.mts --path skills/my-skill
+node skills/audit-skill/scripts/validate-skills.mjs --path skills/my-skill
 ```
 
 Full quality review (Q6–Q9, E3–E5, E7) requires running the `audit-skill` agent skill.

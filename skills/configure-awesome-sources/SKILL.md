@@ -38,31 +38,31 @@ Use `disabled_sources` to suppress inherited sources. Do not use an `enabled` fi
 List effective sources:
 
 ```bash
-npx tsx skills/configure-awesome-sources/scripts/configure-awesome-sources.mts list
+node skills/configure-awesome-sources/scripts/configure-awesome-sources.mjs list
 ```
 
 Add a source:
 
 ```bash
-npx tsx skills/configure-awesome-sources/scripts/configure-awesome-sources.mts add --layer repo --repo owner/name --path awesome-skills.json
+node skills/configure-awesome-sources/scripts/configure-awesome-sources.mjs add --layer repo --repo owner/name --path awesome-skills.json
 ```
 
 Disable an inherited source:
 
 ```bash
-npx tsx skills/configure-awesome-sources/scripts/configure-awesome-sources.mts disable --layer repo --repo owner/name --path awesome-skills.json
+node skills/configure-awesome-sources/scripts/configure-awesome-sources.mjs disable --layer repo --repo owner/name --path awesome-skills.json
 ```
 
 Enable a disabled source:
 
 ```bash
-npx tsx skills/configure-awesome-sources/scripts/configure-awesome-sources.mts enable --layer repo --repo owner/name --path awesome-skills.json
+node skills/configure-awesome-sources/scripts/configure-awesome-sources.mjs enable --layer repo --repo owner/name --path awesome-skills.json
 ```
 
 Remove a direct source:
 
 ```bash
-npx tsx skills/configure-awesome-sources/scripts/configure-awesome-sources.mts remove --layer repo --repo owner/name --path awesome-skills.json
+node skills/configure-awesome-sources/scripts/configure-awesome-sources.mjs remove --layer repo --repo owner/name --path awesome-skills.json
 ```
 
 ## Guidance

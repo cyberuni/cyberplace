@@ -29,7 +29,7 @@ Rules:
 
 - **Always** map upstream paths to `skills/<skill-name>/…`, even when `skills-lock.json` `skillPath` points at `.agents/skills/…` or another layout in the consumer repo.
 - **Never** update `.agents/skills/`, duplicate trees, or paths outside `skills/<skill-name>/` in the source repository.
-- Include every changed file under that skill folder (e.g. `scripts/*.mts`), not only `SKILL.md`.
+- Include every changed file under that skill folder (e.g. `scripts/*.mjs`), not only `SKILL.md`.
 - Never include `SKILL.local.md` — local augmentations stay local.
 
 Derive paths:
@@ -208,7 +208,7 @@ gh pr create \
 
 ## Test plan
 
-- [ ] Run audit-skill / `validate-skills.mts` against the updated skill(s)
+- [ ] Run audit-skill / `validate-skills.mjs` against the updated skill(s)
 - [ ] Confirm no files outside `skills/` were modified
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)

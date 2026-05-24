@@ -6,7 +6,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-import { mergeCommitDisciplineIntoAgentsMd } from './lib/commit-discipline-content.mts'
+import { mergeCommitDisciplineIntoAgentsMd } from './lib/commit-discipline-content.mjs'
 
 export interface InjectOptions {
 	root?: string
@@ -51,7 +51,7 @@ if (process.argv[1] === import.meta.filename) {
 
 	if (!commitSkill) {
 		process.stderr.write(
-			'Usage: inject-commit-discipline.mts --commit-skill <name> [--root <path>] [--dry-run] [--verbose]\n',
+			'Usage: inject-commit-discipline.mjs --commit-skill <name> [--root <path>] [--dry-run] [--verbose]\n',
 		)
 		process.exit(1)
 	}

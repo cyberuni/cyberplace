@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-import { getPackageRoot } from './package-root.mts'
+import { getPackageRoot } from './package-root.mjs'
 
 function getPackageVersion(): string {
 	const pkgPath = join(getPackageRoot(), 'package.json')

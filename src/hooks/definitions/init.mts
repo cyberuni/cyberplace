@@ -1,4 +1,4 @@
-import type { HookDefinition } from '../register-agent-hooks.mts'
+import type { HookDefinition } from '../register-agent-hooks.mjs'
 
 const MARK_INTERNAL = 'bash .agents/hooks/mark-internal.sh'
 const INJECT_AUGMENTATIONS = 'bash .agents/hooks/inject-local-augmentations.sh'

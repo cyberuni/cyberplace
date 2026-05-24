@@ -69,7 +69,7 @@ description: Use this skill when <trigger condition>. <One-line summary of what 
 Run automated checks first:
 
 ```bash
-npx tsx .agents/skills/audit-skill/scripts/validate-skills.mts --path ~/.agents/skills/<name>
+node .agents/skills/audit-skill/scripts/validate-skills.mjs --path ~/.agents/skills/<name>
 ```
 
 Fix any CRITICAL findings before proceeding.
