@@ -1,8 +1,7 @@
-import assert from 'node:assert/strict'
 import * as fs from 'node:fs'
 import * as os from 'node:os'
 import * as path from 'node:path'
-import test from 'node:test'
+import { expect, test } from 'vitest'
 
 import { runChecks } from '../../../skills/audit-skill/scripts/validate-skills.mts'
 
@@ -43,7 +42,7 @@ node "$(pwd)/scripts/validate-skills.mts"
 		(skillFile) => {
 			const result = runChecks(skillFile)
 			const s4Warnings = result.warnings.filter((finding) => finding.checkId === 'S4')
-			assert.equal(s4Warnings.length, 0)
+			expect(s4Warnings.length).toBe(0)
 		},
 	)
 })
@@ -58,8 +57,8 @@ node scripts/missing-helper.mts
 		(skillFile) => {
 			const result = runChecks(skillFile)
 			const s4Warnings = result.warnings.filter((finding) => finding.checkId === 'S4')
-			assert.equal(s4Warnings.length, 1)
-			assert.match(s4Warnings[0]?.evidence ?? '', /scripts\/missing-helper\.mts/)
+			expect(s4Warnings.length).toBe(1)
+			expect(s4Warnings[0]?.evidence ?? '').toMatch(/scripts\/missing-helper\.mts/)
 		},
 	)
 })

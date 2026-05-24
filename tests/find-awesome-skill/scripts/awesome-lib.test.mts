@@ -1,5 +1,4 @@
-import assert from 'node:assert/strict'
-import test from 'node:test'
+import { expect, test } from 'vitest'
 
 import { flattenAwesomeEntries, validateAwesomeList } from '../../../skills/find-awesome-skill/scripts/awesome-lib.mts'
 import { renderAwesomeListMarkdown } from '../../../skills/update-awesome-list/scripts/render-awesome-list.mts'
@@ -33,38 +32,36 @@ test('validateAwesomeList accepts repos and skills objects with canonical keys',
 		'memory',
 	)
 
-	assert.deepEqual(Object.keys(file.repos), ['owner/repo'])
-	assert.deepEqual(Object.keys(file.skills), ['owner/repo::skill-name'])
+	expect(Object.keys(file.repos)).toEqual(['owner/repo'])
+	expect(Object.keys(file.skills)).toEqual(['owner/repo::skill-name'])
 
 	const entries = flattenAwesomeEntries(file)
-	assert.equal(entries[0]?.type, 'repo')
-	assert.equal(entries[1]?.type, 'skill')
-	assert.deepEqual(entries[0]?.tags, ['public-repo', 'targeted'])
-	assert.deepEqual(entries[1]?.tags, ['validation'])
+	expect(entries[0]?.type).toBe('repo')
+	expect(entries[1]?.type).toBe('skill')
+	expect(entries[0]?.tags).toEqual(['public-repo', 'targeted'])
+	expect(entries[1]?.tags).toEqual(['validation'])
 })
 
 test('validateAwesomeList rejects mismatched canonical keys', () => {
-	assert.throws(
-		() =>
-			validateAwesomeList(
-				{
-					version: 1,
-					repos: {
-						wrong: {
-							repo: 'owner/repo',
-							kind: 'targeted',
-							trust: 'authored',
-							summary: 'Repo summary',
-							why_recommended: 'Repo reason',
-							tags: [],
-						},
+	expect(() =>
+		validateAwesomeList(
+			{
+				version: 1,
+				repos: {
+					wrong: {
+						repo: 'owner/repo',
+						kind: 'targeted',
+						trust: 'authored',
+						summary: 'Repo summary',
+						why_recommended: 'Repo reason',
+						tags: [],
 					},
-					skills: {},
 				},
-				'memory',
-			),
-		/key must match normalized repo owner\/repo/,
-	)
+				skills: {},
+			},
+			'memory',
+		),
+	).toThrow(/key must match normalized repo owner\/repo/)
 })
 
 test('renderAwesomeListMarkdown sorts entries by trust then canonical id', () => {
@@ -105,9 +102,9 @@ test('renderAwesomeListMarkdown sorts entries by trust then canonical id', () =>
 	const authoredSkillIndex = markdown.indexOf('`z/repo#z-skill`')
 	const recommendedSkillIndex = markdown.indexOf('`a/repo#a-skill`')
 
-	assert.notEqual(authoredRepoIndex, -1)
-	assert.notEqual(authoredSkillIndex, -1)
-	assert.notEqual(recommendedSkillIndex, -1)
-	assert.ok(authoredRepoIndex < authoredSkillIndex)
-	assert.ok(authoredSkillIndex < recommendedSkillIndex)
+	expect(authoredRepoIndex).not.toBe(-1)
+	expect(authoredSkillIndex).not.toBe(-1)
+	expect(recommendedSkillIndex).not.toBe(-1)
+	expect(authoredRepoIndex).toBeLessThan(authoredSkillIndex)
+	expect(authoredSkillIndex).toBeLessThan(recommendedSkillIndex)
 })

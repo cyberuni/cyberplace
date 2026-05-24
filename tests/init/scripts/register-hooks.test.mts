@@ -1,8 +1,7 @@
-import assert from 'node:assert/strict'
 import * as fs from 'node:fs'
 import * as os from 'node:os'
 import * as path from 'node:path'
-import test from 'node:test'
+import { expect, test } from 'vitest'
 
 import { registerHooks } from '../../../skills/init/scripts/register-hooks.mts'
 
@@ -27,7 +26,7 @@ test('skips all agents when no agent dirs exist', () => {
 		(_root) => {},
 		(root) => {
 			const results = registerHooks({ root })
-			assert.ok(results.every((r) => r.status === 'skipped (dir not found)'))
+			expect(results.every((r) => r.status === 'skipped (dir not found)')).toBe(true)
 		},
 	)
 })
@@ -41,8 +40,8 @@ test('registers Claude Code hooks when .claude dir exists and settings.json is a
 			const results = registerHooks({ root })
 			const postToolUse = results.find((r) => r.agent === 'Claude Code' && r.hook.includes('PostToolUse'))
 			const sessionStart = results.find((r) => r.agent === 'Claude Code' && r.hook.includes('SessionStart'))
-			assert.equal(postToolUse?.status, 'registered')
-			assert.equal(sessionStart?.status, 'registered')
+			expect(postToolUse?.status).toBe('registered')
+			expect(sessionStart?.status).toBe('registered')
 
 			const settings = readJson(path.join(root, '.claude', 'settings.json')) as {
 				hooks: {
@@ -50,12 +49,14 @@ test('registers Claude Code hooks when .claude dir exists and settings.json is a
 					SessionStart: Array<{ hooks: Array<{ command: string }> }>
 				}
 			}
-			assert.ok(settings.hooks.PostToolUse[0]?.hooks.some((h) => h.command === 'bash .agents/hooks/mark-internal.sh'))
-			assert.ok(
+			expect(settings.hooks.PostToolUse[0]?.hooks.some((h) => h.command === 'bash .agents/hooks/mark-internal.sh')).toBe(
+				true,
+			)
+			expect(
 				settings.hooks.SessionStart[0]?.hooks.some(
 					(h) => h.command === 'bash .agents/hooks/inject-local-augmentations.sh',
 				),
-			)
+			).toBe(true)
 		},
 	)
 })
@@ -81,7 +82,7 @@ test('detects Claude Code hooks as already present when fully registered', () =>
 		(root) => {
 			const results = registerHooks({ root })
 			const claude = results.filter((r) => r.agent === 'Claude Code')
-			assert.ok(claude.every((r) => r.status === 'already present'))
+			expect(claude.every((r) => r.status === 'already present')).toBe(true)
 		},
 	)
 })
@@ -105,8 +106,8 @@ test('does not clobber unrelated Claude Code settings', () => {
 				model: string
 				permissions: { allow: string[] }
 			}
-			assert.equal(settings.model, 'claude-opus-4-7')
-			assert.deepEqual(settings.permissions.allow, ['Bash'])
+			expect(settings.model).toBe('claude-opus-4-7')
+			expect(settings.permissions.allow).toEqual(['Bash'])
 		},
 	)
 })
@@ -130,15 +131,9 @@ test('merges into existing PostToolUse group with matching matcher', () => {
 				hooks: { PostToolUse: Array<{ matcher?: string; hooks: Array<{ command: string }> }> }
 			}
 			const group = settings.hooks.PostToolUse.find((g) => g.matcher === 'Write|Edit')
-			assert.ok(
-				group?.hooks.some((h) => h.command === 'bash other.sh'),
-				'existing hook preserved',
-			)
-			assert.ok(
-				group?.hooks.some((h) => h.command === 'bash .agents/hooks/mark-internal.sh'),
-				'new hook added',
-			)
-			assert.equal(settings.hooks.PostToolUse.length, 1, 'no duplicate group created')
+			expect(group?.hooks.some((h) => h.command === 'bash other.sh')).toBe(true)
+			expect(group?.hooks.some((h) => h.command === 'bash .agents/hooks/mark-internal.sh')).toBe(true)
+			expect(settings.hooks.PostToolUse.length).toBe(1)
 		},
 	)
 })
@@ -151,14 +146,14 @@ test('registers Cursor hook when .cursor dir exists and hooks.json is absent', (
 		(root) => {
 			const results = registerHooks({ root })
 			const cursor = results.find((r) => r.agent === 'Cursor')
-			assert.equal(cursor?.status, 'registered')
+			expect(cursor?.status).toBe('registered')
 
 			const settings = readJson(path.join(root, '.cursor', 'hooks.json')) as {
 				version: number
 				hooks: { afterFileEdit: Array<{ command: string }> }
 			}
-			assert.equal(settings.version, 1)
-			assert.ok(settings.hooks.afterFileEdit.some((h) => h.command === 'bash .agents/hooks/mark-internal.sh'))
+			expect(settings.version).toBe(1)
+			expect(settings.hooks.afterFileEdit.some((h) => h.command === 'bash .agents/hooks/mark-internal.sh')).toBe(true)
 		},
 	)
 })
@@ -178,7 +173,7 @@ test('detects Cursor hook as already present', () => {
 		(root) => {
 			const results = registerHooks({ root })
 			const cursor = results.find((r) => r.agent === 'Cursor')
-			assert.equal(cursor?.status, 'already present')
+			expect(cursor?.status).toBe('already present')
 		},
 	)
 })
@@ -192,8 +187,8 @@ test('registers Codex hooks when .codex-plugin dir exists', () => {
 			const results = registerHooks({ root })
 			const postToolUse = results.find((r) => r.agent === 'Codex' && r.hook.includes('PostToolUse'))
 			const sessionStart = results.find((r) => r.agent === 'Codex' && r.hook.includes('SessionStart'))
-			assert.equal(postToolUse?.status, 'registered')
-			assert.equal(sessionStart?.status, 'registered')
+			expect(postToolUse?.status).toBe('registered')
+			expect(sessionStart?.status).toBe('registered')
 		},
 	)
 })
@@ -208,12 +203,9 @@ test('dry-run: writes no files even when hooks are missing', () => {
 		},
 		(root) => {
 			const results = registerHooks({ root, dryRun: true })
-			assert.ok(
-				results.some((r) => r.status === 'registered'),
-				'reported as registered',
-			)
-			assert.ok(!fs.existsSync(path.join(root, '.claude', 'settings.json')), 'Claude settings not written')
-			assert.ok(!fs.existsSync(path.join(root, '.cursor', 'hooks.json')), 'Cursor hooks not written')
+			expect(results.some((r) => r.status === 'registered')).toBe(true)
+			expect(fs.existsSync(path.join(root, '.claude', 'settings.json'))).toBe(false)
+			expect(fs.existsSync(path.join(root, '.cursor', 'hooks.json'))).toBe(false)
 		},
 	)
 })
@@ -229,8 +221,8 @@ test('running twice produces no duplicate hooks', () => {
 			const settings = readJson(path.join(root, '.claude', 'settings.json')) as {
 				hooks: { PostToolUse: Array<{ hooks: unknown[] }>; SessionStart: Array<{ hooks: unknown[] }> }
 			}
-			assert.equal(settings.hooks.PostToolUse[0]?.hooks.length, 1)
-			assert.equal(settings.hooks.SessionStart[0]?.hooks.length, 1)
+			expect(settings.hooks.PostToolUse[0]?.hooks.length).toBe(1)
+			expect(settings.hooks.SessionStart[0]?.hooks.length).toBe(1)
 		},
 	)
 })
