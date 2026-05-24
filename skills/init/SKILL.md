@@ -43,11 +43,15 @@ Then register hooks so these behaviors apply automatically going forward, not ju
 
 ### Hook registration
 
-Ensure the `cyber-skills` npm package is available (`pnpm add -D cyber-skills` or pinned `npx cyber-skills@<version>`). Then from the repo root:
+Invoke the `cyber-skills` CLI from the repo root. Do **not** add `cyber-skills` as a devDependency by default — it is bin-only tooling and will trigger unused-dependency warnings (for example from knip) in repos that never import it.
+
+**Default (global init skill):** pinned npx with an explicit version (never `@latest`):
 
 ```bash
-npx cyber-skills register-hooks --set init
+npx cyber-skills@<version> register-hooks --set init
 ```
+
+**Optional devDependency:** only when the user needs offline CLI access *and* the AI agent runs locally against that repo (`pnpm add -D cyber-skills`, then `pnpm exec cyber-skills …`).
 
 The command detects which agents are present (`.claude/`, `.cursor/`, `.codex-plugin/`), deep-merges the required hook entries for each without clobbering other settings, and exits quietly. It is idempotent — safe to re-run. Pass `--verbose` for a human-readable summary on stderr.
 

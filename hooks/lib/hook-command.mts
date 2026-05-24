@@ -11,7 +11,8 @@ function getPackageVersion(): string {
 
 /**
  * Build a hook command string for registration in agent settings.
- * Prefers local node_modules bin when cyber-skills is a devDependency.
+ * Prefers local node_modules bin when present (offline/local-agent setups);
+ * otherwise pins npx to the package version that ran register-hooks.
  */
 export function hookCommand(subcommand: string, root = process.cwd()): string {
 	const localBin = join(root, 'node_modules', '.bin', 'cyber-skills')
