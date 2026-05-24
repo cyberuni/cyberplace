@@ -1,0 +1,36 @@
+{
+	"plugins": [
+		{
+			"name": "skill-discovery",
+			"description": "Find and evaluate skills before installing. Prefer global install (-g).",
+			"skills": ["./skills/find-awesome-skill"]
+		},
+		{
+			"name": "skill-authoring",
+			"description": "Create, generalize, patch, and audit skills. Prefer global install (-g).",
+			"skills": [
+				"./skills/create-skill",
+				"./skills/skillify",
+				"./skills/patch-skill",
+				"./skills/audit-skill"
+			]
+		},
+		{
+			"name": "agent-initialization",
+			"description": "Initialize a repository for AI agent workflows. Prefer project install (default).",
+			"skills": [
+				"./skills/init",
+				"./skills/init-commit-discipline",
+				"./skills/commit"
+			]
+		},
+		{
+			"name": "awesome-list-maintenance",
+			"description": "Manage curated awesome-list sources and entries. configure-awesome-sources: global; update-awesome-list: project.",
+			"skills": [
+				"./skills/configure-awesome-sources",
+				"./skills/update-awesome-list"
+			]
+		}
+	]
+}
