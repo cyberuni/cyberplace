@@ -16,8 +16,7 @@
 		},
 		{
 			"title": "Agent Initialization",
-			"description": "Initialize and configure a repository for AI agent workflows.",
-			"installScope": "project",
+			"description": "One-time repository setup for AI agent workflows. init and init-commit-discipline: global; commit: project.",
 			"skills": ["init", "init-commit-discipline", "commit"]
 		},
 		{
@@ -32,8 +31,8 @@
 		"create-skill": "global",
 		"skillify": "global",
 		"patch-skill": "global",
-		"init": "project",
-		"init-commit-discipline": "project",
+		"init": "global",
+		"init-commit-discipline": "global",
 		"commit": "project",
 		"configure-awesome-sources": "global",
 		"update-awesome-list": "project"

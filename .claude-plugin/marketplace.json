@@ -17,7 +17,7 @@
 		},
 		{
 			"name": "agent-initialization",
-			"description": "Initialize a repository for AI agent workflows. Prefer project install (default).",
+			"description": "One-time repo setup. init and init-commit-discipline: global (-g); commit: project.",
 			"skills": [
 				"./skills/init",
 				"./skills/init-commit-discipline",
