@@ -1,6 +1,6 @@
 ---
 name: audit-skill
-description: Audit a SKILL.md file for structure, quality, and security. Use this skill when evaluating a skill before installing, reviewing a new or modified skill before committing, or checking that a published skill meets quality standards — catches broken references, vague triggers, baked-in assumptions, scope creep, and security risks in one pass.
+description: Use this skill when auditing a SKILL.md for structure, quality, and security before installing or committing.
 metadata:
   internal: true
 ---
@@ -17,7 +17,7 @@ Full audit of a SKILL.md file covering structure, content quality, security, and
 
 ## Automated checks
 
-The mechanical subset of checks (S1–S5, Q1–Q4, E1–E2, E6) can be run without an LLM:
+The mechanical subset of checks (S1–S5, Q1–Q5, E1–E2, E6) can be run without an LLM:
 
 ```bash
 # Audit all skills in the repo
@@ -27,7 +27,7 @@ npx tsx skills/audit-skill/scripts/validate-skills.mts
 npx tsx skills/audit-skill/scripts/validate-skills.mts --path skills/my-skill
 ```
 
-This script is also wired into CI (`validate-skills` workflow). Full quality review (Q5–Q8, E3–E5, E7–E8, P1–P3) still requires running this agent skill.
+This script is also wired into CI (`validate-skills` workflow). Full quality review (Q6–Q9, E3–E5, E7–E8, P1–P3) still requires running this agent skill.
 
 ## Instructions
 
@@ -78,10 +78,11 @@ For each skill, evaluate all checks below and produce one results table. Apply E
 | Q2 | Quality | Description is specific (not vague / matches-everything) | HIGH | |
 | Q3 | Quality | Sub-skill has `Internal skill:` prefix in description | MEDIUM | |
 | Q4 | Quality | Skill has actionable instruction body (not just description) | MEDIUM | |
-| Q5 | Quality | No baked-in stack assumptions | MEDIUM | |
-| Q6 | Quality | Single workflow scope (narrow and composable) | MEDIUM | |
-| Q7 | Quality | No generic / obvious instructions the model already knows | LOW | |
-| Q8 | Quality | `description` scope matches actual content | LOW | |
+| Q5 | Quality | `description` value is ≤120 characters | MEDIUM | |
+| Q6 | Quality | No baked-in stack assumptions | MEDIUM | |
+| Q7 | Quality | Single workflow scope (narrow and composable) | MEDIUM | |
+| Q8 | Quality | No generic / obvious instructions the model already knows | LOW | |
+| Q9 | Quality | `description` scope matches actual content | LOW | |
 | E1 | Security | No dangerous shell commands (SKILL.md + scripts/) | CRITICAL | |
 | E2 | Security | No prompt injection patterns (SKILL.md + scripts/) | CRITICAL | |
 | E3 | Security | No secret / credential access | CRITICAL | |
@@ -136,20 +137,23 @@ Warn if the skill appears to be a sub-skill (no situational trigger, description
 **Q4 — Instruction body (MEDIUM)**
 Warn if the skill body contains only a description and no actionable steps, numbered instructions, or decision logic. A skill with no instructions gives the agent nothing to execute.
 
-**Q5 — No baked-in stack assumptions (MEDIUM)**
+**Q5 — Description length (MEDIUM)**
+Fail if the `description` frontmatter value exceeds 120 characters. Long descriptions are truncated in the agent context window, which defeats the purpose of the trigger phrase. Drop trailing example phrases ("Use when asked to 'foo', 'bar'...") — those belong in the skill body, not the description.
+
+**Q6 — No baked-in stack assumptions (MEDIUM)**
 Warn if the skill hardcodes a specific tool, runtime, or environment that may not match the user's setup, without first detecting it at runtime. Examples:
 - Assumes `npm` without checking for `pnpm`/`yarn`/`bun`
 - Assumes VS Code without checking the editor
 - Assumes Linux paths on a potentially Windows/macOS system
 The skill should detect the user's setup at runtime or explicitly scope itself to a specific stack in its description.
 
-**Q6 — Single workflow scope (MEDIUM)**
+**Q7 — Single workflow scope (MEDIUM)**
 Warn if the skill body appears to implement more than one distinct workflow or covers multiple unrelated concerns. Each skill should do one thing. Signals: multiple top-level "## Workflow" sections with unrelated goals, or a description that lists many unrelated capabilities separated by "and also".
 
-**Q7 — No obvious instructions (LOW)**
+**Q8 — No obvious instructions (LOW)**
 Warn if the body contains instructions that any capable model would already follow without being told — e.g., "write clean code", "be helpful", "provide useful error messages", "write tests for new code". These add noise and dilute the signal of the actual decisions the skill encodes.
 
-**Q8 — Description matches content (LOW)**
+**Q9 — Description matches content (LOW)**
 Warn if the `description` claims a capability the skill body does not deliver, or if the body covers significantly more than the description promises.
 
 ---

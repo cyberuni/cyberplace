@@ -1,6 +1,6 @@
 ---
 name: create-skill
-description: Use this skill when the user asks to create a new agent skill. Determines the correct kind (global, repo internal, or repo public) and creates it in the right location.
+description: Use this skill when creating a new agent skill — determines global, repo-internal, or repo-public placement.
 metadata:
   internal: true
 ---
@@ -196,4 +196,4 @@ Reference scripts in `SKILL.md` with a `bash` block showing the exact invocation
 - **Repo internal**: `.agents/skills/` lives in the repo and is committed; each contributor links it locally.
 - **Repo public**: `skills/` lives in the repo and is committed; it is the installable artifact — do not symlink it into agent dirs.
 - Agent skills directories (e.g. `~/.claude/skills/`) only contain symlinks; never edit files there directly.
-- The `description` frontmatter field is what agents read to decide when to activate the skill — make it specific and include "Use this skill when" trigger language. For sub-skills, prefix with "Internal skill:" to prevent unintended activation.
+- The `description` frontmatter field is what agents read to decide when to activate the skill — make it specific and include "Use this skill when" trigger language, and keep it ≤120 characters (longer descriptions are truncated in the context window). For sub-skills, prefix with "Internal skill:" to prevent unintended activation.
