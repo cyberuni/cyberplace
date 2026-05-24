@@ -1,33 +1,26 @@
 ---
 name: create-skill
-description: Use this skill when creating a new agent skill — determines global, repo-internal, or repo-public placement.
-metadata:
-  internal: true
+description: Use this skill when the user asks to create a new agent skill. Creates the skill directory under ~/.agents/skills/ and links it into all detected agents so they can pick it up.
 ---
 
 # Create Skill
 
 When the user asks to create a new skill, follow this convention.
 
-## Skill kinds
+## Directory structure
 
-There are three kinds of skills. Determine which one applies before creating anything:
+Skills live in `~/.agents/skills/<name>/` and are linked into each agent's skills directory:
 
-| Kind | Location | Purpose |
-|---|---|---|
-| **Global** | `~/.agents/skills/<name>/` | Personal skills usable across all projects; linked into agent dirs |
-| **Repo internal** | `<repo-root>/.agents/skills/<name>/` | Dev-workflow skills for contributors to this repo only (e.g. release helpers, SDK updaters) |
-| **Repo public** | `<repo-root>/skills/<name>/` | Skills shipped with the package; users install via `npx skills add <owner>/<repo>` |
-
-Ask or infer from context which kind the user wants. The kind determines placement and whether linking is needed.
+```
+~/.agents/skills/
+  <name>/
+    SKILL.md        ← source of truth, edit this
+~/.claude/skills/
+  <name>            ← symlink → ~/.agents/skills/<name>  (Claude Code)
+# ...and equivalent paths for other detected agents
+```
 
 ## Steps
-
-### 0. Determine the skill kind
-
-- If the user is working inside a repo and the skill is meant for contributors to that repo only → **repo internal**
-- If the user is working inside a publishable package and the skill is for end users of that package → **repo public**
-- Otherwise → **global**
 
 ### 1. Create the skill
 
@@ -37,13 +30,13 @@ Check whether `npx skills` is available:
 npx skills --version 2>/dev/null
 ```
 
-#### Global skill
-
-**If `npx skills` available:**
+**If available**, use it to scaffold the skill:
 
 ```bash
 npx skills init <name> --dir ~/.agents/skills
 ```
+
+This creates `~/.agents/skills/<name>/SKILL.md` with a starter template. Edit that file to fill in the real content.
 
 **If not available**, create manually:
 
@@ -51,31 +44,7 @@ npx skills init <name> --dir ~/.agents/skills
 mkdir -p ~/.agents/skills/<name>
 ```
 
-Write `~/.agents/skills/<name>/SKILL.md`.
-
-#### Repo internal skill
-
-Create inside the repo root:
-
-```bash
-mkdir -p .agents/skills/<name>
-```
-
-Write `.agents/skills/<name>/SKILL.md`. Contributors link it locally with `npx skills add .agents/skills/<name>` or a manual symlink.
-
-#### Repo public skill
-
-Create in the repo's public skills directory:
-
-```bash
-mkdir -p skills/<name>
-```
-
-Write `skills/<name>/SKILL.md`. No agent-dir linking is needed — users install it themselves via `npx skills add <owner>/<repo>`.
-
----
-
-For all kinds, use this template:
+Then write `~/.agents/skills/<name>/SKILL.md` using this template:
 
 ```markdown
 ---
@@ -97,20 +66,14 @@ description: Use this skill when <trigger condition>. <One-line summary of what 
 
 ### 2. Validate the skill
 
-Invoke the `audit-skill` skill on the new file. Fix any CRITICAL findings before proceeding. Do not continue to step 3 if any CRITICAL findings remain.
+Invoke the `validate-skill` skill on the new file. Fix any CRITICAL findings before proceeding. Do not continue to step 3 if any CRITICAL findings remain.
 
-### 3. Link to agents (global and repo internal only)
-
-Skip this step for **repo public** skills.
+### 3. Link to agents
 
 **If `npx skills` is available:**
 
 ```bash
-# Global:
 npx skills add ~/.agents/skills/<name>
-
-# Repo internal:
-npx skills add .agents/skills/<name>
 ```
 
 This detects all installed agents and prompts the user to choose which ones to link. It handles the correct path for each agent (Claude Code, Cursor, Codex, OpenCode, etc.).
@@ -126,11 +89,7 @@ If missing, fall back to the manual step below.
 **If `npx skills` is not available, or the symlink is missing after the above:**
 
 ```bash
-# Global:
 ln -sf ~/.agents/skills/<name> ~/.claude/skills/<name>
-
-# Repo internal (adjust path per contributor machine):
-ln -sf "$(pwd)/.agents/skills/<name>" ~/.claude/skills/<name>
 ```
 
 Adjust the target path for other agents as needed (e.g., `~/.cursor/skills/`, `~/.opencode/skills/`).
@@ -140,60 +99,9 @@ Adjust the target path for other agents as needed (e.g., `~/.cursor/skills/`, `~
 - **Decisions over documentation.** Encode what to decide and how — don't repeat reference material the model already knows.
 - **Narrow and composable.** One workflow per skill. Skills can be triggered by situation (user-facing) or called by other skills (sub-skills). Sub-skills have no situational trigger — their `description` should say "Internal skill: called by X" to avoid accidental activation. Neither type should be loaded as ambient context.
 - **No baked-in opinions.** Detect the user's setup (package manager, monorepo shape, tooling) at runtime rather than assuming a specific stack.
-- **Extract deterministic tasks into scripts.** When a skill step is purely mechanical — parsing, file generation, validation, transformation — extract it into a script rather than prompting the model to do it step by step. Scripts are reproducible, testable, and faster than model reasoning.
-
-## Scripts
-
-Deterministic tasks (file generation, parsing, validation, transformation) should live in the skill's `scripts/` folder rather than being performed inline by the model.
-
-### When to extract
-
-Extract a step into a script when it:
-- Produces the same output given the same input (no judgment needed)
-- Involves text manipulation, file I/O, or structured data processing
-- Would require many inline model steps that a ten-line program handles better
-
-### File format and execution
-
-Write scripts as `.mts` (TypeScript ES modules). Execute with:
-
-```bash
-# Default: use npx tsx (works on any Node version)
-npx tsx scripts/<script-name>.mts
-
-# If Node ≥ 22.6 with --experimental-strip-types (or Node 23+ with native TS support):
-node --experimental-strip-types scripts/<script-name>.mts
-```
-
-Detect Node version at runtime to pick the right runner:
-
-```bash
-node_major=$(node -e "process.stdout.write(String(process.versions.node.split('.')[0]))")
-if [ "$node_major" -ge 23 ]; then
-  node scripts/<script-name>.mts
-else
-  npx tsx scripts/<script-name>.mts
-fi
-```
-
-### Structure
-
-Place scripts alongside `SKILL.md`:
-
-```
-skills/<name>/
-  SKILL.md
-  scripts/
-    generate-foo.mts
-    validate-bar.mts
-```
-
-Reference scripts in `SKILL.md` with a `bash` block showing the exact invocation so the model knows to run the script rather than re-implement the logic inline.
 
 ## Notes
 
-- **Global**: `~/.agents/skills/` is the source of truth — back up this directory.
-- **Repo internal**: `.agents/skills/` lives in the repo and is committed; each contributor links it locally.
-- **Repo public**: `skills/` lives in the repo and is committed; it is the installable artifact — do not symlink it into agent dirs.
+- `~/.agents/skills/` is the source of truth — commit or back up this directory.
 - Agent skills directories (e.g. `~/.claude/skills/`) only contain symlinks; never edit files there directly.
-- The `description` frontmatter field is what agents read to decide when to activate the skill — make it specific and include "Use this skill when" trigger language, and keep it ≤120 characters (longer descriptions are truncated in the context window). For sub-skills, prefix with "Internal skill:" to prevent unintended activation.
+- The `description` frontmatter field is what agents read to decide when to activate the skill — make it specific and include "Use this skill when" trigger language. For sub-skills, prefix with "Internal skill:" to prevent unintended activation.
