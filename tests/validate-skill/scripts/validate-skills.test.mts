@@ -4,7 +4,7 @@ import * as fs from 'node:fs'
 import * as os from 'node:os'
 import * as path from 'node:path'
 
-import { runChecks } from './validate-skills.mts'
+import { runChecks } from '../../../skills/validate-skill/scripts/validate-skills.mts'
 
 function withTempSkill(content: string, check: (skillFile: string) => void): void {
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'validate-skill-'))
