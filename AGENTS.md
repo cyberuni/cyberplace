@@ -22,7 +22,7 @@ npx tsx skills/audit-skill/scripts/validate-skills.mts --path skills/my-skill
 Run a single test file:
 
 ```bash
-npx tsx --test tests/audit-skill/scripts/validate-skills.test.mts
+pnpm vitest run tests/audit-skill/scripts/validate-skills.test.mts
 ```
 
 Regenerate the README awesome-skills section after editing `awesome-skills.json`:

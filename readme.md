@@ -45,7 +45,7 @@ The `create-skill` skill helps you create three kinds of skills depending on you
 
 ## Quality
 
-Every PR that touches a skill runs the audit script bundled with `audit-skill`, which mechanically checks structure (S1–S5), quality (Q1–Q4), and security (E1–E2, E6).
+Every PR that touches a skill runs the audit script bundled with `audit-skill`, which mechanically checks structure (S1–S5), quality (Q1–Q5), and security (E1–E2, E6).
 
 ```bash
 # Run locally
@@ -55,7 +55,7 @@ pnpm test:audit
 npx tsx skills/audit-skill/scripts/validate-skills.mts --path skills/my-skill
 ```
 
-Full quality review (Q5–Q8, E3–E5, E7) requires running the `audit-skill` agent skill.
+Full quality review (Q6–Q9, E3–E5, E7) requires running the `audit-skill` agent skill.
 
 <!-- AWESOME-SKILLS:START -->
 ## Awesome Skills
