@@ -2,13 +2,45 @@
 
 This file provides guidance to AI coding assistants when working with code in this repository.
 
-## What This Repo Is
+## Commands
 
-Opinionated skills, personas, workflows, and roles for AI agents. Unlike `unional/skills` (general-purpose, widely shareable), this repo encodes deliberate personal configurations — how agents should behave, communicate, and make decisions.
+Run all tests:
 
-## No Build or Test System
+```bash
+pnpm test
+```
 
-Pure markdown. No build, lint, or test commands. The `npx skills` CLI is used by consumers to install skills, not by contributors.
+Audit all skills (runs S1–S5, Q1–Q4, E1–E2, E6 checks mechanically):
+
+```bash
+pnpm test:audit
+
+# Audit a single skill:
+npx tsx skills/audit-skill/scripts/validate-skills.mts --path skills/my-skill
+```
+
+Run a single test file:
+
+```bash
+npx tsx --test tests/audit-skill/scripts/validate-skills.test.mts
+```
+
+Regenerate the README awesome-skills section after editing `awesome-skills.json`:
+
+```bash
+pnpm render:awesome-list
+```
+
+## Validation After Changes
+
+**Always run the following before committing or pushing any change to a skill:**
+
+```bash
+pnpm test
+pnpm test:audit
+```
+
+This is required — CI runs `validate` on every PR that touches `skills/` or `.agents/skills/`.
 
 ## Adding a New Skill
 
