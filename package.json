@@ -1,6 +1,6 @@
 {
 	"name": "cyber-skills",
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"description": "Opinionated skills, hooks, and workflows for AI agents",
 	"keywords": [
 		"agent-skill",
