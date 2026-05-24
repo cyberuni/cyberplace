@@ -1,8 +1,8 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 
-import { flattenAwesomeEntries, validateAwesomeList } from './awesome-lib.mts'
-import { renderAwesomeListMarkdown } from '../../update-awesome-list/scripts/render-awesome-list.mts'
+import { flattenAwesomeEntries, validateAwesomeList } from '../../../skills/find-awesome-skill/scripts/awesome-lib.mts'
+import { renderAwesomeListMarkdown } from '../../../skills/update-awesome-list/scripts/render-awesome-list.mts'
 
 test('validateAwesomeList accepts repos and skills objects with canonical keys', () => {
   const file = validateAwesomeList({
