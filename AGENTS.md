@@ -10,7 +10,7 @@ Run all tests:
 pnpm test
 ```
 
-Audit all skills (runs S1–S5, Q1–Q4, E1–E2, E6 checks mechanically):
+Audit all skills (runs S1–S5, Q1–Q5, E1–E2, E6 checks mechanically):
 
 ```bash
 pnpm test:audit
@@ -41,6 +41,16 @@ pnpm test:audit
 ```
 
 This is required — CI runs `validate` on every PR that touches `skills/` or `.agents/skills/`.
+
+## Commit Discipline
+
+Commit every self-contained unit of work — code, config, skills — as its own commit before moving on.
+
+- Conventional Commits: `feat:`, `fix:`, `refactor:`, `test:`, `docs:`, `chore:`
+- One concern per commit; never batch unrelated changes
+- Use `git add -p` for mixed changes in one file
+- Never commit with red tests; run validation commands first
+- Use the `commit-work` skill for guidance on staging and message writing
 
 ## Adding a New Skill
 
