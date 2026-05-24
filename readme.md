@@ -3,24 +3,7 @@
 [![validate-skills](https://github.com/cyberuni/cyber-skills/actions/workflows/validate-skills.yml/badge.svg)](https://github.com/cyberuni/cyber-skills/actions/workflows/validate-skills.yml)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-Opinionated skills, personas, workflows, and roles for AI agents — Claude Code, Cursor, Codex, and others.
-
-Where `unional/skills` encodes general-purpose workflows any team can use, `cyber-skills` is the opinionated layer: deliberate configurations that shape how AI agents behave, communicate, and make decisions.
-
-## Public skills
-
-Install any of these with `npx skills add cyberuni/cyber-skills`.
-
-| Skill | Description |
-| ----- | ----------- |
-| **[init](skills/init/SKILL.md)** | Initialize a new AGENTS.md with codebase documentation, then symlink CLAUDE.md to it. |
-| **[init-commit-discipline](skills/init-commit-discipline/SKILL.md)** | Inject commit discipline into AGENTS.md and register SessionStart hooks where supported. |
-| **[commit](skills/commit/SKILL.md)** | Minimal Conventional Commits helper — staging, messages, one concern per commit. |
-| **[create-skill](skills/create-skill/SKILL.md)** | Create a new agent skill — determines whether it should be global, repo internal, or repo public. |
-| **[find-awesome-skill](skills/find-awesome-skill/SKILL.md)** | Search curated awesome lists for skill and skill-repo recommendations with exact install commands. |
-| **[update-awesome-list](skills/update-awesome-list/SKILL.md)** | Add or update a curated awesome-list entry, then sync the README section. |
-| **[configure-awesome-sources](skills/configure-awesome-sources/SKILL.md)** | Manage the layered awesome-list sources used for curated skill discovery. |
-| **[audit-skill](skills/audit-skill/SKILL.md)** | Audit a SKILL.md for structure, quality, and security before installing or publishing. |
+Opinionated skills, hooks, and workflows for AI agents — Claude Code, Cursor, Codex, and others. Published as an npm package; install skills with the [Skills CLI](https://github.com/vercel-labs/skills).
 
 ## Installation
 
@@ -35,6 +18,48 @@ npx skills add cyberuni/cyber-skills --skill init -g
 npx skills add cyberuni/cyber-skills --skill init -a claude-code -g
 ```
 
+## Public skills
+
+| Skill | Description |
+| ----- | ----------- |
+| **[init](skills/init/SKILL.md)** | Initialize a new AGENTS.md with codebase documentation, then symlink CLAUDE.md to it. |
+| **[init-commit-discipline](skills/init-commit-discipline/SKILL.md)** | Inject commit discipline into AGENTS.md and register SessionStart hooks where supported. |
+| **[commit](skills/commit/SKILL.md)** | Minimal Conventional Commits helper — staging, messages, one concern per commit. |
+| **[create-skill](skills/create-skill/SKILL.md)** | Create a new agent skill — determines whether it should be global, repo internal, or repo public. |
+| **[skillify](skills/skillify/SKILL.md)** | Generalize a workflow from the current session into a reusable SKILL.md. |
+| **[patch-skill](skills/patch-skill/SKILL.md)** | Contribute local improvements to an installed skill back to its source repo via PR. |
+| **[find-awesome-skill](skills/find-awesome-skill/SKILL.md)** | Search curated awesome lists for skill and skill-repo recommendations with exact install commands. |
+| **[update-awesome-list](skills/update-awesome-list/SKILL.md)** | Add or update a curated awesome-list entry, then sync the README section. |
+| **[configure-awesome-sources](skills/configure-awesome-sources/SKILL.md)** | Manage the layered awesome-list sources used for curated skill discovery. |
+| **[audit-skill](skills/audit-skill/SKILL.md)** | Audit a SKILL.md for structure, quality, and security before installing or publishing. |
+
+## Package contents
+
+Beyond the skill files, the package also ships a `cyber-skills` CLI and runtime hooks. Some skills (for example `init-commit-discipline`) use these under the hood; you normally do not need to invoke the CLI yourself.
+
+| Layer | Purpose |
+| ----- | ------- |
+| **Skills** | Public agent skills under `skills/` — the primary interface |
+| **Hooks** | Runtime hooks for local augmentations, internal-skill marking, and commit discipline |
+| **CLI** | `cyber-skills` binary used by skills and available for direct use when needed |
+
+### CLI
+
+For advanced or scripted use:
+
+```sh
+npx cyber-skills register-hooks --set init
+npx cyber-skills register-hooks --set commit-discipline
+npx cyber-skills inject-commit-discipline --commit-skill commit
+npx cyber-skills run-hook commit-discipline
+```
+
+Pin to a specific version:
+
+```sh
+npx cyber-skills@$(npm view cyber-skills version) register-hooks --set init
+```
+
 ## Skill kinds
 
 The `create-skill` skill helps you create three kinds of skills depending on your use case:
@@ -43,7 +68,7 @@ The `create-skill` skill helps you create three kinds of skills depending on you
 |------|----------|----------|
 | **Global** | `~/.agents/skills/<name>/` | Personal skills available across all your projects |
 | **Repo internal** | `.agents/skills/<name>/` | Contributor tooling scoped to one repo (e.g. release helpers, SDK updaters) |
-| **Repo public** | `skills/<name>/` | Skills shipped with a package — users install via `npx skills add <owner>/<repo>` |
+| **Repo public** | `skills/<name>/` | Skills shipped with this package — users install via `npx skills add cyberuni/cyber-skills` |
 
 ## Quality
 
