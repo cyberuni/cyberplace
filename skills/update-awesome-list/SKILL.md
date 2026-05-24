@@ -1,9 +1,9 @@
 ---
-name: add-awesome-skill
+name: update-awesome-list
 description: Use this skill when the user wants to add or update a curated awesome-list entry for a repo or skill, including summaries, recommendation notes, and README sync.
 ---
 
-# Add Awesome Skill
+# Update Awesome List
 
 Add or update entries in the current repo's `awesome-skills.json`, then regenerate the README awesome-list section.
 
@@ -26,13 +26,13 @@ Use natural-language narrowing when the user wants help selecting standout skill
 Inspect the repo with the bundled helper:
 
 ```bash
-npx tsx skills/add-awesome-skill/scripts/inspect-skills-repo.mts --repo owner/name
+npx tsx skills/update-awesome-list/scripts/inspect-skills-repo.mts --repo owner/name
 ```
 
 Narrow by query when needed:
 
 ```bash
-npx tsx skills/add-awesome-skill/scripts/inspect-skills-repo.mts --repo owner/name --query "release"
+npx tsx skills/update-awesome-list/scripts/inspect-skills-repo.mts --repo owner/name --query "release"
 ```
 
 ## Editing rules
@@ -60,5 +60,5 @@ npx tsx skills/add-awesome-skill/scripts/inspect-skills-repo.mts --repo owner/na
 After editing, regenerate the README bounded section so the human-facing list stays in sync with `awesome-skills.json`:
 
 ```bash
-npx tsx skills/add-awesome-skill/scripts/render-awesome-list.mts
+npx tsx skills/update-awesome-list/scripts/render-awesome-list.mts
 ```
