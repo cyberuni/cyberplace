@@ -14,6 +14,10 @@
 	},
 	"author": "unional <homawong@gmail.com>",
 	"license": "MIT",
+	"publishConfig": {
+		"access": "public",
+		"provenance": true
+	},
 	"type": "module",
 	"bin": {
 		"cyber-skills": "./bin/cyber-skills.mjs"
@@ -25,7 +29,7 @@
 	],
 	"scripts": {
 		"build": "tsdown",
-		"prepare": "husky",
+		"prepare": "node -e \"if(!(process.env.CI||process.env.GITHUB_ACTIONS))require('child_process').execSync('husky',{stdio:'inherit'})\"",
 		"prepack": "pnpm build",
 		"check": "biome check --write .",
 		"cs": "changeset",
