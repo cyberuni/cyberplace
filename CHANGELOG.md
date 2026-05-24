@@ -1,5 +1,11 @@
 # cyber-skills
 
+## 0.0.2
+
+### Patch Changes
+
+- a250638: Fix `npx cyber-skills` by building CLI and hook scripts before npm publish.
+
 ## 0.0.1
 
 ### Patch Changes
