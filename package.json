@@ -14,7 +14,7 @@
   ],
   "license": "MIT",
   "scripts": {
-    "render:awesome-list": "tsx skills/add-awesome-skill/scripts/render-awesome-list.mts",
+    "render:awesome-list": "tsx skills/update-awesome-list/scripts/render-awesome-list.mts",
     "validate": "tsx skills/validate-skill/scripts/validate-skills.mts"
   },
   "devDependencies": {
