@@ -206,27 +206,30 @@ export function registerHooks(options: RegisterOptions = {}): HookResult[] {
 if (process.argv[1] === import.meta.filename) {
 	const args = process.argv.slice(2)
 	const dryRun = args.includes('--dry-run')
+	const verbose = args.includes('--verbose')
 	const rootIdx = args.indexOf('--root')
 	const root = rootIdx !== -1 ? args[rootIdx + 1]! : process.cwd()
 
 	const results = registerHooks({ root, dryRun })
 
-	if (dryRun) console.log('Dry run — no files written.\n')
+	if (verbose) {
+		if (dryRun) console.log('Dry run — no files written.\n')
 
-	const agentWidth = Math.max(...results.map((r) => r.agent.length), 'Agent'.length)
-	const hookWidth = Math.max(...results.map((r) => r.hook.length), 'Hook'.length)
-	const statusWidth = Math.max(...results.map((r) => r.status.length), 'Status'.length)
+		const agentWidth = Math.max(...results.map((r) => r.agent.length), 'Agent'.length)
+		const hookWidth = Math.max(...results.map((r) => r.hook.length), 'Hook'.length)
+		const statusWidth = Math.max(...results.map((r) => r.status.length), 'Status'.length)
 
-	function pad(s: string, n: number) {
-		return s.padEnd(n)
-	}
-	function row(a: string, h: string, s: string) {
-		return `| ${pad(a, agentWidth)} | ${pad(h, hookWidth)} | ${pad(s, statusWidth)} |`
-	}
+		function pad(s: string, n: number) {
+			return s.padEnd(n)
+		}
+		function row(a: string, h: string, s: string) {
+			return `| ${pad(a, agentWidth)} | ${pad(h, hookWidth)} | ${pad(s, statusWidth)} |`
+		}
 
-	console.log(row('Agent', 'Hook', 'Status'))
-	console.log(`|-${'-'.repeat(agentWidth)}-|-${'-'.repeat(hookWidth)}-|-${'-'.repeat(statusWidth)}-|`)
-	for (const r of results) {
-		console.log(row(r.agent, r.hook, r.status))
+		console.log(row('Agent', 'Hook', 'Status'))
+		console.log(`|-${'-'.repeat(agentWidth)}-|-${'-'.repeat(hookWidth)}-|-${'-'.repeat(statusWidth)}-|`)
+		for (const r of results) {
+			console.log(row(r.agent, r.hook, r.status))
+		}
 	}
 }

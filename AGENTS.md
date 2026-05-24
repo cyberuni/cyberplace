@@ -4,13 +4,32 @@ This file provides guidance to AI coding assistants when working with code in th
 
 ## Commands
 
+Run everything (typecheck + lint + tests + audit) before pushing:
+
+```bash
+pnpm verify
+```
+
 Run all tests:
 
 ```bash
 pnpm test
 ```
 
-Audit all skills (runs S1–S5, Q1–Q5, E1–E2, E6 checks mechanically):
+Type-check only:
+
+```bash
+pnpm typecheck
+```
+
+Lint (and auto-fix) with Biome:
+
+```bash
+pnpm lint        # check only
+pnpm check       # check and auto-fix
+```
+
+Audit all skills (runs S1–S5, Q1–Q5, Q10–Q11, E1–E2, E6 checks mechanically):
 
 ```bash
 pnpm test:audit
@@ -18,6 +37,8 @@ pnpm test:audit
 # Audit a single skill:
 npx tsx skills/audit-skill/scripts/validate-skills.mts --path skills/my-skill
 ```
+
+Full quality review (Q6–Q12, E3–E5, E7–E8, P1–P3) requires running the `audit-skill` agent skill.
 
 Run a single test file:
 
@@ -36,8 +57,7 @@ pnpm render:awesome-list
 **Always run the following before committing or pushing any change to a skill:**
 
 ```bash
-pnpm test
-pnpm test:audit
+pnpm verify   # runs typecheck + lint + test + test:audit
 ```
 
 This is required — CI runs `validate` on every PR that touches `skills/` or `.agents/skills/`.
@@ -53,6 +73,14 @@ Commit every self-contained unit of work — code, config, skills — as its own
 - Use the `commit-work` skill for guidance on staging and message writing
 
 ## Adding a New Skill
+
+Three kinds of skills exist depending on scope:
+
+| Kind | Location | Use case |
+|------|----------|----------|
+| **Global** | `~/.agents/skills/<name>/` | Personal skills across all projects |
+| **Repo internal** | `.agents/skills/<name>/` | Contributor tooling scoped to this repo |
+| **Repo public** | `skills/<name>/` | Shipped with the package; users install via `npx skills add` |
 
 Create `skills/<skill-name>/SKILL.md` with this structure:
 
