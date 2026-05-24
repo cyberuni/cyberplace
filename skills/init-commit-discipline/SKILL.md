@@ -62,9 +62,9 @@ Pass `--verbose` on either command for a human-readable summary. Pass `--dry-run
 
 ## What gets applied
 
-**AGENTS.md** (all agents): `## Commit Discipline` with Conventional Commits rules and a pointer to the chosen commit helper skill.
+**AGENTS.md** (all agents): `## Commit Discipline` with Conventional Commits rules, a **unit of work** definition (one coherent, independently revertable change — not "everything touched this session"), agent-compatible staging (`git add <files>` plus `git diff --cached`; never `git add .`, `git add -A`, or interactive `git add -p`), and a pointer to the chosen commit helper skill.
 
-**Runtime hook** (Claude Code, Codex): SessionStart injection of the same discipline so the agent commits each self-contained unit of work before moving on.
+**Runtime hook** (Claude Code, Codex): SessionStart injection of the same discipline so the agent commits each unit of work before moving on.
 
 For agents without hook support, AGENTS.md alone applies the rules.
 

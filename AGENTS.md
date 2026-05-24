@@ -83,9 +83,12 @@ This is required — CI runs `validate` on every PR that touches `skills/` or `.
 
 Commit every self-contained unit of work — code, config, skills — as its own commit before moving on.
 
+**Unit of work:** one coherent, independently revertable change — one domain's refactor, one feature, one bugfix, one test suite expansion for one concern, one config change. Never two unrelated concerns in the same commit. A TDD red-green-refactor cycle alone is not a commit boundary; commit when the full intended change is complete and tests pass. If the working tree has unrelated changes, leave them unstaged — commit the current unit first, then continue.
+
 - Conventional Commits: `feat:`, `fix:`, `refactor:`, `test:`, `docs:`, `chore:`
 - One concern per commit; never batch unrelated changes
-- Use `git add -p` for mixed changes in one file
+- Stage only files for this unit: `git add <files>`, then verify with `git diff --cached`
+- Never use `git add .`, `git add -A`, or `git add -p` (interactive commands agents cannot run)
 - Never commit with red tests; run validation commands first
 - Use the `commit-work` skill when committing (staging, splitting, message writing)
 
