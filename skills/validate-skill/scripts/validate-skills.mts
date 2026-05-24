@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import * as fs from 'node:fs'
 import * as path from 'node:path'
+import { pathToFileURL } from 'node:url'
 
 type Severity = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW'
 
@@ -138,9 +139,15 @@ function stripExamples(content: string): string {
   return content.replace(/`[^`]*`/g, '').replace(/"[^"]*"/g, '')
 }
 
+function isShellExpandedReference(source: string, matchIndex: number): boolean {
+  const previousChar = source[matchIndex - 1]
+  const previousTwoChars = source.slice(Math.max(0, matchIndex - 2), matchIndex)
+  return previousChar === '$' || previousTwoChars === ')/' || previousTwoChars === '}/'
+}
+
 // ── Check runner ─────────────────────────────────────────────────────────────
 
-function runChecks(filePath: string): CheckResult {
+export function runChecks(filePath: string): CheckResult {
   const criticals: Finding[] = []
   const warnings: Finding[] = []
 
@@ -199,6 +206,7 @@ function runChecks(filePath: string): CheckResult {
   let m: RegExpExecArray | null
   while ((m = s4RefPattern.exec(codeBlocks)) !== null) {
     const ref = m[1]
+    if (isShellExpandedReference(codeBlocks, m.index)) continue
     if (!s4Skip.test(ref) && s4Ext.test(ref)) s4Refs.add(ref)
   }
   for (const ref of s4Refs) {
@@ -375,4 +383,6 @@ function main(): void {
   console.log('   Run the validate-skill agent skill for full quality review (Q5–Q8, E3–E5, E7).')
 }
 
-main()
+if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+  main()
+}
