@@ -52,6 +52,23 @@ Regenerate the README awesome-skills section after editing `awesome-skills.json`
 pnpm render:awesome-list
 ```
 
+## Architecture
+
+This repo is a skill library and CLI tool for AI agents (Claude Code, Cursor, Codex).
+
+**Key directories:**
+
+- `skills/` — public skills shipped with the package; users install via `npx skills add cyberuni/cyber-skills`
+- `.agents/skills/` — repo-internal skills for contributor workflows (changesets, security PRs, repo renames); all must have `metadata: internal: true`
+- `hooks/` — runtime hook scripts and the `register-agent-hooks.mts` logic used by the `cyber-skills` CLI
+- `hooks/definitions/` — hook set definitions (`init.mts`, `commit-discipline.mts`) that describe which hooks to register per agent
+- `bin/cyber-skills.mts` — CLI entry point; supports `run-hook`, `register-hooks --set <set>`, and `inject-commit-discipline`
+- `tests/` — Vitest test files, mirroring the structure of `skills/`
+
+**Skill lifecycle:** Skills are authored in `skills/<name>/SKILL.md`, validated by `audit-skill`, and surfaced to agents via the `skills` CLI or `npx skills add`. Runtime behavior (local augmentations, marking internal skills) is handled by hooks registered in `.claude/settings.json` and `.cursor/settings.json`.
+
+**`cyber-skills` CLI:** Used to register agent hooks into agent settings files without adding it as a devDependency. In other repos, invoke via pinned npx with an exact version from `npm view cyber-skills version`. In this repo, use the local bin: `node --experimental-strip-types bin/cyber-skills.mts register-hooks --set init`. Idempotent.
+
 ## Validation After Changes
 
 **Always run the following before committing or pushing any change to a skill:**
@@ -110,3 +127,16 @@ Write all content in en-US (American English spelling: "color", "organize", "beh
 ## Skill Augmentations
 
 When reading any `SKILL.md` file, always check whether a `SKILL.local.md` exists in the same directory. If it does, treat its contents as additional instructions that extend the base skill. Local augmentations take precedence over the base skill where they conflict.
+
+**Runtime hooks (this repo):** registered in `.claude/settings.json`. To re-register after changes, from the repo root:
+
+```bash
+node --experimental-strip-types bin/cyber-skills.mts register-hooks --set init
+```
+
+That registers:
+
+- **`inject-local-augmentations.sh`** (SessionStart) — injects `.agents/skills/**/SKILL.local.md` into session context at startup
+- **`mark-internal.sh`** (PostToolUse/afterFileEdit) — adds `metadata: internal: true` to any `SKILL.md` written under `.agents/skills/`
+
+Hook scripts live in `.agents/hooks/`. Re-run registration after adding agents or changing hook sets.
