@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "create-issue": {
+      "source": "repobuddy/repobuddy",
+      "sourceType": "github",
+      "skillPath": "skills/create-issue/SKILL.md",
+      "computedHash": "7fe6e7fbc795d9e1ce0070a661af1da716ddbb24177a2ec7faf347da24f9ac54"
+    },
     "create-skill": {
       "source": "cyberuni/agent-helmsman",
       "sourceType": "github",
