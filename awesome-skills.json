@@ -1,8 +1,8 @@
 {
   "version": 1,
   "repos": {
-    "cyberuni/agent-helmsman": {
-      "repo": "cyberuni/agent-helmsman",
+    "cyberuni/cyber-skills": {
+      "repo": "cyberuni/cyber-skills",
       "kind": "targeted",
       "trust": "authored",
       "summary": "Opinionated agent behavior and skill-authoring workflows for Claude Code, Codex, Cursor, and similar agents.",

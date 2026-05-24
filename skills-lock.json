@@ -2,7 +2,7 @@
   "version": 1,
   "skills": {
     "audit-skill": {
-      "source": "cyberuni/agent-helmsman",
+      "source": "cyberuni/cyber-skills",
       "sourceType": "github",
       "skillPath": "skills/audit-skill/SKILL.md",
       "computedHash": "9965007332fdd40f6829ce81446939741fb8513cf2f5fde15debfcac2050b70a"
@@ -14,13 +14,13 @@
       "computedHash": "7fe6e7fbc795d9e1ce0070a661af1da716ddbb24177a2ec7faf347da24f9ac54"
     },
     "create-skill": {
-      "source": "cyberuni/agent-helmsman",
+      "source": "cyberuni/cyber-skills",
       "sourceType": "github",
       "skillPath": "skills/create-skill/SKILL.md",
       "computedHash": "aaa07c8696a526543106125efdfc51d8ec68cacfab401c5767a032154f483ba1"
     },
     "find-awesome-skill": {
-      "source": "cyberuni/agent-helmsman",
+      "source": "cyberuni/cyber-skills",
       "sourceType": "github",
       "skillPath": "skills/find-awesome-skill/SKILL.md",
       "computedHash": "935221f470fc81725c95daa1b02ccba1b92a3ccb0675ca909b9056c46e2a2030"
@@ -32,7 +32,7 @@
       "computedHash": "d78b2e51db20d5e19948faa0428ef3a1d51efed14706d4dc58cea2dfc6ef6530"
     },
     "init": {
-      "source": "cyberuni/agent-helmsman",
+      "source": "cyberuni/cyber-skills",
       "sourceType": "github",
       "skillPath": "skills/init/SKILL.md",
       "computedHash": "f159caa24cc412a4eeeab3e62f22817f45854295f0fed380453c69fe5575518b"

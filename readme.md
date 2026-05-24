@@ -1,15 +1,15 @@
-# agent-helmsman
+# cyber-skills
 
-[![validate-skills](https://github.com/cyberuni/agent-helmsman/actions/workflows/validate-skills.yml/badge.svg)](https://github.com/cyberuni/agent-helmsman/actions/workflows/validate-skills.yml)
+[![validate-skills](https://github.com/cyberuni/cyber-skills/actions/workflows/validate-skills.yml/badge.svg)](https://github.com/cyberuni/cyber-skills/actions/workflows/validate-skills.yml)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 Opinionated skills, personas, workflows, and roles for AI agents — Claude Code, Cursor, Codex, and others.
 
-Where `unional/skills` encodes general-purpose workflows any team can use, `agent-helmsman` is the helm: deliberate, opinionated configurations that shape how AI agents behave, communicate, and make decisions.
+Where `unional/skills` encodes general-purpose workflows any team can use, `cyber-skills` is the opinionated layer: deliberate configurations that shape how AI agents behave, communicate, and make decisions.
 
 ## Public skills
 
-Install any of these with `npx skills add cyberuni/agent-helmsman`.
+Install any of these with `npx skills add cyberuni/cyber-skills`.
 
 | Skill | Description |
 | ----- | ----------- |
@@ -24,13 +24,13 @@ Install any of these with `npx skills add cyberuni/agent-helmsman`.
 
 ```bash
 # Install all public skills globally
-npx skills add cyberuni/agent-helmsman --all -g
+npx skills add cyberuni/cyber-skills --all -g
 
 # Install a specific skill
-npx skills add cyberuni/agent-helmsman --skill init -g
+npx skills add cyberuni/cyber-skills --skill init -g
 
 # Install for a specific agent
-npx skills add cyberuni/agent-helmsman --skill init -a claude-code -g
+npx skills add cyberuni/cyber-skills --skill init -a claude-code -g
 ```
 
 ## Skill kinds
@@ -49,7 +49,7 @@ Every PR that touches a skill runs the audit script bundled with `audit-skill`, 
 
 ```bash
 # Run locally
-npm run validate
+pnpm test:audit
 
 # Audit a single skill
 npx tsx skills/audit-skill/scripts/validate-skills.mts --path skills/my-skill
@@ -62,11 +62,11 @@ Full quality review (Q5–Q8, E3–E5, E7) requires running the `audit-skill` ag
 
 ### Authored
 
-- `cyberuni/agent-helmsman` — targeted
+- `cyberuni/cyber-skills` — targeted
   Opinionated agent behavior and skill-authoring workflows for Claude Code, Codex, Cursor, and similar agents.
   Why recommended: Good defaults for small focused skill repos and disciplined skill authoring.
   Tags: `opinionated`, `public-repo`, `skill-authoring`, `targeted`, `validation`
-  Install: `npx skills add cyberuni/agent-helmsman`
+  Install: `npx skills add cyberuni/cyber-skills`
   Highlights:
   - `skill:init` — Create or improve AGENTS.md and carry forward local skill augmentation guidance.
   - `skill:create-skill` — Create a new skill and place it in the right global, repo-internal, or repo-public location.

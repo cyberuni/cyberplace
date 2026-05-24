@@ -294,7 +294,7 @@ async function loadAwesomeListFromSource(source: ResolvedSource, cwd: string): P
   const response = await fetch(`https://api.github.com/repos/${source.repo}/contents/${source.path}`, {
     headers: {
       'Accept': 'application/vnd.github+json',
-      'User-Agent': 'agent-helmsman-awesome-skills',
+      'User-Agent': 'cyber-skills-awesome-skills',
     },
   })
   if (!response.ok) throw new Error(`Failed to fetch ${source.repo}/${source.path}: ${response.status} ${response.statusText}`)

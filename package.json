@@ -1,5 +1,5 @@
 {
-  "name": "agent-helmsman",
+  "name": "cyber-skills",
   "version": "0.0.0",
   "description": "Opinionated skills, personas, workflows, and roles for AI agents",
   "keywords": [
@@ -10,7 +10,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cyberuni/agent-helmsman.git"
+    "url": "git+https://github.com/cyberuni/cyber-skills.git"
   },
   "license": "MIT",
   "scripts": {

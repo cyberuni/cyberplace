@@ -46,7 +46,7 @@ async function fetchRepoSkills(repo: string): Promise<SkillSummary[]> {
   const response = await fetch(`https://api.github.com/repos/${repo}/contents/skills`, {
     headers: {
       'Accept': 'application/vnd.github+json',
-      'User-Agent': 'agent-helmsman-awesome-skills',
+      'User-Agent': 'cyber-skills-awesome-skills',
     },
   })
   if (!response.ok) throw new Error(`Failed to inspect skills/ in ${repo}: ${response.status} ${response.statusText}`)
@@ -56,7 +56,7 @@ async function fetchRepoSkills(repo: string): Promise<SkillSummary[]> {
     const skillResponse = await fetch(`https://api.github.com/repos/${repo}/contents/skills/${directory}/SKILL.md`, {
       headers: {
         'Accept': 'application/vnd.github+json',
-        'User-Agent': 'agent-helmsman-awesome-skills',
+        'User-Agent': 'cyber-skills-awesome-skills',
       },
     })
     if (!skillResponse.ok) continue
