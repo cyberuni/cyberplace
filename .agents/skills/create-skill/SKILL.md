@@ -1,6 +1,8 @@
 ---
 name: create-skill
 description: Use this skill when the user asks to create a new agent skill. Determines the correct kind (global, repo internal, or repo public) and creates it in the right location.
+metadata:
+  internal: true
 ---
 
 # Create Skill

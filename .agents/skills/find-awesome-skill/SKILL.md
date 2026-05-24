@@ -1,6 +1,8 @@
 ---
 name: find-awesome-skill
 description: Use this skill when the user wants curated skill or skill-repo recommendations from awesome lists they follow, with exact install commands and source-aware ranking.
+metadata:
+  internal: true
 ---
 
 # Find Awesome Skill

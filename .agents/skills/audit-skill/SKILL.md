@@ -1,6 +1,8 @@
 ---
 name: audit-skill
 description: Audit a SKILL.md file for structure, quality, and security. Use this skill when evaluating a skill before installing, reviewing a new or modified skill before committing, or checking that a published skill meets quality standards — catches broken references, vague triggers, baked-in assumptions, scope creep, and security risks in one pass.
+metadata:
+  internal: true
 ---
 
 # Audit Skill
