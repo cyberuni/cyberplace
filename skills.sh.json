@@ -1,0 +1,15 @@
+{
+  "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+  "notGrouped": "bottom",
+  "groupings": [
+    {
+      "title": "Awesome Lists",
+      "description": "Skills for discovering, managing, and publishing awesome lists.",
+      "skills": [
+        "configure-awesome-sources",
+        "find-awesome-skill",
+        "update-awesome-list"
+      ]
+    }
+  ]
+}
