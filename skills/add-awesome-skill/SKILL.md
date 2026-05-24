@@ -1,0 +1,64 @@
+---
+name: add-awesome-skill
+description: Use this skill when the user wants to add or update a curated awesome-list entry for a repo or skill, including summaries, recommendation notes, and README sync.
+---
+
+# Add Awesome Skill
+
+Add or update entries in the current repo's `awesome-skills.json`, then regenerate the README awesome-list section.
+
+## Entry target
+
+When the user gives a repo, do not assume the right recommendation unit. Inspect first, then ask whether they want:
+
+- the whole repo as an entry
+- one or more specific skills as entries
+- a repo entry with highlighted skills
+
+If the repo has many public skills, tell the user the exact count when available. If the count is greater than 12, tell the user it appears to be a broad-catalog repo and recommend adding specific skills, while still allowing:
+
+- repo only
+- repo with highlights
+- specific skills only
+
+Use natural-language narrowing when the user wants help selecting standout skills or highlights.
+
+Inspect the repo with the bundled helper:
+
+```bash
+npx tsx skills/add-awesome-skill/scripts/inspect-skills-repo.mts --repo owner/name
+```
+
+Narrow by query when needed:
+
+```bash
+npx tsx skills/add-awesome-skill/scripts/inspect-skills-repo.mts --repo owner/name --query "release"
+```
+
+## Editing rules
+
+1. Edit `awesome-skills.json`.
+2. Store a neutral `summary` for what the repo or skill does.
+3. Store a separate `why_recommended` note for why the user or agent recommends it.
+4. Keep tags short and lower-kebab-case.
+5. For `type: skill`, require `skill`.
+6. For `type: repo`, omit `skill`.
+7. Repo entries may include typed `highlights` using:
+
+```json
+{
+  "type": "skill",
+  "key": "validate-skill",
+  "summary": "Validate SKILL.md structure, quality, and security.",
+  "why_recommended": "Strong review rubric before publishing or installing third-party skills.",
+  "tags": ["validation", "security"]
+}
+```
+
+## Finish
+
+After editing, regenerate the README bounded section so the human-facing list stays in sync with `awesome-skills.json`:
+
+```bash
+npx tsx skills/add-awesome-skill/scripts/render-awesome-list.mts
+```
