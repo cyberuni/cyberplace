@@ -27,6 +27,10 @@ description: "One sentence trigger description — WHAT it does, WHEN to invoke 
 
 For sub-skills (called by other skills, not triggered by user situation), prefix the description with `"Internal skill:"` to prevent accidental activation.
 
+## Language
+
+Write all content in en-US (American English spelling: "color", "organize", "behavior", etc.).
+
 ## Skill Design Principles
 
 - **Decisions over documentation** — encode what to decide and how, not reference material the model already knows
