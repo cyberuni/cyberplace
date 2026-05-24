@@ -1,5 +1,5 @@
 {
-	"name": "@cyberuni/cyber-skills",
+	"name": "cyber-skills",
 	"version": "0.0.0",
 	"description": "Opinionated skills, hooks, and workflows for AI agents",
 	"keywords": [
