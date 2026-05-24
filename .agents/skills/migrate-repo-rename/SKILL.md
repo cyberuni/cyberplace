@@ -1,6 +1,8 @@
 ---
 name: migrate-repo-rename
 description: Use this skill when a repo, package, or namespace rename requires migrating old references and local state.
+metadata:
+  internal: true
 ---
 
 # Migrate Repo Rename
