@@ -331,6 +331,47 @@ export function runChecks(filePath: string): CheckResult {
 		)
 	}
 
+	// Q10: SKILL.md must not treat stdout prose/tables as authoritative data
+	const q10Patterns: RegExp[] = [
+		/show (this |the )?(summary )?table/i,
+		/parse (the )?stdout/i,
+		/from the (script )?output/i,
+		/prints a summary table/i,
+		/print(s|ed)? a (summary )?table/i,
+	]
+	const q10Line = body.split('\n').find((line) => {
+		if (/\b(do not|don't|never)\b/i.test(line) && /parse (the )?stdout/i.test(line)) return false
+		return q10Patterns.some((pat) => pat.test(line))
+	})
+	if (q10Line) {
+		warn(
+			'HIGH',
+			'Q10',
+			'SKILL.md instructs parsing stdout prose/tables as data',
+			q10Line.trim(),
+			'Point agents at an artifact file or jq on CLI output; stdout should be JSON ack only',
+		)
+	}
+
+	// Q11: interactive scripts must document --yes for agent runs
+	const scriptsDir = path.join(skillDir, 'scripts')
+	if (fs.existsSync(scriptsDir)) {
+		const scriptFiles = fs.readdirSync(scriptsDir).filter((f) => !f.startsWith('.'))
+		const hasInteractive = scriptFiles.some((f) => {
+			const src = fs.readFileSync(path.join(scriptsDir, f), 'utf8')
+			return /readline|createInterface|\.question\(/.test(src)
+		})
+		if (hasInteractive && !/--yes|-y/.test(content)) {
+			warn(
+				'HIGH',
+				'Q11',
+				'Interactive script missing non-interactive agent path',
+				'scripts/ uses readline/prompt but SKILL.md does not document --yes or -y',
+				'Document --yes (or equivalent) in SKILL.md for autonomous agent runs',
+			)
+		}
+	}
+
 	// ── Security ─────────────────────────────────────────────────────────────────
 
 	// E1: dangerous shell commands — checked in fenced code blocks only.
@@ -382,9 +423,9 @@ export function runChecks(filePath: string): CheckResult {
 
 function printFinding(f: Finding): void {
 	const icon = f.severity === 'CRITICAL' ? '❌' : '⚠️ '
-	console.log(`  ${icon} [${f.severity}] ${f.checkId} — ${f.name}`)
-	console.log(`     Evidence: ${f.evidence}`)
-	console.log(`     Fix:      ${f.fix}`)
+	console.info(`  ${icon} [${f.severity}] ${f.checkId} — ${f.name}`)
+	console.info(`     Evidence: ${f.evidence}`)
+	console.info(`     Fix:      ${f.fix}`)
 }
 
 // ── Main ─────────────────────────────────────────────────────────────────────
@@ -410,18 +451,18 @@ function main(): void {
 	}
 
 	if (skillFiles.length === 0) {
-		console.log('No SKILL.md files found.')
+		console.info('No SKILL.md files found.')
 		process.exit(0)
 	}
 
-	console.log(`Validating ${skillFiles.length} skill(s)…`)
+	console.info(`Validating ${skillFiles.length} skill(s)…`)
 
 	let totalCriticals = 0
 	let totalWarnings = 0
 
 	for (const filePath of skillFiles) {
 		const dirName = path.basename(path.dirname(filePath))
-		console.log(`\n── ${dirName} ─────────────────────────`)
+		console.info(`\n── ${dirName} ─────────────────────────`)
 
 		const { criticals, warnings } = runChecks(filePath)
 		totalCriticals += criticals.length
@@ -431,22 +472,22 @@ function main(): void {
 		for (const f of warnings) printFinding(f)
 
 		if (criticals.length === 0) {
-			console.log('  ✅ no CRITICAL findings')
+			console.info('  ✅ no CRITICAL findings')
 		} else {
-			console.log('  🚨 DO NOT commit or install until all CRITICAL findings are resolved.')
+			console.info('  🚨 DO NOT commit or install until all CRITICAL findings are resolved.')
 		}
 	}
 
-	console.log('\n══════════════════════════════════════')
-	console.log(`Results: ${totalCriticals} critical failure(s), ${totalWarnings} warning(s)`)
+	console.info('\n══════════════════════════════════════')
+	console.info(`Results: ${totalCriticals} critical failure(s), ${totalWarnings} warning(s)`)
 
 	if (totalCriticals > 0) {
-		console.log('❌ Fix all CRITICAL findings before merging.')
+		console.info('❌ Fix all CRITICAL findings before merging.')
 		process.exit(1)
 	}
 
-	console.log('✅ All checks passed (S1–S5, Q1–Q5, E1–E2, E6).')
-	console.log('   Run the audit-skill agent skill for full quality review (Q6–Q9, E3–E5, E7).')
+	console.info('✅ All checks passed (S1–S5, Q1–Q5, Q10–Q11, E1–E2, E6).')
+	console.info('   Run the audit-skill agent skill for full quality review (Q6–Q12, E3–E5, E7).')
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
