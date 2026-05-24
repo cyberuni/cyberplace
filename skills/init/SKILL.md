@@ -17,7 +17,8 @@ When reading any `SKILL.md` file, always check whether a `SKILL.local.md` exists
 ```
 
 Usage notes:
-- If there's already an AGENTS.md, suggest improvements to it.
+- If there's already an AGENTS.md, compare each section you would add (Commands, Architecture, Skill Augmentations, etc.) against what is already there. When content differs — not just missing, but substantively different — ask the user whether to update that section before changing it. Do not overwrite existing sections silently.
+- If sections are missing entirely, add them without asking.
 - Avoid listing every component or file structure that can be easily discovered.
 - Do not make up sections like "Common Development Tasks" or "Tips for Development" unless that content appears in existing project files.
 - If there are Cursor rules (in `.cursor/rules/` or `.cursorrules`) or Copilot rules (in `.github/copilot-instructions.md`), include the important parts.
