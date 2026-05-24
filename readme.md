@@ -15,6 +15,9 @@ Install any of these with `npx skills add cyberuni/agent-helmsman`.
 | ----- | ----------- |
 | **[init](skills/init/SKILL.md)** | Initialize a new AGENTS.md with codebase documentation, then symlink CLAUDE.md to it. |
 | **[create-skill](skills/create-skill/SKILL.md)** | Create a new agent skill — determines whether it should be global, repo internal, or repo public. |
+| **[find-awesome-skill](skills/find-awesome-skill/SKILL.md)** | Search curated awesome lists for skill and skill-repo recommendations with exact install commands. |
+| **[add-awesome-skill](skills/add-awesome-skill/SKILL.md)** | Add or update a curated awesome-list entry, then sync the README section. |
+| **[configure-awesome-sources](skills/configure-awesome-sources/SKILL.md)** | Manage the layered awesome-list sources used for curated skill discovery. |
 | **[validate-skill](skills/validate-skill/SKILL.md)** | Validate a SKILL.md for structure, quality, and security before committing or publishing. |
 
 ## Installation
@@ -53,3 +56,19 @@ npx tsx skills/validate-skill/scripts/validate-skills.mts --path skills/my-skill
 ```
 
 Full quality review (Q5–Q8, E3–E5, E7) requires running the `validate-skill` agent skill.
+
+<!-- AWESOME-SKILLS:START -->
+## Awesome Skills
+
+### Authored
+
+- `cyberuni/agent-helmsman` — targeted
+  Opinionated agent behavior and skill-authoring workflows for Claude Code, Codex, Cursor, and similar agents.
+  Why recommended: Good defaults for small focused skill repos and disciplined skill authoring.
+  Tags: `skill-authoring`, `validation`, `public-repo`, `targeted`, `opinionated`
+  Install: `npx skills add cyberuni/agent-helmsman`
+  Highlights:
+  - `skill:init` — Create or improve AGENTS.md and carry forward local skill augmentation guidance.
+  - `skill:create-skill` — Create a new skill and place it in the right global, repo-internal, or repo-public location.
+  - `skill:validate-skill` — Validate SKILL.md structure, quality, and security before commit or publication.
+<!-- AWESOME-SKILLS:END -->

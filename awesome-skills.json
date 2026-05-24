@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "type": "repo",
+      "repo": "cyberuni/agent-helmsman",
+      "kind": "targeted",
+      "trust": "authored",
+      "summary": "Opinionated agent behavior and skill-authoring workflows for Claude Code, Codex, Cursor, and similar agents.",
+      "why_recommended": "Good defaults for small focused skill repos and disciplined skill authoring.",
+      "tags": [
+        "skill-authoring",
+        "validation",
+        "public-repo",
+        "targeted",
+        "opinionated"
+      ],
+      "highlights": [
+        {
+          "type": "skill",
+          "key": "init",
+          "summary": "Create or improve AGENTS.md and carry forward local skill augmentation guidance.",
+          "why_recommended": "Useful when a repo needs agent-facing documentation with minimal drift.",
+          "tags": [
+            "documentation",
+            "agent-config"
+          ]
+        },
+        {
+          "type": "skill",
+          "key": "create-skill",
+          "summary": "Create a new skill and place it in the right global, repo-internal, or repo-public location.",
+          "why_recommended": "Helps keep skill repositories scoped correctly instead of mixing private and public workflows.",
+          "tags": [
+            "skill-authoring",
+            "scaffolding"
+          ]
+        },
+        {
+          "type": "skill",
+          "key": "validate-skill",
+          "summary": "Validate SKILL.md structure, quality, and security before commit or publication.",
+          "why_recommended": "Strong review rubric before publishing or installing third-party skills.",
+          "tags": [
+            "validation",
+            "security",
+            "publishing"
+          ]
+        }
+      ]
+    }
+  ]
+}
