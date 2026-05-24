@@ -52,10 +52,5 @@
 	"packageManager": "pnpm@11.0.0",
 	"engines": {
 		"node": ">=22"
-	},
-	"pnpm": {
-		"onlyBuiltDependencies": [
-			"esbuild"
-		]
 	}
 }
