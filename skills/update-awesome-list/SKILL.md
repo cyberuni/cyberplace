@@ -38,12 +38,13 @@ npx tsx skills/update-awesome-list/scripts/inspect-skills-repo.mts --repo owner/
 ## Editing rules
 
 1. Edit `awesome-skills.json`.
-2. Store a neutral `summary` for what the repo or skill does.
-3. Store a separate `why_recommended` note for why the user or agent recommends it.
-4. Keep tags short and lower-kebab-case.
-5. For `type: skill`, require `skill`.
-6. For `type: repo`, omit `skill`.
-7. Repo entries may include typed `highlights` using:
+2. Store repo recommendations under the top-level `repos` object, keyed by normalized repo id (`owner/name`).
+3. Store skill recommendations under the top-level `skills` object, keyed by canonical skill id (`owner/name::skill-name`).
+4. Keep the embedded `repo` and `skill` values consistent with the object key.
+5. Store a neutral `summary` for what the repo or skill does.
+6. Store a separate `why_recommended` note for why the user or agent recommends it.
+7. Keep tags short and lower-kebab-case.
+8. Repo entries may include typed `highlights` using:
 
 ```json
 {

@@ -65,7 +65,7 @@ Full quality review (Q5–Q8, E3–E5, E7) requires running the `validate-skill`
 - `cyberuni/agent-helmsman` — targeted
   Opinionated agent behavior and skill-authoring workflows for Claude Code, Codex, Cursor, and similar agents.
   Why recommended: Good defaults for small focused skill repos and disciplined skill authoring.
-  Tags: `skill-authoring`, `validation`, `public-repo`, `targeted`, `opinionated`
+  Tags: `opinionated`, `public-repo`, `skill-authoring`, `targeted`, `validation`
   Install: `npx skills add cyberuni/agent-helmsman`
   Highlights:
   - `skill:init` — Create or improve AGENTS.md and carry forward local skill augmentation guidance.

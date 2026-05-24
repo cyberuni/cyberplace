@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 import * as fs from 'node:fs'
 import * as path from 'node:path'
+import { pathToFileURL } from 'node:url'
+import { flattenAwesomeEntries, validateAwesomeList } from '../../find-awesome-skill/scripts/awesome-lib.mts'
 
 interface Highlight {
   type: string
@@ -38,7 +40,7 @@ function deriveInstallCommand(entry: Entry): string {
     : `npx skills add ${entry.repo} --skill ${entry.skill}`
 }
 
-function renderAwesomeListMarkdown(entries: Entry[]): string {
+export function renderAwesomeListMarkdown(entries: Entry[]): string {
   const sections: string[] = ['## Awesome Skills', '']
   for (const trust of ['authored', 'recommended'] as const) {
     const grouped = entries
@@ -73,12 +75,14 @@ function updateMarkedSection(content: string, markerName: string, replacement: s
   return content.replace(new RegExp(`${start}[\\s\\S]*?${end}`, 'm'), `${start}\n${replacement}\n${end}`)
 }
 
-const cwd = process.cwd()
-const awesomePath = path.join(cwd, 'awesome-skills.json')
-const readmePath = path.join(cwd, 'readme.md')
-const awesome = JSON.parse(fs.readFileSync(awesomePath, 'utf8')) as { entries: Entry[] }
-const markdown = renderAwesomeListMarkdown(awesome.entries)
-const updated = updateMarkedSection(fs.readFileSync(readmePath, 'utf8'), 'AWESOME-SKILLS', markdown)
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  const cwd = process.cwd()
+  const awesomePath = path.join(cwd, 'awesome-skills.json')
+  const readmePath = path.join(cwd, 'readme.md')
+  const awesome = validateAwesomeList(JSON.parse(fs.readFileSync(awesomePath, 'utf8')), awesomePath)
+  const markdown = renderAwesomeListMarkdown(flattenAwesomeEntries(awesome))
+  const updated = updateMarkedSection(fs.readFileSync(readmePath, 'utf8'), 'AWESOME-SKILLS', markdown)
 
-fs.writeFileSync(readmePath, updated)
-console.log(`Updated awesome list section in ${readmePath}`)
+  fs.writeFileSync(readmePath, updated)
+  console.log(`Updated awesome list section in ${readmePath}`)
+}

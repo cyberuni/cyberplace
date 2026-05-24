@@ -1,8 +1,7 @@
 {
   "version": 1,
-  "entries": [
-    {
-      "type": "repo",
+  "repos": {
+    "cyberuni/agent-helmsman": {
       "repo": "cyberuni/agent-helmsman",
       "kind": "targeted",
       "trust": "authored",
@@ -49,5 +48,6 @@
         }
       ]
     }
-  ]
+  },
+  "skills": {}
 }
