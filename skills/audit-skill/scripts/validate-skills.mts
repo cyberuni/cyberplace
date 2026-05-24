@@ -380,7 +380,7 @@ function main(): void {
   }
 
   console.log('✅ All checks passed (S1–S5, Q1–Q4, E1–E2, E6).')
-  console.log('   Run the validate-skill agent skill for full quality review (Q5–Q8, E3–E5, E7).')
+  console.log('   Run the audit-skill agent skill for full quality review (Q5–Q8, E3–E5, E7).')
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {

@@ -95,7 +95,7 @@ description: Use this skill when <trigger condition>. <One-line summary of what 
 
 ### 2. Validate the skill
 
-Invoke the `validate-skill` skill on the new file. Fix any CRITICAL findings before proceeding. Do not continue to step 3 if any CRITICAL findings remain.
+Invoke the `audit-skill` skill on the new file. Fix any CRITICAL findings before proceeding. Do not continue to step 3 if any CRITICAL findings remain.
 
 ### 3. Link to agents (global and repo internal only)
 
