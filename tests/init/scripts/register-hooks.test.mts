@@ -49,9 +49,9 @@ test('registers Claude Code hooks when .claude dir exists and settings.json is a
 					SessionStart: Array<{ hooks: Array<{ command: string }> }>
 				}
 			}
-			expect(settings.hooks.PostToolUse[0]?.hooks.some((h) => h.command === 'bash .agents/hooks/mark-internal.sh')).toBe(
-				true,
-			)
+			expect(
+				settings.hooks.PostToolUse[0]?.hooks.some((h) => h.command === 'bash .agents/hooks/mark-internal.sh'),
+			).toBe(true)
 			expect(
 				settings.hooks.SessionStart[0]?.hooks.some(
 					(h) => h.command === 'bash .agents/hooks/inject-local-augmentations.sh',
