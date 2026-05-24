@@ -1,2 +1,2 @@
-.agents/awesome-skill-sources.local.yaml
+.agents/*.local.*
 node_modules/
