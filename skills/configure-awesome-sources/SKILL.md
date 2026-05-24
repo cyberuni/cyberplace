@@ -1,6 +1,6 @@
 ---
 name: configure-awesome-sources
-description: Use this skill when the user wants to add, remove, disable, enable, or inspect the awesome-list sources used for curated skill discovery.
+description: Use this skill when adding, removing, or inspecting the awesome-list sources used for curated skill discovery.
 ---
 
 # Configure Awesome Sources
