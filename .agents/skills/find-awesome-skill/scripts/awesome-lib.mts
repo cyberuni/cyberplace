@@ -42,7 +42,8 @@ type AwesomeEntry = RepoEntry | SkillEntry
 
 interface AwesomeListFile {
   version: 1
-  entries: AwesomeEntry[]
+  repos: Record<string, Omit<RepoEntry, 'type'>>
+  skills: Record<string, Omit<SkillEntry, 'type'>>
 }
 
 interface SourceRef {
@@ -122,6 +123,10 @@ function entryId(entry: AwesomeEntry): string {
   return entry.type === 'repo' ? entry.repo : `${entry.repo}::${entry.skill}`
 }
 
+function skillEntryId(repo: string, skill: string): string {
+  return `${repo}::${skill}`
+}
+
 function highlightId(repo: string, highlight: Highlight): string {
   return `${repo}::${highlight.type}::${highlight.key}`
 }
@@ -172,51 +177,69 @@ function validateHighlight(value: unknown, context: string): Highlight {
   }
 }
 
-function validateAwesomeList(data: unknown, origin: string): AwesomeListFile {
+export function validateAwesomeList(data: unknown, origin: string): AwesomeListFile {
   const file = data as Partial<AwesomeListFile>
-  if (!file || typeof file !== 'object' || file.version !== 1 || !Array.isArray(file.entries)) {
-    throw new Error(`${origin} must contain version: 1 and an entries array`)
+  if (!file || typeof file !== 'object' || file.version !== 1 || typeof file.repos !== 'object' || file.repos === null || typeof file.skills !== 'object' || file.skills === null) {
+    throw new Error(`${origin} must contain version: 1 plus repos and skills objects`)
   }
 
-  const entries = file.entries.map((raw, index) => {
-    const entry = raw as Partial<AwesomeEntry>
-    const context = `${origin} entry ${index + 1}`
+  const repos = Object.fromEntries(Object.entries(file.repos).map(([key, raw], index) => {
+    const entry = raw as Partial<Omit<RepoEntry, 'type'>>
+    const context = `${origin} repo ${index + 1}`
     if (!entry || typeof entry !== 'object') throw new Error(`${context} must be an object`)
-    if (entry.type !== 'repo' && entry.type !== 'skill') throw new Error(`${context} has invalid type`)
     if (!entry.repo || !entry.summary || !entry.why_recommended || !entry.kind || !entry.trust) {
       throw new Error(`${context} is missing required fields`)
     }
-    if (entry.type === 'skill' && !entry.skill) throw new Error(`${context} must include skill when type is skill`)
-    if (entry.type === 'repo' && 'skill' in entry && entry.skill) throw new Error(`${context} must not include skill when type is repo`)
-
-    if (entry.type === 'repo') {
-      return {
-        type: 'repo',
-        repo: normalizeRepo(entry.repo),
-        kind: entry.kind,
-        trust: entry.trust,
-        summary: String(entry.summary),
-        why_recommended: String(entry.why_recommended),
-        tags: normalizeTags(entry.tags),
-        highlights: Array.isArray(entry.highlights)
-          ? entry.highlights.map((item, i) => validateHighlight(item, `${context} highlight ${i + 1}`))
-          : [],
-      } satisfies RepoEntry
-    }
-
-    return {
-      type: 'skill',
-      repo: normalizeRepo(entry.repo),
-      skill: String(entry.skill),
+    const normalizedRepo = normalizeRepo(entry.repo)
+    if (key !== normalizedRepo) throw new Error(`${context} key must match normalized repo ${normalizedRepo}`)
+    return [key, {
+      repo: normalizedRepo,
       kind: entry.kind,
       trust: entry.trust,
       summary: String(entry.summary),
       why_recommended: String(entry.why_recommended),
       tags: normalizeTags(entry.tags),
-    } satisfies SkillEntry
-  })
+      highlights: Array.isArray(entry.highlights)
+        ? entry.highlights.map((item, i) => validateHighlight(item, `${context} highlight ${i + 1}`))
+        : [],
+    } satisfies Omit<RepoEntry, 'type'>]
+  }))
 
-  return { version: 1, entries }
+  const skills = Object.fromEntries(Object.entries(file.skills).map(([key, raw], index) => {
+    const entry = raw as Partial<Omit<SkillEntry, 'type'>>
+    const context = `${origin} skill ${index + 1}`
+    if (!entry || typeof entry !== 'object') throw new Error(`${context} must be an object`)
+    if (!entry.repo || !entry.skill || !entry.summary || !entry.why_recommended || !entry.kind || !entry.trust) {
+      throw new Error(`${context} is missing required fields`)
+    }
+    const normalizedRepo = normalizeRepo(entry.repo)
+    const normalizedSkill = String(entry.skill)
+    const normalizedId = skillEntryId(normalizedRepo, normalizedSkill)
+    if (key !== normalizedId) throw new Error(`${context} key must match normalized skill id ${normalizedId}`)
+    return [key, {
+      repo: normalizedRepo,
+      skill: normalizedSkill,
+      kind: entry.kind,
+      trust: entry.trust,
+      summary: String(entry.summary),
+      why_recommended: String(entry.why_recommended),
+      tags: normalizeTags(entry.tags),
+    } satisfies Omit<SkillEntry, 'type'>]
+  }))
+
+  return { version: 1, repos, skills }
+}
+
+export function flattenAwesomeEntries(file: AwesomeListFile): AwesomeEntry[] {
+  const repoEntries = Object.values(file.repos).map(entry => ({
+    type: 'repo' as const,
+    ...entry,
+  }))
+  const skillEntries = Object.values(file.skills).map(entry => ({
+    type: 'skill' as const,
+    ...entry,
+  }))
+  return [...repoEntries, ...skillEntries]
 }
 
 function loadSourceConfigFile(filePath: string): SourceConfigFile {
@@ -301,7 +324,7 @@ function mergeAwesomeEntries(loaded: Array<{ source: ResolvedSource; file: Aweso
   }>()
 
   for (const { source, file } of loaded) {
-    for (const entry of file.entries) {
+    for (const entry of flattenAwesomeEntries(file)) {
       const id = entryId(entry)
       const note = { source: `${source.repo}/${source.path}`, sourceClass: source.sourceClass, why_recommended: entry.why_recommended }
       const existing = byId.get(id)
