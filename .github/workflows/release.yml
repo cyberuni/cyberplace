@@ -1,0 +1,9 @@
+name: release
+on:
+  push:
+    branches: [main]
+
+jobs:
+  release:
+    uses: cyberuni/.github/.github/workflows/pnpm-release-changeset-simple.yml@main
+    secrets: inherit
