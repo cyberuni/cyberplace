@@ -1,8 +1,6 @@
 ---
 name: init
 description: Use this skill when the user wants to initialize or improve an AGENTS.md file with codebase documentation. Creates AGENTS.md and symlinks CLAUDE.md to it, or suggests improvements if AGENTS.md already exists.
-metadata:
-  internal: true
 ---
 
 Analyze this codebase and create or improve an AGENTS.md file, then symlink CLAUDE.md to it.
@@ -45,38 +43,20 @@ Then register hooks so these behaviors apply automatically going forward, not ju
 
 ### Hook registration
 
-`npx skills` handles agent detection for file placement but has no hook management — hook formats are agent-specific. Detect which agents are present and register for each:
+Run the hook registration script from the repo root:
 
-**Claude Code** (`.claude/settings.json`):
-
-```json
-{
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "hooks": [{ "type": "command", "command": "bash .agents/hooks/mark-internal.sh" }]
-      }
-    ],
-    "SessionStart": [
-      {
-        "hooks": [{ "type": "command", "command": "bash .agents/hooks/inject-local-augmentations.sh" }]
-      }
-    ]
-  }
-}
+```bash
+node skills/init/scripts/register-hooks.mts
 ```
 
-Use the `update-config` skill to merge these into the existing `.claude/settings.json` without overwriting other settings.
+The script detects which agents are present (`.claude/`, `.cursor/`, `.codex-plugin/`), deep-merges the required hook entries for each without clobbering other settings, and prints a summary. It is idempotent — safe to re-run.
 
-The two hook scripts live in `.agents/hooks/`:
+The two hook scripts it registers live in `.agents/hooks/`:
 
-- **`mark-internal.sh`** — reads tool JSON from stdin, checks if the written file path matches `.agents/skills/*/SKILL.md`, and patches in `metadata: internal: true` if missing.
-- **`inject-local-augmentations.sh`** — scans `.agents/skills/*/SKILL.local.md` and emits their contents as `hookSpecificOutput` so the agent sees local augmentations at the start of every session (a safety net on top of the AGENTS.md instruction).
+- **`mark-internal.sh`** — PostToolUse: patches `metadata: internal: true` into any SKILL.md written under `.agents/skills/`
+- **`inject-local-augmentations.sh`** — SessionStart: surfaces `SKILL.local.md` contents as session context at the start of every session
 
-**Codex** — hooks are registered via a plugin's `hooks.json` using the identical format. If a `.codex-plugin/` exists in the repo, add or merge into `.codex-plugin/hooks.json`. Otherwise, create a minimal plugin (see the Codex `plugin-creator` skill) or document the hook manually.
-
-**Other agents** (Cursor, OpenCode, etc.): no equivalent lifecycle hook system exists yet. Skip hook registration for them; the AGENTS.md instruction covers the SKILL.local.md behaviour for all agents that read it.
+For **other agents** (OpenCode, etc.): if they expose a documented repo-level hook system, register the equivalent hooks. Otherwise skip hook registration and rely on AGENTS.md for the `SKILL.local.md` behaviour.
 
 > Note: `npx skills` does not yet manage runtime hook registration automatically. Follow https://github.com/vercel-labs/skills/issues/1231 — once resolved, the manual steps above should become `npx skills add` side-effects.
 
