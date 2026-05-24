@@ -43,18 +43,22 @@ Then register hooks so these behaviors apply automatically going forward, not ju
 
 ### Hook registration
 
-Run the hook registration script from the repo root:
+Ensure the `cyber-skills` npm package is available (`pnpm add -D cyber-skills` or pinned `npx cyber-skills@<version>`). Then from the repo root:
 
 ```bash
-npx tsx skills/init/scripts/register-hooks.mts
+npx cyber-skills register-hooks --set init
 ```
 
-The script detects which agents are present (`.claude/`, `.cursor/`, `.codex-plugin/`), deep-merges the required hook entries for each without clobbering other settings, and exits quietly. It is idempotent — safe to re-run. Pass `--verbose` to see a human-readable summary.
+The command detects which agents are present (`.claude/`, `.cursor/`, `.codex-plugin/`), deep-merges the required hook entries for each without clobbering other settings, and exits quietly. It is idempotent — safe to re-run. Pass `--verbose` for a human-readable summary on stderr.
 
 The two hook scripts it registers live in `.agents/hooks/`:
 
 - **`mark-internal.sh`** — PostToolUse/afterFileEdit: patches `metadata: internal: true` into any SKILL.md written under `.agents/skills/`
 - **`inject-local-augmentations.sh`** — SessionStart: surfaces `SKILL.local.md` contents as session context at the start of every session
+
+Registration logic lives in the `cyber-skills` npm package (`hooks/register-agent-hooks.mts`).
+
+For **commit discipline** (AGENTS.md section + SessionStart hook), invoke the `init-commit-discipline` skill after init.
 
 For **other agents** (OpenCode, etc.): if they expose a documented repo-level hook system, register the equivalent hooks. Otherwise skip hook registration and rely on AGENTS.md for the `SKILL.local.md` behaviour.
 

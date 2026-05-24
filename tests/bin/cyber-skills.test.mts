@@ -28,3 +28,15 @@ test('run-hook exits non-zero for unknown hook name', () => {
 	expect(result.status).toBe(1)
 	expect(result.stderr).toMatch(/not found/)
 })
+
+test('register-hooks requires --set', () => {
+	const result = run('register-hooks')
+	expect(result.status).toBe(1)
+	expect(result.stderr).toMatch(/register-hooks/)
+})
+
+test('inject-commit-discipline requires --commit-skill', () => {
+	const result = run('inject-commit-discipline')
+	expect(result.status).toBe(1)
+	expect(result.stderr).toMatch(/commit-skill/)
+})

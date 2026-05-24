@@ -15,6 +15,9 @@
 	"author": "unional <homawong@gmail.com>",
 	"license": "MIT",
 	"type": "module",
+	"bin": {
+		"cyber-skills": "./bin/cyber-skills.mts"
+	},
 	"files": [
 		"bin",
 		"hooks",

@@ -13,9 +13,9 @@
 			"skills": ["create-skill", "audit-skill"]
 		},
 		{
-			"title": "Repo Setup",
+			"title": "Agent Initialization",
 			"description": "Initialize and configure a repository for AI agent workflows.",
-			"skills": ["init", "setup-github-repo"]
+			"skills": ["init", "init-commit-discipline", "commit"]
 		},
 		{
 			"title": "Awesome List Maintenance",

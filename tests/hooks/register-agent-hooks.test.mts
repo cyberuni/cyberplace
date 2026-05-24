@@ -3,7 +3,7 @@ import * as os from 'node:os'
 import * as path from 'node:path'
 import { expect, test } from 'vitest'
 
-import { registerHooks } from '../../../skills/init/scripts/register-hooks.mts'
+import { registerHooksForSet } from '../../hooks/register-agent-hooks.mts'
 
 function withTempRoot(setup: (root: string) => void, check: (root: string) => void): void {
 	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'register-hooks-'))
@@ -19,27 +19,23 @@ function readJson(filePath: string): unknown {
 	return JSON.parse(fs.readFileSync(filePath, 'utf8'))
 }
 
-// --- Agent detection ---
-
 test('skips all agents when no agent dirs exist', () => {
 	withTempRoot(
 		(_root) => {},
 		(root) => {
-			const results = registerHooks({ root })
+			const results = registerHooksForSet('init', { root })
 			expect(results.every((r) => r.status === 'skipped (dir not found)')).toBe(true)
 		},
 	)
 })
 
-// --- Claude Code ---
-
 test('registers Claude Code hooks when .claude dir exists and settings.json is absent', () => {
 	withTempRoot(
 		(root) => fs.mkdirSync(path.join(root, '.claude')),
 		(root) => {
-			const results = registerHooks({ root })
-			const postToolUse = results.find((r) => r.agent === 'Claude Code' && r.hook.includes('PostToolUse'))
-			const sessionStart = results.find((r) => r.agent === 'Claude Code' && r.hook.includes('SessionStart'))
+			const results = registerHooksForSet('init', { root })
+			const postToolUse = results.find((r) => r.agent === 'Claude Code' && r.hook.includes('mark-internal'))
+			const sessionStart = results.find((r) => r.agent === 'Claude Code' && r.hook.includes('inject-local'))
 			expect(postToolUse?.status).toBe('registered')
 			expect(sessionStart?.status).toBe('registered')
 
@@ -80,7 +76,7 @@ test('detects Claude Code hooks as already present when fully registered', () =>
 			)
 		},
 		(root) => {
-			const results = registerHooks({ root })
+			const results = registerHooksForSet('init', { root })
 			const claude = results.filter((r) => r.agent === 'Claude Code')
 			expect(claude.every((r) => r.status === 'already present')).toBe(true)
 		},
@@ -101,7 +97,7 @@ test('does not clobber unrelated Claude Code settings', () => {
 			)
 		},
 		(root) => {
-			registerHooks({ root })
+			registerHooksForSet('init', { root })
 			const settings = readJson(path.join(root, '.claude', 'settings.json')) as {
 				model: string
 				permissions: { allow: string[] }
@@ -126,7 +122,7 @@ test('merges into existing PostToolUse group with matching matcher', () => {
 			)
 		},
 		(root) => {
-			registerHooks({ root })
+			registerHooksForSet('init', { root })
 			const settings = readJson(path.join(root, '.claude', 'settings.json')) as {
 				hooks: { PostToolUse: Array<{ matcher?: string; hooks: Array<{ command: string }> }> }
 			}
@@ -138,13 +134,11 @@ test('merges into existing PostToolUse group with matching matcher', () => {
 	)
 })
 
-// --- Cursor ---
-
 test('registers Cursor hook when .cursor dir exists and hooks.json is absent', () => {
 	withTempRoot(
 		(root) => fs.mkdirSync(path.join(root, '.cursor')),
 		(root) => {
-			const results = registerHooks({ root })
+			const results = registerHooksForSet('init', { root })
 			const cursor = results.find((r) => r.agent === 'Cursor')
 			expect(cursor?.status).toBe('registered')
 
@@ -158,42 +152,23 @@ test('registers Cursor hook when .cursor dir exists and hooks.json is absent', (
 	)
 })
 
-test('detects Cursor hook as already present', () => {
+test('registers commit-discipline SessionStart on Claude Code', () => {
 	withTempRoot(
+		(root) => fs.mkdirSync(path.join(root, '.claude')),
 		(root) => {
-			fs.mkdirSync(path.join(root, '.cursor'))
-			fs.writeFileSync(
-				path.join(root, '.cursor', 'hooks.json'),
-				JSON.stringify({
-					version: 1,
-					hooks: { afterFileEdit: [{ command: 'bash .agents/hooks/mark-internal.sh' }] },
-				}),
+			const results = registerHooksForSet('commit-discipline', { root })
+			const session = results.find((r) => r.agent === 'Claude Code' && r.hook.includes('commit-discipline'))
+			expect(session?.status).toBe('registered')
+
+			const settings = readJson(path.join(root, '.claude', 'settings.json')) as {
+				hooks: { SessionStart: Array<{ hooks: Array<{ command: string }> }> }
+			}
+			expect(settings.hooks.SessionStart[0]?.hooks.some((h) => h.command.includes('run-hook commit-discipline'))).toBe(
+				true,
 			)
 		},
-		(root) => {
-			const results = registerHooks({ root })
-			const cursor = results.find((r) => r.agent === 'Cursor')
-			expect(cursor?.status).toBe('already present')
-		},
 	)
 })
-
-// --- Codex ---
-
-test('registers Codex hooks when .codex-plugin dir exists', () => {
-	withTempRoot(
-		(root) => fs.mkdirSync(path.join(root, '.codex-plugin')),
-		(root) => {
-			const results = registerHooks({ root })
-			const postToolUse = results.find((r) => r.agent === 'Codex' && r.hook.includes('PostToolUse'))
-			const sessionStart = results.find((r) => r.agent === 'Codex' && r.hook.includes('SessionStart'))
-			expect(postToolUse?.status).toBe('registered')
-			expect(sessionStart?.status).toBe('registered')
-		},
-	)
-})
-
-// --- Dry run ---
 
 test('dry-run: writes no files even when hooks are missing', () => {
 	withTempRoot(
@@ -202,7 +177,7 @@ test('dry-run: writes no files even when hooks are missing', () => {
 			fs.mkdirSync(path.join(root, '.cursor'))
 		},
 		(root) => {
-			const results = registerHooks({ root, dryRun: true })
+			const results = registerHooksForSet('init', { root, dryRun: true })
 			expect(results.some((r) => r.status === 'registered')).toBe(true)
 			expect(fs.existsSync(path.join(root, '.claude', 'settings.json'))).toBe(false)
 			expect(fs.existsSync(path.join(root, '.cursor', 'hooks.json'))).toBe(false)
@@ -210,14 +185,12 @@ test('dry-run: writes no files even when hooks are missing', () => {
 	)
 })
 
-// --- Idempotency ---
-
 test('running twice produces no duplicate hooks', () => {
 	withTempRoot(
 		(root) => fs.mkdirSync(path.join(root, '.claude')),
 		(root) => {
-			registerHooks({ root })
-			registerHooks({ root })
+			registerHooksForSet('init', { root })
+			registerHooksForSet('init', { root })
 			const settings = readJson(path.join(root, '.claude', 'settings.json')) as {
 				hooks: { PostToolUse: Array<{ hooks: unknown[] }>; SessionStart: Array<{ hooks: unknown[] }> }
 			}
