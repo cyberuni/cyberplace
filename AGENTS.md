@@ -87,7 +87,7 @@ Commit every self-contained unit of work — code, config, skills — as its own
 - One concern per commit; never batch unrelated changes
 - Use `git add -p` for mixed changes in one file
 - Never commit with red tests; run validation commands first
-- Use the `commit-work` skill for guidance on staging and message writing
+- Use the `commit-work` skill when committing (staging, splitting, message writing)
 
 ## Adding a New Skill
 
