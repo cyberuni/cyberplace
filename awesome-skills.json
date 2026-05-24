@@ -1,53 +1,37 @@
 {
-  "version": 1,
-  "repos": {
-    "cyberuni/cyber-skills": {
-      "repo": "cyberuni/cyber-skills",
-      "kind": "targeted",
-      "trust": "authored",
-      "summary": "Opinionated agent behavior and skill-authoring workflows for Claude Code, Codex, Cursor, and similar agents.",
-      "why_recommended": "Good defaults for small focused skill repos and disciplined skill authoring.",
-      "tags": [
-        "skill-authoring",
-        "validation",
-        "public-repo",
-        "targeted",
-        "opinionated"
-      ],
-      "highlights": [
-        {
-          "type": "skill",
-          "key": "init",
-          "summary": "Create or improve AGENTS.md and carry forward local skill augmentation guidance.",
-          "why_recommended": "Useful when a repo needs agent-facing documentation with minimal drift.",
-          "tags": [
-            "documentation",
-            "agent-config"
-          ]
-        },
-        {
-          "type": "skill",
-          "key": "create-skill",
-          "summary": "Create a new skill and place it in the right global, repo-internal, or repo-public location.",
-          "why_recommended": "Helps keep skill repositories scoped correctly instead of mixing private and public workflows.",
-          "tags": [
-            "skill-authoring",
-            "scaffolding"
-          ]
-        },
-        {
-          "type": "skill",
-          "key": "audit-skill",
-          "summary": "Audit SKILL.md structure, quality, and security before installing or publishing.",
-          "why_recommended": "Strong review rubric before installing third-party skills or publishing your own.",
-          "tags": [
-            "audit",
-            "security",
-            "publishing"
-          ]
-        }
-      ]
-    }
-  },
-  "skills": {}
+	"version": 1,
+	"repos": {
+		"cyberuni/cyber-skills": {
+			"repo": "cyberuni/cyber-skills",
+			"kind": "targeted",
+			"trust": "authored",
+			"summary": "Opinionated agent behavior and skill-authoring workflows for Claude Code, Codex, Cursor, and similar agents.",
+			"why_recommended": "Good defaults for small focused skill repos and disciplined skill authoring.",
+			"tags": ["skill-authoring", "validation", "public-repo", "targeted", "opinionated"],
+			"highlights": [
+				{
+					"type": "skill",
+					"key": "init",
+					"summary": "Create or improve AGENTS.md and carry forward local skill augmentation guidance.",
+					"why_recommended": "Useful when a repo needs agent-facing documentation with minimal drift.",
+					"tags": ["documentation", "agent-config"]
+				},
+				{
+					"type": "skill",
+					"key": "create-skill",
+					"summary": "Create a new skill and place it in the right global, repo-internal, or repo-public location.",
+					"why_recommended": "Helps keep skill repositories scoped correctly instead of mixing private and public workflows.",
+					"tags": ["skill-authoring", "scaffolding"]
+				},
+				{
+					"type": "skill",
+					"key": "audit-skill",
+					"summary": "Audit SKILL.md structure, quality, and security before installing or publishing.",
+					"why_recommended": "Strong review rubric before installing third-party skills or publishing your own.",
+					"tags": ["audit", "security", "publishing"]
+				}
+			]
+		}
+	},
+	"skills": {}
 }

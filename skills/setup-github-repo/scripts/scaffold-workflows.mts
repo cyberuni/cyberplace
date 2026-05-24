@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 /**
  * Scaffolds GitHub Actions workflow files based on detected repo state.
  * Reads .github/setup-state.json produced by detect-state.mts.
@@ -6,9 +7,9 @@
  * Usage: npx tsx scaffold-workflows.mts --state .github/setup-state.json [--workflows pull-request,release,dependabot-automerge,codeql] [--yes]
  */
 
-import { createInterface } from 'node:readline'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { createInterface } from 'node:readline'
 
 // --- Args ---
 
@@ -18,22 +19,22 @@ const workflowsArg = args[args.indexOf('--workflows') + 1]
 const autoYes = args.includes('--yes') || args.includes('-y')
 
 if (!existsSync(statePath)) {
-  console.error(`State file not found: ${statePath}`)
-  console.error('Run detect-state.mts first.')
-  process.exit(1)
+	console.error(`State file not found: ${statePath}`)
+	console.error('Run detect-state.mts first.')
+	process.exit(1)
 }
 
 interface State {
-  repo: string
-  defaultBranch: string
-  detected: {
-    language: string | null
-    codeqlLanguage: string | null
-    packageManager: string | null
-    hasPackageJson: boolean
-    hasDependabotConfig: boolean
-    existingWorkflows: string[]
-  }
+	repo: string
+	defaultBranch: string
+	detected: {
+		language: string | null
+		codeqlLanguage: string | null
+		packageManager: string | null
+		hasPackageJson: boolean
+		hasDependabotConfig: boolean
+		existingWorkflows: string[]
+	}
 }
 
 const state = JSON.parse(readFileSync(statePath, 'utf8')) as State
@@ -45,54 +46,54 @@ const allWorkflows = ['pull-request', 'release', 'dependabot-automerge', 'codeql
 
 let toOffer: string[]
 if (workflowsArg) {
-  toOffer = workflowsArg.split(',').map((s) => s.trim())
+	toOffer = workflowsArg.split(',').map((s) => s.trim())
 } else {
-  // Infer from signals
-  const hasWorkflows = detected.existingWorkflows.length > 0
-  if (!hasWorkflows) {
-    toOffer = [...allWorkflows]
-  } else {
-    toOffer = []
-    if (detected.hasPackageJson) toOffer.push('pull-request', 'release')
-    if (detected.hasDependabotConfig) toOffer.push('dependabot-automerge')
-    if (detected.language) toOffer.push('codeql')
-    toOffer = [...new Set(toOffer)]
-  }
+	// Infer from signals
+	const hasWorkflows = detected.existingWorkflows.length > 0
+	if (!hasWorkflows) {
+		toOffer = [...allWorkflows]
+	} else {
+		toOffer = []
+		if (detected.hasPackageJson) toOffer.push('pull-request', 'release')
+		if (detected.hasDependabotConfig) toOffer.push('dependabot-automerge')
+		if (detected.language) toOffer.push('codeql')
+		toOffer = [...new Set(toOffer)]
+	}
 }
 
 // --- Filter already-existing ---
 
 const workflowsDir = '.github/workflows'
 const toCreate = toOffer.filter((name) => {
-  const file = `${name}.yml`
-  if (detected.existingWorkflows.includes(file)) {
-    console.log(`  [skip] ${file} — already exists`)
-    return false
-  }
-  return true
+	const file = `${name}.yml`
+	if (detected.existingWorkflows.includes(file)) {
+		console.log(`  [skip] ${file} — already exists`)
+		return false
+	}
+	return true
 })
 
 if (toCreate.length === 0) {
-  console.log('\nAll requested workflow files already exist. Nothing to create.')
-  process.exit(0)
+	console.log('\nAll requested workflow files already exist. Nothing to create.')
+	process.exit(0)
 }
 
 console.log('\nWorkflows to create:')
 for (const name of toCreate) {
-  console.log(`  ${name}.yml`)
+	console.log(`  ${name}.yml`)
 }
 
 // --- Confirm ---
 
 async function confirm(): Promise<boolean> {
-  if (autoYes) return true
-  const rl = createInterface({ input: process.stdin, output: process.stdout })
-  return new Promise((resolve) => {
-    rl.question('\nCreate these files? [y/N] ', (answer) => {
-      rl.close()
-      resolve(answer.toLowerCase() === 'y')
-    })
-  })
+	if (autoYes) return true
+	const rl = createInterface({ input: process.stdin, output: process.stdout })
+	return new Promise((resolve) => {
+		rl.question('\nCreate these files? [y/N] ', (answer) => {
+			rl.close()
+			resolve(answer.toLowerCase() === 'y')
+		})
+	})
 }
 
 // --- LTS Node versions ---
@@ -102,28 +103,36 @@ const NODE_LTS_VERSIONS = [20, 22, 24]
 // --- Install and test commands by package manager ---
 
 function installCmd(pm: string | null): string {
-  switch (pm) {
-    case 'pnpm': return 'pnpm install --frozen-lockfile'
-    case 'bun': return 'bun install --frozen-lockfile'
-    case 'yarn': return 'yarn install --frozen-lockfile'
-    default: return 'npm ci'
-  }
+	switch (pm) {
+		case 'pnpm':
+			return 'pnpm install --frozen-lockfile'
+		case 'bun':
+			return 'bun install --frozen-lockfile'
+		case 'yarn':
+			return 'yarn install --frozen-lockfile'
+		default:
+			return 'npm ci'
+	}
 }
 
 function testCmd(pm: string | null): string {
-  switch (pm) {
-    case 'pnpm': return 'pnpm test'
-    case 'bun': return 'bun test'
-    case 'yarn': return 'yarn test'
-    default: return 'npm test'
-  }
+	switch (pm) {
+		case 'pnpm':
+			return 'pnpm test'
+		case 'bun':
+			return 'bun test'
+		case 'yarn':
+			return 'yarn test'
+		default:
+			return 'npm test'
+	}
 }
 
 function setupNodeAction(pm: string | null): string {
-  const cacheMap: Record<string, string> = { pnpm: 'pnpm', bun: 'bun', yarn: 'yarn', npm: 'npm' }
-  const cache = cacheMap[pm ?? 'npm'] ?? 'npm'
-  const extra = pm === 'pnpm' ? `\n      - uses: pnpm/action-setup@v4` : ''
-  return `${extra}
+	const cacheMap: Record<string, string> = { pnpm: 'pnpm', bun: 'bun', yarn: 'yarn', npm: 'npm' }
+	const cache = cacheMap[pm ?? 'npm'] ?? 'npm'
+	const extra = pm === 'pnpm' ? '\n      - uses: pnpm/action-setup@v4' : ''
+	return `${extra}
       - uses: actions/setup-node@v4
         with:
           node-version: \${{ matrix.node-version }}
@@ -133,23 +142,22 @@ function setupNodeAction(pm: string | null): string {
 // --- Workflow templates ---
 
 function pullRequestYml(): string {
-  const pm = detected.packageManager
-  const isNode = detected.hasPackageJson || pm !== null
-  const matrix = isNode
-    ? `    strategy:
+	const pm = detected.packageManager
+	const isNode = detected.hasPackageJson || pm !== null
+	const matrix = isNode
+		? `    strategy:
       fail-fast: false
       matrix:
         node-version: ${JSON.stringify(NODE_LTS_VERSIONS)}\n`
-    : ''
-  const nodeVersion = isNode ? '\n          node-version: ${{ matrix.node-version }}' : ''
-  const nodeSetup = isNode ? setupNodeAction(pm) : ''
-  const install = isNode ? `\n      - run: ${installCmd(pm)}` : ''
-  const test = isNode
-    ? `\n      - run: ${testCmd(pm)}
+		: ''
+	const nodeSetup = isNode ? setupNodeAction(pm) : ''
+	const install = isNode ? `\n      - run: ${installCmd(pm)}` : ''
+	const test = isNode
+		? `\n      - run: ${testCmd(pm)}
         # TODO: add lint, type-check, and other CI commands here`
-    : `\n      - run: echo "TODO: add your CI commands here"  # TODO: replace with actual commands`
+		: `\n      - run: echo "TODO: add your CI commands here"  # TODO: replace with actual commands`
 
-  return `name: pull-request
+	return `name: pull-request
 on:
   pull_request:
     types: [opened, synchronize, reopened]
@@ -174,21 +182,21 @@ ${matrix}    steps:
 }
 
 function releaseYml(): string {
-  const pm = detected.packageManager
-  const isNode = detected.hasPackageJson || pm !== null
-  const matrix = isNode
-    ? `    strategy:
+	const pm = detected.packageManager
+	const isNode = detected.hasPackageJson || pm !== null
+	const matrix = isNode
+		? `    strategy:
       fail-fast: false
       matrix:
         node-version: ${JSON.stringify(NODE_LTS_VERSIONS)}\n`
-    : ''
-  const nodeSetup = isNode ? setupNodeAction(pm) : ''
-  const install = isNode ? `\n      - run: ${installCmd(pm)}` : ''
-  const test = isNode
-    ? `\n      - run: ${testCmd(pm)}`
-    : `\n      - run: echo "TODO: add your CI commands here"  # TODO: replace`
+		: ''
+	const nodeSetup = isNode ? setupNodeAction(pm) : ''
+	const install = isNode ? `\n      - run: ${installCmd(pm)}` : ''
+	const test = isNode
+		? `\n      - run: ${testCmd(pm)}`
+		: `\n      - run: echo "TODO: add your CI commands here"  # TODO: replace`
 
-  return `name: release
+	return `name: release
 on:
   push:
     branches: [${defaultBranch}]
@@ -208,13 +216,23 @@ ${matrix}    steps:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0${isNode ? '\n' + '      ' + setupNodeAction(pm).trim().split('\n').map(l => '      ' + l.trimStart()).join('\n') : ''}${isNode ? '\n      - run: ' + installCmd(pm) : ''}
+          fetch-depth: 0${
+						isNode
+							? '\n' +
+								'      ' +
+								setupNodeAction(pm)
+									.trim()
+									.split('\n')
+									.map((l) => '      ' + l.trimStart())
+									.join('\n')
+							: ''
+					}${isNode ? '\n      - run: ' + installCmd(pm) : ''}
       # TODO: add your release steps here (e.g. npx changeset publish, cargo publish, goreleaser)
 `
 }
 
 function dependabotAutomergeYml(): string {
-  return `name: dependabot-automerge
+	return `name: dependabot-automerge
 on: pull_request
 
 permissions:
@@ -242,8 +260,8 @@ jobs:
 }
 
 function codeqlYml(): string {
-  const lang = detected.codeqlLanguage ?? 'javascript'
-  return `name: CodeQL
+	const lang = detected.codeqlLanguage ?? 'javascript'
+	return `name: CodeQL
 on:
   push:
     branches: [${defaultBranch}]
@@ -278,29 +296,29 @@ jobs:
 }
 
 const templates: Record<string, () => string> = {
-  'pull-request': pullRequestYml,
-  'release': releaseYml,
-  'dependabot-automerge': dependabotAutomergeYml,
-  'codeql': codeqlYml,
+	'pull-request': pullRequestYml,
+	release: releaseYml,
+	'dependabot-automerge': dependabotAutomergeYml,
+	codeql: codeqlYml,
 }
 
 const ok = await confirm()
 if (!ok) {
-  console.log('Aborted.')
-  process.exit(0)
+	console.log('Aborted.')
+	process.exit(0)
 }
 
 mkdirSync(workflowsDir, { recursive: true })
 
 for (const name of toCreate) {
-  const generate = templates[name]
-  if (!generate) {
-    console.log(`  [skip] ${name} — unknown workflow name`)
-    continue
-  }
-  const filePath = join(workflowsDir, `${name}.yml`)
-  writeFileSync(filePath, generate())
-  console.log(`  [created] ${filePath}`)
+	const generate = templates[name]
+	if (!generate) {
+		console.log(`  [skip] ${name} — unknown workflow name`)
+		continue
+	}
+	const filePath = join(workflowsDir, `${name}.yml`)
+	writeFileSync(filePath, generate())
+	console.log(`  [created] ${filePath}`)
 }
 
 console.log('\nDone. Review the generated files before committing — CI steps may need customization.')
