@@ -6,10 +6,12 @@ on:
     paths:
       - 'skills/**'
       - '.agents/skills/**'
+      - 'tests/**'
   pull_request:
     paths:
       - 'skills/**'
       - '.agents/skills/**'
+      - 'tests/**'
 
 jobs:
   validate:
@@ -17,5 +19,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Validate skills
-        run: npx tsx skills/validate-skill/scripts/validate-skills.mts
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Test
+        run: pnpm test
+
+      - name: Audit skills
+        run: pnpm test:audit
