@@ -49,10 +49,10 @@ npx tsx skills/update-awesome-list/scripts/inspect-skills-repo.mts --repo owner/
 ```json
 {
   "type": "skill",
-  "key": "validate-skill",
-  "summary": "Validate SKILL.md structure, quality, and security.",
-  "why_recommended": "Strong review rubric before publishing or installing third-party skills.",
-  "tags": ["validation", "security"]
+  "key": "audit-skill",
+  "summary": "Audit SKILL.md structure, quality, and security.",
+  "why_recommended": "Strong review rubric before installing or publishing skills.",
+  "tags": ["audit", "security"]
 }
 ```
 

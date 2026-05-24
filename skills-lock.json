@@ -31,10 +31,10 @@
       "skillPath": "skills/init/SKILL.md",
       "computedHash": "fc3cd007bda5e96e25366a6608bc4ae72aeab87e5c9c695e9b07e374db1bd2d7"
     },
-    "validate-skill": {
+    "audit-skill": {
       "source": "cyberuni/agent-helmsman",
       "sourceType": "github",
-      "skillPath": "skills/validate-skill/SKILL.md",
+      "skillPath": "skills/audit-skill/SKILL.md",
       "computedHash": "6637862862595b4bb6f721a65347b78ba1e3d21892cf00b12c5e1385904326a9"
     }
   }

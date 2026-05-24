@@ -18,7 +18,7 @@ Install any of these with `npx skills add cyberuni/agent-helmsman`.
 | **[find-awesome-skill](skills/find-awesome-skill/SKILL.md)** | Search curated awesome lists for skill and skill-repo recommendations with exact install commands. |
 | **[update-awesome-list](skills/update-awesome-list/SKILL.md)** | Add or update a curated awesome-list entry, then sync the README section. |
 | **[configure-awesome-sources](skills/configure-awesome-sources/SKILL.md)** | Manage the layered awesome-list sources used for curated skill discovery. |
-| **[validate-skill](skills/validate-skill/SKILL.md)** | Validate a SKILL.md for structure, quality, and security before committing or publishing. |
+| **[audit-skill](skills/audit-skill/SKILL.md)** | Audit a SKILL.md for structure, quality, and security before installing or publishing. |
 
 ## Installation
 
@@ -45,17 +45,17 @@ The `create-skill` skill helps you create three kinds of skills depending on you
 
 ## Quality
 
-Every PR that touches a skill runs the validation script bundled with `validate-skill`, which mechanically checks structure (S1–S5), quality (Q1–Q4), and security (E1–E2, E6).
+Every PR that touches a skill runs the audit script bundled with `audit-skill`, which mechanically checks structure (S1–S5), quality (Q1–Q4), and security (E1–E2, E6).
 
 ```bash
 # Run locally
 npm run validate
 
-# Validate a single skill
-npx tsx skills/validate-skill/scripts/validate-skills.mts --path skills/my-skill
+# Audit a single skill
+npx tsx skills/audit-skill/scripts/validate-skills.mts --path skills/my-skill
 ```
 
-Full quality review (Q5–Q8, E3–E5, E7) requires running the `validate-skill` agent skill.
+Full quality review (Q5–Q8, E3–E5, E7) requires running the `audit-skill` agent skill.
 
 <!-- AWESOME-SKILLS:START -->
 ## Awesome Skills
@@ -70,5 +70,5 @@ Full quality review (Q5–Q8, E3–E5, E7) requires running the `validate-skill`
   Highlights:
   - `skill:init` — Create or improve AGENTS.md and carry forward local skill augmentation guidance.
   - `skill:create-skill` — Create a new skill and place it in the right global, repo-internal, or repo-public location.
-  - `skill:validate-skill` — Validate SKILL.md structure, quality, and security before commit or publication.
+  - `skill:audit-skill` — Audit SKILL.md structure, quality, and security before installing or publishing.
 <!-- AWESOME-SKILLS:END -->

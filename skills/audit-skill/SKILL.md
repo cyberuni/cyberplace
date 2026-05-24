@@ -1,16 +1,16 @@
 ---
-name: validate-skill
-description: Validate a SKILL.md file for structure, quality, and security before committing or publishing. Use this skill when reviewing a new or modified skill — catches broken references, vague triggers, baked-in assumptions, scope creep, and security risks in one pass.
+name: audit-skill
+description: Audit a SKILL.md file for structure, quality, and security. Use this skill when evaluating a skill before installing, reviewing a new or modified skill before committing, or checking that a published skill meets quality standards — catches broken references, vague triggers, baked-in assumptions, scope creep, and security risks in one pass.
 ---
 
-# Validate Skill
+# Audit Skill
 
-Full validation of a SKILL.md file covering structure, content quality, and security. Based on OWASP Agentic Skills Top 10 and the skill design principles in this repo.
+Full audit of a SKILL.md file covering structure, content quality, and security. Based on OWASP Agentic Skills Top 10 and the skill design principles in this repo.
 
 ## When to use
 
-- Before committing a new or modified skill to this repo
 - Before installing a third-party skill locally
+- Before committing a new or modified skill to this repo
 - When reviewing a skill for publication to skills.sh
 
 ## Automated checks
@@ -18,11 +18,11 @@ Full validation of a SKILL.md file covering structure, content quality, and secu
 The mechanical subset of checks (S1–S5, Q1–Q4, E1–E2, E6) can be run without an LLM:
 
 ```bash
-# Validate all skills in the repo
-npx tsx skills/validate-skill/scripts/validate-skills.mts
+# Audit all skills in the repo
+npx tsx skills/audit-skill/scripts/validate-skills.mts
 
-# Validate a single skill
-npx tsx skills/validate-skill/scripts/validate-skills.mts --path skills/my-skill
+# Audit a single skill
+npx tsx skills/audit-skill/scripts/validate-skills.mts --path skills/my-skill
 ```
 
 This script is also wired into CI (`validate-skills` workflow). Full quality review (Q5–Q8, E3–E5, E7) still requires running this agent skill.

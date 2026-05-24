@@ -3,11 +3,34 @@
   "notGrouped": "bottom",
   "groupings": [
     {
-      "title": "Awesome Lists",
-      "description": "Skills for discovering, managing, and publishing awesome lists.",
+      "title": "Skill Discovery",
+      "description": "Find and evaluate skills before installing.",
+      "skills": [
+        "find-awesome-skill",
+        "audit-skill"
+      ]
+    },
+    {
+      "title": "Skill Authoring",
+      "description": "Create and publish agent skills.",
+      "skills": [
+        "create-skill",
+        "audit-skill"
+      ]
+    },
+    {
+      "title": "Repo Setup",
+      "description": "Initialize and configure a repository for AI agent workflows.",
+      "skills": [
+        "init",
+        "setup-github-repo"
+      ]
+    },
+    {
+      "title": "Awesome List Maintenance",
+      "description": "Manage the curated awesome-list sources and entries.",
       "skills": [
         "configure-awesome-sources",
-        "find-awesome-skill",
         "update-awesome-list"
       ]
     }
