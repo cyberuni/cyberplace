@@ -7,9 +7,9 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-import { getCommitDisciplineHooks } from './definitions/commit-discipline.mts'
-import { INIT_HOOKS } from './definitions/init.mts'
-import { commandMatchesHook } from './lib/hook-command.mts'
+import { getCommitDisciplineHooks } from './definitions/commit-discipline.mjs'
+import { INIT_HOOKS } from './definitions/init.mjs'
+import { commandMatchesHook } from './lib/hook-command.mjs'
 
 interface ClaudeHookEntry {
 	type: string
@@ -280,7 +280,7 @@ if (process.argv[1] === import.meta.filename) {
 
 	if (!set || (set !== 'init' && set !== 'commit-discipline')) {
 		process.stderr.write(
-			'Usage: register-agent-hooks.mts --set init|commit-discipline [--root <path>] [--dry-run] [--verbose]\n',
+			'Usage: register-agent-hooks.mjs --set init|commit-discipline [--root <path>] [--dry-run] [--verbose]\n',
 		)
 		process.exit(1)
 	}

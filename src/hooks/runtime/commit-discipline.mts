@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-import { formatCommitDisciplineSection, parseCommitDisciplineSection } from '../lib/commit-discipline-content.mts'
+import { formatCommitDisciplineSection, parseCommitDisciplineSection } from '../lib/commit-discipline-content.mjs'
 
 async function readStdin(): Promise<string> {
 	const chunks: Buffer[] = []

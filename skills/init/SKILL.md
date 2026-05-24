@@ -64,7 +64,7 @@ The two hook scripts it registers live in `.agents/hooks/`:
 - **`mark-internal.sh`** — PostToolUse/afterFileEdit: patches `metadata: internal: true` into any SKILL.md written under `.agents/skills/`
 - **`inject-local-augmentations.sh`** — SessionStart: surfaces `SKILL.local.md` contents as session context at the start of every session
 
-Registration logic lives in the `cyber-skills` npm package (`hooks/register-agent-hooks.mts`).
+Registration logic lives in the `cyber-skills` npm package (`hooks/register-agent-hooks.mjs`).
 
 For **commit discipline** (AGENTS.md section + SessionStart hook), invoke the `init-commit-discipline` skill after init.
 

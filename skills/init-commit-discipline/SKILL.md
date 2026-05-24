@@ -19,7 +19,7 @@ Commit discipline references a **commit helper skill** for staging, splitting, a
 Run from the repo root:
 
 ```bash
-npx tsx skills/init-commit-discipline/scripts/resolve-commit-skill.mts --check
+node skills/init-commit-discipline/scripts/resolve-commit-skill.mjs --check
 ```
 
 If none are detected, ask the user to choose:

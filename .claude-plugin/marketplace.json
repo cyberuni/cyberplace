@@ -8,29 +8,17 @@
 		{
 			"name": "skill-authoring",
 			"description": "Create, generalize, patch, and audit skills. Prefer global install (-g).",
-			"skills": [
-				"./skills/create-skill",
-				"./skills/skillify",
-				"./skills/patch-skill",
-				"./skills/audit-skill"
-			]
+			"skills": ["./skills/create-skill", "./skills/skillify", "./skills/patch-skill", "./skills/audit-skill"]
 		},
 		{
 			"name": "agent-initialization",
 			"description": "One-time repo setup. init and init-commit-discipline: global (-g); commit: project.",
-			"skills": [
-				"./skills/init",
-				"./skills/init-commit-discipline",
-				"./skills/commit"
-			]
+			"skills": ["./skills/init", "./skills/init-commit-discipline", "./skills/commit"]
 		},
 		{
 			"name": "awesome-list-maintenance",
 			"description": "Manage curated awesome-list sources and entries. configure-awesome-sources: global; update-awesome-list: project.",
-			"skills": [
-				"./skills/configure-awesome-sources",
-				"./skills/update-awesome-list"
-			]
+			"skills": ["./skills/configure-awesome-sources", "./skills/update-awesome-list"]
 		}
 	]
 }

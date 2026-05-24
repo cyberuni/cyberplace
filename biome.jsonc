@@ -2,11 +2,19 @@
 	"$schema": "https://biomejs.dev/schemas/2.4.15/schema.json",
 	"extends": ["@repobuddy/biome/recommended"],
 	"files": {
-		"includes": ["!dist", "!node_modules", "!skills-lock.json", "!.agents", "!.claude"]
+		"includes": [
+			"!bin",
+			"!hooks",
+			"!node_modules",
+			"!skills-lock.json",
+			"!skills/**/scripts/*.mjs",
+			"!.agents",
+			"!.claude"
+		]
 	},
 	"overrides": [
 		{
-			"includes": ["skills/**/*.mts", "hooks/**/*.mts", "bin/**/*.mts"],
+			"includes": ["src/**/*.ts", "src/**/*.mts"],
 			"linter": {
 				"rules": {
 					"suspicious": {

@@ -98,7 +98,7 @@ const repo = normalizeRepo(repoIndex !== -1 ? args[repoIndex + 1] : '')
 const query = (queryIndex !== -1 ? args[queryIndex + 1] : '').toLowerCase()
 if (!repo) {
 	console.error(
-		'Usage: tsx skills/update-awesome-list/scripts/inspect-skills-repo.mts --repo owner/name [--query term]',
+		'Usage: node skills/update-awesome-list/scripts/inspect-skills-repo.mjs --repo owner/name [--query term]',
 	)
 	process.exit(1)
 }

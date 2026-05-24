@@ -2,7 +2,7 @@
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 import { pathToFileURL } from 'node:url'
-import { flattenAwesomeEntries, validateAwesomeList } from '../../find-awesome-skill/scripts/awesome-lib.mts'
+import { flattenAwesomeEntries, validateAwesomeList } from '../../find-awesome-skill/scripts/awesome-lib.js'
 
 interface Highlight {
 	type: string

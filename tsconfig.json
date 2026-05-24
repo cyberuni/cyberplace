@@ -9,5 +9,5 @@
 		"allowImportingTsExtensions": true,
 		"skipLibCheck": true
 	},
-	"include": ["bin/**/*.mts", "hooks/**/*.mts", "skills/**/*.mts", "tests/**/*.mts"]
+	"include": ["src/**/*.ts", "src/**/*.mts"]
 }
