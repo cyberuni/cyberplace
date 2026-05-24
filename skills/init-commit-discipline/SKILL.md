@@ -38,24 +38,24 @@ Do **not** add `cyber-skills` as a devDependency by default — it is bin-only t
 
 Check in order:
 
-1. **Pinned npx (default)** — `npx cyber-skills@<version> <subcommand>` with an explicit version (never `@latest`). No `package.json` change; use when init skills are installed globally.
+1. **Pinned npx (default)** — resolve `npm view cyber-skills version`, then `npx cyber-skills@<exact> <subcommand>` (never `@latest`, never a literal `<version>` placeholder). No `package.json` change; use when init skills are installed globally.
 2. **Existing devDependency** — if `cyber-skills` is already in `package.json`, use `pnpm exec cyber-skills` or the local bin.
 3. **Optional devDependency** — only when the user needs offline CLI access *and* the AI agent runs locally against that repo: `pnpm add -D cyber-skills`.
-4. If neither npx nor a local install works, ask the user to confirm a pinned npx version or opt in to the devDependency above.
+4. If neither npx nor a local install works, ask the user to confirm an exact pinned version or opt in to the devDependency above.
 
 ## Workflow
 
 1. Resolve commit helper skill (above).
-2. Inject AGENTS.md section:
+2. Inject AGENTS.md section (substitute the exact version from `npm view cyber-skills version`):
 
 ```bash
-npx cyber-skills@<version> inject-commit-discipline --commit-skill <name>
+npx cyber-skills@0.1.2 inject-commit-discipline --commit-skill <name>
 ```
 
 3. Register SessionStart hook:
 
 ```bash
-npx cyber-skills@<version> register-hooks --set commit-discipline
+npx cyber-skills@0.1.2 register-hooks --set commit-discipline
 ```
 
 Pass `--verbose` on either command for a human-readable summary. Pass `--dry-run` to preview without writing.

@@ -45,11 +45,14 @@ Then register hooks so these behaviors apply automatically going forward, not ju
 
 Invoke the `cyber-skills` CLI from the repo root. Do **not** add `cyber-skills` as a devDependency by default — it is bin-only tooling and will trigger unused-dependency warnings (for example from knip) in repos that never import it.
 
-**Default (global init skill):** pinned npx with an explicit version (never `@latest`):
+**Default (global init skill):** pinned npx with an **exact** published version (never `@latest`, never a literal `<version>` placeholder, never a range in docs you write):
 
 ```bash
-npx cyber-skills@<version> register-hooks --set init
+npm view cyber-skills version   # resolve first, e.g. 0.1.2
+npx cyber-skills@0.1.2 register-hooks --set init
 ```
+
+Use the version `npm view` returns. A one-time `npx cyber-skills@^0.1.0 …` fetch is acceptable if you cannot resolve, but prefer an exact pin. For `commit-discipline`, `register-hooks` embeds the **exact** version from the package it runs into SessionStart hook commands — re-run registration after upgrading cyber-skills.
 
 **Optional devDependency:** only when the user needs offline CLI access *and* the AI agent runs locally against that repo (`pnpm add -D cyber-skills`, then `pnpm exec cyber-skills …`).
 
