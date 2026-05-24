@@ -1,26 +1,59 @@
 {
-  "name": "cyber-skills",
-  "version": "0.0.0",
-  "description": "Opinionated skills, personas, workflows, and roles for AI agents",
-  "keywords": [
-    "agent-skill",
-    "claude-code",
-    "cursor",
-    "codex"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/cyberuni/cyber-skills.git"
-  },
-  "license": "MIT",
-  "scripts": {
-    "render:awesome-list": "tsx skills/update-awesome-list/scripts/render-awesome-list.mts",
-    "test": "tsx --test tests/**/*.test.mts",
-    "test:audit": "tsx skills/audit-skill/scripts/validate-skills.mts"
-  },
-  "devDependencies": {
-    "@types/node": "^24.10.1",
-    "tsx": "^4.22.3"
-  },
-  "packageManager": "pnpm@11.0.0"
+	"name": "@cyberuni/cyber-skills",
+	"version": "0.0.0",
+	"description": "Opinionated skills, hooks, and workflows for AI agents",
+	"keywords": [
+		"agent-skill",
+		"claude-code",
+		"cursor",
+		"codex"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/cyberuni/cyber-skills.git"
+	},
+	"author": "unional <homawong@gmail.com>",
+	"license": "MIT",
+	"type": "module",
+	"files": [
+		"bin",
+		"hooks",
+		"skills"
+	],
+	"scripts": {
+		"prepare": "husky",
+		"check": "biome check --write .",
+		"cs": "changeset",
+		"format": "biome format --write .",
+		"knip": "knip",
+		"lint": "biome check .",
+		"release": "changeset publish",
+		"render:awesome-list": "tsx skills/update-awesome-list/scripts/render-awesome-list.mts",
+		"test": "vitest run",
+		"test:audit": "tsx skills/audit-skill/scripts/validate-skills.mts",
+		"test:watch": "vitest",
+		"typecheck": "tsc --noEmit",
+		"verify": "pnpm typecheck && pnpm lint && pnpm test && pnpm test:audit",
+		"version": "changeset version"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.4.15",
+		"@changesets/cli": "^2.29.4",
+		"@commitlint/cli": "^21.0.1",
+		"@commitlint/config-conventional": "^21.0.1",
+		"@repobuddy/biome": "^2.3.1",
+		"@types/node": "^24.10.1",
+		"husky": "^9.1.7",
+		"knip": "^6.14.1",
+		"tsx": "^4.22.3",
+		"typescript": "^6.0.0",
+		"vitest": "^4.1.7"
+	},
+	"packageManager": "pnpm@11.0.0",
+	"engines": {
+		"node": ">=22"
+	},
+	"pnpm": {
+		"onlyBuiltDependencies": ["esbuild"]
+	}
 }
