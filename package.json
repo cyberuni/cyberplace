@@ -1,23 +1,25 @@
 {
   "name": "agent-helmsman",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "Opinionated skills, personas, workflows, and roles for AI agents",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/cyberuni/agent-helmsman.git"
-  },
   "keywords": [
     "agent-skill",
     "claude-code",
     "cursor",
     "codex"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cyberuni/agent-helmsman.git"
+  },
   "license": "MIT",
   "scripts": {
     "render:awesome-list": "tsx skills/update-awesome-list/scripts/render-awesome-list.mts",
     "validate": "tsx skills/validate-skill/scripts/validate-skills.mts"
   },
   "devDependencies": {
+    "@types/node": "^24.10.1",
     "tsx": "^4.22.3"
-  }
+  },
+  "packageManager": "pnpm@11.0.0"
 }
