@@ -207,6 +207,8 @@ export function runChecks(filePath: string): CheckResult {
   while ((m = s4RefPattern.exec(codeBlocks)) !== null) {
     const ref = m[1]
     if (isShellExpandedReference(codeBlocks, m.index)) continue
+    // Skip refs that are embedded within an absolute path (preceded by '/')
+    if (m.index > 0 && codeBlocks[m.index - 1] === '/') continue
     if (!s4Skip.test(ref) && s4Ext.test(ref)) s4Refs.add(ref)
   }
   for (const ref of s4Refs) {
@@ -271,6 +273,13 @@ export function runChecks(filePath: string): CheckResult {
     warn('MEDIUM', 'Q4', 'No actionable instruction body',
       'body has no numbered steps or section headers',
       'Add numbered steps, decision logic, or ## section headers')
+  }
+
+  // Q5: description must be ≤120 characters
+  if (fmDesc && fmDesc.length > 120) {
+    warn('MEDIUM', 'Q5', 'Description exceeds 120 characters',
+      `description: ${fmDesc.slice(0, 80)}… (${fmDesc.length} chars)`,
+      'Trim to ≤120 chars; move example phrases to the skill body')
   }
 
   // ── Security ─────────────────────────────────────────────────────────────────
@@ -379,8 +388,8 @@ function main(): void {
     process.exit(1)
   }
 
-  console.log('✅ All checks passed (S1–S5, Q1–Q4, E1–E2, E6).')
-  console.log('   Run the audit-skill agent skill for full quality review (Q5–Q8, E3–E5, E7).')
+  console.log('✅ All checks passed (S1–S5, Q1–Q5, E1–E2, E6).')
+  console.log('   Run the audit-skill agent skill for full quality review (Q6–Q9, E3–E5, E7).')
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
