@@ -1,6 +1,6 @@
 ---
 name: init
-description: Use this skill when the user wants to initialize or improve an AGENTS.md file with codebase documentation. Creates AGENTS.md and symlinks CLAUDE.md to it, or suggests improvements if AGENTS.md already exists.
+description: Use this skill when initializing or improving an AGENTS.md file with codebase documentation.
 metadata:
   internal: true
 ---

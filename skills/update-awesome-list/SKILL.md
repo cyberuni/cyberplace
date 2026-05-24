@@ -1,6 +1,6 @@
 ---
 name: update-awesome-list
-description: Use this skill when the user wants to add or update a curated awesome-list entry for a repo or skill, including summaries, recommendation notes, and README sync.
+description: Use this skill when adding or updating a curated awesome-list entry, including summaries and README sync.
 ---
 
 # Update Awesome List

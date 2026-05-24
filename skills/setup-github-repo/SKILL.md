@@ -1,6 +1,6 @@
 ---
 name: setup-github-repo
-description: Use this skill when the user wants to configure a GitHub repository with standard settings — merge strategy, branch protection rulesets, Dependabot, CI workflow scaffolding, and security settings. Use when asked to 'set up the GitHub repo', 'configure branch protection', 'apply standard repo settings', 'bootstrap GitHub settings', or 'add CI workflows'.
+description: Use this skill when setting up a GitHub repo with standard settings — branch protection, Dependabot, and CI.
 ---
 
 # Setup GitHub Repo
