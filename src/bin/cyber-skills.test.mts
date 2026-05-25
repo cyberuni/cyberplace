@@ -69,10 +69,32 @@ test('skill source returns JSON for a skill in repo lock', () => {
 })
 
 test('skill source exits non-zero for unknown skill', () => {
-	const result = run('skill', 'source', 'definitely-does-not-exist-xyz', '--json')
-	expect(result.status).toBe(1)
-	const parsed = JSON.parse(result.stdout)
-	expect(parsed.foundIn).toBeNull()
+	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-source-cli-miss-'))
+	const home = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-source-cli-home-'))
+	const fakeBin = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-source-cli-fakebin-'))
+	fs.writeFileSync(path.join(fakeBin, 'npx'), '#!/bin/sh\nexit 1\n', { mode: 0o755 })
+	try {
+		const result = spawnSync(
+			'node',
+			[bin, 'skill', 'source', 'definitely-does-not-exist-xyz', '--json', '--root', root],
+			{
+				encoding: 'utf8',
+				env: {
+					...process.env,
+					HOME: home,
+					NODE_NO_WARNINGS: '1',
+					PATH: `${fakeBin}${path.delimiter}${process.env.PATH ?? ''}`,
+				},
+			},
+		)
+		expect(result.status).toBe(1)
+		const parsed = JSON.parse(result.stdout)
+		expect(parsed.foundIn).toBeNull()
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+		fs.rmSync(home, { recursive: true, force: true })
+		fs.rmSync(fakeBin, { recursive: true, force: true })
+	}
 })
 
 test('hook run --extract emits SessionStart JSON', () => {
