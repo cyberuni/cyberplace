@@ -49,12 +49,14 @@ test('skill source requires a skill name', () => {
 	expect(result.stderr).toMatch(/missing required argument/)
 })
 
-test('skill source returns JSON for a known global skill', () => {
-	const result = run('skill', 'source', 'setup-github-repo', '--json')
+test('skill source returns JSON for a skill in repo lock', () => {
+	const root = path.resolve('.')
+	const result = run('skill', 'source', 'audit-skill', '--json', '--root', root)
+	expect(result.status).toBe(0)
 	const parsed = JSON.parse(result.stdout)
-	expect(parsed.name).toBe('setup-github-repo')
-	expect(parsed.source).toBeTruthy()
-	expect(parsed.foundIn).toMatch(/repo|global|npx-skills/)
+	expect(parsed.name).toBe('audit-skill')
+	expect(parsed.source).toBe('cyberuni/cyber-skills')
+	expect(parsed.foundIn).toBe('repo')
 })
 
 test('skill source exits non-zero for unknown skill', () => {
