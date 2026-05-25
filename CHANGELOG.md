@@ -1,5 +1,11 @@
 # cyber-skills
 
+## 0.3.0
+
+### Minor Changes
+
+- 5493c00: Add `discipline list` and `discipline show` commands to load version-pinned agent-tool output rules. Extend `audit validate` with mechanical checks for stdout-as-data and script output hygiene.
+
 ## 0.2.0
 
 ### Minor Changes
