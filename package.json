@@ -27,6 +27,7 @@
 		"build": "tsdown",
 		"check": "biome check --write .",
 		"cs": "changeset",
+		"dev": "tsx src/bin/cyber-skills.mts",
 		"format": "biome format --write .",
 		"knip": "knip",
 		"lint": "biome check .",
@@ -54,6 +55,7 @@
 		"husky": "^9.1.7",
 		"knip": "^6.14.1",
 		"tsdown": "^0.22.0",
+		"tsx": "^4.22.3",
 		"typescript": "^6.0.0",
 		"vitest": "^4.1.7"
 	},
