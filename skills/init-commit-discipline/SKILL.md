@@ -45,13 +45,18 @@ Check in order:
 ## Workflow
 
 1. Resolve commit helper skill (above).
-2. Inject AGENTS.md section (substitute the exact version from `npm view cyber-skills version`):
+2. Ask whether to enable **auto-commit** — commit each unit of work immediately when complete and verified, without waiting for the user to ask.
+3. Inject AGENTS.md section (substitute the exact version from `npm view cyber-skills version`):
 
 ```bash
+# With auto-commit (opt-in):
+npx cyber-skills@<version> commit inject --commit-skill <name> --auto-commit
+
+# Without auto-commit:
 npx cyber-skills@<version> commit inject --commit-skill <name>
 ```
 
-3. Register SessionStart hook:
+4. Register SessionStart hook:
 
 ```bash
 npx cyber-skills@<version> hook register \
@@ -61,11 +66,13 @@ npx cyber-skills@<version> hook register \
   --heading "Commit Discipline"
 ```
 
-Pass `--verbose` on either command for a human-readable summary. Pass `--dry-run` to preview without writing.
+Pass `--verbose` on inject or register for a human-readable summary. Pass `--dry-run` to preview without writing.
 
 > **Stale hook caveat:** `hook register` skips hooks it considers equivalent to what's already registered (including old shell-script, old `run-hook`, and old named `hook run` commands). If the SessionStart hook command in the agent settings file is stale and not being updated, edit it manually or re-run register with the flags above.
 
-4. Create a repo-local `SKILL.local.md` augmentation for the commit helper skill:
+5. Optional repo-local `SKILL.local.md` augmentation — only when **both** are true:
+   - the user opted in to auto-commit, and
+   - the commit helper is or will be **project-scoped** under `.agents/skills/<commit-skill-name>/`
 
 ```bash
 mkdir -p .agents/skills/<commit-skill-name>
@@ -89,15 +96,15 @@ Commit, then continue to the next unit. Never finish multiple units
 before committing.
 ```
 
-**Global vs project install:** The Skill Augmentations rule applies augmentations from the same directory as the loaded `SKILL.md`. When the helper is installed globally (`-g`), always-on rules come from the AGENTS.md **Commit Discipline** section and the SessionStart hook. Repo-local `SKILL.local.md` reinforces commit workflows when the agent loads the skill from `.agents/skills/<name>/` — use project-scoped install (option C, or option A/B without `-g`) when you need that reinforcement on every commit-skill invocation.
+**Global vs project install:** When the helper is installed globally (`-g`), auto-commit in AGENTS.md and the SessionStart hook are the always-on path. Repo-local `SKILL.local.md` only applies when the agent loads the skill from `.agents/skills/<name>/` (project-scoped install). Skip step 5 for global helpers — AGENTS.md + hook are sufficient.
 
 ## What gets applied
 
-**AGENTS.md** (all agents): `## Commit Discipline` section with an **auto-commit rule** (commit each unit immediately — do not wait for the user to ask), a **unit of work** definition (one coherent, independently revertable change — not "everything touched this session"), agent-compatible staging (`git add <files>` plus `git diff --cached`; never `git add .`, `git add -A`, or interactive `git add -p`), and a pointer to the chosen commit helper skill.
+**AGENTS.md** (all agents): `## Commit Discipline` with unit-of-work definition, agent-compatible staging (`git add <files>` plus `git diff --cached`; never `git add .`, `git add -A`, or interactive `git add -p`), Conventional Commits guidance, and a pointer to the chosen commit helper skill. When the user opts in to auto-commit, the inject step adds the **Auto-commit rule** block to this section.
 
-**Runtime hook** (Claude Code, Cursor, Codex): SessionStart injection of the commit discipline context so the agent is reminded of the rules at the start of every session.
+**Runtime hook** (Claude Code, Cursor, Codex): SessionStart injection of the Commit Discipline section so agents are reminded of the rules at the start of every session.
 
-**SKILL.local.md** (when the commit skill loads from the repo): Per-repo augmentation with the explicit auto-commit rule. For globally installed helpers, AGENTS.md and the SessionStart hook carry always-on discipline.
+**SKILL.local.md** (optional): Secondary auto-commit reinforcement when the commit helper loads from the repo. Skip for global installs.
 
 For agents without hook support, AGENTS.md alone applies the rules.
 
