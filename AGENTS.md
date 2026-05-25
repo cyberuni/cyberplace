@@ -32,7 +32,6 @@ When writing or editing any `SKILL.md` under `.agents/skills/`, always include `
 - Never commit with red tests; run validation commands first
 - Use the `commit-work` skill when committing (staging, splitting, message writing)
 
-
 ## Commands
 
 Run everything (typecheck + lint + tests + audit) before pushing:

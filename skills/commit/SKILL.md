@@ -7,9 +7,10 @@ description: "Use this skill when committing and you need Conventional Commits g
 
 Minimal commit helper for repos using commit discipline. For full staging/splitting workflows, use `commit-work` from [softaworks/agent-toolkit](https://github.com/softaworks/agent-toolkit) instead.
 
+Repo-specific rules (including auto-commit) may appear in AGENTS.md **Commit Discipline** or in `SKILL.local.md` augmentations for the commit helper skill.
+
 ## Rules
 
-- Commit every self-contained unit of work before moving on
 - **Unit of work:** one coherent, independently revertable change — one feature, one bugfix, one refactor in one domain, one config change. Never two unrelated concerns in one commit. A TDD cycle alone is not a commit boundary; commit when the intended change is complete and tests pass
 - Use Conventional Commits: `feat:`, `fix:`, `refactor:`, `test:`, `docs:`, `chore:`
 - One concern per commit; never batch unrelated changes
@@ -32,4 +33,4 @@ type: short summary in imperative mood
 Optional body explaining what changed and why.
 ```
 
-Examples: `feat: add commit discipline hook registration`, `fix: resolve package root for run-hook`
+Examples: `feat: add commit inject auto-commit flag`, `fix: resolve package root for hook run`

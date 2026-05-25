@@ -6,6 +6,7 @@ import { mergeCommitDisciplineIntoAgentsMd } from './content.js'
 export interface InjectOptions {
 	root?: string
 	commitSkill: string
+	autoCommit?: boolean
 	dryRun?: boolean
 	verbose?: boolean
 }
@@ -19,7 +20,9 @@ export function injectCommitDiscipline(options: InjectOptions): { path: string; 
 	}
 
 	const before = readFileSync(agentsPath, 'utf8')
-	const after = mergeCommitDisciplineIntoAgentsMd(before, options.commitSkill)
+	const after = mergeCommitDisciplineIntoAgentsMd(before, options.commitSkill, {
+		autoCommit: options.autoCommit,
+	})
 	const changed = before !== after
 
 	if (changed && !options.dryRun) {
