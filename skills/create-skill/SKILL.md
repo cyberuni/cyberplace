@@ -1,15 +1,27 @@
 ---
 name: create-skill
-description: Use this skill when the user asks to create a new agent skill. Creates the skill directory under ~/.agents/skills/ and links it into all detected agents so they can pick it up.
+description: Use this skill when the user asks to create a new agent skill — scaffold, audit, and link into detected agents.
 ---
 
 # Create Skill
 
 When the user asks to create a new skill, follow this convention.
 
+## Skill kinds
+
+Pick the location from scope before scaffolding:
+
+| Kind | Location | Notes |
+| --- | --- | --- |
+| Global | `~/.agents/skills/<name>/` | Personal skills across all projects |
+| Repo internal | `.agents/skills/<name>/` | Contributor tooling; add `metadata: internal: true` |
+| Repo public | `skills/<name>/` | Shipped with a package; users install via `npx skills add` |
+
+Ask the user if the kind is ambiguous.
+
 ## Directory structure
 
-Skills live in `~/.agents/skills/<name>/` and are linked into each agent's skills directory:
+Global skills live in `~/.agents/skills/<name>/` and are linked into each agent's skills directory:
 
 ```
 ~/.agents/skills/
@@ -23,6 +35,8 @@ Skills live in `~/.agents/skills/<name>/` and are linked into each agent's skill
 ## Steps
 
 ### 1. Create the skill
+
+Determine the skill kind (above), then create the directory at the matching path.
 
 Check whether `npx skills` is available:
 
@@ -74,7 +88,7 @@ npx cyber-skills@<version> audit validate --path ~/.agents/skills/<name>
 
 Fix any CRITICAL findings before proceeding.
 
-Then invoke the **audit-skill** agent skill for full review (Q6–Q12, E3–E8, P1–P3). Do not continue to step 3 if any CRITICAL findings remain.
+Then invoke the **audit-skill** agent skill for full review (Q6–Q11, E3–E8, P1–P3). Do not continue to step 3 if any CRITICAL findings remain.
 
 ### 3. Link to agents
 
@@ -118,6 +132,8 @@ If the skill includes a `scripts/` directory, apply these rules so agents do not
 - **Skills present; scripts record** — SKILL.md tells the agent what file or field to read; the agent summarizes for the user
 - **Autonomous runs** — document `--yes` or equivalent non-interactive flags; never put prompts on stdout
 - **Implementation** — use `process.stdout.write(JSON.stringify(result) + '\n')` for contract output; never `console.log`
+
+For cyber-skills workflows, prefer `npx cyber-skills@<version> …` CLI subcommands over new bundled `scripts/`.
 
 ## Notes
 
