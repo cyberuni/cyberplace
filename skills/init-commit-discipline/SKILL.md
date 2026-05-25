@@ -102,7 +102,28 @@ before committing.
 
 ## What gets applied
 
-**AGENTS.md** (all agents): `## Commit Discipline` with unit-of-work definition, agent-compatible staging (`git add <files>` plus `git diff --cached`; never `git add .`, `git add -A`, or interactive `git add -p`), Conventional Commits guidance, and a pointer to the chosen commit helper skill. When the user opts in to auto-commit, the inject step adds the **Auto-commit rule** block to this section.
+Injected content is **agent-first**: normative commit rules in the section body; optional depth in `### References` at the bottom. No links to other repository files — commit-helper skill name and `governance show` one-liners only.
+
+**AGENTS.md** (all agents): `## Commit Discipline` with unit-of-work definition, agent-compatible staging (`git add <files>` plus `git diff --cached`; never `git add .`, `git add -A`, or interactive `git add -p`), Conventional Commits guidance, and `### References` pointing to the chosen commit helper skill. When the user opts in to auto-commit, the inject step adds the **Auto-commit rule** block before the unit-of-work rules.
+
+**Example injected shape:**
+
+```markdown
+## Commit Discipline
+
+**Auto-commit rule:** … (only when opted in)
+
+**Unit of work:** …
+
+- Conventional Commits: …
+- One concern per commit; …
+- Stage only files for this unit: …
+- Never commit with red tests; …
+
+### References
+
+- **`commit-work` skill** — staging, splitting, and message writing when committing
+```
 
 **Runtime hook** (Claude Code, Cursor, Codex): SessionStart injection of the Commit Discipline section so agents are reminded of the rules at the start of every session.
 

@@ -138,5 +138,6 @@ npx cyber-skills@<version> governance show skill-design
 
 ## Related Decisions
 
+- [ADR-0003: Agent-first Authoring](0003-agent-first-authoring.md) — dense, self-contained Governance, Discipline, and Skill docs; references at end
 - [ADR-0002: External Governance Federation](0002-external-governance-federation.md) — federation deferred; domain governances co-located until npm packages exist
 - Research: [2026-05-skill-ecosystem-landscape.md](../research/2026-05-skill-ecosystem-landscape.md) — reference implementations for `skill-repo-structure` (not duplicated in governance)

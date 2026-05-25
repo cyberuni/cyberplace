@@ -1,6 +1,6 @@
 # Agent Tool Output
 
-Rules for scripts, hooks, and CLIs that AI agents invoke. Apply when authoring skill `scripts/`, documenting CLI commands in SKILL.md, or building tools in the cyber-skills CLI.
+Rules for scripts, hooks, and CLIs that AI agents invoke. Apply when authoring skill `scripts/` or documenting CLI commands in SKILL.md.
 
 ## Why
 
@@ -44,7 +44,7 @@ Use for skill `scripts/`, hook runtime commands, and any tool where the primary 
 
 ## Dual-audience CLI
 
-Use for command-line tools used by both humans and agents (e.g. `cyber-skills` subcommands).
+Use for command-line tools used by both humans and agents.
 
 ### Default stdout = human-readable
 
@@ -55,6 +55,11 @@ Use for command-line tools used by both humans and agents (e.g. `cyber-skills` s
 - Agents **must** pass `--json` when they need structured output.
 - `--json` stdout is the only machine-parseable contract; default stdout is not.
 - SKILL.md must instruct agents to use `--json`, not to parse default prose or tables.
+
+### Default-stdout exception
+
+- When a tool documents **default stdout** as the machine contract (not `--json`), SKILL.md must say so explicitly.
+- Do not assume default stdout is parseable for arbitrary CLIs.
 
 ### Stderr and verbosity
 
@@ -74,15 +79,10 @@ When a skill documents commands agents run:
 - Do **not** instruct agents to parse default stdout prose, summary tables, or generic "script output" as data.
 - Prefer: "read `<artifact-path>`" or "parse stdout JSON" or "run with `--json` and parse the array."
 
-## Reference implementations (cyber-skills package)
+## References
 
-Patterns specific to this package — not general guidance for all skill authors:
+Related governances (load on demand; read stdout as authoritative):
 
-| Pattern | Example |
-| ------- | ------- |
-| Dual-audience `--json` | `output()` helper — default human tables/fields; `--json` emits structured JSON |
-| Always-JSON stdout | `hook run` — SessionStart payload via `process.stdout.write` |
-| Agent loads governance | `governance show agent-tool-output` — markdown body on stdout for agent consumption |
-| Agent search | `awesome find "<query>" --json` — agents pass `--json`; default output is human prose |
-
-When adding cyber-skills workflows to a skill, prefer `npx cyber-skills@<version> …` CLI subcommands over new bundled `scripts/`.
+```bash
+npx cyber-skills@<version> governance show skill-design
+```

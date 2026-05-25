@@ -6,6 +6,29 @@ Rules for authoring SKILL.md files that agents load on demand. Apply when creati
 
 Skills encode **decisions** — what to choose and how — not reference material the model already knows. A good skill is narrow, composable, and detects the user's setup at runtime instead of assuming a stack.
 
+## Agent-first
+
+SKILL.md is **agent-first**: dense normative rules the agent can execute without opening linked files first.
+
+| Term | Meaning |
+| --- | --- |
+| **Agent-first** | Primary reader is an LLM agent executing the doc |
+| **Dense and concise** | Imperative rules; no tutorials, surveys, or rationale prose in the body |
+| **Self-contained** | Agent completes the workflow from this document alone — **no links to other repository files** |
+| **References at end** | Optional `## References` after normative content — on-demand standards, external HTTPS URLs, sibling files in the same skill folder only |
+
+**SKILL.md structure:**
+
+```markdown
+# Skill Title
+## When to use / Prerequisites   # short scope
+## Workflow                      # numbered steps, decision logic
+## Anti-patterns                 # optional
+## References                    # on-demand standards, external URLs, reference.md — no repo file paths
+```
+
+Do not embed References content or links to sibling files mid-workflow. Put optional depth in **References** at the end.
+
 ## Core principles
 
 ### Decisions over documentation
@@ -25,11 +48,7 @@ Detect the user's setup (package manager, monorepo shape, editor, OS paths) at r
 
 ## Placement and scope
 
-Where a skill file lives depends on who consumes it. For whole-repo layout (manifests, CI, archetypes), load **skill-repo-structure**:
-
-```bash
-npx cyber-skills@<version> governance show skill-repo-structure
-```
+Where a skill file lives depends on who consumes it. Whole-repo layout (manifests, CI, archetypes) is covered in **skill-repo-structure** — load from References when scaffolding a library repo.
 
 ### Skill kinds
 
@@ -51,7 +70,8 @@ Repo-internal skills must include `metadata: internal: true` in frontmatter.
 
 Keep SKILL.md concise — essential workflow and decision logic only.
 
-- Put detailed reference material in sibling files (`reference.md`, `examples.md`) that the agent reads only when needed.
+- Put detailed reference material in sibling files (`reference.md`, `examples.md`) in the same skill folder.
+- Link sibling files **only from References**; agent reads them when stuck, not by default.
 - Link references **one level deep** from SKILL.md; avoid chains of nested files.
 - Aim to keep SKILL.md under ~500 lines; split when a skill grows beyond that.
 
@@ -64,6 +84,8 @@ When a step produces the same output given the same input and needs no judgment,
 - Candidates: text manipulation, file I/O, structured data transforms, validation with fixed rules.
 
 Do not re-derive deterministic steps in natural language each run.
+
+When a skill includes `scripts/` or documents CLI commands agents run, load **agent-tool-output** from References for stdout, JSON, non-interactive, and stderr rules.
 
 ## Description and structure
 
@@ -78,12 +100,11 @@ Do not re-derive deterministic steps in natural language each run.
 - Include actionable steps, numbered instructions, or decision logic — not just a restatement of the description.
 - Do not instruct generic behavior the model already follows ("write clean code", "be helpful").
 
-## When to add scripts
+## References
 
-If the skill includes a `scripts/` directory or documents CLI commands agents run, also load the **agent-tool-output** governance for stdout, JSON, non-interactive, and stderr rules:
+Related governances (load on demand; read stdout as authoritative):
 
 ```bash
+npx cyber-skills@<version> governance show skill-repo-structure
 npx cyber-skills@<version> governance show agent-tool-output
 ```
-
-Read stdout as the authoritative rules for executable tooling.

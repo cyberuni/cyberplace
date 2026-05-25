@@ -27,7 +27,8 @@ When reading any `SKILL.md` file, always check whether a `SKILL.local.md` exists
 
 2. **Commands** — commonly used for building, linting, and running tests, including how to run a single test.
 3. **Architecture** — high-level structure that requires reading multiple files to understand. Focus on the big picture, not file listings.
-4. Other sections only when grounded in existing project files (see usage notes below).
+4. **Discipline sections** (when present, e.g. `## Commit Discipline`) — agent-first: dense normative rules in the body, `### References` at section bottom for commit-helper skills and `governance show` pointers. Load `governance show skill-repo-structure` for the Discipline sections rules.
+5. Other sections only when grounded in existing project files (see usage notes below).
 
 ## Usage notes
 
