@@ -23,14 +23,7 @@ export function commitCommand(): Command {
 		.option('--dry-run', 'Preview without writing')
 		.option('--verbose', 'Human-readable status on stderr')
 		.option('--json', 'Output raw JSON')
-		.action(
-			(opts: {
-				commitSkill: string
-				autoCommit?: boolean
-				root: string
-				dryRun: boolean
-				verbose: boolean
-			}) => {
+		.action((opts: { commitSkill: string; autoCommit?: boolean; root: string; dryRun: boolean; verbose: boolean }) => {
 			try {
 				const result = injectCommitDiscipline(opts)
 				output(result, () => printFields({ path: result.path, changed: String(result.changed) }))

@@ -10,7 +10,9 @@ const AUTO_COMMIT_RULE = `**Auto-commit rule:** When a unit of work is complete 
 
 `
 
-const BASE_BODY = (commitSkill: string) => `**Unit of work:** one coherent, independently revertable change — one domain's refactor, one feature, one bugfix, one test suite expansion for one concern, one config change. Never two unrelated concerns in the same commit. A TDD red-green-refactor cycle alone is not a commit boundary; commit when the full intended change is complete and tests pass. If the working tree has unrelated changes, leave them unstaged — commit the current unit first, then continue.
+const BASE_BODY = (
+	commitSkill: string,
+) => `**Unit of work:** one coherent, independently revertable change — one domain's refactor, one feature, one bugfix, one test suite expansion for one concern, one config change. Never two unrelated concerns in the same commit. A TDD red-green-refactor cycle alone is not a commit boundary; commit when the full intended change is complete and tests pass. If the working tree has unrelated changes, leave them unstaged — commit the current unit first, then continue.
 
 - Conventional Commits: \`feat:\`, \`fix:\`, \`refactor:\`, \`test:\`, \`docs:\`, \`chore:\`
 - One concern per commit; never batch unrelated changes
@@ -20,14 +22,13 @@ const BASE_BODY = (commitSkill: string) => `**Unit of work:** one coherent, inde
 - Use the \`${commitSkill}\` skill when committing (staging, splitting, message writing)
 `
 
-export function formatCommitDisciplineSection(
-	commitSkill: string,
-	options: CommitDisciplineOptions = {},
-): string {
+export function formatCommitDisciplineSection(commitSkill: string, options: CommitDisciplineOptions = {}): string {
 	const body = (options.autoCommit ? AUTO_COMMIT_RULE : '') + BASE_BODY(commitSkill)
-	return `${COMMIT_DISCIPLINE_HEADING}
+	return (
+		`${COMMIT_DISCIPLINE_HEADING}
 
 ${body}`.trimEnd() + '\n'
+	)
 }
 
 /** Extract body of ## Commit Discipline from AGENTS.md, or null if missing. */
