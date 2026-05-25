@@ -47,6 +47,22 @@ const E2_PATTERNS: RegExp[] = [
 	/[Yy]our new instructions are/,
 ]
 
+const STDOUT_AS_DATA_PATTERNS: RegExp[] = [
+	/\bparse (?:the )?(?:script )?output\b/i,
+	/\bread (?:the )?(?:summary )?table\b/i,
+	/\bshow (?:the )?(?:script )?output\b/i,
+	/\bfrom (?:the )?script output\b/i,
+]
+
+function hasStdoutAsDataMitigation(content: string): boolean {
+	return (
+		/--json/.test(content) ||
+		/parse stdout json/i.test(content) ||
+		/read `<[^`]+>`/i.test(content) ||
+		/read the (?:artifact|file|report)/i.test(content)
+	)
+}
+
 export function findSkillFiles(dirs: string[], cwd: string): string[] {
 	const seen = new Set<string>()
 	const results: string[] = []
@@ -305,7 +321,22 @@ export function runChecks(filePath: string): CheckResult {
 	}
 
 	const scriptsDir = path.join(skillDir, 'scripts')
-	if (fs.existsSync(scriptsDir)) {
+	const hasScripts = fs.existsSync(scriptsDir)
+
+	for (const pat of STDOUT_AS_DATA_PATTERNS) {
+		if (pat.test(body) && !hasStdoutAsDataMitigation(content)) {
+			warn(
+				'HIGH',
+				'Q10',
+				'SKILL.md instructs parsing stdout prose as data',
+				body.match(pat)?.[0] ?? 'stdout-as-data pattern',
+				'Prefer artifact file paths, parse stdout JSON, or document --json for CLI commands',
+			)
+			break
+		}
+	}
+
+	if (hasScripts) {
 		const scriptFiles = fs.readdirSync(scriptsDir).filter((f) => !f.startsWith('.'))
 		const hasInteractive = scriptFiles.some((f) => {
 			const src = fs.readFileSync(path.join(scriptsDir, f), 'utf8')
@@ -314,11 +345,26 @@ export function runChecks(filePath: string): CheckResult {
 		if (hasInteractive && !/--yes|-y/.test(content)) {
 			warn(
 				'HIGH',
-				'Q10',
+				'Q11',
 				'Interactive script missing non-interactive agent path',
 				'scripts/ uses readline/prompt but SKILL.md does not document --yes or -y',
 				'Document --yes (or equivalent) in SKILL.md for autonomous agent runs',
 			)
+		}
+
+		for (const f of scriptFiles) {
+			const src = fs.readFileSync(path.join(scriptsDir, f), 'utf8')
+			const usesConsoleOut = /console\.(log|info)\(/.test(src)
+			const hasContractWrite = /process\.stdout\.write/.test(src)
+			if (usesConsoleOut && !hasContractWrite) {
+				warn(
+					'MEDIUM',
+					'Q12',
+					'Script stdout hygiene',
+					`${f}: uses console.log/info without process.stdout.write JSON contract`,
+					'Use process.stdout.write(JSON…) for contract output; gate prose behind --verbose on stderr',
+				)
+			}
 		}
 	}
 

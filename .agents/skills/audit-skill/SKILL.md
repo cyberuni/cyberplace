@@ -29,6 +29,16 @@ npx cyber-skills@<version> audit validate --path skills/my-skill
 
 This command is also wired into CI (`validate-skills` workflow). Full quality review (Q6–Q12, E3–E5, E7–E8, P1–P3) still requires running this agent skill. Q12 (script stdout hygiene) is agent-only.
 
+### Agent-tool output discipline
+
+Checks Q10–Q12 enforce the **agent-tool-output** discipline. When auditing a skill with `scripts/` or CLI instructions, load the discipline first:
+
+```bash
+npx cyber-skills@<version> discipline show agent-tool-output
+```
+
+Read stdout as the authoritative rules. Map findings to discipline sections (agent-native vs dual-audience CLI, stdout-as-data, non-interactive paths, stdout hygiene).
+
 ## Instructions
 
 ### 0. Obtain the skill (pre-install path only)

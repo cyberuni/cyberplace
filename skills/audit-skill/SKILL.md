@@ -15,7 +15,7 @@ Full audit of a SKILL.md file covering structure, content quality, security, and
 
 ## Automated checks
 
-The mechanical subset of checks (S1–S5, Q1–Q5, Q10, E1–E2, E6) can be run without an LLM:
+The mechanical subset of checks (S1–S5, Q1–Q5, Q10–Q11, E1–E2, E6) can be run without an LLM:
 
 ```bash
 # Audit all skills in the repo
@@ -25,7 +25,17 @@ npx cyber-skills@<version> audit validate
 npx cyber-skills@<version> audit validate --path skills/my-skill
 ```
 
-This command is also wired into CI (`validate-skills` workflow). Full quality review (Q6–Q11, E3–E5, E7–E8, P1–P3) still requires running this agent skill. Q11 (script stdout hygiene) is agent-only.
+This command is also wired into CI (`validate-skills` workflow). Full quality review (Q6–Q12, E3–E5, E7–E8, P1–P3) still requires running this agent skill. Q12 (script stdout hygiene) is agent-only.
+
+### Agent-tool output discipline
+
+Checks Q10–Q12 enforce the **agent-tool-output** discipline. When auditing a skill with `scripts/` or CLI instructions, load the discipline first:
+
+```bash
+npx cyber-skills@<version> discipline show agent-tool-output
+```
+
+Read stdout as the authoritative rules. Map findings to discipline sections (agent-native vs dual-audience CLI, stdout-as-data, non-interactive paths, stdout hygiene).
 
 ## Instructions
 
@@ -81,8 +91,9 @@ For each skill, evaluate all checks below and produce one results table. Apply E
 | Q7 | Quality | Single workflow scope (narrow and composable) | MEDIUM | |
 | Q8 | Quality | No generic / obvious instructions the model already knows | LOW | |
 | Q9 | Quality | `description` scope matches actual content | LOW | |
-| Q10 | Quality | Skills with `scripts/` document non-interactive agent invocation (`--yes`, etc.) | HIGH | |
-| Q11 | Quality | Scripts default path: no prose on stdout without `--verbose` | MEDIUM | |
+| Q10 | Quality | SKILL.md does not instruct parsing stdout prose/tables as data | HIGH | |
+| Q11 | Quality | Skills with `scripts/` document non-interactive agent invocation (`--yes`, etc.) | HIGH | |
+| Q12 | Quality | Scripts default path: no prose on stdout without `--verbose` | MEDIUM | |
 | E1 | Security | No dangerous shell commands (SKILL.md + scripts/) | CRITICAL | |
 | E2 | Security | No prompt injection patterns (SKILL.md + scripts/) | CRITICAL | |
 | E3 | Security | No secret / credential access | CRITICAL | |
@@ -163,11 +174,14 @@ Warn if the `description` claims a capability the skill body does not deliver, o
 - **Stale commands/APIs:** the body references removed CLI subcommands, hook names, or APIs without current equivalents (e.g. old `run-hook` after rename).
 - **Stale cross-references:** Related skills or "see also" links point to skills or workflows that no longer exist or no longer do what the link claims.
 
-**Q10 — Non-interactive agent path (HIGH)**
+**Q10 — No stdout-as-data in SKILL.md (HIGH)**
+Fail if SKILL.md tells the agent to read, show, or parse script "output", a "summary table", or similar prose when an artifact file or `--json` on a CLI tool is the authoritative source. Prefer: "read `<artifact-path>`" or "parse stdout JSON" or "run with `--json`".
+
+**Q11 — Non-interactive agent path (HIGH)**
 If `scripts/` exists and any script uses interactive prompts (`readline`, `[y/N]`), fail unless SKILL.md documents a `--yes` (or equivalent) flag for autonomous agent runs.
 
-**Q11 — Script stdout hygiene (MEDIUM)**
-For each file in `scripts/`, warn if `console.info` or `console.log` emits prose outside a `--verbose` branch. Contract output must use `process.stdout.write` with JSON. Partially covered by Q10 in `audit validate`; full review requires reading script control flow.
+**Q12 — Script stdout hygiene (MEDIUM)**
+For each file in `scripts/`, warn if `console.info` or `console.log` emits prose outside a `--verbose` branch. Contract output must use `process.stdout.write` with JSON. Partially covered by Q10–Q11 in `audit validate`; full review requires reading script control flow.
 
 ---
 

@@ -110,16 +110,15 @@ Adjust the target path for other agents as needed (e.g., `~/.cursor/skills/`, `~
 - **Narrow and composable.** One workflow per skill. Skills can be triggered by situation (user-facing) or called by other skills (sub-skills). Sub-skills have no situational trigger — their `description` should say "Internal skill: called by X" to avoid accidental activation. Neither type should be loaded as ambient context.
 - **No baked-in opinions.** Detect the user's setup (package manager, monorepo shape, tooling) at runtime rather than assuming a specific stack.
 
-## Skill script output discipline
+## Scripts and CLI output
 
-If the skill includes a `scripts/` directory, apply these rules so agents do not confuse human output with machine results:
+If the skill includes a `scripts/` directory or documents CLI commands agents run, load the output discipline before authoring or reviewing executable tooling:
 
-- **Stdout is the machine contract** — one JSON value or silence; no prose, tables, or progress in default mode
-- **Files hold durable state** — agents read artifacts by path named in stdout JSON or SKILL.md
-- **Stderr is human/diagnostic** — use `console.warn` / `console.error`; gate tables and progress behind `--verbose`
-- **Skills present; scripts record** — SKILL.md tells the agent what file or field to read; the agent summarizes for the user
-- **Autonomous runs** — document `--yes` or equivalent non-interactive flags; never put prompts on stdout
-- **Implementation** — use `process.stdout.write(JSON.stringify(result) + '\n')` for contract output; never `console.log`
+```bash
+npx cyber-skills@<version> discipline show agent-tool-output
+```
+
+Read stdout as the authoritative rules. Prefer `npx cyber-skills@<version> …` CLI subcommands over new bundled `scripts/`.
 
 ## Notes
 

@@ -19,6 +19,27 @@ function withTempSkill(content: string, check: (skillFile: string) => void): voi
 	}
 }
 
+function withTempSkillAndScripts(
+	content: string,
+	scripts: Record<string, string>,
+	check: (skillFile: string) => void,
+): void {
+	const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'audit-skill-'))
+	const skillDir = path.join(tempDir, 'skills', 'sample-skill')
+	const scriptsDir = path.join(skillDir, 'scripts')
+	fs.mkdirSync(scriptsDir, { recursive: true })
+	fs.writeFileSync(path.join(skillDir, 'SKILL.md'), content)
+	for (const [name, src] of Object.entries(scripts)) {
+		fs.writeFileSync(path.join(scriptsDir, name), src)
+	}
+
+	try {
+		check(path.join(skillDir, 'SKILL.md'))
+	} finally {
+		fs.rmSync(tempDir, { recursive: true, force: true })
+	}
+}
+
 const skillFrontmatter = `---
 name: sample-skill
 description: "Use this skill when the user wants a validator regression test for shell-expanded references."
@@ -59,6 +80,62 @@ node scripts/missing-helper.mjs
 			const s4Warnings = result.warnings.filter((finding) => finding.checkId === 'S4')
 			expect(s4Warnings.length).toBe(1)
 			expect(s4Warnings[0]?.evidence ?? '').toMatch(/scripts\/missing-helper\.mjs/)
+		},
+	)
+})
+
+test('Q10 warns when SKILL.md instructs parsing script output without mitigation', () => {
+	withTempSkill(
+		`${skillFrontmatter}
+Run the helper and parse the script output to decide next steps.
+`,
+		(skillFile) => {
+			const result = runChecks(skillFile)
+			const q10 = result.warnings.filter((finding) => finding.checkId === 'Q10')
+			expect(q10.length).toBe(1)
+		},
+	)
+})
+
+test('Q10 passes when --json is documented', () => {
+	withTempSkill(
+		`${skillFrontmatter}
+Run \`my-tool --json\` and parse stdout JSON.
+`,
+		(skillFile) => {
+			const result = runChecks(skillFile)
+			const q10 = result.warnings.filter((finding) => finding.checkId === 'Q10')
+			expect(q10.length).toBe(0)
+		},
+	)
+})
+
+test('Q11 warns for interactive scripts without --yes in SKILL.md', () => {
+	withTempSkillAndScripts(
+		`${skillFrontmatter}
+Run \`node scripts/prompt.mjs\` when needed.
+`,
+		{
+			'prompt.mjs': "import readline from 'node:readline'\nreadline.createInterface({ input: process.stdin })",
+		},
+		(skillFile) => {
+			const result = runChecks(skillFile)
+			const q11 = result.warnings.filter((finding) => finding.checkId === 'Q11')
+			expect(q11.length).toBe(1)
+		},
+	)
+})
+
+test('Q12 warns when script uses console.log without stdout JSON contract', () => {
+	withTempSkillAndScripts(
+		`${skillFrontmatter}
+Run \`node scripts/run.mjs --yes\`.
+`,
+		{ 'run.mjs': "console.log('done')\n" },
+		(skillFile) => {
+			const result = runChecks(skillFile)
+			const q12 = result.warnings.filter((finding) => finding.checkId === 'Q12')
+			expect(q12.length).toBe(1)
 		},
 	)
 })
