@@ -15,10 +15,10 @@ Extracts a repeatable workflow from what was done in the current session and cre
 
 ## Steps
 
-Load the **skill-design** discipline before drafting:
+Load the **skill-design** governance before drafting:
 
 ```bash
-npx cyber-skills@<version> discipline show skill-design
+npx cyber-skills@<version> governance show skill-design
 ```
 
 Read stdout as the authoritative rules for principles, progressive disclosure, and description structure.

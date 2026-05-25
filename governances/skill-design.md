@@ -56,10 +56,10 @@ Do not re-derive deterministic steps in natural language each run.
 
 ## When to add scripts
 
-If the skill includes a `scripts/` directory or documents CLI commands agents run, also load the **agent-tool-output** discipline for stdout, JSON, non-interactive, and stderr rules:
+If the skill includes a `scripts/` directory or documents CLI commands agents run, also load the **agent-tool-output** governance for stdout, JSON, non-interactive, and stderr rules:
 
 ```bash
-npx cyber-skills@<version> discipline show agent-tool-output
+npx cyber-skills@<version> governance show agent-tool-output
 ```
 
 Read stdout as the authoritative rules for executable tooling.

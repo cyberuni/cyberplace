@@ -4,7 +4,7 @@ import { Command } from 'commander'
 import { auditCommand } from './audit/cli.js'
 import { awesomeCommand } from './awesome/cli.js'
 import { commitCommand } from './commit/cli.js'
-import { disciplineCommand } from './discipline/cli.js'
+import { governanceCommand } from './governance/cli.js'
 import { hookCommand } from './hook/cli.js'
 import { skillCommand } from './skill/cli.js'
 
@@ -15,7 +15,7 @@ program.name('cyber-skills').description('Skills, hooks, and workflows for AI ag
 program.addCommand(auditCommand())
 program.addCommand(awesomeCommand())
 program.addCommand(commitCommand())
-program.addCommand(disciplineCommand())
+program.addCommand(governanceCommand())
 program.addCommand(hookCommand())
 program.addCommand(skillCommand())
 

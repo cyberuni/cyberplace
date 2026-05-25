@@ -3,27 +3,27 @@ import * as path from 'node:path'
 
 import { getPackageRoot } from '../hook/package-root.js'
 
-export interface DisciplineMeta {
+export interface GovernanceMeta {
 	name: string
 	title: string
 	body: string
 }
 
-const DISCIPLINE_NAME_PATTERN = /^[a-z0-9-]+$/
+const GOVERNANCE_NAME_PATTERN = /^[a-z0-9-]+$/
 
-function disciplinesDir(): string {
-	return path.join(getPackageRoot(), 'disciplines')
+function governancesDir(): string {
+	return path.join(getPackageRoot(), 'governances')
 }
 
-export function normalizeDisciplineName(name: string): string {
+export function normalizeGovernanceName(name: string): string {
 	const trimmed = name.trim()
 	if (/[/\\]/.test(trimmed)) {
-		throw new Error(`Invalid discipline name: ${name}`)
+		throw new Error(`Invalid governance name: ${name}`)
 	}
 
 	const base = path.basename(trimmed)
 	if (!base) {
-		throw new Error(`Invalid discipline name: ${name}`)
+		throw new Error(`Invalid governance name: ${name}`)
 	}
 
 	const normalized = base
@@ -32,16 +32,16 @@ export function normalizeDisciplineName(name: string): string {
 		.replace(/-+/g, '-')
 		.replace(/^-+|-+$/g, '')
 
-	if (!normalized || !DISCIPLINE_NAME_PATTERN.test(normalized)) {
-		throw new Error(`Invalid discipline name: ${name}`)
+	if (!normalized || !GOVERNANCE_NAME_PATTERN.test(normalized)) {
+		throw new Error(`Invalid governance name: ${name}`)
 	}
 
 	return normalized
 }
 
-function disciplinePath(name: string): string {
-	const normalized = normalizeDisciplineName(name)
-	return path.join(disciplinesDir(), `${normalized}.md`)
+function governancePath(name: string): string {
+	const normalized = normalizeGovernanceName(name)
+	return path.join(governancesDir(), `${normalized}.md`)
 }
 
 function parseTitle(body: string, fallback: string): string {
@@ -56,8 +56,8 @@ function titleFromName(name: string): string {
 		.join(' ')
 }
 
-export function listDisciplines(): DisciplineMeta[] {
-	const dir = disciplinesDir()
+export function listGovernances(): GovernanceMeta[] {
+	const dir = governancesDir()
 	if (!fs.existsSync(dir)) return []
 
 	return fs
@@ -71,11 +71,11 @@ export function listDisciplines(): DisciplineMeta[] {
 		.sort((a, b) => a.name.localeCompare(b.name))
 }
 
-export function loadDiscipline(name: string): DisciplineMeta {
-	const normalized = normalizeDisciplineName(name)
-	const filePath = disciplinePath(name)
+export function loadGovernance(name: string): GovernanceMeta {
+	const normalized = normalizeGovernanceName(name)
+	const filePath = governancePath(name)
 	if (!fs.existsSync(filePath)) {
-		throw new Error(`Unknown discipline: ${normalized}`)
+		throw new Error(`Unknown governance: ${normalized}`)
 	}
 	const body = fs.readFileSync(filePath, 'utf8')
 	return { name: normalized, title: parseTitle(body, titleFromName(normalized)), body }

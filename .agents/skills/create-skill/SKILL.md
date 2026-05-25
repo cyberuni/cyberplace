@@ -104,12 +104,12 @@ ln -sf ~/.agents/skills/<name> ~/.claude/skills/<name>
 
 Adjust the target path for other agents as needed (e.g., `~/.cursor/skills/`, `~/.opencode/skills/`).
 
-## Skill design discipline
+## Skill design governance
 
-Before writing content, load the **skill-design** discipline:
+Before writing content, load the **skill-design** governance:
 
 ```bash
-npx cyber-skills@<version> discipline show skill-design
+npx cyber-skills@<version> governance show skill-design
 ```
 
 Read stdout as the authoritative rules for principles, progressive disclosure, description structure, and when to extract deterministic logic to scripts or existing project CLIs.
@@ -119,7 +119,7 @@ Read stdout as the authoritative rules for principles, progressive disclosure, d
 If the skill includes a `scripts/` directory or documents CLI commands agents run, also load **agent-tool-output**:
 
 ```bash
-npx cyber-skills@<version> discipline show agent-tool-output
+npx cyber-skills@<version> governance show agent-tool-output
 ```
 
 Read stdout as the authoritative rules for stdout, JSON, non-interactive paths, and stderr. When adding cyber-skills workflows to a repo skill, prefer `npx cyber-skills@<version> …` CLI subcommands over new bundled `scripts/`.

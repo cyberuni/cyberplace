@@ -29,25 +29,25 @@ npx cyber-skills@<version> audit validate --path skills/my-skill
 
 This command is also wired into CI (`pull-request` workflow via `pnpm verify`). Full quality review (Q6–Q12, E3–E5, E7–E8, P1–P3) still requires running this agent skill. Q12 (script stdout hygiene) is agent-only.
 
-### Skill design discipline
+### Skill design governance
 
-Checks Q6–Q9 enforce the **skill-design** discipline. Load it before evaluating content quality:
-
-```bash
-npx cyber-skills@<version> discipline show skill-design
-```
-
-Read stdout as the authoritative rules. Map findings to discipline sections (core principles, progressive disclosure, deterministic extraction, description and structure).
-
-### Agent-tool output discipline
-
-Checks Q10–Q12 enforce the **agent-tool-output** discipline. When auditing a skill with `scripts/` or CLI instructions, load the discipline first:
+Checks Q6–Q9 enforce the **skill-design** governance. Load it before evaluating content quality:
 
 ```bash
-npx cyber-skills@<version> discipline show agent-tool-output
+npx cyber-skills@<version> governance show skill-design
 ```
 
-Read stdout as the authoritative rules. Map findings to discipline sections (agent-native vs dual-audience CLI, stdout-as-data, non-interactive paths, stdout hygiene).
+Read stdout as the authoritative rules. Map findings to governance sections (core principles, progressive disclosure, deterministic extraction, description and structure).
+
+### Agent-tool output governance
+
+Checks Q10–Q12 enforce the **agent-tool-output** governance. When auditing a skill with `scripts/` or CLI instructions, load the governance first:
+
+```bash
+npx cyber-skills@<version> governance show agent-tool-output
+```
+
+Read stdout as the authoritative rules. Map findings to governance sections (agent-native vs dual-audience CLI, stdout-as-data, non-interactive paths, stdout hygiene).
 
 ## Instructions
 
@@ -165,7 +165,7 @@ Fail if the `description` frontmatter value exceeds 120 characters. Long descrip
 
 **Q6 — No baked-in stack assumptions (MEDIUM)**
 
-Canonical definition: **skill-design** discipline § No baked-in opinions.
+Canonical definition: **skill-design** governance § No baked-in opinions.
 
 Warn if the skill hardcodes a specific tool, runtime, or environment that may not match the user's setup, without first detecting it at runtime. Examples:
 
@@ -177,19 +177,19 @@ The skill should detect the user's setup at runtime or explicitly scope itself t
 
 **Q7 — Single workflow scope (MEDIUM)**
 
-Canonical definition: **skill-design** discipline § Narrow and composable.
+Canonical definition: **skill-design** governance § Narrow and composable.
 
 Warn if the skill body appears to implement more than one distinct workflow or covers multiple unrelated concerns. Each skill should do one thing. Signals: multiple top-level "## Workflow" sections with unrelated goals, or a description that lists many unrelated capabilities separated by "and also".
 
 **Q8 — No obvious instructions (LOW)**
 
-Canonical definition: **skill-design** discipline § Decisions over documentation and § Description and structure.
+Canonical definition: **skill-design** governance § Decisions over documentation and § Description and structure.
 
 Warn if the body contains instructions that any capable model would already follow without being told — e.g., "write clean code", "be helpful", "provide useful error messages", "write tests for new code". These add noise and dilute the signal of the actual decisions the skill encodes.
 
 **Q9 — Description matches content (LOW)**
 
-Canonical definition: **skill-design** discipline § Description and structure.
+Canonical definition: **skill-design** governance § Description and structure.
 
 Warn if the `description` claims a capability the skill body does not deliver, or if the body covers significantly more than the description promises.
 

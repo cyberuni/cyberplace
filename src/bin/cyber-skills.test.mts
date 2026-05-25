@@ -139,49 +139,49 @@ test('hook run --glob emits SessionStart JSON', () => {
 	}
 })
 
-test('discipline list includes agent-tool-output', () => {
-	const result = run('discipline', 'list')
+test('governance list includes agent-tool-output', () => {
+	const result = run('governance', 'list')
 	expect(result.status).toBe(0)
 	expect(result.stdout.trim().split('\n')).toContain('agent-tool-output')
 })
 
-test('discipline list --json returns structured output', () => {
-	const result = run('discipline', 'list', '--json')
+test('governance list --json returns structured output', () => {
+	const result = run('governance', 'list', '--json')
 	expect(result.status).toBe(0)
-	const parsed = JSON.parse(result.stdout) as { disciplines: { name: string; title: string }[] }
-	expect(parsed.disciplines.some((d) => d.name === 'agent-tool-output')).toBe(true)
+	const parsed = JSON.parse(result.stdout) as { governances: { name: string; title: string }[] }
+	expect(parsed.governances.some((d) => d.name === 'agent-tool-output')).toBe(true)
 })
 
-test('discipline show prints markdown body', () => {
-	const result = run('discipline', 'show', 'agent-tool-output')
-	expect(result.status).toBe(0)
-	expect(result.stdout).toMatch(/# Agent Tool Output/)
-	expect(result.stdout).toMatch(/Stdout is the machine contract/)
-})
-
-test('discipline show accepts normalized name input', () => {
-	const result = run('discipline', 'show', 'Agent-Tool-Output')
+test('governance show prints markdown body', () => {
+	const result = run('governance', 'show', 'agent-tool-output')
 	expect(result.status).toBe(0)
 	expect(result.stdout).toMatch(/# Agent Tool Output/)
 	expect(result.stdout).toMatch(/Stdout is the machine contract/)
 })
 
-test('discipline list includes skill-design', () => {
-	const result = run('discipline', 'list')
+test('governance show accepts normalized name input', () => {
+	const result = run('governance', 'show', 'Agent-Tool-Output')
+	expect(result.status).toBe(0)
+	expect(result.stdout).toMatch(/# Agent Tool Output/)
+	expect(result.stdout).toMatch(/Stdout is the machine contract/)
+})
+
+test('governance list includes skill-design', () => {
+	const result = run('governance', 'list')
 	expect(result.status).toBe(0)
 	expect(result.stdout.trim().split('\n')).toContain('skill-design')
 })
 
-test('discipline show --json returns structured output', () => {
-	const result = run('discipline', 'show', 'agent-tool-output', '--json')
+test('governance show --json returns structured output', () => {
+	const result = run('governance', 'show', 'agent-tool-output', '--json')
 	expect(result.status).toBe(0)
 	const parsed = JSON.parse(result.stdout) as { name: string; title: string; body: string }
 	expect(parsed.name).toBe('agent-tool-output')
 	expect(parsed.body).toMatch(/Agent Tool Output/)
 })
 
-test('discipline show unknown name exits non-zero', () => {
-	const result = run('discipline', 'show', 'missing-discipline')
+test('governance show unknown name exits non-zero', () => {
+	const result = run('governance', 'show', 'missing-governance')
 	expect(result.status).toBe(1)
-	expect(result.stderr).toMatch(/Unknown discipline/)
+	expect(result.stderr).toMatch(/Unknown governance/)
 })

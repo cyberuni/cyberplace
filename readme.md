@@ -97,7 +97,7 @@ Beyond the skill files, the package also ships a `cyber-skills` CLI and runtime 
 | **Skills** | Public agent skills under `skills/` — the primary interface |
 | **Hooks** | SessionStart instruction hooks for commit discipline (`hook register` / `hook run`) |
 | **CLI** | `cyber-skills` binary used by skills and available for direct use when needed |
-| **Disciplines** | Version-pinned agent-tool contracts (`discipline list` / `discipline show`) |
+| **Governances** | Version-pinned agent-tool contracts (`governance list` / `governance show`) |
 
 ### CLI
 

@@ -90,10 +90,10 @@ This repo is a skill library and CLI tool for AI agents (Claude Code, Cursor, Co
 
 - `skills/` — public skills shipped with the package; users install via `npx skills add cyberuni/cyber-skills`
 - `.agents/skills/` — repo-internal skills for contributor workflows (changesets, security PRs, repo renames); all must have `metadata: internal: true`
-- `src/` — TypeScript source; domain folders: `audit/`, `awesome/`, `commit/`, `discipline/`, `hook/`, `skill/`
-- `disciplines/` — version-pinned agent-tool contracts shipped with the npm package; load via `cyber-skills discipline show <name>`
+- `src/` — TypeScript source; domain folders: `audit/`, `awesome/`, `commit/`, `governance/`, `hook/`, `skill/`
+- `governances/` — version-pinned agent-tool contracts shipped with the npm package; load via `cyber-skills governance show <name>`
 - `bin/cyber-skills.mjs` — slim tracked shim; delegates to `dist/cli.mjs`
-- `dist/cli.mjs` — single bundled CLI (gitignored, built by tsdown); commands: `audit`, `awesome`, `commit`, `discipline`, `hook`, `skill`
+- `dist/cli.mjs` — single bundled CLI (gitignored, built by tsdown); commands: `audit`, `awesome`, `commit`, `governance`, `hook`, `skill`
 - `skills/` — public skills shipped with the package
 
 **Skill lifecycle:** Skills are authored in `skills/<name>/SKILL.md`, validated by `audit-skill`, and surfaced to agents via the `skills` CLI or `npx skills add`. Runtime behavior (commit discipline) is handled by instruction hooks registered in `.claude/settings.json` and `.cursor/hooks.json`. Local skill augmentations (`SKILL.local.md`) are applied when a skill is loaded — see **Skill Augmentations** below.
@@ -145,4 +145,4 @@ Write all content in en-US (American English spelling: "color", "organize", "beh
 - **Narrow and composable** — one workflow per skill; user-facing skills match situations, sub-skills are called explicitly by other skills
 - **No baked-in opinions** — detect the user's setup at runtime rather than assuming a specific stack
 
-Full authoring rules: `npx cyber-skills@<version> discipline show skill-design` (after build in this repo).
+Full authoring rules: `npx cyber-skills@<version> governance show skill-design` (after build in this repo).

@@ -8,14 +8,14 @@ Accepted
 
 cyber-skills ships two related but distinct kinds of agent guidance:
 
-1. **Version-pinned standards** — markdown contracts in `disciplines/` (for example `skill-design`, `agent-tool-output`), loaded on demand via `cyber-skills discipline show` and enforced mechanically by `audit-skill`.
+1. **Version-pinned standards** — markdown contracts in `governances/` (for example `skill-design`, `agent-tool-output`), loaded on demand via `cyber-skills governance show` and enforced mechanically by `audit-skill`.
 2. **Session-injected behavior** — rules such as Commit Discipline, injected at SessionStart through the `commit-discipline` hook and documented in AGENTS.md.
 
-Both are currently labeled **discipline**. That overloads one word for two different mechanisms:
+Both were initially labeled **discipline**, overloading one word for two different mechanisms:
 
-| Mechanism | Load model | Authority model | Current naming |
+| Mechanism | Load model | Authority model | Naming |
 | --- | --- | --- | --- |
-| Standards | On demand per workflow | Version-pinned, auditable, stdout is source of truth | `disciplines/`, `discipline show` |
+| Standards | On demand per workflow | Version-pinned, auditable, stdout is source of truth | `governances/`, `governance show` |
 | Behavior | Every session (when hook registered) | Habitual, ambient context | `commit-discipline`, Commit Discipline |
 
 The standards layer behaves like governance (canonical rules, audit enforcement, enterprise-familiar vocabulary). The behavior layer behaves like discipline (operating habits, self-regulation, lighter tone). Using one term for both creates confusion for contributors and obscures the architectural split.
@@ -49,7 +49,7 @@ Rename everything to **governance** — standards and session behavior.
 Use **Governance** for version-pinned auditable standards and **Discipline** for session-injected behavioral rules.
 
 - **Pros**: Clearest taxonomy; each term matches its mechanism and tone; preserves natural "commit discipline" phrasing; aligns audit layer with governance semantics.
-- **Cons**: Two concepts to learn; requires a future CLI/folder rename to align implementation with terminology.
+- **Cons**: Two concepts to learn; required a CLI/folder rename to align implementation with terminology.
 
 ## Decision
 
@@ -62,7 +62,7 @@ Adopt the **split taxonomy**:
 
 **Tagline:** Governance defines what is correct. Discipline defines what is habitual.
 
-**Implementation status:** Terminology is accepted now. The shipped CLI (`discipline list`, `discipline show`) and directory (`disciplines/`) remain unchanged until a deliberate rename milestone documented in a follow-up ADR or changeset.
+**Implementation status:** Implemented. Standards ship under `governances/` with CLI `governance list` and `governance show`. Session discipline (`commit-discipline`) is unchanged.
 
 ## Rationale
 
@@ -77,28 +77,27 @@ Option 1 was a reasonable v1 shortcut but does not scale as more standards and s
 - Removes ambiguity between load-on-demand standards and always-on behavior.
 - Gives audit and authoring workflows a precise vocabulary (governance).
 - Preserves natural language for commit hooks (discipline).
-- Provides a stable conceptual model before any breaking CLI rename.
+- Provides a stable conceptual model aligned with CLI and directory names.
 
 ### Negative
 
-- Temporary mismatch between documented taxonomy and shipped CLI/directory names until rename.
 - Contributors must learn two terms instead of one.
+- Breaking change for consumers of `discipline list|show` (hard break; no alias).
 
 ### Risks
 
-- Partial adoption if the CLI rename is deferred indefinitely — standards docs refer to "governance" while commands still say `discipline`.
-- **Mitigation:** Cross-link ADR-0001 from `disciplines/README.md` and `readme.md`; plan explicit rename with deprecation alias.
+- None outstanding for the standards-layer rename.
 
 ## Implementation Notes
 
-Future rename work (not part of this ADR):
+Completed rename (breaking change):
 
-- Rename `disciplines/` → `governances/`, `src/discipline/` → `src/governance/`, CLI `discipline` → `governance`.
-- Update skills, tests, `package.json` `files`, and AGENTS.md references (~25 files).
-- Document as a breaking change in CHANGELOG; consider `discipline` as a deprecated alias for one release.
-- **Keep unchanged:** `commit-discipline` hook name, `init-commit-discipline` skill name, AGENTS.md "Commit Discipline" heading.
+- Renamed `disciplines/` → `governances/`, `src/discipline/` → `src/governance/`, CLI `discipline` → `governance`.
+- Updated skills, tests, `package.json` `files`, and AGENTS.md references.
+- No deprecated alias — `discipline list|show` removed.
+- **Unchanged:** `commit-discipline` hook name, `init-commit-discipline` skill name, AGENTS.md "Commit Discipline" heading.
 
-Target CLI after rename:
+CLI:
 
 ```bash
 npx cyber-skills@<version> governance list
@@ -107,4 +106,4 @@ npx cyber-skills@<version> governance show skill-design
 
 ## Related Decisions
 
-- None yet (first ADR). A future ADR may record the rename execution and deprecation timeline.
+- None yet (first ADR).

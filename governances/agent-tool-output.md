@@ -82,7 +82,7 @@ Patterns specific to this package — not general guidance for all skill authors
 | ------- | ------- |
 | Dual-audience `--json` | `output()` helper — default human tables/fields; `--json` emits structured JSON |
 | Always-JSON stdout | `hook run` — SessionStart payload via `process.stdout.write` |
-| Agent loads discipline | `discipline show agent-tool-output` — markdown body on stdout for agent consumption |
+| Agent loads governance | `governance show agent-tool-output` — markdown body on stdout for agent consumption |
 | Agent search | `awesome find "<query>" --json` — agents pass `--json`; default output is human prose |
 
 When adding cyber-skills workflows to a skill, prefer `npx cyber-skills@<version> …` CLI subcommands over new bundled `scripts/`.
