@@ -23,13 +23,13 @@ Duplicate sources are deduped by `repo + path`.
 1. Run the bundled finder:
 
 ```bash
-node skills/find-awesome-skill/scripts/find-awesome-skill.mjs "<query>"
+npx cyber-skills@<version> awesome find "<query>"
 ```
 
 For machine-readable output:
 
 ```bash
-node skills/find-awesome-skill/scripts/find-awesome-skill.mjs "<query>" --json
+npx cyber-skills@<version> awesome find "<query>" --json
 ```
 
 2. Load configured awesome sources from the three config layers plus the default source.

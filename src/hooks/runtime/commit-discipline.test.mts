@@ -10,7 +10,7 @@ test('run-hook commit-discipline emits SessionStart JSON', () => {
 	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'commit-hook-'))
 	try {
 		fs.writeFileSync(path.join(root, 'AGENTS.md'), '## Commit Discipline\n\n- Custom rule\n')
-		const result = spawnSync('node', [bin, 'run-hook', 'commit-discipline'], {
+		const result = spawnSync('node', [bin, 'hook', 'run', 'commit-discipline'], {
 			cwd: root,
 			encoding: 'utf8',
 			input: '{}',

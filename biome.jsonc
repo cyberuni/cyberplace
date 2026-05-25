@@ -4,6 +4,7 @@
 	"files": {
 		"includes": [
 			"!bin",
+			"!dist",
 			"!hooks",
 			"!node_modules",
 			"!skills-lock.json",
