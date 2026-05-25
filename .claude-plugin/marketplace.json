@@ -3,7 +3,7 @@
 		{
 			"name": "skill-discovery",
 			"description": "Find and evaluate skills before installing. Prefer global install (-g).",
-			"skills": ["./skills/find-awesome-skill"]
+			"skills": ["./skills/find-awesome-skill", "./skills/audit-skill"]
 		},
 		{
 			"name": "skill-authoring",
