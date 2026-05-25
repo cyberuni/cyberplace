@@ -23,6 +23,30 @@ One workflow per skill. User-facing skills match a situation; sub-skills are cal
 
 Detect the user's setup (package manager, monorepo shape, editor, OS paths) at runtime rather than assuming a specific stack. If the skill only applies to one stack, say so explicitly in the description.
 
+## Placement and scope
+
+Where a skill file lives depends on who consumes it. For whole-repo layout (manifests, CI, archetypes), load **skill-repo-structure**:
+
+```bash
+npx cyber-skills@<version> governance show skill-repo-structure
+```
+
+### Skill kinds
+
+| Kind | Location | Use case |
+| --- | --- | --- |
+| **Global** | `~/.agents/skills/<name>/` | Personal skills across all projects |
+| **Repo internal** | `.agents/skills/<name>/` | Contributor tooling scoped to one repo |
+| **Repo public** | `skills/<name>/` | Shipped with a package or installed via `npx skills add` |
+
+Repo-internal skills must include `metadata: internal: true` in frontmatter.
+
+### Patch and local rules
+
+- Upstream contributions from a local install map to `skills/<name>/…` in the source repo — never `.agents/skills/` upstream.
+- **`SKILL.local.md`** extends a skill locally; never commit or push it upstream.
+- Include every changed file under the skill folder when patching (not only `SKILL.md`).
+
 ## Progressive disclosure
 
 Keep SKILL.md concise — essential workflow and decision logic only.

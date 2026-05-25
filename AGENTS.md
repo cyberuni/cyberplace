@@ -92,6 +92,8 @@ This repo is a skill library and CLI tool for AI agents (Claude Code, Cursor, Co
 - `.agents/skills/` — repo-internal skills for contributor workflows (changesets, security PRs, repo renames); all must have `metadata: internal: true`
 - `src/` — TypeScript source; domain folders: `audit/`, `awesome/`, `commit/`, `governance/`, `hook/`, `skill/`
 - `governances/` — version-pinned agent-tool contracts shipped with the npm package; load via `cyber-skills governance show <name>`
+- `docs/adr/` — architecture decision records
+- `docs/research/` — background surveys linked from ADRs and governances (not loaded via CLI)
 - `bin/cyber-skills.mjs` — slim tracked shim; delegates to `dist/cli.mjs`
 - `dist/cli.mjs` — single bundled CLI (gitignored, built by tsdown); commands: `audit`, `awesome`, `commit`, `governance`, `hook`, `skill`
 - `skills/` — public skills shipped with the package

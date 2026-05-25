@@ -6,6 +6,7 @@ test('listGovernances includes agent-tool-output and skill-design', () => {
 	const names = listGovernances().map((d) => d.name)
 	expect(names).toContain('agent-tool-output')
 	expect(names).toContain('skill-design')
+	expect(names).toContain('skill-repo-structure')
 })
 
 test('loadGovernance returns markdown body with title', () => {
@@ -24,6 +25,12 @@ test('loadGovernance loads skill-design', () => {
 	const governance = loadGovernance('skill-design')
 	expect(governance.title).toBe('Skill Design')
 	expect(governance.body).toMatch(/Progressive disclosure/)
+})
+
+test('loadGovernance loads skill-repo-structure', () => {
+	const governance = loadGovernance('skill-repo-structure')
+	expect(governance.title).toBe('Skill Repo Structure')
+	expect(governance.body).toMatch(/Repo archetypes/)
 })
 
 test('normalizeGovernanceName trims whitespace and lowercases', () => {
