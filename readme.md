@@ -18,6 +18,50 @@ npx skills add cyberuni/cyber-skills --skill init -g
 npx skills add cyberuni/cyber-skills --skill init -a claude-code -g
 ```
 
+## Getting started: `init` and `init-commit-discipline`
+
+These skills set up a repo for AI agents. Install them **globally** once, then run them per repository from your agent chat.
+
+```bash
+# Recommended: both init skills globally
+npx skills add cyberuni/cyber-skills --skill init --skill init-commit-discipline -g
+```
+
+| Skill | Install scope | When to run |
+| ----- | ------------- | ----------- |
+| **`init`** | Global (`-g`) | First time in a repo, or when `AGENTS.md` needs a refresh |
+| **`init-commit-discipline`** | Global (`-g`) | After `init`, when you want commit rules enforced in every session |
+
+### 1. Run `init`
+
+In Claude Code, Cursor, or another agent, ask to **run the `init` skill** (or "initialize AGENTS.md for this repo"). The skill will:
+
+- Create or improve **`AGENTS.md`** — Skill Augmentations first, then commands, architecture, and other grounded sections
+- **Symlink `CLAUDE.md` → `AGENTS.md`** so Claude Code picks up the same guidance
+- Ensure repo-internal skills under `.agents/skills/` include `metadata: internal: true`
+- List companion `init-*` skills (including `init-commit-discipline`) and ask whether to run any of them
+
+If `AGENTS.md` already exists, the skill compares proposed changes and asks before overwriting substantive content.
+
+### 2. Run `init-commit-discipline`
+
+Run this **after `init`**. Ask your agent to **run the `init-commit-discipline` skill**. The skill will:
+
+1. **Resolve a commit helper skill** — checks for an installed helper (`commit-work`, bundled `commit`, etc.) and asks you to choose if none is found
+2. **Ask about auto-commit** — whether the agent should commit each completed unit of work without waiting for you to ask
+3. **Inject `## Commit Discipline` into `AGENTS.md`** — unit-of-work rules, Conventional Commits, staging guidance, and a pointer to the chosen commit helper
+4. **Register a SessionStart hook** — on Claude Code, Cursor, and Codex, reinjects the Commit Discipline section at the start of every session
+
+If you choose the bundled fallback commit helper, install it **project-scoped** (not global):
+
+```bash
+npx skills add cyberuni/cyber-skills --skill commit
+```
+
+For agents without hook support, the AGENTS.md section alone applies the rules.
+
+Both skills use the `cyber-skills` CLI under the hood (pinned `npx cyber-skills@<version>`). You normally invoke them through your agent; see [Package contents](#package-contents) for direct CLI use.
+
 ## Public skills
 
 | Skill | Description |
