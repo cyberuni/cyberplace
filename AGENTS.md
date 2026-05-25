@@ -62,7 +62,8 @@ This repo is a skill library and CLI tool for AI agents (Claude Code, Cursor, Co
 - `.agents/skills/` — repo-internal skills for contributor workflows (changesets, security PRs, repo renames); all must have `metadata: internal: true`
 - `src/` — TypeScript source for the CLI, hooks, skill scripts, and co-located tests
 - `hooks/` — built runtime hook scripts published with the package
-- `bin/cyber-skills.mjs` — built CLI entry point; supports `run-hook`, `register-hooks --set <set>`, and `inject-commit-discipline`
+- `bin/cyber-skills.mjs` — slim tracked shim; delegates to `dist/bin/cyber-skills.mjs`
+- `dist/bin/` — compiled CLI (gitignored, built by tsdown); supports `run-hook`, `register-hooks --set <set>`, `inject-commit-discipline`, and `skill-source`
 - `skills/` — public skills shipped with the package, including built helper scripts under `skills/*/scripts/`
 
 **Skill lifecycle:** Skills are authored in `skills/<name>/SKILL.md`, validated by `audit-skill`, and surfaced to agents via the `skills` CLI or `npx skills add`. Runtime behavior (local augmentations, marking internal skills) is handled by hooks registered in `.claude/settings.json` and `.cursor/settings.json`.
@@ -81,7 +82,7 @@ This is required — CI runs `pnpm verify` on every PR that touches `skills/`, `
 
 ## Commit Discipline
 
-Commit every self-contained unit of work — code, config, skills — as its own commit before moving on.
+**Auto-commit rule:** When a unit of work is complete and verified, commit it immediately — do not wait for the user to ask. Batching multiple units into one commit, or finishing all work before committing, are both violations of this rule.
 
 **Unit of work:** one coherent, independently revertable change — one domain's refactor, one feature, one bugfix, one test suite expansion for one concern, one config change. Never two unrelated concerns in the same commit. A TDD red-green-refactor cycle alone is not a commit boundary; commit when the full intended change is complete and tests pass. If the working tree has unrelated changes, leave them unstaged — commit the current unit first, then continue.
 
