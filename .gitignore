@@ -1,4 +1,5 @@
 .agents/*.local.*
+.github/setup-state.json
 node_modules/
-bin
+dist
 hooks
