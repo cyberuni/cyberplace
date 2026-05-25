@@ -64,7 +64,7 @@ export function findSkillSource(skillName: string, root: string): SkillSourceRes
 	try {
 		const result = spawnSync('npx', ['--yes', 'skills', 'find', skillName], {
 			encoding: 'utf8',
-			timeout: 10_000,
+			timeout: 4_000,
 			env: { ...process.env, NO_COLOR: '1', CI: '1' },
 		})
 		const out = (result.stdout ?? '') + (result.stderr ?? '')
