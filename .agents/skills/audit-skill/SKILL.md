@@ -29,6 +29,16 @@ npx cyber-skills@<version> audit validate --path skills/my-skill
 
 This command is also wired into CI (`pull-request` workflow via `pnpm verify`). Full quality review (Q6–Q12, E3–E5, E7–E8, P1–P3) still requires running this agent skill. Q12 (script stdout hygiene) is agent-only.
 
+### Skill design discipline
+
+Checks Q6–Q9 enforce the **skill-design** discipline. Load it before evaluating content quality:
+
+```bash
+npx cyber-skills@<version> discipline show skill-design
+```
+
+Read stdout as the authoritative rules. Map findings to discipline sections (core principles, progressive disclosure, deterministic extraction, description and structure).
+
 ### Agent-tool output discipline
 
 Checks Q10–Q12 enforce the **agent-tool-output** discipline. When auditing a skill with `scripts/` or CLI instructions, load the discipline first:
@@ -154,19 +164,33 @@ Warn if the skill body contains only a description and no actionable steps, numb
 Fail if the `description` frontmatter value exceeds 120 characters. Long descriptions are truncated in the agent context window, which defeats the purpose of the trigger phrase. Drop trailing example phrases ("Use when asked to 'foo', 'bar'...") — those belong in the skill body, not the description.
 
 **Q6 — No baked-in stack assumptions (MEDIUM)**
+
+Canonical definition: **skill-design** discipline § No baked-in opinions.
+
 Warn if the skill hardcodes a specific tool, runtime, or environment that may not match the user's setup, without first detecting it at runtime. Examples:
+
 - Assumes `npm` without checking for `pnpm`/`yarn`/`bun`
 - Assumes VS Code without checking the editor
 - Assumes Linux paths on a potentially Windows/macOS system
+
 The skill should detect the user's setup at runtime or explicitly scope itself to a specific stack in its description.
 
 **Q7 — Single workflow scope (MEDIUM)**
+
+Canonical definition: **skill-design** discipline § Narrow and composable.
+
 Warn if the skill body appears to implement more than one distinct workflow or covers multiple unrelated concerns. Each skill should do one thing. Signals: multiple top-level "## Workflow" sections with unrelated goals, or a description that lists many unrelated capabilities separated by "and also".
 
 **Q8 — No obvious instructions (LOW)**
+
+Canonical definition: **skill-design** discipline § Decisions over documentation and § Description and structure.
+
 Warn if the body contains instructions that any capable model would already follow without being told — e.g., "write clean code", "be helpful", "provide useful error messages", "write tests for new code". These add noise and dilute the signal of the actual decisions the skill encodes.
 
 **Q9 — Description matches content (LOW)**
+
+Canonical definition: **skill-design** discipline § Description and structure.
+
 Warn if the `description` claims a capability the skill body does not deliver, or if the body covers significantly more than the description promises.
 
 **Q10 — No stdout-as-data in SKILL.md (HIGH)**

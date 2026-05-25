@@ -9,16 +9,39 @@ export interface DisciplineMeta {
 	body: string
 }
 
+const DISCIPLINE_NAME_PATTERN = /^[a-z0-9-]+$/
+
 function disciplinesDir(): string {
 	return path.join(getPackageRoot(), 'disciplines')
 }
 
-function disciplinePath(name: string): string {
-	const base = path.basename(name)
-	if (base !== name || !/^[a-z0-9-]+$/.test(name)) {
+export function normalizeDisciplineName(name: string): string {
+	const trimmed = name.trim()
+	if (/[/\\]/.test(trimmed)) {
 		throw new Error(`Invalid discipline name: ${name}`)
 	}
-	return path.join(disciplinesDir(), `${name}.md`)
+
+	const base = path.basename(trimmed)
+	if (!base) {
+		throw new Error(`Invalid discipline name: ${name}`)
+	}
+
+	const normalized = base
+		.toLowerCase()
+		.replace(/[\s_]+/g, '-')
+		.replace(/-+/g, '-')
+		.replace(/^-+|-+$/g, '')
+
+	if (!normalized || !DISCIPLINE_NAME_PATTERN.test(normalized)) {
+		throw new Error(`Invalid discipline name: ${name}`)
+	}
+
+	return normalized
+}
+
+function disciplinePath(name: string): string {
+	const normalized = normalizeDisciplineName(name)
+	return path.join(disciplinesDir(), `${normalized}.md`)
 }
 
 function parseTitle(body: string, fallback: string): string {
@@ -49,10 +72,11 @@ export function listDisciplines(): DisciplineMeta[] {
 }
 
 export function loadDiscipline(name: string): DisciplineMeta {
+	const normalized = normalizeDisciplineName(name)
 	const filePath = disciplinePath(name)
 	if (!fs.existsSync(filePath)) {
-		throw new Error(`Unknown discipline: ${name}`)
+		throw new Error(`Unknown discipline: ${normalized}`)
 	}
 	const body = fs.readFileSync(filePath, 'utf8')
-	return { name, title: parseTitle(body, titleFromName(name)), body }
+	return { name: normalized, title: parseTitle(body, titleFromName(normalized)), body }
 }

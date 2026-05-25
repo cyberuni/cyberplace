@@ -144,3 +144,5 @@ Write all content in en-US (American English spelling: "color", "organize", "beh
 - **Decisions over documentation** — encode what to decide and how, not reference material the model already knows
 - **Narrow and composable** — one workflow per skill; user-facing skills match situations, sub-skills are called explicitly by other skills
 - **No baked-in opinions** — detect the user's setup at runtime rather than assuming a specific stack
+
+Full authoring rules: `npx cyber-skills@<version> discipline show skill-design` (after build in this repo).
