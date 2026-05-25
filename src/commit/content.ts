@@ -2,12 +2,15 @@ import { parseMarkdownSection } from '../hook/extract-section.js'
 
 const COMMIT_DISCIPLINE_HEADING = '## Commit Discipline'
 
-export function formatCommitDisciplineSection(commitSkill: string): string {
-	return `${COMMIT_DISCIPLINE_HEADING}
+export interface CommitDisciplineOptions {
+	autoCommit?: boolean
+}
 
-**Auto-commit rule:** When a unit of work is complete and verified, commit it immediately — do not wait for the user to ask. Batching multiple units into one commit, or finishing all work before committing, are both violations of this rule.
+const AUTO_COMMIT_RULE = `**Auto-commit rule:** When a unit of work is complete and verified, commit it immediately — do not wait for the user to ask. Batching multiple units into one commit, or finishing all work before committing, are both violations of this rule.
 
-**Unit of work:** one coherent, independently revertable change — one domain's refactor, one feature, one bugfix, one test suite expansion for one concern, one config change. Never two unrelated concerns in the same commit. A TDD red-green-refactor cycle alone is not a commit boundary; commit when the full intended change is complete and tests pass. If the working tree has unrelated changes, leave them unstaged — commit the current unit first, then continue.
+`
+
+const BASE_BODY = (commitSkill: string) => `**Unit of work:** one coherent, independently revertable change — one domain's refactor, one feature, one bugfix, one test suite expansion for one concern, one config change. Never two unrelated concerns in the same commit. A TDD red-green-refactor cycle alone is not a commit boundary; commit when the full intended change is complete and tests pass. If the working tree has unrelated changes, leave them unstaged — commit the current unit first, then continue.
 
 - Conventional Commits: \`feat:\`, \`fix:\`, \`refactor:\`, \`test:\`, \`docs:\`, \`chore:\`
 - One concern per commit; never batch unrelated changes
@@ -16,6 +19,15 @@ export function formatCommitDisciplineSection(commitSkill: string): string {
 - Never commit with red tests; run validation commands first
 - Use the \`${commitSkill}\` skill when committing (staging, splitting, message writing)
 `
+
+export function formatCommitDisciplineSection(
+	commitSkill: string,
+	options: CommitDisciplineOptions = {},
+): string {
+	const body = (options.autoCommit ? AUTO_COMMIT_RULE : '') + BASE_BODY(commitSkill)
+	return `${COMMIT_DISCIPLINE_HEADING}
+
+${body}`.trimEnd() + '\n'
 }
 
 /** Extract body of ## Commit Discipline from AGENTS.md, or null if missing. */
@@ -24,8 +36,12 @@ export function parseCommitDisciplineSection(agentsMd: string): string | null {
 }
 
 /** Replace or append the Commit Discipline section in AGENTS.md. */
-export function mergeCommitDisciplineIntoAgentsMd(agentsMd: string, commitSkill: string): string {
-	const section = formatCommitDisciplineSection(commitSkill)
+export function mergeCommitDisciplineIntoAgentsMd(
+	agentsMd: string,
+	commitSkill: string,
+	options: CommitDisciplineOptions = {},
+): string {
+	const section = formatCommitDisciplineSection(commitSkill, options)
 	const existing = parseCommitDisciplineSection(agentsMd)
 
 	if (existing !== null) {
