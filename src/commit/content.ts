@@ -1,4 +1,4 @@
-export const COMMIT_DISCIPLINE_HEADING = '## Commit Discipline'
+const COMMIT_DISCIPLINE_HEADING = '## Commit Discipline'
 
 export function formatCommitDisciplineSection(commitSkill: string): string {
 	return `${COMMIT_DISCIPLINE_HEADING}

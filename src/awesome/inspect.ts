@@ -58,7 +58,7 @@ async function fetchRepoSkills(repo: string): Promise<SkillSummary[]> {
 	return results
 }
 
-export function readLocalRepoSkills(cwd: string): SkillSummary[] {
+function readLocalRepoSkills(cwd: string): SkillSummary[] {
 	const skillsDir = path.join(cwd, 'skills')
 	if (!fs.existsSync(skillsDir)) return []
 	return fs
