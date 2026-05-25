@@ -2,6 +2,8 @@
 
 Versioned agent-tool contracts shipped with the `cyber-skills` npm package. Content is frozen to the installed package version.
 
+These artifacts are **governance** documents per [ADR-0001](../docs/adr/0001-governance-vs-discipline-taxonomy.md); the CLI name `discipline` is pending rename.
+
 ## Consumption
 
 Do not link to these files from SKILL.md. Load disciplines through the CLI:

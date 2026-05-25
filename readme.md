@@ -145,6 +145,8 @@ node bin/cyber-skills.mjs audit validate --path skills/my-skill
 
 Full quality review (Q6–Q12, E3–E5, E7–E8, P1–P3) requires running the `audit-skill` agent skill.
 
+Architecture decisions are recorded in [docs/adr/](docs/adr/) — see [ADR-0001: Governance vs Discipline Taxonomy](docs/adr/0001-governance-vs-discipline-taxonomy.md).
+
 <!-- AWESOME-SKILLS:START -->
 ## Awesome Skills
 
