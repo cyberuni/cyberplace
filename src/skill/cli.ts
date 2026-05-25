@@ -1,5 +1,6 @@
 import { Command } from 'commander'
 
+import { ROOT_OPTION, resolveRoot } from '../cli-options.js'
 import { output, printFields } from '../output.js'
 import { findSkillSource } from './source.js'
 
@@ -9,10 +10,10 @@ export function skillCommand(): Command {
 	cmd
 		.command('source <name>')
 		.description('Find the source repo of an installed skill')
-		.option('--root <path>', 'Repo root', process.cwd())
+		.addOption(ROOT_OPTION)
 		.option('--json', 'Output raw JSON')
-		.action((name: string, opts: { root: string }) => {
-			const result = findSkillSource(name, opts.root)
+		.action((name: string, opts: { root?: string }) => {
+			const result = findSkillSource(name, resolveRoot(opts.root))
 			output(result, () =>
 				printFields({
 					name: result.name,

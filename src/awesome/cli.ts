@@ -1,5 +1,6 @@
 import { Command } from 'commander'
 
+import { ROOT_OPTION, resolveRoot } from '../cli-options.js'
 import { output, printFields, printTable } from '../output.js'
 import { inspectSkillsRepo } from './inspect.js'
 import { findAwesomeSkills } from './lib.js'
@@ -13,12 +14,12 @@ export function awesomeCommand(): Command {
 		.command('find [query...]')
 		.description('Search for awesome skills')
 		.option('--limit <n>', 'Maximum results', '8')
-		.option('--root <path>', 'Repo root', process.cwd())
+		.addOption(ROOT_OPTION)
 		.option('--json', 'Output raw JSON')
-		.action(async (queryWords: string[], opts: { limit: string; root: string }) => {
+		.action(async (queryWords: string[], opts: { limit: string; root?: string }) => {
 			const query = queryWords.join(' ')
 			const limit = Math.max(1, Number(opts.limit) || 8)
-			const results = (await findAwesomeSkills(opts.root, query)).slice(0, limit)
+			const results = (await findAwesomeSkills(resolveRoot(opts.root), query)).slice(0, limit)
 
 			output(results, () => {
 				if (results.length === 0) {
@@ -43,10 +44,10 @@ export function awesomeCommand(): Command {
 		.command('inspect <repo>')
 		.description('Inspect skills in a GitHub repo')
 		.option('--query <term>', 'Filter skills by term')
-		.option('--root <path>', 'Repo root', process.cwd())
+		.addOption(ROOT_OPTION)
 		.option('--json', 'Output raw JSON')
-		.action(async (repo: string, opts: { query?: string; root: string }) => {
-			const skills = await inspectSkillsRepo(repo, opts.root)
+		.action(async (repo: string, opts: { query?: string; root?: string }) => {
+			const skills = await inspectSkillsRepo(repo, resolveRoot(opts.root))
 			const filtered = opts.query
 				? skills.filter((s) =>
 						`${s.directory} ${s.name} ${s.description}`.toLowerCase().includes(opts.query!.toLowerCase()),
@@ -62,10 +63,10 @@ export function awesomeCommand(): Command {
 	cmd
 		.command('render')
 		.description('Render awesome-skills.json into readme.md')
-		.option('--root <path>', 'Repo root', process.cwd())
+		.addOption(ROOT_OPTION)
 		.option('--json', 'Output raw JSON')
-		.action((opts: { root: string }) => {
-			const result = renderAwesomeList(opts.root)
+		.action((opts: { root?: string }) => {
+			const result = renderAwesomeList(resolveRoot(opts.root))
 			output(result, () => printFields({ readmePath: result.readmePath, changed: String(result.changed) }))
 		})
 
@@ -74,10 +75,10 @@ export function awesomeCommand(): Command {
 	sources
 		.command('list')
 		.description('List effective awesome sources')
-		.option('--root <path>', 'Repo root', process.cwd())
+		.addOption(ROOT_OPTION)
 		.option('--json', 'Output raw JSON')
-		.action((opts: { root: string }) => {
-			const result = listSources(opts.root)
+		.action((opts: { root?: string }) => {
+			const result = listSources(resolveRoot(opts.root))
 			output(result, () => {
 				if (result.sources.length === 0) {
 					console.log('No awesome sources configured.')
@@ -97,12 +98,12 @@ export function awesomeCommand(): Command {
 			.description(`${subcmd.charAt(0).toUpperCase() + subcmd.slice(1)} an awesome source`)
 			.requiredOption('--layer <layer>', 'Layer: local | repo | global')
 			.option('--path <path>', 'JSON file path in the repo', 'awesome-skills.json')
-			.option('--root <path>', 'Repo root', process.cwd())
+			.addOption(ROOT_OPTION)
 			.option('--json', 'Output raw JSON')
-			.action((repo: string, opts: { layer: string; path: string; root: string }) => {
+			.action((repo: string, opts: { layer: string; path: string; root?: string }) => {
 				try {
 					const layer = resolveLayer(opts.layer)
-					const result = mutateSources(subcmd, opts.root, layer, repo, opts.path)
+					const result = mutateSources(subcmd, resolveRoot(opts.root), layer, repo, opts.path)
 					output(result, () => {
 						console.log(result.message)
 						if (result.defaultDisabled)

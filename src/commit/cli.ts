@@ -1,5 +1,6 @@
 import { Command } from 'commander'
 
+import { ROOT_OPTION, resolveRoot } from '../cli-options.js'
 import { output, printFields } from '../output.js'
 import { injectCommitDiscipline } from './inject.js'
 import {
@@ -17,7 +18,7 @@ export function commitCommand(): Command {
 		.command('inject')
 		.description('Inject or update ## Commit Discipline in AGENTS.md')
 		.requiredOption('--commit-skill <name>', 'Commit helper skill name')
-		.option('--root <path>', 'Repo root', process.cwd())
+		.addOption(ROOT_OPTION)
 		.option('--dry-run', 'Preview without writing')
 		.option('--verbose', 'Human-readable status on stderr')
 		.option('--json', 'Output raw JSON')
@@ -34,16 +35,16 @@ export function commitCommand(): Command {
 	cmd
 		.command('resolve-skill')
 		.description('Detect installed commit helper skills')
-		.option('--root <path>', 'Repo root', process.cwd())
+		.addOption(ROOT_OPTION)
 		.option('--check', 'Exit 1 if no commit skill detected')
 		.option('--recommend', 'Print recommended install command and exit')
 		.option('--json', 'Output raw JSON')
-		.action((opts: { root: string; check: boolean; recommend: boolean }) => {
+		.action((opts: { root?: string; check: boolean; recommend: boolean }) => {
 			if (opts.recommend) {
 				process.stdout.write(`${RECOMMENDED_INSTALL}\n`)
 				process.exit(0)
 			}
-			const detected = detectCommitSkills(opts.root)
+			const detected = detectCommitSkills(resolveRoot(opts.root))
 			const result = {
 				detected,
 				recommended: RECOMMENDED_COMMIT_SKILL,
