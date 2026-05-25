@@ -25,7 +25,7 @@ npx cyber-skills@<version> audit validate
 npx cyber-skills@<version> audit validate --path skills/my-skill
 ```
 
-This command can be used in CI—for example, in a validate job that runs before merge. Full quality review (Q6–Q12, E3–E5, E7–E8, P1–P3) still requires running this agent skill. Q12 (script stdout hygiene) is agent-only.
+This command can be used in CI—for example, in a validate job that runs before merge. Full quality review (Q6–Q13, E3–E5, E7–E8, P1–P3) still requires running this agent skill. Q12–Q13 (script stdout hygiene, no rationale sections) are agent-only.
 
 ### Skill design governance
 
@@ -206,6 +206,12 @@ If `scripts/` exists and any script uses interactive prompts (`readline`, `[y/N]
 
 **Q12 — Script stdout hygiene (MEDIUM)**
 For each file in `scripts/`, warn if `console.info` or `console.log` emits prose outside a `--verbose` branch. Contract output must use `process.stdout.write` with JSON. Partially covered by Q10–Q11 in `audit validate`; full review requires reading script control flow.
+
+**Q13 — No rationale sections (LOW)**
+
+Canonical definition: **skill-design** governance § Structure and § Anti-patterns.
+
+Warn if the skill body contains `## Why`, `## Rationale`, `## Background`, or `## Context` headings, or sustained causal explanation ("because…") that belongs in an ADR rather than executable workflow steps.
 
 ---
 

@@ -50,6 +50,7 @@ Adopt **agent-first authoring** for all Governance, Discipline, and Skill docume
 | **Dense and concise** | Imperative rules; no tutorials, surveys, or "why we chose X" prose in the body |
 | **Self-contained** | Agent completes the workflow from this document alone — **no links to other repository files** (ADRs, research, other governances as paths). Load related standards via `governance show` stdout, not checkout paths. |
 | **References at end** | Optional `## References` after normative content — `governance show` commands, external HTTPS URLs, and skill-sibling files (`reference.md` in the same skill folder) only |
+| **No rationale sections** | Do not include `## Why`, `## Rationale`, `## Background`, or `## Context` sections. One-line **scope** ("Apply when…") is allowed; causal explanation ("because agents parse stdout…") is not. Rationale belongs in ADRs; evidence belongs in research. |
 
 **Document structure template:**
 
@@ -94,9 +95,11 @@ Option 3 separates the **why** (ADR) from the **what** (governances, init skills
 
 ## Implementation Notes
 
-- Refactor `governances/skill-design.md`, `governances/skill-repo-structure.md`, and `governances/agent-tool-output.md` as exemplars.
+- Refactor `governances/skill-design.md`, `governances/skill-repo-structure.md`, and `governances/agent-tool-output.md` as exemplars — remove all `## Why` sections and rationale prose; move glossary tables out of governance bodies.
 - Split cyber-skills CLI output patterns out of `governances/agent-tool-output.md` into [ADR-0004](0004-cyber-skills-cli-output.md).
 - Update `skills/init-commit-discipline/SKILL.md`, `skills/init/SKILL.md`, and `src/commit/content.ts` for Discipline section shape.
+- Align [ADR-0001](0001-governance-vs-discipline-taxonomy.md) governance content boundaries with this ADR (no ADR/research path links in governances).
+- Add governance load tests and audit-skill Q13 to catch rationale sections in shipped artifacts.
 - Cross-link from `governances/README.md`, `AGENTS.md`, and `docs/research/README.md`.
 
 ## Related Decisions

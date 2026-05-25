@@ -2,10 +2,6 @@
 
 Rules for scripts, hooks, and CLIs that AI agents invoke. Apply when authoring skill `scripts/` or documenting CLI commands in SKILL.md.
 
-## Why
-
-Agents parse stdout programmatically. Mixing human prose, progress spinners, or prompts on stdout causes misreads, brittle parsing, and silent failures. Separate machine contracts from human diagnostics.
-
 ## Agent-native tools
 
 Use for skill `scripts/`, hook runtime commands, and any tool where the primary consumer is always an agent.

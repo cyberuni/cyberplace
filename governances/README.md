@@ -28,8 +28,9 @@ Governances load into agent context on demand. Write them **agent-first**:
 - **Dense and concise** — imperative must / should / do not rules; no tutorials or surveys in the body
 - **Self-contained** — no links to other repository files; agent completes the workflow from stdout alone
 - **References at end** — cross-governance `governance show` commands and external HTTPS URLs only in `## References`
+- **No rationale sections** — do not include `## Why`, `## Rationale`, `## Background`, or causal "because…" prose; ADRs record **why**, governances record **what**
 
-Do not embed reference-repo catalogs, issue surveys, or illustrative examples in governances. Keep surveys and decision rationale outside agent-loaded standards.
+Do not embed reference-repo catalogs, issue surveys, or illustrative examples in governances. Keep surveys and decision rationale in ADRs and research.
 
 ## Available governances
 

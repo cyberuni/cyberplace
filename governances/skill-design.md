@@ -2,20 +2,14 @@
 
 Rules for authoring SKILL.md files that agents load on demand. Apply when creating, generalizing, or auditing a skill — before adding scripts or CLI instructions.
 
-## Why
+## Structure
 
-Skills encode **decisions** — what to choose and how — not reference material the model already knows. A good skill is narrow, composable, and detects the user's setup at runtime instead of assuming a stack.
+SKILL.md must be agent-first: dense normative rules the agent executes without opening linked files first.
 
-## Agent-first
-
-SKILL.md is **agent-first**: dense normative rules the agent can execute without opening linked files first.
-
-| Term | Meaning |
-| --- | --- |
-| **Agent-first** | Primary reader is an LLM agent executing the doc |
-| **Dense and concise** | Imperative rules; no tutorials, surveys, or rationale prose in the body |
-| **Self-contained** | Agent completes the workflow from this document alone — **no links to other repository files** |
-| **References at end** | Optional `## References` after normative content — on-demand standards, external HTTPS URLs, sibling files in the same skill folder only |
+- Do not include `## Why`, `## Rationale`, `## Background`, or `## Context` sections.
+- Do not include causal explanation ("because…") or rationale prose in the body.
+- One-line scope ("Apply when…") is allowed at the top.
+- Put optional depth in `## References` at the end — `governance show` commands, external HTTPS URLs, sibling files in the same skill folder only.
 
 **SKILL.md structure:**
 
@@ -27,7 +21,7 @@ SKILL.md is **agent-first**: dense normative rules the agent can execute without
 ## References                    # on-demand standards, external URLs, reference.md — no repo file paths
 ```
 
-Do not embed References content or links to sibling files mid-workflow. Put optional depth in **References** at the end.
+Do not embed References content or links to sibling files mid-workflow.
 
 ## Core principles
 
@@ -80,7 +74,7 @@ Keep SKILL.md concise — essential workflow and decision logic only.
 When a step produces the same output given the same input and needs no judgment, move it out of prose:
 
 - Prefer an **existing project CLI** or a small **script** in the skill's `scripts/` directory.
-- The skill retains **when** and **why**; the tool retains **how**.
+- The skill retains **when** to invoke the tool; the tool retains **how**.
 - Candidates: text manipulation, file I/O, structured data transforms, validation with fixed rules.
 
 Do not re-derive deterministic steps in natural language each run.
@@ -99,6 +93,13 @@ When a skill includes `scripts/` or documents CLI commands agents run, load **ag
 
 - Include actionable steps, numbered instructions, or decision logic — not just a restatement of the description.
 - Do not instruct generic behavior the model already follows ("write clean code", "be helpful").
+
+## Anti-patterns
+
+- Rationale or "because…" prose in the body
+- `## Why`, `## Rationale`, `## Background`, or `## Context` sections
+- Links to other repository files mid-workflow
+- Mid-body links to sibling skill files (use References at end)
 
 ## References
 

@@ -4,10 +4,6 @@ Rules for organizing a **repository that ships one or more Agent Skills** — di
 
 This governance covers **repo layout**. Per-skill authoring rules live in **skill-design**; per-skill format baseline is the agentskills.io specification (see References).
 
-## Why
-
-The agentskills spec defines **one skill folder**, not how to run a skill **library** repo. Popular collections diverge (flat `skills/`, plugin bundles, npm toolchains). This governance encodes **archetypes** and **required vs optional** artifacts so agents and contributors scaffold consistently — without forcing every repo to match cyber-skills' full toolchain.
-
 ## Repo archetypes
 
 Pick the **primary** archetype. Hybrid repos are fine if each layer is intentional.
@@ -137,6 +133,8 @@ Prefer **digest + lockfile** over ad hoc path scraping for reproducible installs
 - Duplicating the same skill in `skills/` and `.agents/skills/` without a documented reason
 - Bloating AGENTS.md with full governance bodies — use `governance show` pointers in References instead
 - Embedding reference-repo catalogs or surveys in governances — keep those outside agent-loaded standards
+- Rationale or "because…" prose in governances, discipline sections, or public skills
+- `## Why`, `## Rationale`, `## Background`, or `## Context` sections in agent-loaded artifacts
 - Linking to repository files (ADRs, research, other governances as paths) from governances, discipline sections, or public skills
 - Assuming `node_modules` or install paths for loading governances from other repos
 - Running no CI on skill-only repos that accept external PRs
@@ -160,7 +158,7 @@ Use **`init-skill-repo`** (when shipped) to scaffold and wire disciplines for th
 | Maintained / tooling | `npx cyber-skills@<version> audit validate` in CI |
 | Tooling library | Full repo verify command documented in AGENTS.md |
 
-Full quality review (Q6–Q12, E3–E8): run the **audit-skill** agent skill after mechanical validation passes.
+Full quality review (Q6–Q13, E3–E8): run the **audit-skill** agent skill after mechanical validation passes.
 
 ## References
 

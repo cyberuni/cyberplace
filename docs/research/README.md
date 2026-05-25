@@ -14,7 +14,7 @@ Governances, Discipline sections, and public Skills follow **agent-first** autho
 
 ## Naming
 
-Use `YYYY-MM-<topic>.md` (for example `2026-05-skill-ecosystem-landscape.md`). One topic per file. When research leads to a decision, link the ADR and governance from the research file and vice versa.
+Use `YYYY-MM-<topic>.md` (for example `2026-05-skill-ecosystem-landscape.md`). One topic per file. When research leads to a decision, link the ADR from the research file; ADRs link to the governance they inform.
 
 ## Index
 
@@ -27,5 +27,5 @@ Use `YYYY-MM-<topic>.md` (for example `2026-05-skill-ecosystem-landscape.md`). O
 
 1. Create `docs/research/YYYY-MM-<topic>.md` with sources, findings, and open questions.
 2. Add a row to the index table above.
-3. Link from the relevant ADR and/or governance **Related** section.
+3. Link from the relevant **ADR** (not from governance bodies — governances do not link back to repo paths).
 4. When findings become policy, extract the decision into a governance or ADR — do not let research and governance diverge silently.

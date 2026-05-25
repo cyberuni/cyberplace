@@ -53,3 +53,13 @@ test('loadGovernance rejects invalid name characters', () => {
 	expect(() => loadGovernance('../escape')).toThrow(/Invalid governance name/)
 	expect(() => normalizeGovernanceName('')).toThrow(/Invalid governance name/)
 })
+
+test('shipped governances exclude rationale sections', () => {
+	for (const { name } of listGovernances()) {
+		const governance = loadGovernance(name)
+		expect(governance.body, name).not.toMatch(/^## Why/m)
+		expect(governance.body, name).not.toMatch(/^## Rationale/m)
+		expect(governance.body, name).not.toMatch(/^## Background/m)
+		expect(governance.body, name).not.toMatch(/^## Context/m)
+	}
+})

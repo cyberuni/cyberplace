@@ -79,13 +79,15 @@ Governances are **loaded into agent context** via `governance show`. They must e
 
 - Normative rules (must / should / do not)
 - Structural templates that define layout (for example directory trees for an archetype)
-- Pointers to other governances, ADRs, or research paths — one line, not duplicated content
+- Cross-governance loads via `governance show` commands in `## References` only (per [ADR-0003](0003-agent-first-authoring.md))
 
 **In governances, exclude:**
 
 - Reference repo catalogs (`anthropics/skills`, `trailofbits/skills`, …)
 - Ecosystem surveys and issue-thread summaries
 - Illustrative “for example” repo links and long worked examples
+- Rationale prose and `## Why`-style sections (`## Rationale`, `## Background`, `## Context`)
+- Links to repository files (ADRs, research, other governances as paths)
 
 **Where to put excluded content:**
 
@@ -93,7 +95,7 @@ Governances are **loaded into agent context** via `governance show`. They must e
 - Policy decisions and trade-offs → ADRs (this directory)
 - Authoring reminder → [`governances/README.md`](../../governances/README.md)
 
-When research informs a governance, extract the **rule** into the governance and keep the **evidence** in research. Link both ways; do not let them diverge silently.
+When research informs a governance, extract the **rule** into the governance and keep the **evidence** in research. ADRs and research link **to** governances; governances do not link back to repo paths. Do not let rules and evidence diverge silently.
 
 ## Rationale
 

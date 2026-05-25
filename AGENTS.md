@@ -71,7 +71,7 @@ pnpm test:audit
 node bin/cyber-skills.mjs audit validate --path skills/my-skill
 ```
 
-Full quality review (Q6–Q12, E3–E5, E7–E8, P1–P3) requires running the `audit-skill` agent skill.
+Full quality review (Q6–Q13, E3–E5, E7–E8, P1–P3) requires running the `audit-skill` agent skill.
 
 Run a single test file:
 
@@ -147,6 +147,7 @@ Write all content in en-US (American English spelling: "color", "organize", "beh
 ## Skill Design Principles
 
 - **Agent-first** — dense, self-contained bodies; no links to other repository files; optional depth in References via `governance show` or skill-sibling files
+- **No rationale prose** — do not include `## Why` sections or causal "because…" explanation in skill bodies; ADRs record why
 - **Decisions over documentation** — encode what to decide and how, not reference material the model already knows
 - **Narrow and composable** — one workflow per skill; user-facing skills match situations, sub-skills are called explicitly by other skills
 - **No baked-in opinions** — detect the user's setup at runtime rather than assuming a specific stack
