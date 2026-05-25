@@ -138,3 +138,37 @@ test('hook run --glob emits SessionStart JSON', () => {
 		fs.rmSync(root, { recursive: true, force: true })
 	}
 })
+
+test('discipline list includes agent-tool-output', () => {
+	const result = run('discipline', 'list')
+	expect(result.status).toBe(0)
+	expect(result.stdout.trim().split('\n')).toContain('agent-tool-output')
+})
+
+test('discipline list --json returns structured output', () => {
+	const result = run('discipline', 'list', '--json')
+	expect(result.status).toBe(0)
+	const parsed = JSON.parse(result.stdout) as { disciplines: { name: string; title: string }[] }
+	expect(parsed.disciplines.some((d) => d.name === 'agent-tool-output')).toBe(true)
+})
+
+test('discipline show prints markdown body', () => {
+	const result = run('discipline', 'show', 'agent-tool-output')
+	expect(result.status).toBe(0)
+	expect(result.stdout).toMatch(/# Agent Tool Output/)
+	expect(result.stdout).toMatch(/Stdout is the machine contract/)
+})
+
+test('discipline show --json returns structured output', () => {
+	const result = run('discipline', 'show', 'agent-tool-output', '--json')
+	expect(result.status).toBe(0)
+	const parsed = JSON.parse(result.stdout) as { name: string; title: string; body: string }
+	expect(parsed.name).toBe('agent-tool-output')
+	expect(parsed.body).toMatch(/Agent Tool Output/)
+})
+
+test('discipline show unknown name exits non-zero', () => {
+	const result = run('discipline', 'show', 'missing-discipline')
+	expect(result.status).toBe(1)
+	expect(result.stderr).toMatch(/Unknown discipline/)
+})

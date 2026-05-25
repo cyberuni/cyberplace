@@ -59,7 +59,7 @@ pnpm lint        # check only
 pnpm check       # check and auto-fix
 ```
 
-Audit all skills (runs S1–S5, Q1–Q5, Q10, E1–E2, E6 checks mechanically):
+Audit all skills (runs S1–S5, Q1–Q5, Q10–Q11, E1–E2, E6 checks mechanically):
 
 ```bash
 pnpm test:audit
@@ -68,7 +68,7 @@ pnpm test:audit
 node bin/cyber-skills.mjs audit validate --path skills/my-skill
 ```
 
-Full quality review (Q6–Q11, E3–E5, E7–E8, P1–P3) requires running the `audit-skill` agent skill.
+Full quality review (Q6–Q12, E3–E5, E7–E8, P1–P3) requires running the `audit-skill` agent skill.
 
 Run a single test file:
 
@@ -90,9 +90,10 @@ This repo is a skill library and CLI tool for AI agents (Claude Code, Cursor, Co
 
 - `skills/` — public skills shipped with the package; users install via `npx skills add cyberuni/cyber-skills`
 - `.agents/skills/` — repo-internal skills for contributor workflows (changesets, security PRs, repo renames); all must have `metadata: internal: true`
-- `src/` — TypeScript source; domain folders: `audit/`, `awesome/`, `commit/`, `hook/`, `skill/`
+- `src/` — TypeScript source; domain folders: `audit/`, `awesome/`, `commit/`, `discipline/`, `hook/`, `skill/`
+- `disciplines/` — version-pinned agent-tool contracts shipped with the npm package; load via `cyber-skills discipline show <name>`
 - `bin/cyber-skills.mjs` — slim tracked shim; delegates to `dist/cli.mjs`
-- `dist/cli.mjs` — single bundled CLI (gitignored, built by tsdown); commands: `audit`, `awesome`, `commit`, `hook`, `skill`
+- `dist/cli.mjs` — single bundled CLI (gitignored, built by tsdown); commands: `audit`, `awesome`, `commit`, `discipline`, `hook`, `skill`
 - `skills/` — public skills shipped with the package
 
 **Skill lifecycle:** Skills are authored in `skills/<name>/SKILL.md`, validated by `audit-skill`, and surfaced to agents via the `skills` CLI or `npx skills add`. Runtime behavior (commit discipline) is handled by instruction hooks registered in `.claude/settings.json` and `.cursor/hooks.json`. Local skill augmentations (`SKILL.local.md`) are applied when a skill is loaded — see **Skill Augmentations** below.
