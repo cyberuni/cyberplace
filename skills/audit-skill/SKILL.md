@@ -5,13 +5,13 @@ description: Use this skill when auditing a SKILL.md for structure, quality, and
 
 # Audit Skill
 
-Full audit of a SKILL.md file covering structure, content quality, security, and supply-chain signals. Based on OWASP Agentic Skills Top 10 and established skill design principles. The rubric applies to **general third-party skills**, including those with bundled `scripts/` directories.
+Full audit of a SKILL.md file covering structure, content quality, security, and supply-chain signals. Based on OWASP Agentic Skills Top 10 and established skill design principles. The rubric applies to **any skill**, including those with bundled `scripts/` directories.
 
 ## When to use
 
 - Before installing a third-party skill locally
 - Before committing a new or modified skill
-- When reviewing a skill for publication to skills.sh
+- When reviewing a skill for publication to `skills.sh`
 
 ## Automated checks
 
