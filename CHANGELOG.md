@@ -1,5 +1,11 @@
 # cyber-skills
 
+## 0.2.0
+
+### Minor Changes
+
+- ffeb753: Add `skill list` command with `--grep` glob filter to discover installed skills from repo, global, and package locations.
+
 ## 0.1.0
 
 ### Minor Changes
