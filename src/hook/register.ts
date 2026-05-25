@@ -34,7 +34,7 @@ interface CursorSettings {
 	[key: string]: unknown
 }
 
-export type HookStatus = 'registered' | 'already present' | 'skipped (dir not found)'
+type HookStatus = 'registered' | 'already present' | 'skipped (dir not found)'
 
 export interface HookResult {
 	agent: string
@@ -120,7 +120,7 @@ function registerCursorHook(
 	return true
 }
 
-export function registerAgentHooks(hooks: HookDefinition[], options: RegisterOptions = {}): HookResult[] {
+function registerAgentHooks(hooks: HookDefinition[], options: RegisterOptions = {}): HookResult[] {
 	const root = options.root ?? process.cwd()
 	const dryRun = options.dryRun ?? false
 	const results: HookResult[] = []
@@ -227,7 +227,7 @@ export function registerAgentHooks(hooks: HookDefinition[], options: RegisterOpt
 	return results
 }
 
-export function hooksForSet(set: HookSet, root?: string): HookDefinition[] {
+function hooksForSet(set: HookSet, root?: string): HookDefinition[] {
 	switch (set) {
 		case 'init':
 			return getInitHooks(root)

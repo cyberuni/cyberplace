@@ -69,7 +69,7 @@ export function renderAwesomeListMarkdown(entries: Entry[]): string {
 	return sections.join('\n').trimEnd()
 }
 
-export function updateMarkedSection(content: string, markerName: string, replacement: string): string {
+function updateMarkedSection(content: string, markerName: string, replacement: string): string {
 	const start = `<!-- ${markerName}:START -->`
 	const end = `<!-- ${markerName}:END -->`
 	if (!content.includes(start) || !content.includes(end))
