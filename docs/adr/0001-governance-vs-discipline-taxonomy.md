@@ -1,0 +1,110 @@
+# ADR-0001: Governance vs Discipline Taxonomy
+
+## Status
+
+Accepted
+
+## Context
+
+cyber-skills ships two related but distinct kinds of agent guidance:
+
+1. **Version-pinned standards** — markdown contracts in `disciplines/` (for example `skill-design`, `agent-tool-output`), loaded on demand via `cyber-skills discipline show` and enforced mechanically by `audit-skill`.
+2. **Session-injected behavior** — rules such as Commit Discipline, injected at SessionStart through the `commit-discipline` hook and documented in AGENTS.md.
+
+Both are currently labeled **discipline**. That overloads one word for two different mechanisms:
+
+| Mechanism | Load model | Authority model | Current naming |
+| --- | --- | --- | --- |
+| Standards | On demand per workflow | Version-pinned, auditable, stdout is source of truth | `disciplines/`, `discipline show` |
+| Behavior | Every session (when hook registered) | Habitual, ambient context | `commit-discipline`, Commit Discipline |
+
+The standards layer behaves like governance (canonical rules, audit enforcement, enterprise-familiar vocabulary). The behavior layer behaves like discipline (operating habits, self-regulation, lighter tone). Using one term for both creates confusion for contributors and obscures the architectural split.
+
+## Decision Drivers
+
+- **Clear separation** between load-on-demand standards and always-on session behavior.
+- **Auditability** — standards must be version-pinned and treated as authoritative by audit tooling.
+- **Natural phrasing** for existing commit hooks — "commit discipline" already reads correctly.
+- **Appropriate tone** — avoid compliance-theater language for daily agent habits.
+- **Enterprise clarity** where standards are referenced in audit and authoring workflows.
+
+## Considered Options
+
+### Option 1: Discipline only (status quo)
+
+Keep **discipline** for both standards (`disciplines/`, `discipline show`) and session behavior (`commit-discipline`).
+
+- **Pros**: Unified vocabulary; no rename cost; already shipped in v0.3.0.
+- **Cons**: Ambiguous dual meaning; standards layer lacks governance semantics; harder to explain the load-on-demand vs always-on split.
+
+### Option 2: Governance only
+
+Rename everything to **governance** — standards and session behavior.
+
+- **Pros**: Strong authority signal for auditable standards; familiar to enterprise/platform teams.
+- **Cons**: "Commit governance" sounds bureaucratic and unnatural; mischaracterizes habitual session behavior as org policy.
+
+### Option 3: Split — Governance + Discipline (chosen)
+
+Use **Governance** for version-pinned auditable standards and **Discipline** for session-injected behavioral rules.
+
+- **Pros**: Clearest taxonomy; each term matches its mechanism and tone; preserves natural "commit discipline" phrasing; aligns audit layer with governance semantics.
+- **Cons**: Two concepts to learn; requires a future CLI/folder rename to align implementation with terminology.
+
+## Decision
+
+Adopt the **split taxonomy**:
+
+| Layer | Term | Definition |
+| --- | --- | --- |
+| **Governance** | Version-pinned, auditable **standards** | Canonical rules loaded on demand via CLI; stdout is source of truth; enforced by audit tooling. |
+| **Discipline** | Session-injected **behavior** | Habitual rules injected into every session via hooks; ambient operating practice. |
+
+**Tagline:** Governance defines what is correct. Discipline defines what is habitual.
+
+**Implementation status:** Terminology is accepted now. The shipped CLI (`discipline list`, `discipline show`) and directory (`disciplines/`) remain unchanged until a deliberate rename milestone documented in a follow-up ADR or changeset.
+
+## Rationale
+
+Option 3 resolves the naming collision without forcing awkward phrasing on either layer. Governance accurately describes what `audit-skill` does with canonical stdout from `skill-design` and `agent-tool-output`. Discipline accurately describes what `commit-discipline` and `init-commit-discipline` enforce — habitual agent behavior, not organizational compliance.
+
+Option 1 was a reasonable v1 shortcut but does not scale as more standards and session disciplines are added. Option 2 over-corrects toward enterprise policy language and fits poorly for session habits.
+
+## Consequences
+
+### Positive
+
+- Removes ambiguity between load-on-demand standards and always-on behavior.
+- Gives audit and authoring workflows a precise vocabulary (governance).
+- Preserves natural language for commit hooks (discipline).
+- Provides a stable conceptual model before any breaking CLI rename.
+
+### Negative
+
+- Temporary mismatch between documented taxonomy and shipped CLI/directory names until rename.
+- Contributors must learn two terms instead of one.
+
+### Risks
+
+- Partial adoption if the CLI rename is deferred indefinitely — standards docs refer to "governance" while commands still say `discipline`.
+- **Mitigation:** Cross-link ADR-0001 from `disciplines/README.md` and `readme.md`; plan explicit rename with deprecation alias.
+
+## Implementation Notes
+
+Future rename work (not part of this ADR):
+
+- Rename `disciplines/` → `governances/`, `src/discipline/` → `src/governance/`, CLI `discipline` → `governance`.
+- Update skills, tests, `package.json` `files`, and AGENTS.md references (~25 files).
+- Document as a breaking change in CHANGELOG; consider `discipline` as a deprecated alias for one release.
+- **Keep unchanged:** `commit-discipline` hook name, `init-commit-discipline` skill name, AGENTS.md "Commit Discipline" heading.
+
+Target CLI after rename:
+
+```bash
+npx cyber-skills@<version> governance list
+npx cyber-skills@<version> governance show skill-design
+```
+
+## Related Decisions
+
+- None yet (first ADR). A future ADR may record the rename execution and deprecation timeline.
