@@ -22,28 +22,59 @@ export function hookCommand(subcommand: string, root = process.cwd()): string {
 	return `npx cyber-skills@${version} ${subcommand}`
 }
 
+function extractFlagValue(command: string, flag: string): string | null {
+	const match = command.match(new RegExp(`${flag}\\s+('[^']*'|"[^"]*"|\\S+)`))
+	if (!match?.[1]) return null
+	const value = match[1]
+	if ((value.startsWith("'") && value.endsWith("'")) || (value.startsWith('"') && value.endsWith('"'))) {
+		return value.slice(1, -1)
+	}
+	return value
+}
+
+function legacyEquivalent(hookId: string, existing: string): boolean {
+	if (hookId === 'commit-discipline') {
+		return (
+			existing.includes('hook run commit-discipline') ||
+			existing.includes('run-hook commit-discipline') ||
+			(existing.includes('hook run') && existing.includes('--extract') && existing.includes('Commit Discipline'))
+		)
+	}
+	if (hookId === 'local-augmentations' || hookId === 'inject-local-augmentations') {
+		return (
+			existing.includes('hook run inject-local-augmentations') ||
+			existing.includes('run-hook inject-local-augmentations') ||
+			existing.includes('inject-local-augmentations.sh') ||
+			(existing.includes('hook run') && existing.includes('--glob') && existing.includes('SKILL.local.md'))
+		)
+	}
+	if (hookId === 'mark-internal') {
+		return (
+			existing.includes('hook run mark-internal') ||
+			existing.includes('run-hook mark-internal') ||
+			existing.includes('mark-internal.sh')
+		)
+	}
+	return false
+}
+
 /** True when an existing registered command refers to the same hook id. */
 export function commandMatchesHook(existing: string, hookId: string, expectedCommand: string): boolean {
 	if (existing === expectedCommand) return true
-	// Accept old `run-hook X` format as equivalent to new `hook run X`
-	if (
-		hookId === 'commit-discipline' &&
-		(existing.includes('hook run commit-discipline') || existing.includes('run-hook commit-discipline'))
-	)
+
+	const existingName = extractFlagValue(existing, '--name')
+	const expectedName = extractFlagValue(expectedCommand, '--name')
+	if (existingName && expectedName && existingName !== expectedName) {
+		return false
+	}
+	if (existingName && expectedName && existingName === expectedName) {
+		for (const flag of ['--file', '--glob', '--extract', '--heading'] as const) {
+			const existingValue = extractFlagValue(existing, flag)
+			const expectedValue = extractFlagValue(expectedCommand, flag)
+			if (existingValue !== expectedValue) return false
+		}
 		return true
-	if (
-		hookId === 'mark-internal' &&
-		(existing.includes('hook run mark-internal') ||
-			existing.includes('run-hook mark-internal') ||
-			existing.includes('mark-internal.sh'))
-	)
-		return true
-	if (
-		hookId === 'inject-local-augmentations' &&
-		(existing.includes('hook run inject-local-augmentations') ||
-			existing.includes('run-hook inject-local-augmentations') ||
-			existing.includes('inject-local-augmentations.sh'))
-	)
-		return true
-	return false
+	}
+
+	return legacyEquivalent(hookId, existing)
 }

@@ -25,16 +25,16 @@ test('prints error for unknown command', () => {
 	expect(result.stderr).toMatch(/unknown command/)
 })
 
-test('hook run exits non-zero for unknown hook name', () => {
-	const result = run('hook', 'run', 'nonexistent-hook')
+test('hook run requires an instruction source', () => {
+	const result = run('hook', 'run')
 	expect(result.status).toBe(1)
-	expect(result.stderr).toMatch(/Unknown hook/)
+	expect(result.stderr).toMatch(/exactly one of --file, --glob, or --extract/i)
 })
 
-test('hook register requires --set', () => {
+test('hook register requires --name and instruction source', () => {
 	const result = run('hook', 'register')
 	expect(result.status).toBe(1)
-	expect(result.stderr).toMatch(/--set/)
+	expect(result.stderr).toMatch(/--name/)
 })
 
 test('commit inject requires --commit-skill', () => {
@@ -66,14 +66,13 @@ test('skill source exits non-zero for unknown skill', () => {
 	expect(parsed.foundIn).toBeNull()
 })
 
-test('hook run commit-discipline emits SessionStart JSON', () => {
+test('hook run --extract emits SessionStart JSON', () => {
 	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'commit-hook-'))
 	try {
 		fs.writeFileSync(path.join(root, 'AGENTS.md'), '## Commit Discipline\n\n- Custom rule\n')
-		const result = spawnSync('node', [bin, 'hook', 'run', 'commit-discipline'], {
+		const result = spawnSync('node', [bin, 'hook', 'run', '--extract', 'AGENTS.md', '--heading', 'Commit Discipline'], {
 			cwd: root,
 			encoding: 'utf8',
-			input: '{}',
 			env: { ...process.env, NODE_NO_WARNINGS: '1' },
 		})
 		expect(result.status).toBe(0)
@@ -82,6 +81,28 @@ test('hook run commit-discipline emits SessionStart JSON', () => {
 		}
 		expect(payload.hookSpecificOutput.hookEventName).toBe('SessionStart')
 		expect(payload.hookSpecificOutput.additionalContext).toContain('Custom rule')
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
+})
+
+test('hook run --glob emits SessionStart JSON', () => {
+	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'glob-hook-'))
+	try {
+		const skillDir = path.join(root, '.agents', 'skills', 'demo-skill')
+		fs.mkdirSync(skillDir, { recursive: true })
+		fs.writeFileSync(path.join(skillDir, 'SKILL.local.md'), 'Use repo-specific commit rules.')
+		const result = spawnSync('node', [bin, 'hook', 'run', '--glob', '.agents/skills/**/SKILL.local.md'], {
+			cwd: root,
+			encoding: 'utf8',
+			env: { ...process.env, NODE_NO_WARNINGS: '1' },
+		})
+		expect(result.status).toBe(0)
+		const payload = JSON.parse(result.stdout.trim()) as {
+			hookSpecificOutput: { hookEventName: string; additionalContext: string }
+		}
+		expect(payload.hookSpecificOutput.additionalContext).toContain('demo-skill')
+		expect(payload.hookSpecificOutput.additionalContext).toContain('Use repo-specific commit rules.')
 	} finally {
 		fs.rmSync(root, { recursive: true, force: true })
 	}

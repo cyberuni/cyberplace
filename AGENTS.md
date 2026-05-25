@@ -65,9 +65,9 @@ This repo is a skill library and CLI tool for AI agents (Claude Code, Cursor, Co
 - `dist/cli.mjs` — single bundled CLI (gitignored, built by tsdown); commands: `audit`, `awesome`, `commit`, `hook`, `skill`
 - `skills/` — public skills shipped with the package
 
-**Skill lifecycle:** Skills are authored in `skills/<name>/SKILL.md`, validated by `audit-skill`, and surfaced to agents via the `skills` CLI or `npx skills add`. Runtime behavior (local augmentations, marking internal skills) is handled by hooks registered in `.claude/settings.json` and `.cursor/settings.json`.
+**Skill lifecycle:** Skills are authored in `skills/<name>/SKILL.md`, validated by `audit-skill`, and surfaced to agents via the `skills` CLI or `npx skills add`. Runtime behavior (local augmentations, commit discipline) is handled by instruction hooks registered in `.claude/settings.json` and `.cursor/hooks.json`.
 
-**`cyber-skills` CLI:** Used to register agent hooks and run scripts without adding it as a devDependency. In other repos, invoke via pinned npx with an exact version from `npm view cyber-skills version`. In this repo, build first, then use the local bin: `node bin/cyber-skills.mjs hook register --set init`. Idempotent.
+**`cyber-skills` CLI:** Used to register agent hooks and run scripts without adding it as a devDependency. In other repos, invoke via pinned npx with an exact version from `npm view cyber-skills version`. In this repo, build first, then use the local bin. Idempotent.
 
 ## Validation After Changes
 
@@ -135,12 +135,14 @@ When reading any `SKILL.md` file, always check whether a `SKILL.local.md` exists
 
 ```bash
 pnpm build
-node bin/cyber-skills.mjs hook register --set init
+node bin/cyber-skills.mjs hook register \
+  --name local-augmentations --event SessionStart \
+  --glob '.agents/skills/**/SKILL.local.md'
+node bin/cyber-skills.mjs hook register \
+  --name commit-discipline --event SessionStart \
+  --extract AGENTS.md --heading "Commit Discipline"
 ```
 
-That registers:
+Hooks run via `npx cyber-skills@<version> hook run --file|--glob|--extract` — one generic runner, no local script files. Re-run registration after adding agents or changing hook inputs.
 
-- **`inject-local-augmentations`** (SessionStart) — injects `.agents/skills/**/SKILL.local.md` into session context at startup
-- **`mark-internal`** (PostToolUse/afterFileEdit) — adds `metadata: internal: true` to any `SKILL.md` written under `.agents/skills/`
-
-Hooks run via `npx cyber-skills@<version> hook run <name>` — no local script files needed. Re-run registration after adding agents or changing hook sets.
+When writing or editing any `SKILL.md` under `.agents/skills/`, always include `metadata: internal: true` in the frontmatter.

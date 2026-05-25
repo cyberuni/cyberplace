@@ -40,6 +40,8 @@ metadata:
 
 Add it if missing. This prevents these skills from being accidentally surfaced as public or globally available.
 
+**Ongoing rule (replaces a PostToolUse hook):** When writing or editing any `SKILL.md` under `.agents/skills/`, always include `metadata: internal: true` in the frontmatter.
+
 Then register hooks so these behaviors apply automatically going forward, not just at init time.
 
 ## Ensure cyber-skills package
@@ -55,20 +57,18 @@ Check in order:
 
 ### Hook registration
 
-Register hooks (substitute the exact version from `npm view cyber-skills version`):
+Register a SessionStart instruction hook (substitute the exact version from `npm view cyber-skills version`):
 
 ```bash
-npx cyber-skills@<version> hook register --set init
+npx cyber-skills@<version> hook register \
+  --name local-augmentations \
+  --event SessionStart \
+  --glob '.agents/skills/**/SKILL.local.md'
 ```
 
-The command detects which agents are present (`.claude/`, `.cursor/`, `.codex-plugin/`), deep-merges the required hook entries for each without clobbering other settings, and exits quietly. It is idempotent — safe to re-run. Pass `--verbose` for a human-readable summary on stderr.
+The command detects which agents are present (`.claude/`, `.cursor/`, `.codex-plugin/`), deep-merges the hook entry for each without clobbering other settings, and exits quietly. It is idempotent — safe to re-run. Pass `--verbose` for a human-readable summary on stderr.
 
-The hooks it registers:
-
-- **`mark-internal`** — PostToolUse/afterFileEdit: patches `metadata: internal: true` into any SKILL.md written under `.agents/skills/`
-- **`inject-local-augmentations`** — SessionStart: surfaces `SKILL.local.md` contents as session context at the start of every session
-
-Hook implementations live inside the `cyber-skills` npm package and are invoked via `npx cyber-skills@<version> hook run <name>` — no local script files required.
+At session start, the hook injects the contents of every `SKILL.local.md` under `.agents/skills/` as additional context. Hook commands use the generic `hook run` with `--file`, `--glob`, or `--extract` — no specialized hook names or local script files.
 
 For **commit discipline** (AGENTS.md section + SessionStart hook), invoke the `init-commit-discipline` skill after init.
 

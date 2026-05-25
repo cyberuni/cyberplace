@@ -2,61 +2,106 @@ import { Command } from 'commander'
 
 import { ROOT_OPTION, resolveRoot } from '../cli-options.js'
 import { output, printTable } from '../output.js'
-import { type HookSet, printResults, registerHooksForSet } from './register.js'
-import runCommitDiscipline from './runtime/commit-discipline.js'
-import runInjectLocalAugmentations from './runtime/inject-local-augmentations.js'
-import runMarkInternal from './runtime/mark-internal.js'
-
-const HOOK_RUNNERS: Record<string, () => Promise<void>> = {
-	'commit-discipline': runCommitDiscipline,
-	'inject-local-augmentations': runInjectLocalAugmentations,
-	'mark-internal': runMarkInternal,
-}
+import { buildHookDefinition, type RegisterHookInput } from './build-definition.js'
+import { printResults, registerHook } from './register.js'
+import runInjectInstructions from './runtime/inject-instructions.js'
 
 export function hookCommand(): Command {
 	const cmd = new Command('hook').description('Manage and run agent hooks')
 
 	cmd
-		.command('run <name>')
-		.description('Run a runtime hook by name')
+		.command('run')
+		.description('Run an instruction hook (SessionStart context injection)')
+		.option('--name <name>', 'Hook name (for logging and idempotency)')
+		.option('--file <path>', 'Read instructions from a file')
+		.option('--glob <pattern>', 'Glob files and inject their contents')
+		.option('--extract <path>', 'Extract a markdown section from a file')
+		.option('--heading <heading>', 'Heading to extract (required with --extract)')
 		.option('--verbose', 'Human-readable status on stderr')
-		.action(async (name: string) => {
-			const runner = HOOK_RUNNERS[name]
-			if (!runner) {
-				process.stderr.write(`Unknown hook: ${name}\nAvailable: ${Object.keys(HOOK_RUNNERS).join(', ')}\n`)
-				process.exit(1)
-			}
-			await runner()
+		.action(async (opts: { name?: string; file?: string; glob?: string; extract?: string; heading?: string }) => {
+			await runInjectInstructions({
+				name: opts.name,
+				file: opts.file,
+				glob: opts.glob,
+				extract: opts.extract,
+				heading: opts.heading,
+			})
 		})
 
 	cmd
 		.command('register')
-		.description('Register agent hooks for a named set')
-		.requiredOption('--set <set>', 'Hook set to register (init | commit-discipline)')
+		.description('Register an instruction hook in agent settings')
+		.requiredOption('--name <name>', 'Hook name')
+		.option('--event <event>', 'Hook event', 'SessionStart')
+		.option('--file <path>', 'Instruction file path')
+		.option('--glob <pattern>', 'Glob pattern for dynamic instructions')
+		.option('--extract <path>', 'Markdown file to extract a section from')
+		.option('--heading <heading>', 'Heading to extract (required with --extract)')
+		.option('--matcher <matcher>', 'PostToolUse matcher (default Write|Edit)')
 		.addOption(ROOT_OPTION)
 		.option('--dry-run', 'Preview without writing')
 		.option('--verbose', 'Human-readable status on stderr')
 		.option('--json', 'Output raw JSON')
-		.action((opts: { set: string; root?: string; dryRun: boolean; verbose: boolean }) => {
-			const { set, dryRun, verbose } = opts
-			const root = resolveRoot(opts.root)
-			if (set !== 'init' && set !== 'commit-discipline') {
-				process.stderr.write('--set must be one of: init, commit-discipline\n')
-				process.exit(1)
-			}
-			const results = registerHooksForSet(set as HookSet, { root, dryRun })
-			if (verbose) {
-				printResults(results, dryRun)
-			} else {
-				output(results, () =>
-					printTable(results, [
-						{ label: 'Agent', get: (r) => r.agent },
-						{ label: 'Hook', get: (r) => r.hook },
-						{ label: 'Status', get: (r) => r.status },
-					]),
-				)
-			}
-		})
+		.action(
+			(opts: {
+				name: string
+				event: string
+				file?: string
+				glob?: string
+				extract?: string
+				heading?: string
+				matcher?: string
+				root?: string
+				dryRun: boolean
+				verbose: boolean
+			}) => {
+				const root = resolveRoot(opts.root)
+				if (opts.event !== 'SessionStart' && opts.event !== 'PostToolUse') {
+					process.stderr.write('--event must be SessionStart or PostToolUse\n')
+					process.exit(1)
+				}
+
+				const modes = [opts.file, opts.glob, opts.extract].filter(Boolean)
+				if (modes.length !== 1) {
+					process.stderr.write('Exactly one of --file, --glob, or --extract is required\n')
+					process.exit(1)
+				}
+				if (opts.extract && !opts.heading) {
+					process.stderr.write('--extract requires --heading\n')
+					process.exit(1)
+				}
+
+				const input: RegisterHookInput = {
+					name: opts.name,
+					event: opts.event as RegisterHookInput['event'],
+					file: opts.file,
+					glob: opts.glob,
+					extract: opts.extract,
+					heading: opts.heading,
+					matcher: opts.matcher,
+				}
+
+				try {
+					buildHookDefinition(input, root)
+				} catch (err) {
+					process.stderr.write(`${err instanceof Error ? err.message : String(err)}\n`)
+					process.exit(1)
+				}
+
+				const results = registerHook(input, { root, dryRun: opts.dryRun })
+				if (opts.verbose) {
+					printResults(results, opts.dryRun)
+				} else {
+					output(results, () =>
+						printTable(results, [
+							{ label: 'Agent', get: (r) => r.agent },
+							{ label: 'Hook', get: (r) => r.hook },
+							{ label: 'Status', get: (r) => r.status },
+						]),
+					)
+				}
+			},
+		)
 
 	return cmd
 }

@@ -40,7 +40,7 @@ Beyond the skill files, the package also ships a `cyber-skills` CLI and runtime 
 | Layer | Purpose |
 | ----- | ------- |
 | **Skills** | Public agent skills under `skills/` — the primary interface |
-| **Hooks** | Runtime hooks for local augmentations, internal-skill marking, and commit discipline |
+| **Hooks** | Instruction hooks for local augmentations and commit discipline (`hook register` / `hook run`) |
 | **CLI** | `cyber-skills` binary used by skills and available for direct use when needed |
 
 ### CLI
@@ -48,16 +48,22 @@ Beyond the skill files, the package also ships a `cyber-skills` CLI and runtime 
 For advanced or scripted use:
 
 ```sh
-npx cyber-skills hook register --set init
-npx cyber-skills hook register --set commit-discipline
+npx cyber-skills hook register \
+  --name local-augmentations --event SessionStart \
+  --glob '.agents/skills/**/SKILL.local.md'
+npx cyber-skills hook register \
+  --name commit-discipline --event SessionStart \
+  --extract AGENTS.md --heading "Commit Discipline"
 npx cyber-skills commit inject --commit-skill commit
-npx cyber-skills hook run commit-discipline
+npx cyber-skills hook run --extract AGENTS.md --heading "Commit Discipline"
 ```
 
 Pin to a specific version:
 
 ```sh
-npx cyber-skills@$(npm view cyber-skills version) hook register --set init
+npx cyber-skills@$(npm view cyber-skills version) hook register \
+  --name local-augmentations --event SessionStart \
+  --glob '.agents/skills/**/SKILL.local.md'
 ```
 
 ## Skill kinds

@@ -1,26 +1,15 @@
 {
   "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node bin/cyber-skills.mjs hook run mark-internal"
-          }
-        ]
-      }
-    ],
     "SessionStart": [
       {
         "hooks": [
           {
             "type": "command",
-            "command": "node bin/cyber-skills.mjs hook run inject-local-augmentations"
+            "command": "node bin/cyber-skills.mjs hook run --name local-augmentations --glob '.agents/skills/**/SKILL.local.md'"
           },
           {
             "type": "command",
-            "command": "node bin/cyber-skills.mjs hook run commit-discipline"
+            "command": "node bin/cyber-skills.mjs hook run --name commit-discipline --extract AGENTS.md --heading 'Commit Discipline'"
           }
         ]
       }

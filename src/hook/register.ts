@@ -1,8 +1,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { buildHookDefinition, type RegisterHookInput } from './build-definition.js'
 import { commandMatchesHook } from './command.js'
-import { getCommitDisciplineHooks } from './definitions/commit-discipline.js'
-import { getInitHooks } from './definitions/init.js'
 
 interface ClaudeHookEntry {
 	type: string
@@ -55,8 +54,6 @@ export type HookDefinition = {
 	cursor?: { event: 'afterFileEdit' | 'sessionStart' }
 	codex?: { event: 'PostToolUse' | 'SessionStart'; matcher?: string }
 }
-
-export type HookSet = 'init' | 'commit-discipline'
 
 function readJson<T>(path: string): T {
 	return JSON.parse(readFileSync(path, 'utf8')) as T
@@ -227,18 +224,13 @@ function registerAgentHooks(hooks: HookDefinition[], options: RegisterOptions = 
 	return results
 }
 
-function hooksForSet(set: HookSet, root?: string): HookDefinition[] {
-	switch (set) {
-		case 'init':
-			return getInitHooks(root)
-		case 'commit-discipline':
-			return getCommitDisciplineHooks(root)
-	}
+export function registerHooks(hooks: HookDefinition[], options: RegisterOptions = {}): HookResult[] {
+	return registerAgentHooks(hooks, options)
 }
 
-export function registerHooksForSet(set: HookSet, options: RegisterOptions = {}): HookResult[] {
+export function registerHook(input: RegisterHookInput, options: RegisterOptions = {}): HookResult[] {
 	const root = options.root ?? process.cwd()
-	return registerAgentHooks(hooksForSet(set, root), options)
+	return registerHooks([buildHookDefinition(input, root)], options)
 }
 
 export function printResults(results: HookResult[], dryRun: boolean) {

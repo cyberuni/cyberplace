@@ -1,3 +1,5 @@
+import { parseMarkdownSection } from '../hook/extract-section.js'
+
 const COMMIT_DISCIPLINE_HEADING = '## Commit Discipline'
 
 export function formatCommitDisciplineSection(commitSkill: string): string {
@@ -18,15 +20,7 @@ Commit every self-contained unit of work — code, config, skills — as its own
 
 /** Extract body of ## Commit Discipline from AGENTS.md, or null if missing. */
 export function parseCommitDisciplineSection(agentsMd: string): string | null {
-	const heading = COMMIT_DISCIPLINE_HEADING
-	const start = agentsMd.indexOf(heading)
-	if (start === -1) return null
-
-	const afterHeading = agentsMd.slice(start + heading.length)
-	const nextHeading = afterHeading.search(/\n## /)
-	const body = nextHeading === -1 ? afterHeading : afterHeading.slice(0, nextHeading)
-	const trimmed = body.trim()
-	return trimmed.length > 0 ? `${heading}\n\n${trimmed}\n` : `${heading}\n`
+	return parseMarkdownSection(agentsMd, COMMIT_DISCIPLINE_HEADING)
 }
 
 /** Replace or append the Commit Discipline section in AGENTS.md. */

@@ -10,7 +10,7 @@ Inject always-on commit discipline into the repo: an AGENTS.md section for every
 ## Prerequisites
 
 - `AGENTS.md` should exist (run the `init` skill first if missing).
-- The `inject-local-augmentations` SessionStart hook should be registered (run the `init` skill — this is what makes SKILL.local.md augmentations work).
+- The `local-augmentations` SessionStart hook should be registered (run the `init` skill — this is what makes SKILL.local.md augmentations work).
 - The `cyber-skills` npm package must be accessible via npx or local install (see below).
 
 ## Commit helper skill
@@ -56,12 +56,16 @@ npx cyber-skills@<version> commit inject --commit-skill <name>
 3. Register SessionStart hook:
 
 ```bash
-npx cyber-skills@<version> hook register --set commit-discipline
+npx cyber-skills@<version> hook register \
+  --name commit-discipline \
+  --event SessionStart \
+  --extract AGENTS.md \
+  --heading "Commit Discipline"
 ```
 
 Pass `--verbose` on either command for a human-readable summary. Pass `--dry-run` to preview without writing.
 
-> **Stale hook caveat:** `hook register` skips hooks it considers equivalent to what's already registered (including old shell-script and old `run-hook` commands). If the SessionStart hook command in the agent settings file is stale and not being updated, edit it manually to match the expected format: `npx cyber-skills@<version> hook run commit-discipline`.
+> **Stale hook caveat:** `hook register` skips hooks it considers equivalent to what's already registered (including old shell-script, old `run-hook`, and old named `hook run` commands). If the SessionStart hook command in the agent settings file is stale and not being updated, edit it manually or re-run register with the flags above.
 
 4. Create a SKILL.local.md augmentation for the commit helper skill:
 
@@ -87,7 +91,7 @@ Commit, then continue to the next unit. Never finish multiple units
 before committing.
 ```
 
-This file is injected at SessionStart by the `inject-local-augmentations` hook (registered by the `init` skill), giving the agent a repo-specific reinforcement whenever the commit skill is active. Without this, agents may read the AGENTS.md rule but still batch commits when working through multi-step tasks.
+This file is injected at SessionStart by the `local-augmentations` hook (registered by the `init` skill), giving the agent a repo-specific reinforcement whenever the commit skill is active. Without this, agents may read the AGENTS.md rule but still batch commits when working through multi-step tasks.
 
 ## What gets applied
 
@@ -95,7 +99,7 @@ This file is injected at SessionStart by the `inject-local-augmentations` hook (
 
 **Runtime hook** (Claude Code, Codex): SessionStart injection of the commit discipline context so the agent is reminded of the rules at the start of every session.
 
-**SKILL.local.md** (all agents with `inject-local-augmentations` hook): Per-repo augmentation for the commit helper skill, injected at SessionStart, with the explicit auto-commit rule. This is the most reliable enforcement mechanism — it fires on every session and is scoped to the commit skill's activation context.
+**SKILL.local.md** (all agents with the `local-augmentations` hook): Per-repo augmentation for the commit helper skill, injected at SessionStart, with the explicit auto-commit rule. This is the most reliable enforcement mechanism — it fires on every session and is scoped to the commit skill's activation context.
 
 For agents without hook support, AGENTS.md alone applies the rules.
 
