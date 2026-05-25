@@ -65,7 +65,7 @@ This repo is a skill library and CLI tool for AI agents (Claude Code, Cursor, Co
 - `dist/cli.mjs` — single bundled CLI (gitignored, built by tsdown); commands: `audit`, `awesome`, `commit`, `hook`, `skill`
 - `skills/` — public skills shipped with the package
 
-**Skill lifecycle:** Skills are authored in `skills/<name>/SKILL.md`, validated by `audit-skill`, and surfaced to agents via the `skills` CLI or `npx skills add`. Runtime behavior (local augmentations, commit discipline) is handled by instruction hooks registered in `.claude/settings.json` and `.cursor/hooks.json`.
+**Skill lifecycle:** Skills are authored in `skills/<name>/SKILL.md`, validated by `audit-skill`, and surfaced to agents via the `skills` CLI or `npx skills add`. Runtime behavior (commit discipline) is handled by instruction hooks registered in `.claude/settings.json` and `.cursor/hooks.json`. Local skill augmentations (`SKILL.local.md`) are applied when a skill is loaded — see **Skill Augmentations** below.
 
 **`cyber-skills` CLI:** Used to register agent hooks and run scripts without adding it as a devDependency. In other repos, invoke via pinned npx with an exact version from `npm view cyber-skills version`. In this repo, build first, then use the local bin. Idempotent.
 
@@ -131,18 +131,15 @@ Write all content in en-US (American English spelling: "color", "organize", "beh
 
 When reading any `SKILL.md` file, always check whether a `SKILL.local.md` exists in the same directory. If it does, treat its contents as additional instructions that extend the base skill. Local augmentations take precedence over the base skill where they conflict.
 
-**Runtime hooks (this repo):** registered in `.claude/settings.json`. To re-register after changes, from the repo root:
+**Runtime hooks (this repo):** commit discipline is registered in `.claude/settings.json`. To re-register after changes, from the repo root:
 
 ```bash
 pnpm build
-node bin/cyber-skills.mjs hook register \
-  --name local-augmentations --event SessionStart \
-  --glob '.agents/skills/**/SKILL.local.md'
 node bin/cyber-skills.mjs hook register \
   --name commit-discipline --event SessionStart \
   --extract AGENTS.md --heading "Commit Discipline"
 ```
 
-Hooks run via `npx cyber-skills@<version> hook run --file|--glob|--extract` — one generic runner, no local script files. Re-run registration after adding agents or changing hook inputs.
+Augmentations apply when a skill is loaded, per the **Skill Augmentations** rule above. Hooks run via `npx cyber-skills@<version> hook run --file|--glob|--extract`.
 
 When writing or editing any `SKILL.md` under `.agents/skills/`, always include `metadata: internal: true` in the frontmatter.

@@ -5,10 +5,6 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node bin/cyber-skills.mjs hook run --name local-augmentations --glob '.agents/skills/**/SKILL.local.md'"
-          },
-          {
-            "type": "command",
             "command": "node bin/cyber-skills.mjs hook run --name commit-discipline --extract AGENTS.md --heading 'Commit Discipline'"
           }
         ]

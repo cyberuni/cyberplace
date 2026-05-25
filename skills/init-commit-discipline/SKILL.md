@@ -10,7 +10,7 @@ Inject always-on commit discipline into the repo: an AGENTS.md section for every
 ## Prerequisites
 
 - `AGENTS.md` should exist (run the `init` skill first if missing).
-- The `local-augmentations` SessionStart hook should be registered (run the `init` skill — this is what makes SKILL.local.md augmentations work).
+- AGENTS.md should include the **Skill Augmentations** section (run the `init` skill — agents read `SKILL.local.md` when loading a skill).
 - The `cyber-skills` npm package must be accessible via npx or local install (see below).
 
 ## Commit helper skill
@@ -91,7 +91,7 @@ Commit, then continue to the next unit. Never finish multiple units
 before committing.
 ```
 
-This file is injected at SessionStart by the `local-augmentations` hook (registered by the `init` skill), giving the agent a repo-specific reinforcement whenever the commit skill is active. Without this, agents may read the AGENTS.md rule but still batch commits when working through multi-step tasks.
+When the commit helper skill is loaded, the agent reads this file per the AGENTS.md Skill Augmentations rule — giving repo-specific reinforcement scoped to commit workflows. Without this, agents may read the AGENTS.md rule but still batch commits when working through multi-step tasks.
 
 ## What gets applied
 
@@ -99,7 +99,7 @@ This file is injected at SessionStart by the `local-augmentations` hook (registe
 
 **Runtime hook** (Claude Code, Codex): SessionStart injection of the commit discipline context so the agent is reminded of the rules at the start of every session.
 
-**SKILL.local.md** (all agents with the `local-augmentations` hook): Per-repo augmentation for the commit helper skill, injected at SessionStart, with the explicit auto-commit rule. This is the most reliable enforcement mechanism — it fires on every session and is scoped to the commit skill's activation context.
+**SKILL.local.md** (all agents): Per-repo augmentation for the commit helper skill, read when that skill is loaded, with the explicit auto-commit rule.
 
 For agents without hook support, AGENTS.md alone applies the rules.
 

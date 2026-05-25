@@ -42,8 +42,6 @@ Add it if missing. This prevents these skills from being accidentally surfaced a
 
 **Ongoing rule (replaces a PostToolUse hook):** When writing or editing any `SKILL.md` under `.agents/skills/`, always include `metadata: internal: true` in the frontmatter.
 
-Then register hooks so these behaviors apply automatically going forward, not just at init time.
-
 ## Ensure cyber-skills package
 
 Do **not** add `cyber-skills` as a devDependency by default — it is bin-only tooling and will trigger unused-dependency warnings (for example from knip) in repos that never import it.
@@ -55,24 +53,11 @@ Check in order:
 3. **Optional devDependency** — only when the user needs offline CLI access *and* the AI agent runs locally against that repo: `pnpm add -D cyber-skills`.
 4. If neither npx nor a local install works, ask the user to confirm an exact pinned version or opt in to the devDependency above.
 
-### Hook registration
+### Skill augmentations
 
-Register a SessionStart instruction hook (substitute the exact version from `npm view cyber-skills version`):
-
-```bash
-npx cyber-skills@<version> hook register \
-  --name local-augmentations \
-  --event SessionStart \
-  --glob '.agents/skills/**/SKILL.local.md'
-```
-
-The command detects which agents are present (`.claude/`, `.cursor/`, `.codex-plugin/`), deep-merges the hook entry for each without clobbering other settings, and exits quietly. It is idempotent — safe to re-run. Pass `--verbose` for a human-readable summary on stderr.
-
-At session start, the hook injects the contents of every `SKILL.local.md` under `.agents/skills/` as additional context. Hook commands use the generic `hook run` with `--file`, `--glob`, or `--extract` — no specialized hook names or local script files.
+Include the **Skill Augmentations** section in AGENTS.md (see above). When an agent reads any `SKILL.md`, it checks for `SKILL.local.md` in the same directory and applies it — keeping augmentations scoped to the skill being used.
 
 For **commit discipline** (AGENTS.md section + SessionStart hook), invoke the `init-commit-discipline` skill after init.
-
-For **other agents** (OpenCode, etc.): if they expose a documented repo-level hook system, register the equivalent hooks. Otherwise skip hook registration and rely on AGENTS.md for the `SKILL.local.md` behaviour.
 
 > Note: `npx skills` does not yet manage runtime hook registration automatically. Follow https://github.com/vercel-labs/skills/issues/1231 — once resolved, the manual steps above should become `npx skills add` side-effects.
 
