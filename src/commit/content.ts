@@ -5,7 +5,7 @@ const COMMIT_DISCIPLINE_HEADING = '## Commit Discipline'
 export function formatCommitDisciplineSection(commitSkill: string): string {
 	return `${COMMIT_DISCIPLINE_HEADING}
 
-Commit every self-contained unit of work — code, config, skills — as its own commit before moving on.
+**Auto-commit rule:** When a unit of work is complete and verified, commit it immediately — do not wait for the user to ask. Batching multiple units into one commit, or finishing all work before committing, are both violations of this rule.
 
 **Unit of work:** one coherent, independently revertable change — one domain's refactor, one feature, one bugfix, one test suite expansion for one concern, one config change. Never two unrelated concerns in the same commit. A TDD red-green-refactor cycle alone is not a commit boundary; commit when the full intended change is complete and tests pass. If the working tree has unrelated changes, leave them unstaged — commit the current unit first, then continue.
 

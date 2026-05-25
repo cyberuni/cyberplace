@@ -11,6 +11,8 @@ test('formatCommitDisciplineSection includes skill name', () => {
 	expect(section).toContain('## Commit Discipline')
 	expect(section).toContain('commit-work')
 	expect(section).toContain('Conventional Commits')
+	expect(section).toContain('Auto-commit rule')
+	expect(section).toContain('do not wait for the user to ask')
 })
 
 test('formatCommitDisciplineSection uses agent-compatible staging guidance', () => {
