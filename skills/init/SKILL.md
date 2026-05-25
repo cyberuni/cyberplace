@@ -80,6 +80,12 @@ New-Item -ItemType SymbolicLink -Name CLAUDE.md -Target AGENTS.md
 
 ## Follow-up init skills
 
-After init completes, look for other `init-*` skills shipped by `cyber-skills` (for example `init-commit-discipline`). Discover them from the installed package (`skills/init-*/`), `skills.sh.json`, or `.claude-plugin/marketplace.json` — exclude `init` itself.
+After init completes, discover companion `init-*` skills shipped by `cyber-skills` (for example `init-commit-discipline`):
+
+```bash
+npx cyber-skills@<version> skill list --grep 'init-*'
+```
+
+Use the same exact version pinning as in **Ensure cyber-skills package** above. If the CLI is unavailable, fall back to `skills/init-*/`, `skills.sh.json`, or `.claude-plugin/marketplace.json`.
 
 List any found skills with a one-line summary from each skill's description. Ask the user whether they also want to run any of them.

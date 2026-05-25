@@ -49,6 +49,15 @@ test('skill source requires a skill name', () => {
 	expect(result.stderr).toMatch(/missing required argument/)
 })
 
+test('skill list lists init companion skills', () => {
+	const result = run('skill', 'list', '--grep', 'init-*', '--json')
+	expect(result.status).toBe(0)
+	const parsed = JSON.parse(result.stdout) as { name: string; description: string; foundIn: string }[]
+	expect(parsed.some((s) => s.name === 'init-commit-discipline')).toBe(true)
+	expect(parsed.every((s) => s.name.startsWith('init-'))).toBe(true)
+	expect(parsed.every((s) => s.foundIn)).toBe(true)
+})
+
 test('skill source returns JSON for a skill in repo lock', () => {
 	const root = path.resolve('.')
 	const result = run('skill', 'source', 'audit-skill', '--json', '--root', root)
