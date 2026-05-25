@@ -19,7 +19,10 @@ const BASE_BODY = (
 - Stage only files for this unit: \`git add <files>\`, then verify with \`git diff --cached\`
 - Never use \`git add .\`, \`git add -A\`, or \`git add -p\` (interactive commands agents cannot run)
 - Never commit with red tests; run validation commands first
-- Use the \`${commitSkill}\` skill when committing (staging, splitting, message writing)
+
+### References
+
+- **\`${commitSkill}\` skill** — staging, splitting, and message writing when committing
 `
 
 export function formatCommitDisciplineSection(commitSkill: string, options: CommitDisciplineOptions = {}): string {

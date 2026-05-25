@@ -13,6 +13,8 @@ test('loadGovernance returns markdown body with title', () => {
 	const governance = loadGovernance('agent-tool-output')
 	expect(governance.title).toBe('Agent Tool Output')
 	expect(governance.body).toMatch(/Stdout is the machine contract/)
+	expect(governance.body).not.toMatch(/cyber-skills package patterns/)
+	expect(governance.body).toMatch(/Default-stdout exception/)
 })
 
 test('loadGovernance normalizes name casing and separators', () => {

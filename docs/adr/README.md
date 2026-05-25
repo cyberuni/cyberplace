@@ -8,6 +8,8 @@ This directory contains Architecture Decision Records (ADRs) for cyber-skills â€
 | --- | --- | --- | --- |
 | [0001](0001-governance-vs-discipline-taxonomy.md) | Governance vs Discipline Taxonomy | Accepted | 2026-05-25 |
 | [0002](0002-external-governance-federation.md) | External Governance Federation | Proposed | 2026-05-25 |
+| [0003](0003-agent-first-authoring.md) | Agent-first Authoring | Accepted | 2026-05-25 |
+| [0004](0004-cyber-skills-cli-output.md) | cyber-skills CLI Output Architecture | Accepted | 2026-05-25 |
 
 ## Creating a new ADR
 

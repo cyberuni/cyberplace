@@ -2,23 +2,11 @@
 
 Rules for organizing a **repository that ships one or more Agent Skills** — directories, manifests, contributor internals, and CI. Apply when creating a skill library, running `init-skill-repo`, or auditing whether a repo is a well-formed skill collection.
 
-This governance covers **repo layout**. Per-skill authoring rules live in **skill-design**; per-skill format baseline is [agentskills.io](https://agentskills.io/specification).
-
-## Relationship to other standards
-
-| Layer | Source | This governance |
-| --- | --- | --- |
-| Single skill format | [agentskills.io specification](https://agentskills.io/specification) | **Must comply** — do not redefine `SKILL.md` or optional skill folders |
-| Skill content quality | `governance show skill-design` | Complements — placement kind, progressive disclosure |
-| Skill security | `governance show skill-security` (when shipped) | Complements — content in `SKILL.md` and `scripts/` |
-| Org operational governance | [OWASP AST09](https://owasp.org/www-project-agentic-skills-top-10/) | **Out of scope** — inventory, approval, audit at enterprise level |
-| Ecosystem survey | `docs/research/2026-05-skill-ecosystem-landscape.md` (repo checkout) | Reference repos and RFC links — **not** in this governance |
-
-External governance federation is deferred per [ADR-0002](../../docs/adr/0002-external-governance-federation.md). Reference implementations by archetype live in the research doc — do not duplicate repo links here.
+This governance covers **repo layout**. Per-skill authoring rules live in **skill-design**; per-skill format baseline is the agentskills.io specification (see References).
 
 ## Why
 
-The agentskills spec defines **one skill folder**, not how to run a skill **library** repo. Popular collections diverge (flat `skills/`, plugin bundles, npm toolchains). This governance encodes **archetypes** and **required vs optional** artifacts so agents and contributors scaffold consistently — without forcing every repo to match cyber-skills’ full toolchain.
+The agentskills spec defines **one skill folder**, not how to run a skill **library** repo. Popular collections diverge (flat `skills/`, plugin bundles, npm toolchains). This governance encodes **archetypes** and **required vs optional** artifacts so agents and contributors scaffold consistently — without forcing every repo to match cyber-skills' full toolchain.
 
 ## Repo archetypes
 
@@ -122,6 +110,17 @@ These extend **skill-design** placement rules for library repos:
 
 **`SKILL.local.md`** stays local; never commit to public `skills/` or push upstream.
 
+## Discipline sections
+
+AGENTS.md **Discipline** sections (for example `## Commit Discipline` injected by SessionStart hooks) are **agent-first**:
+
+- **Dense normative rules** in the section body — unit-of-work definition, staging rules, habits.
+- **Self-contained** — no links to other repository files; agent follows discipline without loading governances first.
+- **`### References` at section bottom** — commit-helper skill name, `governance show` one-liners only.
+- **Do not** paste full governance bodies or ecosystem surveys into AGENTS.md.
+
+Use **`init-commit-discipline`** to inject commit discipline for this profile.
+
 ## Optional manifests (do not require all)
 
 | File | When |
@@ -131,15 +130,14 @@ These extend **skill-design** placement rules for library repos:
 | `.claude-plugin/marketplace.json` | Claude plugin UX |
 | `governances/` | Repo ships version-pinned standards loadable via `governance show` |
 
-Watch [agentskills distribution RFCs](https://github.com/agentskills/agentskills/issues/255) for future `.well-known` manifests and packaged artifacts — prefer **digest + lockfile** over ad hoc path scraping.
-
-Supply-chain threats for cyber-skills consumers (GitHub skills vs npm CLI): [docs/research/2026-05-cyber-skills-supply-chain-threat-model.md](../docs/research/2026-05-cyber-skills-supply-chain-threat-model.md).
+Prefer **digest + lockfile** over ad hoc path scraping for reproducible installs.
 
 ## Anti-patterns
 
 - Duplicating the same skill in `skills/` and `.agents/skills/` without a documented reason
-- Bloating AGENTS.md with full governance bodies — use `governance show` pointers instead
-- Embedding reference repo links or surveys in governances — use `docs/research/` instead
+- Bloating AGENTS.md with full governance bodies — use `governance show` pointers in References instead
+- Embedding reference-repo catalogs or surveys in governances — keep those outside agent-loaded standards
+- Linking to repository files (ADRs, research, other governances as paths) from governances, discipline sections, or public skills
 - Assuming `node_modules` or install paths for loading governances from other repos
 - Running no CI on skill-only repos that accept external PRs
 - Committing `SKILL.local.md` or secrets into public skill trees
@@ -163,3 +161,19 @@ Use **`init-skill-repo`** (when shipped) to scaffold and wire disciplines for th
 | Tooling library | Full repo verify command documented in AGENTS.md |
 
 Full quality review (Q6–Q12, E3–E8): run the **audit-skill** agent skill after mechanical validation passes.
+
+## References
+
+**Related governances** (load on demand):
+
+```bash
+npx cyber-skills@<version> governance show skill-design
+```
+
+| Layer | Source |
+| --- | --- |
+| Single skill format | [agentskills.io specification](https://agentskills.io/specification) |
+| Skill content quality | `governance show skill-design` |
+| Skill security | `governance show skill-security` (when shipped) |
+| Org operational governance | [OWASP AST09](https://owasp.org/www-project-agentic-skills-top-10/) — out of scope for repo layout |
+| Distribution RFCs | [agentskills distribution RFCs](https://github.com/agentskills/agentskills/issues/255) — future `.well-known` manifests |

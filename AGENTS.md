@@ -30,7 +30,10 @@ When writing or editing any `SKILL.md` under `.agents/skills/`, always include `
 - Stage only files for this unit: `git add <files>`, then verify with `git diff --cached`
 - Never use `git add .`, `git add -A`, or `git add -p` (interactive commands agents cannot run)
 - Never commit with red tests; run validation commands first
-- Use the `commit-work` skill when committing (staging, splitting, message writing)
+
+### References
+
+- **`commit-work` skill** — staging, splitting, and message writing when committing
 
 ## Commands
 
@@ -143,6 +146,7 @@ Write all content in en-US (American English spelling: "color", "organize", "beh
 
 ## Skill Design Principles
 
+- **Agent-first** — dense, self-contained bodies; no links to other repository files; optional depth in References via `governance show` or skill-sibling files
 - **Decisions over documentation** — encode what to decide and how, not reference material the model already knows
 - **Narrow and composable** — one workflow per skill; user-facing skills match situations, sub-skills are called explicitly by other skills
 - **No baked-in opinions** — detect the user's setup at runtime rather than assuming a specific stack

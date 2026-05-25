@@ -2,7 +2,7 @@
 
 Versioned agent-tool contracts shipped with the `cyber-skills` npm package. Content is frozen to the installed package version.
 
-These artifacts are **governance** documents per [ADR-0001](../docs/adr/0001-governance-vs-discipline-taxonomy.md).
+These artifacts are **governance** — version-pinned, auditable standards loaded on demand via CLI. Session **discipline** (for example commit habits injected by hooks) is a separate layer.
 
 ## Consumption
 
@@ -21,12 +21,22 @@ npx cyber-skills@<version> governance show agent-tool-output --json
 
 Always pin an exact version from `npm view cyber-skills version`.
 
-Governances are loaded into agent context on demand. Keep them **normative and concise** — no reference-repo catalogs, issue surveys, or illustrative examples. Put those in [`docs/research/`](../docs/research/README.md). ADRs record **decisions**; research records **evidence**. Policy: [ADR-0001 — Governance content boundaries](../docs/adr/0001-governance-vs-discipline-taxonomy.md#governance-content-boundaries).
+## Agent-first authoring
+
+Governances load into agent context on demand. Write them **agent-first**:
+
+- **Dense and concise** — imperative must / should / do not rules; no tutorials or surveys in the body
+- **Self-contained** — no links to other repository files; agent completes the workflow from stdout alone
+- **References at end** — cross-governance `governance show` commands and external HTTPS URLs only in `## References`
+
+Do not embed reference-repo catalogs, issue surveys, or illustrative examples in governances. Keep surveys and decision rationale outside agent-loaded standards.
 
 ## Available governances
 
 | Name | Purpose |
 | ---- | ------- |
-| `skill-design` | SKILL.md authoring — principles, progressive disclosure, placement, deterministic extraction |
-| `skill-repo-structure` | Skill library repo layout — archetypes, manifests, CI, contributor conventions |
-| `agent-tool-output` | Output rules for scripts, hooks, and CLIs that agents invoke |
+| `skill-design` | SKILL.md authoring — agent-first structure, principles, progressive disclosure, placement, deterministic extraction |
+| `skill-repo-structure` | Skill library repo layout — archetypes, manifests, CI, discipline sections, contributor conventions |
+| `agent-tool-output` | General output rules for scripts, hooks, and CLIs that agents invoke |
+
+For cyber-skills CLI output archetypes (`output()` helper, subcommand inventory, markdown-on-stdout for `governance show`), see [ADR-0004](../docs/adr/0004-cyber-skills-cli-output.md).

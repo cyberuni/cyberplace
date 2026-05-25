@@ -27,12 +27,15 @@ test('formatCommitDisciplineSection uses agent-compatible staging guidance', () 
 	expect(section).toContain('git diff --cached')
 	expect(section).toContain('git add -p')
 	expect(section).not.toMatch(/Use `git add -p`/)
+	expect(section).toContain('### References')
+	expect(section).toContain('`commit` skill')
 })
 
 test('mergeCommitDisciplineIntoAgentsMd appends when section missing', () => {
 	const agents = '# AGENTS.md\n\nSome intro.\n'
 	const merged = mergeCommitDisciplineIntoAgentsMd(agents, 'commit')
 	expect(merged).toContain('## Commit Discipline')
+	expect(merged).toContain('### References')
 	expect(merged).toContain('`commit` skill')
 })
 
