@@ -48,16 +48,16 @@ Beyond the skill files, the package also ships a `cyber-skills` CLI and runtime 
 For advanced or scripted use:
 
 ```sh
-npx cyber-skills register-hooks --set init
-npx cyber-skills register-hooks --set commit-discipline
-npx cyber-skills inject-commit-discipline --commit-skill commit
-npx cyber-skills run-hook commit-discipline
+npx cyber-skills hook register --set init
+npx cyber-skills hook register --set commit-discipline
+npx cyber-skills commit inject --commit-skill commit
+npx cyber-skills hook run commit-discipline
 ```
 
 Pin to a specific version:
 
 ```sh
-npx cyber-skills@$(npm view cyber-skills version) register-hooks --set init
+npx cyber-skills@$(npm view cyber-skills version) hook register --set init
 ```
 
 ## Skill kinds
@@ -79,7 +79,7 @@ Every PR that touches a skill runs the audit script bundled with `audit-skill`, 
 pnpm test:audit
 
 # Audit a single skill
-node skills/audit-skill/scripts/validate-skills.mjs --path skills/my-skill
+node bin/cyber-skills.mjs audit validate --path skills/my-skill
 ```
 
 Full quality review (Q6–Q9, E3–E5, E7) requires running the `audit-skill` agent skill.

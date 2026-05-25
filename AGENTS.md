@@ -35,7 +35,7 @@ Audit all skills (runs S1–S5, Q1–Q5, Q10–Q11, E1–E2, E6 checks mechanica
 pnpm test:audit
 
 # Audit a single skill:
-node skills/audit-skill/scripts/validate-skills.mjs --path skills/my-skill
+node bin/cyber-skills.mjs audit validate --path skills/my-skill
 ```
 
 Full quality review (Q6–Q12, E3–E5, E7–E8, P1–P3) requires running the `audit-skill` agent skill.
@@ -43,7 +43,7 @@ Full quality review (Q6–Q12, E3–E5, E7–E8, P1–P3) requires running the `
 Run a single test file:
 
 ```bash
-pnpm vitest run src/skills/audit-skill/scripts/validate-skills.test.ts
+pnpm vitest run src/audit/validate.test.ts
 ```
 
 Regenerate the README awesome-skills section after editing `awesome-skills.json`:

@@ -47,7 +47,7 @@ Derive paths:
 From context or ask the user. Look up origin using the `cyber-skills` CLI, which checks the repo-local lock, the global lock, and `npx skills find` in order:
 
 ```bash
-npx cyber-skills@latest skill-source <skill-name>
+npx cyber-skills@<version> skill source <skill-name>
 ```
 
 Output is JSON: `{ name, source, sourceUrl, skillPath, foundIn }`. Extract `source` (`owner/repo`).
@@ -218,7 +218,7 @@ gh pr create \
 
 ## Test plan
 
-- [ ] Run audit-skill / `validate-skills.mjs` against the updated skill(s)
+- [ ] Run audit-skill / `audit validate` against the updated skill(s)
 - [ ] Confirm no files outside `skills/` were modified
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
