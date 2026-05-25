@@ -148,13 +148,20 @@ Warn if the skill hardcodes a specific tool, runtime, or environment that may no
 The skill should detect the user's setup at runtime or explicitly scope itself to a specific stack in its description.
 
 **Q7 — Single workflow scope (MEDIUM)**
-Warn if the skill body appears to implement more than one distinct workflow or covers multiple unrelated concerns. Each skill should do one thing. Signals: multiple top-level "## Workflow" sections with unrelated goals, or a description that lists many unrelated capabilities separated by "and also".
+Warn if the skill body appears to implement more than one distinct workflow or covers multiple unrelated concerns. Each skill should do one thing. Signals: multiple top-level "## Workflow" sections with unrelated goals, or a description that lists many unrelated capabilities separated by "and also". Also warn when:
+
+- **Misplaced concern:** the body covers work that belongs in a **sibling composable skill** (e.g. repo AGENTS.md setup vs commit policy vs commit helper — three separate workflows).
+- **Duplication:** the same rule or section appears **twice** under different headings (e.g. two Skill Augmentations blocks).
+- **Stale composition:** **Related skills** (or similar cross-links) describe capabilities a linked skill no longer provides.
 
 **Q8 — No obvious instructions (LOW)**
 Warn if the body contains instructions that any capable model would already follow without being told — e.g., "write clean code", "be helpful", "provide useful error messages", "write tests for new code". These add noise and dilute the signal of the actual decisions the skill encodes.
 
 **Q9 — Description matches content (LOW)**
-Warn if the `description` claims a capability the skill body does not deliver, or if the body covers significantly more than the description promises.
+Warn if the `description` claims a capability the skill body does not deliver, or if the body covers significantly more than the description promises. Also warn when:
+
+- **Stale commands/APIs:** the body references removed CLI subcommands, hook names, or APIs without current equivalents (e.g. old `run-hook` after rename).
+- **Stale cross-references:** Related skills or "see also" links point to skills or workflows that no longer exist or no longer do what the link claims.
 
 **Q10 — Non-interactive agent path (HIGH)**
 If `scripts/` exists and any script uses interactive prompts (`readline`, `[y/N]`), fail unless SKILL.md documents a `--yes` (or equivalent) flag for autonomous agent runs.
