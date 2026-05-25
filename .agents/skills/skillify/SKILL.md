@@ -1,6 +1,8 @@
 ---
 name: skillify
 description: Use this skill when generalizing a workflow from the current session into a reusable SKILL.md.
+metadata:
+  internal: true
 ---
 
 # Skillify
