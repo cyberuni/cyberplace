@@ -2,4 +2,3 @@
 .github/setup-state.json
 node_modules/
 dist
-hooks
