@@ -2,16 +2,7 @@
 	"$schema": "https://biomejs.dev/schemas/2.4.15/schema.json",
 	"extends": ["@repobuddy/biome/recommended"],
 	"files": {
-		"includes": [
-			"!bin",
-			"!dist",
-			"!hooks",
-			"!node_modules",
-			"!skills-lock.json",
-			"!skills/**/scripts/*.mjs",
-			"!.agents",
-			"!.claude"
-		]
+		"includes": ["!bin", "!dist", "!node_modules", "!skills-lock.json", "!.agents", "!.claude"]
 	},
 	"overrides": [
 		{
