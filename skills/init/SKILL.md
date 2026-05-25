@@ -58,7 +58,7 @@ Check in order:
 Register hooks (substitute the exact version from `npm view cyber-skills version`):
 
 ```bash
-npx cyber-skills@0.1.2 register-hooks --set init
+npx cyber-skills@<version> hook register --set init
 ```
 
 The command detects which agents are present (`.claude/`, `.cursor/`, `.codex-plugin/`), deep-merges the required hook entries for each without clobbering other settings, and exits quietly. It is idempotent — safe to re-run. Pass `--verbose` for a human-readable summary on stderr.
@@ -68,7 +68,7 @@ The hooks it registers:
 - **`mark-internal`** — PostToolUse/afterFileEdit: patches `metadata: internal: true` into any SKILL.md written under `.agents/skills/`
 - **`inject-local-augmentations`** — SessionStart: surfaces `SKILL.local.md` contents as session context at the start of every session
 
-Hook implementations live inside the `cyber-skills` npm package and are invoked via `npx cyber-skills@<version> run-hook <name>` — no local script files required.
+Hook implementations live inside the `cyber-skills` npm package and are invoked via `npx cyber-skills@<version> hook run <name>` — no local script files required.
 
 For **commit discipline** (AGENTS.md section + SessionStart hook), invoke the `init-commit-discipline` skill after init.
 

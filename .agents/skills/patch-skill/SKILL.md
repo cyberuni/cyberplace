@@ -208,7 +208,7 @@ gh pr create \
 
 ## Test plan
 
-- [ ] Run audit-skill / `validate-skills.mjs` against the updated skill(s)
+- [ ] Run audit-skill / `audit validate` against the updated skill(s)
 - [ ] Confirm no files outside `skills/` were modified
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)

@@ -19,13 +19,13 @@ The mechanical subset of checks (S1–S5, Q1–Q5, Q10–Q11, E1–E2, E6) can b
 
 ```bash
 # Audit all skills in the repo
-node skills/audit-skill/scripts/validate-skills.mjs
+npx cyber-skills@<version> audit validate
 
 # Audit a single skill
-node skills/audit-skill/scripts/validate-skills.mjs --path skills/my-skill
+npx cyber-skills@<version> audit validate --path skills/my-skill
 ```
 
-This script is also wired into CI (`validate-skills` workflow). Full quality review (Q6–Q12, E3–E5, E7–E8, P1–P3) still requires running this agent skill. Q12 (script stdout hygiene) is agent-only.
+This command is also wired into CI (`validate-skills` workflow). Full quality review (Q6–Q12, E3–E5, E7–E8, P1–P3) still requires running this agent skill. Q12 (script stdout hygiene) is agent-only.
 
 ## Instructions
 
@@ -164,7 +164,7 @@ Fail if SKILL.md tells the agent to read, show, or parse script "output", a "sum
 If `scripts/` exists and any script uses interactive prompts (`readline`, `[y/N]`), fail unless SKILL.md documents a `--yes` (or equivalent) flag for autonomous agent runs.
 
 **Q12 — Script stdout hygiene (MEDIUM)**
-For each file in `scripts/`, warn if `console.info` or `console.log` emits prose outside a `--verbose` branch. Contract output must use `process.stdout.write` with JSON. Partially covered by Q10–Q11 in `validate-skills.mjs`; full review requires reading script control flow.
+For each file in `scripts/`, warn if `console.info` or `console.log` emits prose outside a `--verbose` branch. Contract output must use `process.stdout.write` with JSON. Partially covered by Q10–Q11 in `audit validate`; full review requires reading script control flow.
 
 ---
 
