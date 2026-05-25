@@ -2,6 +2,37 @@
 
 This file provides guidance to AI coding assistants when working with code in this repository.
 
+## Skill Augmentations
+
+When reading any `SKILL.md` file, always check whether a `SKILL.local.md` exists in the same directory. If it does, treat its contents as additional instructions that extend the base skill. Local augmentations take precedence over the base skill where they conflict.
+
+**Runtime hooks (this repo):** commit discipline is registered in `.claude/settings.json`. To re-register after changes, from the repo root:
+
+```bash
+pnpm build
+node bin/cyber-skills.mjs hook register \
+  --name commit-discipline --event SessionStart \
+  --extract AGENTS.md --heading "Commit Discipline"
+```
+
+Augmentations apply when a skill is loaded, per the **Skill Augmentations** rule above. Hooks run via `npx cyber-skills@<version> hook run --file|--glob|--extract`.
+
+When writing or editing any `SKILL.md` under `.agents/skills/`, always include `metadata: internal: true` in the frontmatter.
+
+## Commit Discipline
+
+**Auto-commit rule:** When a unit of work is complete and verified, commit it immediately — do not wait for the user to ask. Batching multiple units into one commit, or finishing all work before committing, are both violations of this rule.
+
+**Unit of work:** one coherent, independently revertable change — one domain's refactor, one feature, one bugfix, one test suite expansion for one concern, one config change. Never two unrelated concerns in the same commit. A TDD red-green-refactor cycle alone is not a commit boundary; commit when the full intended change is complete and tests pass. If the working tree has unrelated changes, leave them unstaged — commit the current unit first, then continue.
+
+- Conventional Commits: `feat:`, `fix:`, `refactor:`, `test:`, `docs:`, `chore:`
+- One concern per commit; never batch unrelated changes
+- Stage only files for this unit: `git add <files>`, then verify with `git diff --cached`
+- Never use `git add .`, `git add -A`, or `git add -p` (interactive commands agents cannot run)
+- Never commit with red tests; run validation commands first
+- Use the `commit-work` skill when committing (staging, splitting, message writing)
+
+
 ## Commands
 
 Run everything (typecheck + lint + tests + audit) before pushing:
@@ -79,19 +110,6 @@ pnpm verify   # runs typecheck + lint + test + test:audit
 
 This is required — CI runs `pnpm verify` on every PR that touches `skills/`, `.agents/skills/`, `src/`, or package build config.
 
-## Commit Discipline
-
-**Auto-commit rule:** When a unit of work is complete and verified, commit it immediately — do not wait for the user to ask. Batching multiple units into one commit, or finishing all work before committing, are both violations of this rule.
-
-**Unit of work:** one coherent, independently revertable change — one domain's refactor, one feature, one bugfix, one test suite expansion for one concern, one config change. Never two unrelated concerns in the same commit. A TDD red-green-refactor cycle alone is not a commit boundary; commit when the full intended change is complete and tests pass. If the working tree has unrelated changes, leave them unstaged — commit the current unit first, then continue.
-
-- Conventional Commits: `feat:`, `fix:`, `refactor:`, `test:`, `docs:`, `chore:`
-- One concern per commit; never batch unrelated changes
-- Stage only files for this unit: `git add <files>`, then verify with `git diff --cached`
-- Never use `git add .`, `git add -A`, or `git add -p` (interactive commands agents cannot run)
-- Never commit with red tests; run validation commands first
-- Use the `commit-work` skill when committing (staging, splitting, message writing)
-
 ## Adding a New Skill
 
 Three kinds of skills exist depending on scope:
@@ -126,20 +144,3 @@ Write all content in en-US (American English spelling: "color", "organize", "beh
 - **Decisions over documentation** — encode what to decide and how, not reference material the model already knows
 - **Narrow and composable** — one workflow per skill; user-facing skills match situations, sub-skills are called explicitly by other skills
 - **No baked-in opinions** — detect the user's setup at runtime rather than assuming a specific stack
-
-## Skill Augmentations
-
-When reading any `SKILL.md` file, always check whether a `SKILL.local.md` exists in the same directory. If it does, treat its contents as additional instructions that extend the base skill. Local augmentations take precedence over the base skill where they conflict.
-
-**Runtime hooks (this repo):** commit discipline is registered in `.claude/settings.json`. To re-register after changes, from the repo root:
-
-```bash
-pnpm build
-node bin/cyber-skills.mjs hook register \
-  --name commit-discipline --event SessionStart \
-  --extract AGENTS.md --heading "Commit Discipline"
-```
-
-Augmentations apply when a skill is loaded, per the **Skill Augmentations** rule above. Hooks run via `npx cyber-skills@<version> hook run --file|--glob|--extract`.
-
-When writing or editing any `SKILL.md` under `.agents/skills/`, always include `metadata: internal: true` in the frontmatter.
