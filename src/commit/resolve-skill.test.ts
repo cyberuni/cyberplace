@@ -8,7 +8,7 @@ import {
 	detectCommitSkills,
 	RECOMMENDED_COMMIT_SKILL,
 	resolveCommitSkillName,
-} from './resolve-commit-skill.ts'
+} from './resolve-skill.js'
 
 test('resolveCommitSkillName prefers commit-work when present', () => {
 	const detected = [

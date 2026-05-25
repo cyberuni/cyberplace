@@ -1,6 +1,7 @@
 import { expect, test } from 'vitest'
-import { renderAwesomeListMarkdown } from '../../update-awesome-list/scripts/render-awesome-list.ts'
-import { flattenAwesomeEntries, validateAwesomeList } from './awesome-lib.ts'
+
+import { flattenAwesomeEntries, validateAwesomeList } from './lib.js'
+import { renderAwesomeListMarkdown } from './render.js'
 
 test('validateAwesomeList accepts repos and skills objects with canonical keys', () => {
 	const file = validateAwesomeList(

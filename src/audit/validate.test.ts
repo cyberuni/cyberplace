@@ -3,7 +3,7 @@ import * as os from 'node:os'
 import * as path from 'node:path'
 import { expect, test } from 'vitest'
 
-import { runChecks } from './validate-skills.ts'
+import { runChecks } from './validate.js'
 
 function withTempSkill(content: string, check: (skillFile: string) => void): void {
 	const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'audit-skill-'))
