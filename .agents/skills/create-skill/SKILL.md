@@ -104,21 +104,25 @@ ln -sf ~/.agents/skills/<name> ~/.claude/skills/<name>
 
 Adjust the target path for other agents as needed (e.g., `~/.cursor/skills/`, `~/.opencode/skills/`).
 
-## What makes a good skill
+## Skill design discipline
 
-- **Decisions over documentation.** Encode what to decide and how — don't repeat reference material the model already knows.
-- **Narrow and composable.** One workflow per skill. Skills can be triggered by situation (user-facing) or called by other skills (sub-skills). Sub-skills have no situational trigger — their `description` should say "Internal skill: called by X" to avoid accidental activation. Neither type should be loaded as ambient context.
-- **No baked-in opinions.** Detect the user's setup (package manager, monorepo shape, tooling) at runtime rather than assuming a specific stack.
+Before writing content, load the **skill-design** discipline:
+
+```bash
+npx cyber-skills@<version> discipline show skill-design
+```
+
+Read stdout as the authoritative rules for principles, progressive disclosure, description structure, and when to extract deterministic logic to scripts or existing project CLIs.
 
 ## Scripts and CLI output
 
-If the skill includes a `scripts/` directory or documents CLI commands agents run, load the output discipline before authoring or reviewing executable tooling:
+If the skill includes a `scripts/` directory or documents CLI commands agents run, also load **agent-tool-output**:
 
 ```bash
 npx cyber-skills@<version> discipline show agent-tool-output
 ```
 
-Read stdout as the authoritative rules. Prefer `npx cyber-skills@<version> …` CLI subcommands over new bundled `scripts/`.
+Read stdout as the authoritative rules for stdout, JSON, non-interactive paths, and stderr. When adding cyber-skills workflows to a repo skill, prefer `npx cyber-skills@<version> …` CLI subcommands over new bundled `scripts/`.
 
 ## Notes
 

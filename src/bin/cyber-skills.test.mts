@@ -159,6 +159,19 @@ test('discipline show prints markdown body', () => {
 	expect(result.stdout).toMatch(/Stdout is the machine contract/)
 })
 
+test('discipline show accepts normalized name input', () => {
+	const result = run('discipline', 'show', 'Agent-Tool-Output')
+	expect(result.status).toBe(0)
+	expect(result.stdout).toMatch(/# Agent Tool Output/)
+	expect(result.stdout).toMatch(/Stdout is the machine contract/)
+})
+
+test('discipline list includes skill-design', () => {
+	const result = run('discipline', 'list')
+	expect(result.status).toBe(0)
+	expect(result.stdout.trim().split('\n')).toContain('skill-design')
+})
+
 test('discipline show --json returns structured output', () => {
 	const result = run('discipline', 'show', 'agent-tool-output', '--json')
 	expect(result.status).toBe(0)

@@ -15,6 +15,14 @@ Extracts a repeatable workflow from what was done in the current session and cre
 
 ## Steps
 
+Load the **skill-design** discipline before drafting:
+
+```bash
+npx cyber-skills@<version> discipline show skill-design
+```
+
+Read stdout as the authoritative rules for principles, progressive disclosure, and description structure.
+
 ### 1. Identify the workflow to generalize
 
 From the session history, extract:
@@ -74,12 +82,12 @@ description: Use this skill when <trigger>. <One-line summary.>
 
 Rules:
 - Encode the WHY behind each step (the constraint or decision), not just the WHAT
-- Flag deterministic steps as candidates for script extraction (see below)
+- Flag deterministic steps as candidates for script extraction (see **skill-design** § Extract deterministic logic)
 - Keep each step focused on one decision or action
 
 ### 5. Flag script-extraction candidates
 
-Mark any step that:
+Per **skill-design** § Extract deterministic logic, mark any step that:
 - Produces the same output given the same input (no judgment needed)
 - Involves text manipulation, file I/O, or structured data processing
 

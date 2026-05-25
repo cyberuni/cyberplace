@@ -23,4 +23,5 @@ Always pin an exact version from `npm view cyber-skills version`.
 
 | Name | Purpose |
 | ---- | ------- |
+| `skill-design` | SKILL.md authoring — principles, progressive disclosure, deterministic extraction |
 | `agent-tool-output` | Output rules for scripts, hooks, and CLIs that agents invoke |

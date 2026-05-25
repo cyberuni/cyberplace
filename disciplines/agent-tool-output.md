@@ -74,9 +74,9 @@ When a skill documents commands agents run:
 - Do **not** instruct agents to parse default stdout prose, summary tables, or generic "script output" as data.
 - Prefer: "read `<artifact-path>`" or "parse stdout JSON" or "run with `--json` and parse the array."
 
-## Reference implementations
+## Reference implementations (cyber-skills package)
 
-Patterns in the cyber-skills package:
+Patterns specific to this package — not general guidance for all skill authors:
 
 | Pattern | Example |
 | ------- | ------- |
