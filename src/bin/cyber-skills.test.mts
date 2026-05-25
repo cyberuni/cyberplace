@@ -40,3 +40,24 @@ test('inject-commit-discipline requires --commit-skill', () => {
 	expect(result.status).toBe(1)
 	expect(result.stderr).toMatch(/commit-skill/)
 })
+
+test('skill-source requires a skill name', () => {
+	const result = run('skill-source')
+	expect(result.status).toBe(1)
+	expect(result.stderr).toMatch(/skill-source/)
+})
+
+test('skill-source returns JSON for a known global skill', () => {
+	const result = run('skill-source', 'setup-github-repo')
+	const parsed = JSON.parse(result.stdout)
+	expect(parsed.name).toBe('setup-github-repo')
+	expect(parsed.source).toBeTruthy()
+	expect(parsed.foundIn).toMatch(/repo|global|npx-skills/)
+})
+
+test('skill-source exits non-zero for unknown skill', () => {
+	const result = run('skill-source', 'definitely-does-not-exist-xyz')
+	expect(result.status).toBe(1)
+	const parsed = JSON.parse(result.stdout)
+	expect(parsed.foundIn).toBeNull()
+})
