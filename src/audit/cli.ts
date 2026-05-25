@@ -19,7 +19,7 @@ export function auditCommand(): Command {
 
 	cmd
 		.command('validate')
-		.description('Validate skills against structural and quality checks (S1–S5, Q1–Q5, Q10–Q11, E1–E2, E6)')
+		.description('Validate skills against structural and quality checks (S1–S5, Q1–Q5, Q10, E1–E2, E6)')
 		.option('--path <path>', 'Validate a single skill directory or SKILL.md file')
 		.addOption(ROOT_OPTION)
 		.option('--json', 'Output raw JSON')
@@ -79,8 +79,8 @@ export function auditCommand(): Command {
 					process.exit(1)
 				}
 
-				console.info('✅ All checks passed (S1–S5, Q1–Q5, Q10–Q11, E1–E2, E6).')
-				console.info('   Run the audit-skill agent skill for full quality review (Q6–Q12, E3–E5, E7).')
+				console.info('✅ All checks passed (S1–S5, Q1–Q5, Q10, E1–E2, E6).')
+				console.info('   Run the audit-skill agent skill for full quality review (Q6–Q11, E3–E5, E7).')
 			})
 		})
 

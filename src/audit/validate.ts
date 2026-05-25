@@ -304,27 +304,6 @@ export function runChecks(filePath: string): CheckResult {
 		)
 	}
 
-	const q10Patterns: RegExp[] = [
-		/show (this |the )?(summary )?table/i,
-		/parse (the )?stdout/i,
-		/from the (script )?output/i,
-		/prints a summary table/i,
-		/print(s|ed)? a (summary )?table/i,
-	]
-	const q10Line = body.split('\n').find((line) => {
-		if (/\b(do not|don't|never)\b/i.test(line) && /parse (the )?stdout/i.test(line)) return false
-		return q10Patterns.some((pat) => pat.test(line))
-	})
-	if (q10Line) {
-		warn(
-			'HIGH',
-			'Q10',
-			'SKILL.md instructs parsing stdout prose/tables as data',
-			q10Line.trim(),
-			'Point agents at an artifact file or jq on CLI output; stdout should be JSON ack only',
-		)
-	}
-
 	const scriptsDir = path.join(skillDir, 'scripts')
 	if (fs.existsSync(scriptsDir)) {
 		const scriptFiles = fs.readdirSync(scriptsDir).filter((f) => !f.startsWith('.'))
@@ -335,7 +314,7 @@ export function runChecks(filePath: string): CheckResult {
 		if (hasInteractive && !/--yes|-y/.test(content)) {
 			warn(
 				'HIGH',
-				'Q11',
+				'Q10',
 				'Interactive script missing non-interactive agent path',
 				'scripts/ uses readline/prompt but SKILL.md does not document --yes or -y',
 				'Document --yes (or equivalent) in SKILL.md for autonomous agent runs',

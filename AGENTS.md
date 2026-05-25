@@ -59,7 +59,7 @@ pnpm lint        # check only
 pnpm check       # check and auto-fix
 ```
 
-Audit all skills (runs S1–S5, Q1–Q5, Q10–Q11, E1–E2, E6 checks mechanically):
+Audit all skills (runs S1–S5, Q1–Q5, Q10, E1–E2, E6 checks mechanically):
 
 ```bash
 pnpm test:audit
@@ -68,7 +68,7 @@ pnpm test:audit
 node bin/cyber-skills.mjs audit validate --path skills/my-skill
 ```
 
-Full quality review (Q6–Q12, E3–E5, E7–E8, P1–P3) requires running the `audit-skill` agent skill.
+Full quality review (Q6–Q11, E3–E5, E7–E8, P1–P3) requires running the `audit-skill` agent skill.
 
 Run a single test file:
 
