@@ -1,2 +1,4 @@
 .agents/*.local.*
 node_modules/
+bin
+hooks

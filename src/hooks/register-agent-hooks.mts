@@ -8,7 +8,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 import { getCommitDisciplineHooks } from './definitions/commit-discipline.mjs'
-import { INIT_HOOKS } from './definitions/init.mjs'
+import { getInitHooks } from './definitions/init.mjs'
 import { commandMatchesHook } from './lib/hook-command.mjs'
 
 interface ClaudeHookEntry {
@@ -237,7 +237,7 @@ export function registerAgentHooks(hooks: HookDefinition[], options: RegisterOpt
 export function hooksForSet(set: HookSet, root?: string): HookDefinition[] {
 	switch (set) {
 		case 'init':
-			return INIT_HOOKS
+			return getInitHooks(root)
 		case 'commit-discipline':
 			return getCommitDisciplineHooks(root)
 	}

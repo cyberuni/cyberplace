@@ -20,7 +20,7 @@
           },
           {
             "type": "command",
-            "command": "npx cyber-skills@0.0.1 run-hook commit-discipline"
+            "command": "npx tsx ./src/bin/cyber-skills.mts run-hook commit-discipline"
           }
         ]
       }

@@ -42,29 +42,33 @@ Add it if missing. This prevents these skills from being accidentally surfaced a
 
 Then register hooks so these behaviors apply automatically going forward, not just at init time.
 
+## Ensure cyber-skills package
+
+Do **not** add `cyber-skills` as a devDependency by default — it is bin-only tooling and will trigger unused-dependency warnings (for example from knip) in repos that never import it.
+
+Check in order:
+
+1. **Pinned npx (default)** — resolve `npm view cyber-skills version`, then `npx cyber-skills@<exact> <subcommand>` (never `@latest`, never a literal `<version>` placeholder). No `package.json` change; use when init skills are installed globally.
+2. **Existing devDependency** — if `cyber-skills` is already in `package.json`, use `pnpm exec cyber-skills` or the local bin.
+3. **Optional devDependency** — only when the user needs offline CLI access *and* the AI agent runs locally against that repo: `pnpm add -D cyber-skills`.
+4. If neither npx nor a local install works, ask the user to confirm an exact pinned version or opt in to the devDependency above.
+
 ### Hook registration
 
-Invoke the `cyber-skills` CLI from the repo root. Do **not** add `cyber-skills` as a devDependency by default — it is bin-only tooling and will trigger unused-dependency warnings (for example from knip) in repos that never import it.
-
-**Default (global init skill):** pinned npx with an **exact** published version (never `@latest`, never a literal `<version>` placeholder, never a range in docs you write):
+Register hooks (substitute the exact version from `npm view cyber-skills version`):
 
 ```bash
-npm view cyber-skills version   # resolve first, e.g. 0.1.2
 npx cyber-skills@0.1.2 register-hooks --set init
 ```
 
-Use the version `npm view` returns. A one-time `npx cyber-skills@^0.1.0 …` fetch is acceptable if you cannot resolve, but prefer an exact pin. For `commit-discipline`, `register-hooks` embeds the **exact** version from the package it runs into SessionStart hook commands — re-run registration after upgrading cyber-skills.
-
-**Optional devDependency:** only when the user needs offline CLI access *and* the AI agent runs locally against that repo (`pnpm add -D cyber-skills`, then `pnpm exec cyber-skills …`).
-
 The command detects which agents are present (`.claude/`, `.cursor/`, `.codex-plugin/`), deep-merges the required hook entries for each without clobbering other settings, and exits quietly. It is idempotent — safe to re-run. Pass `--verbose` for a human-readable summary on stderr.
 
-The two hook scripts it registers live in `.agents/hooks/`:
+The hooks it registers:
 
-- **`mark-internal.sh`** — PostToolUse/afterFileEdit: patches `metadata: internal: true` into any SKILL.md written under `.agents/skills/`
-- **`inject-local-augmentations.sh`** — SessionStart: surfaces `SKILL.local.md` contents as session context at the start of every session
+- **`mark-internal`** — PostToolUse/afterFileEdit: patches `metadata: internal: true` into any SKILL.md written under `.agents/skills/`
+- **`inject-local-augmentations`** — SessionStart: surfaces `SKILL.local.md` contents as session context at the start of every session
 
-Registration logic lives in the `cyber-skills` npm package (`hooks/register-agent-hooks.mjs`).
+Hook implementations live inside the `cyber-skills` npm package and are invoked via `npx cyber-skills@<version> run-hook <name>` — no local script files required.
 
 For **commit discipline** (AGENTS.md section + SessionStart hook), invoke the `init-commit-discipline` skill after init.
 

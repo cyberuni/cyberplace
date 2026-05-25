@@ -27,5 +27,15 @@ export function hookCommand(subcommand: string, root = process.cwd()): string {
 export function commandMatchesHook(existing: string, hookId: string, expectedCommand: string): boolean {
 	if (existing === expectedCommand) return true
 	if (hookId === 'commit-discipline' && existing.includes('run-hook commit-discipline')) return true
+	if (
+		hookId === 'mark-internal' &&
+		(existing.includes('run-hook mark-internal') || existing.includes('mark-internal.sh'))
+	)
+		return true
+	if (
+		hookId === 'inject-local-augmentations' &&
+		(existing.includes('run-hook inject-local-augmentations') || existing.includes('inject-local-augmentations.sh'))
+	)
+		return true
 	return false
 }

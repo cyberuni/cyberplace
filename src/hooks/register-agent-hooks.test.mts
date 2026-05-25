@@ -45,13 +45,9 @@ test('registers Claude Code hooks when .claude dir exists and settings.json is a
 					SessionStart: Array<{ hooks: Array<{ command: string }> }>
 				}
 			}
+			expect(settings.hooks.PostToolUse[0]?.hooks.some((h) => h.command.includes('run-hook mark-internal'))).toBe(true)
 			expect(
-				settings.hooks.PostToolUse[0]?.hooks.some((h) => h.command === 'bash .agents/hooks/mark-internal.sh'),
-			).toBe(true)
-			expect(
-				settings.hooks.SessionStart[0]?.hooks.some(
-					(h) => h.command === 'bash .agents/hooks/inject-local-augmentations.sh',
-				),
+				settings.hooks.SessionStart[0]?.hooks.some((h) => h.command.includes('run-hook inject-local-augmentations')),
 			).toBe(true)
 		},
 	)
@@ -128,7 +124,7 @@ test('merges into existing PostToolUse group with matching matcher', () => {
 			}
 			const group = settings.hooks.PostToolUse.find((g) => g.matcher === 'Write|Edit')
 			expect(group?.hooks.some((h) => h.command === 'bash other.sh')).toBe(true)
-			expect(group?.hooks.some((h) => h.command === 'bash .agents/hooks/mark-internal.sh')).toBe(true)
+			expect(group?.hooks.some((h) => h.command.includes('run-hook mark-internal'))).toBe(true)
 			expect(settings.hooks.PostToolUse.length).toBe(1)
 		},
 	)
@@ -147,7 +143,7 @@ test('registers Cursor hook when .cursor dir exists and hooks.json is absent', (
 				hooks: { afterFileEdit: Array<{ command: string }> }
 			}
 			expect(settings.version).toBe(1)
-			expect(settings.hooks.afterFileEdit.some((h) => h.command === 'bash .agents/hooks/mark-internal.sh')).toBe(true)
+			expect(settings.hooks.afterFileEdit.some((h) => h.command.includes('run-hook mark-internal'))).toBe(true)
 		},
 	)
 })

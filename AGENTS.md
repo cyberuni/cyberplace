@@ -140,7 +140,7 @@ node bin/cyber-skills.mjs register-hooks --set init
 
 That registers:
 
-- **`inject-local-augmentations.sh`** (SessionStart) — injects `.agents/skills/**/SKILL.local.md` into session context at startup
-- **`mark-internal.sh`** (PostToolUse/afterFileEdit) — adds `metadata: internal: true` to any `SKILL.md` written under `.agents/skills/`
+- **`inject-local-augmentations`** (SessionStart) — injects `.agents/skills/**/SKILL.local.md` into session context at startup
+- **`mark-internal`** (PostToolUse/afterFileEdit) — adds `metadata: internal: true` to any `SKILL.md` written under `.agents/skills/`
 
-Hook scripts live in `.agents/hooks/`. Re-run registration after adding agents or changing hook sets.
+Hooks run via `npx cyber-skills@<version> run-hook <name>` — no local script files needed. Re-run registration after adding agents or changing hook sets.
