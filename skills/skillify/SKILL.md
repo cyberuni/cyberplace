@@ -85,7 +85,7 @@ Mark any step that:
 
 Add a TODO comment in the skill body:
 ```
-<!-- TODO: extract to src/skills/<skill>/scripts/<step>.ts -->
+<!-- TODO: extract to src/<domain>/... -->
 ```
 
 ### 6. Validate
