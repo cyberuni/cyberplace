@@ -1,6 +1,8 @@
 ---
 name: audit-skill
 description: Use this skill when auditing a SKILL.md for structure, quality, and security before installing or committing.
+metadata:
+  internal: true
 ---
 
 # Audit Skill
