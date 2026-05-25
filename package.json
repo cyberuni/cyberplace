@@ -12,12 +12,8 @@
 		"type": "git",
 		"url": "git+https://github.com/cyberuni/cyber-skills.git"
 	},
-	"author": "unional <homawong@gmail.com>",
 	"license": "MIT",
-	"publishConfig": {
-		"access": "public",
-		"provenance": true
-	},
+	"author": "unional <homawong@gmail.com>",
 	"type": "module",
 	"bin": {
 		"cyber-skills": "./bin/cyber-skills.mjs"
@@ -29,13 +25,13 @@
 	],
 	"scripts": {
 		"build": "tsdown",
-		"prepare": "node -e \"if(!(process.env.CI||process.env.GITHUB_ACTIONS))require('child_process').execSync('husky',{stdio:'inherit'})\"",
-		"prepack": "pnpm build",
 		"check": "biome check --write .",
 		"cs": "changeset",
 		"format": "biome format --write .",
 		"knip": "knip",
 		"lint": "biome check .",
+		"prepack": "pnpm build",
+		"prepare": "node -e \"if(!(process.env.CI||process.env.GITHUB_ACTIONS))require('child_process').execSync('husky',{stdio:'inherit'})\"",
 		"release": "changeset publish",
 		"render:awesome-list": "pnpm build && node bin/cyber-skills.mjs awesome render",
 		"test": "pnpm build && vitest run src",
@@ -44,6 +40,9 @@
 		"typecheck": "tsc --noEmit",
 		"verify": "pnpm typecheck && pnpm lint && pnpm test && pnpm test:audit",
 		"version": "changeset version"
+	},
+	"dependencies": {
+		"commander": "^14.0.3"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.4.15",
@@ -62,7 +61,8 @@
 	"engines": {
 		"node": ">=22"
 	},
-	"dependencies": {
-		"commander": "^14.0.3"
+	"publishConfig": {
+		"access": "public",
+		"provenance": true
 	}
 }
