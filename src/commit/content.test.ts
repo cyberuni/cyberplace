@@ -4,7 +4,7 @@ import {
 	formatCommitDisciplineSection,
 	mergeCommitDisciplineIntoAgentsMd,
 	parseCommitDisciplineSection,
-} from './commit-discipline-content.mts'
+} from './content.js'
 
 test('formatCommitDisciplineSection includes skill name', () => {
 	const section = formatCommitDisciplineSection('commit-work')

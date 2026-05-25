@@ -3,7 +3,7 @@ import * as os from 'node:os'
 import * as path from 'node:path'
 import { expect, test } from 'vitest'
 
-import { registerHooksForSet } from './register-agent-hooks.mts'
+import { registerHooksForSet } from './register.js'
 
 function withTempRoot(setup: (root: string) => void, check: (root: string) => void): void {
 	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'register-hooks-'))
@@ -45,9 +45,9 @@ test('registers Claude Code hooks when .claude dir exists and settings.json is a
 					SessionStart: Array<{ hooks: Array<{ command: string }> }>
 				}
 			}
-			expect(settings.hooks.PostToolUse[0]?.hooks.some((h) => h.command.includes('run-hook mark-internal'))).toBe(true)
+			expect(settings.hooks.PostToolUse[0]?.hooks.some((h) => h.command.includes('hook run mark-internal'))).toBe(true)
 			expect(
-				settings.hooks.SessionStart[0]?.hooks.some((h) => h.command.includes('run-hook inject-local-augmentations')),
+				settings.hooks.SessionStart[0]?.hooks.some((h) => h.command.includes('hook run inject-local-augmentations')),
 			).toBe(true)
 		},
 	)
@@ -124,7 +124,7 @@ test('merges into existing PostToolUse group with matching matcher', () => {
 			}
 			const group = settings.hooks.PostToolUse.find((g) => g.matcher === 'Write|Edit')
 			expect(group?.hooks.some((h) => h.command === 'bash other.sh')).toBe(true)
-			expect(group?.hooks.some((h) => h.command.includes('run-hook mark-internal'))).toBe(true)
+			expect(group?.hooks.some((h) => h.command.includes('hook run mark-internal'))).toBe(true)
 			expect(settings.hooks.PostToolUse.length).toBe(1)
 		},
 	)
@@ -143,7 +143,7 @@ test('registers Cursor hook when .cursor dir exists and hooks.json is absent', (
 				hooks: { afterFileEdit: Array<{ command: string }> }
 			}
 			expect(settings.version).toBe(1)
-			expect(settings.hooks.afterFileEdit.some((h) => h.command.includes('run-hook mark-internal'))).toBe(true)
+			expect(settings.hooks.afterFileEdit.some((h) => h.command.includes('hook run mark-internal'))).toBe(true)
 		},
 	)
 })
@@ -159,7 +159,7 @@ test('registers commit-discipline SessionStart on Claude Code', () => {
 			const settings = readJson(path.join(root, '.claude', 'settings.json')) as {
 				hooks: { SessionStart: Array<{ hooks: Array<{ command: string }> }> }
 			}
-			expect(settings.hooks.SessionStart[0]?.hooks.some((h) => h.command.includes('run-hook commit-discipline'))).toBe(
+			expect(settings.hooks.SessionStart[0]?.hooks.some((h) => h.command.includes('hook run commit-discipline'))).toBe(
 				true,
 			)
 		},
