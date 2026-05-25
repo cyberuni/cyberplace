@@ -116,6 +116,14 @@ Two **independent** supply chains: skill content (GitHub) and CLI (npm). Pinning
 
 **Mitigations:** audit-skill E2 checks; treat skill body as untrusted data; review diffs on `skills update`.
 
+### T8 — Hidden Unicode in AI-facing project files (Medium)
+
+**Scenario:** Attacker plants zero-width or bidirectional Unicode controls in `SKILL.md`, `.cursorrules`, `CLAUDE.md`, or related AI-facing files so instructions render innocuously to humans but are read differently by tools.
+
+**Impact:** Reviewers miss malicious instructions or altered display order; agent follows hidden workflow.
+
+**Mitigations:** audit-skill E9 checks for invisible Unicode control characters; review diffs in a viewer that exposes hidden or bidirectional text.
+
 ## Recommended install profiles
 
 | Profile | Skill install | CLI | Best for |

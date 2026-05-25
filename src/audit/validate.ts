@@ -47,6 +47,33 @@ const E2_PATTERNS: RegExp[] = [
 	/[Yy]our new instructions are/,
 ]
 
+const INVISIBLE_UNICODE = new Map<number, string>([
+	[0x00ad, 'SOFT HYPHEN'],
+	[0x034f, 'COMBINING GRAPHEME JOINER'],
+	[0x061c, 'ARABIC LETTER MARK'],
+	[0x180e, 'MONGOLIAN VOWEL SEPARATOR'],
+	[0x200b, 'ZERO WIDTH SPACE'],
+	[0x200c, 'ZERO WIDTH NON-JOINER'],
+	[0x200d, 'ZERO WIDTH JOINER'],
+	[0x200e, 'LEFT-TO-RIGHT MARK'],
+	[0x200f, 'RIGHT-TO-LEFT MARK'],
+	[0x202a, 'LEFT-TO-RIGHT EMBEDDING'],
+	[0x202b, 'RIGHT-TO-LEFT EMBEDDING'],
+	[0x202c, 'POP DIRECTIONAL FORMATTING'],
+	[0x202d, 'LEFT-TO-RIGHT OVERRIDE'],
+	[0x202e, 'RIGHT-TO-LEFT OVERRIDE'],
+	[0x2060, 'WORD JOINER'],
+	[0x2061, 'FUNCTION APPLICATION'],
+	[0x2062, 'INVISIBLE TIMES'],
+	[0x2063, 'INVISIBLE SEPARATOR'],
+	[0x2064, 'INVISIBLE PLUS'],
+	[0x2066, 'LEFT-TO-RIGHT ISOLATE'],
+	[0x2067, 'RIGHT-TO-LEFT ISOLATE'],
+	[0x2068, 'FIRST STRONG ISOLATE'],
+	[0x2069, 'POP DIRECTIONAL ISOLATE'],
+	[0xfeff, 'ZERO WIDTH NO-BREAK SPACE / BOM'],
+])
+
 const STDOUT_AS_DATA_PATTERNS: RegExp[] = [
 	/\bparse (?:the )?(?:script )?output\b/i,
 	/\bread (?:the )?(?:summary )?table\b/i,
@@ -155,6 +182,31 @@ function isShellExpandedReference(source: string, matchIndex: number): boolean {
 	return previousChar === '$' || previousTwoChars === ')/' || previousTwoChars === '}/'
 }
 
+function findInvisibleUnicode(
+	source: string,
+): { line: number; column: number; codePoint: number; name: string } | null {
+	let line = 1
+	let column = 1
+
+	for (const char of source) {
+		if (char === '\n') {
+			line++
+			column = 1
+			continue
+		}
+
+		const codePoint = char.codePointAt(0)
+		if (codePoint !== undefined) {
+			const name = INVISIBLE_UNICODE.get(codePoint)
+			if (name) return { line, column, codePoint, name }
+		}
+
+		column++
+	}
+
+	return null
+}
+
 export function runChecks(filePath: string): CheckResult {
 	const criticals: Finding[] = []
 	const warnings: Finding[] = []
@@ -174,6 +226,7 @@ export function runChecks(filePath: string): CheckResult {
 	const body = extractBody(content)
 	const codeBlocks = extractCodeBlocks(content)
 	const stripped = stripExamples(content)
+	const invisibleInSkill = findInvisibleUnicode(content)
 
 	if (parent !== 'skills') {
 		crit(
@@ -394,6 +447,15 @@ export function runChecks(filePath: string): CheckResult {
 		}
 	}
 
+	if (invisibleInSkill) {
+		crit(
+			'E9',
+			'Invisible Unicode control character',
+			`SKILL.md:${invisibleInSkill.line}:${invisibleInSkill.column} U+${invisibleInSkill.codePoint.toString(16).toUpperCase().padStart(4, '0')} ${invisibleInSkill.name}`,
+			'Remove the hidden character or replace it with visible ASCII text',
+		)
+	}
+
 	const e6Hit = stripped.split('\n').find((l) => /git push.*(--force|-f )/.test(l) && /(main|master)/.test(l))
 	if (e6Hit) {
 		warn(
@@ -403,6 +465,21 @@ export function runChecks(filePath: string): CheckResult {
 			e6Hit.trim(),
 			'Add an explicit user-confirmation step before the force-push',
 		)
+	}
+
+	if (hasScripts) {
+		for (const f of fs.readdirSync(scriptsDir).filter((name) => !name.startsWith('.'))) {
+			const src = fs.readFileSync(path.join(scriptsDir, f), 'utf8')
+			const invisibleInScript = findInvisibleUnicode(src)
+			if (invisibleInScript) {
+				crit(
+					'E9',
+					'Invisible Unicode control character',
+					`scripts/${f}:${invisibleInScript.line}:${invisibleInScript.column} U+${invisibleInScript.codePoint.toString(16).toUpperCase().padStart(4, '0')} ${invisibleInScript.name}`,
+					'Remove the hidden character or replace it with visible ASCII text',
+				)
+			}
+		}
 	}
 
 	return { criticals, warnings }
