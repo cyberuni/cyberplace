@@ -3,6 +3,7 @@ import * as path from 'node:path'
 
 import { Command } from 'commander'
 
+import { ROOT_OPTION, resolveRoot } from '../cli-options.js'
 import { output } from '../output.js'
 import { type Finding, findSkillFiles, runChecks, SKILL_DIRS } from './validate.js'
 
@@ -20,10 +21,10 @@ export function auditCommand(): Command {
 		.command('validate')
 		.description('Validate skills against structural and quality checks (S1–S5, Q1–Q5, Q10–Q11, E1–E2, E6)')
 		.option('--path <path>', 'Validate a single skill directory or SKILL.md file')
-		.option('--root <path>', 'Repo root', process.cwd())
+		.addOption(ROOT_OPTION)
 		.option('--json', 'Output raw JSON')
-		.action((opts: { path?: string; root: string }) => {
-			const cwd = opts.root
+		.action((opts: { path?: string; root?: string }) => {
+			const cwd = resolveRoot(opts.root)
 			let skillFiles: string[]
 
 			if (opts.path) {

@@ -1,5 +1,6 @@
 import { Command } from 'commander'
 
+import { ROOT_OPTION, resolveRoot } from '../cli-options.js'
 import { output, printTable } from '../output.js'
 import { type HookSet, printResults, registerHooksForSet } from './register.js'
 import runCommitDiscipline from './runtime/commit-discipline.js'
@@ -32,12 +33,13 @@ export function hookCommand(): Command {
 		.command('register')
 		.description('Register agent hooks for a named set')
 		.requiredOption('--set <set>', 'Hook set to register (init | commit-discipline)')
-		.option('--root <path>', 'Repo root', process.cwd())
+		.addOption(ROOT_OPTION)
 		.option('--dry-run', 'Preview without writing')
 		.option('--verbose', 'Human-readable status on stderr')
 		.option('--json', 'Output raw JSON')
-		.action((opts: { set: string; root: string; dryRun: boolean; verbose: boolean }) => {
-			const { set, root, dryRun, verbose } = opts
+		.action((opts: { set: string; root?: string; dryRun: boolean; verbose: boolean }) => {
+			const { set, dryRun, verbose } = opts
+			const root = resolveRoot(opts.root)
 			if (set !== 'init' && set !== 'commit-discipline') {
 				process.stderr.write('--set must be one of: init, commit-discipline\n')
 				process.exit(1)
