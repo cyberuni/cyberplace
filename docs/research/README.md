@@ -21,6 +21,7 @@ Use `YYYY-MM-<topic>.md` (for example `2026-05-skill-ecosystem-landscape.md`). O
 | Date | Document | Informs |
 | --- | --- | --- |
 | 2026-05 | [Skill ecosystem landscape](2026-05-skill-ecosystem-landscape.md) | `skill-repo-structure` governance, ADR-0002, future `init-skill-repo` |
+| 2026-05 | [cyber-skills supply chain threat model](2026-05-cyber-skills-supply-chain-threat-model.md) | README install guidance, `init` / `init-commit-discipline` skills, hook register |
 
 ## Adding research
 

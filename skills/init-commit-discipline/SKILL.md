@@ -68,7 +68,9 @@ npx cyber-skills@<version> hook register \
 
 Pass `--verbose` on inject or register for a human-readable summary. Pass `--dry-run` to preview without writing.
 
-> **Stale hook caveat:** `hook register` skips hooks it considers equivalent to what's already registered (including old shell-script, old `run-hook`, and old named `hook run` commands). If the SessionStart hook command in the agent settings file is stale and not being updated, edit it manually or re-run register with the flags above.
+> **Hook semver upgrade:** Re-running `hook register` replaces an existing hook when `--name` and hook flags match but the pinned `npx cyber-skills@<semver>` differs (for example after upgrading the CLI). Legacy shell-script hooks are replaced when register runs.
+
+> **Stale hook caveat:** `hook register` skips hooks it considers fully equivalent. If the SessionStart command is wrong in other ways, edit agent settings manually or re-run register with the flags above.
 
 5. Optional repo-local `SKILL.local.md` augmentation — only when **both** are true:
    - the user opted in to auto-commit, and

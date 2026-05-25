@@ -32,6 +32,11 @@ function extractFlagValue(command: string, flag: string): string | null {
 	return value
 }
 
+function extractNpxVersion(command: string): string | null {
+	const match = command.match(/npx cyber-skills@(\S+)/)
+	return match?.[1] ?? null
+}
+
 function legacyEquivalent(hookId: string, existing: string): boolean {
 	if (hookId === 'commit-discipline') {
 		return (
@@ -58,8 +63,8 @@ function legacyEquivalent(hookId: string, existing: string): boolean {
 	return false
 }
 
-/** True when an existing registered command refers to the same hook id. */
-export function commandMatchesHook(existing: string, hookId: string, expectedCommand: string): boolean {
+/** Same logical hook target (--name + input flags, or legacy equivalent), ignoring semver and local bin vs npx. */
+export function sameHookTarget(existing: string, hookId: string, expectedCommand: string): boolean {
 	if (existing === expectedCommand) return true
 
 	const existingName = extractFlagValue(existing, '--name')
@@ -77,4 +82,24 @@ export function commandMatchesHook(existing: string, hookId: string, expectedCom
 	}
 
 	return legacyEquivalent(hookId, existing)
+}
+
+/** True when an existing registered command refers to the same hook id and semver/path. */
+export function commandMatchesHook(existing: string, hookId: string, expectedCommand: string): boolean {
+	if (existing === expectedCommand) return true
+	if (!sameHookTarget(existing, hookId, expectedCommand)) return false
+
+	const existingVersion = extractNpxVersion(existing)
+	const expectedVersion = extractNpxVersion(expectedCommand)
+	if (existingVersion && expectedVersion && existingVersion !== expectedVersion) {
+		return false
+	}
+
+	const existingUsesLocalBin = /node_modules[/\\]\.bin[/\\]cyber-skills/.test(existing)
+	const expectedUsesLocalBin = /node_modules[/\\]\.bin[/\\]cyber-skills/.test(expectedCommand)
+	if (existingUsesLocalBin !== expectedUsesLocalBin) {
+		return false
+	}
+
+	return true
 }

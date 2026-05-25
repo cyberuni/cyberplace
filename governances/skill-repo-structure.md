@@ -133,6 +133,8 @@ These extend **skill-design** placement rules for library repos:
 
 Watch [agentskills distribution RFCs](https://github.com/agentskills/agentskills/issues/255) for future `.well-known` manifests and packaged artifacts — prefer **digest + lockfile** over ad hoc path scraping.
 
+Supply-chain threats for cyber-skills consumers (GitHub skills vs npm CLI): [docs/research/2026-05-cyber-skills-supply-chain-threat-model.md](../docs/research/2026-05-cyber-skills-supply-chain-threat-model.md).
+
 ## Anti-patterns
 
 - Duplicating the same skill in `skills/` and `.agents/skills/` without a documented reason

@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { buildHookDefinition, type RegisterHookInput } from './build-definition.js'
-import { commandMatchesHook } from './command.js'
+import { commandMatchesHook, sameHookTarget } from './command.js'
 
 interface ClaudeHookEntry {
 	type: string
@@ -67,6 +67,28 @@ function commandExistsInGroups(groups: ClaudeHookGroup[], def: HookDefinition): 
 	return groups.some((g) => g.hooks.some((h) => commandMatchesHook(h.command, def.id, def.command)))
 }
 
+function replaceHookInGroups(groups: ClaudeHookGroup[], def: HookDefinition): boolean {
+	for (const group of groups) {
+		for (const hook of group.hooks) {
+			if (sameHookTarget(hook.command, def.id, def.command) && hook.command !== def.command) {
+				hook.command = def.command
+				return true
+			}
+		}
+	}
+	return false
+}
+
+function replaceHookInList(list: CursorHookEntry[], def: HookDefinition): boolean {
+	for (const hook of list) {
+		if (sameHookTarget(hook.command, def.id, def.command) && hook.command !== def.command) {
+			hook.command = def.command
+			return true
+		}
+	}
+	return false
+}
+
 function registerClaudeHook(
 	settings: ClaudeSettings,
 	def: HookDefinition,
@@ -74,6 +96,10 @@ function registerClaudeHook(
 ): boolean {
 	settings.hooks ??= {}
 	settings.hooks[event] ??= []
+
+	if (replaceHookInGroups(settings.hooks[event]!, def)) {
+		return true
+	}
 
 	if (commandExistsInGroups(settings.hooks[event]!, def)) {
 		return false
@@ -110,6 +136,9 @@ function registerCursorHook(
 	settings.hooks[event] ??= []
 
 	const list = settings.hooks[event]!
+	if (replaceHookInList(list, def)) {
+		return true
+	}
 	if (list.some((h) => commandMatchesHook(h.command, def.id, def.command))) {
 		return false
 	}

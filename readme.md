@@ -24,24 +24,40 @@ npx skills add cyberuni/cyber-skills --skill init -a claude-code -g
 **CLI** (hooks, commit inject, audit — used by skills and for scripting):
 
 ```bash
+# Exploration only — do not use @latest in hooks or CI
 npx cyber-skills@latest --help
 ```
 
-Pin to a released version in scripts: `npx cyber-skills@$(npm view cyber-skills version) <subcommand>`.
+| Use case | Pinning |
+| -------- | ------- |
+| **Scripts / manual CLI** | `npx cyber-skills@$(npm view cyber-skills version) <subcommand>` |
+| **`init` / `init-commit-discipline` skills** | On first use in a repo, the skill resolves npm semver (`npm view cyber-skills version`) and runs `npx cyber-skills@<exact> …`. After `init-commit-discipline`, SessionStart hooks store that semver (for example `npx cyber-skills@0.3.0 hook run …`). Re-run `init-commit-discipline` to bump hook semver after upgrades. |
+| **Skill content (`SKILL.md`)** | Not pinned by the CLI — see [Supply chain](#supply-chain) below. |
+
+### Supply chain
+
+Skills install from **GitHub**; the CLI installs from **npm** — two independent surfaces. See [docs/research/2026-05-cyber-skills-supply-chain-threat-model.md](docs/research/2026-05-cyber-skills-supply-chain-threat-model.md) for the full threat model.
+
+- **Solo / quick start:** global `npx skills add … -g` (live default branch).
+- **Teams (recommended):** project-scoped install, commit `skills-lock.json`, restore with `npx skills experimental_install` or `npx skills ci`.
+- **Strongest coupling:** `pnpm add -D cyber-skills`, then `npx skills add ./node_modules/cyber-skills --skill init …` so skill files and CLI share one npm release.
 
 ## Getting started: `init` and `init-commit-discipline`
 
-These skills set up a repo for AI agents. Install them **globally** once, then run them per repository from your agent chat.
+These skills set up a repo for AI agents. Install once (globally for solo use, or project-scoped for teams — see [Supply chain](#supply-chain)), then run them per repository from your agent chat.
 
 ```bash
-# Recommended: both init skills globally
+# Solo: both init skills globally
 npx skills add cyberuni/cyber-skills --skill init --skill init-commit-discipline -g
+
+# Team: project-scoped (commit skills-lock.json after install)
+npx skills add cyberuni/cyber-skills --skill init --skill init-commit-discipline
 ```
 
 | Skill | Install scope | When to run |
 | ----- | ------------- | ----------- |
-| **`init`** | Global (`-g`) | First time in a repo, or when `AGENTS.md` needs a refresh |
-| **`init-commit-discipline`** | Global (`-g`) | After `init`, when you want commit rules enforced in every session |
+| **`init`** | Global (`-g`) or project | First time in a repo, or when `AGENTS.md` needs a refresh |
+| **`init-commit-discipline`** | Global (`-g`) or project | After `init`, when you want commit rules enforced in every session |
 
 ### 1. Run `init`
 
@@ -71,7 +87,7 @@ npx skills add cyberuni/cyber-skills --skill commit
 
 For agents without hook support, the AGENTS.md section alone applies the rules.
 
-Both skills use the `cyber-skills` CLI under the hood (pinned `npx cyber-skills@<version>`). You normally invoke them through your agent; see [Package contents](#package-contents) for direct CLI use.
+Both skills use the `cyber-skills` CLI under the hood — semver is resolved and pinned on first use; hooks keep that pin until you re-run `init-commit-discipline`. You normally invoke them through your agent; see [Installation](#installation) and [Package contents](#package-contents) for direct CLI use.
 
 ## Public skills
 

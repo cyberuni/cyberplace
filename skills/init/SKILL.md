@@ -62,30 +62,10 @@ Check in order:
 
 ## CLAUDE.md symlink
 
-Create the CLAUDE.md symlink. Detect the platform first:
-
-**Unix / macOS / Linux:**
-
-```bash
-[ -f CLAUDE.md ] && ! [ -L CLAUDE.md ] && rm CLAUDE.md
-ln -sf AGENTS.md CLAUDE.md
-```
-
-**Windows (PowerShell):**
-
-```powershell
-if (Test-Path CLAUDE.md -PathType Leaf) { Remove-Item CLAUDE.md }
-New-Item -ItemType SymbolicLink -Name CLAUDE.md -Target AGENTS.md
-```
+Symlink `CLAUDE.md` → `AGENTS.md`; if `CLAUDE.md` is a regular file, merge it into `AGENTS.md` first.
 
 ## Follow-up init skills
 
-After init completes, discover companion `init-*` skills shipped by `cyber-skills` (for example `init-commit-discipline`):
-
-```bash
-npx cyber-skills@<version> skill list --grep 'init-*'
-```
-
-Use the same exact version pinning as in **Ensure cyber-skills package** above. If the CLI is unavailable, fall back to `skills/init-*/`, `skills.sh.json`, or `.claude-plugin/marketplace.json`.
+After init completes, discover companion `init-*` skills with `npx cyber-skills@<version> skill list --grep 'init-*'`.
 
 List any found skills with a one-line summary from each skill's description. Ask the user whether they also want to run any of them.

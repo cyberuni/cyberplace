@@ -83,7 +83,7 @@ test('registers extract hook on Claude Code', () => {
 	)
 })
 
-test('detects legacy inject-local-augmentations as already present', () => {
+test('upgrades legacy inject-local-augmentations shell hook', () => {
 	withTempRoot(
 		(root) => {
 			fs.mkdirSync(path.join(root, '.claude'))
@@ -103,7 +103,14 @@ test('detects legacy inject-local-augmentations as already present', () => {
 				{ name: 'local-augmentations', event: 'SessionStart', glob: '.agents/skills/**/SKILL.local.md' },
 				{ root },
 			)
-			expect(results.find((r) => r.agent === 'Claude Code')?.status).toBe('already present')
+			expect(results.find((r) => r.agent === 'Claude Code')?.status).toBe('registered')
+
+			const settings = readJson(path.join(root, '.claude', 'settings.json')) as {
+				hooks: { SessionStart: Array<{ hooks: Array<{ command: string }> }> }
+			}
+			const command = settings.hooks.SessionStart[0]?.hooks[0]?.command ?? ''
+			expect(command).toContain('hook run')
+			expect(command).toContain('--name local-augmentations')
 		},
 	)
 })
@@ -121,6 +128,56 @@ test('matches hooks by --name and input flags', () => {
 			expected,
 		),
 	).toBe(false)
+})
+
+test('does not treat different semver as equivalent', () => {
+	const expected =
+		"npx cyber-skills@2.0.0 hook run --name commit-discipline --extract AGENTS.md --heading 'Commit Discipline'"
+	const existing =
+		"npx cyber-skills@1.0.0 hook run --name commit-discipline --extract AGENTS.md --heading 'Commit Discipline'"
+	expect(commandMatchesHook(existing, 'commit-discipline', expected)).toBe(false)
+})
+
+test('upgrades pinned semver in Cursor sessionStart hook', () => {
+	withTempRoot(
+		(root) => {
+			fs.mkdirSync(path.join(root, '.cursor'))
+			fs.writeFileSync(
+				path.join(root, '.cursor', 'hooks.json'),
+				JSON.stringify({
+					version: 1,
+					hooks: {
+						sessionStart: [
+							{
+								command:
+									"npx cyber-skills@0.1.0 hook run --name commit-discipline --extract AGENTS.md --heading 'Commit Discipline'",
+							},
+						],
+					},
+				}),
+			)
+		},
+		(root) => {
+			const results = registerHook(
+				{
+					name: 'commit-discipline',
+					event: 'SessionStart',
+					extract: 'AGENTS.md',
+					heading: 'Commit Discipline',
+				},
+				{ root },
+			)
+			expect(results.find((r) => r.agent === 'Cursor')?.status).toBe('registered')
+
+			const settings = readJson(path.join(root, '.cursor', 'hooks.json')) as {
+				hooks: { sessionStart: Array<{ command: string }> }
+			}
+			const command = settings.hooks.sessionStart[0]?.command ?? ''
+			expect(command).toContain('npx cyber-skills@')
+			expect(command).not.toContain('@0.1.0')
+			expect(settings.hooks.sessionStart.length).toBe(1)
+		},
+	)
 })
 
 test('does not clobber unrelated Claude Code settings', () => {
