@@ -27,6 +27,7 @@ The standards layer behaves like governance (canonical rules, audit enforcement,
 - **Natural phrasing** for existing commit hooks — "commit discipline" already reads correctly.
 - **Appropriate tone** — avoid compliance-theater language for daily agent habits.
 - **Enterprise clarity** where standards are referenced in audit and authoring workflows.
+- **Agent context efficiency** — governances load into the agent window on demand; they must stay normative and concise.
 
 ## Considered Options
 
@@ -64,6 +65,36 @@ Adopt the **split taxonomy**:
 
 **Implementation status:** Implemented. Standards ship under `governances/` with CLI `governance list` and `governance show`. Session discipline (`commit-discipline`) is unchanged.
 
+### Governance content boundaries
+
+Governances are **loaded into agent context** via `governance show`. They must encode **what is correct**, not background reading. Illustrative material belongs elsewhere.
+
+| Artifact | Role | Loaded via `governance show`? |
+| --- | --- | --- |
+| **`governances/*.md`** | Version-pinned **standards** — requirements, archetypes, anti-patterns | Yes |
+| **`docs/research/*.md`** | **Evidence** — repo surveys, reference implementations, RFC/issue links | No — repo checkout only |
+| **`docs/adr/*.md`** | **Decisions** — rationale, options considered, consequences | No — repo checkout only |
+
+**In governances, include:**
+
+- Normative rules (must / should / do not)
+- Structural templates that define layout (for example directory trees for an archetype)
+- Pointers to other governances, ADRs, or research paths — one line, not duplicated content
+
+**In governances, exclude:**
+
+- Reference repo catalogs (`anthropics/skills`, `trailofbits/skills`, …)
+- Ecosystem surveys and issue-thread summaries
+- Illustrative “for example” repo links and long worked examples
+
+**Where to put excluded content:**
+
+- Reference implementations and repo surveys → [`docs/research/`](../research/README.md) (for example [2026-05-skill-ecosystem-landscape.md](../research/2026-05-skill-ecosystem-landscape.md))
+- Policy decisions and trade-offs → ADRs (this directory)
+- Authoring reminder → [`governances/README.md`](../../governances/README.md)
+
+When research informs a governance, extract the **rule** into the governance and keep the **evidence** in research. Link both ways; do not let them diverge silently.
+
 ## Rationale
 
 Option 3 resolves the naming collision without forcing awkward phrasing on either layer. Governance accurately describes what `audit-skill` does with canonical stdout from `skill-design` and `agent-tool-output`. Discipline accurately describes what `commit-discipline` and `init-commit-discipline` enforce — habitual agent behavior, not organizational compliance.
@@ -78,6 +109,7 @@ Option 1 was a reasonable v1 shortcut but does not scale as more standards and s
 - Gives audit and authoring workflows a precise vocabulary (governance).
 - Preserves natural language for commit hooks (discipline).
 - Provides a stable conceptual model aligned with CLI and directory names.
+- Keeps agent-loaded governances lean; surveys and examples do not compete with rules for context window space.
 
 ### Negative
 
@@ -106,4 +138,5 @@ npx cyber-skills@<version> governance show skill-design
 
 ## Related Decisions
 
-- None yet (first ADR).
+- [ADR-0002: External Governance Federation](0002-external-governance-federation.md) — federation deferred; domain governances co-located until npm packages exist
+- Research: [2026-05-skill-ecosystem-landscape.md](../research/2026-05-skill-ecosystem-landscape.md) — reference implementations for `skill-repo-structure` (not duplicated in governance)
