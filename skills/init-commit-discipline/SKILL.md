@@ -10,7 +10,8 @@ Inject always-on commit discipline into the repo: an AGENTS.md section for every
 ## Prerequisites
 
 - `AGENTS.md` should exist (run the `init` skill first if missing).
-- The `cyber-skills` npm package must be invokable (see below).
+- The `inject-local-augmentations` SessionStart hook should be registered (run the `init` skill — this is what makes SKILL.local.md augmentations work).
+- The `cyber-skills` npm package must be accessible via npx or local install (see below).
 
 ## Commit helper skill
 
@@ -60,11 +61,41 @@ npx cyber-skills@0.1.2 register-hooks --set commit-discipline
 
 Pass `--verbose` on either command for a human-readable summary. Pass `--dry-run` to preview without writing.
 
+> **Stale hook caveat:** `register-hooks` skips hooks it considers equivalent to what's already registered (including old shell-script commands). If the SessionStart hook command in the agent settings file is stale and not being updated, edit it manually to match the expected format: `npx cyber-skills@<version> run-hook commit-discipline`.
+
+4. Create a SKILL.local.md augmentation for the commit helper skill:
+
+```bash
+mkdir -p .agents/skills/<commit-skill-name>
+```
+
+Then write `.agents/skills/<commit-skill-name>/SKILL.local.md`:
+
+```markdown
+# <commit-skill-name> local augmentation
+
+## Auto-commit rule
+
+In this repo, commit each unit of work immediately when it is complete
+and verified — do not wait for the user to ask.
+
+A unit is complete when:
+- All files for that concern are written/edited
+- Tests pass (pre-commit hook or manual verify)
+
+Commit, then continue to the next unit. Never finish multiple units
+before committing.
+```
+
+This file is injected at SessionStart by the `inject-local-augmentations` hook (registered by the `init` skill), giving the agent a repo-specific reinforcement whenever the commit skill is active. Without this, agents may read the AGENTS.md rule but still batch commits when working through multi-step tasks.
+
 ## What gets applied
 
-**AGENTS.md** (all agents): `## Commit Discipline` with Conventional Commits rules, a **unit of work** definition (one coherent, independently revertable change — not "everything touched this session"), agent-compatible staging (`git add <files>` plus `git diff --cached`; never `git add .`, `git add -A`, or interactive `git add -p`), and a pointer to the chosen commit helper skill.
+**AGENTS.md** (all agents): `## Commit Discipline` section with an **auto-commit rule** (commit each unit immediately — do not wait for the user to ask), a **unit of work** definition (one coherent, independently revertable change — not "everything touched this session"), agent-compatible staging (`git add <files>` plus `git diff --cached`; never `git add .`, `git add -A`, or interactive `git add -p`), and a pointer to the chosen commit helper skill.
 
-**Runtime hook** (Claude Code, Codex): SessionStart injection of the same discipline so the agent commits each unit of work before moving on.
+**Runtime hook** (Claude Code, Codex): SessionStart injection of the commit discipline context so the agent is reminded of the rules at the start of every session.
+
+**SKILL.local.md** (all agents with `inject-local-augmentations` hook): Per-repo augmentation for the commit helper skill, injected at SessionStart, with the explicit auto-commit rule. This is the most reliable enforcement mechanism — it fires on every session and is scoped to the commit skill's activation context.
 
 For agents without hook support, AGENTS.md alone applies the rules.
 
