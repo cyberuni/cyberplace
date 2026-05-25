@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .agents/hooks/mark-internal.sh"
+            "command": "node bin/cyber-skills.mjs run-hook mark-internal"
           }
         ]
       }
@@ -16,11 +16,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .agents/hooks/inject-local-augmentations.sh"
+            "command": "node bin/cyber-skills.mjs run-hook inject-local-augmentations"
           },
           {
             "type": "command",
-            "command": "npx tsx ./src/bin/cyber-skills.mts run-hook commit-discipline"
+            "command": "node bin/cyber-skills.mjs run-hook commit-discipline"
           }
         ]
       }
