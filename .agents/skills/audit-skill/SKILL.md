@@ -27,7 +27,7 @@ npx cyber-skills@<version> audit validate
 npx cyber-skills@<version> audit validate --path skills/my-skill
 ```
 
-This command is also wired into CI (`validate-skills` workflow). Full quality review (Q6–Q12, E3–E5, E7–E8, P1–P3) still requires running this agent skill. Q12 (script stdout hygiene) is agent-only.
+This command is also wired into CI (`pull-request` workflow via `pnpm verify`). Full quality review (Q6–Q12, E3–E5, E7–E8, P1–P3) still requires running this agent skill. Q12 (script stdout hygiene) is agent-only.
 
 ### Agent-tool output discipline
 

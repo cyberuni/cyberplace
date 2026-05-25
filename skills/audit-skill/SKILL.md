@@ -5,12 +5,12 @@ description: Use this skill when auditing a SKILL.md for structure, quality, and
 
 # Audit Skill
 
-Full audit of a SKILL.md file covering structure, content quality, security, and supply-chain signals. Based on OWASP Agentic Skills Top 10 and the skill design principles in this repo. The rubric applies to **general third-party skills**, including those with bundled `scripts/` directories — not only cyber-skills package skills.
+Full audit of a SKILL.md file covering structure, content quality, security, and supply-chain signals. Based on OWASP Agentic Skills Top 10 and established skill design principles. The rubric applies to **general third-party skills**, including those with bundled `scripts/` directories.
 
 ## When to use
 
 - Before installing a third-party skill locally
-- Before committing a new or modified skill to this repo
+- Before committing a new or modified skill
 - When reviewing a skill for publication to skills.sh
 
 ## Automated checks
@@ -18,14 +18,14 @@ Full audit of a SKILL.md file covering structure, content quality, security, and
 The mechanical subset of checks (S1–S5, Q1–Q5, Q10–Q11, E1–E2, E6) can be run without an LLM:
 
 ```bash
-# Audit all skills in the repo
+# Audit all skills in the project
 npx cyber-skills@<version> audit validate
 
 # Audit a single skill
 npx cyber-skills@<version> audit validate --path skills/my-skill
 ```
 
-This command is also wired into CI (`validate-skills` workflow). Full quality review (Q6–Q12, E3–E5, E7–E8, P1–P3) still requires running this agent skill. Q12 (script stdout hygiene) is agent-only.
+This command can be used in CI—for example, in a validate job that runs before merge. Full quality review (Q6–Q12, E3–E5, E7–E8, P1–P3) still requires running this agent skill. Q12 (script stdout hygiene) is agent-only.
 
 ### Agent-tool output discipline
 

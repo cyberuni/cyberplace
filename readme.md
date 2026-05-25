@@ -1,11 +1,14 @@
 # cyber-skills
 
-[![validate-skills](https://github.com/cyberuni/cyber-skills/actions/workflows/validate-skills.yml/badge.svg)](https://github.com/cyberuni/cyber-skills/actions/workflows/validate-skills.yml)
+[![CI](https://github.com/cyberuni/cyber-skills/actions/workflows/pull-request.yml/badge.svg)](https://github.com/cyberuni/cyber-skills/actions/workflows/pull-request.yml)
+[![npm version](https://img.shields.io/npm/v/cyber-skills.svg)](https://www.npmjs.com/package/cyber-skills)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-Opinionated skills, hooks, and workflows for AI agents — Claude Code, Cursor, Codex, and others. Published as an npm package; install skills with the [Skills CLI](https://github.com/vercel-labs/skills).
+Opinionated skills, hooks, and workflows for AI agents — Claude Code, Cursor, Codex, and others. Published as the [`cyber-skills`](https://www.npmjs.com/package/cyber-skills) npm package; install skills with the [Skills CLI](https://github.com/vercel-labs/skills).
 
 ## Installation
+
+**Skills** (agent workflows — primary interface):
 
 ```bash
 # Install all public skills globally
@@ -17,6 +20,14 @@ npx skills add cyberuni/cyber-skills --skill init -g
 # Install for a specific agent
 npx skills add cyberuni/cyber-skills --skill init -a claude-code -g
 ```
+
+**CLI** (hooks, commit inject, audit — used by skills and for scripting):
+
+```bash
+npx cyber-skills@latest --help
+```
+
+Pin to a released version in scripts: `npx cyber-skills@$(npm view cyber-skills version) <subcommand>`.
 
 ## Getting started: `init` and `init-commit-discipline`
 
@@ -86,6 +97,7 @@ Beyond the skill files, the package also ships a `cyber-skills` CLI and runtime 
 | **Skills** | Public agent skills under `skills/` — the primary interface |
 | **Hooks** | SessionStart instruction hooks for commit discipline (`hook register` / `hook run`) |
 | **CLI** | `cyber-skills` binary used by skills and available for direct use when needed |
+| **Disciplines** | Version-pinned agent-tool contracts (`discipline list` / `discipline show`) |
 
 ### CLI
 
@@ -121,7 +133,7 @@ The `create-skill` skill helps you create three kinds of skills depending on you
 
 ## Quality
 
-Every PR that touches a skill runs the audit script bundled with `audit-skill`, which mechanically checks structure (S1–S5), quality (Q1–Q5), and security (E1–E2, E6).
+Every PR runs `pnpm verify` (typecheck, lint, tests, and skill audit). The audit script bundled with `audit-skill` mechanically checks structure (S1–S5), quality (Q1–Q5, Q10–Q11), and security (E1–E2, E6).
 
 ```bash
 # Run locally
@@ -131,7 +143,7 @@ pnpm test:audit
 node bin/cyber-skills.mjs audit validate --path skills/my-skill
 ```
 
-Full quality review (Q6–Q9, E3–E5, E7) requires running the `audit-skill` agent skill.
+Full quality review (Q6–Q12, E3–E5, E7–E8, P1–P3) requires running the `audit-skill` agent skill.
 
 <!-- AWESOME-SKILLS:START -->
 ## Awesome Skills
