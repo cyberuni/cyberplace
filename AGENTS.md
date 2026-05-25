@@ -60,15 +60,14 @@ This repo is a skill library and CLI tool for AI agents (Claude Code, Cursor, Co
 
 - `skills/` — public skills shipped with the package; users install via `npx skills add cyberuni/cyber-skills`
 - `.agents/skills/` — repo-internal skills for contributor workflows (changesets, security PRs, repo renames); all must have `metadata: internal: true`
-- `src/` — TypeScript source for the CLI, hooks, skill scripts, and co-located tests
-- `hooks/` — built runtime hook scripts published with the package
-- `bin/cyber-skills.mjs` — slim tracked shim; delegates to `dist/bin/cyber-skills.mjs`
-- `dist/bin/` — compiled CLI (gitignored, built by tsdown); supports `run-hook`, `register-hooks --set <set>`, `inject-commit-discipline`, and `skill-source`
-- `skills/` — public skills shipped with the package, including built helper scripts under `skills/*/scripts/`
+- `src/` — TypeScript source; domain folders: `audit/`, `awesome/`, `commit/`, `hook/`, `skill/`
+- `bin/cyber-skills.mjs` — slim tracked shim; delegates to `dist/cli.mjs`
+- `dist/cli.mjs` — single bundled CLI (gitignored, built by tsdown); commands: `audit`, `awesome`, `commit`, `hook`, `skill`
+- `skills/` — public skills shipped with the package
 
 **Skill lifecycle:** Skills are authored in `skills/<name>/SKILL.md`, validated by `audit-skill`, and surfaced to agents via the `skills` CLI or `npx skills add`. Runtime behavior (local augmentations, marking internal skills) is handled by hooks registered in `.claude/settings.json` and `.cursor/settings.json`.
 
-**`cyber-skills` CLI:** Used to register agent hooks into agent settings files without adding it as a devDependency. In other repos, invoke via pinned npx with an exact version from `npm view cyber-skills version`. In this repo, build first, then use the local bin: `node bin/cyber-skills.mjs register-hooks --set init`. Idempotent.
+**`cyber-skills` CLI:** Used to register agent hooks and run scripts without adding it as a devDependency. In other repos, invoke via pinned npx with an exact version from `npm view cyber-skills version`. In this repo, build first, then use the local bin: `node bin/cyber-skills.mjs hook register --set init`. Idempotent.
 
 ## Validation After Changes
 
@@ -136,7 +135,7 @@ When reading any `SKILL.md` file, always check whether a `SKILL.local.md` exists
 
 ```bash
 pnpm build
-node bin/cyber-skills.mjs register-hooks --set init
+node bin/cyber-skills.mjs hook register --set init
 ```
 
 That registers:
@@ -144,4 +143,4 @@ That registers:
 - **`inject-local-augmentations`** (SessionStart) — injects `.agents/skills/**/SKILL.local.md` into session context at startup
 - **`mark-internal`** (PostToolUse/afterFileEdit) — adds `metadata: internal: true` to any `SKILL.md` written under `.agents/skills/`
 
-Hooks run via `npx cyber-skills@<version> run-hook <name>` — no local script files needed. Re-run registration after adding agents or changing hook sets.
+Hooks run via `npx cyber-skills@<version> hook run <name>` — no local script files needed. Re-run registration after adding agents or changing hook sets.

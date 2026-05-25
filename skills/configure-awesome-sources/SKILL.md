@@ -38,31 +38,31 @@ Use `disabled_sources` to suppress inherited sources. Do not use an `enabled` fi
 List effective sources:
 
 ```bash
-node skills/configure-awesome-sources/scripts/configure-awesome-sources.mjs list
+npx cyber-skills@<version> awesome sources list
 ```
 
 Add a source:
 
 ```bash
-node skills/configure-awesome-sources/scripts/configure-awesome-sources.mjs add --layer repo --repo owner/name --path awesome-skills.json
+npx cyber-skills@<version> awesome sources add owner/name --layer repo --path awesome-skills.json
 ```
 
 Disable an inherited source:
 
 ```bash
-node skills/configure-awesome-sources/scripts/configure-awesome-sources.mjs disable --layer repo --repo owner/name --path awesome-skills.json
+npx cyber-skills@<version> awesome sources disable owner/name --layer repo --path awesome-skills.json
 ```
 
 Enable a disabled source:
 
 ```bash
-node skills/configure-awesome-sources/scripts/configure-awesome-sources.mjs enable --layer repo --repo owner/name --path awesome-skills.json
+npx cyber-skills@<version> awesome sources enable owner/name --layer repo --path awesome-skills.json
 ```
 
 Remove a direct source:
 
 ```bash
-node skills/configure-awesome-sources/scripts/configure-awesome-sources.mjs remove --layer repo --repo owner/name --path awesome-skills.json
+npx cyber-skills@<version> awesome sources remove owner/name --layer repo --path awesome-skills.json
 ```
 
 ## Guidance

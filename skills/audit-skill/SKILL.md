@@ -19,10 +19,10 @@ The mechanical subset of checks (S1–S5, Q1–Q5, Q10–Q11, E1–E2, E6) can b
 
 ```bash
 # Audit all skills in the repo
-node skills/audit-skill/scripts/validate-skills.mjs
+npx cyber-skills@<version> audit validate
 
 # Audit a single skill
-node skills/audit-skill/scripts/validate-skills.mjs --path skills/my-skill
+npx cyber-skills@<version> audit validate --path skills/my-skill
 ```
 
 This script is also wired into CI (`validate-skills` workflow). Full quality review (Q6–Q12, E3–E5, E7–E8, P1–P3) still requires running this agent skill. Q12 (script stdout hygiene) is agent-only.

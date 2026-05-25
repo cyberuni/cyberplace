@@ -26,13 +26,13 @@ Use natural-language narrowing when the user wants help selecting standout skill
 Inspect the repo with the bundled helper:
 
 ```bash
-node skills/update-awesome-list/scripts/inspect-skills-repo.mjs --repo owner/name
+npx cyber-skills@<version> awesome inspect owner/name
 ```
 
 Narrow by query when needed:
 
 ```bash
-node skills/update-awesome-list/scripts/inspect-skills-repo.mjs --repo owner/name --query "release"
+npx cyber-skills@<version> awesome inspect owner/name --query "release"
 ```
 
 ## Editing rules
@@ -61,5 +61,5 @@ node skills/update-awesome-list/scripts/inspect-skills-repo.mjs --repo owner/nam
 After editing, regenerate the README bounded section so the human-facing list stays in sync with `awesome-skills.json`:
 
 ```bash
-node skills/update-awesome-list/scripts/render-awesome-list.mjs
+npx cyber-skills@<version> awesome render
 ```

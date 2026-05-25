@@ -20,7 +20,7 @@ Commit discipline references a **commit helper skill** for staging, splitting, a
 Run from the repo root:
 
 ```bash
-node skills/init-commit-discipline/scripts/resolve-commit-skill.mjs --check
+npx cyber-skills@<version> commit resolve-skill --check
 ```
 
 If none are detected, ask the user to choose:
@@ -50,18 +50,18 @@ Check in order:
 2. Inject AGENTS.md section (substitute the exact version from `npm view cyber-skills version`):
 
 ```bash
-npx cyber-skills@0.1.2 inject-commit-discipline --commit-skill <name>
+npx cyber-skills@<version> commit inject --commit-skill <name>
 ```
 
 3. Register SessionStart hook:
 
 ```bash
-npx cyber-skills@0.1.2 register-hooks --set commit-discipline
+npx cyber-skills@<version> hook register --set commit-discipline
 ```
 
 Pass `--verbose` on either command for a human-readable summary. Pass `--dry-run` to preview without writing.
 
-> **Stale hook caveat:** `register-hooks` skips hooks it considers equivalent to what's already registered (including old shell-script commands). If the SessionStart hook command in the agent settings file is stale and not being updated, edit it manually to match the expected format: `npx cyber-skills@<version> run-hook commit-discipline`.
+> **Stale hook caveat:** `hook register` skips hooks it considers equivalent to what's already registered (including old shell-script and old `run-hook` commands). If the SessionStart hook command in the agent settings file is stale and not being updated, edit it manually to match the expected format: `npx cyber-skills@<version> hook run commit-discipline`.
 
 4. Create a SKILL.local.md augmentation for the commit helper skill:
 

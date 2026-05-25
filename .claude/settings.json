@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node bin/cyber-skills.mjs run-hook mark-internal"
+            "command": "node bin/cyber-skills.mjs hook run mark-internal"
           }
         ]
       }
@@ -16,11 +16,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node bin/cyber-skills.mjs run-hook inject-local-augmentations"
+            "command": "node bin/cyber-skills.mjs hook run inject-local-augmentations"
           },
           {
             "type": "command",
-            "command": "node bin/cyber-skills.mjs run-hook commit-discipline"
+            "command": "node bin/cyber-skills.mjs hook run commit-discipline"
           }
         ]
       }

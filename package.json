@@ -24,8 +24,7 @@
 	},
 	"files": [
 		"bin",
-		"dist/bin",
-		"hooks",
+		"dist",
 		"skills"
 	],
 	"scripts": {
@@ -38,9 +37,9 @@
 		"knip": "knip",
 		"lint": "biome check .",
 		"release": "changeset publish",
-		"render:awesome-list": "pnpm build && node skills/update-awesome-list/scripts/render-awesome-list.mjs",
+		"render:awesome-list": "pnpm build && node bin/cyber-skills.mjs awesome render",
 		"test": "pnpm build && vitest run src",
-		"test:audit": "pnpm build && node skills/audit-skill/scripts/validate-skills.mjs",
+		"test:audit": "pnpm build && node bin/cyber-skills.mjs audit validate",
 		"test:watch": "vitest",
 		"typecheck": "tsc --noEmit",
 		"verify": "pnpm typecheck && pnpm lint && pnpm test && pnpm test:audit",
@@ -62,5 +61,8 @@
 	"packageManager": "pnpm@11.0.0",
 	"engines": {
 		"node": ">=22"
+	},
+	"dependencies": {
+		"commander": "^14.0.3"
 	}
 }
