@@ -7,17 +7,53 @@
       "skillPath": "skills/add-changeset/SKILL.md",
       "computedHash": "8a5266fe92b2f9f755238564e44b5b44e1b5ce0a469d5659c1b03d49dd590dd1"
     },
+    "audit-skill": {
+      "source": "cyberuni/cyber-skills",
+      "sourceType": "github",
+      "skillPath": "skills/audit-skill/SKILL.md",
+      "computedHash": "74241f28bb8454d8547a0fdad93fc5085228dd99c625f5c7d3357c7376194452"
+    },
     "create-issue": {
       "source": "repobuddy/repobuddy",
       "sourceType": "github",
       "skillPath": "skills/create-issue/SKILL.md",
-      "computedHash": "7fe6e7fbc795d9e1ce0070a661af1da716ddbb24177a2ec7faf347da24f9ac54"
+      "computedHash": "a34e03da771bd2a55af2cc90bd63f64edf460aff3f7b8cbad01227db3555a593"
+    },
+    "create-skill": {
+      "source": "cyberuni/cyber-skills",
+      "sourceType": "github",
+      "skillPath": "skills/create-skill/SKILL.md",
+      "computedHash": "6d6941b9f4b1b318a94658d840afd18c912a53ac745a8b5c626d6843ff1a8048"
+    },
+    "find-awesome-skill": {
+      "source": "cyberuni/cyber-skills",
+      "sourceType": "github",
+      "skillPath": "skills/find-awesome-skill/SKILL.md",
+      "computedHash": "148963073160113bdb785d03ea95341443a9ef191befca31922eb63575d98317"
     },
     "fix-security-pr": {
       "source": "repobuddy/agent-security",
       "sourceType": "github",
       "skillPath": "skills/fix-security-pr/SKILL.md",
       "computedHash": "d78b2e51db20d5e19948faa0428ef3a1d51efed14706d4dc58cea2dfc6ef6530"
+    },
+    "merge-dep-prs": {
+      "source": "repobuddy/repobuddy",
+      "sourceType": "github",
+      "skillPath": "skills/merge-dep-prs/SKILL.md",
+      "computedHash": "e360aff8316401b610997b3ea5c6e057341608d565a13deb3a18ca83eaef4a98"
+    },
+    "patch-skill": {
+      "source": "cyberuni/cyber-skills",
+      "sourceType": "github",
+      "skillPath": "skills/patch-skill/SKILL.md",
+      "computedHash": "94e2b001d3ee4da20c158d10919b34af9e31fe12f6b5a25e44b6ad1c01060980"
+    },
+    "skillify": {
+      "source": "cyberuni/cyber-skills",
+      "sourceType": "github",
+      "skillPath": "skills/skillify/SKILL.md",
+      "computedHash": "2445b4ad9ca7ca29979f5ea0ad901569469a3f1d438ca4b25981ee6ff4660596"
     }
   }
 }
