@@ -139,3 +139,33 @@ Run \`node scripts/run.mjs --yes\`.
 		},
 	)
 })
+
+test('E9 fails when SKILL.md contains invisible Unicode controls', () => {
+	withTempSkill(
+		`${skillFrontmatter}
+Review this hidden payload: scan\u200Bnow
+`,
+		(skillFile) => {
+			const result = runChecks(skillFile)
+			const e9 = result.criticals.filter((finding) => finding.checkId === 'E9')
+			expect(e9.length).toBe(1)
+			expect(e9[0]?.evidence ?? '').toContain('U+200B')
+		},
+	)
+})
+
+test('E9 fails when bundled scripts contain invisible Unicode controls', () => {
+	withTempSkillAndScripts(
+		`${skillFrontmatter}
+Run \`node scripts/run.mjs --yes\`.
+`,
+		{ 'run.mjs': "console.log('safe')\u202E\n" },
+		(skillFile) => {
+			const result = runChecks(skillFile)
+			const e9 = result.criticals.filter((finding) => finding.checkId === 'E9')
+			expect(e9.length).toBe(1)
+			expect(e9[0]?.evidence ?? '').toContain('scripts/run.mjs')
+			expect(e9[0]?.evidence ?? '').toContain('U+202E')
+		},
+	)
+})
