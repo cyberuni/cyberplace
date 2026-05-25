@@ -1,0 +1,32 @@
+name: pull-request
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [20,22,24]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm verify
+
+  all-checks:
+    needs: [ci]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: All checks passed
+        run: |
+          if [[ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}" == "true" ]]; then
+            exit 1
+          fi
