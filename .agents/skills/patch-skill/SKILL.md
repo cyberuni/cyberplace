@@ -1,6 +1,8 @@
 ---
 name: patch-skill
 description: Use this skill when contributing local improvements to an installed skill back to its source repo via PR.
+metadata:
+  internal: true
 ---
 
 # Patch Skill
@@ -44,15 +46,25 @@ Derive paths:
 
 ### 1. Identify the skill(s) to patch
 
-From context or ask the user. Look up origin in `skills-lock.json` at the consumer repo root:
+From context or ask the user. Look up origin using the `cyber-skills` CLI, which checks the repo-local lock, the global lock, and `npx skills find` in order:
 
 ```bash
-jq '.skills["<skill-name>"]' skills-lock.json
+npx cyber-skills@<version> skill source <skill-name>
 ```
 
-Extract: `source` (`owner/repo`), `skillPath` (for naming only — upstream target is always `skills/<skill-name>/`).
+Output is JSON: `{ name, source, sourceUrl, skillPath, foundIn }`. Extract `source` (`owner/repo`).
 
-If there is no lock entry, ask for `owner/repo` and the skill folder name.
+If the CLI exits non-zero (`foundIn: null`), fall back to reading the lockfiles directly:
+
+```bash
+# Repo-local (committed, version 1 schema):
+jq '.skills["<skill-name>"]' skills-lock.json
+
+# Global (version 3 schema, has sourceUrl):
+jq '.skills["<skill-name>"]' ~/.agents/.skill-lock.json
+```
+
+If there is still no lock entry, ask for `owner/repo` and the skill folder name.
 
 For multiple related skills (user confirms one PR), repeat file discovery for each `skills/<name>/` directory.
 
