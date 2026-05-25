@@ -1,64 +1,23 @@
 name: release
-
 on:
   push:
     branches: [main]
 
 permissions:
+  id-token: write
   contents: write
   pull-requests: write
-  id-token: write
 
 jobs:
-  verify:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: pnpm/action-setup@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-
-      - run: pnpm install --frozen-lockfile
-
-      - run: pnpm verify
+  code:
+    uses: cyberuni/.github/.github/workflows/pnpm-verify.yml@main
+    with:
+      os: '["ubuntu-latest"]'
+      skip-playwright: true
 
   release:
-    needs: verify
-    runs-on: ubuntu-latest
-    concurrency: release-${{ github.ref }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.CI_GITHUB_TOKEN }}
-
-      - uses: pnpm/action-setup@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-
-      - name: Install npm with OIDC trusted publishing support
-        run: npm install -g npm@latest
-
-      - run: pnpm install --frozen-lockfile
-
-      - run: pnpm build
-
-      - name: Create Release Pull Request
-        id: changesets
-        uses: changesets/action@v1
-        with:
-          commit: "chore: version packages"
-          version: pnpm run version
-        env:
-          GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
-
-      - name: Publish to npm
-        if: steps.changesets.outputs.hasChangesets == 'false'
-        run: pnpm run release
+    uses: cyberuni/.github/.github/workflows/pnpm-release-changeset.yml@main
+    needs: code
+    secrets: inherit
+    with:
+      skip-playwright: true
