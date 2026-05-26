@@ -1,5 +1,12 @@
 # cyber-skills
 
+## 0.4.1
+
+### Patch Changes
+
+- 718e20c: Detect hidden Unicode control characters in `SKILL.md` files and bundled scripts during audit validation.
+- b513c31: Warn when public shipped skills reference repository-local files outside their own skill directory.
+
 ## 0.4.0
 
 ### Minor Changes
