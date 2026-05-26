@@ -130,3 +130,15 @@ export async function promptScopeSelect(iface: RlInterface): Promise<'project' |
 	const trimmed = answer.trim().toLowerCase()
 	return trimmed === 'g' || trimmed === 'global' ? 'global' : 'project'
 }
+
+export async function promptUpdateScopeSelect(iface: RlInterface): Promise<'project' | 'global' | 'both'> {
+	console.log('\nUpdate scope:')
+	console.log('  [p] project  Update skills in current directory')
+	console.log('  [g] global   Update skills in home directory')
+	console.log('  [b] both     Update project and global skills')
+	const answer = await questionWithEsc(iface, 'Choose [b]: ')
+	const trimmed = answer.trim().toLowerCase()
+	if (trimmed === 'p' || trimmed === 'project') return 'project'
+	if (trimmed === 'g' || trimmed === 'global') return 'global'
+	return 'both'
+}

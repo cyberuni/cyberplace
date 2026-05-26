@@ -16,7 +16,7 @@ import { fetchMarketplace, listRepoSkills } from './github.js'
 import { readLock } from './lock.js'
 import { mapSkillsToPlugins } from './marketplace.js'
 import { migrate } from './migrate.js'
-import { CancelError, createRl, isInteractive, promptScopeSelect, promptSkillSelect } from './prompt.js'
+import { CancelError, createRl, isInteractive, promptScopeSelect, promptSkillSelect, promptUpdateScopeSelect } from './prompt.js'
 import { removeSkill } from './remove.js'
 import { isRepoSpec, parseSpec } from './spec.js'
 import { updateAllSkills, updateSkill } from './update.js'
@@ -131,22 +131,62 @@ export function updateCommand(): Command {
 		.argument('[name]', 'Skill name to update; omit to update all')
 		.addOption(ROOT_OPTION)
 		.option('--global', 'Update in global skills')
+		.option('--project', 'Update in project skills')
 		.option('--branch <branch>', 'Git branch to fetch from', 'main')
 		.option('--json', 'Output raw JSON')
-		.action(async (name: string | undefined, opts: { root?: string; global?: boolean; branch?: string }) => {
-			const root = resolveRoot(opts.root)
-			const scope = resolveScope(opts.global)
-			if (name) {
-				const result = await updateSkill(name, { root, scope })
-				output(result, () => console.log(result.message))
-				if (!result.updated) process.exit(1)
-			} else {
-				const results = await updateAllSkills({ root, scope })
-				output(results, () => {
-					for (const r of results) console.log(`${r.updated ? '+' : '!'} ${r.name}: ${r.message}`)
-				})
-			}
-		})
+		.action(
+			async (
+				name: string | undefined,
+				opts: { root?: string; global?: boolean; project?: boolean; branch?: string; json?: boolean },
+			) => {
+				const root = resolveRoot(opts.root)
+				const scopeExplicit = opts.global || opts.project
+				const interactive = isInteractive() && !opts.json && !scopeExplicit && !name
+
+				if (interactive) {
+					const rl = createRl()
+					let updateScope: 'project' | 'global' | 'both'
+					try {
+						updateScope = await promptUpdateScopeSelect(rl)
+					} catch (err) {
+						if (err instanceof CancelError) {
+							console.log('\nCancelled.')
+							return
+						}
+						throw err
+					} finally {
+						rl.close()
+					}
+
+					const scopes: Array<'project' | 'global'> =
+						updateScope === 'both' ? ['project', 'global'] : [updateScope]
+					const allResults: Array<{ scope: string; results: Awaited<ReturnType<typeof updateAllSkills>> }> = []
+					for (const s of scopes) {
+						const results = await updateAllSkills({ root, scope: s })
+						allResults.push({ scope: s, results })
+					}
+					output(allResults, () => {
+						for (const { scope: s, results } of allResults) {
+							if (scopes.length > 1) console.log(`\n[${s}]`)
+							for (const r of results) console.log(`${r.updated ? '+' : '!'} ${r.name}: ${r.message}`)
+						}
+					})
+					return
+				}
+
+				const scope = resolveScope(opts.global)
+				if (name) {
+					const result = await updateSkill(name, { root, scope })
+					output(result, () => console.log(result.message))
+					if (!result.updated) process.exit(1)
+				} else {
+					const results = await updateAllSkills({ root, scope })
+					output(results, () => {
+						for (const r of results) console.log(`${r.updated ? '+' : '!'} ${r.name}: ${r.message}`)
+					})
+				}
+			},
+		)
 }
 
 export function listCommand(): Command {
