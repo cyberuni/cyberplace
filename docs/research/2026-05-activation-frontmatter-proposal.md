@@ -1,6 +1,6 @@
 # Activation frontmatter proposal (May 2026)
 
-Draft for upstream discussion with [Agent Skills](https://agentskills.io). **Normative rules in this repo:** `governance show skill-design` (Activation section). **Related ADR:** [ADR-0005: Skill Taxonomy](../adr/0005-skill-taxonomy.md).
+Draft for upstream discussion with [Agent Skills](https://agentskills.io). **Upstream comment:** [agentskills#57 — merged `activation.lifecycle` proposal](https://github.com/agentskills/agentskills/issues/57#issuecomment-4540026815). **Normative rules in this repo:** `governance show skill-design` (Activation section). **Related ADR:** [ADR-0005: Skill Taxonomy](../adr/0005-skill-taxonomy.md).
 
 ---
 
@@ -126,6 +126,8 @@ metadata:
 
 ## Suggested upstream path
 
+**Posted:** [agentskills#57 comment — merged activation block (`activation.lifecycle`)](https://github.com/agentskills/agentskills/issues/57#issuecomment-4540026815) (canonical upstream thread; supersedes [discussion #408](https://github.com/agentskills/agentskills/discussions/408)).
+
 **Phase 1:** Document `activation` as a recommended metadata key with the mapping table above (metadata conventions appendix or companion doc). Align with [agentskills#271](https://github.com/agentskills/agentskills/issues/271) extended frontmatter discussions.
 
 **Phase 2:** Hosts and tooling (e.g. cyber-skills `hook register`) read `metadata.activation` from skill frontmatter and map to native hook config.
@@ -147,6 +149,7 @@ metadata:
 
 ## Sources
 
+- [agentskills#57 — activation mechanisms RFC (merged proposal comment)](https://github.com/agentskills/agentskills/issues/57#issuecomment-4540026815)
 - [Agent Skills specification](https://agentskills.io/specification)
 - [Cursor third-party hooks mapping](https://cursor.com/docs/reference/third-party-hooks)
 - [Claude Code skills docs](https://code.claude.com/docs/en/skills)
