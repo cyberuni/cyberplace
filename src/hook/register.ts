@@ -63,13 +63,21 @@ function writeJson(path: string, data: unknown) {
 	writeFileSync(path, JSON.stringify(data, null, 2) + '\n')
 }
 
+function hookEntries(group: ClaudeHookGroup): ClaudeHookEntry[] {
+	if (!Array.isArray(group.hooks)) {
+		group.hooks = []
+	}
+	return group.hooks
+}
+
 function commandExistsInGroups(groups: ClaudeHookGroup[], def: HookDefinition): boolean {
-	return groups.some((g) => g.hooks.some((h) => commandMatchesHook(h.command, def.id, def.command)))
+	return groups.some((g) => hookEntries(g).some((h) => commandMatchesHook(h?.command, def.id, def.command)))
 }
 
 function replaceHookInGroups(groups: ClaudeHookGroup[], def: HookDefinition): boolean {
 	for (const group of groups) {
-		for (const hook of group.hooks) {
+		for (const hook of hookEntries(group)) {
+			if (!hook) continue
 			if (sameHookTarget(hook.command, def.id, def.command) && hook.command !== def.command) {
 				hook.command = def.command
 				return true
@@ -81,6 +89,7 @@ function replaceHookInGroups(groups: ClaudeHookGroup[], def: HookDefinition): bo
 
 function replaceHookInList(list: CursorHookEntry[], def: HookDefinition): boolean {
 	for (const hook of list) {
+		if (!hook) continue
 		if (sameHookTarget(hook.command, def.id, def.command) && hook.command !== def.command) {
 			hook.command = def.command
 			return true
@@ -117,10 +126,12 @@ function registerClaudeHook(
 			})
 		}
 	} else {
-		if (settings.hooks.SessionStart!.length > 0) {
-			settings.hooks.SessionStart![0]!.hooks.push({ type: 'command', command: def.command })
+		const sessionStart = settings.hooks.SessionStart!
+		if (sessionStart.length > 0) {
+			const group = sessionStart[0]!
+			hookEntries(group).push({ type: 'command', command: def.command })
 		} else {
-			settings.hooks.SessionStart!.push({ hooks: [{ type: 'command', command: def.command }] })
+			sessionStart.push({ hooks: [{ type: 'command', command: def.command }] })
 		}
 	}
 	return true
@@ -139,7 +150,7 @@ function registerCursorHook(
 	if (replaceHookInList(list, def)) {
 		return true
 	}
-	if (list.some((h) => commandMatchesHook(h.command, def.id, def.command))) {
+	if (list.some((h) => h && commandMatchesHook(h.command, def.id, def.command))) {
 		return false
 	}
 	list.push({ command: def.command })

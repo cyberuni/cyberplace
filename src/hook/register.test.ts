@@ -263,3 +263,69 @@ test('running twice produces no duplicate hooks', () => {
 		},
 	)
 })
+
+test('registers when existing hook entry has no command', () => {
+	withTempRoot(
+		(root) => {
+			fs.mkdirSync(path.join(root, '.claude'))
+			fs.writeFileSync(
+				path.join(root, '.claude', 'settings.json'),
+				JSON.stringify({
+					hooks: {
+						SessionStart: [{ hooks: [{ type: 'command' }] }],
+					},
+				}),
+			)
+		},
+		(root) => {
+			const results = registerHook(
+				{
+					name: 'commit-discipline',
+					event: 'SessionStart',
+					extract: 'AGENTS.md',
+					heading: 'Commit Discipline',
+				},
+				{ root },
+			)
+			expect(results.find((r) => r.agent === 'Claude Code')?.status).toBe('registered')
+
+			const settings = readJson(path.join(root, '.claude', 'settings.json')) as {
+				hooks: { SessionStart: Array<{ hooks: Array<{ command?: string }> }> }
+			}
+			const commands = settings.hooks.SessionStart[0]?.hooks.map((h) => h.command) ?? []
+			expect(commands.some((c) => c?.includes('--name commit-discipline'))).toBe(true)
+		},
+	)
+})
+
+test('registers when cursor hook entry has null command', () => {
+	withTempRoot(
+		(root) => {
+			fs.mkdirSync(path.join(root, '.cursor'))
+			fs.writeFileSync(
+				path.join(root, '.cursor', 'hooks.json'),
+				JSON.stringify({
+					version: 1,
+					hooks: { sessionStart: [{ command: null }] },
+				}),
+			)
+		},
+		(root) => {
+			const results = registerHook(
+				{
+					name: 'commit-discipline',
+					event: 'SessionStart',
+					extract: 'AGENTS.md',
+					heading: 'Commit Discipline',
+				},
+				{ root },
+			)
+			expect(results.find((r) => r.agent === 'Cursor')?.status).toBe('registered')
+
+			const settings = readJson(path.join(root, '.cursor', 'hooks.json')) as {
+				hooks: { sessionStart: Array<{ command: string | null }> }
+			}
+			expect(settings.hooks.sessionStart.some((h) => h.command?.includes('--name commit-discipline'))).toBe(true)
+		},
+	)
+})
