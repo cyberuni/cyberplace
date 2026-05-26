@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "skills": {
+    "add-changeset": {
+      "spec": "repobuddy/agent-changesets:add-changeset",
+      "source": "repobuddy/agent-changesets",
+      "sourceType": "github",
+      "skillPath": "skills/add-changeset/SKILL.md",
+      "installedAt": "/home/unional/code/cyberuni/cyber-skills/.agents/skills/add-changeset/SKILL.md",
+      "computedHash": "8a5266fe92b2f9f755238564e44b5b44e1b5ce0a469d5659c1b03d49dd590dd1"
+    },
+    "audit-skill": {
+      "spec": "cyberuni/cyber-skills:audit-skill",
+      "source": "cyberuni/cyber-skills",
+      "sourceType": "github",
+      "skillPath": "skills/audit-skill/SKILL.md",
+      "installedAt": "/home/unional/code/cyberuni/cyber-skills/.agents/skills/audit-skill/SKILL.md",
+      "computedHash": "0597babb0ec4d31f4c7836802558438604fab66aeb4cc2a89512028ed82dbc01"
+    },
+    "create-issue": {
+      "spec": "repobuddy/repobuddy:create-issue",
+      "source": "repobuddy/repobuddy",
+      "sourceType": "github",
+      "skillPath": "skills/create-issue/SKILL.md",
+      "installedAt": "/home/unional/code/cyberuni/cyber-skills/.agents/skills/create-issue/SKILL.md",
+      "computedHash": "a34e03da771bd2a55af2cc90bd63f64edf460aff3f7b8cbad01227db3555a593"
+    },
+    "create-skill": {
+      "spec": "cyberuni/cyber-skills:create-skill",
+      "source": "cyberuni/cyber-skills",
+      "sourceType": "github",
+      "skillPath": "skills/create-skill/SKILL.md",
+      "installedAt": "/home/unional/code/cyberuni/cyber-skills/.agents/skills/create-skill/SKILL.md",
+      "computedHash": "bdb47a40ada243d9530331cd99bdf280c6b8ba115b5725b78ef16f78dabf6009"
+    },
+    "find-awesome-skill": {
+      "spec": "cyberuni/cyber-skills:find-awesome-skill",
+      "source": "cyberuni/cyber-skills",
+      "sourceType": "github",
+      "skillPath": "skills/find-awesome-skill/SKILL.md",
+      "installedAt": "/home/unional/code/cyberuni/cyber-skills/.agents/skills/find-awesome-skill/SKILL.md",
+      "computedHash": "acbd0e80274bce1969efedec72c1e4dfb84239761e5023392167dd71dbd3b5ea"
+    },
+    "fix-security-pr": {
+      "spec": "repobuddy/agent-security:fix-security-pr",
+      "source": "repobuddy/agent-security",
+      "sourceType": "github",
+      "skillPath": "skills/fix-security-pr/SKILL.md",
+      "installedAt": "/home/unional/code/cyberuni/cyber-skills/.agents/skills/fix-security-pr/SKILL.md",
+      "computedHash": "d78b2e51db20d5e19948faa0428ef3a1d51efed14706d4dc58cea2dfc6ef6530"
+    },
+    "merge-dep-prs": {
+      "spec": "repobuddy/repobuddy:merge-dep-prs",
+      "source": "repobuddy/repobuddy",
+      "sourceType": "github",
+      "skillPath": "skills/merge-dep-prs/SKILL.md",
+      "installedAt": "/home/unional/code/cyberuni/cyber-skills/.agents/skills/merge-dep-prs/SKILL.md",
+      "computedHash": "e360aff8316401b610997b3ea5c6e057341608d565a13deb3a18ca83eaef4a98"
+    },
+    "patch-skill": {
+      "spec": "cyberuni/cyber-skills:patch-skill",
+      "source": "cyberuni/cyber-skills",
+      "sourceType": "github",
+      "skillPath": "skills/patch-skill/SKILL.md",
+      "installedAt": "/home/unional/code/cyberuni/cyber-skills/.agents/skills/patch-skill/SKILL.md",
+      "computedHash": "d26987ecc8b931867091b3e3a688c2c35f122d0309ee3dc74f73eaeb3367fb32"
+    },
+    "skillify": {
+      "spec": "cyberuni/cyber-skills:skillify",
+      "source": "cyberuni/cyber-skills",
+      "sourceType": "github",
+      "skillPath": "skills/skillify/SKILL.md",
+      "installedAt": "/home/unional/code/cyberuni/cyber-skills/.agents/skills/skillify/SKILL.md",
+      "computedHash": "cdbe90da74a6c3894c92bdf7abcca9ef01ef6d652857cb64b119d505b9cee19c"
+    }
+  }
+}
