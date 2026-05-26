@@ -1,5 +1,15 @@
 # cyber-skills
 
+## 0.5.0
+
+### Minor Changes
+
+- 9c5063f: Document universal `metadata.activation` as normalized hook lifecycle events in skill-design governance, revise create-persona-skill and create-skill guidance, gloss ADR-0005, and add an upstream activation frontmatter proposal draft.
+
+### Patch Changes
+
+- e2cec0c: Fix `init-commit-discipline` to not prompt for `npx --yes` install consent; defer to `init` skill where consent is obtained.
+
 ## 0.4.3
 
 ### Patch Changes
