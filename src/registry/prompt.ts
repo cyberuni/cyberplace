@@ -1,6 +1,14 @@
+import * as rl from 'node:readline'
 import { createInterface } from 'node:readline/promises'
 
 export type RlInterface = ReturnType<typeof createInterface>
+
+export class CancelError extends Error {
+	constructor() {
+		super('cancelled')
+		this.name = 'CancelError'
+	}
+}
 
 export function isInteractive(): boolean {
 	return process.stdin.isTTY === true && process.stdout.isTTY === true
@@ -10,6 +18,52 @@ export function createRl(): RlInterface {
 	return createInterface({ input: process.stdin, output: process.stdout })
 }
 
+async function questionWithEsc(iface: RlInterface, prompt: string): Promise<string> {
+	if (!process.stdin.isTTY) {
+		return iface.question(prompt)
+	}
+
+	rl.emitKeypressEvents(process.stdin, iface as unknown as rl.Interface)
+	const stdin = process.stdin as NodeJS.ReadStream & { isRaw?: boolean }
+	const wasRaw = stdin.isRaw ?? false
+	if (!wasRaw) stdin.setRawMode(true)
+
+	return new Promise((resolve, reject) => {
+		let done = false
+
+		const finish = (fn: () => void) => {
+			if (done) return
+			done = true
+			if (!wasRaw) stdin.setRawMode(false)
+			stdin.removeListener('keypress', onKeypress)
+			fn()
+		}
+
+		const onKeypress = (_: unknown, key: { name?: string; ctrl?: boolean } | undefined) => {
+			if (key?.name === 'escape') {
+				finish(() => {
+					iface.close()
+					reject(new CancelError())
+				})
+			} else if (key?.ctrl && key?.name === 'c') {
+				finish(() => {
+					iface.close()
+					process.exit(0)
+				})
+			}
+		}
+
+		stdin.on('keypress', onKeypress)
+
+		iface.question(prompt).then(
+			(answer) => finish(() => resolve(answer)),
+			(err) => {
+				if (!done) finish(() => reject(err))
+			},
+		)
+	})
+}
+
 export interface SelectItem {
 	value: string
 	label: string
@@ -17,7 +71,7 @@ export interface SelectItem {
 	group?: string
 }
 
-export async function promptSkillSelect(rl: RlInterface, items: SelectItem[], source: string): Promise<string[]> {
+export async function promptSkillSelect(iface: RlInterface, items: SelectItem[], source: string): Promise<string[]> {
 	console.log(`\nAvailable skills from ${source}:\n`)
 
 	const groups = new Map<string, SelectItem[]>()
@@ -54,7 +108,7 @@ export async function promptSkillSelect(rl: RlInterface, items: SelectItem[], so
 		console.log()
 	}
 
-	const answer = await rl.question('Select skills (numbers comma-separated, or "all") [all]: ')
+	const answer = await questionWithEsc(iface, 'Select skills (numbers comma-separated, or "all") [all]: ')
 	const trimmed = answer.trim().toLowerCase()
 
 	if (!trimmed || trimmed === 'all') return items.map((item) => item.value)
@@ -68,11 +122,11 @@ export async function promptSkillSelect(rl: RlInterface, items: SelectItem[], so
 	return selected
 }
 
-export async function promptScopeSelect(rl: RlInterface): Promise<'project' | 'global'> {
+export async function promptScopeSelect(iface: RlInterface): Promise<'project' | 'global'> {
 	console.log('\nInstall scope:')
 	console.log('  [p] project  Install in current directory (committed with project)')
 	console.log('  [g] global   Install in home directory (available across all projects)')
-	const answer = await rl.question('Choose [p]: ')
+	const answer = await questionWithEsc(iface, 'Choose [p]: ')
 	const trimmed = answer.trim().toLowerCase()
 	return trimmed === 'g' || trimmed === 'global' ? 'global' : 'project'
 }
