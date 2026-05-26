@@ -14,14 +14,9 @@ export interface FindOptions {
 	scope?: ConfigScope
 }
 
-const DEFAULT_GITHUB_PROVIDER: Provider = { url: 'https://github.com', type: 'github' }
 const CYBER_SKILLS_REPO = 'cyberuni/cyber-skills'
 
-async function searchProvider(
-	provider: Provider | null,
-	ownerRepo: string,
-	query: string,
-): Promise<FoundSkill[]> {
+async function searchProvider(provider: Provider | null, ownerRepo: string, query: string): Promise<FoundSkill[]> {
 	const [owner, repo] = ownerRepo.split('/')
 	if (!owner || !repo) return []
 
@@ -61,8 +56,6 @@ export async function findSkills(query: string, options: FindOptions): Promise<F
 		// for custom providers, we search the registry root — the user needs to specify a repo
 		// skip providers without a known repo listing (they're addressed via org/repo spec directly)
 		if (provider.type === 'github') {
-			// custom github instance — skip, no default repo to search
-			continue
 		}
 	}
 

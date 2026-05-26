@@ -1,6 +1,6 @@
-import { type ConfigScope, readConfig } from './config.js'
-import { type LockScope, getLockEntry, readLock } from './lock.js'
 import { addSkill } from './add.js'
+import type { ConfigScope } from './config.js'
+import { getLockEntry, type LockScope, readLock } from './lock.js'
 
 export interface UpdateOptions {
 	root: string

@@ -2,9 +2,8 @@ import * as fs from 'node:fs'
 import * as os from 'node:os'
 import * as path from 'node:path'
 import { afterEach, beforeEach, expect, test } from 'vitest'
-
-import { readLock } from './lock.js'
 import { readConfig } from './config.js'
+import { readLock } from './lock.js'
 import { migrate } from './migrate.js'
 
 let root: string

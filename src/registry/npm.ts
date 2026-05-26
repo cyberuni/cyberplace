@@ -24,9 +24,12 @@ export function resolveNodeModulesDir(root: string, packageName: string): string
 export function installNpmPackage(root: string, packageName: string): NpmInstallResult {
 	const pm = detectPackageManager(root)
 
-	const args: string[] = pm === 'pnpm' ? ['add', '--save-dev', packageName]
-		: pm === 'yarn' ? ['add', '--dev', packageName]
-		: ['install', '--save-dev', packageName]
+	const args: string[] =
+		pm === 'pnpm'
+			? ['add', '--save-dev', packageName]
+			: pm === 'yarn'
+				? ['add', '--dev', packageName]
+				: ['install', '--save-dev', packageName]
 
 	const result = spawnSync(pm, args, { cwd: root, encoding: 'utf8', stdio: 'inherit' })
 	if (result.status !== 0) {

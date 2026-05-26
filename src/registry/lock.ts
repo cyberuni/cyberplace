@@ -27,7 +27,7 @@ export function readLock(root: string, scope: LockScope): CyberSkillsLock {
 	const filePath = getLockPath(root, scope)
 	if (!fs.existsSync(filePath)) return { version: 1, skills: {} }
 	try {
-		const raw = JSON.parse(fs.readFileSync(filePath, 'utf8')) as CyberSkillsLock
+		const raw = JSON.parse(fs.readFileSync(filePath, 'utf8')) as Omit<CyberSkillsLock, 'version' | 'skills'>
 		return { version: 1, skills: {}, ...raw }
 	} catch {
 		return { version: 1, skills: {} }

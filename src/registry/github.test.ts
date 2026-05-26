@@ -59,10 +59,7 @@ test('fetchSkillContent uses GitLab raw URL for gitlab provider', async () => {
 })
 
 test('fetchSkillContent throws on non-ok response', async () => {
-	vi.stubGlobal(
-		'fetch',
-		vi.fn().mockResolvedValue({ ok: false, status: 404, statusText: 'Not Found' }),
-	)
+	vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, status: 404, statusText: 'Not Found' }))
 
 	await expect(fetchSkillContent(null, 'org', 'repo', 'skills/commit/SKILL.md')).rejects.toThrow('404')
 })
@@ -91,7 +88,8 @@ test('listRepoSkills falls back to GitHub API when awesome-skills.json absent', 
 	]
 	vi.stubGlobal(
 		'fetch',
-		vi.fn()
+		vi
+			.fn()
 			.mockResolvedValueOnce({ ok: false, status: 404, statusText: 'Not Found' }) // awesome-skills.json missing
 			.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(githubResponse) }),
 	)
@@ -110,7 +108,13 @@ test('fetchAndInstallSkill installs a single named skill', async () => {
 		}),
 	)
 
-	const spec: RepoSpec = { type: 'repo', owner: 'cyberuni', repo: 'cyber-skills', skill: 'commit', raw: 'cyberuni/cyber-skills:commit' }
+	const spec: RepoSpec = {
+		type: 'repo',
+		owner: 'cyberuni',
+		repo: 'cyber-skills',
+		skill: 'commit',
+		raw: 'cyberuni/cyber-skills:commit',
+	}
 	const installed = await fetchAndInstallSkill(null, spec, root)
 
 	expect(installed).toHaveLength(1)
@@ -125,7 +129,8 @@ test('fetchAndInstallSkill installs all skills when no skill name given', async 
 	]
 	vi.stubGlobal(
 		'fetch',
-		vi.fn()
+		vi
+			.fn()
 			.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(awesomeData) }) // awesome-skills.json
 			.mockResolvedValue({ ok: true, text: () => Promise.resolve('# skill content') }),
 	)
