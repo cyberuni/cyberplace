@@ -44,13 +44,25 @@ Detect the user's setup (package manager, monorepo shape, editor, OS paths) at r
 
 Where a skill file lives depends on who consumes it. Whole-repo layout (manifests, CI, archetypes) is covered in **skill-repo-structure** — load from References when scaffolding a library repo.
 
-### Skill kinds
+### Skill placement
 
-| Kind | Location | Use case |
+Use **placement** for where a skill lives; do not call this axis "type".
+
+| Placement | Location | Use case |
 | --- | --- | --- |
-| **Global** | `~/.agents/skills/<name>/` | Personal skills across all projects |
-| **Repo internal** | `.agents/skills/<name>/` | Contributor tooling scoped to one repo |
-| **Repo public** | `skills/<name>/` | Shipped with a package or installed via `npx skills add` |
+| **User** | `~/.agents/skills/<name>/` | Personal skills across all projects |
+| **Project private** | `.agents/skills/<name>/` | Contributor tooling scoped to one repo |
+| **Project public** | `skills/<name>/` | Shipped with a package or installed via `npx skills add` |
+
+### Skill patterns
+
+Use **pattern** for the workflow shape; do not overload "kind" or "type" here.
+
+| Pattern | Use case |
+| --- | --- |
+| **Process** | Multi-step workflows where sequence and decision logic matter |
+| **Tool-based** | Workflows centered on consistent use of tools, systems, or connectors |
+| **Standard** | Workflows that enforce tone, structure, formatting, or quality bars |
 
 Repo-internal skills must include `metadata: internal: true` in frontmatter.
 

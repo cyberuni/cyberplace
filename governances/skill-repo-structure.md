@@ -96,11 +96,11 @@ Do not treat plugin-bundle layout as the default — most repos use flat `skills
 
 These extend **skill-design** placement rules for library repos:
 
-| Kind | Location | Notes |
+| Placement | Location | Notes |
 | --- | --- | --- |
-| **Global** | `~/.agents/skills/<name>/` | User machine; not in the skill repo |
-| **Repo internal** | `.agents/skills/<name>/` | `metadata: internal: true`; not shipped in `npx skills add` public tree |
-| **Repo public** | `skills/<name>/` | Installed by consumers |
+| **User** | `~/.agents/skills/<name>/` | User machine; not in the skill repo |
+| **Project private** | `.agents/skills/<name>/` | `metadata: internal: true`; not shipped in `npx skills add` public tree |
+| **Project public** | `skills/<name>/` | Installed by consumers |
 
 **Upstream patches** from a local install always map to `skills/<name>/…` in the source repo — never `.agents/skills/` in upstream.
 

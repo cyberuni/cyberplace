@@ -34,13 +34,23 @@ From the session history, extract:
 
 Separate decisions from documentation. The skill should encode what to decide and how — not reference material the model already knows.
 
-### 2. Determine skill kind
+### 2. Determine skill placement and pattern
 
-| Signal | Kind |
+Placement:
+
+| Signal | Placement |
 |---|---|
-| Workflow is personal, not tied to a specific codebase | Global (`~/.agents/skills/<name>/`) |
-| Workflow only makes sense for contributors to this repo | Repo internal (`.agents/skills/<name>/`) |
-| Workflow is meant to be installed by users of this package | Repo public (`skills/<name>/`) |
+| Workflow is personal, not tied to a specific codebase | User (`~/.agents/skills/<name>/`) |
+| Workflow only makes sense for contributors to this repo | Project private (`.agents/skills/<name>/`) |
+| Workflow is meant to be installed by users of this package | Project public (`skills/<name>/`) |
+
+Pattern:
+
+| Signal | Pattern |
+|---|---|
+| Ordered workflow with multiple decisions or phases | Process |
+| Workflow centered on calling tools or external systems | Tool-based |
+| Workflow mainly enforcing tone, structure, or quality | Standard |
 
 Ask the user if the context is ambiguous.
 

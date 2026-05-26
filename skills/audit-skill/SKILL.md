@@ -68,13 +68,13 @@ Do not run `npx skills add` or any install command until the audit passes.
 
 ### 1. Identify target
 
-Skills live in three locations depending on their kind:
+Skills live in three locations depending on their placement:
 
-| Kind | Location |
+| Placement | Location |
 |---|---|
-| Global | `~/.agents/skills/<name>/SKILL.md` |
-| Repo internal | `.agents/skills/<name>/SKILL.md` |
-| Repo public | `skills/<name>/SKILL.md` |
+| User | `~/.agents/skills/<name>/SKILL.md` |
+| Project private | `.agents/skills/<name>/SKILL.md` |
+| Project public | `skills/<name>/SKILL.md` |
 
 If the user names a specific skill, locate its SKILL.md in whichever of these directories contains it (or in the temp dir from step 0).
 If no skill is named, audit every SKILL.md found across all three locations in the current repo (deduplicate by real path to avoid double-counting symlinks).

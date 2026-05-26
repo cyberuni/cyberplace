@@ -3,7 +3,7 @@ import * as os from 'node:os'
 import * as path from 'node:path'
 
 type EntryType = 'repo' | 'skill'
-type RepoKind = 'targeted' | 'broad-catalog'
+type CatalogKind = 'targeted' | 'broad-catalog'
 type TrustLevel = 'authored' | 'recommended'
 type HighlightType = 'skill' | 'bundle' | 'workflow' | 'plugin' | 'mcp-server' | 'cli' | 'app' | 'doc'
 type SourceClass = 'local-private' | 'repo-shared' | 'global-user' | 'default'
@@ -19,7 +19,7 @@ interface Highlight {
 interface RepoEntry {
 	type: 'repo'
 	repo: string
-	kind: RepoKind
+	kind: CatalogKind
 	trust: TrustLevel
 	summary: string
 	why_recommended: string
@@ -31,7 +31,7 @@ interface SkillEntry {
 	type: 'skill'
 	repo: string
 	skill: string
-	kind: RepoKind
+	kind: CatalogKind
 	trust: TrustLevel
 	summary: string
 	why_recommended: string
@@ -73,7 +73,7 @@ interface AggregatedEntry {
 	type: EntryType
 	repo: string
 	skill?: string
-	kind: RepoKind
+	kind: CatalogKind
 	trust: TrustLevel
 	summary: string
 	why_recommended: string

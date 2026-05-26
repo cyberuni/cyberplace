@@ -29,7 +29,7 @@ export function awesomeCommand(): Command {
 				console.log(query ? `Awesome skill matches for "${query}":` : 'Awesome skill recommendations:')
 				for (const result of results) {
 					const title = result.type === 'repo' ? result.repo : `${result.repo}#${result.skill}`
-					console.log(`\n- ${title} (${result.kind}, ${result.trust})`)
+					console.log(`\n- ${title} (catalog ${result.kind}, ${result.trust})`)
 					console.log(`  ${result.summary}`)
 					console.log(`  Why recommended: ${result.why_recommended}`)
 					if (result.reasons.length > 0) console.log(`  Match: ${result.reasons.join('; ')}`)

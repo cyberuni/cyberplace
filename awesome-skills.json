@@ -19,7 +19,7 @@
 				{
 					"type": "skill",
 					"key": "create-skill",
-					"summary": "Create a new skill and place it in the right global, repo-internal, or repo-public location.",
+					"summary": "Create a new skill and place it in the right user, project-private, or project-public location.",
 					"why_recommended": "Helps keep skill repositories scoped correctly instead of mixing private and public workflows.",
 					"tags": ["skill-authoring", "scaffolding"]
 				},
