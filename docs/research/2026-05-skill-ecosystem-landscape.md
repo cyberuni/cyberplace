@@ -7,7 +7,7 @@ Background research for cyber-skills repo structure, external governance federat
 - [ADR-0002: External governance federation](../adr/0002-external-governance-federation.md)
 - Governance: `governance show skill-repo-structure` (after build)
 - [ADR-0001: Governance vs discipline taxonomy](../adr/0001-governance-vs-discipline-taxonomy.md)
-- [Activation frontmatter proposal](2026-05-activation-frontmatter-proposal.md)
+- [Activation frontmatter proposal](2026-05-activation-frontmatter-proposal.md) — [upstream comment on agentskills#57](https://github.com/agentskills/agentskills/issues/57#issuecomment-4540026815)
 
 ---
 

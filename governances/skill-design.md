@@ -180,5 +180,3 @@ Related governances (load on demand; read stdout as authoritative):
 npx cyber-skills@<version> governance show skill-repo-structure
 npx cyber-skills@<version> governance show agent-tool-output
 ```
-
-Upstream activation draft: `docs/research/2026-05-activation-frontmatter-proposal.md` (research only — not loaded via CLI).

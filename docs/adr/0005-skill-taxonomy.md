@@ -156,4 +156,4 @@ Do not change the awesome catalog schema in the same step.
 
 - [ADR-0001: Governance vs Discipline Taxonomy](0001-governance-vs-discipline-taxonomy.md)
 - [ADR-0003: Agent-first Authoring](0003-agent-first-authoring.md)
-- [Activation frontmatter proposal](../research/2026-05-activation-frontmatter-proposal.md) — upstream draft for `metadata.activation`
+- [Activation frontmatter proposal](../research/2026-05-activation-frontmatter-proposal.md) — upstream draft for `metadata.activation`; [posted on agentskills#57](https://github.com/agentskills/agentskills/issues/57#issuecomment-4540026815)
