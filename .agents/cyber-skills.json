@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "skills": {
+    "add-changeset": "repobuddy/agent-changesets",
+    "audit-skill": "cyberuni/cyber-skills",
+    "create-issue": "repobuddy/repobuddy",
+    "create-skill": "cyberuni/cyber-skills",
+    "find-awesome-skill": "cyberuni/cyber-skills",
+    "fix-security-pr": "repobuddy/agent-security",
+    "merge-dep-prs": "repobuddy/repobuddy",
+    "patch-skill": "cyberuni/cyber-skills",
+    "skillify": "cyberuni/cyber-skills"
+  }
+}
