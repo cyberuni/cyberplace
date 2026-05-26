@@ -39,19 +39,6 @@ When reading any `SKILL.md` file, always check whether a `SKILL.local.md` exists
 - If there are Cursor rules (in `.cursor/rules/` or `.cursorrules`) or Copilot rules (in `.github/copilot-instructions.md`), include the important parts.
 - If there is a README.md, include the important parts.
 
-## Repo-internal skills
-
-After writing AGENTS.md, scan for repo-internal skills and mark them. For each `SKILL.md` found under `.agents/skills/`, ensure the frontmatter includes:
-
-```yaml
-metadata:
-  internal: true
-```
-
-Add it if missing. This prevents these skills from being accidentally surfaced as public or globally available.
-
-**Ongoing rule:** When writing or editing any `SKILL.md` under `.agents/skills/`, always include `metadata: internal: true` in the frontmatter.
-
 ## Ensure cyber-skills package
 
 Check in order:
@@ -60,6 +47,16 @@ Check in order:
 2. **Existing devDependency** — if `cyber-skills` is already in `package.json`, use `pnpm exec cyber-skills` or the local bin.
 3. **Optional devDependency** — when the user needs offline CLI access and the AI agent runs locally against that repo: `pnpm add -D cyber-skills`.
 4. If neither npx nor a local install works, ask the user to confirm an exact pinned version or opt in to the devDependency above.
+
+## Repo-internal skills
+
+After writing AGENTS.md, repair repo-private skills with the CLI — do not read each `SKILL.md` under `.agents/skills/` manually.
+
+Run `skill repair-private` using the CLI resolved above. Use `skill validate-private` to check without writing.
+
+This sets `metadata: internal: true` on repo-private skills and removes erroneous symlinks into `skills/`.
+
+**Ongoing rule:** When writing or editing any `SKILL.md` under `.agents/skills/`, always include `metadata: internal: true` in the frontmatter.
 
 ## CLAUDE.md symlink
 
