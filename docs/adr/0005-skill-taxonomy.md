@@ -1,4 +1,4 @@
-# ADR-0005: Skill Placement vs Pattern Taxonomy
+# ADR-0005: Skill Taxonomy
 
 ## Status
 
@@ -29,6 +29,8 @@ External product language is more explicit:
 - Anthropic separates **project instructions**, **styles**, **roles/perspectives**, and **subagents**.
 - Anthropic and related tooling also use scope-like words such as **user**, **project**, and **local**.
 
+In the wild, a distinct class of skills loads an expert stance — orchestrator, designer, product manager, security auditor — into the session. These are widely called **persona skills** and split into two activation modes: invoked once at session start to set identity for the whole session, or triggered per-situation like a slash command. Neither the placement axis nor the existing pattern values covered this.
+
 ## Decision Drivers
 
 - Remove ambiguity between placement and workflow shape.
@@ -36,6 +38,7 @@ External product language is more explicit:
 - Avoid breaking the existing awesome catalog schema without a migration plan.
 - Keep authoring guidance short enough for agent-loaded artifacts.
 - Make future metadata fields composable instead of overloading one label.
+- Cover persona/role skills, which are common in the wild but not described by process/tool-based/standard.
 
 ## Decision
 
@@ -44,11 +47,12 @@ Adopt this taxonomy:
 | Concern | Term | Meaning |
 | --- | --- | --- |
 | Where a skill lives | **Placement** | User vs project-private vs project-public |
-| What workflow shape it encodes | **Pattern** | Process vs tool-based vs standard |
+| What workflow shape it encodes | **Pattern** | Process vs tool-based vs standard vs persona |
 | Expert stance, if any | **Role** | Reviewer, analyst, designer, etc. |
 | Output voice/format, if any | **Style** | Concise, formal, brand voice, etc. |
 | External systems or tools needed | **Capabilities** | Tools, actions, connectors, apps |
 | Reference corpus or domain material | **Knowledge** | Uploaded files, references, templates, schemas |
+| When it activates | **Activation** | Session-start vs per-situation |
 
 ### Placement values
 
@@ -71,14 +75,23 @@ Use these names for workflow shape:
 | `process` | Ordered multi-step workflow with decisions or phases |
 | `tool-based` | Workflow centered on tools, systems, or connectors |
 | `standard` | Workflow that enforces tone, structure, formatting, or quality |
+| `persona` | Loads an expert stance, decision style, and working behavior into the session |
 
 Do not use **type** for this axis in repo-facing docs.
+
+### Activation values
+
+| Activation | Meaning |
+| --- | --- |
+| `session-start` | Invoked once; sets identity or context for the whole session |
+| `per-situation` | Triggered by task match; scoped to a single request |
+
+Persona skills almost always use `session-start` activation. Process, tool-based, and standard skills typically use `per-situation`. Declare activation explicitly in frontmatter when it is non-obvious.
 
 ### What not to call a skill type
 
 Do not treat these as primary skill types:
 
-- Persona
 - Role
 - Tone
 - Style
@@ -86,7 +99,7 @@ Do not treat these as primary skill types:
 - Tools
 - Knowledge
 
-Model them as orthogonal attributes when needed.
+Model them as orthogonal attributes when needed. The exception is **persona** — it is the workflow shape for role-loading skills and belongs under **Pattern**.
 
 ## Awesome Catalog Compatibility
 
@@ -111,12 +124,15 @@ Within TypeScript, prefer names such as **catalog kind** or `CatalogKind` to avo
 - Leaves room for future metadata without another rename.
 - Matches common external terminology more closely.
 - Reduces ambiguity in agent-loaded skills and governances.
+- Persona skills are now a first-class pattern — authoring guidance and audit rules can reference them explicitly.
+- Activation mode distinguishes session-start persona skills from per-situation slash-command-style skills.
 
 ### Negative
 
 - Contributors must learn new names for the old placement labels.
 - Repo docs now use a more explicit taxonomy than some adjacent tools.
 - The awesome catalog still carries historical `kind` naming until a schema migration is planned.
+- Adding `persona` as a fourth pattern value means existing tooling that enumerates patterns needs updating.
 
 ## Migration Guidance
 
@@ -127,6 +143,8 @@ Update repo-facing docs and skills as follows:
 - `Repo internal` → `Project private`
 - `Repo public` → `Project public`
 - `skill type` for workflow shape → `skill pattern`
+
+Persona skills must declare `metadata.persona: true` in frontmatter. The `audit-skill` E2 rule (prompt injection check) already exempts declared persona skills from flagging role-loading phrases.
 
 Do not change the awesome catalog schema in the same step.
 
