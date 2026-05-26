@@ -10,6 +10,7 @@ Add `add`, `remove`, `update`, `list`, `find`, `migrate`, and `config provider` 
 - `cyber-skills find [query]` searches `cyberuni/cyber-skills` or a custom repo.
 - `cyber-skills migrate` imports existing `skills-lock.json` entries into the new `.agents/cyber-skills-lock.json` format.
 - `cyber-skills config provider add <url>` registers a custom skill source (GitHub, GitLab, or custom).
-- Press `Esc` at any interactive `add` prompt to cancel without installing.
+- Press `Esc` at any interactive `add` or `update` prompt to cancel.
+- `cyber-skills update` (interactive, no flags) asks whether to update project skills, global skills, or both (default: both).
 
 Config is stored in `.agents/cyber-skills.json`; the lock is stored in `.agents/cyber-skills-lock.json`.
