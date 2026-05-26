@@ -2,7 +2,7 @@ import * as fs from 'node:fs'
 import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
 
-export type ProviderType = 'github' | 'gitlab' | 'custom'
+export type ProviderType = 'github' | 'gitlab' | 'custom' | 'marketplace'
 
 export interface Provider {
 	url: string
@@ -44,11 +44,12 @@ export function writeConfig(root: string, scope: ConfigScope, config: CyberSkill
 	fs.writeFileSync(filePath, `${JSON.stringify(data, null, 2)}\n`)
 }
 
-const VALID_PROVIDER_TYPES: ProviderType[] = ['github', 'gitlab', 'custom']
+const VALID_PROVIDER_TYPES: ProviderType[] = ['github', 'gitlab', 'custom', 'marketplace']
 
 export function inferProviderType(url: string): ProviderType {
 	if (url.includes('github.com')) return 'github'
 	if (url.includes('gitlab.')) return 'gitlab'
+	if (url.includes('skills.sh')) return 'marketplace'
 	return 'custom'
 }
 

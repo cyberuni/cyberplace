@@ -16,29 +16,59 @@ afterEach(() => {
 	vi.restoreAllMocks()
 })
 
-const awesomeData = [
+const marketplaceResponse = {
+	query: '',
+	searchType: 'fuzzy',
+	skills: [
+		{
+			id: 'cyberuni/cyber-skills/commit',
+			skillId: 'commit',
+			name: 'commit',
+			installs: 100,
+			source: 'cyberuni/cyber-skills',
+		},
+		{
+			id: 'cyberuni/cyber-skills/add-changeset',
+			skillId: 'add-changeset',
+			name: 'add-changeset',
+			installs: 80,
+			source: 'cyberuni/cyber-skills',
+		},
+		{
+			id: 'cyberuni/cyber-skills/create-skill',
+			skillId: 'create-skill',
+			name: 'create-skill',
+			installs: 60,
+			source: 'cyberuni/cyber-skills',
+		},
+	],
+	count: 3,
+	duration_ms: 10,
+}
+
+const githubSkillsData = [
 	{ name: 'commit', skillPath: 'skills/commit/SKILL.md' },
 	{ name: 'add-changeset', skillPath: 'skills/add-changeset/SKILL.md' },
 	{ name: 'create-skill', skillPath: 'skills/create-skill/SKILL.md' },
 ]
 
 test('findSkills returns all skills when query is empty', async () => {
-	vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve(awesomeData) }))
+	vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve(marketplaceResponse) }))
 
 	const results = await findSkills('', { root })
 	expect(results.length).toBeGreaterThanOrEqual(3)
 })
 
 test('findSkills filters by query string', async () => {
-	vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve(awesomeData) }))
+	const filtered = { ...marketplaceResponse, skills: [marketplaceResponse.skills[0]!], count: 1 }
+	vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve(filtered) }))
 
 	const results = await findSkills('commit', { root })
 	expect(results.some((r) => r.name === 'commit')).toBe(true)
-	expect(results.every((r) => r.name.includes('commit'))).toBe(true)
 })
 
 test('findSkills includes install command', async () => {
-	vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve(awesomeData) }))
+	vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve(marketplaceResponse) }))
 
 	const results = await findSkills('commit', { root })
 	expect(results[0]!.installCommand).toContain('npx cyber-skills add')
@@ -53,7 +83,7 @@ test('findSkills returns empty array when fetch fails', async () => {
 })
 
 test('findSkillsInRepo searches a specific repo', async () => {
-	vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve(awesomeData) }))
+	vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve(githubSkillsData) }))
 
 	const results = await findSkillsInRepo('repobuddy/repobuddy', '')
 	expect(results.length).toBeGreaterThanOrEqual(1)
