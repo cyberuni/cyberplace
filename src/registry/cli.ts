@@ -3,11 +3,22 @@ import { Command } from 'commander'
 import { ROOT_OPTION, resolveRoot } from '../cli-options.js'
 import { output, printTable } from '../output.js'
 import { addSkill } from './add.js'
-import { addProvider, listProviders, removeProvider, validateProviderType } from './config.js'
+import {
+	addProvider,
+	listProviders,
+	matchProvider,
+	readConfig,
+	removeProvider,
+	validateProviderType,
+} from './config.js'
 import { findSkills, findSkillsInRepo } from './find.js'
+import { fetchMarketplace, listRepoSkills } from './github.js'
 import { readLock } from './lock.js'
+import { mapSkillsToPlugins } from './marketplace.js'
 import { migrate } from './migrate.js'
+import { createRl, isInteractive, promptScopeSelect, promptSkillSelect } from './prompt.js'
 import { removeSkill } from './remove.js'
+import { isRepoSpec, parseSpec } from './spec.js'
 import { updateAllSkills, updateSkill } from './update.js'
 
 type Scope = 'project' | 'global'
@@ -22,19 +33,74 @@ export function addCommand(): Command {
 		.argument('<spec>', 'Repo spec (org/repo[:skill]) or npm package name')
 		.addOption(ROOT_OPTION)
 		.option('--global', 'Install to user global skills (~/.agents/skills)')
+		.option('--project', 'Install to project skills (.agents/skills)')
 		.option('--branch <branch>', 'Git branch to fetch from', 'main')
+		.option('--yes', 'Install all skills without prompting')
 		.option('--json', 'Output raw JSON')
-		.action(async (spec: string, opts: { root?: string; global?: boolean; branch?: string }) => {
-			const root = resolveRoot(opts.root)
-			const scope = resolveScope(opts.global)
-			const result = await addSkill(spec, { root, scope, branch: opts.branch })
-			output(result, () => {
-				console.log(`Installed ${result.installed.length} skill(s) from ${result.spec}:`)
-				for (const s of result.installed) {
-					console.log(`  + ${s.name}  ->  ${s.installedAt}`)
+		.action(
+			async (
+				spec: string,
+				opts: { root?: string; global?: boolean; project?: boolean; branch?: string; yes?: boolean; json?: boolean },
+			) => {
+				const root = resolveRoot(opts.root)
+				const branch = opts.branch ?? 'main'
+				const parsedSpec = parseSpec(spec)
+				const scopeExplicit = opts.global || opts.project
+				const interactive = isInteractive() && !opts.yes && !opts.json && !scopeExplicit
+
+				// Interactive flow: repo spec with no specific skill, running in a TTY
+				if (isRepoSpec(parsedSpec) && !parsedSpec.skill && interactive) {
+					const config = readConfig(root, 'project')
+					const provider = matchProvider(config.providers ?? [], `${parsedSpec.owner}/${parsedSpec.repo}`)
+
+					const [skills, marketplace] = await Promise.all([
+						listRepoSkills(provider, parsedSpec.owner, parsedSpec.repo, branch),
+						fetchMarketplace(provider, parsedSpec.owner, parsedSpec.repo, branch),
+					])
+
+					const pluginMap = marketplace ? mapSkillsToPlugins(marketplace) : new Map<string, string>()
+					const items = skills.map((s) => ({
+						value: s.name,
+						label: s.name,
+						group: pluginMap.get(s.name),
+					}))
+
+					const rl = createRl()
+					let selectedSkills: string[]
+					let scope: 'project' | 'global'
+					try {
+						selectedSkills = await promptSkillSelect(rl, items, `${parsedSpec.owner}/${parsedSpec.repo}`)
+						scope = await promptScopeSelect(rl)
+					} finally {
+						rl.close()
+					}
+
+					if (selectedSkills.length === 0) {
+						console.log('No skills selected.')
+						return
+					}
+
+					const result = await addSkill(spec, { root, scope, branch, skills: selectedSkills })
+					output(result, () => {
+						console.log(`Installed ${result.installed.length} skill(s) from ${result.spec}:`)
+						for (const s of result.installed) {
+							console.log(`  + ${s.name}`)
+						}
+					})
+					return
 				}
-			})
-		})
+
+				// Non-interactive / specific skill / npm package path
+				const scope = resolveScope(opts.global)
+				const result = await addSkill(spec, { root, scope, branch })
+				output(result, () => {
+					console.log(`Installed ${result.installed.length} skill(s) from ${result.spec}:`)
+					for (const s of result.installed) {
+						console.log(`  + ${s.name}`)
+					}
+				})
+			},
+		)
 }
 
 export function removeCommand(): Command {

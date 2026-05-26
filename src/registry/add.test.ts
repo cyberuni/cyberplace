@@ -153,3 +153,25 @@ test('addSkill uses GitHub default when no provider pattern matches', async () =
 	const url = (fetch as ReturnType<typeof vi.fn>).mock.calls[0]?.[0] as string
 	expect(url).toContain('raw.githubusercontent.com')
 })
+
+test('addSkill installs only skills matching the skills filter', async () => {
+	const awesomeData = [
+		{ name: 'commit', skillPath: 'skills/commit/SKILL.md' },
+		{ name: 'add-changeset', skillPath: 'skills/add-changeset/SKILL.md' },
+		{ name: 'audit-skill', skillPath: 'skills/audit-skill/SKILL.md' },
+	]
+	vi.stubGlobal(
+		'fetch',
+		vi
+			.fn()
+			.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(awesomeData) })
+			.mockResolvedValue({ ok: true, text: () => Promise.resolve('---\nname: skill\n---') }),
+	)
+
+	const result = await addSkill('cyberuni/cyber-skills', { root, skills: ['commit', 'audit-skill'] })
+	expect(result.installed).toHaveLength(2)
+	expect(result.installed.map((s) => s.name)).toEqual(['commit', 'audit-skill'])
+
+	const missing = path.join(root, '.agents', 'skills', 'add-changeset', 'SKILL.md')
+	expect(fs.existsSync(missing)).toBe(false)
+})

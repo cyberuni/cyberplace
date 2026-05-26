@@ -3,7 +3,7 @@ import * as os from 'node:os'
 import * as path from 'node:path'
 import { afterEach, beforeEach, expect, test, vi } from 'vitest'
 
-import { computeHash, fetchAndInstallSkill, fetchSkillContent, listRepoSkills } from './github.js'
+import { computeHash, fetchAndInstallSkill, fetchMarketplace, fetchSkillContent, listRepoSkills } from './github.js'
 import type { RepoSpec } from './spec.js'
 
 let root: string
@@ -141,4 +141,62 @@ test('fetchAndInstallSkill installs all skills when no skill name given', async 
 	expect(installed).toHaveLength(2)
 	expect(fs.existsSync(path.join(root, 'commit', 'SKILL.md'))).toBe(true)
 	expect(fs.existsSync(path.join(root, 'add-changeset', 'SKILL.md'))).toBe(true)
+})
+
+test('fetchMarketplace returns parsed marketplace when found', async () => {
+	const marketplace = { plugins: [{ name: 'p', description: 'd', skills: ['./skills/commit'] }] }
+	vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve(marketplace) }))
+
+	const result = await fetchMarketplace(null, 'org', 'repo')
+	expect(result).toEqual(marketplace)
+	const url = (fetch as ReturnType<typeof vi.fn>).mock.calls[0]?.[0] as string
+	expect(url).toContain('.claude-plugin/marketplace.json')
+})
+
+test('fetchMarketplace returns null when not found (404)', async () => {
+	vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, status: 404 }))
+	expect(await fetchMarketplace(null, 'org', 'repo')).toBeNull()
+})
+
+test('fetchMarketplace returns null on network error', async () => {
+	vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network error')))
+	expect(await fetchMarketplace(null, 'org', 'repo')).toBeNull()
+})
+
+test('fetchAndInstallSkill respects skillFilter when no skill in spec', async () => {
+	const awesomeData = [
+		{ name: 'commit', skillPath: 'skills/commit/SKILL.md' },
+		{ name: 'add-changeset', skillPath: 'skills/add-changeset/SKILL.md' },
+		{ name: 'audit-skill', skillPath: 'skills/audit-skill/SKILL.md' },
+	]
+	vi.stubGlobal(
+		'fetch',
+		vi
+			.fn()
+			.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(awesomeData) })
+			.mockResolvedValue({ ok: true, text: () => Promise.resolve('# skill') }),
+	)
+
+	const spec: RepoSpec = { type: 'repo', owner: 'cyberuni', repo: 'cyber-skills', raw: 'cyberuni/cyber-skills' }
+	const installed = await fetchAndInstallSkill(null, spec, root, 'main', ['commit', 'audit-skill'])
+
+	expect(installed).toHaveLength(2)
+	expect(installed.map((s) => s.name)).toEqual(['commit', 'audit-skill'])
+	expect(fs.existsSync(path.join(root, 'add-changeset', 'SKILL.md'))).toBe(false)
+})
+
+test('fetchAndInstallSkill ignores skillFilter when skill in spec', async () => {
+	vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, text: () => Promise.resolve('# skill') }))
+
+	const spec: RepoSpec = {
+		type: 'repo',
+		owner: 'cyberuni',
+		repo: 'cyber-skills',
+		skill: 'commit',
+		raw: 'cyberuni/cyber-skills:commit',
+	}
+	// filter is irrelevant when spec.skill is set
+	const installed = await fetchAndInstallSkill(null, spec, root, 'main', ['other-skill'])
+	expect(installed).toHaveLength(1)
+	expect(installed[0]!.name).toBe('commit')
 })

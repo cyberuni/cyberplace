@@ -12,6 +12,7 @@ export interface AddOptions {
 	root: string
 	scope?: ConfigScope
 	branch?: string
+	skills?: string[]
 }
 
 export interface AddResult {
@@ -40,7 +41,7 @@ export async function addSkill(input: string, options: AddOptions): Promise<AddR
 		// match config patterns — null means GitHub default
 		const provider = matchProvider(providers, `${spec.owner}/${spec.repo}`)
 
-		const fetched = await fetchAndInstallSkill(provider, spec, installDir, branch)
+		const fetched = await fetchAndInstallSkill(provider, spec, installDir, branch, options.skills)
 
 		for (const f of fetched) {
 			const installedAt = join(installDir, f.name, 'SKILL.md')

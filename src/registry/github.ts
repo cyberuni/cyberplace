@@ -3,6 +3,7 @@ import * as fs from 'node:fs'
 import { dirname, join } from 'node:path'
 
 import type { Provider } from './config.js'
+import type { Marketplace } from './marketplace.js'
 import type { RepoSpec } from './spec.js'
 
 export interface SkillMeta {
@@ -97,11 +98,28 @@ export function computeHash(content: string): string {
 	return createHash('sha256').update(content).digest('hex')
 }
 
+export async function fetchMarketplace(
+	provider: Provider | null,
+	owner: string,
+	repo: string,
+	branch = 'main',
+): Promise<Marketplace | null> {
+	try {
+		const base = buildRawBase(provider, owner, repo, branch)
+		const res = await fetch(`${base}/.claude-plugin/marketplace.json`)
+		if (!res.ok) return null
+		return (await res.json()) as Marketplace
+	} catch {
+		return null
+	}
+}
+
 export async function fetchAndInstallSkill(
 	provider: Provider | null,
 	spec: RepoSpec,
 	installDir: string,
 	branch = 'main',
+	skillFilter?: string[],
 ): Promise<FetchedSkill[]> {
 	const { owner, repo, skill } = spec
 	const installed: FetchedSkill[] = []
@@ -116,7 +134,8 @@ export async function fetchAndInstallSkill(
 		installed.push({ name: skill, content, skillPath, hash })
 	} else {
 		const skills = await listRepoSkills(provider, owner, repo, branch)
-		for (const meta of skills) {
+		const filtered = skillFilter ? skills.filter((s) => skillFilter.includes(s.name)) : skills
+		for (const meta of filtered) {
 			const content = await fetchSkillContent(provider, owner, repo, meta.skillPath, branch)
 			const hash = computeHash(content)
 			const dest = join(installDir, meta.name, 'SKILL.md')
