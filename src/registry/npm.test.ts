@@ -3,7 +3,7 @@ import * as os from 'node:os'
 import * as path from 'node:path'
 import { afterEach, beforeEach, expect, test } from 'vitest'
 
-import { detectPackageManager, listNpmSkills, resolveNodeModulesDir } from './npm.js'
+import { detectPackageManager, detectWorkspaceRoot, listNpmSkills, resolveNodeModulesDir } from './npm.js'
 
 let root: string
 
@@ -52,4 +52,28 @@ test('listNpmSkills returns skill names from skills dir', () => {
 
 test('listNpmSkills returns empty array when dir does not exist', () => {
 	expect(listNpmSkills(path.join(root, 'nonexistent'))).toEqual([])
+})
+
+test('detectWorkspaceRoot returns true when pnpm-workspace.yaml present', () => {
+	fs.writeFileSync(path.join(root, 'pnpm-workspace.yaml'), 'packages:\n  - packages/*\n')
+	expect(detectWorkspaceRoot(root)).toBe(true)
+})
+
+test('detectWorkspaceRoot returns true when lerna.json present', () => {
+	fs.writeFileSync(path.join(root, 'lerna.json'), '{}')
+	expect(detectWorkspaceRoot(root)).toBe(true)
+})
+
+test('detectWorkspaceRoot returns true when package.json has workspaces array', () => {
+	fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify({ workspaces: ['packages/*'] }))
+	expect(detectWorkspaceRoot(root)).toBe(true)
+})
+
+test('detectWorkspaceRoot returns false when package.json workspaces is not an array', () => {
+	fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify({ workspaces: {} }))
+	expect(detectWorkspaceRoot(root)).toBe(false)
+})
+
+test('detectWorkspaceRoot returns false when no workspace indicators present', () => {
+	expect(detectWorkspaceRoot(root)).toBe(false)
 })

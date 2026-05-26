@@ -17,19 +17,39 @@ export function detectPackageManager(root: string): PackageManager {
 	return 'npm'
 }
 
+export function detectWorkspaceRoot(root: string): boolean {
+	return (
+		fs.existsSync(join(root, 'pnpm-workspace.yaml')) ||
+		fs.existsSync(join(root, 'lerna.json')) ||
+		(() => {
+			try {
+				const pkg = JSON.parse(fs.readFileSync(join(root, 'package.json'), 'utf8')) as {
+					workspaces?: unknown
+				}
+				return Array.isArray(pkg.workspaces)
+			} catch {
+				return false
+			}
+		})()
+	)
+}
+
 export function resolveNodeModulesDir(root: string, packageName: string): string {
 	return join(root, 'node_modules', packageName)
 }
 
 export function installNpmPackage(root: string, packageName: string): NpmInstallResult {
 	const pm = detectPackageManager(root)
+	const isMonorepo = detectWorkspaceRoot(root)
 
-	const args: string[] =
-		pm === 'pnpm'
-			? ['add', '--save-dev', packageName]
-			: pm === 'yarn'
-				? ['add', '--dev', packageName]
-				: ['install', '--save-dev', packageName]
+	let args: string[]
+	if (pm === 'pnpm') {
+		args = ['add', '-D', ...(isMonorepo ? ['-w'] : []), packageName]
+	} else if (pm === 'yarn') {
+		args = ['add', '--dev', ...(isMonorepo ? ['-W'] : []), packageName]
+	} else {
+		args = ['install', '--save-dev', ...(isMonorepo ? ['-w', '.'] : []), packageName]
+	}
 
 	const result = spawnSync(pm, args, { cwd: root, encoding: 'utf8', stdio: 'inherit' })
 	if (result.status !== 0) {
