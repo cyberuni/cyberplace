@@ -7,20 +7,33 @@ description: "Use this skill when initializing commit discipline — AGENTS.md r
 
 Inject always-on commit discipline into the repo: an AGENTS.md section for every agent, plus SessionStart hooks on agents that support them.
 
+This skill **requires** the cyber-skills CLI — see **Ensure cyber-skills CLI** below.
+
 ## Prerequisites
 
 - `AGENTS.md` should exist (run the `init` skill first if missing).
 - AGENTS.md should include the **Skill Augmentations** section (run the `init` skill — agents read `SKILL.local.md` when loading a skill).
-- The `cyber-skills` npm package must be accessible via npx or local install (see below).
+
+## Ensure cyber-skills CLI
+
+Before any subcommand:
+
+1. Resolve exact semver: `npm view cyber-skills version` (never `@latest`, never a literal `<version>` placeholder).
+2. Run `npx cyber-skills@<exact> <subcommand>`.
+
+If step 2 fails (npx install prompt, `command not found`, or other non-zero exit):
+
+1. Tell the user the workflow needs to download `cyber-skills@<exact>` from npm (no `package.json` change).
+2. **Ask** whether to install.
+3. After yes, use `npx --yes cyber-skills@<exact> <subcommand>` for the rest of this workflow.
+4. If the user declines npx, ask whether to add `cyber-skills@<exact>` as a devDependency instead. Note drawbacks: it modifies `package.json` and may need ignoring in unused-dependency tools (e.g. `knip`). If they decline both, stop this skill.
 
 ## Commit helper skill
 
 Commit discipline references a **commit helper skill** for staging, splitting, and message writing. Resolve one before injecting AGENTS.md.
 
-Run from the repo root:
-
 ```bash
-npx cyber-skills@<version> commit resolve-skill --check
+npx cyber-skills@<exact> commit resolve-skill --check
 ```
 
 If none are detected, ask the user to choose:
@@ -33,38 +46,31 @@ If none are detected, ask the user to choose:
 
 Do not proceed until a commit helper skill name is chosen.
 
-## Ensure cyber-skills package
-
-Check in order:
-
-1. **Pinned npx (default)** — resolve `npm view cyber-skills version`, then `npx cyber-skills@<exact> <subcommand>` (never `@latest`, never a literal `<version>` placeholder). No `package.json` change.
-2. **Existing devDependency** — if `cyber-skills` is already in `package.json`, use `pnpm exec cyber-skills` or the local bin.
-3. **Optional devDependency** — when the user needs offline CLI access and the AI agent runs locally against that repo: `pnpm add -D cyber-skills`.
-4. If neither npx nor a local install works, ask the user to confirm an exact pinned version or opt in to the devDependency above.
-
 ## Workflow
 
 1. Resolve commit helper skill (above).
 2. Ask whether to enable **auto-commit** — commit each unit of work immediately when complete and verified, without waiting for the user to ask.
-3. Inject AGENTS.md section (substitute the exact version from `npm view cyber-skills version`):
+3. Inject AGENTS.md section:
 
 ```bash
 # With auto-commit (opt-in):
-npx cyber-skills@<version> commit inject --commit-skill <name> --auto-commit
+npx cyber-skills@<exact> commit inject --commit-skill <name> --auto-commit
 
 # Without auto-commit:
-npx cyber-skills@<version> commit inject --commit-skill <name>
+npx cyber-skills@<exact> commit inject --commit-skill <name>
 ```
 
-4. Register SessionStart hook:
+4. Register SessionStart hook. When using pinned npx after install consent, pass `--npx-yes` so SessionStart can install without prompting:
 
 ```bash
-npx cyber-skills@<version> hook register \
+npx --yes cyber-skills@<exact> hook register --npx-yes \
   --name commit-discipline \
   --event SessionStart \
   --extract AGENTS.md \
   --heading "Commit Discipline"
 ```
+
+When `hook register` does not support `--npx-yes` (older CLI), edit the registered command to use `npx --yes cyber-skills@<exact>` instead of `npx cyber-skills@<exact>`.
 
 Pass `--verbose` on inject or register for a human-readable summary. Pass `--dry-run` to preview without writing.
 

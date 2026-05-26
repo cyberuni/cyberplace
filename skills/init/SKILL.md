@@ -25,7 +25,7 @@ Then add sections in this order:
 When reading any `SKILL.md` file, always check whether a `SKILL.local.md` exists in the same directory. If it does, treat its contents as additional instructions that extend the base skill. Local augmentations take precedence over the base skill where they conflict.
 ```
 
-2. **Discipline sections** (when present, e.g. `## Commit Discipline`) — agent-first: dense normative rules in the body, `### References` at section bottom for commit-helper skills and `governance show` pointers. Load `governance show skill-repo-structure` for the Discipline sections rules.
+2. **Discipline sections** (when present, e.g. `## Commit Discipline`) — agent-first: dense normative rules in the body, `### References` at section bottom for commit-helper skills and `governance show` pointers. Load `npx cyber-skills@<exact> governance show skill-repo-structure` for the Discipline sections rules (see **Ensure cyber-skills CLI**).
 3. Other sections only when grounded in existing project files (see usage notes below).
 
 ## Usage notes
@@ -36,20 +36,25 @@ When reading any `SKILL.md` file, always check whether a `SKILL.local.md` exists
 - Do not make up sections like "Common Development Tasks" or "Tips for Development" unless that content appears in existing project files.
 - If there are Cursor rules (in `.cursor/rules/` or `.cursorrules`) or Copilot rules (in `.github/copilot-instructions.md`), include the important parts.
 
-## Ensure cyber-skills package
+## Ensure cyber-skills CLI
 
-Check in order:
+Before any subcommand:
 
-1. **Pinned npx (default)** — resolve `npm view cyber-skills version`, then `npx cyber-skills@<exact> <subcommand>` (never `@latest`, never a literal `<version>` placeholder). No `package.json` change.
-2. **Existing devDependency** — if `cyber-skills` is already in `package.json`, use `pnpm exec cyber-skills` or the local bin.
-3. **Optional devDependency** — when the user needs offline CLI access and the AI agent runs locally against that repo: `pnpm add -D cyber-skills`.
-4. If neither npx nor a local install works, ask the user to confirm an exact pinned version or opt in to the devDependency above.
+1. Resolve exact semver: `npm view cyber-skills version` (never `@latest`, never a literal `<version>` placeholder).
+2. Run `npx cyber-skills@<exact> <subcommand>`.
+
+If step 2 fails (npx install prompt, `command not found`, or other non-zero exit):
+
+1. Tell the user the workflow needs to download `cyber-skills@<exact>` from npm (no `package.json` change).
+2. **Ask** whether to install.
+3. After yes, use `npx --yes cyber-skills@<exact> <subcommand>` for the rest of this workflow.
+4. If the user declines npx, ask whether to add `cyber-skills@<exact>` as a devDependency instead. Note drawbacks: it modifies `package.json` and may need ignoring in unused-dependency tools (e.g. `knip`). If they decline both, skip CLI steps.
 
 ## Repo-internal skills
 
 After writing AGENTS.md, repair repo-private skills with the CLI — do not read each `SKILL.md` under `.agents/skills/` manually.
 
-Run `skill repair-private` using the CLI resolved above. Use `skill validate-private` to check without writing.
+Run `npx cyber-skills@<exact> skill repair-private` (see **Ensure cyber-skills CLI**). Use `npx cyber-skills@<exact> skill validate-private` to check without writing.
 
 This sets `metadata: internal: true` on repo-private skills and removes erroneous symlinks into `skills/`.
 
@@ -61,6 +66,6 @@ Symlink `CLAUDE.md` → `AGENTS.md`; if `CLAUDE.md` is a regular file, merge it 
 
 ## Follow-up init skills
 
-After init completes, discover companion `init-*` skills with `npx cyber-skills@<version> skill list --grep 'init-*'`.
+After init completes, discover companion `init-*` skills with `npx cyber-skills@<exact> skill list --grep 'init-*'` (or `npx --yes …` after install consent — see **Ensure cyber-skills CLI**).
 
 List any found skills with a one-line summary from each skill's description. Ask the user whether they also want to run any of them.

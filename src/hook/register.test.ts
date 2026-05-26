@@ -329,3 +329,26 @@ test('registers when cursor hook entry has null command', () => {
 		},
 	)
 })
+
+test('register with npxYes writes --yes into npx hook command', () => {
+	withTempRoot(
+		(root) => fs.mkdirSync(path.join(root, '.cursor')),
+		(root) => {
+			registerHook(
+				{
+					name: 'commit-discipline',
+					event: 'SessionStart',
+					extract: 'AGENTS.md',
+					heading: 'Commit Discipline',
+					npxYes: true,
+				},
+				{ root },
+			)
+			const settings = readJson(path.join(root, '.cursor', 'hooks.json')) as {
+				hooks: { sessionStart: Array<{ command: string }> }
+			}
+			const command = settings.hooks.sessionStart[0]?.command ?? ''
+			expect(command).toContain('npx --yes cyber-skills@')
+		},
+	)
+})

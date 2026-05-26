@@ -38,6 +38,10 @@ export function hookCommand(): Command {
 		.option('--extract <path>', 'Markdown file to extract a section from')
 		.option('--heading <heading>', 'Heading to extract (required with --extract)')
 		.option('--matcher <matcher>', 'PostToolUse matcher (default Write|Edit)')
+		.option(
+			'--npx-yes',
+			'Register npx hook commands with --yes (after user consented to npm install; SessionStart cannot prompt)',
+		)
 		.addOption(ROOT_OPTION)
 		.option('--dry-run', 'Preview without writing')
 		.option('--verbose', 'Human-readable status on stderr')
@@ -51,6 +55,7 @@ export function hookCommand(): Command {
 				extract?: string
 				heading?: string
 				matcher?: string
+				npxYes?: boolean
 				root?: string
 				dryRun: boolean
 				verbose: boolean
@@ -79,6 +84,7 @@ export function hookCommand(): Command {
 					extract: opts.extract,
 					heading: opts.heading,
 					matcher: opts.matcher,
+					npxYes: opts.npxYes,
 				}
 
 				try {

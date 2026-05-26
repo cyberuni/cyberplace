@@ -11,6 +11,8 @@ export interface RegisterHookInput {
 	extract?: string
 	heading?: string
 	matcher?: string
+	/** When set, registered npx hook commands include --yes (use after user consented to npm install). */
+	npxYes?: boolean
 }
 
 function shellQuote(value: string): string {
@@ -39,7 +41,7 @@ export function buildHookDefinition(input: RegisterHookInput, root = process.cwd
 		throw new Error('--extract requires --heading')
 	}
 
-	const command = hookCommand(buildRunArgs(input), root)
+	const command = hookCommand(buildRunArgs(input), root, { npxYes: input.npxYes })
 	const label = `${input.event} › ${input.name}`
 
 	if (input.event === 'SessionStart') {

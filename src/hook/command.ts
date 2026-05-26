@@ -13,13 +13,18 @@ function getPackageVersion(): string {
  * Build a hook command string for registration in agent settings.
  * Prefers local node_modules bin when present; otherwise pins npx to the current version.
  */
-export function hookCommand(subcommand: string, root = process.cwd()): string {
+export function hookCommand(
+	subcommand: string,
+	root = process.cwd(),
+	options: { npxYes?: boolean } = {},
+): string {
 	const localBin = join(root, 'node_modules', '.bin', 'cyber-skills')
 	if (existsSync(localBin)) {
 		return `${localBin} ${subcommand}`
 	}
 	const version = getPackageVersion()
-	return `npx cyber-skills@${version} ${subcommand}`
+	const npx = options.npxYes ? 'npx --yes' : 'npx'
+	return `${npx} cyber-skills@${version} ${subcommand}`
 }
 
 function isCommandString(command: unknown): command is string {
@@ -39,8 +44,12 @@ function extractFlagValue(command: unknown, flag: string): string | null {
 
 function extractNpxVersion(command: unknown): string | null {
 	if (!isCommandString(command)) return null
-	const match = command.match(/npx cyber-skills@(\S+)/)
+	const match = command.match(/npx(?:\s+(?:--yes|-y))?\s+cyber-skills@(\S+)/)
 	return match?.[1] ?? null
+}
+
+function usesNpxYes(command: string): boolean {
+	return /npx\s+(?:--yes|-y)\s/.test(command)
 }
 
 function legacyEquivalent(hookId: string, existing: string): boolean {
@@ -106,6 +115,12 @@ export function commandMatchesHook(existing: unknown, hookId: string, expectedCo
 	const existingUsesLocalBin = /node_modules[/\\]\.bin[/\\]cyber-skills/.test(existing)
 	const expectedUsesLocalBin = /node_modules[/\\]\.bin[/\\]cyber-skills/.test(expectedCommand)
 	if (existingUsesLocalBin !== expectedUsesLocalBin) {
+		return false
+	}
+
+	const expectedUsesNpxYes = usesNpxYes(expectedCommand)
+	const existingUsesNpxYes = usesNpxYes(existing)
+	if (expectedUsesNpxYes && !existingUsesNpxYes) {
 		return false
 	}
 
