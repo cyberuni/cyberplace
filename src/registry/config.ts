@@ -7,6 +7,8 @@ export type ProviderType = 'github' | 'gitlab' | 'custom'
 export interface Provider {
 	url: string
 	type: ProviderType
+	/** Glob pattern on "owner/repo" — e.g. "mycompany/*" or "mycompany/my-repo" */
+	match?: string
 }
 
 export interface CyberSkillsConfig {
@@ -48,15 +50,35 @@ export function inferProviderType(url: string): ProviderType {
 	return 'custom'
 }
 
-export function addProvider(root: string, scope: ConfigScope, url: string, type?: ProviderType): void {
+export function addProvider(root: string, scope: ConfigScope, url: string, type?: ProviderType, match?: string): void {
 	const config = readConfig(root, scope)
 	const providers = config.providers ?? []
 	const normalized = url.replace(/\/$/, '')
 	const exists = providers.some((p) => p.url === normalized)
 	if (!exists) {
-		providers.push({ url: normalized, type: type ?? inferProviderType(normalized) })
+		const entry: Provider = { url: normalized, type: type ?? inferProviderType(normalized) }
+		if (match) entry.match = match
+		providers.push(entry)
 		writeConfig(root, scope, { ...config, providers })
 	}
+}
+
+function globMatches(pattern: string, value: string): boolean {
+	// Supports * (any chars within one segment) and ** (any chars across segments)
+	const re = new RegExp(
+		`^${pattern
+			.replace(/[.+^${}()|[\]\\]/g, '\\$&')
+			.replace(/\*\*/g, '.+')
+			.replace(/\*/g, '[^/]+')}$`,
+	)
+	return re.test(value)
+}
+
+export function matchProvider(providers: Provider[], ownerRepo: string): Provider | null {
+	for (const p of providers) {
+		if (p.match && globMatches(p.match, ownerRepo)) return p
+	}
+	return null
 }
 
 export function removeProvider(root: string, scope: ConfigScope, url: string): void {

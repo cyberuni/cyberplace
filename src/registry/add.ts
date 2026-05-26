@@ -2,7 +2,7 @@ import * as fs from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 
-import { type ConfigScope, readConfig, writeConfig } from './config.js'
+import { type ConfigScope, matchProvider, readConfig, writeConfig } from './config.js'
 import { fetchAndInstallSkill } from './github.js'
 import { type LockScope, setLockEntry } from './lock.js'
 import { installNpmPackage, listNpmSkills } from './npm.js'
@@ -37,8 +37,8 @@ export async function addSkill(input: string, options: AddOptions): Promise<AddR
 	if (isRepoSpec(spec)) {
 		const config = readConfig(root, scope)
 		const providers = config.providers ?? []
-		// find matching provider for the repo host, else use null (github default)
-		const provider = providers.find((p) => p.type !== 'github') ?? null
+		// match config patterns — null means GitHub default
+		const provider = matchProvider(providers, `${spec.owner}/${spec.repo}`)
 
 		const fetched = await fetchAndInstallSkill(provider, spec, installDir, branch)
 
