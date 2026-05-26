@@ -198,6 +198,7 @@ export function configCommand(): Command {
 				printTable(providers, [
 					{ label: 'url', get: (p) => p.url },
 					{ label: 'type', get: (p) => p.type },
+					{ label: 'match', get: (p) => p.match ?? '' },
 				]),
 			)
 		})
