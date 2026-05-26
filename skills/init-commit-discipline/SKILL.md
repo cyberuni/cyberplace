@@ -21,12 +21,7 @@ Before any subcommand:
 1. Resolve exact semver: `npm view cyber-skills version` (never `@latest`, never a literal `<version>` placeholder).
 2. Run `npx cyber-skills@<exact> <subcommand>`.
 
-If step 2 fails (npx install prompt, `command not found`, or other non-zero exit):
-
-1. Tell the user the workflow needs to download `cyber-skills@<exact>` from npm (no `package.json` change).
-2. **Ask** whether to install.
-3. After yes, use `npx --yes cyber-skills@<exact> <subcommand>` for the rest of this workflow.
-4. If the user declines npx, ask whether to add `cyber-skills@<exact>` as a devDependency instead. Note drawbacks: it modifies `package.json` and may need ignoring in unused-dependency tools (e.g. `knip`). If they decline both, stop this skill.
+If step 2 fails (npx install prompt, `command not found`, or other non-zero exit), the `init` skill (a prerequisite) handles the install consent flow. Tell the user to run `init` first, then return here. Stop this skill until then.
 
 ## Commit helper skill
 
@@ -70,7 +65,7 @@ npx cyber-skills@<exact> hook register \
   --heading "Commit Discipline"
 ```
 
-When the user consented to npm install during this workflow, edit the registered SessionStart command to use `npx --yes cyber-skills@<exact>` instead of `npx cyber-skills@<exact>` so SessionStart can run non-interactively.
+If the user consented to npm install during the `init` skill (earlier in this session), edit the registered SessionStart command to use `npx --yes cyber-skills@<exact>` instead of `npx cyber-skills@<exact>` so SessionStart can run non-interactively.
 
 Pass `--verbose` on inject or register for a human-readable summary. Pass `--dry-run` to preview without writing.
 
