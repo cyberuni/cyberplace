@@ -137,6 +137,14 @@ Fail if the `name:` value does not match the parent directory name exactly.
 **S4 — Referenced files exist (HIGH)**
 For every file path or subdirectory mentioned in the skill body (e.g., `scripts/setup.sh`, `references/`), verify it exists inside the skill's own directory. Fail if any referenced path is missing.
 
+For **public shipped skills** under `skills/<name>/` (excluding repo-internal skills and skills marked `metadata: internal: true`), also warn when the body references repository-local files outside the skill folder. Detection targets include:
+
+- Markdown links that traverse outside the skill folder
+- Parent-directory traversals like `../`
+- Repo-local prose paths such as `docs/<file>`, `governances/<file>`, `skills/<name>/<file>`, `src/<file>`, `apps/<name>/<file>`, or `packages/<name>/<file>`
+
+Public skills are installed in isolation, so those references break downstream. Repo-internal skills may continue to reference cross-repo files when appropriate.
+
 **S5 — Internal links resolve (MEDIUM)**
 For every markdown link of the form `[text](#anchor)` or `[text](./file.md#anchor)`, verify the target section heading or file exists. Warn on broken anchors.
 

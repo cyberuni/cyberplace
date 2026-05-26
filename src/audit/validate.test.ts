@@ -19,6 +19,30 @@ function withTempSkill(content: string, check: (skillFile: string) => void): voi
 	}
 }
 
+function withTempSkillAt(
+	relativeDir: string,
+	content: string,
+	extraFiles: Record<string, string>,
+	check: (skillFile: string) => void,
+): void {
+	const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'audit-skill-'))
+	const skillDir = path.join(tempDir, relativeDir)
+	const skillFile = path.join(skillDir, 'SKILL.md')
+	fs.mkdirSync(skillDir, { recursive: true })
+	fs.writeFileSync(skillFile, content)
+	for (const [name, src] of Object.entries(extraFiles)) {
+		const target = path.join(tempDir, name)
+		fs.mkdirSync(path.dirname(target), { recursive: true })
+		fs.writeFileSync(target, src)
+	}
+
+	try {
+		check(skillFile)
+	} finally {
+		fs.rmSync(tempDir, { recursive: true, force: true })
+	}
+}
+
 function withTempSkillAndScripts(
 	content: string,
 	scripts: Record<string, string>,
@@ -80,6 +104,53 @@ node scripts/missing-helper.mjs
 			const s4Warnings = result.warnings.filter((finding) => finding.checkId === 'S4')
 			expect(s4Warnings.length).toBe(1)
 			expect(s4Warnings[0]?.evidence ?? '').toMatch(/scripts\/missing-helper\.mjs/)
+		},
+	)
+})
+
+test('S4 warns when a public skill markdown link traverses outside the skill folder', () => {
+	withTempSkillAt(
+		path.join('skills', 'sample-skill'),
+		`${skillFrontmatter}
+See [threat model](../../docs/research/threat-model.md).
+`,
+		{},
+		(skillFile) => {
+			const result = runChecks(skillFile)
+			const s4Warnings = result.warnings.filter((finding) => finding.checkId === 'S4')
+			expect(s4Warnings.some((finding) => finding.evidence.includes('../../docs/research/threat-model.md'))).toBe(true)
+		},
+	)
+})
+
+test('S4 warns when a public skill references repo-local prose paths outside the skill folder', () => {
+	withTempSkillAt(
+		path.join('skills', 'sample-skill'),
+		`${skillFrontmatter}
+Read docs/research/threat-model.md before continuing.
+`,
+		{ 'docs/research/threat-model.md': '# Threat Model\n' },
+		(skillFile) => {
+			const result = runChecks(skillFile)
+			const s4Warnings = result.warnings.filter((finding) => finding.checkId === 'S4')
+			expect(s4Warnings.some((finding) => finding.evidence.includes('docs/research/threat-model.md'))).toBe(true)
+		},
+	)
+})
+
+test('S4 does not warn for repo-internal skills referencing repo-local paths', () => {
+	withTempSkillAt(
+		path.join('.agents', 'skills', 'sample-skill'),
+		`${skillFrontmatter}
+Read docs/research/threat-model.md before continuing.
+`,
+		{ 'docs/research/threat-model.md': '# Threat Model\n' },
+		(skillFile) => {
+			const result = runChecks(skillFile)
+			const s4Warnings = result.warnings.filter(
+				(finding) => finding.checkId === 'S4' && finding.evidence.includes('docs/research/threat-model.md'),
+			)
+			expect(s4Warnings.length).toBe(0)
 		},
 	)
 })

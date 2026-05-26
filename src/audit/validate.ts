@@ -116,11 +116,13 @@ export function findSkillFiles(dirs: string[], cwd: string): string[] {
 	return results.sort()
 }
 
-function parseFrontmatter(content: string): { name: string; description: string } {
+function parseFrontmatter(content: string): { name: string; description: string; internal: boolean } {
 	const lines = content.split('\n')
 	let fmCount = 0
 	let name = ''
 	let description = ''
+	let metadataIndent: number | null = null
+	let internal = false
 
 	for (const line of lines) {
 		if (line.trim() === '---') {
@@ -135,9 +137,24 @@ function parseFrontmatter(content: string): { name: string; description: string 
 
 		const descMatch = line.match(/^description:\s*(.+)/)
 		if (descMatch) description = descMatch[1]!.trim().replace(/^["']|["']$/g, '')
+
+		const metadataMatch = line.match(/^(\s*)metadata:\s*$/)
+		if (metadataMatch) {
+			metadataIndent = metadataMatch[1]!.length
+			continue
+		}
+
+		if (metadataIndent !== null) {
+			const indent = line.match(/^(\s*)/)?.[1]?.length ?? 0
+			if (line.trim() && indent <= metadataIndent) {
+				metadataIndent = null
+			} else if (/^\s*internal:\s*true\s*$/i.test(line)) {
+				internal = true
+			}
+		}
 	}
 
-	return { name, description }
+	return { name, description, internal }
 }
 
 function extractBody(content: string): string {
@@ -207,6 +224,60 @@ function findInvisibleUnicode(
 	return null
 }
 
+const ROOT_LOCAL_PATH_PREFIXES = ['docs/', 'governances/', 'skills/', 'src/', 'apps/', 'packages/']
+
+function normalizeLinkTarget(target: string): string {
+	const trimmed = target.trim().replace(/^<|>$/g, '')
+	const withoutTitle = trimmed.split(/\s+"/)[0] ?? trimmed
+	return withoutTitle
+}
+
+function findPublicSkillExternalRefs(
+	content: string,
+	skillDir: string,
+	repoRoot: string,
+): Array<{ ref: string; reason: string }> {
+	const findings = new Map<string, string>()
+	const add = (ref: string, reason: string) => {
+		if (!findings.has(ref)) findings.set(ref, reason)
+	}
+
+	const markdownLinkPattern = /\[[^\]]+\]\(([^)]+)\)/g
+	let match: RegExpExecArray | null
+	while ((match = markdownLinkPattern.exec(content)) !== null) {
+		const target = normalizeLinkTarget(match[1] ?? '')
+		if (!target || /^(https?:|mailto:|#)/i.test(target)) continue
+		if (target.startsWith('../')) {
+			add(target, 'parent-directory traversal escapes the skill folder')
+			continue
+		}
+		if (ROOT_LOCAL_PATH_PREFIXES.some((prefix) => target.startsWith(prefix) && target.length > prefix.length)) {
+			add(target, 'repo-local link points outside the skill folder')
+			continue
+		}
+		if (path.isAbsolute(target) && target.startsWith(repoRoot)) {
+			add(target, 'absolute path points to a repo file outside the skill folder')
+		}
+	}
+
+	const prosePathPattern =
+		/(^|[\s(<'"`])(\.\.\/[^\s)"'`<>]+|(?:docs|governances|skills|src|apps|packages)\/[^\s)"'`<>]+)(?![A-Za-z0-9_-])/gm
+
+	while ((match = prosePathPattern.exec(content)) !== null) {
+		const ref = match[2] ?? ''
+		if (!ref) continue
+		if (ref.startsWith('../')) {
+			add(ref, 'parent-directory traversal escapes the skill folder')
+		} else {
+			const resolved = path.resolve(repoRoot, ref)
+			if (resolved.startsWith(skillDir)) continue
+			if (fs.existsSync(resolved)) add(ref, 'repo-local path points outside the skill folder')
+		}
+	}
+
+	return Array.from(findings, ([ref, reason]) => ({ ref, reason }))
+}
+
 export function runChecks(filePath: string): CheckResult {
 	const criticals: Finding[] = []
 	const warnings: Finding[] = []
@@ -219,14 +290,18 @@ export function runChecks(filePath: string): CheckResult {
 
 	const content = fs.readFileSync(filePath, 'utf8')
 	const skillDir = path.dirname(filePath)
+	const skillBaseDir = path.dirname(skillDir)
+	const skillBaseParent = path.basename(path.dirname(skillBaseDir))
+	const repoRoot = skillBaseParent === '.agents' ? path.dirname(path.dirname(skillBaseDir)) : path.dirname(skillBaseDir)
 	const dirName = path.basename(skillDir)
-	const parent = path.basename(path.dirname(skillDir))
+	const parent = path.basename(skillBaseDir)
 
-	const { name: fmName, description: fmDesc } = parseFrontmatter(content)
+	const { name: fmName, description: fmDesc, internal: fmInternal } = parseFrontmatter(content)
 	const body = extractBody(content)
 	const codeBlocks = extractCodeBlocks(content)
 	const stripped = stripExamples(content)
 	const invisibleInSkill = findInvisibleUnicode(content)
+	const isPublicShippedSkill = parent === 'skills' && skillBaseParent !== '.agents' && !fmInternal
 
 	if (parent !== 'skills') {
 		crit(
@@ -283,6 +358,18 @@ export function runChecks(filePath: string): CheckResult {
 				'Referenced file does not exist in skill directory',
 				`${ref} (looked for ${path.join(skillDir, ref)})`,
 				'Create the file inside the skill directory or remove the reference',
+			)
+		}
+	}
+
+	if (isPublicShippedSkill) {
+		for (const finding of findPublicSkillExternalRefs(content, skillDir, repoRoot)) {
+			warn(
+				'HIGH',
+				'S4',
+				'Public skill references files outside its skill directory',
+				`${finding.ref} (${finding.reason})`,
+				'Keep shipped skill references inside the skill folder or replace with external URLs / generic prose',
 			)
 		}
 	}
