@@ -17,6 +17,14 @@ Extracts a repeatable workflow from what was done in the current session and cre
 
 ## Steps
 
+Load the **skill-design** governance before drafting:
+
+```bash
+npx cyber-skills@<version> governance show skill-design
+```
+
+Read stdout as the authoritative rules for principles, progressive disclosure, and description structure.
+
 ### 1. Identify the workflow to generalize
 
 From the session history, extract:
@@ -28,13 +36,23 @@ From the session history, extract:
 
 Separate decisions from documentation. The skill should encode what to decide and how — not reference material the model already knows.
 
-### 2. Determine skill kind
+### 2. Determine skill placement and pattern
 
-| Signal | Kind |
+Placement:
+
+| Signal | Placement |
 |---|---|
-| Workflow is personal, not tied to a specific codebase | Global (`~/.agents/skills/<name>/`) |
-| Workflow only makes sense for contributors to this repo | Repo internal (`.agents/skills/<name>/`) |
-| Workflow is meant to be installed by users of this package | Repo public (`skills/<name>/`) |
+| Workflow is personal, not tied to a specific codebase | User (`~/.agents/skills/<name>/`) |
+| Workflow only makes sense for contributors to this repo | Project private (`.agents/skills/<name>/`) |
+| Workflow is meant to be installed by users of this package | Project public (`skills/<name>/`) |
+
+Pattern:
+
+| Signal | Pattern |
+|---|---|
+| Ordered workflow with multiple decisions or phases | Process |
+| Workflow centered on calling tools or external systems | Tool-based |
+| Workflow mainly enforcing tone, structure, or quality | Standard |
 
 Ask the user if the context is ambiguous.
 
@@ -76,12 +94,12 @@ description: Use this skill when <trigger>. <One-line summary.>
 
 Rules:
 - Encode the WHY behind each step (the constraint or decision), not just the WHAT
-- Flag deterministic steps as candidates for script extraction (see below)
+- Flag deterministic steps as candidates for script extraction (see **skill-design** § Extract deterministic logic)
 - Keep each step focused on one decision or action
 
 ### 5. Flag script-extraction candidates
 
-Mark any step that:
+Per **skill-design** § Extract deterministic logic, mark any step that:
 - Produces the same output given the same input (no judgment needed)
 - Involves text manipulation, file I/O, or structured data processing
 

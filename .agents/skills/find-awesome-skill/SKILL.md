@@ -20,34 +20,44 @@ Awesome sources are loaded from these layers, in this order:
 
 Duplicate sources are deduped by `repo + path`.
 
+Use this section when the user asks which sources are searched, or when the CLI returns no results and you need to diagnose missing configuration.
+
 ## Search flow
 
-1. Run the bundled finder:
+### 1. Primary path — use the CLI
 
-```bash
-npx cyber-skills@<version> awesome find "<query>"
-```
-
-For machine-readable output:
+Run the bundled finder with JSON output (machine contract):
 
 ```bash
 npx cyber-skills@<version> awesome find "<query>" --json
 ```
 
-2. Load configured awesome sources from the three config layers plus the default source.
-3. Merge duplicate repo or skill entries across sources.
-4. Rank matches by:
-   - exact name match
-   - summary match
-   - tag match
-   - corroboration count
-   - source class preference
-5. Return concise results with:
-   - repo or repo+skill identity
-   - why it matched
-   - primary `why_recommended`
-   - whether other sources also recommended it
-   - exact `npx skills add ...` install command
+Parse the JSON array and present concise results with install commands. Default CLI output (without `--json`) is human-readable prose for summaries only.
+
+### 2. Fallback — when the CLI cannot fully answer
+
+Use manual reasoning from the source layers above when:
+
+- `cyber-skills` is unavailable or `awesome find` fails
+- the query returns **zero results** — inspect configured sources and suggest `configure-awesome-sources`
+- the user asks **which sources** are searched (see Source discovery)
+- you need to explain match rationale beyond JSON fields (corroboration across sources, tag vs summary nuance)
+
+When falling back, merge duplicate repo or skill entries across sources and rank by:
+
+- exact name match
+- summary match
+- tag match
+- corroboration count
+- source class preference
+
+Return concise results with:
+
+- repo or repo+skill identity
+- why it matched
+- primary `why_recommended`
+- whether other sources also recommended it
+- exact `npx skills add ...` install command
 
 ## Guidance
 
