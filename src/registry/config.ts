@@ -26,7 +26,7 @@ export function readConfig(root: string, scope: ConfigScope): CyberSkillsConfig 
 	const filePath = getConfigPath(root, scope)
 	if (!fs.existsSync(filePath)) return { version: 1 }
 	try {
-		const raw = JSON.parse(fs.readFileSync(filePath, 'utf8')) as CyberSkillsConfig
+		const raw = JSON.parse(fs.readFileSync(filePath, 'utf8')) as Omit<CyberSkillsConfig, 'version'>
 		return { version: 1, ...raw }
 	} catch {
 		return { version: 1 }

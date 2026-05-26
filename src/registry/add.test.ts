@@ -85,7 +85,8 @@ test('addSkill installs all skills when no skill name given', async () => {
 	]
 	vi.stubGlobal(
 		'fetch',
-		vi.fn()
+		vi
+			.fn()
 			.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(awesomeData) })
 			.mockResolvedValue({ ok: true, text: () => Promise.resolve('---\nname: skill\n---') }),
 	)
