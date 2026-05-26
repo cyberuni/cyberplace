@@ -20,7 +20,6 @@ const sampleEntry = {
 	source: 'cyberuni/cyber-skills',
 	sourceType: 'github' as const,
 	skillPath: 'skills/commit/SKILL.md',
-	installedAt: '.agents/skills/commit/SKILL.md',
 }
 
 test('getLockPath returns project path', () => {

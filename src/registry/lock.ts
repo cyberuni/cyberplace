@@ -7,7 +7,6 @@ export interface LockEntry {
 	source: string
 	sourceType: 'github' | 'gitlab' | 'npm' | 'custom'
 	skillPath: string
-	installedAt: string
 	computedHash?: string
 }
 

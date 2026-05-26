@@ -80,7 +80,6 @@ export function migrate(options: MigrateOptions): MigrateResult {
 			source,
 			sourceType,
 			skillPath,
-			installedAt: join(root, '.agents', 'skills', name, 'SKILL.md'),
 			computedHash: entry.computedHash,
 		}
 
