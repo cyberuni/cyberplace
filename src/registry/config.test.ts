@@ -8,6 +8,7 @@ import {
 	getConfigPath,
 	inferProviderType,
 	listProviders,
+	matchProvider,
 	readConfig,
 	removeProvider,
 	writeConfig,
@@ -124,4 +125,50 @@ test('removeProvider is safe when provider not found', () => {
 
 test('listProviders returns empty array when no config', () => {
 	expect(listProviders(root, 'project')).toEqual([])
+})
+
+test('addProvider stores match field', () => {
+	addProvider(root, 'project', 'https://gitlab.mycompany.com', 'gitlab', 'mycompany/*')
+	const providers = listProviders(root, 'project')
+	expect(providers[0]!.match).toBe('mycompany/*')
+})
+
+test('addProvider stores no match field when omitted', () => {
+	addProvider(root, 'project', 'https://gitlab.mycompany.com')
+	const providers = listProviders(root, 'project')
+	expect(providers[0]!.match).toBeUndefined()
+})
+
+test('matchProvider returns null when no providers have a match pattern', () => {
+	addProvider(root, 'project', 'https://gitlab.mycompany.com')
+	const providers = listProviders(root, 'project')
+	expect(matchProvider(providers, 'mycompany/myrepo')).toBeNull()
+})
+
+test('matchProvider returns provider when owner/* matches', () => {
+	addProvider(root, 'project', 'https://gitlab.mycompany.com', 'gitlab', 'mycompany/*')
+	const providers = listProviders(root, 'project')
+	const result = matchProvider(providers, 'mycompany/myrepo')
+	expect(result).not.toBeNull()
+	expect(result!.url).toBe('https://gitlab.mycompany.com')
+})
+
+test('matchProvider returns null when owner does not match pattern', () => {
+	addProvider(root, 'project', 'https://gitlab.mycompany.com', 'gitlab', 'mycompany/*')
+	const providers = listProviders(root, 'project')
+	expect(matchProvider(providers, 'other-org/myrepo')).toBeNull()
+})
+
+test('matchProvider matches exact owner/repo pattern', () => {
+	addProvider(root, 'project', 'https://gitlab.mycompany.com', 'gitlab', 'mycompany/specific-repo')
+	const providers = listProviders(root, 'project')
+	expect(matchProvider(providers, 'mycompany/specific-repo')).not.toBeNull()
+	expect(matchProvider(providers, 'mycompany/other-repo')).toBeNull()
+})
+
+test('matchProvider returns first matching provider', () => {
+	addProvider(root, 'project', 'https://gitlab1.com', 'gitlab', 'mycompany/*')
+	addProvider(root, 'project', 'https://gitlab2.com', 'gitlab', 'mycompany/*')
+	const providers = listProviders(root, 'project')
+	expect(matchProvider(providers, 'mycompany/repo')!.url).toBe('https://gitlab1.com')
 })
