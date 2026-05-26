@@ -81,12 +81,16 @@ Do not use **type** for this axis in repo-facing docs.
 
 ### Activation values
 
+Store activation in frontmatter as **`metadata.activation`** (cyber-skills canon in **skill-design** governance). Values normalize **hook lifecycle events** across Claude Code, Cursor, and Codex (kebab-case → agent-specific hook config keys). Applies to all patterns — not persona-only.
+
 | Activation | Meaning |
 | --- | --- |
-| `session-start` | Invoked once; sets identity or context for the whole session |
-| `per-situation` | Triggered by task match; scoped to a single request |
+| `per-situation` | No hook event; load via `description` or explicit invoke — **default when omitted** |
+| `session-start` | Normalized SessionStart / `sessionStart` hook — chat opens or resumes |
+| `post-tool-use` | Normalized PostToolUse / `postToolUse` hook — after tool succeeds |
+| *(others)* | Full vocabulary and agent mapping table in **skill-design** governance |
 
-Persona skills almost always use `session-start` activation. Process, tool-based, and standard skills typically use `per-situation`. Declare activation explicitly in frontmatter when it is non-obvious.
+Persona skills default to `per-situation`. Discipline and always-on injection skills use hook events such as `session-start`. Hosts may interpret metadata differently; authors declare intent.
 
 ### What not to call a skill type
 
@@ -152,3 +156,4 @@ Do not change the awesome catalog schema in the same step.
 
 - [ADR-0001: Governance vs Discipline Taxonomy](0001-governance-vs-discipline-taxonomy.md)
 - [ADR-0003: Agent-first Authoring](0003-agent-first-authoring.md)
+- [Activation frontmatter proposal](../research/2026-05-activation-frontmatter-proposal.md) — upstream draft for `metadata.activation`

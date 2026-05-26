@@ -26,6 +26,7 @@ Capture the workflow shape separately from placement:
 | Process | Ordered multi-step workflow with decision points |
 | Tool-based | Consistent use of tools, systems, or connectors |
 | Standard | Tone, format, structure, or quality enforcement |
+| Persona | Expert stance loaded opt-in via `description`; add `metadata.persona: "true"` |
 
 Ask the user if the placement or pattern is ambiguous.
 
@@ -151,3 +152,4 @@ Read stdout as the authoritative rules for stdout, JSON, non-interactive paths, 
 - `~/.agents/skills/` is the source of truth — commit or back up this directory.
 - Agent skills directories (e.g. `~/.claude/skills/`) only contain symlinks; never edit files there directly.
 - The `description` frontmatter field is what agents read to decide when to activate the skill — make it specific and include "Use this skill when" trigger language. For sub-skills, prefix with "Internal skill:" to prevent unintended activation.
+- Optional `metadata.activation` — normalized hook lifecycle event (kebab-case). Default: omit or `per-situation` (no hook; load via `description`). For hook-backed skills, set the event from the **skill-design** Activation table and register with `hook register --event SessionStart|PostToolUse` (map from table; CLI supports those two today).

@@ -7,6 +7,7 @@ Background research for cyber-skills repo structure, external governance federat
 - [ADR-0002: External governance federation](../adr/0002-external-governance-federation.md)
 - Governance: `governance show skill-repo-structure` (after build)
 - [ADR-0001: Governance vs discipline taxonomy](../adr/0001-governance-vs-discipline-taxonomy.md)
+- [Activation frontmatter proposal](2026-05-activation-frontmatter-proposal.md)
 
 ---
 
@@ -46,6 +47,8 @@ skill-name/
 Key constraints: `name` matches directory; progressive disclosure; validate with [skills-ref](https://github.com/agentskills/agentskills/tree/main/skills-ref).
 
 Client implementation guides mention cross-client paths such as `.agents/skills/` — convention, not core spec.
+
+The spec defines **`metadata`** for author/client extensions but does not standardize a **portable hook lifecycle vocabulary** — how skill authors declare which agent hook event should run a skill. Claude Code, Cursor, and Codex each use different hook config key names (`SessionStart` vs `sessionStart`, `PostToolUse` vs `postToolUse`, etc.). cyber-skills proposes **`metadata.activation`** as normalized kebab-case hook events, with `per-situation` for description-triggered skills — see [2026-05-activation-frontmatter-proposal.md](2026-05-activation-frontmatter-proposal.md) and `governance show skill-design`.
 
 ---
 

@@ -63,8 +63,10 @@ Use **pattern** for the workflow shape; do not overload "kind" or "type" here.
 | **Process** | Multi-step workflows where sequence and decision logic matter |
 | **Tool-based** | Workflows centered on consistent use of tools, systems, or connectors |
 | **Standard** | Workflows that enforce tone, structure, formatting, or quality bars |
+| **Persona** | Loads an expert stance, decision style, and working behavior into the session |
 
 Repo-internal skills must include `metadata: internal: true` in frontmatter.
+Persona skills must include `metadata.persona: "true"`.
 
 ### Patch and local rules
 
@@ -101,6 +103,63 @@ When a skill includes `scripts/` or documents CLI commands agents run, load **ag
 - `description` must contain `"Use this skill when"` or `"When to use"` trigger language.
 - Keep `description` ≤120 characters — long descriptions are truncated in the agent context window.
 
+### Activation
+
+Optional `metadata.activation` — canonical **hook lifecycle event** in kebab-case. Maps to Claude Code, Cursor, and Codex hook config keys. Hosts interpret metadata; authors declare intent.
+
+| Question | Mechanism | Not `metadata.activation` |
+| --- | --- | --- |
+| Which hook event runs the skill | **`metadata.activation`** (hook events below) | |
+| Who may load the skill (no hook) | `description`, Claude `disable-model-invocation`, `"Internal skill:"` prefix | |
+| Tool/shell filters on hook events | Hook `matcher` at registration time | |
+
+**Default:** omit or set `per-situation` — no hook; load via `description` or explicit invoke.
+
+**Hook-backed skills:** set `metadata.activation` to the normalized event, then register with `hook register --event …` (cyber-skills CLI maps `session-start` → `SessionStart` / `sessionStart`, `post-tool-use` → `PostToolUse` / `postToolUse`). CLI today supports `SessionStart` and `PostToolUse` only; other values are portable declarations until hosts implement them.
+
+| `metadata.activation` | Claude Code | Cursor | Codex |
+| --- | --- | --- | --- |
+| `per-situation` | — | — | — |
+| `session-start` | `SessionStart` | `sessionStart` | `SessionStart` |
+| `session-end` | `SessionEnd` | `sessionEnd` | — |
+| `pre-tool-use` | `PreToolUse` | `preToolUse` | — |
+| `post-tool-use` | `PostToolUse` | `postToolUse` | `PostToolUse` |
+| `post-tool-use-failure` | — | `postToolUseFailure` | — |
+| `before-submit-prompt` | `UserPromptSubmit` | `beforeSubmitPrompt` | — |
+| `before-shell-execution` | — | `beforeShellExecution` | — |
+| `after-shell-execution` | — | `afterShellExecution` | — |
+| `before-mcp-execution` | — | `beforeMCPExecution` | — |
+| `after-mcp-execution` | — | `afterMCPExecution` | — |
+| `before-read-file` | — | `beforeReadFile` | — |
+| `after-file-edit` | — | `afterFileEdit` | — |
+| `subagent-start` | — | `subagentStart` | — |
+| `subagent-stop` | — | `subagentStop` | `SubagentStop` |
+| `pre-compact` | `PreCompact` | `preCompact` | — |
+| `stop` | `Stop` | `stop` | `Stop` |
+| `after-agent-response` | — | `afterAgentResponse` | — |
+| `after-agent-thought` | — | `afterAgentThought` | — |
+| `before-tab-file-read` | — | `beforeTabFileRead` | — |
+| `after-tab-file-edit` | — | `afterTabFileEdit` | — |
+
+— = no documented equivalent on that host.
+
+**Defaults by pattern:** persona → `per-situation` (opt-in via `description`); discipline / always-on injection → `session-start`; process / tool-based / standard → `per-situation` or omit.
+
+Example (persona, opt-in):
+
+```yaml
+metadata:
+  persona: "true"
+  activation: per-situation
+```
+
+Example (discipline, hook-backed):
+
+```yaml
+metadata:
+  activation: session-start
+```
+
 ### Body
 
 - Include actionable steps, numbered instructions, or decision logic — not just a restatement of the description.
@@ -121,3 +180,5 @@ Related governances (load on demand; read stdout as authoritative):
 npx cyber-skills@<version> governance show skill-repo-structure
 npx cyber-skills@<version> governance show agent-tool-output
 ```
+
+Upstream activation draft: `docs/research/2026-05-activation-frontmatter-proposal.md` (research only — not loaded via CLI).

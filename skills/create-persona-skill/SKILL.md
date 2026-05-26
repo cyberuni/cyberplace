@@ -1,11 +1,22 @@
 ---
 name: create-persona-skill
-description: Use this skill when the user asks to create a persona or role skill. Scaffolds SKILL.md with session-start activation.
+description: Use this skill when the user asks to create a persona or role skill. Scaffolds opt-in SKILL.md with metadata.persona.
 ---
 
 # Create Persona Skill
 
-Apply when the user wants a role-loading skill — orchestrator, designer, product manager, security auditor, or any expert stance that activates at session start.
+Apply when the user wants a role-loading skill — orchestrator, designer, product manager, security auditor, or any expert stance they invoke explicitly or when work clearly matches the role.
+
+## Activation model
+
+Persona skills default to **opt-in** — no hook unless the author chooses one.
+
+1. **`metadata.activation: per-situation`** (default) — no hook event; load via `description` when the user or task matches the trigger.
+2. **`metadata.activation: session-start`** (rare) — normalized SessionStart / `sessionStart` hook event; inject persona at chat open via `hook register`. Discipline-like; not the default for personas.
+
+Other hook events: see **skill-design** governance (Activation table).
+
+Full rules: `npx cyber-skills@<version> governance show skill-design`
 
 ## Workflow
 
@@ -31,6 +42,7 @@ Ask all in one pass. Skip any already answered.
 6. **Capabilities** — tools, systems, or connectors needed (if any)
 7. **Boundaries** — what does this role defer, refuse, or escalate?
 8. **Trigger** — how does the user invoke it? (e.g., "act as orchestrator", "start designer mode")
+9. **Activation** — `per-situation` (default) or a hook event such as `session-start` (explain hook implication if chosen)
 
 ### 3. Create directory and write SKILL.md
 
@@ -38,15 +50,15 @@ Ask all in one pass. Skip any already answered.
 mkdir -p <placement-path>/<name>
 ```
 
-Write `<placement-path>/<name>/SKILL.md` from this template — fill every section from interview answers, leave no placeholder text:
+Write `<placement-path>/<name>/SKILL.md` from this template — fill every section from interview answers, leave no placeholder text. Default `activation: per-situation`; use another value from the governance table only when interview answer 9 requires a hook event.
 
 ```markdown
 ---
 name: <name>
 description: Use this skill when the user <trigger phrase>. Loads <role> context for the session.
 metadata:
-  persona: true
-activation: session-start
+  persona: "true"
+  activation: per-situation
 ---
 
 # <Role Title>
@@ -74,6 +86,8 @@ You are a <role> — <one-sentence stance>.
 <What this role defers, refuses, or escalates. When to exit the persona.>
 ```
 
+If `activation` is a hook event (not `per-situation`), register the hook after audit — map the value to `hook register --event` per **skill-design** governance.
+
 ### 4. Audit
 
 ```bash
@@ -94,8 +108,8 @@ Adjust target path per agent (`~/.cursor/skills/`, `~/.opencode/skills/`, etc.).
 
 ## Anti-patterns
 
-- `activation: per-situation` on a persona skill — always use `session-start`
-- Missing `metadata.persona: true` — audit rule E2 flags role-loading phrases without it
+- Defaulting personas to `session-start` without explicit author intent — prefer `per-situation` + `description` trigger
+- Missing `metadata.persona: "true"` on role-loading body text — audit-skill E2 review treats undeclared persona phrases as injection
 - Multi-step workflow inside a persona skill — delegate to a separate process or tool-based skill
 - Decision heuristics written as prose paragraphs — use "when X, do Y" form
 
