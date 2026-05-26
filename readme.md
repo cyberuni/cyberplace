@@ -137,15 +137,28 @@ npx cyber-skills@$(npm view cyber-skills version) hook register \
 
 Skill augmentations (`SKILL.local.md`) apply when a skill is loaded — see AGENTS.md **Skill Augmentations**.
 
-## Skill kinds
+## Skill placement and patterns
 
-The `create-skill` skill helps you create three kinds of skills depending on your use case:
+Use two separate terms:
 
-| Kind | Location | Use case |
-|------|----------|----------|
-| **Global** | `~/.agents/skills/<name>/` | Personal skills available across all your projects |
-| **Repo internal** | `.agents/skills/<name>/` | Contributor tooling scoped to one repo (e.g. release helpers, SDK updaters) |
-| **Repo public** | `skills/<name>/` | Skills shipped with this package — users install via `npx skills add cyberuni/cyber-skills` |
+- **Placement** answers where the skill lives.
+- **Pattern** answers what sort of workflow the skill encodes.
+
+### Placement
+
+| Placement | Location | Use case |
+|-----------|----------|----------|
+| **User** | `~/.agents/skills/<name>/` | Personal skills available across all your projects |
+| **Project private** | `.agents/skills/<name>/` | Contributor tooling scoped to one repo (e.g. release helpers, SDK updaters) |
+| **Project public** | `skills/<name>/` | Skills shipped with this package — users install via `npx skills add cyberuni/cyber-skills` |
+
+### Pattern
+
+| Pattern | Use case |
+|---------|----------|
+| **Process** | Multi-step workflows where ordered steps and decisions matter |
+| **Tool-based** | Skills centered on reliable use of tools, systems, or connectors |
+| **Standard** | Skills that enforce tone, structure, formatting, or quality |
 
 ## Quality
 
@@ -175,6 +188,6 @@ Architecture decisions are recorded in [docs/adr/](docs/adr/). Background survey
   Install: `npx skills add cyberuni/cyber-skills`
   Highlights:
   - `skill:init` — Create or improve AGENTS.md and carry forward local skill augmentation guidance.
-  - `skill:create-skill` — Create a new skill and place it in the right global, repo-internal, or repo-public location.
+  - `skill:create-skill` — Create a new skill and place it in the right user, project-private, or project-public location.
   - `skill:audit-skill` — Audit SKILL.md structure, quality, and security before installing or publishing.
 <!-- AWESOME-SKILLS:END -->

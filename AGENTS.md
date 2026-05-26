@@ -117,13 +117,26 @@ This is required — CI runs `pnpm verify` on every PR that touches `skills/`, `
 
 ## Adding a New Skill
 
-Three kinds of skills exist depending on scope:
+Separate the two axes:
 
-| Kind | Location | Use case |
-|------|----------|----------|
-| **Global** | `~/.agents/skills/<name>/` | Personal skills across all projects |
-| **Repo internal** | `.agents/skills/<name>/` | Contributor tooling scoped to this repo |
-| **Repo public** | `skills/<name>/` | Shipped with the package; users install via `npx skills add` |
+- **Placement** — where the skill lives and who consumes it
+- **Pattern** — what sort of workflow the skill encodes
+
+### Skill placement
+
+| Placement | Location | Use case |
+|-----------|----------|----------|
+| **User** | `~/.agents/skills/<name>/` | Personal skills across all projects |
+| **Project private** | `.agents/skills/<name>/` | Contributor tooling scoped to this repo |
+| **Project public** | `skills/<name>/` | Shipped with the package; users install via `npx skills add` |
+
+### Skill patterns
+
+| Pattern | Use case |
+|---------|----------|
+| **Process** | Multi-step workflows where sequence and decisions matter |
+| **Tool-based** | Workflows centered on consistent use of tools, systems, or connectors |
+| **Standard** | Skills that enforce tone, structure, formatting, or quality bars |
 
 Create `skills/<skill-name>/SKILL.md` with this structure:
 

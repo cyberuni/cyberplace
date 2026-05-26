@@ -7,17 +7,27 @@ description: Use this skill when the user asks to create a new agent skill — s
 
 When the user asks to create a new skill, follow this convention.
 
-## Skill kinds
+## Skill placement
 
-Pick the location from scope before scaffolding:
+Pick the placement before scaffolding:
 
-| Kind | Location | Notes |
+| Placement | Location | Notes |
 | --- | --- | --- |
-| Global | `~/.agents/skills/<name>/` | Personal skills across all projects |
-| Repo internal | `.agents/skills/<name>/` | Contributor tooling; add `metadata: internal: true` |
-| Repo public | `skills/<name>/` | Shipped with a package; users install via `npx skills add` |
+| User | `~/.agents/skills/<name>/` | Personal skills across all projects |
+| Project private | `.agents/skills/<name>/` | Contributor tooling; add `metadata: internal: true` |
+| Project public | `skills/<name>/` | Shipped with a package; users install via `npx skills add` |
 
-Ask the user if the kind is ambiguous.
+## Skill patterns
+
+Capture the workflow shape separately from placement:
+
+| Pattern | When to use it |
+| --- | --- |
+| Process | Ordered multi-step workflow with decision points |
+| Tool-based | Consistent use of tools, systems, or connectors |
+| Standard | Tone, format, structure, or quality enforcement |
+
+Ask the user if the placement or pattern is ambiguous.
 
 ## Directory structure
 
@@ -36,7 +46,7 @@ Global skills live in `~/.agents/skills/<name>/` and are linked into each agent'
 
 ### 1. Create the skill
 
-Determine the skill kind (above), then create the directory at the matching path.
+Determine the skill placement (above), then create the directory at the matching path.
 
 Check whether `npx skills` is available:
 
