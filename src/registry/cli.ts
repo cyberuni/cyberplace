@@ -16,7 +16,14 @@ import { fetchMarketplace, listRepoSkills } from './github.js'
 import { readLock } from './lock.js'
 import { mapSkillsToPlugins } from './marketplace.js'
 import { migrate } from './migrate.js'
-import { CancelError, createRl, isInteractive, promptScopeSelect, promptSkillSelect, promptUpdateScopeSelect } from './prompt.js'
+import {
+	CancelError,
+	createRl,
+	isInteractive,
+	promptScopeSelect,
+	promptSkillSelect,
+	promptUpdateScopeSelect,
+} from './prompt.js'
 import { removeSkill } from './remove.js'
 import { isRepoSpec, parseSpec } from './spec.js'
 import { updateAllSkills, updateSkill } from './update.js'
@@ -158,8 +165,7 @@ export function updateCommand(): Command {
 						rl.close()
 					}
 
-					const scopes: Array<'project' | 'global'> =
-						updateScope === 'both' ? ['project', 'global'] : [updateScope]
+					const scopes: Array<'project' | 'global'> = updateScope === 'both' ? ['project', 'global'] : [updateScope]
 					const allResults: Array<{ scope: string; results: Awaited<ReturnType<typeof updateAllSkills>> }> = []
 					for (const s of scopes) {
 						const results = await updateAllSkills({ root, scope: s })
