@@ -10,9 +10,15 @@
 		},
 		{
 			"title": "Skill Authoring",
-			"description": "Create, generalize, patch, and audit agent skills.",
+			"description": "Create, generalize, patch, persona, and audit agent skills.",
 			"installScope": "global",
-			"skills": ["create-skill", "skillify", "patch-skill", "audit-skill"]
+			"skills": [
+				"create-skill",
+				"create-persona-skill",
+				"skillify",
+				"patch-skill",
+				"audit-skill"
+			]
 		},
 		{
 			"title": "Agent Initialization",
@@ -29,6 +35,7 @@
 		"find-awesome-skill": "global",
 		"audit-skill": "global",
 		"create-skill": "global",
+		"create-persona-skill": "global",
 		"skillify": "global",
 		"patch-skill": "global",
 		"init": "global",

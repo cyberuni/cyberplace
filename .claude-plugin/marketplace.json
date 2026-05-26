@@ -7,8 +7,14 @@
 		},
 		{
 			"name": "skill-authoring",
-			"description": "Create, generalize, patch, and audit skills. Prefer global install (-g).",
-			"skills": ["./skills/create-skill", "./skills/skillify", "./skills/patch-skill", "./skills/audit-skill"]
+			"description": "Create, generalize, patch, persona, and audit skills. Prefer global install (-g).",
+			"skills": [
+				"./skills/create-skill",
+				"./skills/create-persona-skill",
+				"./skills/skillify",
+				"./skills/patch-skill",
+				"./skills/audit-skill"
+			]
 		},
 		{
 			"name": "agent-initialization",
