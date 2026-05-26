@@ -26,7 +26,6 @@ function installFakeSkill(name: string): string {
 		source: 'org/repo',
 		sourceType: 'github',
 		skillPath: `skills/${name}/SKILL.md`,
-		installedAt: path.join(skillDir, 'SKILL.md'),
 	})
 	writeConfig(root, 'project', { version: 1, skills: { [name]: `org/repo:${name}` } })
 	return skillDir

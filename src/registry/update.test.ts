@@ -26,7 +26,6 @@ function setupFakeLockEntry(name: string, spec: string): void {
 		source: 'org/repo',
 		sourceType: 'github',
 		skillPath: `skills/${name}/SKILL.md`,
-		installedAt: path.join(skillDir, 'SKILL.md'),
 	})
 }
 

@@ -49,7 +49,6 @@ export async function addSkill(input: string, options: AddOptions): Promise<AddR
 				source: `${spec.owner}/${spec.repo}`,
 				sourceType: provider?.type === 'gitlab' ? 'gitlab' : 'github',
 				skillPath: f.skillPath,
-				installedAt,
 				computedHash: f.hash,
 			})
 			installed.push({ name: f.name, skillPath: f.skillPath, installedAt })
@@ -85,7 +84,6 @@ export async function addSkill(input: string, options: AddOptions): Promise<AddR
 				source: spec.packageName,
 				sourceType: 'npm',
 				skillPath: `skills/${skillName}/SKILL.md`,
-				installedAt: destPath,
 			})
 			installed.push({ name: skillName, skillPath: `skills/${skillName}/SKILL.md`, installedAt: destPath })
 		}
