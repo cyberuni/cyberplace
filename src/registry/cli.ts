@@ -16,7 +16,7 @@ import { fetchMarketplace, listRepoSkills } from './github.js'
 import { readLock } from './lock.js'
 import { mapSkillsToPlugins } from './marketplace.js'
 import { migrate } from './migrate.js'
-import { createRl, isInteractive, promptScopeSelect, promptSkillSelect } from './prompt.js'
+import { CancelError, createRl, isInteractive, promptScopeSelect, promptSkillSelect } from './prompt.js'
 import { removeSkill } from './remove.js'
 import { isRepoSpec, parseSpec } from './spec.js'
 import { updateAllSkills, updateSkill } from './update.js'
@@ -71,6 +71,12 @@ export function addCommand(): Command {
 					try {
 						selectedSkills = await promptSkillSelect(rl, items, `${parsedSpec.owner}/${parsedSpec.repo}`)
 						scope = await promptScopeSelect(rl)
+					} catch (err) {
+						if (err instanceof CancelError) {
+							console.log('\nCancelled.')
+							return
+						}
+						throw err
 					} finally {
 						rl.close()
 					}
