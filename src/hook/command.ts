@@ -22,7 +22,12 @@ export function hookCommand(subcommand: string, root = process.cwd()): string {
 	return `npx cyber-skills@${version} ${subcommand}`
 }
 
-function extractFlagValue(command: string, flag: string): string | null {
+function isCommandString(command: unknown): command is string {
+	return typeof command === 'string' && command.length > 0
+}
+
+function extractFlagValue(command: unknown, flag: string): string | null {
+	if (!isCommandString(command)) return null
 	const match = command.match(new RegExp(`${flag}\\s+('[^']*'|"[^"]*"|\\S+)`))
 	if (!match?.[1]) return null
 	const value = match[1]
@@ -32,7 +37,8 @@ function extractFlagValue(command: string, flag: string): string | null {
 	return value
 }
 
-function extractNpxVersion(command: string): string | null {
+function extractNpxVersion(command: unknown): string | null {
+	if (!isCommandString(command)) return null
 	const match = command.match(/npx cyber-skills@(\S+)/)
 	return match?.[1] ?? null
 }
@@ -64,7 +70,8 @@ function legacyEquivalent(hookId: string, existing: string): boolean {
 }
 
 /** Same logical hook target (--name + input flags, or legacy equivalent), ignoring semver and local bin vs npx. */
-export function sameHookTarget(existing: string, hookId: string, expectedCommand: string): boolean {
+export function sameHookTarget(existing: unknown, hookId: string, expectedCommand: string): boolean {
+	if (!isCommandString(existing)) return false
 	if (existing === expectedCommand) return true
 
 	const existingName = extractFlagValue(existing, '--name')
@@ -85,7 +92,8 @@ export function sameHookTarget(existing: string, hookId: string, expectedCommand
 }
 
 /** True when an existing registered command refers to the same hook id and semver/path. */
-export function commandMatchesHook(existing: string, hookId: string, expectedCommand: string): boolean {
+export function commandMatchesHook(existing: unknown, hookId: string, expectedCommand: string): boolean {
+	if (!isCommandString(existing)) return false
 	if (existing === expectedCommand) return true
 	if (!sameHookTarget(existing, hookId, expectedCommand)) return false
 
