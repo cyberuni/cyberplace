@@ -3,7 +3,7 @@ import { Command } from 'commander'
 import { ROOT_OPTION, resolveRoot } from '../cli-options.js'
 import { output, printTable } from '../output.js'
 import { addSkill } from './add.js'
-import { addProvider, listProviders, removeProvider } from './config.js'
+import { addProvider, listProviders, removeProvider, validateProviderType } from './config.js'
 import { findSkills, findSkillsInRepo } from './find.js'
 import { readLock } from './lock.js'
 import { migrate } from './migrate.js'
@@ -164,7 +164,8 @@ export function configCommand(): Command {
 		.action((url: string, opts: { root?: string; global?: boolean; type?: string; match?: string }) => {
 			const root = resolveRoot(opts.root)
 			const scope = resolveScope(opts.global)
-			addProvider(root, scope, url, opts.type as 'github' | 'gitlab' | 'custom' | undefined, opts.match)
+			const resolvedType = opts.type ? validateProviderType(opts.type) : undefined
+			addProvider(root, scope, url, resolvedType, opts.match)
 			const providers = listProviders(root, scope)
 			output({ providers }, () =>
 				console.log(`Added provider: ${url.replace(/\/$/, '')}${opts.match ? ` (match: ${opts.match})` : ''}`),

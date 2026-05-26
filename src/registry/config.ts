@@ -44,10 +44,17 @@ export function writeConfig(root: string, scope: ConfigScope, config: CyberSkill
 	fs.writeFileSync(filePath, `${JSON.stringify(data, null, 2)}\n`)
 }
 
+const VALID_PROVIDER_TYPES: ProviderType[] = ['github', 'gitlab', 'custom']
+
 export function inferProviderType(url: string): ProviderType {
 	if (url.includes('github.com')) return 'github'
 	if (url.includes('gitlab.')) return 'gitlab'
 	return 'custom'
+}
+
+export function validateProviderType(type: string): ProviderType {
+	if ((VALID_PROVIDER_TYPES as string[]).includes(type)) return type as ProviderType
+	throw new Error(`Invalid provider type '${type}'. Must be one of: ${VALID_PROVIDER_TYPES.join(', ')}`)
 }
 
 export function addProvider(root: string, scope: ConfigScope, url: string, type?: ProviderType, match?: string): void {

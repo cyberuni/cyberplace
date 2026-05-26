@@ -11,6 +11,7 @@ import {
 	matchProvider,
 	readConfig,
 	removeProvider,
+	validateProviderType,
 	writeConfig,
 } from './config.js'
 
@@ -171,4 +172,24 @@ test('matchProvider returns first matching provider', () => {
 	addProvider(root, 'project', 'https://gitlab2.com', 'gitlab', 'mycompany/*')
 	const providers = listProviders(root, 'project')
 	expect(matchProvider(providers, 'mycompany/repo')!.url).toBe('https://gitlab1.com')
+})
+
+test('validateProviderType accepts github', () => {
+	expect(validateProviderType('github')).toBe('github')
+})
+
+test('validateProviderType accepts gitlab', () => {
+	expect(validateProviderType('gitlab')).toBe('gitlab')
+})
+
+test('validateProviderType accepts custom', () => {
+	expect(validateProviderType('custom')).toBe('custom')
+})
+
+test('validateProviderType throws on unknown value', () => {
+	expect(() => validateProviderType('unknown')).toThrow("Invalid provider type 'unknown'")
+})
+
+test('validateProviderType error message lists valid options', () => {
+	expect(() => validateProviderType('bitbucket')).toThrow('github, gitlab, custom')
 })
