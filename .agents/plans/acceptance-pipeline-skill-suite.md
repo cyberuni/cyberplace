@@ -4,18 +4,16 @@
 
 Build this as a **published public skill suite** in this repo, not as a new top-level `cyber-skills` product area. The suite should let an agent install Uncle Bob's Acceptance Pipeline into a target project by following a portable workflow, while using **TypeScript/Node reference assets** for the deterministic pieces in v1.
 
-The suite should have one user-facing skill plus three explicit internal sub-skills/persona skills:
+The suite should have one user-facing skill plus three internal persona skills:
 
-- `acceptance-pipeline`
-  Public entrypoint. Detects the target repo, chooses the install path, and coordinates the rest.
-- `acceptance-pipeline-architect`
-  `Internal skill:` role focused on mapping the spec to target-project contracts and artifact layout.
-- `acceptance-pipeline-implementer`
-  `Internal skill:` role focused on scaffolding parser, IR, runtime, generator, mutator, scripts, and test hooks.
-- `acceptance-pipeline-critic`
-  `Internal skill:` role focused on conformance review, mutation-survivor analysis, and hardening gaps.
+| Skill | Pattern | Activation | Role |
+|-------|---------|------------|------|
+| `acceptance-pipeline` | process | per-situation | Public entrypoint — detects target repo, chooses install path, coordinates the rest |
+| `acceptance-pipeline-architect` | persona | session-start | Maps spec to target-project contracts and artifact layout |
+| `acceptance-pipeline-implementer` | persona | session-start | Scaffolds parser, IR, runtime, generator, mutator, scripts, and test hooks |
+| `acceptance-pipeline-critic` | persona | session-start | Conformance review, mutation-survivor analysis, and hardening gaps |
 
-Keep these sub-skills under `skills/`, not `.agents/skills/`, so they ship in the npm package. Their descriptions should use the internal-skill prefix to avoid accidental activation.
+All three persona skills require `metadata.persona: true` in frontmatter and must use the `Internal skill:` description prefix to avoid accidental activation. Keep all four under `skills/`, not `.agents/skills/`, so they ship in the npm package.
 
 ## Key Changes
 
