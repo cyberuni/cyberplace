@@ -159,13 +159,16 @@ export function configCommand(): Command {
 		.addOption(ROOT_OPTION)
 		.option('--global', 'Add to global config')
 		.option('--type <type>', 'Provider type: github|gitlab|custom')
+		.option('--match <glob>', 'Org/repo glob to auto-route to this provider (e.g., "mycompany/*")')
 		.option('--json', 'Output raw JSON')
-		.action((url: string, opts: { root?: string; global?: boolean; type?: string }) => {
+		.action((url: string, opts: { root?: string; global?: boolean; type?: string; match?: string }) => {
 			const root = resolveRoot(opts.root)
 			const scope = resolveScope(opts.global)
-			addProvider(root, scope, url, opts.type as 'github' | 'gitlab' | 'custom' | undefined)
+			addProvider(root, scope, url, opts.type as 'github' | 'gitlab' | 'custom' | undefined, opts.match)
 			const providers = listProviders(root, scope)
-			output({ providers }, () => console.log(`Added provider: ${url.replace(/\/$/, '')}`))
+			output({ providers }, () =>
+				console.log(`Added provider: ${url.replace(/\/$/, '')}${opts.match ? ` (match: ${opts.match})` : ''}`),
+			)
 		})
 
 	providerCmd

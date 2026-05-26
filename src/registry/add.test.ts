@@ -117,3 +117,39 @@ test('addSkill installs from npm package', async () => {
 	expect(result.installed[0]!.name).toBe('my-skill')
 	expect(fs.existsSync(path.join(root, '.agents', 'skills', 'my-skill', 'SKILL.md'))).toBe(true)
 })
+
+test('addSkill uses configured GitLab provider when pattern matches', async () => {
+	const { addProvider } = await import('./config.js')
+	addProvider(root, 'project', 'https://gitlab.mycompany.com', 'gitlab', 'mycompany/*')
+
+	vi.stubGlobal(
+		'fetch',
+		vi.fn().mockResolvedValue({
+			ok: true,
+			text: () => Promise.resolve('---\nname: commit\n---'),
+		}),
+	)
+
+	await addSkill('mycompany/skills:commit', { root })
+
+	const url = (fetch as ReturnType<typeof vi.fn>).mock.calls[0]?.[0] as string
+	expect(url).toContain('gitlab.mycompany.com')
+})
+
+test('addSkill uses GitHub default when no provider pattern matches', async () => {
+	const { addProvider } = await import('./config.js')
+	addProvider(root, 'project', 'https://gitlab.mycompany.com', 'gitlab', 'mycompany/*')
+
+	vi.stubGlobal(
+		'fetch',
+		vi.fn().mockResolvedValue({
+			ok: true,
+			text: () => Promise.resolve('---\nname: commit\n---'),
+		}),
+	)
+
+	await addSkill('cyberuni/cyber-skills:commit', { root })
+
+	const url = (fetch as ReturnType<typeof vi.fn>).mock.calls[0]?.[0] as string
+	expect(url).toContain('raw.githubusercontent.com')
+})
