@@ -3,6 +3,7 @@ import { Command } from 'commander'
 import { ROOT_OPTION, resolveRoot } from '../cli-options.js'
 import { output, printFields, printTable } from '../output.js'
 import { listSkills } from './list.js'
+import { repairPrivateSkills, validatePrivateSkills } from './repair.js'
 import { findSkillSource } from './source.js'
 
 export function skillCommand(): Command {
@@ -23,6 +24,43 @@ export function skillCommand(): Command {
 					{ label: 'description', get: (s) => s.description },
 				]),
 			)
+		})
+
+	cmd
+		.command('validate-private')
+		.description('Validate repo-private skills under .agents/skills')
+		.addOption(ROOT_OPTION)
+		.option('--json', 'Output raw JSON')
+		.action((opts: { root?: string }) => {
+			const result = validatePrivateSkills(resolveRoot(opts.root))
+			output(result, () => {
+				printFields({
+					ok: String(result.ok),
+					issues: String(result.issues.length),
+				})
+				for (const issue of result.issues) {
+					console.log(`- ${issue.skill}: ${issue.issue}${issue.details ? ` (${issue.details})` : ''}`)
+				}
+			})
+			if (!result.ok) process.exit(1)
+		})
+
+	cmd
+		.command('repair-private')
+		.description('Repair repo-private skills under .agents/skills')
+		.addOption(ROOT_OPTION)
+		.option('--json', 'Output raw JSON')
+		.action((opts: { root?: string }) => {
+			const result = repairPrivateSkills(resolveRoot(opts.root))
+			output(result, () => {
+				printFields({
+					changed: String(result.changed),
+					actions: String(result.actions.length),
+				})
+				for (const action of result.actions) {
+					console.log(`- ${action.skill}: ${action.action}${action.details ? ` (${action.details})` : ''}`)
+				}
+			})
 		})
 
 	cmd

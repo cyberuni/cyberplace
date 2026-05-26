@@ -71,6 +71,12 @@ pnpm test:audit
 node bin/cyber-skills.mjs audit validate --path skills/my-skill
 ```
 
+Repair repo-private skills after `npx skills update` or other drift:
+
+```bash
+pnpm repair:private-skills
+```
+
 Full quality review (Q6–Q13, E3–E5, E7–E8, P1–P3) requires running the `audit-skill` agent skill.
 
 Run a single test file:

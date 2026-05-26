@@ -34,7 +34,7 @@ export function auditCommand(): Command {
 					console.error(`No SKILL.md found at ${skillMd}`)
 					process.exit(1)
 				}
-				skillFiles = [fs.realpathSync(skillMd)]
+				skillFiles = [skillMd]
 			} else {
 				skillFiles = findSkillFiles(SKILL_DIRS, cwd)
 			}
