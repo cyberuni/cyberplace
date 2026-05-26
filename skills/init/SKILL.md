@@ -25,10 +25,8 @@ Then add sections in this order:
 When reading any `SKILL.md` file, always check whether a `SKILL.local.md` exists in the same directory. If it does, treat its contents as additional instructions that extend the base skill. Local augmentations take precedence over the base skill where they conflict.
 ```
 
-2. **Commands** — commonly used for building, linting, and running tests, including how to run a single test.
-3. **Architecture** — high-level structure that requires reading multiple files to understand. Focus on the big picture, not file listings.
-4. **Discipline sections** (when present, e.g. `## Commit Discipline`) — agent-first: dense normative rules in the body, `### References` at section bottom for commit-helper skills and `governance show` pointers. Load `governance show skill-repo-structure` for the Discipline sections rules.
-5. Other sections only when grounded in existing project files (see usage notes below).
+2. **Discipline sections** (when present, e.g. `## Commit Discipline`) — agent-first: dense normative rules in the body, `### References` at section bottom for commit-helper skills and `governance show` pointers. Load `governance show skill-repo-structure` for the Discipline sections rules.
+3. Other sections only when grounded in existing project files (see usage notes below).
 
 ## Usage notes
 
@@ -37,7 +35,6 @@ When reading any `SKILL.md` file, always check whether a `SKILL.local.md` exists
 - Avoid listing every component or file structure that can be easily discovered.
 - Do not make up sections like "Common Development Tasks" or "Tips for Development" unless that content appears in existing project files.
 - If there are Cursor rules (in `.cursor/rules/` or `.cursorrules`) or Copilot rules (in `.github/copilot-instructions.md`), include the important parts.
-- If there is a README.md, include the important parts.
 
 ## Ensure cyber-skills package
 
