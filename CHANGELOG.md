@@ -1,5 +1,11 @@
 # cyber-skills
 
+## 0.4.2
+
+### Patch Changes
+
+- 4fcba5b: Clarify skill placement and pattern terminology across docs and awesome CLI output.
+
 ## 0.4.1
 
 ### Patch Changes
