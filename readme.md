@@ -137,6 +137,31 @@ npx cyber-skills@$(npm view cyber-skills version) hook register \
 
 Skill augmentations (`SKILL.local.md`) apply when a skill is loaded — see AGENTS.md **Skill Augmentations**.
 
+### Marketplace providers
+
+`cyber-skills find` searches [skills.sh](https://skills.sh) by default — no API key required.
+
+```sh
+# Search the default marketplace
+npx cyber-skills find <query>
+```
+
+Add a custom marketplace provider to also search a private or team registry:
+
+```sh
+npx cyber-skills config provider add https://my-registry.example.com \
+  --type marketplace
+```
+
+All configured marketplace providers are searched on every `find`. Custom providers must expose the same public search endpoint as skills.sh:
+
+```
+GET /api/search?q=<query>&limit=<n>
+→ { skills: [{ skillId, name, source, installs }], count, ... }
+```
+
+The `match` field on a marketplace provider has no effect on `find` (it only routes `add` specs to that provider).
+
 ## Skill placement and patterns
 
 Use two separate terms:
