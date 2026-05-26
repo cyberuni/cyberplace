@@ -43,6 +43,15 @@ Global skills live in `~/.agents/skills/<name>/` and are linked into each agent'
 # ...and equivalent paths for other detected agents
 ```
 
+For **project public** skills under `skills/<name>/`, also add `README.md` beside `SKILL.md`:
+
+- Title and one-line summary
+- **When to use** — trigger phrases
+- **What it does** — brief human overview (not the full agent body)
+- **Install** — `npx skills add owner/repo --skill <name>`
+
+Keep agent instructions in `SKILL.md`; README is for humans and skills.sh listing hygiene.
+
 ## Steps
 
 ### 1. Create the skill

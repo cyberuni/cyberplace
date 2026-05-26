@@ -20,6 +20,7 @@ README.md
 skills/
   <skill-name>/
     SKILL.md
+    README.md          # human-facing usage + install (skills.sh listing hygiene)
 ```
 
 **Optional:** `skills.sh.json`, `.claude-plugin/marketplace.json`, `template/`, `spec/` (pointer to agentskills.io).
@@ -78,8 +79,9 @@ Do not treat plugin-bundle layout as the default — most repos use flat `skills
 1. **`LICENSE`** at repo root.
 2. **Public skills under `skills/<name>/SKILL.md`** (or documented bundle path for plugin archetype).
 3. **Each skill complies** with agentskills.io: `name` matches directory; valid frontmatter; optional folders only as `scripts/`, `references/`, `assets/` unless documented otherwise.
-4. **No loose `SKILL.md`** at repo root or outside a named skill directory.
-5. **README** with install instructions (`npx skills add …`) for consumer-facing repos.
+4. **Each public skill includes `README.md`** alongside `SKILL.md` — when to use, what it does, and `npx skills add owner/repo --skill <name>`. Agent instructions stay in `SKILL.md`; README is for humans and skills.sh discovery.
+5. **No loose `SKILL.md`** at repo root or outside a named skill directory.
+6. **Root README** with install instructions (`npx skills add …`) for consumer-facing repos.
 
 ## Recommended for maintained and tooling libraries
 
