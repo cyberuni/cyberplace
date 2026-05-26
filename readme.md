@@ -1,7 +1,7 @@
 # cyber-skills
 
 [![CI](https://github.com/cyberuni/cyber-skills/actions/workflows/pull-request.yml/badge.svg)](https://github.com/cyberuni/cyber-skills/actions/workflows/pull-request.yml)
-[![npm version](https://img.shields.io/npm/v/cyber-skills.svg)](https://www.npmjs.com/package/cyber-skills)
+[![npm version](https://img.shields.io/npm/v/cyber-skills.svg)](https://github.com/cyberuni/cyber-skills/actions/workflows/release.yml)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 Opinionated skills, hooks, and workflows for AI agents — Claude Code, Cursor, Codex, and others. Published as the [`cyber-skills`](https://www.npmjs.com/package/cyber-skills) npm package; install skills with the [Skills CLI](https://github.com/vercel-labs/skills).
