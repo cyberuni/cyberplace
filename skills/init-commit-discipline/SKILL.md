@@ -60,17 +60,17 @@ npx cyber-skills@<exact> commit inject --commit-skill <name> --auto-commit
 npx cyber-skills@<exact> commit inject --commit-skill <name>
 ```
 
-4. Register SessionStart hook. When using pinned npx after install consent, pass `--npx-yes` so SessionStart can install without prompting:
+4. Register SessionStart hook:
 
 ```bash
-npx --yes cyber-skills@<exact> hook register --npx-yes \
+npx cyber-skills@<exact> hook register \
   --name commit-discipline \
   --event SessionStart \
   --extract AGENTS.md \
   --heading "Commit Discipline"
 ```
 
-When `hook register` does not support `--npx-yes` (older CLI), edit the registered command to use `npx --yes cyber-skills@<exact>` instead of `npx cyber-skills@<exact>`.
+When the user consented to npm install during this workflow, edit the registered SessionStart command to use `npx --yes cyber-skills@<exact>` instead of `npx cyber-skills@<exact>` so SessionStart can run non-interactively.
 
 Pass `--verbose` on inject or register for a human-readable summary. Pass `--dry-run` to preview without writing.
 
