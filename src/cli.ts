@@ -6,6 +6,15 @@ import { awesomeCommand } from './awesome/cli.js'
 import { commitCommand } from './commit/cli.js'
 import { governanceCommand } from './governance/cli.js'
 import { hookCommand } from './hook/cli.js'
+import {
+	addCommand,
+	configCommand,
+	findCommand,
+	listCommand,
+	migrateCommand,
+	removeCommand,
+	updateCommand,
+} from './registry/cli.js'
 import { skillCommand } from './skill/cli.js'
 
 const program = new Command()
@@ -18,6 +27,15 @@ program.addCommand(commitCommand())
 program.addCommand(governanceCommand())
 program.addCommand(hookCommand())
 program.addCommand(skillCommand())
+
+// Registry commands (top-level for ergonomics)
+program.addCommand(addCommand())
+program.addCommand(removeCommand())
+program.addCommand(updateCommand())
+program.addCommand(listCommand())
+program.addCommand(findCommand())
+program.addCommand(migrateCommand())
+program.addCommand(configCommand())
 
 program.parseAsync(process.argv).catch((err: unknown) => {
 	process.stderr.write(`${err instanceof Error ? err.message : String(err)}\n`)

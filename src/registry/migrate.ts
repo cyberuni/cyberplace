@@ -2,7 +2,7 @@ import * as fs from 'node:fs'
 import { join } from 'node:path'
 
 import { type ConfigScope, readConfig, writeConfig } from './config.js'
-import { type LockEntry, getLockPath, readLock, writeLock } from './lock.js'
+import { getLockPath, type LockEntry, readLock, writeLock } from './lock.js'
 
 export interface MigrateOptions {
 	root: string

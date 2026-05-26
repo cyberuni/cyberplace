@@ -3,7 +3,7 @@ import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
 
 import { type ConfigScope, readConfig, writeConfig } from './config.js'
-import { type LockScope, getLockEntry, removeLockEntry } from './lock.js'
+import { getLockEntry, type LockScope, removeLockEntry } from './lock.js'
 
 export interface RemoveOptions {
 	root: string

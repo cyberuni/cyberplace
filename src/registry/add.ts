@@ -6,7 +6,7 @@ import { type ConfigScope, readConfig, writeConfig } from './config.js'
 import { fetchAndInstallSkill } from './github.js'
 import { type LockScope, setLockEntry } from './lock.js'
 import { installNpmPackage, listNpmSkills } from './npm.js'
-import { type ParsedSpec, isNpmSpec, isRepoSpec, parseSpec } from './spec.js'
+import { isNpmSpec, isRepoSpec, parseSpec } from './spec.js'
 
 export interface AddOptions {
 	root: string
@@ -97,7 +97,6 @@ export async function addSkill(input: string, options: AddOptions): Promise<AddR
 			skills[skillName] = input
 		}
 		writeConfig(root, scope, { ...updatedConfig, skills })
-
 	}
 
 	return { spec: input, installed }
