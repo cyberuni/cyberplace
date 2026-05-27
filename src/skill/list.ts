@@ -79,9 +79,9 @@ export function listSkills(root: string, options: { grep?: string; home?: string
 
 	const sources: { dir: string; foundIn: SkillLocation }[] = [
 		{ dir: join(root, '.agents', 'skills'), foundIn: 'repo' },
-		{ dir: join(root, 'skills'), foundIn: 'repo' },
+		{ dir: join(root, 'agents', 'skills'), foundIn: 'repo' },
 		{ dir: join(home, '.agents', 'skills'), foundIn: 'global' },
-		{ dir: join(getPackageRoot(), 'skills'), foundIn: 'package' },
+		{ dir: join(getPackageRoot(), 'agents', 'skills'), foundIn: 'package' },
 	]
 
 	const seen = new Set<string>()

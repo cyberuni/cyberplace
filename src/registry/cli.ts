@@ -262,7 +262,7 @@ export function updateCommand(): Command {
 					output(allResults, () => {
 						for (const { scope: s, results } of allResults) {
 							if (scopes.length > 1) console.log(`\n[${s}]`)
-							for (const r of results) console.log(`${r.updated ? '+' : '!'} ${r.name}: ${r.message}`)
+							for (const r of results) console.log(`${r.updated ? '+' : r.skipped ? '~' : '!'} ${r.name}: ${r.message}`)
 						}
 					})
 					return
@@ -272,11 +272,11 @@ export function updateCommand(): Command {
 				if (name) {
 					const result = await updateSkill(name, { root, scope })
 					output(result, () => console.log(result.message))
-					if (!result.updated) process.exit(1)
+					if (!result.updated && !result.skipped) process.exit(1)
 				} else {
 					const results = await updateAllSkills({ root, scope })
 					output(results, () => {
-						for (const r of results) console.log(`${r.updated ? '+' : '!'} ${r.name}: ${r.message}`)
+						for (const r of results) console.log(`${r.updated ? '+' : r.skipped ? '~' : '!'} ${r.name}: ${r.message}`)
 					})
 				}
 			},

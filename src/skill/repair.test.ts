@@ -65,6 +65,39 @@ test('validatePrivateSkills reports repo-private symlinks into public skills', (
 	})
 })
 
+test('repairPrivateSkills keeps agents/ symlinks and records kept_agents_symlink', () => {
+	withTempRepo((root) => {
+		const authoredDir = path.join(root, 'agents', 'skills', 'my-skill')
+		const privateSkillsDir = path.join(root, '.agents', 'skills')
+		fs.mkdirSync(authoredDir, { recursive: true })
+		fs.mkdirSync(privateSkillsDir, { recursive: true })
+		fs.writeFileSync(path.join(authoredDir, 'SKILL.md'), '---\nname: my-skill\ndescription: local\n---\n')
+		fs.symlinkSync(authoredDir, path.join(privateSkillsDir, 'my-skill'))
+
+		const result = repairPrivateSkills(root)
+
+		expect(fs.existsSync(path.join(privateSkillsDir, 'my-skill'))).toBe(true)
+		expect(result.actions.some((a) => a.action === 'kept_agents_symlink')).toBe(true)
+		expect(result.changed).toBe(false)
+	})
+})
+
+test('validatePrivateSkills accepts agents/ symlinks without issues', () => {
+	withTempRepo((root) => {
+		const authoredDir = path.join(root, 'agents', 'skills', 'my-skill')
+		const privateSkillsDir = path.join(root, '.agents', 'skills')
+		fs.mkdirSync(authoredDir, { recursive: true })
+		fs.mkdirSync(privateSkillsDir, { recursive: true })
+		fs.writeFileSync(path.join(authoredDir, 'SKILL.md'), '---\nname: my-skill\ndescription: local\n---\n')
+		fs.symlinkSync(authoredDir, path.join(privateSkillsDir, 'my-skill'))
+
+		const result = validatePrivateSkills(root)
+
+		expect(result.ok).toBe(true)
+		expect(result.issues.length).toBe(0)
+	})
+})
+
 test('validatePrivateSkills allows local augmentation directories without SKILL.md', () => {
 	withTempRepo((root) => {
 		const skillDir = path.join(root, '.agents', 'skills', 'commit-work')
