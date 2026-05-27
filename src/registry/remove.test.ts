@@ -22,7 +22,6 @@ function installFakeSkill(name: string): string {
 	fs.mkdirSync(skillDir, { recursive: true })
 	fs.writeFileSync(path.join(skillDir, 'SKILL.md'), `---\nname: ${name}\n---`)
 	setLockEntry(root, 'project', name, {
-		spec: `org/repo:${name}`,
 		source: 'org/repo',
 		sourceType: 'github',
 		skillPath: `skills/${name}/SKILL.md`,

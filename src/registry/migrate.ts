@@ -76,7 +76,6 @@ export function migrate(options: MigrateOptions): MigrateResult {
 		const skillPath = entry.skillPath ?? `skills/${name}/SKILL.md`
 
 		const newEntry: LockEntry = {
-			spec: source !== 'unknown' ? `${source}:${name}` : name,
 			source,
 			sourceType,
 			skillPath,

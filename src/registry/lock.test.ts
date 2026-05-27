@@ -16,7 +16,6 @@ afterEach(() => {
 })
 
 const sampleEntry = {
-	spec: 'cyberuni/cyber-skills:commit',
 	source: 'cyberuni/cyber-skills',
 	sourceType: 'github' as const,
 	skillPath: 'skills/commit/SKILL.md',
@@ -46,7 +45,7 @@ test('writeLock creates file with correct structure', () => {
 	expect(fs.existsSync(filePath)).toBe(true)
 	const parsed = JSON.parse(fs.readFileSync(filePath, 'utf8'))
 	expect(parsed.version).toBe(1)
-	expect(parsed.skills.commit.spec).toBe('cyberuni/cyber-skills:commit')
+	expect(parsed.skills.commit.source).toBe('cyberuni/cyber-skills')
 })
 
 test('setLockEntry adds entry to lock', () => {
