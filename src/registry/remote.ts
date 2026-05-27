@@ -4,6 +4,8 @@ import * as fs from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 
+import type { SkillManifest } from '../skill/manifest.js'
+import { readSkillManifest } from '../skill/manifest.js'
 import type { Provider } from './config.js'
 import type { Marketplace } from './marketplace.js'
 import type { RepoSpec } from './spec.js'
@@ -18,6 +20,7 @@ export interface FetchedSkill {
 	content: string
 	skillPath: string
 	hash: string
+	manifest: SkillManifest | null
 }
 
 function buildRawBase(provider: Provider | null, owner: string, repo: string, branch = 'main'): string {
@@ -137,10 +140,11 @@ export function sparseCloneAndInstall(
 			const srcDir = join(tmpDir, dirname(meta.skillPath))
 			if (!fs.existsSync(join(srcDir, 'SKILL.md'))) continue
 			installedNames.add(meta.name)
+			const manifest = readSkillManifest(srcDir)
 			const destDir = join(installDir, meta.name)
 			const content = copySkillDir(srcDir, destDir)
 			const hash = computeHash(content)
-			installed.push({ name: meta.name, content, skillPath: meta.skillPath, hash })
+			installed.push({ name: meta.name, content, skillPath: meta.skillPath, hash, manifest })
 		}
 
 		return installed

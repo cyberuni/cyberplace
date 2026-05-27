@@ -114,6 +114,10 @@ export function addCommand(): Command {
 							for (const sk of result.skippedSymlinks) {
 								console.warn(`  ! ${sk.name}: skipped symlink — ${sk.path} is a real directory`)
 							}
+							for (const sk of result.skippedPackageManaged) {
+								const installHint = sk.packageName ? `\n    skills add ${sk.packageName}` : ''
+								console.warn(`  ! ${sk.name}: package-managed skill — install via npm instead:${installHint}`)
+							}
 						})
 					}
 					return
@@ -130,7 +134,14 @@ export function addCommand(): Command {
 					for (const sk of result.skippedSymlinks) {
 						console.warn(`  ! ${sk.name}: skipped symlink — ${sk.path} is a real directory`)
 					}
+					for (const sk of result.skippedPackageManaged) {
+						const installHint = sk.packageName ? `\n    skills add ${sk.packageName}` : ''
+						console.warn(`  ! ${sk.name}: package-managed skill — install via npm instead:${installHint}`)
+					}
 				})
+				if (result.installed.length === 0 && result.skippedPackageManaged.length > 0) {
+					process.exitCode = 1
+				}
 			},
 		)
 }
