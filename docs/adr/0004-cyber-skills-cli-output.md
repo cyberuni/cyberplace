@@ -14,9 +14,9 @@ General output rules for agent-invoked tools live in the version-pinned governan
 
 - **Separation of concerns** — general rules in governance; repo-specific CLI mapping in ADR.
 - **Agent-first governances** — no cyber-skills implementation tables in agent-loaded standards.
-- **Dual audience** — most subcommands must remain pleasant for humans while offering `--format json` for agents.
+- **Dual audience** — most subcommands must remain pleasant for humans while offering `--format agent` for LLM consumers and `--format json` for non-LLM machine consumers.
 - **Hook runtime** — SessionStart hooks are agent-only; always-JSON stdout is appropriate.
-- **Governance loading** — agents load governance bodies via `governance show <name>` without `--format json`; default stdout is the markdown contract.
+- **Governance loading** — agents load governance bodies via `governance show <name>` without `--format agent`; default stdout is the markdown contract.
 
 ## Considered Options
 
@@ -29,10 +29,10 @@ All subcommands emit JSON on stdout by default.
 
 ### Option 2: Single dual-audience pattern everywhere
 
-All subcommands use `output()` with `--format json`; including `governance show` default mode.
+All subcommands use `output()` with `--format agent`; including `governance show` default mode.
 
-- **Pros**: Uniform `--format json` rule in governance.
-- **Cons**: Forces agents to parse JSON wrappers to read governance markdown; extra friction for the most common agent load path.
+- **Pros**: Uniform `--format agent` rule in governance.
+- **Cons**: Forces agents to use `--format agent` to read governance markdown; extra friction for the most common agent load path.
 
 ### Option 3: Three output archetypes (chosen)
 
@@ -47,15 +47,15 @@ Adopt **three output archetypes** for the cyber-skills CLI:
 
 | Archetype | When | Agent contract | Implementation |
 | --- | --- | --- | --- |
-| **Dual-audience** | Most subcommands (`audit`, `awesome`, `commit`, `governance list`, `hook register`, …) | Pass `--format json`; parse stdout JSON | `output(data, readable)` in `src/output.ts` |
+| **Dual-audience** | Most subcommands (`audit`, `awesome`, `commit`, `governance list`, `hook register`, …) | Pass `--format agent`; read terse text output | `output(data, readable)` in `src/output.ts` |
 | **Always-JSON** | Agent-only runtime hooks | Single JSON value on stdout | `hook run` via `process.stdout.write` in `src/hook/runtime/inject-instructions.ts` |
-| **Markdown-on-stdout** | `governance show <name>` default mode | Read markdown body from default stdout (no `--format json`) | `src/governance/cli.ts` — intentional exception; skills document this explicitly |
+| **Markdown-on-stdout** | `governance show <name>` default mode | Read markdown body from default stdout (no `--format agent`) | `src/governance/cli.ts` — intentional exception; skills document this explicitly |
 
 General rules for skill `scripts/` and dual-audience CLIs remain in governance `agent-tool-output`. This ADR records how cyber-skills applies them.
 
 ## Rationale
 
-Option 3 preserves human-friendly default output for discovery and day-to-day CLI use while giving agents a stable structured path via `--format json`. `governance show` without `--format json` keeps the primary agent workflow for loading standards a single command whose stdout is the authoritative markdown body. Hook runtime stays always-JSON because humans never invoke it interactively.
+Option 3 preserves human-friendly default output for discovery and day-to-day CLI use while giving agents a stable low-token path via `--format agent`. `governance show` without `--format agent` keeps the primary agent workflow for loading standards a single command whose stdout is the authoritative markdown body. Hook runtime stays always-JSON because humans never invoke it interactively.
 
 ## Consequences
 
@@ -68,7 +68,7 @@ Option 3 preserves human-friendly default output for discovery and day-to-day CL
 ### Negative
 
 - Three patterns to learn when adding new subcommands.
-- `governance show` default mode is an exception to the dual-audience `--format json` default rule — SKILL.md must document it per governance.
+- `governance show` default mode is an exception to the dual-audience `--format agent` default rule — SKILL.md must document it per governance.
 
 ### Risks
 
@@ -78,9 +78,10 @@ Option 3 preserves human-friendly default output for discovery and day-to-day CL
 
 ### `output()` helper (`src/output.ts`)
 
-- When `--format json` is in `process.argv`, emit `JSON.stringify(data)` to stdout.
-- `--json` is accepted as a hidden backward-compat alias; new code and skill docs must use `--format json`.
-- Otherwise run the `readable()` callback (human tables via `printFields` / `printTable`, or prose).
+- When `--format agent` is in `process.argv`, run the `readable()` callback — output is terse, LLM-optimized text.
+- When `--format json` is in `process.argv`, emit `JSON.stringify(data)` to stdout — for non-LLM machine consumers.
+- `--json` is accepted as a hidden backward-compat alias for `--format json`; new code and skill docs must use `--format agent` or `--format json`.
+- `isAutomatedOutput()` returns true for both `agent` and `json` — use it to suppress interactive prompts.
 - Errors go to stderr; exit non-zero on failure.
 
 ### Verbosity
@@ -95,8 +96,9 @@ When adding cyber-skills workflows to a skill, prefer `npx cyber-skills@<version
 
 | Pattern | Example |
 | --- | --- |
-| Dual-audience `--format json` | `awesome find "<query>" --format json` — agents pass `--format json`; default output is human prose |
-| Dual-audience `--format json` | `audit validate --path skills/my-skill --format json` |
+| Dual-audience `--format agent` | `awesome find "<query>" --format agent` — agents pass `--format agent`; default output is human prose |
+| Dual-audience `--format agent` | `audit validate --path skills/my-skill --format agent` |
+| Dual-audience `--format json` | `awesome find "<query>" --format json` — non-LLM machine consumers that need structured JSON |
 | Always-JSON stdout | `hook run` — SessionStart payload via `process.stdout.write` |
 | Markdown-on-stdout | `governance show agent-tool-output` — markdown body on stdout for agent consumption |
 | Dual-audience `--format json` | `governance show agent-tool-output --format json` — structured wrapper when programmatic metadata is needed |

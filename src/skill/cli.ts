@@ -14,7 +14,7 @@ export function skillCommand(): Command {
 		.description('List skills from the repo, global install, and cyber-skills package')
 		.addOption(ROOT_OPTION)
 		.option('--grep <pattern>', 'Glob-style filter on skill name (for example init-*)')
-		.option('--format <format>', 'Output format: json or text (default: text)')
+		.option('--format <format>', 'Output format: agent, json, or text (default: text)')
 		.addOption(new Option('--json').hideHelp())
 		.action((opts: { root?: string; grep?: string }) => {
 			const skills = listSkills(resolveRoot(opts.root), { grep: opts.grep })
@@ -31,7 +31,7 @@ export function skillCommand(): Command {
 		.command('validate-private')
 		.description('Validate repo-private skills under .agents/skills')
 		.addOption(ROOT_OPTION)
-		.option('--format <format>', 'Output format: json or text (default: text)')
+		.option('--format <format>', 'Output format: agent, json, or text (default: text)')
 		.addOption(new Option('--json').hideHelp())
 		.action((opts: { root?: string }) => {
 			const result = validatePrivateSkills(resolveRoot(opts.root))
@@ -51,7 +51,7 @@ export function skillCommand(): Command {
 		.command('repair-private')
 		.description('Repair repo-private skills under .agents/skills')
 		.addOption(ROOT_OPTION)
-		.option('--format <format>', 'Output format: json or text (default: text)')
+		.option('--format <format>', 'Output format: agent, json, or text (default: text)')
 		.addOption(new Option('--json').hideHelp())
 		.action((opts: { root?: string }) => {
 			const result = repairPrivateSkills(resolveRoot(opts.root))
@@ -70,7 +70,7 @@ export function skillCommand(): Command {
 		.command('source <name>')
 		.description('Find the source repo of an installed skill')
 		.addOption(ROOT_OPTION)
-		.option('--format <format>', 'Output format: json or text (default: text)')
+		.option('--format <format>', 'Output format: agent, json, or text (default: text)')
 		.addOption(new Option('--json').hideHelp())
 		.action((name: string, opts: { root?: string }) => {
 			const result = findSkillSource(name, resolveRoot(opts.root))

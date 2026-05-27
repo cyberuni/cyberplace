@@ -24,13 +24,13 @@ Use this section when the user asks which sources are searched, or when the CLI 
 
 ### 1. Primary path — use the CLI
 
-Run the bundled finder with JSON output (machine contract):
+Run the bundled finder with agent output (terse, LLM-readable):
 
 ```bash
-npx cyber-skills@<version> awesome find "<query>" --format json
+npx cyber-skills@<version> awesome find "<query>" --format agent
 ```
 
-Parse the JSON array and present concise results with install commands. Default CLI output (without `--format json`) is human-readable prose for summaries only.
+Read the output directly and present concise results with install commands. Default CLI output (without `--format agent`) is human-readable prose formatted for terminals.
 
 ### 2. Fallback — when the CLI cannot fully answer
 
