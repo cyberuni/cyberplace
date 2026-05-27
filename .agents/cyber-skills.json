@@ -1,14 +1,3 @@
 {
-  "version": 1,
-  "skills": {
-    "add-changeset": "repobuddy/agent-changesets:add-changeset",
-    "audit-skill": "cyberuni/cyber-skills:audit-skill",
-    "create-issue": "repobuddy/repobuddy:create-issue",
-    "create-skill": "cyberuni/cyber-skills:create-skill",
-    "find-awesome-skill": "cyberuni/cyber-skills:find-awesome-skill",
-    "fix-security-pr": "repobuddy/agent-security:fix-security-pr",
-    "merge-dep-prs": "repobuddy/repobuddy:merge-dep-prs",
-    "patch-skill": "cyberuni/cyber-skills:patch-skill",
-    "skillify": "cyberuni/cyber-skills:skillify"
-  }
+  "version": 1
 }
