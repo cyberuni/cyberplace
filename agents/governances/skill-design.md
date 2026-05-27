@@ -103,9 +103,44 @@ When a skill includes `scripts/` or documents CLI commands agents run, load **ag
 - `description` must contain `"Use this skill when"` or `"When to use"` trigger language.
 - Keep `description` ≤120 characters — long descriptions are truncated in the agent context window.
 
+### skill.json — install-time metadata
+
+`skill.json` is an optional sidecar file in the same directory as `SKILL.md`. It holds install-time metadata that the `skills add` / `skills update` installer reads. It is **not** loaded into agent context, so it costs zero tokens at runtime.
+
+Do not put install-time metadata in SKILL.md frontmatter — agents load it unnecessarily.
+
+**Supported fields:**
+
+```json
+{
+  "distribution": {
+    "install_via": "package_manager",
+    "package": {
+      "name": "cyber-asana",
+      "bin": "cyber-asana"
+    }
+  },
+  "activation": "per-situation"
+}
+```
+
+**`distribution`** — declare the required install channel.
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `install_via` | yes | `"package_manager"` — must be installed via npm, not source control |
+| `package.name` | when `install_via: package_manager` | npm package that ships the skill binary |
+| `package.bin` | no | binary name; defaults to `package.name` |
+
+Use `install_via: package_manager` when the skill depends on a released binary from the same repo. Source-based `skills add org/repo` will skip such skills and print an `npm install` hint.
+
+**`activation`** — declare the hook lifecycle event this skill targets. The installer uses this when auto-registering hooks (future). Valid values: `"per-situation"` (default, no hook) or `"session-start"`.
+
+Deprecated: `metadata.activation` in SKILL.md frontmatter. Move it to `skill.json` instead.
+
 ### Activation
 
-Optional `metadata.activation` — canonical **hook lifecycle event** in kebab-case. Maps to Claude Code, Cursor, and Codex hook config keys. Hosts interpret metadata; authors declare intent.
+The `activation` field in `skill.json` declares the **hook lifecycle event** for this skill. Maps to Claude Code, Cursor, and Codex hook config keys. Hosts interpret the value; authors declare intent.
 
 | Question | Mechanism | Not `metadata.activation` |
 | --- | --- | --- |
@@ -115,7 +150,7 @@ Optional `metadata.activation` — canonical **hook lifecycle event** in kebab-c
 
 **Default:** omit or set `per-situation` — no hook; load via `description` or explicit invoke.
 
-**Hook-backed skills:** set `metadata.activation` to the normalized event, then register with `hook register --event …` (cyber-skills CLI maps `session-start` → `SessionStart` / `sessionStart`, `post-tool-use` → `PostToolUse` / `postToolUse`). CLI today supports `SessionStart` and `PostToolUse` only; other values are portable declarations until hosts implement them.
+**Hook-backed skills:** set `activation` to the normalized event in `skill.json`, then register with `hook register --event …` (cyber-skills CLI maps `session-start` → `SessionStart` / `sessionStart`, `post-tool-use` → `PostToolUse` / `postToolUse`). CLI today supports `SessionStart` and `PostToolUse` only; other values are portable declarations until hosts implement them.
 
 | `metadata.activation` | Claude Code | Cursor | Codex |
 | --- | --- | --- | --- |
@@ -145,19 +180,16 @@ Optional `metadata.activation` — canonical **hook lifecycle event** in kebab-c
 
 **Defaults by pattern:** persona → `per-situation` (opt-in via `description`); discipline / always-on injection → `session-start`; process / tool-based / standard → `per-situation` or omit.
 
-Example (persona, opt-in):
+Example (persona, opt-in) — `skill.json`:
 
-```yaml
-metadata:
-  persona: "true"
-  activation: per-situation
+```json
+{ "activation": "per-situation" }
 ```
 
-Example (discipline, hook-backed):
+Example (discipline, hook-backed) — `skill.json`:
 
-```yaml
-metadata:
-  activation: session-start
+```json
+{ "activation": "session-start" }
 ```
 
 ### Body
