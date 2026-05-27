@@ -132,12 +132,17 @@ test('addSkill creates symlink in skills/ for project scope', async () => {
 })
 
 test('addSkill does not create symlink for global scope', async () => {
-	mockFetchInstall([{ name: 'commit' }])
+	const home = fs.mkdtempSync(path.join(os.tmpdir(), 'cyber-skills-add-home-'))
+	try {
+		mockFetchInstall([{ name: 'commit' }])
 
-	await addSkill('cyberuni/cyber-skills:commit', { root, scope: 'global' })
+		await addSkill('cyberuni/cyber-skills:commit', { root, scope: 'global', home })
 
-	const symlinkPath = path.join(root, 'skills', 'commit')
-	expect(fs.existsSync(symlinkPath)).toBe(false)
+		const symlinkPath = path.join(root, 'skills', 'commit')
+		expect(fs.existsSync(symlinkPath)).toBe(false)
+	} finally {
+		fs.rmSync(home, { recursive: true, force: true })
+	}
 })
 
 test('addSkill skips symlink and returns notification when skills/<name> is a real directory', async () => {
