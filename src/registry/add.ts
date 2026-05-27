@@ -2,7 +2,7 @@ import * as fs from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 
-import { type ConfigScope, matchProvider, readConfig, writeConfig } from './config.js'
+import { type ConfigScope, matchProvider, readConfig } from './config.js'
 import { fetchAndInstallSkill } from './github.js'
 import { type LockScope, setLockEntry } from './lock.js'
 import { installNpmPackage, listNpmSkills } from './npm.js'
@@ -81,14 +81,6 @@ export async function addSkill(input: string, options: AddOptions): Promise<AddR
 				if (skipped) skippedSymlinks.push(skipped)
 			}
 		}
-
-		// record in config skills section
-		const updatedConfig = readConfig(root, scope)
-		const skills = updatedConfig.skills ?? {}
-		for (const f of fetched) {
-			skills[f.name] = input
-		}
-		writeConfig(root, scope, { ...updatedConfig, skills })
 	} else if (isNpmSpec(spec)) {
 		const result = installNpmPackage(root, spec.packageName)
 		if (!result.skillsDir) {
@@ -119,14 +111,6 @@ export async function addSkill(input: string, options: AddOptions): Promise<AddR
 				if (skipped) skippedSymlinks.push(skipped)
 			}
 		}
-
-		// record in config skills section
-		const updatedConfig = readConfig(root, scope)
-		const skills = updatedConfig.skills ?? {}
-		for (const skillName of skillNames) {
-			skills[skillName] = input
-		}
-		writeConfig(root, scope, { ...updatedConfig, skills })
 	}
 
 	return { spec: input, installed, skippedSymlinks }

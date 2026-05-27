@@ -2,7 +2,6 @@ import * as fs from 'node:fs'
 import * as os from 'node:os'
 import * as path from 'node:path'
 import { afterEach, beforeEach, expect, test } from 'vitest'
-import { readConfig } from './config.js'
 import { readLock } from './lock.js'
 import { migrate } from './migrate.js'
 
@@ -54,13 +53,13 @@ test('migrate reads skills-lock.json and writes to new lock', () => {
 	expect(lock.skills['commit']?.source).toBe('cyberuni/cyber-skills')
 })
 
-test('migrate records skills in config', () => {
+test('migrate writes skills to new lock file', () => {
 	writeOldLock(oldLockData)
 	migrate({ root })
 
-	const config = readConfig(root, 'project')
-	expect(config.skills?.['add-changeset']).toBe('repobuddy/agent-changesets')
-	expect(config.skills?.['commit']).toBe('cyberuni/cyber-skills')
+	const lock = readLock(root, 'project')
+	expect(lock.skills['add-changeset']?.source).toBe('repobuddy/agent-changesets')
+	expect(lock.skills['commit']?.source).toBe('cyberuni/cyber-skills')
 })
 
 test('migrate preserves computedHash', () => {
