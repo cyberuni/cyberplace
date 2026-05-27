@@ -101,6 +101,9 @@ export function addCommand(): Command {
 							for (const r of result.installed) {
 								console.log(`  + ${r.name}`)
 							}
+							for (const sk of result.skippedSymlinks) {
+								console.warn(`  ! ${sk.name}: skipped symlink — ${sk.path} is a real directory`)
+							}
 						})
 					}
 					return
@@ -113,6 +116,9 @@ export function addCommand(): Command {
 					console.log(`Installed ${result.installed.length} skill(s) from ${result.spec}:`)
 					for (const s of result.installed) {
 						console.log(`  + ${s.name}`)
+					}
+					for (const sk of result.skippedSymlinks) {
+						console.warn(`  ! ${sk.name}: skipped symlink — ${sk.path} is a real directory`)
 					}
 				})
 			},
