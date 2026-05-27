@@ -131,8 +131,12 @@ export function sparseCloneAndInstall(
 		}
 
 		const installed: FetchedSkill[] = []
+		const installedNames = new Set<string>()
 		for (const meta of metas) {
+			if (installedNames.has(meta.name)) continue
 			const srcDir = join(tmpDir, dirname(meta.skillPath))
+			if (!fs.existsSync(join(srcDir, 'SKILL.md'))) continue
+			installedNames.add(meta.name)
 			const destDir = join(installDir, meta.name)
 			const content = copySkillDir(srcDir, destDir)
 			const hash = computeHash(content)
@@ -181,7 +185,7 @@ export async function listRepoSkills(
 		// fall through to API
 	}
 
-	// Fall back to GitHub/GitLab API to list skills/ directory
+	// Fall back to GitHub/GitLab API to list skills/ and agents/skills/ directories
 	if (!provider || provider.type === 'github') {
 		const url = `${buildApiBase(provider, owner, repo)}/skills`
 		const res = await fetch(url, {
@@ -189,9 +193,25 @@ export async function listRepoSkills(
 		})
 		if (!res.ok) throw new Error(`Failed to list skills in ${owner}/${repo}: ${res.status}`)
 		const data = (await res.json()) as Array<{ name: string; type: string }>
-		return data
+		const results: SkillMeta[] = data
 			.filter((entry) => entry.type === 'dir')
 			.map((entry) => ({ name: entry.name, skillPath: `skills/${entry.name}/SKILL.md` }))
+
+		const seenNames = new Set(results.map((r) => r.name))
+		const agentsUrl = `${buildApiBase(provider, owner, repo)}/agents/skills`
+		const agentsRes = await fetch(agentsUrl, {
+			headers: { Accept: 'application/vnd.github.v3+json', 'User-Agent': 'cyber-skills-cli' },
+		})
+		if (agentsRes.ok) {
+			const agentsData = (await agentsRes.json()) as Array<{ name: string; type: string }>
+			for (const entry of agentsData.filter((e) => e.type === 'dir')) {
+				if (!seenNames.has(entry.name)) {
+					results.push({ name: entry.name, skillPath: `agents/skills/${entry.name}/SKILL.md` })
+				}
+			}
+		}
+
+		return results
 	}
 
 	throw new Error(`Cannot list skills for provider type: ${provider?.type ?? 'github'}`)
@@ -230,7 +250,11 @@ export async function fetchAndInstallSkill(
 
 	let metas: SkillMeta[]
 	if (skill) {
-		metas = [{ name: skill, skillPath: `skills/${skill}/SKILL.md` }]
+		// Try skills/ first (canonical public location), fall back to agents/skills/
+		metas = [
+			{ name: skill, skillPath: `skills/${skill}/SKILL.md` },
+			{ name: skill, skillPath: `agents/skills/${skill}/SKILL.md` },
+		]
 	} else {
 		const skills = await listRepoSkills(provider, owner, repo, branch)
 		metas = skillFilter ? skills.filter((s) => skillFilter.includes(s.name)) : skills
