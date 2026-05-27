@@ -154,6 +154,81 @@ test('addSkill uses GitHub default when no provider pattern matches', async () =
 	expect(url).toContain('raw.githubusercontent.com')
 })
 
+test('addSkill creates symlink in skills/ for project scope', async () => {
+	vi.stubGlobal(
+		'fetch',
+		vi.fn().mockResolvedValue({
+			ok: true,
+			text: () => Promise.resolve('---\nname: commit\ndescription: commit skill\n---\n# Commit'),
+		}),
+	)
+
+	await addSkill('cyberuni/cyber-skills:commit', { root, scope: 'project' })
+
+	const symlinkPath = path.join(root, 'skills', 'commit')
+	expect(fs.existsSync(symlinkPath)).toBe(true)
+	expect(fs.lstatSync(symlinkPath).isSymbolicLink()).toBe(true)
+})
+
+test('addSkill does not create symlink for global scope', async () => {
+	vi.stubGlobal(
+		'fetch',
+		vi.fn().mockResolvedValue({
+			ok: true,
+			text: () => Promise.resolve('---\nname: commit\n---'),
+		}),
+	)
+
+	await addSkill('cyberuni/cyber-skills:commit', { root, scope: 'global' })
+
+	const symlinkPath = path.join(root, 'skills', 'commit')
+	expect(fs.existsSync(symlinkPath)).toBe(false)
+})
+
+test('addSkill skips symlink and returns notification when skills/<name> is a real directory', async () => {
+	const realSkillDir = path.join(root, 'skills', 'commit')
+	fs.mkdirSync(realSkillDir, { recursive: true })
+	fs.writeFileSync(path.join(realSkillDir, 'SKILL.md'), '---\nname: commit\n---')
+
+	vi.stubGlobal(
+		'fetch',
+		vi.fn().mockResolvedValue({
+			ok: true,
+			text: () => Promise.resolve('---\nname: commit\n---'),
+		}),
+	)
+
+	const result = await addSkill('cyberuni/cyber-skills:commit', { root, scope: 'project' })
+
+	expect(result.skippedSymlinks).toHaveLength(1)
+	expect(result.skippedSymlinks[0]!.name).toBe('commit')
+	// real dir should remain untouched
+	expect(fs.lstatSync(realSkillDir).isSymbolicLink()).toBe(false)
+})
+
+test('addSkill updates existing symlink in skills/ on re-install', async () => {
+	// pre-create a symlink pointing somewhere else
+	const skillsDir = path.join(root, 'skills')
+	fs.mkdirSync(skillsDir, { recursive: true })
+	const oldTarget = path.join(root, '.agents', 'skills', 'old')
+	fs.mkdirSync(oldTarget, { recursive: true })
+	fs.symlinkSync(oldTarget, path.join(skillsDir, 'commit'))
+
+	vi.stubGlobal(
+		'fetch',
+		vi.fn().mockResolvedValue({
+			ok: true,
+			text: () => Promise.resolve('---\nname: commit\n---'),
+		}),
+	)
+
+	const result = await addSkill('cyberuni/cyber-skills:commit', { root, scope: 'project' })
+
+	expect(result.skippedSymlinks).toHaveLength(0)
+	const stat = fs.lstatSync(path.join(skillsDir, 'commit'))
+	expect(stat.isSymbolicLink()).toBe(true)
+})
+
 test('addSkill installs only skills matching the skills filter', async () => {
 	const awesomeData = [
 		{ name: 'commit', skillPath: 'skills/commit/SKILL.md' },
