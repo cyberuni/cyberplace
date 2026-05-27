@@ -1,6 +1,8 @@
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 
+import { readSkillManifest } from '../skill/manifest.js'
+
 type Severity = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW'
 
 export interface Finding {
@@ -564,6 +566,40 @@ export function runChecks(filePath: string): CheckResult {
 					'Invisible Unicode control character',
 					`scripts/${f}:${invisibleInScript.line}:${invisibleInScript.column} U+${invisibleInScript.codePoint.toString(16).toUpperCase().padStart(4, '0')} ${invisibleInScript.name}`,
 					'Remove the hidden character or replace it with visible ASCII text',
+				)
+			}
+		}
+	}
+
+	const manifest = readSkillManifest(skillDir)
+	if (manifest !== null) {
+		const dist = manifest.distribution
+		if (dist !== undefined) {
+			const knownInstallVia = ['package_manager']
+			if (!dist.install_via || !knownInstallVia.includes(dist.install_via)) {
+				crit(
+					'S6',
+					'skill.json: invalid distribution.install_via',
+					`install_via: ${dist.install_via ?? '(missing)'}`,
+					`Set distribution.install_via to one of: ${knownInstallVia.join(', ')}`,
+				)
+			} else if (dist.install_via === 'package_manager' && !dist.package?.name) {
+				crit(
+					'S6',
+					'skill.json: distribution.package.name required when install_via is package_manager',
+					'distribution.package.name is missing or empty',
+					'Add distribution.package.name with the npm package name that provides the skill binary',
+				)
+			}
+		}
+		if (manifest.activation !== undefined) {
+			const knownActivation = ['per-situation', 'session-start']
+			if (!knownActivation.includes(manifest.activation)) {
+				crit(
+					'S6',
+					'skill.json: invalid activation value',
+					`activation: ${manifest.activation}`,
+					`Set activation to one of: ${knownActivation.join(', ')}`,
 				)
 			}
 		}
