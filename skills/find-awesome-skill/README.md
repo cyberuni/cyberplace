@@ -19,7 +19,7 @@ The skill searches layered awesome-list sources (local, project, user, and repo 
 Primary CLI:
 
 ```bash
-npx cyber-skills@<version> awesome find "<query>" --json
+npx cyber-skills@<version> awesome find "<query>" --format json
 ```
 
 Configure sources with the `configure-awesome-sources` skill.

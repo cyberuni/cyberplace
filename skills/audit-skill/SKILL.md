@@ -210,7 +210,7 @@ Warn if the `description` claims a capability the skill body does not deliver, o
 - **Stale cross-references:** Related skills or "see also" links point to skills or workflows that no longer exist or no longer do what the link claims.
 
 **Q10 — No stdout-as-data in SKILL.md (HIGH)**
-Fail if SKILL.md tells the agent to read, show, or parse script "output", a "summary table", or similar prose when an artifact file or `--json` on a CLI tool is the authoritative source. Prefer: "read `<artifact-path>`" or "parse stdout JSON" or "run with `--json`".
+Fail if SKILL.md tells the agent to read, show, or parse script "output", a "summary table", or similar prose when an artifact file or `--format json` on a CLI tool is the authoritative source. Prefer: "read `<artifact-path>`" or "parse stdout JSON" or "run with `--format json`".
 
 **Q11 — Non-interactive agent path (HIGH)**
 If `scripts/` exists and any script uses interactive prompts (`readline`, `[y/N]`), fail unless SKILL.md documents a `--yes` (or equivalent) flag for autonomous agent runs.
