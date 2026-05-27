@@ -25,10 +25,26 @@ test('detectPackageManager returns yarn when yarn.lock present', () => {
 	expect(detectPackageManager(root)).toBe('yarn')
 })
 
+test('detectPackageManager returns bun when bun.lock present', () => {
+	fs.writeFileSync(path.join(root, 'bun.lock'), '')
+	expect(detectPackageManager(root)).toBe('bun')
+})
+
+test('detectPackageManager returns bun when bun.lockb present', () => {
+	fs.writeFileSync(path.join(root, 'bun.lockb'), '')
+	expect(detectPackageManager(root)).toBe('bun')
+})
+
 test('detectPackageManager prefers pnpm over yarn', () => {
 	fs.writeFileSync(path.join(root, 'pnpm-lock.yaml'), '')
 	fs.writeFileSync(path.join(root, 'yarn.lock'), '')
 	expect(detectPackageManager(root)).toBe('pnpm')
+})
+
+test('detectPackageManager prefers yarn over bun', () => {
+	fs.writeFileSync(path.join(root, 'yarn.lock'), '')
+	fs.writeFileSync(path.join(root, 'bun.lock'), '')
+	expect(detectPackageManager(root)).toBe('yarn')
 })
 
 test('detectPackageManager defaults to npm', () => {
