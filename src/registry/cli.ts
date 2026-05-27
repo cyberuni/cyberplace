@@ -1,7 +1,7 @@
 import { Command } from 'commander'
 
 import { ROOT_OPTION, resolveRoot } from '../cli-options.js'
-import { output } from '../output.js'
+import { output, printTable } from '../output.js'
 import { addSkill } from './add.js'
 import {
 	addProvider,
@@ -74,10 +74,10 @@ export function addCommand(): Command {
 
 					const rl = createRl()
 					let selectedSkills: string[]
-					let scope: 'project' | 'global'
+					let addScope: 'project' | 'global' | 'both'
 					try {
 						selectedSkills = await promptSkillSelect(rl, items, `${parsedSpec.owner}/${parsedSpec.repo}`)
-						scope = await promptScopeSelect(rl)
+						addScope = await promptScopeSelect(rl)
 					} catch (err) {
 						if (err instanceof CancelError) {
 							console.log('\nCancelled.')
@@ -93,13 +93,16 @@ export function addCommand(): Command {
 						return
 					}
 
-					const result = await addSkill(spec, { root, scope, branch, skills: selectedSkills })
-					output(result, () => {
-						console.log(`Installed ${result.installed.length} skill(s) from ${result.spec}:`)
-						for (const s of result.installed) {
-							console.log(`  + ${s.name}`)
-						}
-					})
+					const scopes: Array<'project' | 'global'> = addScope === 'both' ? ['project', 'global'] : [addScope]
+					for (const s of scopes) {
+						const result = await addSkill(spec, { root, scope: s, branch, skills: selectedSkills })
+						output(result, () => {
+							console.log(`Installed ${result.installed.length} skill(s) from ${result.spec}:`)
+							for (const r of result.installed) {
+								console.log(`  + ${r.name}`)
+							}
+						})
+					}
 					return
 				}
 
