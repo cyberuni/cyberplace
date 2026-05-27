@@ -159,7 +159,7 @@ export async function promptSkillSelect(iface: RlInterface, items: SelectItem[],
 
 	function clearPrev() {
 		if (lastLineCount > 0) {
-			process.stdout.write(`\x1b[${lastLineCount}A\x1b[J`)
+			process.stdout.write(`\x1b[${lastLineCount}A\r\x1b[J`)
 		}
 	}
 
@@ -224,7 +224,7 @@ export async function promptSkillSelect(iface: RlInterface, items: SelectItem[],
 		)
 
 		clearPrev()
-		process.stdout.write(`${lines.join('\n')}\n`)
+		process.stdout.write(`${lines.join('\r\n')}\r\n`)
 		lastLineCount = lines.length
 	}
 
