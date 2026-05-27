@@ -39,5 +39,6 @@ Do not embed reference-repo catalogs, issue surveys, or illustrative examples in
 | `skill-design` | SKILL.md authoring — agent-first structure, placement, patterns, progressive disclosure, deterministic extraction |
 | `skill-repo-structure` | Skill library repo layout — archetypes, manifests, CI, discipline sections, contributor conventions |
 | `agent-tool-output` | General output rules for scripts, hooks, and CLIs that agents invoke |
+| `cli-resolution` | Standard 3-tier strategy for invoking a Node CLI that may be global, repo-local, or absent |
 
 For cyber-skills CLI output archetypes (`output()` helper, subcommand inventory, markdown-on-stdout for `governance show`), see [ADR-0004](../docs/adr/0004-cyber-skills-cli-output.md).
