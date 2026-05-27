@@ -198,7 +198,7 @@ Warn if the skill body appears to implement more than one distinct workflow or c
 
 Canonical definition: **skill-design** governance § Decisions over documentation and § Description and structure.
 
-Warn if the body contains instructions that any capable model would already follow without being told — e.g., "write clean code", "be helpful", "provide useful error messages", "write tests for new code". These add noise and dilute the signal of the actual decisions the skill encodes.
+Warn if the body contains instructions that any capable model would already follow without being told — e.g., "write clean code", "be helpful", "provide useful error messages", "write tests for new code". These add noise and dilute the signal of the actual decisions the skill encodes. Also warn when the opening paragraph restates the `description` frontmatter verbatim or near-verbatim — the description is already in agent context and repeating it wastes tokens.
 
 **Q9 — Description matches content (LOW)**
 
@@ -222,7 +222,7 @@ For each file in `scripts/`, warn if `console.info` or `console.log` emits prose
 
 Canonical definition: **skill-design** governance § Structure and § Anti-patterns.
 
-Warn if the skill body contains `## Why`, `## Rationale`, `## Background`, or `## Context` headings, or sustained causal explanation ("because…") that belongs in an ADR rather than executable workflow steps.
+Warn if the skill body contains `## Why`, `## Rationale`, `## Background`, or `## Context` headings, or sustained causal explanation ("because…") that belongs in an ADR rather than executable workflow steps. Also warn on `## What Happens Next`, `## Next Steps`, or similar sections that describe CI/downstream pipeline behavior the agent cannot act on — those belong in project documentation, not skill bodies.
 
 ---
 
