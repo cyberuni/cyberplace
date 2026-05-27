@@ -137,6 +137,18 @@ npx cyber-skills@$(npm view cyber-skills version) hook register \
 
 Skill augmentations (`SKILL.local.md`) apply when a skill is loaded — see AGENTS.md **Skill Augmentations**.
 
+### CLI output formats
+
+Most subcommands support `--format` for multi-audience output:
+
+| Value | Consumer | Output |
+| ----- | -------- | ------ |
+| _(default)_ | Humans | Tables, aligned fields, prose |
+| `--format agent` | LLM / AI agents | Terse text — lower token cost, better reasoning |
+| `--format json` | Scripts / pipelines | Flat JSON for programmatic parsing |
+
+Skills should use `--format agent`; non-LLM automation should use `--format json`. `--json` is a deprecated alias for `--format json`.
+
 ### Marketplace providers
 
 `cyber-skills find` searches [skills.sh](https://skills.sh) by default — no API key required.

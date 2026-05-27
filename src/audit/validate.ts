@@ -83,7 +83,7 @@ const STDOUT_AS_DATA_PATTERNS: RegExp[] = [
 
 function hasStdoutAsDataMitigation(content: string): boolean {
 	return (
-		/(--json|--format json)/.test(content) ||
+		/(--json|--format json|--format agent)/.test(content) ||
 		/parse stdout json/i.test(content) ||
 		/read `<[^`]+>`/i.test(content) ||
 		/read the (?:artifact|file|report)/i.test(content)
@@ -470,7 +470,7 @@ export function runChecks(filePath: string): CheckResult {
 				'Q10',
 				'SKILL.md instructs parsing stdout prose as data',
 				body.match(pat)?.[0] ?? 'stdout-as-data pattern',
-				'Prefer artifact file paths, parse stdout JSON, or document --json for CLI commands',
+				'Prefer artifact file paths, read stdout with --format agent, or parse with --format json for non-LLM consumers',
 			)
 			break
 		}

@@ -22,7 +22,7 @@ export function auditCommand(): Command {
 		.description('Validate skills against structural and quality checks (S1–S5, Q1–Q5, Q10–Q11, E1–E2, E6, E9)')
 		.option('--path <path>', 'Validate a single skill directory or SKILL.md file')
 		.addOption(ROOT_OPTION)
-		.option('--format <format>', 'Output format: json or text (default: text)')
+		.option('--format <format>', 'Output format: agent, json, or text (default: text)')
 		.addOption(new Option('--json').hideHelp())
 		.action((opts: { path?: string; root?: string }) => {
 			const cwd = resolveRoot(opts.root)

@@ -23,11 +23,26 @@ export function printTable<T>(items: T[], cols: { label: string; get: (item: T) 
 	}
 }
 
-function isJsonOutput(): boolean {
+function getFormat(): string | undefined {
 	const argv = process.argv
 	const fmtIdx = argv.indexOf('--format')
-	if (fmtIdx !== -1 && argv[fmtIdx + 1] === 'json') return true
-	return argv.includes('--json') // hidden backward-compat alias
+	if (fmtIdx !== -1) return argv[fmtIdx + 1]
+	if (argv.includes('--json')) return 'json' // hidden backward-compat alias
+	return undefined
+}
+
+export function isAgentOutput(): boolean {
+	return getFormat() === 'agent'
+}
+
+export function isJsonOutput(): boolean {
+	return getFormat() === 'json'
+}
+
+// True when the caller is a script or agent — suppress interactive prompts
+export function isAutomatedOutput(): boolean {
+	const fmt = getFormat()
+	return fmt === 'json' || fmt === 'agent'
 }
 
 export function output(data: unknown, readable: () => void) {

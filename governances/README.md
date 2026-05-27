@@ -15,8 +15,8 @@ npx cyber-skills@<version> governance list
 # Show governance body (agents: read stdout)
 npx cyber-skills@<version> governance show agent-tool-output
 
-# Structured output
-npx cyber-skills@<version> governance show agent-tool-output --json
+# Agent-optimized output
+npx cyber-skills@<version> governance show agent-tool-output --format agent
 ```
 
 Always pin an exact version from `npm view cyber-skills version`.
