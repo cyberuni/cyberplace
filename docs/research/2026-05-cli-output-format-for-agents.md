@@ -73,10 +73,9 @@ Enterprise and framework authors (Nearform, aiquinta.ai, MCP spec authors) conve
 | `--porcelain` | Git-style; well-known for machine-stable output |
 | `--structured` | Intent-based |
 
-## Open questions
+## Decision
 
-- Should `cyber-skills` CLI adopt `--format <text|json>` (allows future formats like `--format tsv`) or stay with boolean flags like `--json`?
-- Is `--porcelain` recognizable enough outside a git context?
+`--format json` adopted as the machine-output flag for all dual-audience `cyber-skills` CLI commands. `--json` kept as a hidden backward-compat alias. See [ADR-0004](../adr/0004-cyber-skills-cli-output.md).
 
 ## Sources
 

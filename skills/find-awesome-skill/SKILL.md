@@ -27,10 +27,10 @@ Use this section when the user asks which sources are searched, or when the CLI 
 Run the bundled finder with JSON output (machine contract):
 
 ```bash
-npx cyber-skills@<version> awesome find "<query>" --json
+npx cyber-skills@<version> awesome find "<query>" --format json
 ```
 
-Parse the JSON array and present concise results with install commands. Default CLI output (without `--json`) is human-readable prose for summaries only.
+Parse the JSON array and present concise results with install commands. Default CLI output (without `--format json`) is human-readable prose for summaries only.
 
 ### 2. Fallback — when the CLI cannot fully answer
 

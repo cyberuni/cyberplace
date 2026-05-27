@@ -46,11 +46,12 @@ Use for command-line tools used by both humans and agents.
 
 - Tables, aligned fields, and prose summaries are fine for interactive terminal use.
 
-### `--json` = machine contract
+### `--format json` = machine contract
 
-- Agents **must** pass `--json` when they need structured output.
-- `--json` stdout is the only machine-parseable contract; default stdout is not.
-- SKILL.md must instruct agents to use `--json`, not to parse default prose or tables.
+- Agents **must** pass `--format json` when they need structured output.
+- `--format json` stdout is the only machine-parseable contract; default stdout is not.
+- SKILL.md must instruct agents to use `--format json`, not to parse default prose or tables.
+- `--json` is a deprecated alias accepted for backward compatibility but not shown in `--help`.
 
 ### Default-stdout exception
 
@@ -71,9 +72,9 @@ Use for command-line tools used by both humans and agents.
 
 When a skill documents commands agents run:
 
-- Tell agents which flag produces machine output (`--json` for dual-audience CLI).
+- Tell agents which flag produces machine output (`--format json` for dual-audience CLI).
 - Do **not** instruct agents to parse default stdout prose, summary tables, or generic "script output" as data.
-- Prefer: "read `<artifact-path>`" or "parse stdout JSON" or "run with `--json` and parse the array."
+- Prefer: "read `<artifact-path>`" or "parse stdout JSON" or "run with `--format json` and parse the array."
 
 ## References
 
