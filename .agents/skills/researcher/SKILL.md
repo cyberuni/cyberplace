@@ -1,5 +1,6 @@
 ---
 name: researcher
+activation: per-situation
 description: "Use this skill when the user asks to research a technical topic or find evidence for a design decision."
 metadata:
   internal: true

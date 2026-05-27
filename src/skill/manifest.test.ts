@@ -37,11 +37,6 @@ test('readSkillManifest parses distribution metadata', () => {
 	expect(manifest?.distribution?.package?.bin).toBe('cyber-asana')
 })
 
-test('readSkillManifest parses activation metadata', () => {
-	fs.writeFileSync(path.join(root, 'skill.json'), JSON.stringify({ activation: 'session-start' }))
-	expect(readSkillManifest(root)?.activation).toBe('session-start')
-})
-
 test('readSkillManifest handles missing optional bin field', () => {
 	fs.writeFileSync(
 		path.join(root, 'skill.json'),
@@ -60,7 +55,7 @@ test('isPackageManaged returns false when install_via is something else', () => 
 })
 
 test('isPackageManaged returns false when no distribution', () => {
-	expect(isPackageManaged({ activation: 'per-situation' })).toBe(false)
+	expect(isPackageManaged({})).toBe(false)
 })
 
 test('isPackageManaged returns false for null manifest', () => {

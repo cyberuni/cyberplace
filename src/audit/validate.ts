@@ -592,17 +592,6 @@ export function runChecks(filePath: string): CheckResult {
 				)
 			}
 		}
-		if (manifest.activation !== undefined) {
-			const knownActivation = ['per-situation', 'session-start']
-			if (!knownActivation.includes(manifest.activation)) {
-				crit(
-					'S6',
-					'skill.json: invalid activation value',
-					`activation: ${manifest.activation}`,
-					`Set activation to one of: ${knownActivation.join(', ')}`,
-				)
-			}
-		}
 	}
 
 	return { criticals, warnings }

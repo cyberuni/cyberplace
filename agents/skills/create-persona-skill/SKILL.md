@@ -11,8 +11,8 @@ Apply when the user wants a role-loading skill — orchestrator, designer, produ
 
 Persona skills default to **opt-in** — no hook unless the author chooses one.
 
-1. **`metadata.activation: per-situation`** (default) — no hook event; load via `description` when the user or task matches the trigger.
-2. **`metadata.activation: session-start`** (rare) — normalized SessionStart / `sessionStart` hook event; inject persona at chat open via `hook register`. Discipline-like; not the default for personas.
+1. **`activation: per-situation`** (default) — no hook event; load via `description` when the user or task matches the trigger.
+2. **`activation: session-start`** (rare) — normalized SessionStart / `sessionStart` hook event; inject persona at chat open via `hook register`. Discipline-like; not the default for personas.
 
 Other hook events: see **skill-design** governance (Activation table).
 
@@ -55,10 +55,10 @@ Write `<placement-path>/<name>/SKILL.md` from this template — fill every secti
 ```markdown
 ---
 name: <name>
+activation: per-situation
 description: Use this skill when the user <trigger phrase>. Loads <role> context for the session.
 metadata:
   persona: "true"
-  activation: per-situation
 ---
 
 # <Role Title>
@@ -109,6 +109,7 @@ Adjust target path per agent (`~/.cursor/skills/`, `~/.opencode/skills/`, etc.).
 ## Anti-patterns
 
 - Defaulting personas to `session-start` without explicit author intent — prefer `per-situation` + `description` trigger
+- Nesting `activation` under `metadata:` — it must be a top-level frontmatter field
 - Missing `metadata.persona: "true"` on role-loading body text — audit-skill E2 review treats undeclared persona phrases as injection
 - Multi-step workflow inside a persona skill — delegate to a separate process or tool-based skill
 - Decision heuristics written as prose paragraphs — use "when X, do Y" form
