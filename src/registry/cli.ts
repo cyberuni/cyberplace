@@ -12,7 +12,6 @@ import {
 	validateProviderType,
 } from './config.js'
 import { findSkills, findSkillsInRepo, printFindResults } from './find.js'
-import { fetchMarketplace, listRepoSkills } from './github.js'
 import { readLock } from './lock.js'
 import { mapSkillsToPlugins } from './marketplace.js'
 import { migrate } from './migrate.js'
@@ -24,8 +23,9 @@ import {
 	promptSkillSelect,
 	promptUpdateScopeSelect,
 } from './prompt.js'
+import { fetchMarketplace, listRepoSkills } from './remote.js'
 import { removeSkill } from './remove.js'
-import { type Scope } from './scope.js'
+import type { Scope } from './scope.js'
 import { isRepoSpec, parseSpec } from './spec.js'
 import { updateAllSkills, updateSkill } from './update.js'
 

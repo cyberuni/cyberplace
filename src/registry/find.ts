@@ -1,7 +1,7 @@
 import { printTable } from '../output.js'
 import { readConfig } from './config.js'
-import { listRepoSkills } from './github.js'
 import { type FindOptions, type FoundSkill, searchMarketplace } from './marketplace.js'
+import { listRepoSkills } from './remote.js'
 import { parseSpec } from './spec.js'
 
 export type { FindOptions, FoundSkill }
