@@ -40,7 +40,7 @@ function mockFetchInstall(upstreamContent: string) {
 		const dest = path.join(installDir, name, 'SKILL.md')
 		fs.mkdirSync(path.dirname(dest), { recursive: true })
 		fs.writeFileSync(dest, upstreamContent)
-		return [{ name, content: upstreamContent, skillPath: `skills/${name}/SKILL.md`, hash: 'fakehash' }]
+		return [{ name, content: upstreamContent, skillPath: `skills/${name}/SKILL.md`, hash: 'fakehash', manifest: null }]
 	})
 }
 
@@ -102,7 +102,7 @@ test('updateAllSkills skips symlinked entries and still updates real ones', asyn
 			const dest = path.join(installDir2, name, 'SKILL.md')
 			fs.mkdirSync(path.dirname(dest), { recursive: true })
 			fs.writeFileSync(dest, `---\nname: ${name}\n---`)
-			return { name, content: `---\nname: ${name}\n---`, skillPath: `agents/skills/${name}/SKILL.md`, hash: 'fakehash' }
+			return { name, content: `---\nname: ${name}\n---`, skillPath: `agents/skills/${name}/SKILL.md`, hash: 'fakehash', manifest: null }
 		})
 	})
 
@@ -180,7 +180,7 @@ test('updateAllSkills updates all locked skills', async () => {
 			const dest = path.join(installDir, name, 'SKILL.md')
 			fs.mkdirSync(path.dirname(dest), { recursive: true })
 			fs.writeFileSync(dest, `---\nname: ${name}\n---`)
-			return { name, content: `---\nname: ${name}\n---`, skillPath: `skills/${name}/SKILL.md`, hash: 'fakehash' }
+			return { name, content: `---\nname: ${name}\n---`, skillPath: `skills/${name}/SKILL.md`, hash: 'fakehash', manifest: null }
 		})
 	})
 

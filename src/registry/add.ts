@@ -1,6 +1,7 @@
 import * as fs from 'node:fs'
 import { join } from 'node:path'
 
+import { isPackageManaged } from '../skill/manifest.js'
 import { matchProvider, type Provider, readConfig } from './config.js'
 import { setLockEntry } from './lock.js'
 import { installNpmPackage, listNpmSkills } from './npm.js'
@@ -21,10 +22,16 @@ export interface SkippedSymlink {
 	path: string
 }
 
+export interface SkippedPackageManaged {
+	name: string
+	packageName?: string
+}
+
 export interface AddResult {
 	spec: string
 	installed: Array<{ name: string; skillPath: string; installedAt: string }>
 	skippedSymlinks: SkippedSymlink[]
+	skippedPackageManaged: SkippedPackageManaged[]
 }
 
 function tryCreateSkillsSymlink(root: string, name: string, canonicalDir: string): SkippedSymlink | null {
@@ -61,6 +68,7 @@ export async function addSkill(input: string, options: AddOptions): Promise<AddR
 	const installDir = getInstallDir(root, scope, home)
 	const installed: AddResult['installed'] = []
 	const skippedSymlinks: SkippedSymlink[] = []
+	const skippedPackageManaged: SkippedPackageManaged[] = []
 
 	if (isRepoSpec(spec)) {
 		const config = readConfig(root, scope)
@@ -71,6 +79,10 @@ export async function addSkill(input: string, options: AddOptions): Promise<AddR
 		const fetched = await fetchAndInstallSkill(provider, spec, installDir, branch, options.skills)
 
 		for (const f of fetched) {
+			if (isPackageManaged(f.manifest)) {
+				skippedPackageManaged.push({ name: f.name, packageName: f.manifest?.distribution?.package?.name })
+				continue
+			}
 			const installedAt = join(installDir, f.name, 'SKILL.md')
 			setLockEntry(
 				root,
@@ -102,6 +114,10 @@ export async function addSkill(input: string, options: AddOptions): Promise<AddR
 		const fetched = await fetchAndInstallSkill(provider, repoSpec, installDir, effectiveBranch, options.skills)
 
 		for (const f of fetched) {
+			if (isPackageManaged(f.manifest)) {
+				skippedPackageManaged.push({ name: f.name, packageName: f.manifest?.distribution?.package?.name })
+				continue
+			}
 			const installedAt = join(installDir, f.name, 'SKILL.md')
 			const sourceType = configProvider
 				? configProvider.type === 'gitlab'
@@ -167,5 +183,5 @@ export async function addSkill(input: string, options: AddOptions): Promise<AddR
 		}
 	}
 
-	return { spec: input, installed, skippedSymlinks }
+	return { spec: input, installed, skippedSymlinks, skippedPackageManaged }
 }

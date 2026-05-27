@@ -33,13 +33,13 @@ afterEach(() => {
 	vi.clearAllMocks()
 })
 
-function mockFetchInstall(skills: Array<{ name: string; content?: string }>) {
+function mockFetchInstall(skills: Array<{ name: string; content?: string; manifest?: import('../skill/manifest.js').SkillManifest | null }>) {
 	vi.mocked(fetchAndInstallSkill).mockImplementation(async (_provider, _spec, installDir) => {
-		return skills.map(({ name, content = `---\nname: ${name}\n---` }) => {
+		return skills.map(({ name, content = `---\nname: ${name}\n---`, manifest = null }) => {
 			const dest = path.join(installDir, name, 'SKILL.md')
 			fs.mkdirSync(path.dirname(dest), { recursive: true })
 			fs.writeFileSync(dest, content)
-			return { name, content, skillPath: `skills/${name}/SKILL.md`, hash: 'fakehash' }
+			return { name, content, skillPath: `skills/${name}/SKILL.md`, hash: 'fakehash', manifest }
 		})
 	})
 }
@@ -267,4 +267,52 @@ test('addSkill with git URL: config provider overrides path-based hint', async (
 
 	const provider = vi.mocked(fetchAndInstallSkill).mock.calls[0]?.[0]
 	expect(provider).toMatchObject({ type: 'github', url: 'https://git.mycompany.com' })
+})
+
+test('addSkill skips package-managed skill and reports it', async () => {
+	const pkgManifest = { distribution: { install_via: 'package_manager', package: { name: 'cyber-asana' } } }
+	mockFetchInstall([
+		{ name: 'normal-skill' },
+		{ name: 'pkg-skill', manifest: pkgManifest },
+	])
+
+	const result = await addSkill('cyberuni/cyber-asana', { root })
+
+	expect(result.installed).toHaveLength(1)
+	expect(result.installed[0]!.name).toBe('normal-skill')
+	expect(result.skippedPackageManaged).toHaveLength(1)
+	expect(result.skippedPackageManaged[0]!.name).toBe('pkg-skill')
+	expect(result.skippedPackageManaged[0]!.packageName).toBe('cyber-asana')
+})
+
+test('addSkill skips package-managed skill for git URL spec', async () => {
+	const pkgManifest = { distribution: { install_via: 'package_manager', package: { name: 'cyber-asana' } } }
+	mockFetchInstall([{ name: 'pkg-skill', manifest: pkgManifest }])
+
+	const result = await addSkill('https://github.com/cyberuni/cyber-asana', { root })
+
+	expect(result.installed).toHaveLength(0)
+	expect(result.skippedPackageManaged).toHaveLength(1)
+	expect(result.skippedPackageManaged[0]!.name).toBe('pkg-skill')
+})
+
+test('addSkill does not skip package-managed skill when installed via npm', async () => {
+	const { installNpmPackage } = await import('./npm.js')
+	const mockInstall = vi.mocked(installNpmPackage)
+
+	const fakeSkillsDir = path.join(root, 'node_modules', 'cyber-asana', 'skills')
+	const fakeSkillDir = path.join(fakeSkillsDir, 'my-asana-skill')
+	fs.mkdirSync(fakeSkillDir, { recursive: true })
+	fs.writeFileSync(path.join(fakeSkillDir, 'SKILL.md'), '---\nname: my-asana-skill\n---')
+
+	mockInstall.mockReturnValueOnce({
+		packageName: 'cyber-asana',
+		installedDir: path.join(root, 'node_modules', 'cyber-asana'),
+		skillsDir: fakeSkillsDir,
+		packageManager: 'npm' as const,
+	})
+
+	const result = await addSkill('cyber-asana', { root })
+	expect(result.installed).toHaveLength(1)
+	expect(result.skippedPackageManaged).toHaveLength(0)
 })
