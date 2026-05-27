@@ -521,3 +521,15 @@ export async function promptUpdateScopeSelect(iface: RlInterface): Promise<'proj
 		'Update scope:',
 	)
 }
+
+export async function promptRemoveScopeSelect(iface: RlInterface): Promise<'project' | 'global' | 'both'> {
+	return promptSingleSelect(
+		iface,
+		[
+			{ value: 'project' as const, label: 'project', hint: 'Remove from current directory' },
+			{ value: 'global' as const, label: 'global', hint: 'Remove from home directory' },
+			{ value: 'both' as const, label: 'both', hint: 'Remove from project and global' },
+		],
+		'Remove from:',
+	)
+}

@@ -19,6 +19,7 @@ import {
 	CancelError,
 	createRl,
 	isInteractive,
+	promptRemoveScopeSelect,
 	promptScopeSelect,
 	promptSkillSelect,
 	promptUpdateScopeSelect,
@@ -137,18 +138,84 @@ export function addCommand(): Command {
 export function removeCommand(): Command {
 	return new Command('remove')
 		.description('Remove an installed skill')
-		.argument('<name>', 'Skill name to remove')
+		.argument('[name]', 'Skill name to remove')
 		.addOption(ROOT_OPTION)
 		.option('--global', 'Remove from global skills')
+		.option('--project', 'Remove from project skills')
 		.option('--format <format>', 'Output format: agent, json, or text (default: text)')
 		.addOption(new Option('--json').hideHelp())
-		.action((name: string, opts: { root?: string; global?: boolean }) => {
-			const root = resolveRoot(opts.root)
-			const scope = resolveScope(opts.global)
-			const result = removeSkill(name, { root, scope })
-			output(result, () => console.log(result.message))
-			if (!result.removed) process.exit(1)
-		})
+		.action(
+			async (
+				name: string | undefined,
+				opts: { root?: string; global?: boolean; project?: boolean; format?: string; json?: boolean },
+			) => {
+				const root = resolveRoot(opts.root)
+				const scopeExplicit = opts.global || opts.project
+				const machineOutput = isAutomatedOutput() || opts.json
+				const interactive = isInteractive() && !machineOutput && !scopeExplicit && !name
+
+				if (interactive) {
+					const rl = createRl()
+					let removeScope: 'project' | 'global' | 'both'
+					let selectedSkills: string[]
+					try {
+						removeScope = await promptRemoveScopeSelect(rl)
+
+						const scopes: Array<'project' | 'global'> = removeScope === 'both' ? ['project', 'global'] : [removeScope]
+						const items = scopes.flatMap((s) =>
+							Object.keys(readLock(root, s).skills).map((n) => ({
+								value: `${s}:${n}`,
+								label: n,
+								group: scopes.length > 1 ? s : undefined,
+							})),
+						)
+
+						if (items.length === 0) {
+							console.log('No skills installed.')
+							return
+						}
+
+						selectedSkills = await promptSkillSelect(rl, items, 'installed skills')
+					} catch (err) {
+						if (err instanceof CancelError) {
+							console.log('\nCancelled.')
+							return
+						}
+						throw err
+					} finally {
+						rl.close()
+					}
+
+					if (selectedSkills.length === 0) {
+						console.log('No skills selected.')
+						return
+					}
+
+					const results = selectedSkills.map((sv) => {
+						const colonIdx = sv.indexOf(':')
+						const scope = sv.slice(0, colonIdx) as 'project' | 'global'
+						const skillName = sv.slice(colonIdx + 1)
+						return removeSkill(skillName, { root, scope })
+					})
+					output(results, () => {
+						for (const r of results) {
+							console.log(r.removed ? `  - ${r.name}` : `  ! ${r.name}: ${r.message}`)
+						}
+					})
+					if (results.some((r) => !r.removed)) process.exit(1)
+					return
+				}
+
+				if (!name) {
+					console.error('Error: skill name required in non-interactive mode')
+					process.exit(1)
+				}
+				const scope = resolveScope(opts.global)
+				const result = removeSkill(name, { root, scope })
+				output(result, () => console.log(result.message))
+				if (!result.removed) process.exit(1)
+			},
+		)
 }
 
 export function updateCommand(): Command {
