@@ -1,16 +1,16 @@
 import * as fs from 'node:fs'
-import { homedir } from 'node:os'
 import { join } from 'node:path'
 
-import { type ConfigScope, matchProvider, readConfig } from './config.js'
+import { matchProvider, readConfig } from './config.js'
 import { fetchAndInstallSkill } from './github.js'
-import { type LockScope, setLockEntry } from './lock.js'
+import { setLockEntry } from './lock.js'
 import { installNpmPackage, listNpmSkills } from './npm.js'
+import { getInstallDir, type Scope } from './scope.js'
 import { isNpmSpec, isRepoSpec, parseSpec } from './spec.js'
 
 export interface AddOptions {
 	root: string
-	scope?: ConfigScope
+	scope?: Scope
 	branch?: string
 	skills?: string[]
 }
@@ -24,15 +24,6 @@ export interface AddResult {
 	spec: string
 	installed: Array<{ name: string; skillPath: string; installedAt: string }>
 	skippedSymlinks: SkippedSymlink[]
-}
-
-function getInstallDir(root: string, scope: ConfigScope): string {
-	if (scope === 'global') return join(homedir(), '.agents', 'skills')
-	return join(root, '.agents', 'skills')
-}
-
-function toLockScope(scope: ConfigScope): LockScope {
-	return scope
 }
 
 function tryCreateSkillsSymlink(root: string, name: string, canonicalDir: string): SkippedSymlink | null {
@@ -68,7 +59,7 @@ export async function addSkill(input: string, options: AddOptions): Promise<AddR
 
 		for (const f of fetched) {
 			const installedAt = join(installDir, f.name, 'SKILL.md')
-			setLockEntry(root, toLockScope(scope), f.name, {
+			setLockEntry(root, scope, f.name, {
 				source: `${spec.owner}/${spec.repo}`,
 				sourceType: provider?.type === 'gitlab' ? 'gitlab' : 'github',
 				skillPath: f.skillPath,
@@ -99,7 +90,7 @@ export async function addSkill(input: string, options: AddOptions): Promise<AddR
 			fs.mkdirSync(destDir, { recursive: true })
 			fs.copyFileSync(sourcePath, destPath)
 
-			setLockEntry(root, toLockScope(scope), skillName, {
+			setLockEntry(root, scope, skillName, {
 				source: spec.packageName,
 				sourceType: 'npm',
 				skillPath: `skills/${skillName}/SKILL.md`,

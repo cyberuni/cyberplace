@@ -1,12 +1,12 @@
 import * as fs from 'node:fs'
 import { join } from 'node:path'
 
-import type { ConfigScope } from './config.js'
 import { getLockPath, type LockEntry, readLock, writeLock } from './lock.js'
+import type { Scope } from './scope.js'
 
 export interface MigrateOptions {
 	root: string
-	scope?: ConfigScope
+	scope?: Scope
 	dryRun?: boolean
 }
 
