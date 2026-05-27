@@ -119,6 +119,23 @@ function buildVisibleRows(items: SelectItem[], filter: string): VisibleRow[] {
 	return rows
 }
 
+function highlightFuzzy(pattern: string, str: string): string {
+	if (!pattern) return str
+	const p = pattern.toLowerCase()
+	const s = str.toLowerCase()
+	let result = ''
+	let pi = 0
+	for (let si = 0; si < str.length; si++) {
+		if (pi < p.length && s[si] === p[pi]) {
+			result += `\x1b[1m${str[si]}\x1b[22m`
+			pi++
+		} else {
+			result += str[si]
+		}
+	}
+	return result
+}
+
 const VIEWPORT = 10
 
 export async function promptSkillSelect(iface: RlInterface, items: SelectItem[], source: string): Promise<string[]> {
@@ -155,8 +172,6 @@ export async function promptSkillSelect(iface: RlInterface, items: SelectItem[],
 		if (cursor >= viewportStart + VIEWPORT) viewportStart = cursor - VIEWPORT + 1
 
 		const lines: string[] = []
-		lines.push(`  Filter: ${filter}`)
-		lines.push('')
 
 		if (rows.length === 0) {
 			lines.push('')
@@ -169,20 +184,20 @@ export async function promptSkillSelect(iface: RlInterface, items: SelectItem[],
 			for (let i = viewportStart; i < end; i++) {
 				const row = rows[i]!
 				const hi = i === cursor
+				const color = hi ? '\x1b[36m' : ''
+				const reset = hi ? '\x1b[0m' : ''
 
 				if (row.type === 'group') {
 					const selCount = row.items.filter((it) => selected.has(it.value)).length
 					const allSel = selCount === row.items.length
 					const someSel = selCount > 0
 					const mark = allSel ? '[x]' : someSel ? '[-]' : '[ ]'
-					const line = `  ${mark} ${row.name} (${selCount}/${row.items.length})`
-					lines.push(hi ? `\x1b[7m${line}\x1b[0m` : line)
+					lines.push(`  ${color}${mark} ${row.name} (${selCount}/${row.items.length})${reset}`)
 				} else {
 					const mark = selected.has(row.item.value) ? '[x]' : '[ ]'
 					const hint = row.item.hint ? `  \x1b[2m${row.item.hint}\x1b[0m` : ''
-					const label = row.item.label
-					const line = `      ${mark} ${label}${hint}`
-					lines.push(hi ? `\x1b[7m      ${mark} ${label}\x1b[0m${hint}` : line)
+					const label = highlightFuzzy(filter, row.item.label)
+					lines.push(`      ${color}${mark} ${label}${reset}${hint}`)
 				}
 			}
 
