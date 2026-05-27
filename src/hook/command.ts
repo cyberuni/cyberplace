@@ -1,6 +1,7 @@
-import { existsSync, readFileSync } from 'node:fs'
+import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
+import { detectPackageManager } from '../registry/npm.js'
 import { getPackageRoot } from './package-root.js'
 
 function getPackageVersion(): string {
@@ -9,14 +10,23 @@ function getPackageVersion(): string {
 	return pkg.version
 }
 
+function pmExecPrefix(root: string): string | null {
+	const pm = detectPackageManager(root)
+	if (pm === 'pnpm') return 'pnpm exec'
+	if (pm === 'yarn') return 'yarn exec'
+	if (pm === 'bun') return 'bunx'
+	return null
+}
+
 /**
  * Build a hook command string for registration in agent settings.
- * Prefers local node_modules bin when present; otherwise pins npx to the current version.
+ * Uses the repo's package manager exec wrapper when a lock file is present;
+ * otherwise falls back to pinned npx.
  */
 export function hookCommand(subcommand: string, root = process.cwd()): string {
-	const localBin = join(root, 'node_modules', '.bin', 'cyber-skills')
-	if (existsSync(localBin)) {
-		return `${localBin} ${subcommand}`
+	const prefix = pmExecPrefix(root)
+	if (prefix) {
+		return `${prefix} cyber-skills ${subcommand}`
 	}
 	const version = getPackageVersion()
 	return `npx cyber-skills@${version} ${subcommand}`
@@ -91,11 +101,24 @@ export function sameHookTarget(existing: unknown, hookId: string, expectedComman
 	return legacyEquivalent(hookId, existing)
 }
 
+function extractPmExecPrefix(command: string): string | null {
+	const match = command.match(/^(pnpm exec|yarn exec|bunx|npm exec)\s+cyber-skills/)
+	return match?.[1] ?? null
+}
+
 /** True when an existing registered command refers to the same hook id and semver/path. */
 export function commandMatchesHook(existing: unknown, hookId: string, expectedCommand: string): boolean {
 	if (!isCommandString(existing)) return false
 	if (existing === expectedCommand) return true
 	if (!sameHookTarget(existing, hookId, expectedCommand)) return false
+
+	const existingPmPrefix = extractPmExecPrefix(existing)
+	const expectedPmPrefix = extractPmExecPrefix(expectedCommand)
+
+	// If one uses pm exec and the other does not, they differ in execution method → re-register
+	if ((existingPmPrefix === null) !== (expectedPmPrefix === null)) return false
+	// If both use pm exec, require the same package manager
+	if (existingPmPrefix !== null && existingPmPrefix !== expectedPmPrefix) return false
 
 	const existingVersion = extractNpxVersion(existing)
 	const expectedVersion = extractNpxVersion(expectedCommand)
