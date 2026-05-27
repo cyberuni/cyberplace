@@ -72,12 +72,18 @@ export async function addSkill(input: string, options: AddOptions): Promise<AddR
 
 		for (const f of fetched) {
 			const installedAt = join(installDir, f.name, 'SKILL.md')
-			setLockEntry(root, scope, f.name, {
-				source: `${spec.owner}/${spec.repo}`,
-				sourceType: provider?.type === 'gitlab' ? 'gitlab' : 'github',
-				skillPath: f.skillPath,
-				computedHash: f.hash,
-			})
+			setLockEntry(
+				root,
+				scope,
+				f.name,
+				{
+					source: `${spec.owner}/${spec.repo}`,
+					sourceType: provider?.type === 'gitlab' ? 'gitlab' : 'github',
+					skillPath: f.skillPath,
+					computedHash: f.hash,
+				},
+				home,
+			)
 			installed.push({ name: f.name, skillPath: f.skillPath, installedAt })
 
 			if (scope === 'project') {
@@ -104,12 +110,18 @@ export async function addSkill(input: string, options: AddOptions): Promise<AddR
 						? 'github'
 						: 'custom'
 				: hintToSourceType(spec.providerHint)
-			setLockEntry(root, scope, f.name, {
-				source: spec.branch ? `${spec.cloneUrl}#${spec.branch}` : spec.cloneUrl,
-				sourceType,
-				skillPath: f.skillPath,
-				computedHash: f.hash,
-			})
+			setLockEntry(
+				root,
+				scope,
+				f.name,
+				{
+					source: spec.branch ? `${spec.cloneUrl}#${spec.branch}` : spec.cloneUrl,
+					sourceType,
+					skillPath: f.skillPath,
+					computedHash: f.hash,
+				},
+				home,
+			)
 			installed.push({ name: f.name, skillPath: f.skillPath, installedAt })
 
 			if (scope === 'project') {
@@ -135,11 +147,17 @@ export async function addSkill(input: string, options: AddOptions): Promise<AddR
 			fs.mkdirSync(destDir, { recursive: true })
 			fs.copyFileSync(sourcePath, destPath)
 
-			setLockEntry(root, scope, skillName, {
-				source: spec.packageName,
-				sourceType: 'npm',
-				skillPath: `skills/${skillName}/SKILL.md`,
-			})
+			setLockEntry(
+				root,
+				scope,
+				skillName,
+				{
+					source: spec.packageName,
+					sourceType: 'npm',
+					skillPath: `skills/${skillName}/SKILL.md`,
+				},
+				home,
+			)
 			installed.push({ name: skillName, skillPath: `skills/${skillName}/SKILL.md`, installedAt: destPath })
 
 			if (scope === 'project') {

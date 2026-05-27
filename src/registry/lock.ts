@@ -16,13 +16,13 @@ export interface CyberSkillsLock {
 	skills: Record<string, LockEntry>
 }
 
-export function getLockPath(root: string, scope: Scope): string {
-	if (scope === 'global') return join(homedir(), '.agents', 'cyber-skills-lock.json')
+export function getLockPath(root: string, scope: Scope, home?: string): string {
+	if (scope === 'global') return join(home ?? homedir(), '.agents', 'cyber-skills-lock.json')
 	return join(root, '.agents', 'cyber-skills-lock.json')
 }
 
-export function readLock(root: string, scope: Scope): CyberSkillsLock {
-	const filePath = getLockPath(root, scope)
+export function readLock(root: string, scope: Scope, home?: string): CyberSkillsLock {
+	const filePath = getLockPath(root, scope, home)
 	if (!fs.existsSync(filePath)) return { version: 1, skills: {} }
 	try {
 		const raw = JSON.parse(fs.readFileSync(filePath, 'utf8')) as Omit<CyberSkillsLock, 'version' | 'skills'>
@@ -32,24 +32,24 @@ export function readLock(root: string, scope: Scope): CyberSkillsLock {
 	}
 }
 
-export function writeLock(root: string, scope: Scope, lock: CyberSkillsLock): void {
-	const filePath = getLockPath(root, scope)
+export function writeLock(root: string, scope: Scope, lock: CyberSkillsLock, home?: string): void {
+	const filePath = getLockPath(root, scope, home)
 	fs.mkdirSync(dirname(filePath), { recursive: true })
 	fs.writeFileSync(filePath, `${JSON.stringify({ version: 1, skills: lock.skills }, null, 2)}\n`)
 }
 
-export function setLockEntry(root: string, scope: Scope, name: string, entry: LockEntry): void {
-	const lock = readLock(root, scope)
+export function setLockEntry(root: string, scope: Scope, name: string, entry: LockEntry, home?: string): void {
+	const lock = readLock(root, scope, home)
 	lock.skills[name] = entry
-	writeLock(root, scope, lock)
+	writeLock(root, scope, lock, home)
 }
 
-export function removeLockEntry(root: string, scope: Scope, name: string): void {
-	const lock = readLock(root, scope)
+export function removeLockEntry(root: string, scope: Scope, name: string, home?: string): void {
+	const lock = readLock(root, scope, home)
 	delete lock.skills[name]
-	writeLock(root, scope, lock)
+	writeLock(root, scope, lock, home)
 }
 
-export function getLockEntry(root: string, scope: Scope, name: string): LockEntry | null {
-	return readLock(root, scope).skills[name] ?? null
+export function getLockEntry(root: string, scope: Scope, name: string, home?: string): LockEntry | null {
+	return readLock(root, scope, home).skills[name] ?? null
 }
