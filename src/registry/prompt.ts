@@ -159,11 +159,11 @@ export async function promptSkillSelect(iface: RlInterface, items: SelectItem[],
 		lines.push('')
 
 		if (rows.length === 0) {
+			lines.push('')
 			lines.push('  (no skills match)')
+			lines.push('')
 		} else {
-			if (viewportStart > 0) {
-				lines.push(`  \x1b[2m↑ ${viewportStart} more\x1b[0m`)
-			}
+			lines.push(viewportStart > 0 ? `  \x1b[2m↑ ${viewportStart} more\x1b[0m` : '')
 
 			const end = Math.min(viewportStart + VIEWPORT, rows.length)
 			for (let i = viewportStart; i < end; i++) {
@@ -187,9 +187,7 @@ export async function promptSkillSelect(iface: RlInterface, items: SelectItem[],
 			}
 
 			const below = rows.length - (viewportStart + VIEWPORT)
-			if (below > 0) {
-				lines.push(`  \x1b[2m↓ ${below} more\x1b[0m`)
-			}
+			lines.push(below > 0 ? `  \x1b[2m↓ ${below} more\x1b[0m` : '')
 		}
 
 		lines.push('')
