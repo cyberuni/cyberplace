@@ -191,6 +191,8 @@ export async function promptSkillSelect(iface: RlInterface, items: SelectItem[],
 					: '',
 			)
 
+			const hasGroups = rows.some((r) => r.type === 'group')
+			const itemIndent = hasGroups ? '      ' : '  '
 			const end = Math.min(viewportStart + VIEWPORT, rows.length)
 			for (let i = viewportStart; i < end; i++) {
 				const row = rows[i]!
@@ -208,7 +210,7 @@ export async function promptSkillSelect(iface: RlInterface, items: SelectItem[],
 					const mark = selected.has(row.item.value) ? '[x]' : '[ ]'
 					const hint = row.item.hint ? `  \x1b[2m${row.item.hint}\x1b[0m` : ''
 					const label = highlightFuzzy(filter, row.item.label)
-					lines.push(`      ${color}${mark} ${label}${reset}${hint}`)
+					lines.push(`${itemIndent}${color}${mark} ${label}${reset}${hint}`)
 				}
 			}
 
