@@ -121,12 +121,14 @@ test('updateAllSkills updates all locked skills', async () => {
 	setupFakeLockEntry('commit', 'cyberuni/cyber-skills:commit')
 	setupFakeLockEntry('add-changeset', 'repobuddy/agent-changesets:add-changeset')
 
-	vi.mocked(fetchAndInstallSkill).mockImplementation(async (_provider, spec, installDir) => {
-		const name = spec.skill ?? 'commit'
-		const dest = path.join(installDir, name, 'SKILL.md')
-		fs.mkdirSync(path.dirname(dest), { recursive: true })
-		fs.writeFileSync(dest, `---\nname: ${name}\n---`)
-		return [{ name, content: `---\nname: ${name}\n---`, skillPath: `skills/${name}/SKILL.md`, hash: 'fakehash' }]
+	vi.mocked(fetchAndInstallSkill).mockImplementation(async (_provider, _spec, installDir, _branch, skillFilter) => {
+		const names = skillFilter ?? ['commit']
+		return names.map((name) => {
+			const dest = path.join(installDir, name, 'SKILL.md')
+			fs.mkdirSync(path.dirname(dest), { recursive: true })
+			fs.writeFileSync(dest, `---\nname: ${name}\n---`)
+			return { name, content: `---\nname: ${name}\n---`, skillPath: `skills/${name}/SKILL.md`, hash: 'fakehash' }
+		})
 	})
 
 	const results = await updateAllSkills({ root })

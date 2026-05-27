@@ -139,11 +139,49 @@ export async function updateSkill(name: string, options: UpdateOptions): Promise
 export async function updateAllSkills(options: UpdateOptions): Promise<UpdateResult[]> {
 	const { root, scope = 'project' } = options
 	const lock = readLock(root, toLockScope(scope))
+	const allNames = Object.keys(lock.skills)
+
+	if (allNames.length === 0) return []
+
 	const results: UpdateResult[] = []
 
-	for (const name of Object.keys(lock.skills)) {
-		const result = await updateSkill(name, options)
-		results.push(result)
+	// npm skills can't be batched — update individually
+	const npmNames = allNames.filter((n) => lock.skills[n]!.sourceType === 'npm')
+	for (const name of npmNames) {
+		results.push(await updateSkill(name, options))
+	}
+
+	// Group git-based skills by source repo — one clone per repo
+	const bySource = new Map<string, string[]>()
+	for (const name of allNames.filter((n) => lock.skills[n]!.sourceType !== 'npm')) {
+		const source = lock.skills[name]!.source
+		const group = bySource.get(source) ?? []
+		group.push(name)
+		bySource.set(source, group)
+	}
+
+	const installDir = getInstallDir(root, scope)
+	for (const [source, names] of bySource) {
+		const metadataMap = new Map<string, string[]>()
+		for (const name of names) {
+			const existingPath = join(installDir, name, 'SKILL.md')
+			metadataMap.set(
+				name,
+				fs.existsSync(existingPath) ? extractMetadataLines(fs.readFileSync(existingPath, 'utf8')) : [],
+			)
+		}
+
+		const addResult = await addSkill(source, { root, scope, skills: names })
+
+		for (const installed of addResult.installed) {
+			const metaLines = metadataMap.get(installed.name) ?? []
+			if (metaLines.length > 0) {
+				const current = fs.readFileSync(installed.installedAt, 'utf8')
+				const patched = injectMetadataLines(current, metaLines)
+				if (patched !== current) fs.writeFileSync(installed.installedAt, patched)
+			}
+			results.push({ name: installed.name, updated: true, message: `Updated skill '${installed.name}'` })
+		}
 	}
 
 	return results
