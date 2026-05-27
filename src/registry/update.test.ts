@@ -3,8 +3,14 @@ import * as os from 'node:os'
 import * as path from 'node:path'
 import { afterEach, beforeEach, expect, test, vi } from 'vitest'
 
+import { fetchAndInstallSkill } from './github.js'
 import { setLockEntry } from './lock.js'
 import { updateAllSkills, updateSkill } from './update.js'
+
+vi.mock('./github.js', async (importOriginal) => {
+	const mod = await importOriginal<typeof import('./github.js')>()
+	return { ...mod, fetchAndInstallSkill: vi.fn() }
+})
 
 let root: string
 
@@ -29,16 +35,19 @@ function setupFakeLockEntry(name: string, spec: string): void {
 	})
 }
 
+function mockFetchInstall(upstreamContent: string) {
+	vi.mocked(fetchAndInstallSkill).mockImplementation(async (_provider, spec, installDir) => {
+		const name = spec.skill ?? 'commit'
+		const dest = path.join(installDir, name, 'SKILL.md')
+		fs.mkdirSync(path.dirname(dest), { recursive: true })
+		fs.writeFileSync(dest, upstreamContent)
+		return [{ name, content: upstreamContent, skillPath: `skills/${name}/SKILL.md`, hash: 'fakehash' }]
+	})
+}
+
 test('updateSkill re-fetches and updates the skill file', async () => {
 	setupFakeLockEntry('commit', 'cyberuni/cyber-skills:commit')
-
-	vi.stubGlobal(
-		'fetch',
-		vi.fn().mockResolvedValue({
-			ok: true,
-			text: () => Promise.resolve('---\nname: commit\ndescription: updated\n---'),
-		}),
-	)
+	mockFetchInstall('---\nname: commit\ndescription: updated\n---')
 
 	const result = await updateSkill('commit', { root })
 	expect(result.updated).toBe(true)
@@ -65,14 +74,7 @@ test('updateSkill preserves existing metadata block when upstream has none', asy
 		sourceType: 'github',
 		skillPath: 'skills/commit/SKILL.md',
 	})
-
-	vi.stubGlobal(
-		'fetch',
-		vi.fn().mockResolvedValue({
-			ok: true,
-			text: () => Promise.resolve('---\nname: commit\ndescription: updated\n---\n\nbody'),
-		}),
-	)
+	mockFetchInstall('---\nname: commit\ndescription: updated\n---\n\nbody')
 
 	await updateSkill('commit', { root })
 
@@ -95,14 +97,7 @@ test('updateSkill preserves existing metadata block when upstream has different 
 		sourceType: 'github',
 		skillPath: 'skills/commit/SKILL.md',
 	})
-
-	vi.stubGlobal(
-		'fetch',
-		vi.fn().mockResolvedValue({
-			ok: true,
-			text: () => Promise.resolve('---\nname: commit\ndescription: updated\nmetadata:\n  other: value\n---\n\nbody'),
-		}),
-	)
+	mockFetchInstall('---\nname: commit\ndescription: updated\nmetadata:\n  other: value\n---\n\nbody')
 
 	await updateSkill('commit', { root })
 
@@ -113,14 +108,7 @@ test('updateSkill preserves existing metadata block when upstream has different 
 
 test('updateSkill does not inject metadata when existing file has none', async () => {
 	setupFakeLockEntry('commit', 'cyberuni/cyber-skills:commit')
-
-	vi.stubGlobal(
-		'fetch',
-		vi.fn().mockResolvedValue({
-			ok: true,
-			text: () => Promise.resolve('---\nname: commit\ndescription: updated\n---\n\nbody'),
-		}),
-	)
+	mockFetchInstall('---\nname: commit\ndescription: updated\n---\n\nbody')
 
 	await updateSkill('commit', { root })
 
@@ -133,13 +121,13 @@ test('updateAllSkills updates all locked skills', async () => {
 	setupFakeLockEntry('commit', 'cyberuni/cyber-skills:commit')
 	setupFakeLockEntry('add-changeset', 'repobuddy/agent-changesets:add-changeset')
 
-	vi.stubGlobal(
-		'fetch',
-		vi.fn().mockResolvedValue({
-			ok: true,
-			text: () => Promise.resolve('---\nname: skill\n---'),
-		}),
-	)
+	vi.mocked(fetchAndInstallSkill).mockImplementation(async (_provider, spec, installDir) => {
+		const name = spec.skill ?? 'commit'
+		const dest = path.join(installDir, name, 'SKILL.md')
+		fs.mkdirSync(path.dirname(dest), { recursive: true })
+		fs.writeFileSync(dest, `---\nname: ${name}\n---`)
+		return [{ name, content: `---\nname: ${name}\n---`, skillPath: `skills/${name}/SKILL.md`, hash: 'fakehash' }]
+	})
 
 	const results = await updateAllSkills({ root })
 	expect(results).toHaveLength(2)

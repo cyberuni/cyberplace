@@ -7,13 +7,24 @@ import { computeHash, fetchAndInstallSkill, fetchMarketplace, fetchSkillContent,
 import type { RepoSpec } from './spec.js'
 
 let root: string
+let cloneSimDir: string
+
+function seedSkillDir(baseDir: string, skillDir: string, files: Record<string, string>) {
+	const fullDir = path.join(baseDir, skillDir)
+	fs.mkdirSync(fullDir, { recursive: true })
+	for (const [name, content] of Object.entries(files)) {
+		fs.writeFileSync(path.join(fullDir, name), content)
+	}
+}
 
 beforeEach(() => {
 	root = fs.mkdtempSync(path.join(os.tmpdir(), 'cyber-skills-github-'))
+	cloneSimDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cyber-skills-clone-sim-'))
 })
 
 afterEach(() => {
 	fs.rmSync(root, { recursive: true, force: true })
+	fs.rmSync(cloneSimDir, { recursive: true, force: true })
 	vi.restoreAllMocks()
 })
 
@@ -99,14 +110,11 @@ test('listRepoSkills falls back to GitHub API when awesome-skills.json absent', 
 	expect(skills.map((s) => s.name)).toEqual(['commit', 'add-changeset'])
 })
 
-test('fetchAndInstallSkill installs a single named skill', async () => {
-	vi.stubGlobal(
-		'fetch',
-		vi.fn().mockResolvedValue({
-			ok: true,
-			text: () => Promise.resolve('---\nname: commit\n---\n# Commit'),
-		}),
-	)
+test('fetchAndInstallSkill copies SKILL.md and sibling files via sparse clone', async () => {
+	seedSkillDir(cloneSimDir, 'skills/commit', {
+		'SKILL.md': '---\nname: commit\n---\n# Commit',
+		'README.md': '# Readme',
+	})
 
 	const spec: RepoSpec = {
 		type: 'repo',
@@ -115,11 +123,36 @@ test('fetchAndInstallSkill installs a single named skill', async () => {
 		skill: 'commit',
 		raw: 'cyberuni/cyber-skills:commit',
 	}
-	const installed = await fetchAndInstallSkill(null, spec, root)
+	const installed = await fetchAndInstallSkill(null, spec, root, 'main', undefined, cloneSimDir)
 
 	expect(installed).toHaveLength(1)
 	expect(installed[0]!.name).toBe('commit')
 	expect(fs.existsSync(path.join(root, 'commit', 'SKILL.md'))).toBe(true)
+	expect(fs.existsSync(path.join(root, 'commit', 'README.md'))).toBe(true)
+})
+
+test('fetchAndInstallSkill excludes *.local.* files', async () => {
+	seedSkillDir(cloneSimDir, 'skills/commit', {
+		'SKILL.md': '# Commit',
+		'README.md': '# Readme',
+		'SKILL.local.md': 'local overrides',
+		'config.local.json': '{}',
+	})
+
+	const spec: RepoSpec = {
+		type: 'repo',
+		owner: 'cyberuni',
+		repo: 'cyber-skills',
+		skill: 'commit',
+		raw: 'cyberuni/cyber-skills:commit',
+	}
+	const installed = await fetchAndInstallSkill(null, spec, root, 'main', undefined, cloneSimDir)
+
+	expect(installed).toHaveLength(1)
+	expect(fs.existsSync(path.join(root, 'commit', 'SKILL.md'))).toBe(true)
+	expect(fs.existsSync(path.join(root, 'commit', 'README.md'))).toBe(true)
+	expect(fs.existsSync(path.join(root, 'commit', 'SKILL.local.md'))).toBe(false)
+	expect(fs.existsSync(path.join(root, 'commit', 'config.local.json'))).toBe(false)
 })
 
 test('fetchAndInstallSkill installs all skills when no skill name given', async () => {
@@ -127,20 +160,49 @@ test('fetchAndInstallSkill installs all skills when no skill name given', async 
 		{ name: 'commit', skillPath: 'skills/commit/SKILL.md' },
 		{ name: 'add-changeset', skillPath: 'skills/add-changeset/SKILL.md' },
 	]
-	vi.stubGlobal(
-		'fetch',
-		vi
-			.fn()
-			.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(awesomeData) }) // awesome-skills.json
-			.mockResolvedValue({ ok: true, text: () => Promise.resolve('# skill content') }),
-	)
+	vi.stubGlobal('fetch', vi.fn().mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(awesomeData) }))
+	seedSkillDir(cloneSimDir, 'skills/commit', { 'SKILL.md': '# commit' })
+	seedSkillDir(cloneSimDir, 'skills/add-changeset', { 'SKILL.md': '# add-changeset' })
 
 	const spec: RepoSpec = { type: 'repo', owner: 'cyberuni', repo: 'cyber-skills', raw: 'cyberuni/cyber-skills' }
-	const installed = await fetchAndInstallSkill(null, spec, root)
+	const installed = await fetchAndInstallSkill(null, spec, root, 'main', undefined, cloneSimDir)
 
 	expect(installed).toHaveLength(2)
 	expect(fs.existsSync(path.join(root, 'commit', 'SKILL.md'))).toBe(true)
 	expect(fs.existsSync(path.join(root, 'add-changeset', 'SKILL.md'))).toBe(true)
+})
+
+test('fetchAndInstallSkill respects skillFilter when no skill in spec', async () => {
+	const awesomeData = [
+		{ name: 'commit', skillPath: 'skills/commit/SKILL.md' },
+		{ name: 'add-changeset', skillPath: 'skills/add-changeset/SKILL.md' },
+		{ name: 'audit-skill', skillPath: 'skills/audit-skill/SKILL.md' },
+	]
+	vi.stubGlobal('fetch', vi.fn().mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(awesomeData) }))
+	seedSkillDir(cloneSimDir, 'skills/commit', { 'SKILL.md': '# commit' })
+	seedSkillDir(cloneSimDir, 'skills/audit-skill', { 'SKILL.md': '# audit' })
+
+	const spec: RepoSpec = { type: 'repo', owner: 'cyberuni', repo: 'cyber-skills', raw: 'cyberuni/cyber-skills' }
+	const installed = await fetchAndInstallSkill(null, spec, root, 'main', ['commit', 'audit-skill'], cloneSimDir)
+
+	expect(installed).toHaveLength(2)
+	expect(installed.map((s) => s.name)).toEqual(['commit', 'audit-skill'])
+	expect(fs.existsSync(path.join(root, 'add-changeset', 'SKILL.md'))).toBe(false)
+})
+
+test('fetchAndInstallSkill ignores skillFilter when skill in spec', async () => {
+	seedSkillDir(cloneSimDir, 'skills/commit', { 'SKILL.md': '# skill' })
+
+	const spec: RepoSpec = {
+		type: 'repo',
+		owner: 'cyberuni',
+		repo: 'cyber-skills',
+		skill: 'commit',
+		raw: 'cyberuni/cyber-skills:commit',
+	}
+	const installed = await fetchAndInstallSkill(null, spec, root, 'main', ['other-skill'], cloneSimDir)
+	expect(installed).toHaveLength(1)
+	expect(installed[0]!.name).toBe('commit')
 })
 
 test('fetchMarketplace returns parsed marketplace when found', async () => {
@@ -161,42 +223,4 @@ test('fetchMarketplace returns null when not found (404)', async () => {
 test('fetchMarketplace returns null on network error', async () => {
 	vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network error')))
 	expect(await fetchMarketplace(null, 'org', 'repo')).toBeNull()
-})
-
-test('fetchAndInstallSkill respects skillFilter when no skill in spec', async () => {
-	const awesomeData = [
-		{ name: 'commit', skillPath: 'skills/commit/SKILL.md' },
-		{ name: 'add-changeset', skillPath: 'skills/add-changeset/SKILL.md' },
-		{ name: 'audit-skill', skillPath: 'skills/audit-skill/SKILL.md' },
-	]
-	vi.stubGlobal(
-		'fetch',
-		vi
-			.fn()
-			.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(awesomeData) })
-			.mockResolvedValue({ ok: true, text: () => Promise.resolve('# skill') }),
-	)
-
-	const spec: RepoSpec = { type: 'repo', owner: 'cyberuni', repo: 'cyber-skills', raw: 'cyberuni/cyber-skills' }
-	const installed = await fetchAndInstallSkill(null, spec, root, 'main', ['commit', 'audit-skill'])
-
-	expect(installed).toHaveLength(2)
-	expect(installed.map((s) => s.name)).toEqual(['commit', 'audit-skill'])
-	expect(fs.existsSync(path.join(root, 'add-changeset', 'SKILL.md'))).toBe(false)
-})
-
-test('fetchAndInstallSkill ignores skillFilter when skill in spec', async () => {
-	vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, text: () => Promise.resolve('# skill') }))
-
-	const spec: RepoSpec = {
-		type: 'repo',
-		owner: 'cyberuni',
-		repo: 'cyber-skills',
-		skill: 'commit',
-		raw: 'cyberuni/cyber-skills:commit',
-	}
-	// filter is irrelevant when spec.skill is set
-	const installed = await fetchAndInstallSkill(null, spec, root, 'main', ['other-skill'])
-	expect(installed).toHaveLength(1)
-	expect(installed[0]!.name).toBe('commit')
 })

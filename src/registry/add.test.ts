@@ -5,7 +5,13 @@ import { afterEach, beforeEach, expect, test, vi } from 'vitest'
 
 import { addSkill } from './add.js'
 import { readConfig } from './config.js'
+import { fetchAndInstallSkill } from './github.js'
 import { getLockEntry } from './lock.js'
+
+vi.mock('./github.js', async (importOriginal) => {
+	const mod = await importOriginal<typeof import('./github.js')>()
+	return { ...mod, fetchAndInstallSkill: vi.fn() }
+})
 
 // top-level mock so hoisting works correctly
 vi.mock('./npm.js', async (importOriginal) => {
@@ -28,14 +34,19 @@ afterEach(() => {
 	vi.clearAllMocks()
 })
 
+function mockFetchInstall(skills: Array<{ name: string; content?: string }>) {
+	vi.mocked(fetchAndInstallSkill).mockImplementation(async (_provider, _spec, installDir) => {
+		return skills.map(({ name, content = `---\nname: ${name}\n---` }) => {
+			const dest = path.join(installDir, name, 'SKILL.md')
+			fs.mkdirSync(path.dirname(dest), { recursive: true })
+			fs.writeFileSync(dest, content)
+			return { name, content, skillPath: `skills/${name}/SKILL.md`, hash: 'fakehash' }
+		})
+	})
+}
+
 test('addSkill installs a single skill from GitHub repo', async () => {
-	vi.stubGlobal(
-		'fetch',
-		vi.fn().mockResolvedValue({
-			ok: true,
-			text: () => Promise.resolve('---\nname: commit\ndescription: commit skill\n---\n# Commit'),
-		}),
-	)
+	mockFetchInstall([{ name: 'commit', content: '---\nname: commit\ndescription: commit skill\n---\n# Commit' }])
 
 	const result = await addSkill('cyberuni/cyber-skills:commit', { root })
 
@@ -47,13 +58,7 @@ test('addSkill installs a single skill from GitHub repo', async () => {
 })
 
 test('addSkill records entry in lock file', async () => {
-	vi.stubGlobal(
-		'fetch',
-		vi.fn().mockResolvedValue({
-			ok: true,
-			text: () => Promise.resolve('---\nname: commit\n---'),
-		}),
-	)
+	mockFetchInstall([{ name: 'commit' }])
 
 	await addSkill('cyberuni/cyber-skills:commit', { root })
 
@@ -64,13 +69,7 @@ test('addSkill records entry in lock file', async () => {
 })
 
 test('addSkill records skill in config file', async () => {
-	vi.stubGlobal(
-		'fetch',
-		vi.fn().mockResolvedValue({
-			ok: true,
-			text: () => Promise.resolve('---\nname: commit\n---'),
-		}),
-	)
+	mockFetchInstall([{ name: 'commit' }])
 
 	await addSkill('cyberuni/cyber-skills:commit', { root })
 
@@ -79,17 +78,7 @@ test('addSkill records skill in config file', async () => {
 })
 
 test('addSkill installs all skills when no skill name given', async () => {
-	const awesomeData = [
-		{ name: 'commit', skillPath: 'skills/commit/SKILL.md' },
-		{ name: 'add-changeset', skillPath: 'skills/add-changeset/SKILL.md' },
-	]
-	vi.stubGlobal(
-		'fetch',
-		vi
-			.fn()
-			.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(awesomeData) })
-			.mockResolvedValue({ ok: true, text: () => Promise.resolve('---\nname: skill\n---') }),
-	)
+	mockFetchInstall([{ name: 'commit' }, { name: 'add-changeset' }])
 
 	const result = await addSkill('cyberuni/cyber-skills', { root })
 	expect(result.installed).toHaveLength(2)
@@ -122,46 +111,28 @@ test('addSkill uses configured GitLab provider when pattern matches', async () =
 	const { addProvider } = await import('./config.js')
 	addProvider(root, 'project', 'https://gitlab.mycompany.com', 'gitlab', 'mycompany/*')
 
-	vi.stubGlobal(
-		'fetch',
-		vi.fn().mockResolvedValue({
-			ok: true,
-			text: () => Promise.resolve('---\nname: commit\n---'),
-		}),
-	)
+	mockFetchInstall([{ name: 'commit' }])
 
 	await addSkill('mycompany/skills:commit', { root })
 
-	const url = (fetch as ReturnType<typeof vi.fn>).mock.calls[0]?.[0] as string
-	expect(url).toContain('gitlab.mycompany.com')
+	const provider = vi.mocked(fetchAndInstallSkill).mock.calls[0]?.[0]
+	expect(provider).toMatchObject({ type: 'gitlab', url: 'https://gitlab.mycompany.com' })
 })
 
 test('addSkill uses GitHub default when no provider pattern matches', async () => {
 	const { addProvider } = await import('./config.js')
 	addProvider(root, 'project', 'https://gitlab.mycompany.com', 'gitlab', 'mycompany/*')
 
-	vi.stubGlobal(
-		'fetch',
-		vi.fn().mockResolvedValue({
-			ok: true,
-			text: () => Promise.resolve('---\nname: commit\n---'),
-		}),
-	)
+	mockFetchInstall([{ name: 'commit' }])
 
 	await addSkill('cyberuni/cyber-skills:commit', { root })
 
-	const url = (fetch as ReturnType<typeof vi.fn>).mock.calls[0]?.[0] as string
-	expect(url).toContain('raw.githubusercontent.com')
+	const provider = vi.mocked(fetchAndInstallSkill).mock.calls[0]?.[0]
+	expect(provider).toBeNull()
 })
 
 test('addSkill creates symlink in skills/ for project scope', async () => {
-	vi.stubGlobal(
-		'fetch',
-		vi.fn().mockResolvedValue({
-			ok: true,
-			text: () => Promise.resolve('---\nname: commit\ndescription: commit skill\n---\n# Commit'),
-		}),
-	)
+	mockFetchInstall([{ name: 'commit', content: '---\nname: commit\ndescription: commit skill\n---\n# Commit' }])
 
 	await addSkill('cyberuni/cyber-skills:commit', { root, scope: 'project' })
 
@@ -171,13 +142,7 @@ test('addSkill creates symlink in skills/ for project scope', async () => {
 })
 
 test('addSkill does not create symlink for global scope', async () => {
-	vi.stubGlobal(
-		'fetch',
-		vi.fn().mockResolvedValue({
-			ok: true,
-			text: () => Promise.resolve('---\nname: commit\n---'),
-		}),
-	)
+	mockFetchInstall([{ name: 'commit' }])
 
 	await addSkill('cyberuni/cyber-skills:commit', { root, scope: 'global' })
 
@@ -190,13 +155,7 @@ test('addSkill skips symlink and returns notification when skills/<name> is a re
 	fs.mkdirSync(realSkillDir, { recursive: true })
 	fs.writeFileSync(path.join(realSkillDir, 'SKILL.md'), '---\nname: commit\n---')
 
-	vi.stubGlobal(
-		'fetch',
-		vi.fn().mockResolvedValue({
-			ok: true,
-			text: () => Promise.resolve('---\nname: commit\n---'),
-		}),
-	)
+	mockFetchInstall([{ name: 'commit' }])
 
 	const result = await addSkill('cyberuni/cyber-skills:commit', { root, scope: 'project' })
 
@@ -214,13 +173,7 @@ test('addSkill updates existing symlink in skills/ on re-install', async () => {
 	fs.mkdirSync(oldTarget, { recursive: true })
 	fs.symlinkSync(oldTarget, path.join(skillsDir, 'commit'))
 
-	vi.stubGlobal(
-		'fetch',
-		vi.fn().mockResolvedValue({
-			ok: true,
-			text: () => Promise.resolve('---\nname: commit\n---'),
-		}),
-	)
+	mockFetchInstall([{ name: 'commit' }])
 
 	const result = await addSkill('cyberuni/cyber-skills:commit', { root, scope: 'project' })
 
@@ -230,18 +183,7 @@ test('addSkill updates existing symlink in skills/ on re-install', async () => {
 })
 
 test('addSkill installs only skills matching the skills filter', async () => {
-	const awesomeData = [
-		{ name: 'commit', skillPath: 'skills/commit/SKILL.md' },
-		{ name: 'add-changeset', skillPath: 'skills/add-changeset/SKILL.md' },
-		{ name: 'audit-skill', skillPath: 'skills/audit-skill/SKILL.md' },
-	]
-	vi.stubGlobal(
-		'fetch',
-		vi
-			.fn()
-			.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(awesomeData) })
-			.mockResolvedValue({ ok: true, text: () => Promise.resolve('---\nname: skill\n---') }),
-	)
+	mockFetchInstall([{ name: 'commit' }, { name: 'audit-skill' }])
 
 	const result = await addSkill('cyberuni/cyber-skills', { root, skills: ['commit', 'audit-skill'] })
 	expect(result.installed).toHaveLength(2)

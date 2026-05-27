@@ -1,5 +1,7 @@
+import { spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import * as fs from 'node:fs'
+import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 
 import type { Provider } from './config.js'
@@ -40,6 +42,106 @@ function buildApiBase(provider: Provider | null, owner: string, repo: string): s
 	}
 	const base = provider.url.replace(/\/$/, '')
 	return `${base}/api/repos/${owner}/${repo}/contents`
+}
+
+function buildCloneUrl(provider: Provider | null, owner: string, repo: string): string {
+	if (!provider || provider.type === 'github') {
+		return `https://github.com/${owner}/${repo}.git`
+	}
+	if (provider.type === 'gitlab') {
+		const base = provider.url.replace(/\/$/, '')
+		return `${base}/${owner}/${repo}.git`
+	}
+	const base = provider.url.replace(/\/$/, '')
+	return `${base}/${owner}/${repo}.git`
+}
+
+function isLocalFile(filename: string): boolean {
+	return filename.includes('.local.')
+}
+
+function copySkillDir(srcDir: string, destDir: string): string {
+	fs.mkdirSync(destDir, { recursive: true })
+	let skillMdContent = ''
+
+	for (const entry of fs.readdirSync(srcDir, { withFileTypes: true })) {
+		if (entry.isDirectory()) continue
+		if (isLocalFile(entry.name)) continue
+
+		const src = join(srcDir, entry.name)
+		const dest = join(destDir, entry.name)
+		fs.copyFileSync(src, dest)
+
+		if (entry.name === 'SKILL.md') {
+			skillMdContent = fs.readFileSync(src, 'utf8')
+		}
+	}
+
+	return skillMdContent
+}
+
+export function sparseCloneAndInstall(
+	provider: Provider | null,
+	owner: string,
+	repo: string,
+	metas: SkillMeta[],
+	installDir: string,
+	branch: string,
+	/** Pre-populated directory for testing; skips git clone and cleanup when provided. */
+	_cloneDir?: string,
+): FetchedSkill[] {
+	const cloneUrl = buildCloneUrl(provider, owner, repo)
+	const tmpDir = _cloneDir ?? fs.mkdtempSync(join(tmpdir(), 'cyber-skills-'))
+
+	try {
+		if (!_cloneDir) {
+			const cloneResult = spawnSync(
+				'git',
+				[
+					'clone',
+					'--filter=blob:none',
+					'--no-checkout',
+					'--sparse',
+					'--depth',
+					'1',
+					'--branch',
+					branch,
+					cloneUrl,
+					tmpDir,
+				],
+				{ encoding: 'utf8' },
+			)
+			if (cloneResult.status !== 0) {
+				throw new Error(`git clone failed: ${cloneResult.stderr}`)
+			}
+
+			const skillDirs = [...new Set(metas.map((m) => dirname(m.skillPath)))]
+			const sparseResult = spawnSync('git', ['-C', tmpDir, 'sparse-checkout', 'set', ...skillDirs], {
+				encoding: 'utf8',
+			})
+			if (sparseResult.status !== 0) {
+				throw new Error(`git sparse-checkout failed: ${sparseResult.stderr}`)
+			}
+
+			const checkoutResult = spawnSync('git', ['-C', tmpDir, 'checkout'], { encoding: 'utf8' })
+			if (checkoutResult.status !== 0) {
+				throw new Error(`git checkout failed: ${checkoutResult.stderr}`)
+			}
+		}
+
+		const installed: FetchedSkill[] = []
+		for (const meta of metas) {
+			const srcDir = join(tmpDir, dirname(meta.skillPath))
+			const destDir = join(installDir, meta.name)
+			const content = copySkillDir(srcDir, destDir)
+			const hash = computeHash(content)
+			installed.push({ name: meta.name, content, skillPath: meta.skillPath, hash })
+		}
+
+		return installed
+	} finally {
+		if (!_cloneDir) fs.rmSync(tmpDir, { recursive: true, force: true })
+	}
 }
 
 export async function fetchSkillContent(
@@ -120,30 +222,18 @@ export async function fetchAndInstallSkill(
 	installDir: string,
 	branch = 'main',
 	skillFilter?: string[],
+	/** Pre-populated directory for testing; skips git clone and cleanup when provided. */
+	_cloneDir?: string,
 ): Promise<FetchedSkill[]> {
 	const { owner, repo, skill } = spec
-	const installed: FetchedSkill[] = []
 
+	let metas: SkillMeta[]
 	if (skill) {
-		const skillPath = `skills/${skill}/SKILL.md`
-		const content = await fetchSkillContent(provider, owner, repo, skillPath, branch)
-		const hash = computeHash(content)
-		const dest = join(installDir, skill, 'SKILL.md')
-		fs.mkdirSync(dirname(dest), { recursive: true })
-		fs.writeFileSync(dest, content)
-		installed.push({ name: skill, content, skillPath, hash })
+		metas = [{ name: skill, skillPath: `skills/${skill}/SKILL.md` }]
 	} else {
 		const skills = await listRepoSkills(provider, owner, repo, branch)
-		const filtered = skillFilter ? skills.filter((s) => skillFilter.includes(s.name)) : skills
-		for (const meta of filtered) {
-			const content = await fetchSkillContent(provider, owner, repo, meta.skillPath, branch)
-			const hash = computeHash(content)
-			const dest = join(installDir, meta.name, 'SKILL.md')
-			fs.mkdirSync(dirname(dest), { recursive: true })
-			fs.writeFileSync(dest, content)
-			installed.push({ name: meta.name, content, skillPath: meta.skillPath, hash })
-		}
+		metas = skillFilter ? skills.filter((s) => skillFilter.includes(s.name)) : skills
 	}
 
-	return installed
+	return sparseCloneAndInstall(provider, owner, repo, metas, installDir, branch, _cloneDir)
 }
