@@ -119,6 +119,8 @@ function buildVisibleRows(items: SelectItem[], filter: string): VisibleRow[] {
 	return rows
 }
 
+const VIEWPORT = 10
+
 export async function promptSkillSelect(iface: RlInterface, items: SelectItem[], source: string): Promise<string[]> {
 	if (!process.stdin.isTTY) {
 		return promptSkillSelectFallback(iface, items, source)
@@ -133,6 +135,7 @@ export async function promptSkillSelect(iface: RlInterface, items: SelectItem[],
 
 	let filter = ''
 	let cursor = 0
+	let viewportStart = 0
 	const selected = new Set<string>()
 	let rows: VisibleRow[] = buildVisibleRows(items, filter)
 	let lastLineCount = 0
@@ -147,6 +150,10 @@ export async function promptSkillSelect(iface: RlInterface, items: SelectItem[],
 		rows = buildVisibleRows(items, filter)
 		if (cursor >= rows.length) cursor = Math.max(0, rows.length - 1)
 
+		// Keep cursor inside viewport
+		if (cursor < viewportStart) viewportStart = cursor
+		if (cursor >= viewportStart + VIEWPORT) viewportStart = cursor - VIEWPORT + 1
+
 		const lines: string[] = []
 		lines.push(`  Filter: ${filter}`)
 		lines.push('')
@@ -154,7 +161,12 @@ export async function promptSkillSelect(iface: RlInterface, items: SelectItem[],
 		if (rows.length === 0) {
 			lines.push('  (no skills match)')
 		} else {
-			for (let i = 0; i < rows.length; i++) {
+			if (viewportStart > 0) {
+				lines.push(`  \x1b[2m↑ ${viewportStart} more\x1b[0m`)
+			}
+
+			const end = Math.min(viewportStart + VIEWPORT, rows.length)
+			for (let i = viewportStart; i < end; i++) {
 				const row = rows[i]!
 				const hi = i === cursor
 
@@ -172,6 +184,11 @@ export async function promptSkillSelect(iface: RlInterface, items: SelectItem[],
 					const line = `      ${mark} ${label}${hint}`
 					lines.push(hi ? `\x1b[7m      ${mark} ${label}\x1b[0m${hint}` : line)
 				}
+			}
+
+			const below = rows.length - (viewportStart + VIEWPORT)
+			if (below > 0) {
+				lines.push(`  \x1b[2m↓ ${below} more\x1b[0m`)
 			}
 		}
 
@@ -266,6 +283,7 @@ export async function promptSkillSelect(iface: RlInterface, items: SelectItem[],
 				if (filter.length > 0) {
 					filter = filter.slice(0, -1)
 					cursor = 0
+					viewportStart = 0
 					render()
 				}
 				return
@@ -275,6 +293,7 @@ export async function promptSkillSelect(iface: RlInterface, items: SelectItem[],
 			if (seq && seq.length === 1 && seq.charCodeAt(0) >= 32) {
 				filter += seq
 				cursor = 0
+				viewportStart = 0
 				render()
 				return
 			}
