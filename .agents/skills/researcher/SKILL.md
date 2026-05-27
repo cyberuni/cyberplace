@@ -4,7 +4,6 @@ description: "Use this skill when the user asks to research a technical topic or
 metadata:
   internal: true
   persona: "true"
-  activation: per-situation
 ---
 
 # Researcher

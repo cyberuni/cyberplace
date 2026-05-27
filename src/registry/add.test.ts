@@ -33,7 +33,9 @@ afterEach(() => {
 	vi.clearAllMocks()
 })
 
-function mockFetchInstall(skills: Array<{ name: string; content?: string; manifest?: import('../skill/manifest.js').SkillManifest | null }>) {
+function mockFetchInstall(
+	skills: Array<{ name: string; content?: string; manifest?: import('../skill/manifest.js').SkillManifest | null }>,
+) {
 	vi.mocked(fetchAndInstallSkill).mockImplementation(async (_provider, _spec, installDir) => {
 		return skills.map(({ name, content = `---\nname: ${name}\n---`, manifest = null }) => {
 			const dest = path.join(installDir, name, 'SKILL.md')
@@ -271,10 +273,7 @@ test('addSkill with git URL: config provider overrides path-based hint', async (
 
 test('addSkill skips package-managed skill and reports it', async () => {
 	const pkgManifest = { distribution: { install_via: 'package_manager', package: { name: 'cyber-asana' } } }
-	mockFetchInstall([
-		{ name: 'normal-skill' },
-		{ name: 'pkg-skill', manifest: pkgManifest },
-	])
+	mockFetchInstall([{ name: 'normal-skill' }, { name: 'pkg-skill', manifest: pkgManifest }])
 
 	const result = await addSkill('cyberuni/cyber-asana', { root })
 
