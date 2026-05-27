@@ -1,7 +1,7 @@
 import { Command } from 'commander'
 
 import { ROOT_OPTION, resolveRoot } from '../cli-options.js'
-import { output, printTable } from '../output.js'
+import { output } from '../output.js'
 import { addSkill } from './add.js'
 import {
 	addProvider,
@@ -11,7 +11,7 @@ import {
 	removeProvider,
 	validateProviderType,
 } from './config.js'
-import { findSkills, findSkillsInRepo } from './find.js'
+import { findSkills, findSkillsInRepo, printFindResults } from './find.js'
 import { fetchMarketplace, listRepoSkills } from './github.js'
 import { readLock } from './lock.js'
 import { mapSkillsToPlugins } from './marketplace.js'
@@ -227,18 +227,15 @@ export function findCommand(): Command {
 		.argument('[query]', 'Search term')
 		.addOption(ROOT_OPTION)
 		.option('--in <repo>', 'Search a specific org/repo (e.g., --in myorg/my-skills)')
+		.option('--limit <n>', 'Maximum number of results to return (default: 10)', Number)
 		.option('--json', 'Output raw JSON')
-		.action(async (query: string | undefined, opts: { root?: string; in?: string }) => {
+		.action(async (query: string | undefined, opts: { root?: string; in?: string; limit?: number }) => {
 			const root = resolveRoot(opts.root)
 			const q = query ?? ''
-			const results = opts.in ? await findSkillsInRepo(opts.in, q) : await findSkills(q, { root })
-			output(results, () =>
-				printTable(results, [
-					{ label: 'name', get: (r) => r.name },
-					{ label: 'source', get: (r) => r.source },
-					{ label: 'install', get: (r) => r.installCommand },
-				]),
-			)
+			const results = opts.in
+				? await findSkillsInRepo(opts.in, q, { limit: opts.limit })
+				: await findSkills(q, { root, limit: opts.limit })
+			output(results, () => printFindResults(results, q))
 		})
 }
 

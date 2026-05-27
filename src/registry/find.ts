@@ -7,8 +7,10 @@ export type { FindOptions, FoundSkill }
 
 const SKILLS_SH_URL = 'https://skills.sh'
 
+const DEFAULT_LIMIT = 10
+
 export async function findSkills(query: string, options: FindOptions): Promise<FoundSkill[]> {
-	const { root, scope = 'project' } = options
+	const { root, scope = 'project', limit = DEFAULT_LIMIT } = options
 	const config = readConfig(root, scope)
 	const results: FoundSkill[] = []
 	const seen = new Set<string>()
@@ -31,10 +33,48 @@ export async function findSkills(query: string, options: FindOptions): Promise<F
 		}
 	}
 
-	return results
+	sortFoundSkills(results)
+	return results.slice(0, limit)
 }
 
-export async function findSkillsInRepo(spec: string, query: string): Promise<FoundSkill[]> {
+const installCountFormatter = new Intl.NumberFormat('en-US', {
+	notation: 'compact',
+	maximumFractionDigits: 1,
+})
+
+export function formatInstallCount(installs: number): string {
+	return installCountFormatter.format(installs)
+}
+
+function sortFoundSkills(results: FoundSkill[]): void {
+	results.sort((a, b) => {
+		const installsA = a.installs ?? 0
+		const installsB = b.installs ?? 0
+		if (installsB !== installsA) return installsB - installsA
+		return a.name.localeCompare(b.name)
+	})
+}
+
+export function printFindResults(results: FoundSkill[], query: string): void {
+	if (results.length === 0) {
+		console.log(query ? `No skills found for "${query}".` : 'No skills found.')
+		return
+	}
+
+	console.log(query ? `Skill matches for "${query}":` : 'Available skills:')
+	for (const result of results) {
+		const installs = result.installs != null ? ` · ${formatInstallCount(result.installs)} installs` : ''
+		console.log(`\n- ${result.name} (${result.source}${installs})`)
+		console.log(`  ${result.installCommand}`)
+	}
+}
+
+export async function findSkillsInRepo(
+	spec: string,
+	query: string,
+	options: { limit?: number } = {},
+): Promise<FoundSkill[]> {
+	const { limit = DEFAULT_LIMIT } = options
 	const parsed = parseSpec(spec)
 	if (parsed.type !== 'repo') return []
 
@@ -43,12 +83,14 @@ export async function findSkillsInRepo(spec: string, query: string): Promise<Fou
 		const skills = await listRepoSkills(null, owner, repo)
 		const lower = query.toLowerCase()
 		const matched = query ? skills.filter((s) => s.name.toLowerCase().includes(lower)) : skills
-		return matched.map((s) => ({
+		const results = matched.map((s) => ({
 			name: s.name,
 			source: `${owner}/${repo}`,
 			skillPath: s.skillPath,
 			installCommand: `npx cyber-skills add ${owner}/${repo}:${s.name}`,
 		}))
+		sortFoundSkills(results)
+		return results.slice(0, limit)
 	} catch {
 		return []
 	}
