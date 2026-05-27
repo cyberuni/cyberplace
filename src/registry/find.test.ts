@@ -127,21 +127,30 @@ test('findSkillsInRepo returns empty for non-repo spec', async () => {
 })
 
 test('findSkills returns at most 10 results by default', async () => {
-	vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve(makeMarketplaceResponse(15)) }))
+	vi.stubGlobal(
+		'fetch',
+		vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve(makeMarketplaceResponse(15)) }),
+	)
 
 	const results = await findSkills('', { root })
 	expect(results.length).toBe(10)
 })
 
 test('findSkills respects custom limit', async () => {
-	vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve(makeMarketplaceResponse(15)) }))
+	vi.stubGlobal(
+		'fetch',
+		vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve(makeMarketplaceResponse(15)) }),
+	)
 
 	const results = await findSkills('', { root, limit: 5 })
 	expect(results.length).toBe(5)
 })
 
 test('findSkillsInRepo returns at most 10 results by default', async () => {
-	const manySkills = Array.from({ length: 15 }, (_, i) => ({ name: `skill-${i}`, skillPath: `skills/skill-${i}/SKILL.md` }))
+	const manySkills = Array.from({ length: 15 }, (_, i) => ({
+		name: `skill-${i}`,
+		skillPath: `skills/skill-${i}/SKILL.md`,
+	}))
 	vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve(manySkills) }))
 
 	const results = await findSkillsInRepo('repobuddy/repobuddy', '')
@@ -149,7 +158,10 @@ test('findSkillsInRepo returns at most 10 results by default', async () => {
 })
 
 test('findSkillsInRepo respects custom limit', async () => {
-	const manySkills = Array.from({ length: 15 }, (_, i) => ({ name: `skill-${i}`, skillPath: `skills/skill-${i}/SKILL.md` }))
+	const manySkills = Array.from({ length: 15 }, (_, i) => ({
+		name: `skill-${i}`,
+		skillPath: `skills/skill-${i}/SKILL.md`,
+	}))
 	vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve(manySkills) }))
 
 	const results = await findSkillsInRepo('repobuddy/repobuddy', '', { limit: 3 })
