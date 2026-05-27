@@ -382,23 +382,142 @@ async function promptSkillSelectFallback(iface: RlInterface, items: SelectItem[]
 	return result
 }
 
-export async function promptScopeSelect(iface: RlInterface): Promise<'project' | 'global'> {
-	console.log('\nInstall scope:')
-	console.log('  [p] project  Install in current directory (committed with project)')
-	console.log('  [g] global   Install in home directory (available across all projects)')
-	const answer = await questionWithEsc(iface, 'Choose [p]: ')
-	const trimmed = answer.trim().toLowerCase()
-	return trimmed === 'g' || trimmed === 'global' ? 'global' : 'project'
+async function promptSingleSelect<T extends string>(
+	iface: RlInterface,
+	items: Array<{ value: T; label: string; hint?: string }>,
+	prompt: string,
+): Promise<T> {
+	if (!process.stdin.isTTY) {
+		return promptSingleSelectFallback(iface, items, prompt)
+	}
+
+	rl.emitKeypressEvents(process.stdin, iface as unknown as rl.Interface)
+	const stdin = process.stdin as NodeJS.ReadStream & { isRaw?: boolean }
+	const wasRaw = stdin.isRaw ?? false
+	if (!wasRaw) stdin.setRawMode(true)
+
+	process.stdout.write('\x1b[?25l')
+
+	let cursor = 0
+	let lastLineCount = 0
+
+	const labelWidth = Math.max(...items.map((it) => it.label.length))
+
+	function clearPrev() {
+		if (lastLineCount > 0) {
+			process.stdout.write(`\x1b[${lastLineCount}A\r\x1b[J`)
+		}
+	}
+
+	function render() {
+		const lines: string[] = []
+		for (let i = 0; i < items.length; i++) {
+			const item = items[i]!
+			const hi = i === cursor
+			const color = hi ? '\x1b[36m' : ''
+			const reset = hi ? '\x1b[0m' : ''
+			const marker = hi ? '>' : ' '
+			const label = item.label.padEnd(labelWidth)
+			const hint = item.hint ? `  \x1b[2m${item.hint}\x1b[0m` : ''
+			lines.push(`  ${color}${marker} ${label}${reset}${hint}`)
+		}
+		lines.push('')
+		lines.push('  \x1b[2m↑↓ navigate  Enter confirm  Esc cancel\x1b[0m')
+		clearPrev()
+		process.stdout.write(`${lines.join('\r\n')}\r\n`)
+		lastLineCount = lines.length
+	}
+
+	process.stdout.write(`\n${prompt}\n`)
+	render()
+
+	return new Promise((resolve, reject) => {
+		let done = false
+
+		function finish(fn: () => void) {
+			if (done) return
+			done = true
+			stdin.removeListener('keypress', onKeypress)
+			if (!wasRaw) stdin.setRawMode(false)
+			process.stdout.write('\x1b[?25h')
+			fn()
+		}
+
+		const onKeypress = (_: unknown, key: { name?: string; ctrl?: boolean } | undefined) => {
+			if (!key) return
+
+			if (key.ctrl && key.name === 'c') {
+				finish(() => process.exit(0))
+				return
+			}
+
+			if (key.name === 'escape') {
+				clearPrev()
+				finish(() => reject(new CancelError()))
+				return
+			}
+
+			if (key.name === 'return' || key.name === 'enter') {
+				clearPrev()
+				finish(() => resolve(items[cursor]!.value))
+				return
+			}
+
+			if (key.name === 'up') {
+				if (cursor > 0) cursor--
+				render()
+				return
+			}
+
+			if (key.name === 'down') {
+				if (cursor < items.length - 1) cursor++
+				render()
+				return
+			}
+		}
+
+		stdin.on('keypress', onKeypress)
+	})
+}
+
+async function promptSingleSelectFallback<T extends string>(
+	iface: RlInterface,
+	items: Array<{ value: T; label: string; hint?: string }>,
+	prompt: string,
+): Promise<T> {
+	console.log(`\n${prompt}`)
+	const labelWidth = Math.max(...items.map((it) => it.label.length))
+	for (let i = 0; i < items.length; i++) {
+		const item = items[i]!
+		const hint = item.hint ? `  ${item.hint}` : ''
+		console.log(`  [${i + 1}] ${item.label.padEnd(labelWidth)}${hint}`)
+	}
+	const answer = await questionWithEsc(iface, 'Choose [1]: ')
+	const num = Number.parseInt(answer.trim(), 10)
+	if (num >= 1 && num <= items.length) return items[num - 1]!.value
+	return items[0]!.value
+}
+
+export async function promptScopeSelect(iface: RlInterface): Promise<'project' | 'global' | 'both'> {
+	return promptSingleSelect(
+		iface,
+		[
+			{ value: 'project' as const, label: 'project', hint: 'Install in current directory (committed with project)' },
+			{ value: 'global' as const, label: 'global', hint: 'Install in home directory (available across all projects)' },
+			{ value: 'both' as const, label: 'both', hint: 'Install in project and global' },
+		],
+		'Install scope:',
+	)
 }
 
 export async function promptUpdateScopeSelect(iface: RlInterface): Promise<'project' | 'global' | 'both'> {
-	console.log('\nUpdate scope:')
-	console.log('  [p] project  Update skills in current directory')
-	console.log('  [g] global   Update skills in home directory')
-	console.log('  [b] both     Update project and global skills')
-	const answer = await questionWithEsc(iface, 'Choose [b]: ')
-	const trimmed = answer.trim().toLowerCase()
-	if (trimmed === 'p' || trimmed === 'project') return 'project'
-	if (trimmed === 'g' || trimmed === 'global') return 'global'
-	return 'both'
+	return promptSingleSelect(
+		iface,
+		[
+			{ value: 'project' as const, label: 'project', hint: 'Update skills in current directory' },
+			{ value: 'global' as const, label: 'global', hint: 'Update skills in home directory' },
+			{ value: 'both' as const, label: 'both', hint: 'Update project and global skills' },
+		],
+		'Update scope:',
+	)
 }
