@@ -6,7 +6,6 @@ export interface SkillManifest {
 		install_via: string
 		package?: { name: string; bin?: string }
 	}
-	activation?: 'per-situation' | 'session-start'
 }
 
 export function readSkillManifest(skillDir: string): SkillManifest | null {

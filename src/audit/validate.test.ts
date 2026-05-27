@@ -294,21 +294,3 @@ test('S6 fails when install_via is package_manager but package.name is missing',
 		expect(s6[0]!.name).toContain('package.name')
 	})
 })
-
-test('S6 fails when activation is unknown value', () => {
-	withTempSkillAndManifest({ activation: 'always' }, (skillFile) => {
-		const result = runChecks(skillFile)
-		const s6 = result.criticals.filter((f) => f.checkId === 'S6')
-		expect(s6).toHaveLength(1)
-		expect(s6[0]!.name).toContain('activation')
-	})
-})
-
-test('S6 passes for known activation values', () => {
-	for (const activation of ['per-situation', 'session-start']) {
-		withTempSkillAndManifest({ activation }, (skillFile) => {
-			const result = runChecks(skillFile)
-			expect(result.criticals.filter((f) => f.checkId === 'S6')).toHaveLength(0)
-		})
-	}
-})

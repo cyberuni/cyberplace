@@ -119,8 +119,7 @@ Do not put install-time metadata in SKILL.md frontmatter — agents load it unne
       "name": "cyber-asana",
       "bin": "cyber-asana"
     }
-  },
-  "activation": "per-situation"
+  }
 }
 ```
 
@@ -134,25 +133,19 @@ Do not put install-time metadata in SKILL.md frontmatter — agents load it unne
 
 Use `install_via: package_manager` when the skill depends on a released binary from the same repo. Source-based `skills add org/repo` will skip such skills and print an `npm install` hint.
 
-**`activation`** — declare the hook lifecycle event this skill targets. The installer uses this when auto-registering hooks (future). Valid values: `"per-situation"` (default, no hook) or `"session-start"`.
-
-Deprecated: `metadata.activation` in SKILL.md frontmatter. Move it to `skill.json` instead.
-
 ### Activation
 
-The `activation` field in `skill.json` declares the **hook lifecycle event** for this skill. Maps to Claude Code, Cursor, and Codex hook config keys. Hosts interpret the value; authors declare intent.
+The `activation` field belongs in **SKILL.md frontmatter** as a **top-level field** (not nested under `metadata:`). Agents need this information to know whether a hook is involved; not all agents support hooks, so it must travel with the skill file.
 
-| Question | Mechanism | Not `metadata.activation` |
-| --- | --- | --- |
-| Which hook event runs the skill | **`metadata.activation`** (hook events below) | |
-| Who may load the skill (no hook) | `description`, Claude `disable-model-invocation`, `"Internal skill:"` prefix | |
-| Tool/shell filters on hook events | Hook `matcher` at registration time | |
+```yaml
+---
+name: my-skill
+activation: per-situation
+description: "Use this skill when..."
+---
+```
 
-**Default:** omit or set `per-situation` — no hook; load via `description` or explicit invoke.
-
-**Hook-backed skills:** set `activation` to the normalized event in `skill.json`, then register with `hook register --event …` (cyber-skills CLI maps `session-start` → `SessionStart` / `sessionStart`, `post-tool-use` → `PostToolUse` / `postToolUse`). CLI today supports `SessionStart` and `PostToolUse` only; other values are portable declarations until hosts implement them.
-
-| `metadata.activation` | Claude Code | Cursor | Codex |
+| `activation` | Claude Code | Cursor | Codex |
 | --- | --- | --- | --- |
 | `per-situation` | — | — | — |
 | `session-start` | `SessionStart` | `sessionStart` | `SessionStart` |
@@ -178,19 +171,13 @@ The `activation` field in `skill.json` declares the **hook lifecycle event** for
 
 — = no documented equivalent on that host.
 
+**Default:** omit or set `per-situation` — no hook; load via `description` or explicit invoke.
+
+**Hook-backed skills:** set `activation` to the normalized event, then register with `hook register --event …` (cyber-skills CLI maps `session-start` → `SessionStart` / `sessionStart`, `post-tool-use` → `PostToolUse` / `postToolUse`). CLI today supports `SessionStart` and `PostToolUse` only; other values are portable declarations until hosts implement them.
+
 **Defaults by pattern:** persona → `per-situation` (opt-in via `description`); discipline / always-on injection → `session-start`; process / tool-based / standard → `per-situation` or omit.
 
-Example (persona, opt-in) — `skill.json`:
-
-```json
-{ "activation": "per-situation" }
-```
-
-Example (discipline, hook-backed) — `skill.json`:
-
-```json
-{ "activation": "session-start" }
-```
+Deprecated: `metadata.activation` in SKILL.md frontmatter. Use top-level `activation:` instead.
 
 ### Body
 
