@@ -39,7 +39,7 @@ test('listSkills discovers repo and global skills with repo taking precedence', 
 		fs.mkdirSync(sharedGlobalDir, { recursive: true })
 		fs.writeFileSync(path.join(sharedGlobalDir, 'SKILL.md'), '---\nname: init-shared\ndescription: Global copy.\n---\n')
 
-		const sharedRepoDir = path.join(root, 'skills', 'init-shared')
+		const sharedRepoDir = path.join(root, 'agents', 'skills', 'init-shared')
 		fs.mkdirSync(sharedRepoDir, { recursive: true })
 		fs.writeFileSync(path.join(sharedRepoDir, 'SKILL.md'), '---\nname: init-shared\ndescription: Repo copy.\n---\n')
 

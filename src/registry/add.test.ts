@@ -121,12 +121,12 @@ test('addSkill uses GitHub default when no provider pattern matches', async () =
 	expect(provider).toBeNull()
 })
 
-test('addSkill creates symlink in skills/ for project scope', async () => {
+test('addSkill creates symlink in agents/skills/ for project scope', async () => {
 	mockFetchInstall([{ name: 'commit', content: '---\nname: commit\ndescription: commit skill\n---\n# Commit' }])
 
 	await addSkill('cyberuni/cyber-skills:commit', { root, scope: 'project' })
 
-	const symlinkPath = path.join(root, 'skills', 'commit')
+	const symlinkPath = path.join(root, 'agents', 'skills', 'commit')
 	expect(fs.existsSync(symlinkPath)).toBe(true)
 	expect(fs.lstatSync(symlinkPath).isSymbolicLink()).toBe(true)
 })
@@ -138,15 +138,15 @@ test('addSkill does not create symlink for global scope', async () => {
 
 		await addSkill('cyberuni/cyber-skills:commit', { root, scope: 'global', home })
 
-		const symlinkPath = path.join(root, 'skills', 'commit')
+		const symlinkPath = path.join(root, 'agents', 'skills', 'commit')
 		expect(fs.existsSync(symlinkPath)).toBe(false)
 	} finally {
 		fs.rmSync(home, { recursive: true, force: true })
 	}
 })
 
-test('addSkill skips symlink and returns notification when skills/<name> is a real directory', async () => {
-	const realSkillDir = path.join(root, 'skills', 'commit')
+test('addSkill skips symlink and returns notification when agents/skills/<name> is a real directory', async () => {
+	const realSkillDir = path.join(root, 'agents', 'skills', 'commit')
 	fs.mkdirSync(realSkillDir, { recursive: true })
 	fs.writeFileSync(path.join(realSkillDir, 'SKILL.md'), '---\nname: commit\n---')
 
@@ -160,20 +160,20 @@ test('addSkill skips symlink and returns notification when skills/<name> is a re
 	expect(fs.lstatSync(realSkillDir).isSymbolicLink()).toBe(false)
 })
 
-test('addSkill updates existing symlink in skills/ on re-install', async () => {
+test('addSkill updates existing symlink in agents/skills/ on re-install', async () => {
 	// pre-create a symlink pointing somewhere else
-	const skillsDir = path.join(root, 'skills')
-	fs.mkdirSync(skillsDir, { recursive: true })
+	const agentsSkillsDir = path.join(root, 'agents', 'skills')
+	fs.mkdirSync(agentsSkillsDir, { recursive: true })
 	const oldTarget = path.join(root, '.agents', 'skills', 'old')
 	fs.mkdirSync(oldTarget, { recursive: true })
-	fs.symlinkSync(oldTarget, path.join(skillsDir, 'commit'))
+	fs.symlinkSync(oldTarget, path.join(agentsSkillsDir, 'commit'))
 
 	mockFetchInstall([{ name: 'commit' }])
 
 	const result = await addSkill('cyberuni/cyber-skills:commit', { root, scope: 'project' })
 
 	expect(result.skippedSymlinks).toHaveLength(0)
-	const stat = fs.lstatSync(path.join(skillsDir, 'commit'))
+	const stat = fs.lstatSync(path.join(agentsSkillsDir, 'commit'))
 	expect(stat.isSymbolicLink()).toBe(true)
 })
 

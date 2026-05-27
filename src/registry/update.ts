@@ -13,6 +13,7 @@ export interface UpdateOptions {
 export interface UpdateResult {
 	name: string
 	updated: boolean
+	skipped: boolean
 	message: string
 }
 
@@ -104,10 +105,15 @@ export async function updateSkill(name: string, options: UpdateOptions): Promise
 
 	const entry = getLockEntry(root, scope, name)
 	if (!entry) {
-		return { name, updated: false, message: `Skill '${name}' not found in lock file` }
+		return { name, updated: false, skipped: false, message: `Skill '${name}' not found in lock file` }
 	}
 
-	const existingPath = join(getInstallDir(root, scope), name, 'SKILL.md')
+	const skillDir = join(getInstallDir(root, scope), name)
+	if (fs.existsSync(skillDir) && fs.lstatSync(skillDir).isSymbolicLink()) {
+		return { name, updated: false, skipped: true, message: `Skill '${name}' is a local symlink — skipped` }
+	}
+
+	const existingPath = join(skillDir, 'SKILL.md')
 	const existingMetadata = fs.existsSync(existingPath)
 		? extractMetadataLines(fs.readFileSync(existingPath, 'utf8'))
 		: []
@@ -123,7 +129,7 @@ export async function updateSkill(name: string, options: UpdateOptions): Promise
 		}
 	}
 
-	return { name, updated: true, message: `Updated skill '${name}'` }
+	return { name, updated: true, skipped: false, message: `Updated skill '${name}'` }
 }
 
 export async function updateAllSkills(options: UpdateOptions): Promise<UpdateResult[]> {
@@ -152,8 +158,26 @@ export async function updateAllSkills(options: UpdateOptions): Promise<UpdateRes
 
 	const installDir = getInstallDir(root, scope)
 	for (const [source, names] of bySource) {
-		const metadataMap = new Map<string, string[]>()
+		const symlinkSkipped: UpdateResult[] = []
+		const activeNames: string[] = []
 		for (const name of names) {
+			const skillDir = join(installDir, name)
+			if (fs.existsSync(skillDir) && fs.lstatSync(skillDir).isSymbolicLink()) {
+				symlinkSkipped.push({
+					name,
+					updated: false,
+					skipped: true,
+					message: `Skill '${name}' is a local symlink — skipped`,
+				})
+			} else {
+				activeNames.push(name)
+			}
+		}
+		results.push(...symlinkSkipped)
+		if (activeNames.length === 0) continue
+
+		const metadataMap = new Map<string, string[]>()
+		for (const name of activeNames) {
 			const existingPath = join(installDir, name, 'SKILL.md')
 			metadataMap.set(
 				name,
@@ -161,7 +185,7 @@ export async function updateAllSkills(options: UpdateOptions): Promise<UpdateRes
 			)
 		}
 
-		const addResult = await addSkill(source, { root, scope, skills: names })
+		const addResult = await addSkill(source, { root, scope, skills: activeNames })
 
 		for (const installed of addResult.installed) {
 			const metaLines = metadataMap.get(installed.name) ?? []
@@ -170,7 +194,12 @@ export async function updateAllSkills(options: UpdateOptions): Promise<UpdateRes
 				const patched = injectMetadataLines(current, metaLines)
 				if (patched !== current) fs.writeFileSync(installed.installedAt, patched)
 			}
-			results.push({ name: installed.name, updated: true, message: `Updated skill '${installed.name}'` })
+			results.push({
+				name: installed.name,
+				updated: true,
+				skipped: false,
+				message: `Updated skill '${installed.name}'`,
+			})
 		}
 	}
 

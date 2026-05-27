@@ -20,6 +20,7 @@ beforeEach(() => {
 afterEach(() => {
 	fs.rmSync(root, { recursive: true, force: true })
 	vi.restoreAllMocks()
+	vi.clearAllMocks()
 })
 
 function setupFakeLockEntry(name: string, source = 'org/repo'): void {
@@ -49,6 +50,7 @@ test('updateSkill re-fetches and updates the skill file', async () => {
 
 	const result = await updateSkill('commit', { root })
 	expect(result.updated).toBe(true)
+	expect(result.skipped).toBe(false)
 
 	const content = fs.readFileSync(path.join(root, '.agents', 'skills', 'commit', 'SKILL.md'), 'utf8')
 	expect(content).toContain('updated')
@@ -57,6 +59,61 @@ test('updateSkill re-fetches and updates the skill file', async () => {
 test('updateSkill returns updated:false when skill not in lock', async () => {
 	const result = await updateSkill('nonexistent', { root })
 	expect(result.updated).toBe(false)
+	expect(result.skipped).toBe(false)
+})
+
+test('updateSkill skips symlinked skill entries', async () => {
+	const authoredDir = path.join(root, 'agents', 'skills', 'my-local')
+	fs.mkdirSync(authoredDir, { recursive: true })
+	fs.writeFileSync(path.join(authoredDir, 'SKILL.md'), '---\nname: my-local\n---')
+	const installDir = path.join(root, '.agents', 'skills')
+	fs.mkdirSync(installDir, { recursive: true })
+	fs.symlinkSync(authoredDir, path.join(installDir, 'my-local'))
+	setLockEntry(root, 'project', 'my-local', {
+		source: 'org/repo',
+		sourceType: 'github',
+		skillPath: 'agents/skills/my-local/SKILL.md',
+	})
+
+	const result = await updateSkill('my-local', { root })
+
+	expect(result.updated).toBe(false)
+	expect(result.skipped).toBe(true)
+	expect(vi.mocked(fetchAndInstallSkill)).not.toHaveBeenCalled()
+})
+
+test('updateAllSkills skips symlinked entries and still updates real ones', async () => {
+	setupFakeLockEntry('commit', 'cyberuni/cyber-skills')
+
+	const authoredDir = path.join(root, 'agents', 'skills', 'my-local')
+	fs.mkdirSync(authoredDir, { recursive: true })
+	fs.writeFileSync(path.join(authoredDir, 'SKILL.md'), '---\nname: my-local\n---')
+	const installDir = path.join(root, '.agents', 'skills')
+	fs.symlinkSync(authoredDir, path.join(installDir, 'my-local'))
+	setLockEntry(root, 'project', 'my-local', {
+		source: 'cyberuni/cyber-skills',
+		sourceType: 'github',
+		skillPath: 'agents/skills/my-local/SKILL.md',
+	})
+
+	vi.mocked(fetchAndInstallSkill).mockImplementation(async (_provider, spec, installDir2, _branch, skillFilter) => {
+		const names = skillFilter ?? [spec.skill ?? 'commit']
+		return names.map((name) => {
+			const dest = path.join(installDir2, name, 'SKILL.md')
+			fs.mkdirSync(path.dirname(dest), { recursive: true })
+			fs.writeFileSync(dest, `---\nname: ${name}\n---`)
+			return { name, content: `---\nname: ${name}\n---`, skillPath: `agents/skills/${name}/SKILL.md`, hash: 'fakehash' }
+		})
+	})
+
+	const results = await updateAllSkills({ root })
+
+	const localResult = results.find((r) => r.name === 'my-local')
+	expect(localResult?.skipped).toBe(true)
+	expect(localResult?.updated).toBe(false)
+
+	const commitResult = results.find((r) => r.name === 'commit')
+	expect(commitResult?.updated).toBe(true)
 })
 
 test('updateSkill preserves existing metadata block when upstream has none', async () => {
