@@ -182,3 +182,84 @@ test('addSkill installs only skills matching the skills filter', async () => {
 	const missing = path.join(root, '.agents', 'skills', 'add-changeset', 'SKILL.md')
 	expect(fs.existsSync(missing)).toBe(false)
 })
+
+// git-url support
+
+test('addSkill installs from bare HTTPS git URL', async () => {
+	mockFetchInstall([{ name: 'commit' }])
+
+	const result = await addSkill('https://github.com/cyberuni/cyber-skills', { root })
+	expect(result.installed).toHaveLength(1)
+	expect(result.installed[0]!.name).toBe('commit')
+})
+
+test('addSkill with bare git URL stores normalized cloneUrl as lock source', async () => {
+	mockFetchInstall([{ name: 'commit' }])
+
+	await addSkill('https://github.com/cyberuni/cyber-skills', { root })
+
+	const entry = getLockEntry(root, 'project', 'commit')
+	expect(entry!.source).toBe('https://github.com/cyberuni/cyber-skills')
+	expect(entry!.sourceType).toBe('custom')
+})
+
+test('addSkill with GitHub browser URL stores source with #branch', async () => {
+	mockFetchInstall([{ name: 'commit' }])
+
+	await addSkill('https://github.com/cyberuni/cyber-skills/tree/develop', { root })
+
+	const entry = getLockEntry(root, 'project', 'commit')
+	expect(entry!.source).toBe('https://github.com/cyberuni/cyber-skills#develop')
+	expect(entry!.sourceType).toBe('github')
+})
+
+test('addSkill with GitLab URL infers gitlab provider and sourceType', async () => {
+	mockFetchInstall([{ name: 'commit' }])
+
+	await addSkill('https://gitlab.com/owner/repo/-/tree/main', { root })
+
+	const provider = vi.mocked(fetchAndInstallSkill).mock.calls[0]?.[0]
+	expect(provider).toMatchObject({ type: 'gitlab', url: 'https://gitlab.com' })
+
+	const entry = getLockEntry(root, 'project', 'commit')
+	expect(entry!.sourceType).toBe('gitlab')
+})
+
+test('addSkill with self-hosted GitLab URL uses detected host', async () => {
+	mockFetchInstall([{ name: 'commit' }])
+
+	await addSkill('https://git.mycompany.com/team/repo/-/tree/feature', { root })
+
+	const provider = vi.mocked(fetchAndInstallSkill).mock.calls[0]?.[0]
+	expect(provider).toMatchObject({ type: 'gitlab', url: 'https://git.mycompany.com' })
+})
+
+test('addSkill with git URL uses branch from URL over AddOptions.branch', async () => {
+	mockFetchInstall([{ name: 'commit' }])
+
+	await addSkill('https://github.com/owner/repo/tree/feature', { root, branch: 'main' })
+
+	const branchArg = vi.mocked(fetchAndInstallSkill).mock.calls[0]?.[3]
+	expect(branchArg).toBe('feature')
+})
+
+test('addSkill with bare git URL falls back to AddOptions.branch', async () => {
+	mockFetchInstall([{ name: 'commit' }])
+
+	await addSkill('https://github.com/owner/repo', { root, branch: 'develop' })
+
+	const branchArg = vi.mocked(fetchAndInstallSkill).mock.calls[0]?.[3]
+	expect(branchArg).toBe('develop')
+})
+
+test('addSkill with git URL: config provider overrides path-based hint', async () => {
+	const { addProvider } = await import('./config.js')
+	addProvider(root, 'project', 'https://git.mycompany.com', 'github', 'myteam/*')
+
+	mockFetchInstall([{ name: 'commit' }])
+
+	await addSkill('https://git.mycompany.com/myteam/repo/-/tree/main', { root })
+
+	const provider = vi.mocked(fetchAndInstallSkill).mock.calls[0]?.[0]
+	expect(provider).toMatchObject({ type: 'github', url: 'https://git.mycompany.com' })
+})
