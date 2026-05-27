@@ -22,7 +22,7 @@ export function commitCommand(): Command {
 		.addOption(ROOT_OPTION)
 		.option('--dry-run', 'Preview without writing')
 		.option('--verbose', 'Human-readable status on stderr')
-		.option('--format <format>', 'Output format: json or text (default: text)')
+		.option('--format <format>', 'Output format: agent, json, or text (default: text)')
 		.addOption(new Option('--json').hideHelp())
 		.action((opts: { commitSkill: string; autoCommit?: boolean; root: string; dryRun: boolean; verbose: boolean }) => {
 			try {
@@ -40,7 +40,7 @@ export function commitCommand(): Command {
 		.addOption(ROOT_OPTION)
 		.option('--check', 'Exit 1 if no commit skill detected')
 		.option('--recommend', 'Print recommended install command and exit')
-		.option('--format <format>', 'Output format: json or text (default: text)')
+		.option('--format <format>', 'Output format: agent, json, or text (default: text)')
 		.addOption(new Option('--json').hideHelp())
 		.action((opts: { root?: string; check: boolean; recommend: boolean }) => {
 			if (opts.recommend) {

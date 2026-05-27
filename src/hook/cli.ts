@@ -41,7 +41,7 @@ export function hookCommand(): Command {
 		.addOption(ROOT_OPTION)
 		.option('--dry-run', 'Preview without writing')
 		.option('--verbose', 'Human-readable status on stderr')
-		.option('--format <format>', 'Output format: json or text (default: text)')
+		.option('--format <format>', 'Output format: agent, json, or text (default: text)')
 		.addOption(new Option('--json').hideHelp())
 		.action(
 			(opts: {

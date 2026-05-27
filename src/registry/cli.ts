@@ -1,7 +1,7 @@
 import { Command, Option } from 'commander'
 
 import { ROOT_OPTION, resolveRoot } from '../cli-options.js'
-import { output, printTable } from '../output.js'
+import { isAutomatedOutput, output, printTable } from '../output.js'
 import { addSkill } from './add.js'
 import {
 	addProvider,
@@ -42,7 +42,7 @@ export function addCommand(): Command {
 		.option('--project', 'Install to project skills (.agents/skills)')
 		.option('--branch <branch>', 'Git branch to fetch from', 'main')
 		.option('--yes', 'Install all skills without prompting')
-		.option('--format <format>', 'Output format: json or text (default: text)')
+		.option('--format <format>', 'Output format: agent, json, or text (default: text)')
 		.addOption(new Option('--json').hideHelp())
 		.action(
 			async (
@@ -61,7 +61,7 @@ export function addCommand(): Command {
 				const branch = opts.branch ?? 'main'
 				const parsedSpec = parseSpec(spec)
 				const scopeExplicit = opts.global || opts.project
-				const machineOutput = opts.format === 'json' || opts.json
+				const machineOutput = isAutomatedOutput() || opts.json
 				const interactive = isInteractive() && !opts.yes && !machineOutput && !scopeExplicit
 
 				// Interactive flow: repo spec with no specific skill, running in a TTY
@@ -140,7 +140,7 @@ export function removeCommand(): Command {
 		.argument('<name>', 'Skill name to remove')
 		.addOption(ROOT_OPTION)
 		.option('--global', 'Remove from global skills')
-		.option('--format <format>', 'Output format: json or text (default: text)')
+		.option('--format <format>', 'Output format: agent, json, or text (default: text)')
 		.addOption(new Option('--json').hideHelp())
 		.action((name: string, opts: { root?: string; global?: boolean }) => {
 			const root = resolveRoot(opts.root)
@@ -159,7 +159,7 @@ export function updateCommand(): Command {
 		.option('--global', 'Update in global skills')
 		.option('--project', 'Update in project skills')
 		.option('--branch <branch>', 'Git branch to fetch from', 'main')
-		.option('--format <format>', 'Output format: json or text (default: text)')
+		.option('--format <format>', 'Output format: agent, json, or text (default: text)')
 		.addOption(new Option('--json').hideHelp())
 		.action(
 			async (
@@ -168,7 +168,7 @@ export function updateCommand(): Command {
 			) => {
 				const root = resolveRoot(opts.root)
 				const scopeExplicit = opts.global || opts.project
-				const machineOutput = opts.format === 'json' || opts.json
+				const machineOutput = isAutomatedOutput() || opts.json
 				const interactive = isInteractive() && !machineOutput && !scopeExplicit && !name
 
 				if (interactive) {
@@ -221,7 +221,7 @@ export function listCommand(): Command {
 		.description('List installed skills from the lock file')
 		.addOption(ROOT_OPTION)
 		.option('--global', 'List global skills')
-		.option('--format <format>', 'Output format: json or text (default: text)')
+		.option('--format <format>', 'Output format: agent, json, or text (default: text)')
 		.addOption(new Option('--json').hideHelp())
 		.action((opts: { root?: string; global?: boolean }) => {
 			const root = resolveRoot(opts.root)
@@ -249,7 +249,7 @@ export function findCommand(): Command {
 		.addOption(ROOT_OPTION)
 		.option('--in <repo>', 'Search a specific org/repo (e.g., --in myorg/my-skills)')
 		.option('--limit <n>', 'Maximum number of results to return (default: 10)', Number)
-		.option('--format <format>', 'Output format: json or text (default: text)')
+		.option('--format <format>', 'Output format: agent, json, or text (default: text)')
 		.addOption(new Option('--json').hideHelp())
 		.action(async (query: string | undefined, opts: { root?: string; in?: string; limit?: number }) => {
 			const root = resolveRoot(opts.root)
@@ -267,7 +267,7 @@ export function migrateCommand(): Command {
 		.addOption(ROOT_OPTION)
 		.option('--global', 'Migrate to global lock')
 		.option('--dry-run', 'Preview without writing files')
-		.option('--format <format>', 'Output format: json or text (default: text)')
+		.option('--format <format>', 'Output format: agent, json, or text (default: text)')
 		.addOption(new Option('--json').hideHelp())
 		.action((opts: { root?: string; global?: boolean; dryRun?: boolean }) => {
 			const root = resolveRoot(opts.root)
@@ -298,7 +298,7 @@ export function configCommand(): Command {
 		.option('--global', 'Add to global config')
 		.option('--type <type>', 'Provider type: github|gitlab|custom')
 		.option('--match <glob>', 'Org/repo glob to auto-route to this provider (e.g., "mycompany/*")')
-		.option('--format <format>', 'Output format: json or text (default: text)')
+		.option('--format <format>', 'Output format: agent, json, or text (default: text)')
 		.addOption(new Option('--json').hideHelp())
 		.action((url: string, opts: { root?: string; global?: boolean; type?: string; match?: string }) => {
 			const root = resolveRoot(opts.root)
@@ -316,7 +316,7 @@ export function configCommand(): Command {
 		.description('Remove a skill provider')
 		.addOption(ROOT_OPTION)
 		.option('--global', 'Remove from global config')
-		.option('--format <format>', 'Output format: json or text (default: text)')
+		.option('--format <format>', 'Output format: agent, json, or text (default: text)')
 		.addOption(new Option('--json').hideHelp())
 		.action((url: string, opts: { root?: string; global?: boolean }) => {
 			const root = resolveRoot(opts.root)
@@ -330,7 +330,7 @@ export function configCommand(): Command {
 		.description('List configured providers')
 		.addOption(ROOT_OPTION)
 		.option('--global', 'List global providers')
-		.option('--format <format>', 'Output format: json or text (default: text)')
+		.option('--format <format>', 'Output format: agent, json, or text (default: text)')
 		.addOption(new Option('--json').hideHelp())
 		.action((opts: { root?: string; global?: boolean }) => {
 			const root = resolveRoot(opts.root)

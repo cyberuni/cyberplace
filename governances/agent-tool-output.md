@@ -46,12 +46,13 @@ Use for command-line tools used by both humans and agents.
 
 - Tables, aligned fields, and prose summaries are fine for interactive terminal use.
 
-### `--format json` = machine contract
+### `--format agent` = agent contract
 
-- Agents **must** pass `--format json` when they need structured output.
-- `--format json` stdout is the only machine-parseable contract; default stdout is not.
-- SKILL.md must instruct agents to use `--format json`, not to parse default prose or tables.
-- `--json` is a deprecated alias accepted for backward compatibility but not shown in `--help`.
+- Agents **must** pass `--format agent` when they need output optimized for LLM reasoning.
+- `--format agent` stdout is terse, structured text — lower token cost and better reasoning than JSON.
+- `--format json` is for non-LLM machine consumers (scripts, pipelines, database inserts).
+- SKILL.md must instruct agents to use `--format agent`, not to parse default prose or tables.
+- `--json` is a deprecated alias for `--format json`, accepted for backward compatibility but not shown in `--help`.
 
 ### Default-stdout exception
 
@@ -72,9 +73,9 @@ Use for command-line tools used by both humans and agents.
 
 When a skill documents commands agents run:
 
-- Tell agents which flag produces machine output (`--format json` for dual-audience CLI).
+- Tell agents which flag to use: `--format agent` for LLM consumption, `--format json` for non-LLM machine consumers.
 - Do **not** instruct agents to parse default stdout prose, summary tables, or generic "script output" as data.
-- Prefer: "read `<artifact-path>`" or "parse stdout JSON" or "run with `--format json` and parse the array."
+- Prefer: "read `<artifact-path>`" or "run with `--format agent`" or "run with `--format json` and parse the array."
 
 ## References
 

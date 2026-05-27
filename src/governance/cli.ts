@@ -9,7 +9,7 @@ export function governanceCommand(): Command {
 	cmd
 		.command('list')
 		.description('List available governances')
-		.option('--format <format>', 'Output format: json or text (default: text)')
+		.option('--format <format>', 'Output format: agent, json, or text (default: text)')
 		.addOption(new Option('--json').hideHelp())
 		.action(() => {
 			const governances = listGovernances()
@@ -27,7 +27,10 @@ export function governanceCommand(): Command {
 	cmd
 		.command('show <name>')
 		.description('Show governance body (agents: read stdout)')
-		.option('--format <format>', 'Output format: json (structured with name, title, body) or text (default: text)')
+		.option(
+			'--format <format>',
+			'Output format: agent or json (structured with name, title, body), or text (default: text)',
+		)
 		.addOption(new Option('--json').hideHelp())
 		.action((name: string) => {
 			try {
