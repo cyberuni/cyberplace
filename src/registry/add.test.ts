@@ -4,7 +4,6 @@ import * as path from 'node:path'
 import { afterEach, beforeEach, expect, test, vi } from 'vitest'
 
 import { addSkill } from './add.js'
-import { readConfig } from './config.js'
 import { fetchAndInstallSkill } from './github.js'
 import { getLockEntry } from './lock.js'
 
@@ -66,15 +65,6 @@ test('addSkill records entry in lock file', async () => {
 	expect(entry).not.toBeNull()
 	expect(entry!.source).toBe('cyberuni/cyber-skills')
 	expect(entry!.sourceType).toBe('github')
-})
-
-test('addSkill records skill in config file', async () => {
-	mockFetchInstall([{ name: 'commit' }])
-
-	await addSkill('cyberuni/cyber-skills:commit', { root })
-
-	const config = readConfig(root, 'project')
-	expect(config.skills?.['commit']).toBe('cyberuni/cyber-skills:commit')
 })
 
 test('addSkill installs all skills when no skill name given', async () => {

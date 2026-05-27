@@ -14,7 +14,6 @@ export interface Provider {
 export interface CyberSkillsConfig {
 	version: 1
 	providers?: Provider[]
-	skills?: Record<string, string>
 }
 
 export type ConfigScope = 'project' | 'global'
@@ -40,7 +39,6 @@ export function writeConfig(root: string, scope: ConfigScope, config: CyberSkill
 	fs.mkdirSync(dirname(filePath), { recursive: true })
 	const data: CyberSkillsConfig = { version: 1 }
 	if (config.providers && config.providers.length > 0) data.providers = config.providers
-	if (config.skills && Object.keys(config.skills).length > 0) data.skills = config.skills
 	fs.writeFileSync(filePath, `${JSON.stringify(data, null, 2)}\n`)
 }
 

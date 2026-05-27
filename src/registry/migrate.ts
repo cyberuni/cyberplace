@@ -1,7 +1,7 @@
 import * as fs from 'node:fs'
 import { join } from 'node:path'
 
-import { type ConfigScope, readConfig, writeConfig } from './config.js'
+import type { ConfigScope } from './config.js'
 import { getLockPath, type LockEntry, readLock, writeLock } from './lock.js'
 
 export interface MigrateOptions {
@@ -60,7 +60,6 @@ export function migrate(options: MigrateOptions): MigrateResult {
 	}
 
 	const existingLock = readLock(root, scope)
-	const configSkills: Record<string, string> = {}
 	let migratedCount = 0
 	let skippedCount = 0
 
@@ -84,7 +83,6 @@ export function migrate(options: MigrateOptions): MigrateResult {
 
 		if (!dryRun) {
 			existingLock.skills[name] = newEntry
-			configSkills[name] = source !== 'unknown' ? source : name
 		}
 
 		entries.push({ name, status: 'migrated' })
@@ -93,10 +91,6 @@ export function migrate(options: MigrateOptions): MigrateResult {
 
 	if (!dryRun && migratedCount > 0) {
 		writeLock(root, scope, existingLock)
-
-		const config = readConfig(root, scope)
-		const skills = { ...(config.skills ?? {}), ...configSkills }
-		writeConfig(root, scope, { ...config, skills })
 	}
 
 	return { migratedCount, skippedCount, sourcePath: oldLockPath, destPath, entries }
