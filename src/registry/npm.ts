@@ -2,7 +2,7 @@ import { spawnSync } from 'node:child_process'
 import * as fs from 'node:fs'
 import { join } from 'node:path'
 
-export type PackageManager = 'pnpm' | 'yarn' | 'npm'
+export type PackageManager = 'pnpm' | 'yarn' | 'bun' | 'npm'
 
 export interface NpmInstallResult {
 	packageName: string
@@ -14,6 +14,7 @@ export interface NpmInstallResult {
 export function detectPackageManager(root: string): PackageManager {
 	if (fs.existsSync(join(root, 'pnpm-lock.yaml'))) return 'pnpm'
 	if (fs.existsSync(join(root, 'yarn.lock'))) return 'yarn'
+	if (fs.existsSync(join(root, 'bun.lock')) || fs.existsSync(join(root, 'bun.lockb'))) return 'bun'
 	return 'npm'
 }
 
@@ -47,6 +48,8 @@ export function installNpmPackage(root: string, packageName: string): NpmInstall
 		args = ['add', '-D', ...(isMonorepo ? ['-w'] : []), packageName]
 	} else if (pm === 'yarn') {
 		args = ['add', '--dev', ...(isMonorepo ? ['-W'] : []), packageName]
+	} else if (pm === 'bun') {
+		args = ['add', '-d', packageName]
 	} else {
 		args = ['install', '--save-dev', ...(isMonorepo ? ['-w', '.'] : []), packageName]
 	}
