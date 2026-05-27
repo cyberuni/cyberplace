@@ -15,9 +15,15 @@ export interface AddOptions {
 	skills?: string[]
 }
 
+export interface SkippedSymlink {
+	name: string
+	path: string
+}
+
 export interface AddResult {
 	spec: string
 	installed: Array<{ name: string; skillPath: string; installedAt: string }>
+	skippedSymlinks: SkippedSymlink[]
 }
 
 function getInstallDir(root: string, scope: ConfigScope): string {
@@ -29,11 +35,28 @@ function toLockScope(scope: ConfigScope): LockScope {
 	return scope
 }
 
+function tryCreateSkillsSymlink(root: string, name: string, canonicalDir: string): SkippedSymlink | null {
+	const symlinkPath = join(root, 'skills', name)
+
+	if (fs.existsSync(symlinkPath)) {
+		const stat = fs.lstatSync(symlinkPath)
+		if (!stat.isSymbolicLink()) {
+			return { name, path: symlinkPath }
+		}
+		fs.unlinkSync(symlinkPath)
+	}
+
+	fs.mkdirSync(join(root, 'skills'), { recursive: true })
+	fs.symlinkSync(canonicalDir, symlinkPath, 'junction')
+	return null
+}
+
 export async function addSkill(input: string, options: AddOptions): Promise<AddResult> {
 	const { root, scope = 'project', branch = 'main' } = options
 	const spec = parseSpec(input)
 	const installDir = getInstallDir(root, scope)
 	const installed: AddResult['installed'] = []
+	const skippedSymlinks: SkippedSymlink[] = []
 
 	if (isRepoSpec(spec)) {
 		const config = readConfig(root, scope)
@@ -53,6 +76,11 @@ export async function addSkill(input: string, options: AddOptions): Promise<AddR
 				computedHash: f.hash,
 			})
 			installed.push({ name: f.name, skillPath: f.skillPath, installedAt })
+
+			if (scope === 'project') {
+				const skipped = tryCreateSkillsSymlink(root, f.name, join(installDir, f.name))
+				if (skipped) skippedSymlinks.push(skipped)
+			}
 		}
 
 		// record in config skills section
@@ -87,6 +115,11 @@ export async function addSkill(input: string, options: AddOptions): Promise<AddR
 				skillPath: `skills/${skillName}/SKILL.md`,
 			})
 			installed.push({ name: skillName, skillPath: `skills/${skillName}/SKILL.md`, installedAt: destPath })
+
+			if (scope === 'project') {
+				const skipped = tryCreateSkillsSymlink(root, skillName, destDir)
+				if (skipped) skippedSymlinks.push(skipped)
+			}
 		}
 
 		// record in config skills section
@@ -98,5 +131,5 @@ export async function addSkill(input: string, options: AddOptions): Promise<AddR
 		writeConfig(root, scope, { ...updatedConfig, skills })
 	}
 
-	return { spec: input, installed }
+	return { spec: input, installed, skippedSymlinks }
 }
