@@ -25,10 +25,9 @@ import {
 	promptUpdateScopeSelect,
 } from './prompt.js'
 import { removeSkill } from './remove.js'
+import { type Scope } from './scope.js'
 import { isRepoSpec, parseSpec } from './spec.js'
 import { updateAllSkills, updateSkill } from './update.js'
-
-type Scope = 'project' | 'global'
 
 function resolveScope(global?: boolean): Scope {
 	return global ? 'global' : 'project'

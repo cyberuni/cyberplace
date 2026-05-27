@@ -1,13 +1,12 @@
 import * as fs from 'node:fs'
-import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
 
-import type { ConfigScope } from './config.js'
-import { getLockEntry, type LockScope, removeLockEntry } from './lock.js'
+import { getLockEntry, removeLockEntry } from './lock.js'
+import { getInstallDir, type Scope } from './scope.js'
 
 export interface RemoveOptions {
 	root: string
-	scope?: ConfigScope
+	scope?: Scope
 }
 
 export interface RemoveResult {
@@ -16,20 +15,10 @@ export interface RemoveResult {
 	message: string
 }
 
-function getInstallDir(root: string, scope: ConfigScope): string {
-	if (scope === 'global') return join(homedir(), '.agents', 'skills')
-	return join(root, '.agents', 'skills')
-}
-
-function toLockScope(scope: ConfigScope): LockScope {
-	return scope
-}
-
 export function removeSkill(name: string, options: RemoveOptions): RemoveResult {
 	const { root, scope = 'project' } = options
-	const lockScope = toLockScope(scope)
 
-	const entry = getLockEntry(root, lockScope, name)
+	const entry = getLockEntry(root, scope, name)
 	if (!entry) {
 		return { name, removed: false, message: `Skill '${name}' not found in lock file` }
 	}
@@ -40,12 +29,12 @@ export function removeSkill(name: string, options: RemoveOptions): RemoveResult 
 		fs.rmSync(skillDir, { recursive: true, force: true })
 	}
 
-	removeLockEntry(root, lockScope, name)
+	removeLockEntry(root, scope, name)
 
 	return { name, removed: true, message: `Removed skill '${name}'` }
 }
 
-export function removeSkillDir(root: string, scope: ConfigScope, name: string): void {
+export function removeSkillDir(root: string, scope: Scope, name: string): void {
 	const installDir = getInstallDir(root, scope)
 	const skillDir = join(installDir, name)
 	if (fs.existsSync(skillDir)) {

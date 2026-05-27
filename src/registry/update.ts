@@ -1,29 +1,19 @@
 import * as fs from 'node:fs'
-import { homedir } from 'node:os'
 import { join } from 'node:path'
 
 import { addSkill } from './add.js'
-import type { ConfigScope } from './config.js'
-import { getLockEntry, type LockScope, readLock } from './lock.js'
+import { getLockEntry, readLock } from './lock.js'
+import { getInstallDir, type Scope } from './scope.js'
 
 export interface UpdateOptions {
 	root: string
-	scope?: ConfigScope
+	scope?: Scope
 }
 
 export interface UpdateResult {
 	name: string
 	updated: boolean
 	message: string
-}
-
-function toLockScope(scope: ConfigScope): LockScope {
-	return scope
-}
-
-function getInstallDir(root: string, scope: ConfigScope): string {
-	if (scope === 'global') return join(homedir(), '.agents', 'skills')
-	return join(root, '.agents', 'skills')
 }
 
 export function extractMetadataLines(content: string): string[] {
@@ -112,7 +102,7 @@ export function injectMetadataLines(content: string, metadataLines: string[]): s
 export async function updateSkill(name: string, options: UpdateOptions): Promise<UpdateResult> {
 	const { root, scope = 'project' } = options
 
-	const entry = getLockEntry(root, toLockScope(scope), name)
+	const entry = getLockEntry(root, scope, name)
 	if (!entry) {
 		return { name, updated: false, message: `Skill '${name}' not found in lock file` }
 	}
@@ -138,7 +128,7 @@ export async function updateSkill(name: string, options: UpdateOptions): Promise
 
 export async function updateAllSkills(options: UpdateOptions): Promise<UpdateResult[]> {
 	const { root, scope = 'project' } = options
-	const lock = readLock(root, toLockScope(scope))
+	const lock = readLock(root, scope)
 	const allNames = Object.keys(lock.skills)
 
 	if (allNames.length === 0) return []
