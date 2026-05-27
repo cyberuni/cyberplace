@@ -95,6 +95,7 @@ export function sparseCloneAndInstall(
 
 	try {
 		if (!_cloneDir) {
+			process.stderr.write(`Loading ${owner}/${repo}...\n`)
 			const cloneResult = spawnSync(
 				'git',
 				[
