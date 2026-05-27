@@ -2,13 +2,12 @@ import * as fs from 'node:fs'
 import * as os from 'node:os'
 import * as path from 'node:path'
 import { afterEach, beforeEach, expect, test, vi } from 'vitest'
-
-import { fetchAndInstallSkill } from './github.js'
 import { setLockEntry } from './lock.js'
+import { fetchAndInstallSkill } from './remote.js'
 import { updateAllSkills, updateSkill } from './update.js'
 
-vi.mock('./github.js', async (importOriginal) => {
-	const mod = await importOriginal<typeof import('./github.js')>()
+vi.mock('./remote.js', async (importOriginal) => {
+	const mod = await importOriginal<typeof import('./remote.js')>()
 	return { ...mod, fetchAndInstallSkill: vi.fn() }
 })
 

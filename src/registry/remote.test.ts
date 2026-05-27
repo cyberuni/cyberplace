@@ -3,7 +3,7 @@ import * as os from 'node:os'
 import * as path from 'node:path'
 import { afterEach, beforeEach, expect, test, vi } from 'vitest'
 
-import { computeHash, fetchAndInstallSkill, fetchMarketplace, fetchSkillContent, listRepoSkills } from './github.js'
+import { computeHash, fetchAndInstallSkill, fetchMarketplace, fetchSkillContent, listRepoSkills } from './remote.js'
 import type { RepoSpec } from './spec.js'
 
 let root: string

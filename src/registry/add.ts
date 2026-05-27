@@ -2,9 +2,9 @@ import * as fs from 'node:fs'
 import { join } from 'node:path'
 
 import { matchProvider, readConfig } from './config.js'
-import { fetchAndInstallSkill } from './github.js'
 import { setLockEntry } from './lock.js'
 import { installNpmPackage, listNpmSkills } from './npm.js'
+import { fetchAndInstallSkill } from './remote.js'
 import { getInstallDir, type Scope } from './scope.js'
 import { isNpmSpec, isRepoSpec, parseSpec } from './spec.js'
 

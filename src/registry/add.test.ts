@@ -4,11 +4,11 @@ import * as path from 'node:path'
 import { afterEach, beforeEach, expect, test, vi } from 'vitest'
 
 import { addSkill } from './add.js'
-import { fetchAndInstallSkill } from './github.js'
 import { getLockEntry } from './lock.js'
+import { fetchAndInstallSkill } from './remote.js'
 
-vi.mock('./github.js', async (importOriginal) => {
-	const mod = await importOriginal<typeof import('./github.js')>()
+vi.mock('./remote.js', async (importOriginal) => {
+	const mod = await importOriginal<typeof import('./remote.js')>()
 	return { ...mod, fetchAndInstallSkill: vi.fn() }
 })
 
