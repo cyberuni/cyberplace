@@ -3,11 +3,13 @@ export interface FoundSkill {
 	source: string
 	skillPath: string
 	installCommand: string
+	installs?: number
 }
 
 export interface FindOptions {
 	root: string
 	scope?: import('./config.js').ConfigScope
+	limit?: number
 }
 
 interface MarketplaceSkill {
@@ -37,6 +39,7 @@ export async function searchMarketplace(baseUrl: string, query: string): Promise
 			source: s.source,
 			skillPath: `skills/${s.skillId ?? s.name}/SKILL.md`,
 			installCommand: `npx cyber-skills add ${s.source}:${s.name}`,
+			installs: s.installs,
 		}))
 	} catch {
 		return []
