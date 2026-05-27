@@ -1,4 +1,4 @@
-import { Command } from 'commander'
+import { Command, Option } from 'commander'
 
 import { ROOT_OPTION, resolveRoot } from '../cli-options.js'
 import { output, printFields, printTable } from '../output.js'
@@ -15,7 +15,8 @@ export function awesomeCommand(): Command {
 		.description('Search for awesome skills')
 		.option('--limit <n>', 'Maximum results', '8')
 		.addOption(ROOT_OPTION)
-		.option('--json', 'Output raw JSON')
+		.option('--format <format>', 'Output format: json or text (default: text)')
+		.addOption(new Option('--json').hideHelp())
 		.action(async (queryWords: string[], opts: { limit: string; root?: string }) => {
 			const query = queryWords.join(' ')
 			const limit = Math.max(1, Number(opts.limit) || 8)
@@ -45,7 +46,8 @@ export function awesomeCommand(): Command {
 		.description('Inspect skills in a GitHub repo')
 		.option('--query <term>', 'Filter skills by term')
 		.addOption(ROOT_OPTION)
-		.option('--json', 'Output raw JSON')
+		.option('--format <format>', 'Output format: json or text (default: text)')
+		.addOption(new Option('--json').hideHelp())
 		.action(async (repo: string, opts: { query?: string; root?: string }) => {
 			const skills = await inspectSkillsRepo(repo, resolveRoot(opts.root))
 			const filtered = opts.query
@@ -64,7 +66,8 @@ export function awesomeCommand(): Command {
 		.command('render')
 		.description('Render awesome-skills.json into readme.md')
 		.addOption(ROOT_OPTION)
-		.option('--json', 'Output raw JSON')
+		.option('--format <format>', 'Output format: json or text (default: text)')
+		.addOption(new Option('--json').hideHelp())
 		.action((opts: { root?: string }) => {
 			const result = renderAwesomeList(resolveRoot(opts.root))
 			output(result, () => printFields({ readmePath: result.readmePath, changed: String(result.changed) }))
@@ -76,7 +79,8 @@ export function awesomeCommand(): Command {
 		.command('list')
 		.description('List effective awesome sources')
 		.addOption(ROOT_OPTION)
-		.option('--json', 'Output raw JSON')
+		.option('--format <format>', 'Output format: json or text (default: text)')
+		.addOption(new Option('--json').hideHelp())
 		.action((opts: { root?: string }) => {
 			const result = listSources(resolveRoot(opts.root))
 			output(result, () => {
@@ -99,7 +103,8 @@ export function awesomeCommand(): Command {
 			.requiredOption('--layer <layer>', 'Layer: local | repo | global')
 			.option('--path <path>', 'JSON file path in the repo', 'awesome-skills.json')
 			.addOption(ROOT_OPTION)
-			.option('--json', 'Output raw JSON')
+			.option('--format <format>', 'Output format: json or text (default: text)')
+			.addOption(new Option('--json').hideHelp())
 			.action((repo: string, opts: { layer: string; path: string; root?: string }) => {
 				try {
 					const layer = resolveLayer(opts.layer)

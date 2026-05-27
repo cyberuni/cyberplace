@@ -83,7 +83,7 @@ const STDOUT_AS_DATA_PATTERNS: RegExp[] = [
 
 function hasStdoutAsDataMitigation(content: string): boolean {
 	return (
-		/--json/.test(content) ||
+		/(--json|--format json)/.test(content) ||
 		/parse stdout json/i.test(content) ||
 		/read `<[^`]+>`/i.test(content) ||
 		/read the (?:artifact|file|report)/i.test(content)

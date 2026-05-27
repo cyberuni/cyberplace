@@ -1,7 +1,7 @@
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 
-import { Command } from 'commander'
+import { Command, Option } from 'commander'
 
 import { ROOT_OPTION, resolveRoot } from '../cli-options.js'
 import { output } from '../output.js'
@@ -22,7 +22,8 @@ export function auditCommand(): Command {
 		.description('Validate skills against structural and quality checks (S1–S5, Q1–Q5, Q10–Q11, E1–E2, E6, E9)')
 		.option('--path <path>', 'Validate a single skill directory or SKILL.md file')
 		.addOption(ROOT_OPTION)
-		.option('--json', 'Output raw JSON')
+		.option('--format <format>', 'Output format: json or text (default: text)')
+		.addOption(new Option('--json').hideHelp())
 		.action((opts: { path?: string; root?: string }) => {
 			const cwd = resolveRoot(opts.root)
 			let skillFiles: string[]

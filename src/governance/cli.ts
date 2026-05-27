@@ -1,4 +1,4 @@
-import { Command } from 'commander'
+import { Command, Option } from 'commander'
 
 import { output } from '../output.js'
 import { listGovernances, loadGovernance } from './load.js'
@@ -9,7 +9,8 @@ export function governanceCommand(): Command {
 	cmd
 		.command('list')
 		.description('List available governances')
-		.option('--json', 'Output raw JSON')
+		.option('--format <format>', 'Output format: json or text (default: text)')
+		.addOption(new Option('--json').hideHelp())
 		.action(() => {
 			const governances = listGovernances()
 			output({ governances: governances.map(({ name, title }) => ({ name, title })) }, () => {
@@ -26,7 +27,8 @@ export function governanceCommand(): Command {
 	cmd
 		.command('show <name>')
 		.description('Show governance body (agents: read stdout)')
-		.option('--json', 'Output structured JSON with name, title, and body')
+		.option('--format <format>', 'Output format: json (structured with name, title, body) or text (default: text)')
+		.addOption(new Option('--json').hideHelp())
 		.action((name: string) => {
 			try {
 				const governance = loadGovernance(name)

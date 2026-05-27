@@ -1,4 +1,4 @@
-import { Command } from 'commander'
+import { Command, Option } from 'commander'
 
 import { ROOT_OPTION, resolveRoot } from '../cli-options.js'
 import { output, printFields } from '../output.js'
@@ -22,7 +22,8 @@ export function commitCommand(): Command {
 		.addOption(ROOT_OPTION)
 		.option('--dry-run', 'Preview without writing')
 		.option('--verbose', 'Human-readable status on stderr')
-		.option('--json', 'Output raw JSON')
+		.option('--format <format>', 'Output format: json or text (default: text)')
+		.addOption(new Option('--json').hideHelp())
 		.action((opts: { commitSkill: string; autoCommit?: boolean; root: string; dryRun: boolean; verbose: boolean }) => {
 			try {
 				const result = injectCommitDiscipline(opts)
@@ -39,7 +40,8 @@ export function commitCommand(): Command {
 		.addOption(ROOT_OPTION)
 		.option('--check', 'Exit 1 if no commit skill detected')
 		.option('--recommend', 'Print recommended install command and exit')
-		.option('--json', 'Output raw JSON')
+		.option('--format <format>', 'Output format: json or text (default: text)')
+		.addOption(new Option('--json').hideHelp())
 		.action((opts: { root?: string; check: boolean; recommend: boolean }) => {
 			if (opts.recommend) {
 				process.stdout.write(`${RECOMMENDED_INSTALL}\n`)

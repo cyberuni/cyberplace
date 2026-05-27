@@ -1,4 +1,4 @@
-import { Command } from 'commander'
+import { Command, Option } from 'commander'
 
 import { ROOT_OPTION, resolveRoot } from '../cli-options.js'
 import { output, printTable } from '../output.js'
@@ -41,7 +41,8 @@ export function hookCommand(): Command {
 		.addOption(ROOT_OPTION)
 		.option('--dry-run', 'Preview without writing')
 		.option('--verbose', 'Human-readable status on stderr')
-		.option('--json', 'Output raw JSON')
+		.option('--format <format>', 'Output format: json or text (default: text)')
+		.addOption(new Option('--json').hideHelp())
 		.action(
 			(opts: {
 				name: string

@@ -1,4 +1,4 @@
-import { Command } from 'commander'
+import { Command, Option } from 'commander'
 
 import { ROOT_OPTION, resolveRoot } from '../cli-options.js'
 import { output, printFields, printTable } from '../output.js'
@@ -14,7 +14,8 @@ export function skillCommand(): Command {
 		.description('List skills from the repo, global install, and cyber-skills package')
 		.addOption(ROOT_OPTION)
 		.option('--grep <pattern>', 'Glob-style filter on skill name (for example init-*)')
-		.option('--json', 'Output raw JSON')
+		.option('--format <format>', 'Output format: json or text (default: text)')
+		.addOption(new Option('--json').hideHelp())
 		.action((opts: { root?: string; grep?: string }) => {
 			const skills = listSkills(resolveRoot(opts.root), { grep: opts.grep })
 			output(skills, () =>
@@ -30,7 +31,8 @@ export function skillCommand(): Command {
 		.command('validate-private')
 		.description('Validate repo-private skills under .agents/skills')
 		.addOption(ROOT_OPTION)
-		.option('--json', 'Output raw JSON')
+		.option('--format <format>', 'Output format: json or text (default: text)')
+		.addOption(new Option('--json').hideHelp())
 		.action((opts: { root?: string }) => {
 			const result = validatePrivateSkills(resolveRoot(opts.root))
 			output(result, () => {
@@ -49,7 +51,8 @@ export function skillCommand(): Command {
 		.command('repair-private')
 		.description('Repair repo-private skills under .agents/skills')
 		.addOption(ROOT_OPTION)
-		.option('--json', 'Output raw JSON')
+		.option('--format <format>', 'Output format: json or text (default: text)')
+		.addOption(new Option('--json').hideHelp())
 		.action((opts: { root?: string }) => {
 			const result = repairPrivateSkills(resolveRoot(opts.root))
 			output(result, () => {
@@ -67,7 +70,8 @@ export function skillCommand(): Command {
 		.command('source <name>')
 		.description('Find the source repo of an installed skill')
 		.addOption(ROOT_OPTION)
-		.option('--json', 'Output raw JSON')
+		.option('--format <format>', 'Output format: json or text (default: text)')
+		.addOption(new Option('--json').hideHelp())
 		.action((name: string, opts: { root?: string }) => {
 			const result = findSkillSource(name, resolveRoot(opts.root))
 			output(result, () =>

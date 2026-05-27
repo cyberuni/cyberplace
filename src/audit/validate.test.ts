@@ -168,10 +168,10 @@ Run the helper and parse the script output to decide next steps.
 	)
 })
 
-test('Q10 passes when --json is documented', () => {
+test('Q10 passes when --format json is documented', () => {
 	withTempSkill(
 		`${skillFrontmatter}
-Run \`my-tool --json\` and parse stdout JSON.
+Run \`my-tool --format json\` and parse stdout JSON.
 `,
 		(skillFile) => {
 			const result = runChecks(skillFile)

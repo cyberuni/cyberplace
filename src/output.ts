@@ -23,7 +23,14 @@ export function printTable<T>(items: T[], cols: { label: string; get: (item: T) 
 	}
 }
 
+function isJsonOutput(): boolean {
+	const argv = process.argv
+	const fmtIdx = argv.indexOf('--format')
+	if (fmtIdx !== -1 && argv[fmtIdx + 1] === 'json') return true
+	return argv.includes('--json') // hidden backward-compat alias
+}
+
 export function output(data: unknown, readable: () => void) {
-	if (process.argv.includes('--json')) printJson(data)
+	if (isJsonOutput()) printJson(data)
 	else readable()
 }
