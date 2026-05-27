@@ -178,7 +178,18 @@ export async function promptSkillSelect(iface: RlInterface, items: SelectItem[],
 			lines.push('  (no skills match)')
 			lines.push('')
 		} else {
-			lines.push(viewportStart > 0 ? `  \x1b[2m↑ ${viewportStart} more\x1b[0m` : '')
+			const countSelected = (start: number, end: number) =>
+				rows
+					.slice(start, end)
+					.filter((r): r is { type: 'item'; item: SelectItem } => r.type === 'item' && selected.has(r.item.value))
+					.length
+
+			const aboveSel = countSelected(0, viewportStart)
+			lines.push(
+				viewportStart > 0
+					? `  \x1b[2m↑ ${viewportStart} more${aboveSel > 0 ? ` (${aboveSel} selected)` : ''}\x1b[0m`
+					: '',
+			)
 
 			const end = Math.min(viewportStart + VIEWPORT, rows.length)
 			for (let i = viewportStart; i < end; i++) {
@@ -201,8 +212,10 @@ export async function promptSkillSelect(iface: RlInterface, items: SelectItem[],
 				}
 			}
 
-			const below = rows.length - (viewportStart + VIEWPORT)
-			lines.push(below > 0 ? `  \x1b[2m↓ ${below} more\x1b[0m` : '')
+			const belowStart = viewportStart + VIEWPORT
+			const below = rows.length - belowStart
+			const belowSel = countSelected(belowStart, rows.length)
+			lines.push(below > 0 ? `  \x1b[2m↓ ${below} more${belowSel > 0 ? ` (${belowSel} selected)` : ''}\x1b[0m` : '')
 		}
 
 		lines.push('')
