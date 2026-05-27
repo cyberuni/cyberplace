@@ -1,12 +1,12 @@
 import * as fs from 'node:fs'
 import { join } from 'node:path'
 
-import { matchProvider, readConfig } from './config.js'
+import { matchProvider, type Provider, readConfig } from './config.js'
 import { setLockEntry } from './lock.js'
 import { installNpmPackage, listNpmSkills } from './npm.js'
 import { fetchAndInstallSkill } from './remote.js'
 import { getInstallDir, type Scope } from './scope.js'
-import { isNpmSpec, isRepoSpec, parseSpec } from './spec.js'
+import { type GitProviderHint, type GitUrlSpec, isGitUrlSpec, isNpmSpec, isRepoSpec, parseSpec } from './spec.js'
 
 export interface AddOptions {
 	root: string
@@ -42,6 +42,18 @@ function tryCreateSkillsSymlink(root: string, name: string, canonicalDir: string
 	return null
 }
 
+function inferProviderFromHint(spec: GitUrlSpec): Provider | null {
+	if (spec.providerHint === 'gitlab') return { type: 'gitlab', url: spec.host }
+	if (spec.providerHint === 'gitea') return { type: 'custom', url: spec.host }
+	return null
+}
+
+function hintToSourceType(hint: GitProviderHint): 'github' | 'gitlab' | 'custom' {
+	if (hint === 'gitlab') return 'gitlab'
+	if (hint === 'github') return 'github'
+	return 'custom'
+}
+
 export async function addSkill(input: string, options: AddOptions): Promise<AddResult> {
 	const { root, scope = 'project', branch = 'main' } = options
 	const spec = parseSpec(input)
@@ -62,6 +74,38 @@ export async function addSkill(input: string, options: AddOptions): Promise<AddR
 			setLockEntry(root, scope, f.name, {
 				source: `${spec.owner}/${spec.repo}`,
 				sourceType: provider?.type === 'gitlab' ? 'gitlab' : 'github',
+				skillPath: f.skillPath,
+				computedHash: f.hash,
+			})
+			installed.push({ name: f.name, skillPath: f.skillPath, installedAt })
+
+			if (scope === 'project') {
+				const skipped = tryCreateSkillsSymlink(root, f.name, join(installDir, f.name))
+				if (skipped) skippedSymlinks.push(skipped)
+			}
+		}
+	} else if (isGitUrlSpec(spec)) {
+		const config = readConfig(root, scope)
+		const providers = config.providers ?? []
+		const configProvider = matchProvider(providers, `${spec.owner}/${spec.repo}`)
+		const provider = configProvider ?? inferProviderFromHint(spec)
+
+		const repoSpec = { type: 'repo' as const, owner: spec.owner, repo: spec.repo, skill: undefined, raw: spec.raw }
+		const effectiveBranch = spec.branch ?? branch
+		const fetched = await fetchAndInstallSkill(provider, repoSpec, installDir, effectiveBranch, options.skills)
+
+		for (const f of fetched) {
+			const installedAt = join(installDir, f.name, 'SKILL.md')
+			const sourceType = configProvider
+				? configProvider.type === 'gitlab'
+					? 'gitlab'
+					: configProvider.type === 'github'
+						? 'github'
+						: 'custom'
+				: hintToSourceType(spec.providerHint)
+			setLockEntry(root, scope, f.name, {
+				source: spec.branch ? `${spec.cloneUrl}#${spec.branch}` : spec.cloneUrl,
+				sourceType,
 				skillPath: f.skillPath,
 				computedHash: f.hash,
 			})
