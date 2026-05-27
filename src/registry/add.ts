@@ -13,6 +13,7 @@ export interface AddOptions {
 	scope?: Scope
 	branch?: string
 	skills?: string[]
+	home?: string
 }
 
 export interface SkippedSymlink {
@@ -55,9 +56,9 @@ function hintToSourceType(hint: GitProviderHint): 'github' | 'gitlab' | 'custom'
 }
 
 export async function addSkill(input: string, options: AddOptions): Promise<AddResult> {
-	const { root, scope = 'project', branch = 'main' } = options
+	const { root, scope = 'project', branch = 'main', home } = options
 	const spec = parseSpec(input)
-	const installDir = getInstallDir(root, scope)
+	const installDir = getInstallDir(root, scope, home)
 	const installed: AddResult['installed'] = []
 	const skippedSymlinks: SkippedSymlink[] = []
 
