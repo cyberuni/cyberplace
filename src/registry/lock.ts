@@ -3,7 +3,6 @@ import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
 
 export interface LockEntry {
-	spec: string
 	source: string
 	sourceType: 'github' | 'gitlab' | 'npm' | 'custom'
 	skillPath: string

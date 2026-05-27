@@ -218,7 +218,6 @@ export function listCommand(): Command {
 				name,
 				source: entry.source,
 				sourceType: entry.sourceType,
-				spec: entry.spec,
 			}))
 			output(skills, () =>
 				printTable(skills, [

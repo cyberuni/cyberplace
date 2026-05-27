@@ -122,7 +122,7 @@ export async function updateSkill(name: string, options: UpdateOptions): Promise
 		? extractMetadataLines(fs.readFileSync(existingPath, 'utf8'))
 		: []
 
-	const result = await addSkill(entry.spec, { root, scope })
+	const result = await addSkill(entry.source, { root, scope, skills: entry.sourceType !== 'npm' ? [name] : undefined })
 
 	if (existingMetadata.length > 0) {
 		for (const installed of result.installed) {

@@ -69,7 +69,6 @@ export async function addSkill(input: string, options: AddOptions): Promise<AddR
 		for (const f of fetched) {
 			const installedAt = join(installDir, f.name, 'SKILL.md')
 			setLockEntry(root, toLockScope(scope), f.name, {
-				spec: input,
 				source: `${spec.owner}/${spec.repo}`,
 				sourceType: provider?.type === 'gitlab' ? 'gitlab' : 'github',
 				skillPath: f.skillPath,
@@ -109,7 +108,6 @@ export async function addSkill(input: string, options: AddOptions): Promise<AddR
 			fs.copyFileSync(sourcePath, destPath)
 
 			setLockEntry(root, toLockScope(scope), skillName, {
-				spec: input,
 				source: spec.packageName,
 				sourceType: 'npm',
 				skillPath: `skills/${skillName}/SKILL.md`,
