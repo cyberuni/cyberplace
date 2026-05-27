@@ -1,3 +1,4 @@
+import { printTable } from '../output.js'
 import { readConfig } from './config.js'
 import { listRepoSkills } from './github.js'
 import { type FindOptions, type FoundSkill, searchMarketplace } from './marketplace-api.js'
@@ -62,11 +63,12 @@ export function printFindResults(results: FoundSkill[], query: string): void {
 	}
 
 	console.log(query ? `Skill matches for "${query}":` : 'Available skills:')
-	for (const result of results) {
-		const installs = result.installs != null ? ` · ${formatInstallCount(result.installs)} installs` : ''
-		console.log(`\n- ${result.name} (${result.source}${installs})`)
-		console.log(`  ${result.installCommand}`)
-	}
+	printTable(results, [
+		{ label: 'name', get: (r) => r.name },
+		{ label: 'source', get: (r) => r.source },
+		{ label: 'installs', get: (r) => (r.installs != null ? formatInstallCount(r.installs) : '') },
+		{ label: 'install', get: (r) => r.installCommand },
+	])
 }
 
 export async function findSkillsInRepo(
