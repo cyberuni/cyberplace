@@ -2,6 +2,8 @@ import * as fs from 'node:fs'
 import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
 
+import type { Scope } from './scope.js'
+
 export type ProviderType = 'github' | 'gitlab' | 'custom' | 'marketplace'
 
 export interface Provider {
@@ -16,14 +18,12 @@ export interface CyberSkillsConfig {
 	providers?: Provider[]
 }
 
-export type ConfigScope = 'project' | 'global'
-
-export function getConfigPath(root: string, scope: ConfigScope): string {
+export function getConfigPath(root: string, scope: Scope): string {
 	if (scope === 'global') return join(homedir(), '.agents', 'cyber-skills.json')
 	return join(root, '.agents', 'cyber-skills.json')
 }
 
-export function readConfig(root: string, scope: ConfigScope): CyberSkillsConfig {
+export function readConfig(root: string, scope: Scope): CyberSkillsConfig {
 	const filePath = getConfigPath(root, scope)
 	if (!fs.existsSync(filePath)) return { version: 1 }
 	try {
@@ -34,7 +34,7 @@ export function readConfig(root: string, scope: ConfigScope): CyberSkillsConfig 
 	}
 }
 
-export function writeConfig(root: string, scope: ConfigScope, config: CyberSkillsConfig): void {
+export function writeConfig(root: string, scope: Scope, config: CyberSkillsConfig): void {
 	const filePath = getConfigPath(root, scope)
 	fs.mkdirSync(dirname(filePath), { recursive: true })
 	const data: CyberSkillsConfig = { version: 1 }
@@ -56,7 +56,7 @@ export function validateProviderType(type: string): ProviderType {
 	throw new Error(`Invalid provider type '${type}'. Must be one of: ${VALID_PROVIDER_TYPES.join(', ')}`)
 }
 
-export function addProvider(root: string, scope: ConfigScope, url: string, type?: ProviderType, match?: string): void {
+export function addProvider(root: string, scope: Scope, url: string, type?: ProviderType, match?: string): void {
 	const config = readConfig(root, scope)
 	const providers = config.providers ?? []
 	const normalized = url.replace(/\/$/, '')
@@ -87,13 +87,13 @@ export function matchProvider(providers: Provider[], ownerRepo: string): Provide
 	return null
 }
 
-export function removeProvider(root: string, scope: ConfigScope, url: string): void {
+export function removeProvider(root: string, scope: Scope, url: string): void {
 	const config = readConfig(root, scope)
 	const normalized = url.replace(/\/$/, '')
 	const providers = (config.providers ?? []).filter((p) => p.url !== normalized)
 	writeConfig(root, scope, { ...config, providers })
 }
 
-export function listProviders(root: string, scope: ConfigScope): Provider[] {
+export function listProviders(root: string, scope: Scope): Provider[] {
 	return readConfig(root, scope).providers ?? []
 }

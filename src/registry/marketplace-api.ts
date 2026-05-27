@@ -8,7 +8,7 @@ export interface FoundSkill {
 
 export interface FindOptions {
 	root: string
-	scope?: import('./config.js').ConfigScope
+	scope?: import('./scope.js').Scope
 	limit?: number
 }
 
