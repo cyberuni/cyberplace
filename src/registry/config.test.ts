@@ -63,11 +63,10 @@ test('writeConfig creates .agents dir and writes file', () => {
 	expect(parsed.providers[0].url).toBe('https://gitlab.example.com')
 })
 
-test('writeConfig omits empty providers and skills', () => {
-	writeConfig(root, 'project', { version: 1, providers: [], skills: {} })
+test('writeConfig omits empty providers', () => {
+	writeConfig(root, 'project', { version: 1, providers: [] })
 	const parsed = JSON.parse(fs.readFileSync(path.join(root, '.agents', 'cyber-skills.json'), 'utf8'))
 	expect(parsed.providers).toBeUndefined()
-	expect(parsed.skills).toBeUndefined()
 })
 
 test('inferProviderType detects github', () => {

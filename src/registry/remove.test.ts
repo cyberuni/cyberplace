@@ -3,8 +3,7 @@ import * as os from 'node:os'
 import * as path from 'node:path'
 import { afterEach, beforeEach, expect, test } from 'vitest'
 
-import { readConfig, writeConfig } from './config.js'
-import { setLockEntry } from './lock.js'
+import { getLockEntry, setLockEntry } from './lock.js'
 import { removeSkill } from './remove.js'
 
 let root: string
@@ -26,7 +25,6 @@ function installFakeSkill(name: string): string {
 		sourceType: 'github',
 		skillPath: `skills/${name}/SKILL.md`,
 	})
-	writeConfig(root, 'project', { version: 1, skills: { [name]: `org/repo:${name}` } })
 	return skillDir
 }
 
@@ -39,15 +37,7 @@ test('removeSkill removes skill directory', () => {
 test('removeSkill removes lock entry', () => {
 	installFakeSkill('commit')
 	removeSkill('commit', { root })
-	const config = readConfig(root, 'project')
-	expect(config.skills?.['commit']).toBeUndefined()
-})
-
-test('removeSkill removes config entry', () => {
-	installFakeSkill('commit')
-	removeSkill('commit', { root })
-	const config = readConfig(root, 'project')
-	expect(config.skills?.['commit']).toBeUndefined()
+	expect(getLockEntry(root, 'project', 'commit')).toBeNull()
 })
 
 test('removeSkill returns removed:true on success', () => {
