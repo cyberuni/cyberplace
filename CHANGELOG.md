@@ -1,5 +1,58 @@
 # cyber-skills
 
+## 0.6.0
+
+### Minor Changes
+
+- c1c8981: Add `bun` to the `PackageManager` type. `detectPackageManager` now detects `bun.lock` and `bun.lockb` lock files and returns `'bun'`. `installNpmPackage` installs with `bun add -d`.
+- 54c1a50: Add `--format agent` to all dual-audience CLI commands for LLM-optimized output. Agent format produces terse, structured text output — lower token cost and better reasoning than JSON. Use `--format agent` in skills; use `--format json` for non-LLM machine consumers (scripts, pipelines). `isAutomatedOutput()` is also exported to suppress interactive prompts for both `agent` and `json` formats.
+- b319c30: Add `--format json` flag to all dual-audience CLI commands as a more explicit alternative to `--json`. The `--json` flag is still accepted as a hidden backward-compat alias.
+- 92a406c: Add support for full git URLs in `skills add` and `skills update`.
+
+  Pass any HTTPS or SSH clone URL directly, including browser-copy branch URLs from GitHub (`/tree/`), GitLab (`/-/tree/`), and Gitea/Forgejo/Gogs (`/src/branch/`). Provider type is detected from the URL path structure so self-hosted instances work without extra configuration. The `update` command re-fetches from the stored URL automatically.
+
+- 1935b7b: Add `add`, `remove`, `update`, `list`, `find`, `migrate`, and `config provider` commands for skill registry management.
+  - `cyber-skills add <org/repo[:skill]>` installs skills from GitHub, GitLab, or custom providers.
+  - `cyber-skills add <package>` installs skills from an npm package.
+  - `cyber-skills remove <name>`, `update [name]`, and `list` manage installed skills.
+  - `cyber-skills find [query]` searches [skills.sh](https://skills.sh) by default (no API key required); use `--in org/repo` to search a specific repo. Returns up to 10 results by default; use `--limit <n>` to override. Output is a compact table (name, source, installs, install command).
+  - `cyber-skills migrate` imports existing `skills-lock.json` entries into the new `.agents/cyber-skills-lock.json` format.
+  - `cyber-skills config provider add <url>` registers a custom skill source (GitHub, GitLab, custom, or `marketplace`).
+  - Marketplace providers (`--type marketplace`) expose `GET /api/search?q=<query>` and are searched on every `find` alongside skills.sh.
+  - Press `Esc` at any interactive `add` or `update` prompt to cancel.
+  - `cyber-skills update` (interactive, no flags) asks whether to update project skills, global skills, or both (default: both).
+
+  Config is stored in `.agents/cyber-skills.json`; the lock is stored in `.agents/cyber-skills-lock.json`.
+
+- 5c21859: `add` and `update` now also look for skills in `agents/skills/` in addition to `skills/`. When a specific skill name is given, `skills/` is tried first and `agents/skills/` is the fallback. The GitHub API listing path merges both directories, deduplicating by name.
+- 290dcf7: Move public skills to `agents/skills/` and governances to `agents/governances/`. The `skills/` and `governances/` top-level directories are removed; authored content now lives under `agents/`. The `cyber-skills update` command skips `.agents/skills/<name>` entries that are symlinks, so locally authored skills are never overwritten by remote fetch.
+- 5cf14c9: Add interactive skill selection to the `remove` command.
+
+  When run in a TTY without `--global`/`--project` or a skill name, `remove` now prompts for placement first (project/global/both) then shows a multi-select list of installed skills to remove.
+
+- 484d53e: Replace text-input scope prompts with an arrow-key single-select TUI for `add` and `update` commands. Add `both` option to the install scope prompt so skills can be installed to project and global in one step.
+- 0422f26: Upgrade the `add` interactive skill picker with keyboard navigation, fuzzy filtering, and group toggle.
+  - Use arrow keys to navigate the skill list.
+  - Press `Space` to toggle a single skill or an entire group (group rows show `[ ]` / `[-]` / `[x]` state).
+  - Type any characters to fuzzy-filter by skill name; `Backspace` removes the last filter character.
+  - Press `Ctrl+A` to select or deselect all currently visible skills.
+  - Press `Enter` to confirm, `Esc` to cancel.
+  - Non-TTY sessions fall back to the original numbered-list prompt.
+
+- 895dd3a: Add `skill.json` sidecar support for distribution metadata. Skills can declare `distribution.install_via: package_manager` in a `skill.json` file alongside `SKILL.md` to prevent source-based installs via `skills add org/repo`. Skills flagged as package-managed are skipped with a hint to use `skills add <package-name>` instead. The `activation` field moves to top-level SKILL.md frontmatter (not `metadata.activation`) so all agents can see it. Exports `SkillManifest` type and `readSkillManifest`/`isPackageManaged` utilities.
+- 903d906: Install all files in a skill directory (not just `SKILL.md`) when running `registry add` or `registry update`. Files matching `*.local.*` are excluded. Uses a sparse git clone so only the requested skill directories are fetched, keeping installs fast.
+- 62394f7: Create a `skills/<name>` symlink when installing a skill at project scope. If `skills/<name>` is already a real directory (an authored public skill), the symlink is skipped and a warning is printed instead.
+
+### Patch Changes
+
+- e33dc92: Extend `audit-skill` Q8 and Q13 checks to catch token-bloat patterns: redundant intro paragraphs that restate the `description` frontmatter, and agent-passive sections (`## What Happens Next`, `## Next Steps`) that describe CI pipeline behavior the agent cannot act on.
+- a69f794: Add optional `home` parameter to `getLockPath`, `readLock`, `writeLock`, `setLockEntry`, `removeLockEntry`, and `getLockEntry` to allow overriding the home directory, preventing global-scope lock writes from leaking into `~/.agents` during tests.
+- fe343b6: Add optional `home` parameter to `AddOptions` and `getInstallDir` to allow overriding the home directory in tests, preventing the global-scope install path from leaking into the real `~/.agents/skills`.
+- 74840a8: Fix `cyber-skills hook register` to use the repo's package manager exec wrapper (`pnpm exec`, `yarn exec`, `bunx`, or `npm exec`) instead of a hardcoded `node_modules/.bin` path. Falls back to pinned `npx` when no lock file is detected.
+- 484d53e: Fix `list` and `config provider list` commands that failed at runtime due to a missing `printTable` import.
+- 6864937: Fix skill selector indent: items use 2-space indent when there are no groups; ungrouped items in mixed lists appear under an "other" group with standard 4-space indent.
+- d29e65c: Preserve local frontmatter `metadata` block when running `skills update`. Previously, updating an installed skill overwrote the file entirely, discarding any locally added metadata fields such as `metadata: internal: true`.
+
 ## 0.5.0
 
 ### Minor Changes
