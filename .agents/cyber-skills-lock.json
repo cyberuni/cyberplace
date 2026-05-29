@@ -4,13 +4,13 @@
     "add-changeset": {
       "source": "repobuddy/agent-changesets",
       "sourceType": "github",
-      "skillPath": "skills/add-changeset/SKILL.md",
+      "skillPath": "agents/skills/add-changeset/SKILL.md",
       "computedHash": "0df2d1da7f8fe18f6e4733b69564b45e8ae74ec39924906db4a2be232497f593"
     },
     "audit-skill": {
       "source": "cyberuni/cyber-skills",
       "sourceType": "github",
-      "skillPath": "skills/audit-skill/SKILL.md",
+      "skillPath": "agents/skills/audit-skill/SKILL.md",
       "computedHash": "75de93883aa2c7f3064cdeb5d4c6897a99c65365722e917055ba8c48bc5695f0"
     },
     "create-issue": {
@@ -22,13 +22,13 @@
     "create-skill": {
       "source": "cyberuni/cyber-skills",
       "sourceType": "github",
-      "skillPath": "skills/create-skill/SKILL.md",
+      "skillPath": "agents/skills/create-skill/SKILL.md",
       "computedHash": "b2a108ae8bbd5f40b9970fe2d1b0ca7a0132337876a46c1f3d3972660fa18ec2"
     },
     "find-awesome-skill": {
       "source": "cyberuni/cyber-skills",
       "sourceType": "github",
-      "skillPath": "skills/find-awesome-skill/SKILL.md",
+      "skillPath": "agents/skills/find-awesome-skill/SKILL.md",
       "computedHash": "4ac9662600a637764fb3933a1846e3c14e60c85fffd33b16b44fabfae1a61d6c"
     },
     "fix-security-pr": {
@@ -46,14 +46,20 @@
     "patch-skill": {
       "source": "cyberuni/cyber-skills",
       "sourceType": "github",
-      "skillPath": "skills/patch-skill/SKILL.md",
+      "skillPath": "agents/skills/patch-skill/SKILL.md",
       "computedHash": "5ce627b1341bf9f7c74ab5ddeac9b63ce40d7c7f121b87a864bdc111f7d29687"
     },
     "skillify": {
       "source": "cyberuni/cyber-skills",
       "sourceType": "github",
-      "skillPath": "skills/skillify/SKILL.md",
+      "skillPath": "agents/skills/skillify/SKILL.md",
       "computedHash": "1229b628b1ed80044ce5af6a90f6540ddc61b259f233aa3ae3b5d30687d38f97"
+    },
+    "commit": {
+      "source": "cyberuni/cyber-skills",
+      "sourceType": "github",
+      "skillPath": "agents/skills/commit/SKILL.md",
+      "computedHash": "3787a1bc3a0d8e33415505df682efa619390b543b2dbd075e7e0c119df1ecc13"
     }
   }
 }
