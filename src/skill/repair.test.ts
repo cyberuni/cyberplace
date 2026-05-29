@@ -77,3 +77,16 @@ test('validatePrivateSkills allows local augmentation directories without SKILL.
 		expect(result.issues.length).toBe(0)
 	})
 })
+
+test('validatePrivateSkills allows project augmentation directories without SKILL.md', () => {
+	withTempRepo((root) => {
+		const skillDir = path.join(root, '.agents', 'skills', 'commit-work')
+		fs.mkdirSync(skillDir, { recursive: true })
+		fs.writeFileSync(path.join(skillDir, 'SKILL.project.md'), '# project augmentation\n')
+
+		const result = validatePrivateSkills(root)
+
+		expect(result.ok).toBe(true)
+		expect(result.issues.length).toBe(0)
+	})
+})

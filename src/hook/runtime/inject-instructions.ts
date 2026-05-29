@@ -38,9 +38,10 @@ async function readGlobContext(pattern: string, cwd: string): Promise<string> {
 	const parts: string[] = []
 	for (const relativePath of matches.sort()) {
 		const content = readFileSync(join(cwd, relativePath), 'utf8')
-		if (pattern.includes('SKILL.local.md')) {
+		if (pattern.includes('SKILL.local.md') || pattern.includes('SKILL.project.md')) {
 			const skill = basename(dirname(relativePath))
-			parts.push(`### Local augmentation for skill: ${skill}\n\n${content}`)
+			const kind = pattern.includes('SKILL.local.md') ? 'Local' : 'Project'
+			parts.push(`### ${kind} augmentation for skill: ${skill}\n\n${content}`)
 		} else {
 			parts.push(`### ${relativePath}\n\n${content}`)
 		}

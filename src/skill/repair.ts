@@ -106,7 +106,10 @@ export function repairPrivateSkills(root: string): RepairResult {
 
 		const skillFile = path.join(skillDir, 'SKILL.md')
 		if (!fs.existsSync(skillFile)) {
-			if (fs.existsSync(path.join(skillDir, 'SKILL.local.md'))) {
+			if (
+				fs.existsSync(path.join(skillDir, 'SKILL.local.md')) ||
+				fs.existsSync(path.join(skillDir, 'SKILL.project.md'))
+			) {
 				actions.push({ skill: entry.name, action: 'local_augmentation_only' })
 				continue
 			}
@@ -160,7 +163,11 @@ export function validatePrivateSkills(root: string): PrivateSkillCheckResult {
 
 		const skillFile = path.join(skillDir, 'SKILL.md')
 		if (!fs.existsSync(skillFile)) {
-			if (fs.existsSync(path.join(skillDir, 'SKILL.local.md'))) continue
+			if (
+				fs.existsSync(path.join(skillDir, 'SKILL.local.md')) ||
+				fs.existsSync(path.join(skillDir, 'SKILL.project.md'))
+			)
+				continue
 			issues.push({ skill: entry.name, issue: 'missing_skill_file' })
 			continue
 		}

@@ -60,7 +60,7 @@ function buildCloneUrl(provider: Provider | null, owner: string, repo: string): 
 }
 
 function isLocalFile(filename: string): boolean {
-	return filename.includes('.local.')
+	return filename.includes('.local.') || filename.includes('.project.')
 }
 
 function copySkillDir(srcDir: string, destDir: string): string {

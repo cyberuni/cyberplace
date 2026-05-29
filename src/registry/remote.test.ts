@@ -155,6 +155,30 @@ test('fetchAndInstallSkill excludes *.local.* files', async () => {
 	expect(fs.existsSync(path.join(root, 'commit', 'config.local.json'))).toBe(false)
 })
 
+test('fetchAndInstallSkill excludes *.project.* files', async () => {
+	seedSkillDir(cloneSimDir, 'skills/commit', {
+		'SKILL.md': '# Commit',
+		'README.md': '# Readme',
+		'SKILL.project.md': 'project overrides',
+		'config.project.json': '{}',
+	})
+
+	const spec: RepoSpec = {
+		type: 'repo',
+		owner: 'cyberuni',
+		repo: 'cyber-skills',
+		skill: 'commit',
+		raw: 'cyberuni/cyber-skills:commit',
+	}
+	const installed = await fetchAndInstallSkill(null, spec, root, 'main', undefined, cloneSimDir)
+
+	expect(installed).toHaveLength(1)
+	expect(fs.existsSync(path.join(root, 'commit', 'SKILL.md'))).toBe(true)
+	expect(fs.existsSync(path.join(root, 'commit', 'README.md'))).toBe(true)
+	expect(fs.existsSync(path.join(root, 'commit', 'SKILL.project.md'))).toBe(false)
+	expect(fs.existsSync(path.join(root, 'commit', 'config.project.json'))).toBe(false)
+})
+
 test('fetchAndInstallSkill installs all skills when no skill name given', async () => {
 	const awesomeData = [
 		{ name: 'commit', skillPath: 'skills/commit/SKILL.md' },
