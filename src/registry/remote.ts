@@ -173,17 +173,19 @@ export async function listRepoSkills(
 	repo: string,
 	branch = 'main',
 ): Promise<SkillMeta[]> {
-	// Try awesome-skills.json first (faster, no API rate limits)
+	// Try repo skill index (array format) when present — not the awesome-list catalog object
 	try {
 		const base = buildRawBase(provider, owner, repo, branch)
 		const url = `${base}/awesome-skills.json`
 		const res = await fetch(url)
 		if (res.ok) {
-			const data = (await res.json()) as Array<{ name: string; path?: string; skillPath?: string }>
-			return data.map((entry) => ({
-				name: entry.name,
-				skillPath: entry.skillPath ?? entry.path ?? `skills/${entry.name}/SKILL.md`,
-			}))
+			const data = (await res.json()) as unknown
+			if (Array.isArray(data)) {
+				return data.map((entry: { name: string; path?: string; skillPath?: string }) => ({
+					name: entry.name,
+					skillPath: entry.skillPath ?? entry.path ?? `skills/${entry.name}/SKILL.md`,
+				}))
+			}
 		}
 	} catch {
 		// fall through to API
@@ -191,21 +193,23 @@ export async function listRepoSkills(
 
 	// Fall back to GitHub/GitLab API to list skills/ and agents/skills/ directories
 	if (!provider || provider.type === 'github') {
+		const headers = { Accept: 'application/vnd.github.v3+json', 'User-Agent': 'cyber-skills-cli' }
+		const results: SkillMeta[] = []
+
 		const url = `${buildApiBase(provider, owner, repo)}/skills`
-		const res = await fetch(url, {
-			headers: { Accept: 'application/vnd.github.v3+json', 'User-Agent': 'cyber-skills-cli' },
-		})
-		if (!res.ok) throw new Error(`Failed to list skills in ${owner}/${repo}: ${res.status}`)
-		const data = (await res.json()) as Array<{ name: string; type: string }>
-		const results: SkillMeta[] = data
-			.filter((entry) => entry.type === 'dir')
-			.map((entry) => ({ name: entry.name, skillPath: `skills/${entry.name}/SKILL.md` }))
+		const res = await fetch(url, { headers })
+		if (res.ok) {
+			const data = (await res.json()) as Array<{ name: string; type: string }>
+			for (const entry of data.filter((e) => e.type === 'dir')) {
+				results.push({ name: entry.name, skillPath: `skills/${entry.name}/SKILL.md` })
+			}
+		} else if (res.status !== 404) {
+			throw new Error(`Failed to list skills in ${owner}/${repo}: ${res.status}`)
+		}
 
 		const seenNames = new Set(results.map((r) => r.name))
 		const agentsUrl = `${buildApiBase(provider, owner, repo)}/agents/skills`
-		const agentsRes = await fetch(agentsUrl, {
-			headers: { Accept: 'application/vnd.github.v3+json', 'User-Agent': 'cyber-skills-cli' },
-		})
+		const agentsRes = await fetch(agentsUrl, { headers })
 		if (agentsRes.ok) {
 			const agentsData = (await agentsRes.json()) as Array<{ name: string; type: string }>
 			for (const entry of agentsData.filter((e) => e.type === 'dir')) {
@@ -213,6 +217,12 @@ export async function listRepoSkills(
 					results.push({ name: entry.name, skillPath: `agents/skills/${entry.name}/SKILL.md` })
 				}
 			}
+		} else if (agentsRes.status !== 404) {
+			throw new Error(`Failed to list skills in ${owner}/${repo}: ${agentsRes.status}`)
+		}
+
+		if (results.length === 0) {
+			throw new Error(`Failed to list skills in ${owner}/${repo}: no skills/ or agents/skills/ directory found`)
 		}
 
 		return results

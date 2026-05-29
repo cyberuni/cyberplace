@@ -111,6 +111,25 @@ test('listRepoSkills falls back to GitHub API when awesome-skills.json absent', 
 	expect(skills.map((s) => s.name)).toEqual(['commit', 'add-changeset'])
 })
 
+test('listRepoSkills lists agents/skills/ when skills/ is missing via GitHub API', async () => {
+	const agentsResponse = [
+		{ name: 'commit', type: 'dir' },
+		{ name: 'audit-skill', type: 'dir' },
+	]
+	vi.stubGlobal(
+		'fetch',
+		vi
+			.fn()
+			.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ version: 1, repos: {} }) }) // catalog, not index
+			.mockResolvedValueOnce({ ok: false, status: 404 }) // skills/ missing
+			.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(agentsResponse) }),
+	)
+
+	const skills = await listRepoSkills(null, 'cyberuni', 'cyber-skills')
+	expect(skills).toHaveLength(2)
+	expect(skills.every((s) => s.skillPath.startsWith('agents/skills/'))).toBe(true)
+})
+
 test('listRepoSkills includes skills from agents/skills/ via GitHub API', async () => {
 	const skillsResponse = [{ name: 'commit', type: 'dir' }]
 	const agentsResponse = [
