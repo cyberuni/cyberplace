@@ -1,5 +1,16 @@
 # cyber-skills
 
+## 0.7.0
+
+### Minor Changes
+
+- 0b7c55e: Add `SKILL.project.md` as a project-level augmentation layer between `SKILL.md` (base) and `SKILL.local.md` (local). Precedence order: `SKILL.local.md` > `SKILL.project.md` > `SKILL.md`. Both `SKILL.project.md` and `SKILL.local.md` are excluded from `skills add` installation.
+- 7ae1b89: Revert `agents/` directory consolidation — skills ship under `skills/` and governances under `governances/` again.
+  - `UpdateResult.skipped` field removed; update consumers that check `result.skipped`.
+  - `skills add` no longer falls back to `agents/skills/` when fetching from a remote repo.
+  - Project-scope symlinks are created in `skills/<name>` instead of `agents/skills/<name>`.
+  - npm packages must expose skills under `skills/` (not `agents/skills/`) to be discovered.
+
 ## 0.6.0
 
 ### Minor Changes
