@@ -106,7 +106,11 @@ These extend **skill-design** placement rules for library repos:
 
 **Upstream patches** from a local install always map to `skills/<name>/…` in the source repo — never `.agents/skills/` in upstream.
 
+**`SKILL.project.md`** is team-shared project-level overrides; checked into the consuming project's `.agents/skills/<name>/`, never into public `skills/` or upstream.
+
 **`SKILL.local.md`** stays local; never commit to public `skills/` or push upstream.
+
+Augmentation precedence: `SKILL.local.md` > `SKILL.project.md` > `SKILL.md`. Both `SKILL.project.md` and `SKILL.local.md` are excluded from `skills add` installation.
 
 ## Discipline sections
 
@@ -140,7 +144,7 @@ Prefer **digest + lockfile** over ad hoc path scraping for reproducible installs
 - Linking to repository files (ADRs, research, other governances as paths) from governances, discipline sections, or public skills
 - Assuming `node_modules` or install paths for loading governances from other repos
 - Running no CI on skill-only repos that accept external PRs
-- Committing `SKILL.local.md` or secrets into public skill trees
+- Committing `SKILL.local.md`, `SKILL.project.md`, or secrets into public skill trees
 
 ## Detecting a skill repo
 

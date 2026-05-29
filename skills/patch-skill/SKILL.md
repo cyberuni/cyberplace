@@ -30,7 +30,7 @@ Rules:
 - **Always** map upstream paths to `skills/<skill-name>/…`, even when `skills-lock.json` `skillPath` points at `.agents/skills/…` or another layout in the consumer repo.
 - **Never** update `.agents/skills/`, duplicate trees, or paths outside `skills/<skill-name>/` in the source repository.
 - Include every changed file under that skill folder (e.g. `scripts/*.mjs`), not only `SKILL.md`.
-- Never include `SKILL.local.md` — local augmentations stay local.
+- Never include `SKILL.local.md` or `SKILL.project.md` — augmentation files stay in the consuming project.
 
 Derive paths:
 
@@ -73,10 +73,10 @@ For multiple related skills (user confirms one PR), repeat file discovery for ea
 | Global | `~/.agents/skills/<name>/` |
 | Repo internal | `.agents/skills/<name>/` |
 
-Collect files to contribute (exclude `SKILL.local.md`):
+Collect files to contribute (exclude augmentation files):
 
 ```bash
-find "<local-dir>" -type f ! -name 'SKILL.local.md' | sort
+find "<local-dir>" -type f ! -name 'SKILL.local.md' ! -name 'SKILL.project.md' | sort
 ```
 
 ### 3. Diff against source
@@ -167,7 +167,7 @@ while IFS= read -r -d '' file; do
     --arg path "$upstream_path" \
     --arg sha "$blob_sha" \
     '$items + [{path: $path, mode: "100644", type: "blob", sha: $sha}]')
-done < <(find "$LOCAL_DIR" -type f ! -name 'SKILL.local.md' -print0)
+done < <(find "$LOCAL_DIR" -type f ! -name 'SKILL.local.md' ! -name 'SKILL.project.md' -print0)
 ```
 
 Repeat the loop for additional skills in the same PR (append to `TREE_ITEMS` with each skill's `SKILL_NAME` and `LOCAL_DIR`).
@@ -232,7 +232,7 @@ Output the PR URL. After merge, run `npx skills update` in the consumer repo to 
 
 ## What NOT to do
 
-- Do not include `SKILL.local.md` content in the PR
+- Do not include `SKILL.local.md` or `SKILL.project.md` content in the PR
 - Do not push without showing diffs and getting user confirmation
 - Do not create a PR if every mapped file is identical to upstream
 - Do not update `.agents/skills/` or any path outside `skills/<skill-name>/` in the source repo

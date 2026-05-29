@@ -4,7 +4,13 @@ This file provides guidance to AI coding assistants when working with code in th
 
 ## Skill Augmentations
 
-When reading any `SKILL.md` file, always check whether a `SKILL.local.md` exists in the same directory. If it does, treat its contents as additional instructions that extend the base skill. Local augmentations take precedence over the base skill where they conflict.
+When reading any `SKILL.md` file, check for augmentation files in the same directory and merge them in order:
+
+1. `SKILL.md` — base skill (lowest precedence)
+2. `SKILL.project.md` — project-level overrides (team-shared, checked into the consuming project)
+3. `SKILL.local.md` — machine-local overrides (highest precedence, gitignored)
+
+Later layers extend and override earlier ones. Both `SKILL.project.md` and `SKILL.local.md` are ignored during `skills add` installation.
 
 **Runtime hooks (this repo):** commit discipline is registered in `.claude/settings.json`. To re-register after changes, from the repo root:
 
