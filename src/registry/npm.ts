@@ -60,11 +60,7 @@ export function installNpmPackage(root: string, packageName: string): NpmInstall
 	}
 
 	const installedDir = resolveNodeModulesDir(root, packageName)
-	const skillsDir = fs.existsSync(join(installedDir, 'agents', 'skills'))
-		? join(installedDir, 'agents', 'skills')
-		: fs.existsSync(join(installedDir, 'skills'))
-			? join(installedDir, 'skills')
-			: null
+	const skillsDir = fs.existsSync(join(installedDir, 'skills')) ? join(installedDir, 'skills') : null
 
 	return { packageName, installedDir, skillsDir, packageManager: pm }
 }

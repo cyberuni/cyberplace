@@ -102,53 +102,12 @@ test('listRepoSkills falls back to GitHub API when awesome-skills.json absent', 
 		vi
 			.fn()
 			.mockResolvedValueOnce({ ok: false, status: 404, statusText: 'Not Found' }) // awesome-skills.json missing
-			.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(githubResponse) })
-			.mockResolvedValueOnce({ ok: false, status: 404 }), // agents/skills missing
+			.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(githubResponse) }),
 	)
 
 	const skills = await listRepoSkills(null, 'org', 'repo')
 	expect(skills).toHaveLength(2)
 	expect(skills.map((s) => s.name)).toEqual(['commit', 'add-changeset'])
-})
-
-test('listRepoSkills lists agents/skills/ when skills/ is missing via GitHub API', async () => {
-	const agentsResponse = [
-		{ name: 'commit', type: 'dir' },
-		{ name: 'audit-skill', type: 'dir' },
-	]
-	vi.stubGlobal(
-		'fetch',
-		vi
-			.fn()
-			.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ version: 1, repos: {} }) }) // catalog, not index
-			.mockResolvedValueOnce({ ok: false, status: 404 }) // skills/ missing
-			.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(agentsResponse) }),
-	)
-
-	const skills = await listRepoSkills(null, 'cyberuni', 'cyber-skills')
-	expect(skills).toHaveLength(2)
-	expect(skills.every((s) => s.skillPath.startsWith('agents/skills/'))).toBe(true)
-})
-
-test('listRepoSkills includes skills from agents/skills/ via GitHub API', async () => {
-	const skillsResponse = [{ name: 'commit', type: 'dir' }]
-	const agentsResponse = [
-		{ name: 'internal-tool', type: 'dir' },
-		{ name: 'commit', type: 'dir' }, // duplicate — should be skipped
-	]
-	vi.stubGlobal(
-		'fetch',
-		vi
-			.fn()
-			.mockResolvedValueOnce({ ok: false, status: 404 }) // awesome-skills.json missing
-			.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(skillsResponse) })
-			.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(agentsResponse) }),
-	)
-
-	const skills = await listRepoSkills(null, 'org', 'repo')
-	expect(skills).toHaveLength(2)
-	expect(skills.find((s) => s.name === 'commit')?.skillPath).toBe('skills/commit/SKILL.md')
-	expect(skills.find((s) => s.name === 'internal-tool')?.skillPath).toBe('agents/skills/internal-tool/SKILL.md')
 })
 
 test('fetchAndInstallSkill copies SKILL.md and sibling files via sparse clone', async () => {
@@ -244,44 +203,6 @@ test('fetchAndInstallSkill ignores skillFilter when skill in spec', async () => 
 	const installed = await fetchAndInstallSkill(null, spec, root, 'main', ['other-skill'], cloneSimDir)
 	expect(installed).toHaveLength(1)
 	expect(installed[0]!.name).toBe('commit')
-})
-
-test('fetchAndInstallSkill finds skill in agents/skills/ when not in skills/', async () => {
-	seedSkillDir(cloneSimDir, 'agents/skills/internal-tool', {
-		'SKILL.md': '---\nname: internal-tool\n---\n# Internal Tool',
-	})
-
-	const spec: RepoSpec = {
-		type: 'repo',
-		owner: 'cyberuni',
-		repo: 'cyber-skills',
-		skill: 'internal-tool',
-		raw: 'cyberuni/cyber-skills:internal-tool',
-	}
-	const installed = await fetchAndInstallSkill(null, spec, root, 'main', undefined, cloneSimDir)
-
-	expect(installed).toHaveLength(1)
-	expect(installed[0]!.name).toBe('internal-tool')
-	expect(installed[0]!.skillPath).toBe('agents/skills/internal-tool/SKILL.md')
-	expect(fs.existsSync(path.join(root, 'internal-tool', 'SKILL.md'))).toBe(true)
-})
-
-test('fetchAndInstallSkill prefers skills/ over agents/skills/ when both exist', async () => {
-	seedSkillDir(cloneSimDir, 'skills/commit', { 'SKILL.md': '---\nname: commit\n---\n# from skills/' })
-	seedSkillDir(cloneSimDir, 'agents/skills/commit', { 'SKILL.md': '---\nname: commit\n---\n# from agents/skills/' })
-
-	const spec: RepoSpec = {
-		type: 'repo',
-		owner: 'cyberuni',
-		repo: 'cyber-skills',
-		skill: 'commit',
-		raw: 'cyberuni/cyber-skills:commit',
-	}
-	const installed = await fetchAndInstallSkill(null, spec, root, 'main', undefined, cloneSimDir)
-
-	expect(installed).toHaveLength(1)
-	expect(installed[0]!.skillPath).toBe('skills/commit/SKILL.md')
-	expect(fs.readFileSync(path.join(root, 'commit', 'SKILL.md'), 'utf8')).toContain('from skills/')
 })
 
 test('fetchMarketplace returns parsed marketplace when found', async () => {

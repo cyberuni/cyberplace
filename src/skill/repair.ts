@@ -5,7 +5,6 @@ export interface RepairAction {
 	skill: string
 	action:
 		| 'removed_public_symlink'
-		| 'kept_agents_symlink'
 		| 'updated_metadata'
 		| 'already_internal'
 		| 'local_augmentation_only'
@@ -80,7 +79,6 @@ function ensureInternalMetadata(content: string): { changed: boolean; content: s
 export function repairPrivateSkills(root: string): RepairResult {
 	const privateSkillsDir = path.join(root, '.agents', 'skills')
 	const publicSkillsDir = path.join(root, 'skills')
-	const agentsSkillsDir = path.join(root, 'agents', 'skills')
 	const actions: RepairAction[] = []
 	let changed = false
 
@@ -102,12 +100,6 @@ export function repairPrivateSkills(root: string): RepairResult {
 					details: `${skillDir} -> ${resolved}`,
 				})
 				changed = true
-				continue
-			}
-			const inAgentsTree =
-				resolved === path.join(agentsSkillsDir, entry.name) || resolved.startsWith(`${agentsSkillsDir}${path.sep}`)
-			if (inAgentsTree) {
-				actions.push({ skill: entry.name, action: 'kept_agents_symlink', details: `${skillDir} -> ${resolved}` })
 				continue
 			}
 		}
@@ -144,7 +136,6 @@ export function repairPrivateSkills(root: string): RepairResult {
 export function validatePrivateSkills(root: string): PrivateSkillCheckResult {
 	const privateSkillsDir = path.join(root, '.agents', 'skills')
 	const publicSkillsDir = path.join(root, 'skills')
-	const agentsSkillsDir = path.join(root, 'agents', 'skills')
 	const issues: PrivateSkillIssue[] = []
 
 	if (!fs.existsSync(privateSkillsDir)) return { ok: true, issues }
@@ -165,9 +156,6 @@ export function validatePrivateSkills(root: string): PrivateSkillCheckResult {
 				})
 				continue
 			}
-			const inAgentsTree =
-				resolved === path.join(agentsSkillsDir, entry.name) || resolved.startsWith(`${agentsSkillsDir}${path.sep}`)
-			if (inAgentsTree) continue
 		}
 
 		const skillFile = path.join(skillDir, 'SKILL.md')
