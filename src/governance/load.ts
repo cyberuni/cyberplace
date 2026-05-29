@@ -12,7 +12,7 @@ export interface GovernanceMeta {
 const GOVERNANCE_NAME_PATTERN = /^[a-z0-9-]+$/
 
 function governancesDir(): string {
-	return path.join(getPackageRoot(), 'agents', 'governances')
+	return path.join(getPackageRoot(), 'governances')
 }
 
 export function normalizeGovernanceName(name: string): string {

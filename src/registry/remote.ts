@@ -191,41 +191,19 @@ export async function listRepoSkills(
 		// fall through to API
 	}
 
-	// Fall back to GitHub/GitLab API to list skills/ and agents/skills/ directories
+	// Fall back to GitHub/GitLab API to list skills/ directory
 	if (!provider || provider.type === 'github') {
 		const headers = { Accept: 'application/vnd.github.v3+json', 'User-Agent': 'cyber-skills-cli' }
-		const results: SkillMeta[] = []
 
 		const url = `${buildApiBase(provider, owner, repo)}/skills`
 		const res = await fetch(url, { headers })
 		if (res.ok) {
 			const data = (await res.json()) as Array<{ name: string; type: string }>
-			for (const entry of data.filter((e) => e.type === 'dir')) {
-				results.push({ name: entry.name, skillPath: `skills/${entry.name}/SKILL.md` })
-			}
-		} else if (res.status !== 404) {
-			throw new Error(`Failed to list skills in ${owner}/${repo}: ${res.status}`)
+			return data
+				.filter((e) => e.type === 'dir')
+				.map((entry) => ({ name: entry.name, skillPath: `skills/${entry.name}/SKILL.md` }))
 		}
-
-		const seenNames = new Set(results.map((r) => r.name))
-		const agentsUrl = `${buildApiBase(provider, owner, repo)}/agents/skills`
-		const agentsRes = await fetch(agentsUrl, { headers })
-		if (agentsRes.ok) {
-			const agentsData = (await agentsRes.json()) as Array<{ name: string; type: string }>
-			for (const entry of agentsData.filter((e) => e.type === 'dir')) {
-				if (!seenNames.has(entry.name)) {
-					results.push({ name: entry.name, skillPath: `agents/skills/${entry.name}/SKILL.md` })
-				}
-			}
-		} else if (agentsRes.status !== 404) {
-			throw new Error(`Failed to list skills in ${owner}/${repo}: ${agentsRes.status}`)
-		}
-
-		if (results.length === 0) {
-			throw new Error(`Failed to list skills in ${owner}/${repo}: no skills/ or agents/skills/ directory found`)
-		}
-
-		return results
+		throw new Error(`Failed to list skills in ${owner}/${repo}: ${res.status}`)
 	}
 
 	throw new Error(`Cannot list skills for provider type: ${provider?.type ?? 'github'}`)
@@ -264,11 +242,7 @@ export async function fetchAndInstallSkill(
 
 	let metas: SkillMeta[]
 	if (skill) {
-		// Try skills/ first (canonical public location), fall back to agents/skills/
-		metas = [
-			{ name: skill, skillPath: `skills/${skill}/SKILL.md` },
-			{ name: skill, skillPath: `agents/skills/${skill}/SKILL.md` },
-		]
+		metas = [{ name: skill, skillPath: `skills/${skill}/SKILL.md` }]
 	} else {
 		const skills = await listRepoSkills(provider, owner, repo, branch)
 		metas = skillFilter ? skills.filter((s) => skillFilter.includes(s.name)) : skills

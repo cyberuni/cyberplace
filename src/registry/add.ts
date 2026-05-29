@@ -35,7 +35,7 @@ export interface AddResult {
 }
 
 function tryCreateSkillsSymlink(root: string, name: string, canonicalDir: string): SkippedSymlink | null {
-	const symlinkPath = join(root, 'agents', 'skills', name)
+	const symlinkPath = join(root, 'skills', name)
 
 	if (fs.existsSync(symlinkPath)) {
 		const stat = fs.lstatSync(symlinkPath)
@@ -45,7 +45,7 @@ function tryCreateSkillsSymlink(root: string, name: string, canonicalDir: string
 		fs.unlinkSync(symlinkPath)
 	}
 
-	fs.mkdirSync(join(root, 'agents', 'skills'), { recursive: true })
+	fs.mkdirSync(join(root, 'skills'), { recursive: true })
 	fs.symlinkSync(canonicalDir, symlinkPath, 'junction')
 	return null
 }
