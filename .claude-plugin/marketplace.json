@@ -3,28 +3,28 @@
 		{
 			"name": "skill-discovery",
 			"description": "Find and evaluate skills before installing. Prefer global install (-g).",
-			"skills": ["./skills/find-awesome-skill", "./skills/audit-skill"]
+			"skills": ["agents/skills/find-awesome-skill", "agents/skills/audit-skill"]
 		},
 		{
 			"name": "skill-authoring",
 			"description": "Create, generalize, patch, persona, and audit skills. Prefer global install (-g).",
 			"skills": [
-				"./skills/create-skill",
-				"./skills/create-persona-skill",
-				"./skills/skillify",
-				"./skills/patch-skill",
-				"./skills/audit-skill"
+				"agents/skills/create-skill",
+				"agents/skills/create-persona-skill",
+				"agents/skills/skillify",
+				"agents/skills/patch-skill",
+				"agents/skills/audit-skill"
 			]
 		},
 		{
 			"name": "agent-initialization",
 			"description": "One-time repo setup. init and init-commit-discipline: global (-g); commit: project.",
-			"skills": ["./skills/init", "./skills/init-commit-discipline", "./skills/commit"]
+			"skills": ["agents/skills/init", "agents/skills/init-commit-discipline", "agents/skills/commit"]
 		},
 		{
 			"name": "awesome-list-maintenance",
 			"description": "Manage curated awesome-list sources and entries. configure-awesome-sources: global; update-awesome-list: project.",
-			"skills": ["./skills/configure-awesome-sources", "./skills/update-awesome-list"]
+			"skills": ["agents/skills/configure-awesome-sources", "agents/skills/update-awesome-list"]
 		}
 	]
 }
