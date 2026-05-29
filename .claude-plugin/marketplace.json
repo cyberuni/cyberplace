@@ -11,6 +11,7 @@
 			"skills": [
 				"skills/create-skill",
 				"skills/create-persona-skill",
+				"skills/create-universal-plugin",
 				"skills/skillify",
 				"skills/patch-skill",
 				"skills/audit-skill"
