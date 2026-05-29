@@ -69,6 +69,13 @@ function legacyEquivalent(hookId: string, existing: string): boolean {
 			(existing.includes('hook run') && existing.includes('--glob') && existing.includes('SKILL.local.md'))
 		)
 	}
+	if (hookId === 'project-augmentations') {
+		return (
+			existing.includes('hook run project-augmentations') ||
+			existing.includes('run-hook project-augmentations') ||
+			(existing.includes('hook run') && existing.includes('--glob') && existing.includes('SKILL.project.md'))
+		)
+	}
 	if (hookId === 'mark-internal') {
 		return (
 			existing.includes('hook run mark-internal') ||
