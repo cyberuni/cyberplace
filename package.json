@@ -18,6 +18,9 @@
 	"bin": {
 		"cyber-skills": "./bin/cyber-skills.mjs"
 	},
+	"exports": {
+		"./package.json": "./package.json"
+	},
 	"files": [
 		"bin",
 		"dist",
