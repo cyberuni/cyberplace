@@ -1,23 +1,25 @@
 # SDD: Layered Agent Instruction Augmentation (LAIA)
 
-**Status:** Draft  
-**Authors:** unional  
-**Date:** 2026-05-30  
+**Status:** Draft
+**Authors:** unional
+**Date:** 2026-05-30
 **Scope:** cyber-skills repo + open spec proposal to agentskills / open-plugin-spec
 
 ---
 
 ## 1. Problem Statement
 
-Agent skill instructions today come from a single source: the `SKILL.md` file shipped with a package. Real deployments need multiple stakeholders to customize those instructions without modifying the shipped artifact:
+AI agent tools (Claude Code, Cursor, Codex) follow written instructions to perform tasks. Those instructions need to satisfy multiple stakeholders at once — the tool vendor's defaults, a user's personal preferences, an organization's compliance rules, and a project team's conventions — without any one stakeholder having to manually merge everyone else's changes into a single file.
 
-- A user wants personal workflow tweaks applied everywhere.
-- A project team wants shared conventions checked into the repo.
-- An organization needs compliance rules that cannot be disabled.
-- A developer needs local experiments that stay gitignored.
-- A monorepo sub-package needs to specialize a root-level project override.
+Today there is no standard model for this. Each stakeholder either edits the same file (creating ownership conflicts) or each tool invents its own layering convention independently (creating fragmentation across tools). Concretely:
 
-There is no specified model for how these sources combine, what order they apply in, or how conflicts are resolved. Each tool (Claude Code, Cursor, Codex) invents its own convention independently, creating fragmentation.
+- A user wants personal workflow tweaks applied on their machine, across all projects.
+- A project team wants shared conventions checked into the repo so all contributors get them.
+- An organization needs compliance rules that individual developers cannot remove.
+- A developer needs local experiments that stay gitignored and never reach CI.
+- A monorepo sub-package needs to specialize the project-level rules for its domain.
+
+There is no specified model for how these sources combine, what order they apply in, or how conflicts are resolved.
 
 ---
 
@@ -222,8 +224,8 @@ These fields are only meaningful in augmentation layer files. A base `SKILL.md` 
 
 ### D1 — Governance: `skill-augmentation-layers`
 
-**Type:** Governance document  
-**Location:** `governances/skill-augmentation-layers.md`  
+**Type:** Governance document
+**Location:** `governances/skill-augmentation-layers.md`
 **Loaded via:** `cyber-skills governance show skill-augmentation-layers`
 
 Normative, agent-facing version of §§5–8. Dense, no rationale prose. Sections: Layer Model, File Discovery, Resolution Algorithm, Frontmatter Schema. Cross-references `skill-design` governance.
@@ -232,8 +234,8 @@ Normative, agent-facing version of §§5–8. Dense, no rationale prose. Section
 
 ### D2 — CLI: `skill resolve`
 
-**Type:** Code + CLI command  
-**Location:** `src/skill/resolve.ts`, registered in `src/cli.ts`  
+**Type:** Code + CLI command
+**Location:** `src/skill/resolve.ts`, registered in `src/cli.ts`
 **Command:** `cyber-skills skill resolve <skill-name> [--dir <path>] [--json]`
 
 Outputs the effective skill with provenance annotations. Each section is annotated with which layer it came from.
@@ -263,8 +265,8 @@ Outputs the effective skill with provenance annotations. Each section is annotat
 
 ### D3 — CLI: `skill layers`
 
-**Type:** Code + CLI command  
-**Location:** `src/skill/layers.ts`  
+**Type:** Code + CLI command
+**Location:** `src/skill/layers.ts`
 **Command:** `cyber-skills skill layers <skill-name> [--dir <path>]`
 
 Lists all discovered layer files without merging. Useful for diagnosing which files are being found.
@@ -284,7 +286,7 @@ commit-work  layers discovered:
 
 ### D4 — Resolution library
 
-**Type:** Code  
+**Type:** Code
 **Location:** `src/skill/augment.ts` (new), used by D2, D3, and D5
 
 Implements:
@@ -299,7 +301,7 @@ Pure functions; no I/O. Discovery I/O lives in `src/skill/resolve.ts`.
 
 ### D5 — Audit validation: augmentation cross-check
 
-**Type:** Code  
+**Type:** Code
 **Location:** `src/audit/validate.ts` (update existing)
 
 Add checks run when an augmentation file is found alongside or above a base skill:
@@ -318,7 +320,7 @@ Run via `pnpm test:audit` or `cyber-skills audit validate --path <dir>`.
 
 ### D6 — Web docs unit
 
-**Type:** Documentation  
+**Type:** Documentation
 **Location:** `apps/web/src/content/` (unit number TBD — after Unit 6)
 
 Sections:
@@ -334,7 +336,7 @@ Sections:
 
 ### D7 — Open spec proposal
 
-**Type:** Research / upstream proposal  
+**Type:** Research / upstream proposal
 **Location:** `docs/research/2026-05-layered-augmentation-spec.md`
 
 Draft proposal targeting:
@@ -348,7 +350,7 @@ Scope of proposal: §§4–8 of this SDD, stripped of cyber-skills-specific deta
 
 ### D8 — AGENTS.md update
 
-**Type:** Documentation  
+**Type:** Documentation
 **Location:** `CLAUDE.md` (this repo)
 
 Replace the current "Skill Augmentations" section with a pointer to the governance:
