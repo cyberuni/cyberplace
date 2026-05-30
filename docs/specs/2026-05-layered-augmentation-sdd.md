@@ -9,17 +9,18 @@
 
 ## 1. Problem Statement
 
-AI agent tools (Claude Code, Cursor, Codex) follow written instructions to perform tasks. Those instructions need to satisfy multiple stakeholders at once — the tool vendor's defaults, a user's personal preferences, an organization's compliance rules, and a project team's conventions — without any one stakeholder having to manually merge everyone else's changes into a single file.
+AI agent tools (Claude Code, Cursor, Codex) follow written instructions to perform tasks. A basic layering model already exists: Claude Code supports `CLAUDE.md` alongside `CLAUDE.local.md`; this repo's skill system supports `SKILL.md` alongside `SKILL.project.md` and `SKILL.local.md`. The pattern — a shared base plus a local override — is well understood.
 
-Today there is no standard model for this. Each stakeholder either edits the same file (creating ownership conflicts) or each tool invents its own layering convention independently (creating fragmentation across tools). Concretely:
+Two use cases are not yet covered.
 
-- A user wants personal workflow tweaks applied on their machine, across all projects.
-- A project team wants shared conventions checked into the repo so all contributors get them.
-- An organization needs compliance rules that individual developers cannot remove.
-- A developer needs local experiments that stay gitignored and never reach CI.
-- A monorepo sub-package needs to specialize the project-level rules for its domain.
+**Local augmentation.** A developer wants machine-local, gitignored tweaks to a shared skill — different from the project-scoped `SKILL.project.md` (checked in, applies to all contributors) and distinct from a full replacement of the base. The `SKILL.local.md` convention exists in this repo but is not standardized across tools, and its interaction with project-level augmentations is unspecified.
 
-There is no specified model for how these sources combine, what order they apply in, or how conflicts are resolved.
+**Team augmentation.** A project team wants to layer their conventions on top of a shared, published skill without forking it. This surface looks simple but carries a design tension:
+
+- *Augment* — the team's layer sits on top of the shared skill; upstream updates propagate automatically.
+- *Replace* — the team maintains their own copy; they own the full content but must manually track and merge upstream changes.
+
+The augmentation path is lower maintenance but requires a clear merge model. The replacement path is simpler to reason about but creates a fork that drifts. A workable team augmentation story must specify the merge model precisely enough that authors know what they are opting into — and must acknowledge that some teams will still choose replacement deliberately.
 
 ---
 
