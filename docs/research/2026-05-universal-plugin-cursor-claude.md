@@ -1,7 +1,7 @@
 # Universal Plugin: Cursor + Claude Code
 
 **Date:** 2026-05-29
-**Updated:** 2026-05-29 (added Cursor hooks schema, MCP symlink approach, rules/AGENTS.md pattern, other agent landscape; resolved open questions)
+**Updated:** 2026-05-30 (added Codex CLI plugin system, Open Agent Plugin spec from Vercel; updated comparison table and universal layout)
 **Purpose:** Research report for the `create-universal-plugin` skill. Background for `governances/universal-plugin.md`.
 
 ---
@@ -183,22 +183,161 @@ Cursor hooks use `{ "version": 1, ... }` JSON format with camelCase event names.
 
 ---
 
-## 3. Comparison
+## 3. Codex CLI Plugin System
 
-| Aspect | Claude Code | Cursor | Universal? |
-|--------|-------------|--------|------------|
-| Manifest file | `.claude-plugin/plugin.json` | `.cursor-plugin/plugin.json` | **Both needed** — different paths |
-| Skills dir | `skills/<name>/SKILL.md` | `skills/<name>/SKILL.md` | **Identical** — one dir works |
-| Commands dir | `commands/<name>.md` | `commands/` | **Compatible** — same dir, similar format |
-| Agents dir | `agents/<name>.md` | `agents/` | **Compatible** — same dir |
-| MCP file | `.mcp.json` (dot-prefix) | `mcp.json` (no dot) | **Resolved** — `mcp.json` symlinks to `.mcp.json` |
-| Hooks | `hooks/hooks.json` (PascalCase) | `hooks/` (camelCase, `version:1`) | **Incompatible schemas** — separate files required |
-| Rules | not supported | `rules/*.mdc` (always-on) | **Cursor-only** — use AGENTS.md for cross-agent always-on |
-| AGENTS.md in plugin | not auto-read | not auto-read | Inert in plugin dir; requires post-install merge |
+### Manifest
+
+File: `.codex-plugin/plugin.json`
+
+```json
+{
+  "name": "my-plugin",
+  "version": "1.0.0",
+  "description": "What the plugin does",
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "apps": "./.app.json",
+  "hooks": "./hooks.json",
+  "interface": {
+    "displayName": "My Plugin",
+    "shortDescription": "...",
+    "category": "Productivity"
+  }
+}
+```
+
+Full fields: `name` (kebab-case, 64 chars max), `version`, `description`, `author`, `homepage`, `repository`, `license`, `keywords`, `skills`, `mcpServers`, `apps`, `hooks`, `interface` (displayName, shortDescription, longDescription, logo, brandColor, category, capabilities, websiteURL, privacyPolicyURL, termsOfServiceURL).
+
+### Component Types
+
+| Component | Directory / File | Format | Notes |
+|-----------|-----------------|--------|-------|
+| Skills | `skills/<name>/SKILL.md` | Same as Claude Code / Cursor | **Format-compatible** |
+| MCP Servers | `.mcp.json` | JSON | Same field name as Claude Code |
+| App Connectors | `.app.json` | JSON | GitHub, Slack integrations — Codex-only |
+| Hooks | `hooks.json` | JSON | See below |
+
+**Skills frontmatter** — identical to Claude Code / Cursor:
+```yaml
+---
+name: skill-name
+description: When/why to use this skill
+---
+```
+
+**Hooks format** — no version field, event names are camelCase (like Cursor):
+```json
+{
+  "preToolUse": [{ "type": "command", "command": "./hooks/impl.sh" }],
+  "postToolUse": [{ ... }]
+}
+```
+
+### Marketplace
+
+Codex discovers plugins via `.agents/plugins/marketplace.json` (repo-scoped) or `~/.agents/plugins/marketplace.json` (personal).
+
+```json
+{
+  "name": "local-repo",
+  "plugins": [
+    {
+      "name": "my-plugin",
+      "source": { "source": "local", "path": "./plugins/my-plugin" },
+      "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
+      "category": "Productivity"
+    }
+  ]
+}
+```
+
+Installation policies: `AVAILABLE` (browseable) or `INSTALLED_BY_DEFAULT` (auto-active).
+
+### Installation Methods
+
+| Method | Path |
+|--------|------|
+| Repo marketplace | `.agents/plugins/marketplace.json` |
+| Personal marketplace | `~/.agents/plugins/marketplace.json` |
+| CLI | `codex plugin marketplace add <source>` |
+
+### User Config (TOML)
+
+`~/.codex/config.toml` or repo-scoped `.codex/config.toml`. Covers model selection, sandbox/security, MCP server auth, and feature flags. No TOML inside plugins themselves.
 
 ---
 
-## 4. Universal Plugin Layout
+## 4. Open Agent Plugin Spec (Vercel)
+
+### Overview
+
+A vendor-neutral, cross-host standard for packaging AI agent plugins. Hosts ignore unsupported component types, so a plugin can conform without implementing every component. Goal: one plugin package works across Claude Code, Cursor, VS Code Copilot, Codex, and future hosts.
+
+GitHub: `vercel-labs/open-plugin-spec` (v1.0.0)
+
+### Manifest
+
+File: `.plugin/plugin.json`
+
+```json
+{
+  "name": "plugin-id",
+  "version": "1.0.0",
+  "description": "Purpose",
+  "author": { "name": "...", "email": "...", "url": "..." },
+  "keywords": ["tag1"],
+  "skills": "./skills/",
+  "mcpServers": "./mcp.json"
+}
+```
+
+- `name`: 1–64 chars, alphanumeric + hyphens (required)
+- `skills`: path string, path array, or `{ "paths": ["./skills1/", "./skills2/"] }`
+- All relative paths must start with `./` and stay within plugin root (no parent traversal)
+
+### Component Types
+
+**Core** (required for conformance):
+
+| Component | File / Dir | Notes |
+|-----------|-----------|-------|
+| Skills | `skills/<name>/SKILL.md` | Agent Skills spec — identical to Claude Code / Cursor / Codex |
+| MCP Servers | `mcp.json` | `mcpServers` object |
+
+**Extended** (optional, Appendix D):
+
+Commands, Agents, Rules, Hooks, LSP Servers, Output Styles
+
+### Discovery
+
+1. Host reads `.plugin/plugin.json`
+2. Discovers components via default paths or manifest-declared paths
+3. Components surfaced as namespaced tools: `/plugin-name:skill-name`
+
+### Relation to Existing Formats
+
+Open Agent Plugin is the convergence target. It deliberately mirrors the `skills/` dir and SKILL.md format shared by Claude Code, Cursor, and Codex. The manifest location (`.plugin/`) and `mcp.json` (no dot-prefix, no symlink needed) differ from all three vendors today.
+
+---
+
+## 5. Comparison
+
+| Aspect | Claude Code | Cursor | Codex CLI | Open Agent Plugin | Universal? |
+|--------|-------------|--------|-----------|-------------------|------------|
+| Manifest file | `.claude-plugin/plugin.json` | `.cursor-plugin/plugin.json` | `.codex-plugin/plugin.json` | `.plugin/plugin.json` | **Four files needed** — or OAP as canonical + vendor manifests as thin wrappers |
+| Skills dir | `skills/<name>/SKILL.md` | `skills/<name>/SKILL.md` | `skills/<name>/SKILL.md` | `skills/<name>/SKILL.md` | **Identical** — one dir works across all four |
+| Commands dir | `commands/<name>.md` | `commands/` | not supported | extended (Appendix D) | **Claude Code + Cursor compatible**; skip for Codex |
+| Agents dir | `agents/<name>.md` | `agents/` | not supported | extended (Appendix D) | **Claude Code + Cursor compatible**; skip for Codex |
+| MCP file | `.mcp.json` (dot-prefix) | `mcp.json` (no dot) | `.mcp.json` (dot-prefix) | `mcp.json` (no dot) | **Symlink resolves CC + Codex + Cursor**; OAP aligns with Cursor |
+| Hooks | `hooks/hooks.json` (PascalCase) | `hooks/` (camelCase, `version:1`) | `hooks.json` (camelCase, no version) | extended (Appendix D) | **Incompatible schemas** — separate files required; shared impl script |
+| Rules | not supported | `rules/*.mdc` (always-on) | not supported | extended (Appendix D) | **Cursor-only** — use AGENTS.md for cross-agent always-on |
+| AGENTS.md in plugin | not auto-read | not auto-read | not auto-read | not in spec | Inert in plugin dir; requires post-install merge |
+| App connectors | not supported | not supported | `.app.json` | not in core spec | **Codex-only** |
+| Marketplace | official GitHub repo | `cursor.com/marketplace` | `.agents/plugins/marketplace.json` | not in spec | **Codex marketplace.json** is the only repo-local discovery mechanism |
+
+---
+
+## 6. Universal Plugin Layout
 
 ### MCP: Symlink approach
 
@@ -226,43 +365,55 @@ Pattern:
 2. Bundle `commands/setup.md` that merges rule content into the project's `AGENTS.md`
 3. After running setup, the `.mdc` files are redundant (both agents read from `AGENTS.md`)
 
+### Manifest strategy
+
+Four vendor manifests are needed today. The Open Agent Plugin spec (`.plugin/plugin.json`) is the convergence target. A practical approach:
+
+1. Author `.plugin/plugin.json` as the canonical manifest
+2. Generate `.claude-plugin/plugin.json`, `.cursor-plugin/plugin.json`, `.codex-plugin/plugin.json` as thin wrappers (or symlinks to `.plugin/plugin.json` if all fields are compatible)
+
 ### Final layout
 
 ```
 <plugin-name>/
+├── .plugin/
+│   └── plugin.json           # OPEN AGENT PLUGIN — canonical/convergence manifest
 ├── .claude-plugin/
-│   └── plugin.json           # Claude Code manifest
+│   └── plugin.json           # Claude Code manifest (or symlink to ../.plugin/plugin.json)
 ├── .cursor-plugin/
-│   └── plugin.json           # Cursor manifest (identical content)
+│   └── plugin.json           # Cursor manifest (or symlink)
+├── .codex-plugin/
+│   └── plugin.json           # Codex CLI manifest (or symlink); add "apps" if needed
 │
-├── skills/                   # SHARED — identical format
+├── skills/                   # SHARED — identical format across all four
 │   └── <skill-name>/
 │       └── SKILL.md
 │
-├── commands/                 # SHARED — compatible format
+├── commands/                 # CLAUDE CODE + CURSOR only (Codex ignores)
 │   ├── setup.md              # Post-install: merges rules into AGENTS.md
 │   └── <cmd-name>.md
 │
-├── agents/                   # SHARED — compatible format
+├── agents/                   # CLAUDE CODE + CURSOR only (Codex ignores)
 │   └── <agent-name>.md
 │
-├── rules/                    # CURSOR-ONLY — always-on only; Claude ignores
+├── rules/                    # CURSOR-ONLY — always-on only; others ignore
 │   └── <rule-name>.mdc
 │
 ├── hooks/
 │   ├── hooks.json            # CLAUDE CODE — PascalCase events
+│   ├── codex-hooks.json      # CODEX — camelCase, no version field
 │   └── <impl>.sh             # SHARED — implementation script
 │                             # Cursor: .cursor/hooks.json at project root
 │
-├── .mcp.json                 # SOURCE OF TRUTH — Claude Code reads this
-├── mcp.json -> .mcp.json     # SYMLINK — Cursor reads this
+├── .mcp.json                 # SOURCE OF TRUTH — Claude Code + Codex read this
+├── mcp.json -> .mcp.json     # SYMLINK — Cursor + OAP read this
 │
 └── README.md
 ```
 
 ---
 
-## 5. Other Agent Landscape
+## 7. Other Agent Landscape
 
 | Agent | Plugin system | SKILL.md compatible? |
 |-------|--------------|---------------------|
@@ -270,15 +421,19 @@ Pattern:
 | **Gemini CLI** | Yes — `gemini-extension.json` | No — MCP/context/themes focus |
 | **Continue.dev** | Yes — YAML blocks (`config.yaml`) | No — different format |
 | **OpenCode** | Yes — JS/TS modules (`.opencode/plugins/`) | No — different format |
-| **Codex CLI** | Yes — `plugin.json` + TOML | No — different format |
+| **Codex CLI** | Yes — `.codex-plugin/plugin.json`; marketplace via `.agents/plugins/marketplace.json` | **Yes** — `skills/<name>/SKILL.md` identical format |
 | **Cline / Roo Code** | No — MCP servers only | No |
 | **Windsurf** | No — VS Code extensions only | No |
 
 **Amp note:** Amp uses the same `SKILL.md` format as Claude Code and Cursor, but installs to `.agents/skills/` not `skills/`. A plugin's `skills/` directory is not auto-read by Amp. Future extension: an Amp-compatible layout would need `skills/` → `.agents/skills/` mapping at install time.
 
+**Codex note:** Codex is the third host (alongside Claude Code and Cursor) with native SKILL.md support. The `.agents/plugins/marketplace.json` discovery mechanism is Codex-specific and enables repo-local plugin catalogs — a pattern worth emulating for team distribution.
+
+**Open Agent Plugin note:** The OAP spec (`vercel-labs/open-plugin-spec` v1.0.0) is a convergence proposal, not a shipping runtime. It defines the SKILL.md + `mcp.json` core and leaves vendor-specific components (hooks, rules, app connectors) as optional extensions. Tracking this spec is worthwhile — adoption by a major host would simplify multi-vendor distribution significantly.
+
 ---
 
-## 6. Resolved Questions (from original report)
+## 8. Resolved Questions (from original report)
 
 | Question | Resolution |
 |----------|-----------|
@@ -287,6 +442,10 @@ Pattern:
 | Claude Code `version` field | Absent from all official plugins; not required |
 | MCP drift risk | Resolved: `mcp.json` symlinks to `.mcp.json` — no drift |
 | Rules cross-agent gap | Resolved: rules + `commands/setup.md` merges into `AGENTS.md` |
+| Codex SKILL.md support | Confirmed: `skills/<name>/SKILL.md` with identical frontmatter — see Section 3 |
+| Codex hooks format | camelCase event names, no `version` field (differs from Cursor's `version:1`) — separate `codex-hooks.json` required |
+| OAP manifest location | `.plugin/plugin.json` — distinct from all three vendor paths; use as canonical source |
+| OAP adoption status | v1.0.0 spec published; no major host has announced full adoption as of 2026-05-30 |
 
 ---
 
@@ -298,4 +457,10 @@ Pattern:
 - Claude Code official plugins: `~/.claude/plugins/marketplaces/claude-plugins-official/`
 - Example Claude plugin: `.../plugins/example-plugin/`
 - Hookify plugin (Claude hooks reference): `.../plugins/hookify/`
+- Codex CLI plugin build guide: `https://developers.openai.com/codex/plugins/build`
+- Codex CLI config reference: `https://developers.openai.com/codex/config-reference`
+- Codex plugin marketplace guide: `https://codex.danielvaughan.com/2026/04/24/codex-cli-plugin-marketplace-building-distributing-extending/`
+- Codex example repo with plugins: `https://github.com/ansea09/agent-skills-and-protocols`
+- Open Agent Plugin spec (Vercel): `https://github.com/vercel-labs/open-plugin-spec`
+- InfoQ — Vercel Open Agents announcement: `https://www.infoq.com/news/2026/04/vercel-open-agents/`
 - Governance: `governances/universal-plugin.md`
