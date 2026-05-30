@@ -23,6 +23,7 @@ Use `YYYY-MM-<topic>.md` (for example `2026-05-skill-ecosystem-landscape.md`). O
 | 2026-05 | [Skill ecosystem landscape](2026-05-skill-ecosystem-landscape.md) | `skill-repo-structure` governance, ADR-0002, future `init-skill-repo` |
 | 2026-05 | [cyber-skills supply chain threat model](2026-05-cyber-skills-supply-chain-threat-model.md) | README install guidance, `init` / `init-commit-discipline` skills, hook register |
 | 2026-05 | [CLI output format for agents](2026-05-cli-output-format-for-agents.md) | `agent-tool-output` governance, ADR-0004 |
+| 2026-05 | [npm package structure for skills and plugin packages](2026-05-npm-package-structure-plugin-manifest.md) | `skill-repo-structure` governance, potential upstream proposal to `vercel-labs/open-plugin-spec` and `agentskills/agentskills` |
 
 ## Adding research
 
