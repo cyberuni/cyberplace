@@ -12,7 +12,7 @@ This skill **requires** the cyber-skills CLI — see **Ensure cyber-skills CLI**
 ## Prerequisites
 
 - `AGENTS.md` should exist (run the `init` skill first if missing).
-- AGENTS.md should include the **Skill Augmentations** section (run the `init` skill — agents read `SKILL.local.md` when loading a skill).
+- AGENTS.md should include the **Skill Augmentations** section (run the `init` skill first if missing).
 
 ## Ensure cyber-skills CLI
 
@@ -73,34 +73,6 @@ Pass `--verbose` on inject or register for a human-readable summary. Pass `--dry
 
 > **Stale hook caveat:** `hook register` skips hooks it considers fully equivalent. If the SessionStart command is wrong in other ways, edit agent settings manually or re-run register with the flags above.
 
-5. Optional repo-local `SKILL.local.md` augmentation — only when **both** are true:
-   - the user opted in to auto-commit, and
-   - the commit helper is or will be **project-scoped** under `.agents/skills/<commit-skill-name>/`
-
-```bash
-mkdir -p .agents/skills/<commit-skill-name>
-```
-
-Then write `.agents/skills/<commit-skill-name>/SKILL.local.md`:
-
-```markdown
-# <commit-skill-name> local augmentation
-
-## Auto-commit rule
-
-In this repo, commit each unit of work immediately when it is complete
-and verified — do not wait for the user to ask.
-
-A unit is complete when:
-- All files for that concern are written/edited
-- Tests pass (pre-commit hook or manual verify)
-
-Commit, then continue to the next unit. Never finish multiple units
-before committing.
-```
-
-**Global vs project install:** When the helper is installed globally (`-g`), auto-commit in AGENTS.md and the SessionStart hook are the always-on path. Repo-local `SKILL.local.md` only applies when the agent loads the skill from `.agents/skills/<name>/` (project-scoped install). Skip step 5 for global helpers — AGENTS.md + hook are sufficient.
-
 ## What gets applied
 
 Injected content is **agent-first**: normative commit rules in the section body; optional depth in `### References` at the bottom. No links to other repository files — commit-helper skill name and `governance show` one-liners only.
@@ -127,8 +99,6 @@ Injected content is **agent-first**: normative commit rules in the section body;
 ```
 
 **Runtime hook** (Claude Code, Cursor, Codex): SessionStart injection of the Commit Discipline section so agents are reminded of the rules at the start of every session.
-
-**SKILL.local.md** (optional): Secondary auto-commit reinforcement when the commit helper loads from the repo. Skip for global installs.
 
 For agents without hook support, AGENTS.md alone applies the rules.
 
