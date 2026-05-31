@@ -19,7 +19,7 @@ Most users do not call the CLI directly. The common workflow is:
 1. Install one or more skills with the [Skills CLI](https://github.com/vercel-labs/skills).
 2. Open your project in Claude Code, Cursor, Codex, or another agent.
 3. Ask the agent to run the skill by name.
-4. Commit the resulting project files such as `AGENTS.md`, `skills-lock.json`, or repo-private skills.
+4. Commit the resulting project files such as `AGENTS.md`, `.agents/cyber-skills-lock.json`, or repo-private skills.
 
 Example prompts:
 
@@ -46,7 +46,7 @@ Then, in your agent chat inside a repository:
 2. Review or accept the `AGENTS.md` update
 3. Run `init-commit-discipline`
 
-If you installed project-scoped skills, commit `skills-lock.json`.
+If you installed project-scoped skills, commit `.agents/cyber-skills-lock.json`.
 
 ## How to use the main skills
 
@@ -108,7 +108,10 @@ This is the main part contributors and adopters need to understand.
 | --------- | -------- | ------- |
 | **User** | `~/.agents/skills/<name>/` | Personal skills available across all repos |
 | **Project private** | `.agents/skills/<name>/` | Repo-specific contributor workflows not meant for package consumers |
-| **Project public** | `skills/<name>/` | Skills shipped from a repo and installed by others |
+| **Project public** | `skills/<name>/` in the source repo | Skills authored in a package/repo and installed by others |
+
+For a consuming project, project-scoped installs are written to `.agents/skills/<name>/`.
+The root `skills/<name>` path is only a compatibility symlink back to `.agents/skills/<name>/` when that path is free.
 
 ### Recommended layout in a project
 
@@ -116,23 +119,34 @@ This is the main part contributors and adopters need to understand.
 your-repo/
 ├── AGENTS.md
 ├── CLAUDE.md -> AGENTS.md
-├── skills-lock.json
 ├── .agents/
+│   ├── cyber-skills-lock.json
 │   └── skills/
+│       ├── init/
+│       │   ├── SKILL.md
+│       │   ├── README.md
+│       │   ├── scripts/
+│       │   ├── references/
+│       │   └── assets/
 │       └── release-helper/
-│           └── SKILL.md
+│           ├── SKILL.md
+│           ├── SKILL.project.md
+│           └── scripts/
 └── skills/
-    └── code-review/
-        └── SKILL.md
+    └── init -> .agents/skills/init
 ```
 
 Use this layout as a rule of thumb:
 
 - Put shared repo instructions in `AGENTS.md`
+- Treat `.agents/skills/<name>/` as the canonical installed location for a skill and its sibling files
+- Expect sibling folders such as `scripts/`, `assets/`, and `references/` to live inside `.agents/skills/<name>/`
+- Treat `skills/<name>` in a consuming project as an optional symlink, not the source of truth
 - Put team-only workflows in `.agents/skills/`
-- Put installable/public skills in `skills/`
+- Author installable/public skills in `skills/` when you are building a source repo for others to install from
 - Keep `SKILL.local.md` local and uncommitted
 - Use `SKILL.project.md` only in the consuming project, not inside a published public skill
+- Do not expect `.agents/governances/` or a shared `.agents/assets/` tree from `skills add`; governances are loaded from the installed `cyber-skills` CLI package, and assets stay inside each skill directory
 
 ### Skill augmentations
 
@@ -168,7 +182,7 @@ Best for teams that want the same skill set in one repository.
 npx skills add cyberuni/cyber-skills --skill init --skill init-commit-discipline
 ```
 
-Commit `skills-lock.json` so the team restores the same skill sources.
+Commit `.agents/cyber-skills-lock.json` so the team restores the same skill sources.
 
 ### Agent-specific install
 
