@@ -86,7 +86,12 @@ export function addCommand(): Command {
 					let selectedSkills: string[]
 					let addScope: 'project' | 'global' | 'both'
 					try {
-						selectedSkills = await promptSkillSelect(rl, items, `${parsedSpec.owner}/${parsedSpec.repo}`)
+						if (items.length === 1) {
+							console.log(`Auto-selected: ${items[0].value}`)
+							selectedSkills = [items[0].value]
+						} else {
+							selectedSkills = await promptSkillSelect(rl, items, `${parsedSpec.owner}/${parsedSpec.repo}`)
+						}
 						addScope = await promptScopeSelect(rl)
 					} catch (err) {
 						if (err instanceof CancelError) {
