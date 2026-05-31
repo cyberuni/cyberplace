@@ -4,214 +4,218 @@
 [![npm version](https://img.shields.io/npm/v/cyber-skills.svg)](https://github.com/cyberuni/cyber-skills/actions/workflows/release.yml)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-Opinionated skills, hooks, and workflows for AI agents — Claude Code, Cursor, Codex, and others. Published as the [`cyber-skills`](https://www.npmjs.com/package/cyber-skills) npm package; install skills with the [Skills CLI](https://github.com/vercel-labs/skills).
+Skills for AI coding agents. Install the skill once, then ask your agent to use it in a repo.
 
-## Installation
+`cyber-skills` is published as an npm package and ships:
 
-**Skills** (agent workflows — primary interface):
+- Public skills under `skills/`
+- A `cyber-skills` CLI used by some skills under the hood
+- Hook helpers for agents that support session hooks
 
-```bash
-# Install all public skills globally
-npx skills add cyberuni/cyber-skills --all -g
+## What users do with this repo
 
-# Install a specific skill
-npx skills add cyberuni/cyber-skills --skill init -g
+Most users do not call the CLI directly. The common workflow is:
 
-# Install for a specific agent
-npx skills add cyberuni/cyber-skills --skill init -a claude-code -g
-```
+1. Install one or more skills with the [Skills CLI](https://github.com/vercel-labs/skills).
+2. Open your project in Claude Code, Cursor, Codex, or another agent.
+3. Ask the agent to run the skill by name.
+4. Commit the resulting project files such as `AGENTS.md`, `skills-lock.json`, or repo-private skills.
 
-**CLI** (hooks, commit inject, audit — used by skills and for scripting):
+Example prompts:
 
-```bash
-# Exploration only — do not use @latest in hooks or CI
-npx cyber-skills@latest --help
-```
+- `Run the init skill for this repo`
+- `Run init-commit-discipline`
+- `Use create-skill to scaffold a new repo-private skill`
+- `Use audit-skill on skills/my-skill`
 
-| Use case | Pinning |
-| -------- | ------- |
-| **Scripts / manual CLI** | `npx cyber-skills@$(npm view cyber-skills version) <subcommand>` |
-| **`init` / `init-commit-discipline` skills** | On first use in a repo, the skill resolves npm semver (`npm view cyber-skills version`) and runs `npx cyber-skills@<exact> …`. After `init-commit-discipline`, SessionStart hooks store that semver (for example `npx cyber-skills@0.3.0 hook run …`). Re-run `init-commit-discipline` to bump hook semver after upgrades. |
-| **Skill content (`SKILL.md`)** | Not pinned by the CLI — see [Supply chain](#supply-chain) below. |
+## Quick start
 
-### Supply chain
-
-Skills install from **GitHub**; the CLI installs from **npm** — two independent surfaces. See [docs/research/2026-05-cyber-skills-supply-chain-threat-model.md](docs/research/2026-05-cyber-skills-supply-chain-threat-model.md) for the full threat model.
-
-- **Solo / quick start:** global `npx skills add … -g` (live default branch).
-- **Teams (recommended):** project-scoped install, commit `skills-lock.json`, restore with `npx skills experimental_install` or `npx skills ci`.
-- **Strongest coupling:** `pnpm add -D cyber-skills`, then `npx skills add ./node_modules/cyber-skills --skill init …` so skill files and CLI share one npm release.
-
-## Getting started: `init` and `init-commit-discipline`
-
-These skills set up a repo for AI agents. Install once (globally for solo use, or project-scoped for teams — see [Supply chain](#supply-chain)), then run them per repository from your agent chat.
+Install the two skills most teams start with:
 
 ```bash
-# Solo: both init skills globally
+# Solo use across many repos
 npx skills add cyberuni/cyber-skills --skill init --skill init-commit-discipline -g
 
-# Team: project-scoped (commit skills-lock.json after install)
+# Team use inside one repo
 npx skills add cyberuni/cyber-skills --skill init --skill init-commit-discipline
 ```
 
-| Skill | Install scope | When to run |
-| ----- | ------------- | ----------- |
-| **`init`** | Global (`-g`) or project | First time in a repo, or when `AGENTS.md` needs a refresh |
-| **`init-commit-discipline`** | Global (`-g`) or project | After `init`, when you want commit rules enforced in every session |
+Then, in your agent chat inside a repository:
 
-### 1. Run `init`
+1. Run `init`
+2. Review or accept the `AGENTS.md` update
+3. Run `init-commit-discipline`
 
-In Claude Code, Cursor, or another agent, ask to **run the `init` skill** (or "initialize AGENTS.md for this repo"). The skill will:
+If you installed project-scoped skills, commit `skills-lock.json`.
 
-- Create or improve **`AGENTS.md`** — Skill Augmentations first, then commands, architecture, and other grounded sections
-- **Symlink `CLAUDE.md` → `AGENTS.md`** so Claude Code picks up the same guidance
-- Ensure repo-internal skills under `.agents/skills/` include `metadata: internal: true`
-- List companion `init-*` skills (including `init-commit-discipline`) and ask whether to run any of them
+## How to use the main skills
 
-If `AGENTS.md` already exists, the skill compares proposed changes and asks before overwriting substantive content.
+### `init`
 
-### 2. Run `init-commit-discipline`
+Ask your agent to run `init` when a repo needs agent instructions.
 
-Run this **after `init`**. Ask your agent to **run the `init-commit-discipline` skill**. The skill will:
+What it does:
 
-1. **Resolve a commit helper skill** — checks for an installed helper (`commit-work`, bundled `commit`, etc.) and asks you to choose if none is found
-2. **Ask about auto-commit** — whether the agent should commit each completed unit of work without waiting for you to ask
-3. **Inject `## Commit Discipline` into `AGENTS.md`** — unit-of-work rules, Conventional Commits, staging guidance, and a pointer to the chosen commit helper
-4. **Register a SessionStart hook** — on Claude Code, Cursor, and Codex, reinjects the Commit Discipline section at the start of every session
+- Creates or improves `AGENTS.md`
+- Puts **Skill Augmentations** first so agents merge `SKILL.md`, `SKILL.project.md`, and `SKILL.local.md` correctly
+- Adds grounded repo guidance such as commands and architecture
+- Symlinks `CLAUDE.md` to `AGENTS.md` where appropriate
+- Repairs `.agents/skills/` metadata when needed
 
-If you choose the bundled fallback commit helper, install it **project-scoped** (not global):
+Use it:
+
+- In a new repo
+- When `AGENTS.md` is missing
+- When `AGENTS.md` is outdated or too generic
+
+### `init-commit-discipline`
+
+Ask your agent to run `init-commit-discipline` after `init`.
+
+What it does:
+
+- Adds a `Commit Discipline` section to `AGENTS.md`
+- Selects or asks for a commit helper skill
+- Optionally enables auto-commit rules
+- Registers a SessionStart hook on supported agents so the rule is re-injected every session
+
+If you want the bundled fallback commit helper:
 
 ```bash
 npx skills add cyberuni/cyber-skills --skill commit
 ```
 
-For agents without hook support, the AGENTS.md section alone applies the rules.
+### Other public skills
 
-Both skills use the `cyber-skills` CLI under the hood — semver is resolved and pinned on first use; hooks keep that pin until you re-run `init-commit-discipline`. You normally invoke them through your agent; see [Installation](#installation) and [Package contents](#package-contents) for direct CLI use.
+| Skill | Use it when you want to... |
+| ----- | -------------------------- |
+| **[commit](skills/commit/SKILL.md)** | enforce small, conventional commits |
+| **[create-skill](skills/create-skill/SKILL.md)** | scaffold a new user, project-private, or project-public skill |
+| **[skillify](skills/skillify/SKILL.md)** | turn a workflow from the current session into a reusable skill |
+| **[patch-skill](skills/patch-skill/SKILL.md)** | send local skill improvements back upstream |
+| **[find-awesome-skill](skills/find-awesome-skill/SKILL.md)** | find relevant third-party skills with install commands |
+| **[update-awesome-list](skills/update-awesome-list/SKILL.md)** | update this repo's curated recommendations |
+| **[configure-awesome-sources](skills/configure-awesome-sources/SKILL.md)** | manage the registries used by curated skill discovery |
+| **[audit-skill](skills/audit-skill/SKILL.md)** | review a skill for structure, quality, and security before publishing |
 
-## Public skills
+## Project layout
 
-| Skill | Description |
-| ----- | ----------- |
-| **[init](skills/init/SKILL.md)** | Initialize a new AGENTS.md with codebase documentation, then symlink CLAUDE.md to it. |
-| **[init-commit-discipline](skills/init-commit-discipline/SKILL.md)** | Inject commit discipline into AGENTS.md and register SessionStart hooks where supported. |
-| **[commit](skills/commit/SKILL.md)** | Minimal Conventional Commits helper — staging, messages, one concern per commit. |
-| **[create-skill](skills/create-skill/SKILL.md)** | Create a new agent skill — determines whether it should be global, repo internal, or repo public. |
-| **[skillify](skills/skillify/SKILL.md)** | Generalize a workflow from the current session into a reusable SKILL.md. |
-| **[patch-skill](skills/patch-skill/SKILL.md)** | Contribute local improvements to an installed skill back to its source repo via PR. |
-| **[find-awesome-skill](skills/find-awesome-skill/SKILL.md)** | Search curated awesome lists for skill and skill-repo recommendations with exact install commands. |
-| **[update-awesome-list](skills/update-awesome-list/SKILL.md)** | Add or update a curated awesome-list entry, then sync the README section. |
-| **[configure-awesome-sources](skills/configure-awesome-sources/SKILL.md)** | Manage the layered awesome-list sources used for curated skill discovery. |
-| **[audit-skill](skills/audit-skill/SKILL.md)** | Audit a SKILL.md for structure, quality, and security before installing or publishing. |
+This is the main part contributors and adopters need to understand.
 
-## Package contents
+### Skill placement
 
-Beyond the skill files, the package also ships a `cyber-skills` CLI and runtime hooks. Some skills (for example `init-commit-discipline`) use these under the hood; you normally do not need to invoke the CLI yourself.
+| Placement | Location | Purpose |
+| --------- | -------- | ------- |
+| **User** | `~/.agents/skills/<name>/` | Personal skills available across all repos |
+| **Project private** | `.agents/skills/<name>/` | Repo-specific contributor workflows not meant for package consumers |
+| **Project public** | `skills/<name>/` | Skills shipped from a repo and installed by others |
 
-| Layer | Purpose |
-| ----- | ------- |
-| **Skills** | Public agent skills under `skills/` — the primary interface |
-| **Hooks** | SessionStart instruction hooks for commit discipline (`hook register` / `hook run`) |
-| **CLI** | `cyber-skills` binary used by skills and available for direct use when needed |
-| **Governances** | Version-pinned agent-tool contracts (`governance list` / `governance show`) |
+### Recommended layout in a project
 
-### CLI
-
-For advanced or scripted use:
-
-```sh
-npx cyber-skills hook register \
-  --name commit-discipline --event SessionStart \
-  --extract AGENTS.md --heading "Commit Discipline"
-npx cyber-skills commit inject --commit-skill commit
-npx cyber-skills hook run --extract AGENTS.md --heading "Commit Discipline"
+```text
+your-repo/
+├── AGENTS.md
+├── CLAUDE.md -> AGENTS.md
+├── skills-lock.json
+├── .agents/
+│   └── skills/
+│       └── release-helper/
+│           └── SKILL.md
+└── skills/
+    └── code-review/
+        └── SKILL.md
 ```
 
-Pin to a specific version:
+Use this layout as a rule of thumb:
 
-```sh
-npx cyber-skills@$(npm view cyber-skills version) hook register \
-  --name commit-discipline --event SessionStart \
-  --extract AGENTS.md --heading "Commit Discipline"
-```
+- Put shared repo instructions in `AGENTS.md`
+- Put team-only workflows in `.agents/skills/`
+- Put installable/public skills in `skills/`
+- Keep `SKILL.local.md` local and uncommitted
+- Use `SKILL.project.md` only in the consuming project, not inside a published public skill
 
-Skill augmentations (`SKILL.local.md`) apply when a skill is loaded — see AGENTS.md **Skill Augmentations**.
+### Skill augmentations
 
-### CLI output formats
+When a skill is loaded, the layers merge in this order:
 
-Most subcommands support `--format` for multi-audience output:
+1. `SKILL.md`
+2. `SKILL.project.md`
+3. `SKILL.local.md`
 
-| Value | Consumer | Output |
-| ----- | -------- | ------ |
-| _(default)_ | Humans | Tables, aligned fields, prose |
-| `--format agent` | LLM / AI agents | Terse text — lower token cost, better reasoning |
-| `--format json` | Scripts / pipelines | Flat JSON for programmatic parsing |
+Higher layers override lower ones.
 
-Skills should use `--format agent`; non-LLM automation should use `--format json`. `--json` is a deprecated alias for `--format json`.
+This lets you:
 
-### Marketplace providers
+- Keep a reusable base skill in source control
+- Add team-specific overrides in the project
+- Add machine-local tweaks without committing them
 
-`cyber-skills find` searches [skills.sh](https://skills.sh) by default — no API key required.
+## Install patterns
 
-```sh
-# Search the default marketplace
-npx cyber-skills find <query>
-```
+### Global install
 
-Add a custom marketplace provider to also search a private or team registry:
-
-```sh
-npx cyber-skills config provider add https://my-registry.example.com \
-  --type marketplace
-```
-
-All configured marketplace providers are searched on every `find`. Custom providers must expose the same public search endpoint as skills.sh:
-
-```
-GET /api/search?q=<query>&limit=<n>
-→ { skills: [{ skillId, name, source, installs }], count, ... }
-```
-
-The `match` field on a marketplace provider has no effect on `find` (it only routes `add` specs to that provider).
-
-## Skill placement and patterns
-
-Use two separate terms:
-
-- **Placement** answers where the skill lives.
-- **Pattern** answers what sort of workflow the skill encodes.
-
-### Placement
-
-| Placement | Location | Use case |
-|-----------|----------|----------|
-| **User** | `~/.agents/skills/<name>/` | Personal skills available across all your projects |
-| **Project private** | `.agents/skills/<name>/` | Contributor tooling scoped to one repo (e.g. release helpers, SDK updaters) |
-| **Project public** | `skills/<name>/` | Skills shipped with this package — users install via `npx skills add cyberuni/cyber-skills` |
-
-### Pattern
-
-| Pattern | Use case |
-|---------|----------|
-| **Process** | Multi-step workflows where ordered steps and decisions matter |
-| **Tool-based** | Skills centered on reliable use of tools, systems, or connectors |
-| **Standard** | Skills that enforce tone, structure, formatting, or quality |
-
-## Quality
-
-Every PR runs `pnpm verify` (typecheck, lint, tests, and skill audit). The audit script bundled with `audit-skill` mechanically checks structure (S1–S5), quality (Q1–Q5, Q10–Q11), and security (E1–E2, E6).
+Best for one person using the same skills across many repos.
 
 ```bash
-# Run locally
-pnpm test:audit
-
-# Audit a single skill
-node bin/cyber-skills.mjs audit validate --path skills/my-skill
+npx skills add cyberuni/cyber-skills --all -g
 ```
 
-Full quality review (Q6–Q12, E3–E5, E7–E8, P1–P3) requires running the `audit-skill` agent skill.
+### Project-scoped install
 
-Architecture decisions are recorded in [docs/adr/](docs/adr/). Background surveys live in [docs/research/](docs/research/). See [ADR-0001: Governance vs Discipline Taxonomy](docs/adr/0001-governance-vs-discipline-taxonomy.md) and [ADR-0002: External Governance Federation](docs/adr/0002-external-governance-federation.md).
+Best for teams that want the same skill set in one repository.
+
+```bash
+npx skills add cyberuni/cyber-skills --skill init --skill init-commit-discipline
+```
+
+Commit `skills-lock.json` so the team restores the same skill sources.
+
+### Agent-specific install
+
+If you want a skill available only in one host:
+
+```bash
+npx skills add cyberuni/cyber-skills --skill init -a claude-code -g
+```
+
+## Direct CLI use
+
+Most people can skip this section.
+
+The CLI is useful for scripts, audits, and hook registration:
+
+```bash
+# Explore commands
+npx cyber-skills@latest --help
+
+# Pinned manual use
+npx cyber-skills@$(npm view cyber-skills version) audit validate --path skills/my-skill
+```
+
+Common direct commands:
+
+- `governance show` to load version-pinned guidance
+- `audit validate` to run mechanical skill checks
+- `hook register` and `hook run` for hook-backed workflows
+- `skill repair-private` to fix `.agents/skills/` metadata
+
+## For contributors to this repo
+
+Before pushing changes here:
+
+```bash
+pnpm verify
+```
+
+Useful local commands:
+
+```bash
+pnpm test
+pnpm typecheck
+pnpm lint
+pnpm test:audit
+node bin/cyber-skills.mjs audit validate --path skills/my-skill
+```
 
 <!-- AWESOME-SKILLS:START -->
 ## Awesome Skills
