@@ -99,7 +99,7 @@ These fields mean the same thing across vendors:
 | `dependencies` | Yes (inter-plugin) | No | No |
 | `defaultEnabled` | Yes | No | No |
 | `displayName` | Yes | No | No |
-| JSON Schema URL | `https://json.schemastore.org/claude-code-plugin-manifest.json` | — | — |
+| JSON Schema URL | `https://json.schemastore.org/claude-code-plugin-manifest.json` | `https://raw.githubusercontent.com/cursor/plugins/main/schemas/plugin.schema.json` | not published |
 
 ### Claude Code manifest (complete schema)
 
@@ -210,6 +210,20 @@ Codex-specific:
 - `interface` object for marketplace metadata
 - Env vars: `${PLUGIN_ROOT}`, `${PLUGIN_DATA}` (primary); `${CLAUDE_PLUGIN_ROOT}`, `${CLAUDE_PLUGIN_DATA}` (compatibility aliases)
 
+### Published JSON Schemas — all major runtimes
+
+| Runtime | Schema URL | Notes |
+| --- | --- | --- |
+| Claude Code | `https://json.schemastore.org/claude-code-plugin-manifest.json` | Draft 7; generated 2026-04-23 |
+| Cursor | `https://raw.githubusercontent.com/cursor/plugins/main/schemas/plugin.schema.json` | Draft 7; in cursor/plugins GitHub repo |
+| Codex (OpenAI) | not published | Docs only at developers.openai.com |
+| open-plugin-spec | not published | Spec prose in vercel-labs/open-plugin-spec; no schema.json |
+| Windsurf (Codeium) | not published | Docs at docs.windsurf.com; no schema file |
+| GitHub Copilot Extensions | not published | Docs at docs.github.com; no schema file |
+| Gemini Code Assist | not published | config.yaml format; no schema file |
+| Zed | not published | TOML format (extension.toml); schema requested in issue #21994 |
+| Continue.dev | `https://raw.githubusercontent.com/continuedev/continue/main/extensions/vscode/config_schema.json` | Draft 2020-12; VSCode config schema, not a plugin manifest |
+
 ### Open Plugin Spec status
 
 Published by Vercel Labs as v1.0.0. Proposes `.plugin/plugin.json` as a vendor-neutral fallback that conformant hosts check after their vendor-specific path. Claude Code is the primary documented host. Cursor and Codex have vendor-specific paths but may fall back to `.plugin/plugin.json` — not confirmed from official docs. The spec is real and published (not a draft) but multi-vendor adoption is partial and early-stage.
@@ -230,6 +244,13 @@ Published by Vercel Labs as v1.0.0. Proposes `.plugin/plugin.json` as a vendor-n
 ## Sources consulted
 
 - [Claude Code Plugins Reference](https://code.claude.com/docs/en/plugins-reference)
+- [Claude Code plugin manifest JSON Schema](https://json.schemastore.org/claude-code-plugin-manifest.json)
 - [Cursor Plugins Reference](https://cursor.com/docs/reference/plugins)
+- [Cursor plugin manifest JSON Schema](https://raw.githubusercontent.com/cursor/plugins/main/schemas/plugin.schema.json)
 - [Codex Plugins Build](https://developers.openai.com/codex/plugins/build)
 - [Open Plugin Spec — vercel-labs/open-plugin-spec](https://github.com/vercel-labs/open-plugin-spec)
+- [Windsurf extension docs](https://docs.windsurf.com)
+- [GitHub Copilot Extensions docs](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-plugin-reference)
+- [Gemini Code Assist customization docs](https://developers.google.com/gemini-code-assist/docs/customize-gemini-behavior-github)
+- [Zed extension development docs](https://zed.dev/docs/extensions/developing-extensions)
+- [Continue.dev VSCode config schema](https://raw.githubusercontent.com/continuedev/continue/main/extensions/vscode/config_schema.json)
