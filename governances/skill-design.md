@@ -200,5 +200,5 @@ Related governances (load on demand; read stdout as authoritative):
 ```bash
 npx cyber-skills@<version> governance show skill-repo-structure
 npx cyber-skills@<version> governance show agent-tool-output
-npx cyber-skills@<version> governance show plugin-design
+npx cyber-skills@<version> governance show universal-plugin
 ```
