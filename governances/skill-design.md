@@ -74,72 +74,6 @@ Persona skills must include `metadata.persona: "true"`.
 - **`SKILL.local.md`** extends a skill locally; never commit or push it upstream.
 - Include every changed file under the skill folder when patching (not only `SKILL.md`).
 
-## Plugin layer
-
-A **plugin** is the distribution unit; a **skill** is the capability unit. Install plugins; invoke skills. Plugins bundle one or more skills plus optional extensions (MCP servers, hooks, commands, agents, rules) into a single installable package.
-
-The **Open Plugin Specification** (Vercel Labs, `vercel-labs/open-plugin-spec`) defines the vendor-neutral manifest. Supported by Claude Code, Cursor, Codex, and other conformant runtimes.
-
-### Plugin directory layout
-
-```
-plugin-root/
-├── .plugin/
-│   └── plugin.json        # required manifest
-├── skills/
-│   └── <skill-name>/
-│       └── SKILL.md       # Agent Skills spec — see rest of this governance
-├── .mcp.json              # optional MCP server config
-├── commands/              # optional slash commands (.md files)
-├── hooks/
-│   └── hooks.json         # optional event hooks
-├── agents/                # optional specialist agents (.md files)
-├── rules/                 # optional context rules (.mdc files)
-├── .lsp.json              # optional LSP server config
-└── assets/
-```
-
-Vendor-specific overrides go in `.<tool-name>-plugin/plugin.json` (e.g. `.claude-plugin/plugin.json`); they take precedence over `.plugin/plugin.json` on that host only.
-
-### `plugin.json` fields
-
-Required: `name` (1–64 chars, lowercase alphanumeric + hyphens/periods).
-
-Optional metadata: `version` (semver), `description`, `author`, `homepage`, `repository`, `license`, `keywords`.
-
-Optional component paths — each is a string, array, or `{ "paths": [...] }` object:
-
-| Field | Component type | Core? |
-| --- | --- | --- |
-| `skills` | Skill directories | Yes |
-| `mcpServers` | MCP server config or path to `.mcp.json` | Yes |
-| `commands` | Slash command markdown files | No |
-| `agents` | Agent definition markdown files | No |
-| `rules` | Context rule `.mdc` files | No |
-| `hooks` | `hooks.json` or inline config | No |
-| `lspServers` | LSP server config | No |
-| `outputStyles` | Host-specific output resources | No |
-
-A conformant host must support at least one core component type (skills or MCP servers). Extended types are silently ignored on hosts that don't implement them.
-
-### Path and env rules
-
-- All paths must start with `./`; `../` traversal is rejected.
-- `${PLUGIN_ROOT}` expands to the plugin root in MCP `command`, `args`, `env`, `cwd`, and hook commands.
-- `${PLUGIN_DATA}` (recommended by hosts) provides a persistent data directory that survives updates.
-
-### Namespacing
-
-- Skills: `{plugin-name}:{skill-name}`
-- MCP tools: `mcp__plugin_{plugin-name}_{server-name}__{tool-name}`
-- Commands / agents: `{plugin-name}:{component-name}`
-
-Use fully qualified names when referencing MCP tools from skill instructions (required by some hosts to avoid "tool not found" errors).
-
-### `plugin.json` vs `skill.json`
-
-`plugin.json` (`.plugin/plugin.json`) is the distribution manifest read by agent runtimes at install time. `skill.json` (sidecar in the skill directory) is the cyber-skills installer metadata — see [skill.json section](#skilljs--install-time-metadata). They are distinct files with different readers; do not conflate them.
-
 ## Progressive disclosure
 
 Keep SKILL.md concise — essential workflow and decision logic only.
@@ -252,35 +186,6 @@ Deprecated: `metadata.activation` in SKILL.md frontmatter. Use top-level `activa
 - Include actionable steps, numbered instructions, or decision logic — not just a restatement of the description.
 - Do not instruct generic behavior the model already follows ("write clean code", "be helpful").
 
-## Cross-platform portability
-
-Skills are read natively by 32+ agent runtimes. Some platforms require format conversion at install time; a few don't support SKILL.md at all.
-
-| Platform | SKILL.md native | Notes |
-| --- | --- | --- |
-| Claude Code, Codex, Gemini CLI, GitHub Copilot, Amp, Kiro, Goose | Yes | Read directly from platform paths |
-| Cursor | Needs conversion | Project-only; no global install path |
-| Windsurf | Needs conversion | 6,000 char/file hard limit, 12,000 total |
-| Zed, Aider | No | Require separate manual configuration |
-
-### Installation paths
-
-| Platform | Global | Project |
-| --- | --- | --- |
-| Claude Code | `~/.claude/skills/` | `.claude/skills/` |
-| Codex / Gemini CLI | `~/.agents/skills/` | `.agents/skills/` |
-| Cursor | — (none) | `.cursor/skills/` |
-| GitHub Copilot | `~/.copilot/skills/` | `.github/copilot/skills/` |
-| Windsurf | `~/.codeium/windsurf/` | `.windsurf/rules/` |
-
-### Portability rules
-
-- Use forward slashes in all file paths (backslashes break Unix hosts).
-- Keep SKILL.md body under 6,000 characters (Windsurf hard limit).
-- Declare environment requirements in `compatibility`; do not assume tools are installed.
-- Do not embed platform-specific syntax (hook event names, slash command formats) in the skill body — put those in the `activation` field and `hooks/hooks.json`.
-- Use `allowed-tools` to declare permission scope; on hosts that enforce it, undeclared tool use will be blocked.
-
 ## Anti-patterns
 
 - Rationale or "because…" prose in the body
@@ -295,4 +200,5 @@ Related governances (load on demand; read stdout as authoritative):
 ```bash
 npx cyber-skills@<version> governance show skill-repo-structure
 npx cyber-skills@<version> governance show agent-tool-output
+npx cyber-skills@<version> governance show plugin-design
 ```
