@@ -117,6 +117,32 @@
 
 ---
 
+## E11 — Cursor publishes a JSON Schema for its plugin manifest
+
+- **claim_id**: E11
+- **date**: 2026-05-31
+- **status**: Confirmed
+- **confidence**: High
+- **source.label**: cursor/plugins GitHub — plugin.schema.json
+- **source.url**: https://raw.githubusercontent.com/cursor/plugins/main/schemas/plugin.schema.json
+- **source.type**: Official schema file (GitHub, cursor org)
+- **notes**: Draft-07 JSON Schema. Hosted in the `cursor/plugins` repository under `schemas/`. Covers `.cursor-plugin/plugin.json` manifest fields.
+
+---
+
+## E12 — Codex, open-plugin-spec, Windsurf, GitHub Copilot, Gemini, and Zed do not publish JSON Schemas
+
+- **claim_id**: E12
+- **date**: 2026-05-31
+- **status**: Confirmed
+- **confidence**: High
+- **source.label**: Each vendor's official docs and GitHub repos
+- **source.url**: https://developers.openai.com/codex/plugins/build
+- **source.type**: Official docs (multiple vendors)
+- **notes**: Survey of all major AI agent runtimes found no published JSON Schema files for: Codex (.codex-plugin/plugin.json), open-plugin-spec (.plugin/plugin.json), Windsurf, GitHub Copilot Extensions, Gemini Code Assist (uses config.yaml), Zed (uses TOML; schema requested in issue #21994 but not published). Continue.dev publishes a VSCode config schema (not a plugin manifest). Only Claude Code and Cursor have machine-readable schemas.
+
+---
+
 ## E10 — SKILL.md and .mcp.json content is fully portable across vendors
 
 - **claim_id**: E10
