@@ -2,6 +2,8 @@
 
 Gherkin acceptance criteria for any conformant universal plugin tool — validator, generator, or installer. Follows the Uncle Bob [Acceptance-Pipeline-Specification](https://github.com/unclebob/Acceptance-Pipeline-Specification) pattern.
 
+See [design.md](./design.md) for the problem statement, goals, key design decisions, and tradeoffs.
+
 ## Scope
 
 These feature files define the behavior that **any** conformant tool must exhibit. They are the acceptance criteria for future `cyber-skills plugin` CLI commands and for third-party tools that want to claim compatibility with the universal plugin spec.
