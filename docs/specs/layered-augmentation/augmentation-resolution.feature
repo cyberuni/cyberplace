@@ -1,6 +1,6 @@
 Feature: Layer resolution
   The resolution algorithm merges collected layers in priority order to produce the
-  effective extension the agent reads. Each layer is applied as a diff against the
+  effective file the agent reads. Each layer is applied as a diff against the
   accumulated result of all prior layers.
 
   The system under test is any conformant layer resolver (e.g., `cyber-skills skill resolve`).
@@ -100,7 +100,7 @@ Feature: Layer resolution
       """
     When resolution runs
     Then the effective "config.timeout" is 60
-    And "config.retries" is not present in the effective extension
+    And "config.retries" is not present in the effective file
 
   # --- Markdown sections ---
 
@@ -135,7 +135,7 @@ Feature: Layer resolution
     Given base layer has sections "## Overview" and "## Steps"
     And project layer has section "## Team Notes" not present in base
     When resolution runs
-    Then the effective extension ends with "## Team Notes"
+    Then the effective file ends with "## Team Notes"
 
   Scenario: Section remove:true deletes the section from the accumulated result
     Given base layer has section "## Troubleshooting"
@@ -146,7 +146,7 @@ Feature: Layer resolution
           remove: true
       """
     When resolution runs
-    Then the effective extension has no "## Troubleshooting" section
+    Then the effective file has no "## Troubleshooting" section
 
   Scenario: remove:true on a section not present in the accumulated result is silently ignored
     Given base layer does not have a "## Troubleshooting" section
@@ -176,7 +176,7 @@ Feature: Layer resolution
       """
     When resolution runs
     Then the effective "## Steps" contains only "### Step A"
-    And "### Step 1" and "### Step 2" are absent from the effective extension
+    And "### Step 1" and "### Step 2" are absent from the effective file
 
   # --- Layer ordering ---
 
@@ -185,10 +185,10 @@ Feature: Layer resolution
     When resolution runs
     Then the effective "## Steps" contains "local"
 
-  Scenario: Only a local layer with no base produces an effective extension equal to local content
+  Scenario: Only a local layer with no base produces an effective file equal to local content
     Given only "SKILL.local.md" exists for "commit-work"
     When resolution runs
-    Then the effective extension equals the local layer content exactly
+    Then the effective file equals the local layer content exactly
 
   Scenario: Three layers applied in sequence accumulate correctly
     Given base layer has "## Steps" containing "Step 1."
