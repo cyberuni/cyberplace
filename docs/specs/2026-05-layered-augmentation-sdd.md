@@ -1,4 +1,4 @@
-# SDD: Agent Extension Augmentation System (AEAS)
+# SDD: Agentic File Augmentation System (AFAS)
 
 **Status:** Draft  
 **Authors:** unional  
@@ -9,13 +9,13 @@
 
 ## 1. Problem Statement
 
-AI agent tools (Claude Code, Cursor, Codex) follow written instructions and execute code to perform tasks. The add-ons that extend this behavior — collectively called **agent extensions** ([ADR-0006](../adr/0006-agent-extension-terminology.md)) — currently have no standard model for layering across multiple sources of authority.
+AI agent tools (Claude Code, Cursor, Codex) read instruction files — markdown and text files that tell the agent how to think and act. These **agentic files** (`CLAUDE.md`, `SKILL.md`, `AGENTS.md`, `.cursorrules`, and similar) currently have no standard model for layering across multiple sources of authority.
 
 A basic pattern exists: a shared base file with a local override (e.g. `CLAUDE.md` + `CLAUDE.local.md`). This handles the simplest case but leaves two use cases unaddressed.
 
-**Local augmentation.** A developer wants machine-local, gitignored tweaks to a shared agent extension — additions that apply only on their machine and never reach CI. The `SKILL.local.md` convention exists in some tools but is not standardized, and its interaction with other layers is unspecified.
+**Local augmentation.** A developer wants machine-local, gitignored tweaks to a shared agentic file — additions that apply only on their machine and never reach CI. The `SKILL.local.md` convention exists in some tools but is not standardized, and its interaction with other layers is unspecified.
 
-**Team augmentation.** A project team wants to layer their conventions on top of a shared, published agent extension without forking it. This looks simple but carries a design tension:
+**Team augmentation.** A project team wants to layer their conventions on top of a shared, published agentic file without forking it. This looks simple but carries a design tension:
 
 - *Augment* — the team's layer sits on top of the shared extension; upstream updates propagate automatically.
 - *Replace* — the team maintains their own copy; they own the full content but must manually track and merge upstream changes.
@@ -26,24 +26,20 @@ The augmentation path is lower maintenance but requires a clear merge model. The
 
 ## 2. Terminology
 
-This spec uses the three-layer community vocabulary from [ADR-0006](../adr/0006-agent-extension-terminology.md):
-
 | Term | Definition |
 |---|---|
-| **Agent extension** | Any add-on that extends an AI agent's behavior beyond the base model — umbrella term covering skills, tools, and plugins |
-| **Skill** | An instruction-based agent extension: a `SKILL.md` file that tells an agent how to perform a task |
-| **Tool** | A code-based agent extension: a callable function or MCP server the agent can invoke at runtime |
-| **Plugin** | A distribution unit that bundles one or more skills, tools, and other components |
-| **Base extension** | The agent extension file shipped with a package; the lowest-priority content source |
-| **Augmentation** | A layer file that modifies a base extension or a lower-priority augmentation |
-| **Layer** | One source of extension content at a defined scope |
+| **Agentic file** | A markdown or text file that an AI agent reads for instructions, context, or behavioral guidance — e.g. `CLAUDE.md`, `SKILL.md`, `AGENTS.md`, `.cursorrules`. Distinct from code-based tools (MCP servers, callable functions). |
+| **Skill** | An agentic file in `SKILL.md` format that tells an agent how to perform a named task |
+| **Base file** | The agentic file shipped with a package; the lowest-priority content source |
+| **Augmentation** | A layer file that modifies a base file or a lower-priority augmentation |
+| **Layer** | One source of agentic file content at a defined scope |
 | **Scope** | The deployment context a layer belongs to (user, org, project, etc.) |
-| **Resolution** | The algorithm that merges all applicable layers into one effective extension |
-| **Effective extension** | The fully merged result the agent reads |
+| **Resolution** | The algorithm that merges all applicable layers into one effective file |
+| **Effective file** | The fully merged result the agent reads |
 | **Lock** | A declaration in a layer that prevents higher-scoped layers from overriding a section |
 | **Heading** | A markdown `##` section; the unit of section-level merge |
 
-> **v1 scope note:** This spec covers augmentation of instruction-based extensions (skills, `SKILL.md` format). Code-based extensions (tools, MCP servers) have different merge semantics and are deferred to v2.
+> **v1 scope note:** This spec covers augmentation of agentic files — instruction-bearing text files agents read (e.g. `SKILL.md`, `CLAUDE.md`, `AGENTS.md`). Code-based tools (MCP servers, callable functions) have different merge semantics and are deferred to v2.
 
 ---
 
@@ -55,7 +51,7 @@ This spec uses the three-layer community vocabulary from [ADR-0006](../adr/0006-
 - **G4** — Provide a lock mechanism so high-authority layers can prevent override.
 - **G5** — Ship a governance document agents load on demand via `governance show`.
 - **G6** — Ship `skill resolve` and `skill layers` CLI commands for developer debugging.
-- **G7** — Publish an open spec proposal targeting agentskills and open-plugin-spec.
+- **G7** — Publish an open spec proposal targeting agentskills and open-plugin-spec, proposing "agentic file" as shared vocabulary for instruction-bearing text files across agent platforms.
 
 ## 4. Non-Goals
 
@@ -153,7 +149,7 @@ return effective
 | `boolean` | Last-wins | — |
 | `object` (nested map) | Deep merge | `fields.{key}.strategy: replace` |
 
-The `name` field is never merged — it is always taken from the base extension.
+The `name` field is never merged — it is always taken from the base file.
 
 ### 7.3 Markdown section merge
 
@@ -172,7 +168,7 @@ sections:
 - `append` — augmenting content added after accumulated section content.
 - `prepend` — added before.
 
-**New sections:** a heading not present in the accumulated result is appended to the end of the effective extension body.
+**New sections:** a heading not present in the accumulated result is appended to the end of the effective file body.
 
 **Removed sections:** `remove: true` deletes the section from the accumulated result:
 
@@ -226,7 +222,7 @@ sections:
     remove: true        # remove this section from accumulated result
 ```
 
-These fields are meaningful only in augmentation layer files. A base `SKILL.md` may declare `sections.{name}.locked: true` to lock a section against any augmentation.
+These fields are meaningful only in augmentation layer files. A base agentic file may declare `sections.{name}.locked: true` to lock a section against any augmentation.
 
 ---
 
@@ -240,6 +236,8 @@ These fields are meaningful only in augmentation layer files. A base `SKILL.md` 
 
 Normative, agent-facing version of §§5–8. Dense, no rationale prose. Sections: Layer Model, File Discovery, Resolution Algorithm, Frontmatter Schema. Cross-references `skill-design` governance.
 
+Scope note included: applies to agentic files (`SKILL.md` format in v1); code-based tools deferred to v2.
+
 ---
 
 ### D2 — CLI: `skill resolve`
@@ -248,7 +246,7 @@ Normative, agent-facing version of §§5–8. Dense, no rationale prose. Section
 **Location:** `src/skill/resolve.ts`, registered in `src/cli.ts`  
 **Command:** `cyber-skills skill resolve <name> [--dir <path>] [--json]`
 
-Outputs the effective extension with provenance annotations showing which layer each section came from.
+Outputs the effective file with provenance annotations showing which layer each section came from.
 
 **Text output (default):**
 ```
@@ -347,7 +345,7 @@ Draft targeting:
 - **vercel-labs/open-plugin-spec** — plugin-manifest-level augmentation
 - **Claude Code** — request to support `~/.agents/skills/` user-scope discovery
 
-Proposes "agent extension" as a formal cross-layer term alongside the skill/tool/plugin hierarchy. Scoped to §§5–8 of this SDD, stripped of cyber-skills-specific details.
+Proposes "agentic file" as shared vocabulary for instruction-bearing text files (vs code-based tools), and the layer model as a standard augmentation contract. Scoped to §§5–8 of this SDD, stripped of cyber-skills-specific details.
 
 ---
 

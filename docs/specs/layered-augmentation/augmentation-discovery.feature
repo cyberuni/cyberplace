@@ -1,5 +1,5 @@
 Feature: Layer discovery
-  The discovery algorithm collects all applicable augmentation layer files for a skill,
+  The discovery algorithm collects all applicable augmentation layer files for an agentic file,
   ordered from lowest to highest priority. Missing layers are silently skipped.
 
   The system under test is any conformant layer resolver (e.g., `cyber-skills skill layers`).

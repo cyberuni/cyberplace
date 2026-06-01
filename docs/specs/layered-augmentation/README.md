@@ -1,6 +1,6 @@
 # Layered Augmentation Acceptance Specification
 
-Gherkin acceptance criteria for any conformant implementation of the Agent Extension Augmentation System (AEAS). Follows the Uncle Bob [Acceptance-Pipeline-Specification](https://github.com/unclebob/Acceptance-Pipeline-Specification) pattern.
+Gherkin acceptance criteria for any conformant implementation of the Agentic File Augmentation System (AFAS). Follows the Uncle Bob [Acceptance-Pipeline-Specification](https://github.com/unclebob/Acceptance-Pipeline-Specification) pattern.
 
 ## Scope
 
@@ -22,5 +22,5 @@ All scenarios derive from the [SDD](../2026-05-layered-augmentation-sdd.md) (Â§Â
 
 ```bash
 cyber-skills skill layers <name> [--dir <path>]   # D3: list discovered layers
-cyber-skills skill resolve <name> [--dir <path>]  # D2: show effective extension with provenance
+cyber-skills skill resolve <name> [--dir <path>]  # D2: show effective file with provenance
 ```

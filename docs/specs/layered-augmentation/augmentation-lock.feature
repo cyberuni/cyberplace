@@ -41,7 +41,7 @@ Feature: Section locking
           remove: true
       """
     When resolution runs
-    Then the effective extension still contains "## Compliance"
+    Then the effective file still contains "## Compliance"
 
   Scenario: Non-locked sections in the same layer are not affected by another section's lock
     Given base layer has "## Compliance" locked and "## Steps" not locked
