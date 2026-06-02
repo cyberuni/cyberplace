@@ -70,6 +70,22 @@ This sets `metadata: internal: true` on repo-private skills and removes erroneou
 
 Symlink `CLAUDE.md` → `AGENTS.md`; if `CLAUDE.md` is a regular file, merge it into `AGENTS.md` first.
 
+## Vendor skill symlinks
+
+For each skill in `.agents/skills/`, ensure a corresponding symlink exists in every vendor skill directory that is present in the repo. Vendor directories and their skill paths:
+
+| Vendor | Skill dir |
+|--------|-----------|
+| Claude Code | `.claude/skills/` |
+| Cursor | `.cursor/skills/` |
+| OpenCode | `.opencode/skills/` |
+
+For each vendor directory that exists, scan `.agents/skills/<name>` entries and check whether `.<vendor>/skills/<name>` exists. If the symlink is missing, create it as a relative symlink pointing from the vendor skills dir back to the corresponding entry in `.agents/skills/`. If `.<vendor>/skills/` does not exist yet, create it first.
+
+Skip any entry in `.agents/skills/` that is itself a symlink into `skills/` (public skill stubs) — those are managed by `skill repair-private`.
+
+Report: list what was created and what was already present.
+
 ## Follow-up init skills
 
 After init completes, discover companion `init-*` skills with `npx cyber-skills@<exact> skill list --grep 'init-*'` (or `npx --yes …` after install consent — see **Ensure cyber-skills CLI**).
