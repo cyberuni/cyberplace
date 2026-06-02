@@ -17,22 +17,8 @@ This file provides guidance to AI coding assistants when working with code in th
 
 Then add sections in this order:
 
-1. **Skill Augmentations** — always first. Use this exact content:
-
-```markdown
-## Skill Augmentations
-
-When reading any `SKILL.md` file, check for augmentation files in the same directory and merge them in order:
-
-1. `SKILL.md` — base skill (lowest precedence)
-2. `SKILL.project.md` — project-level overrides (team-shared, checked into the consuming project)
-3. `SKILL.local.md` — machine-local overrides (highest precedence, gitignored)
-
-Later layers extend and override earlier ones. Both `SKILL.project.md` and `SKILL.local.md` are ignored during `skills add` installation.
-```
-
-2. **Discipline sections** (when present, e.g. `## Commit Discipline`) — agent-first: dense normative rules in the body, `### References` at section bottom for commit-helper skills and `governance show` pointers. Load `npx cyber-skills@<exact> governance show skill-repo-structure` for the Discipline sections rules (see **Ensure cyber-skills CLI**).
-3. Other sections only when grounded in existing project files (see usage notes below).
+1. **Discipline sections** (when present, e.g. `## Commit Discipline`) — agent-first: dense normative rules in the body, `### References` at section bottom for commit-helper skills and `governance show` pointers. Load `npx cyber-skills@<exact> governance show skill-repo-structure` for the Discipline sections rules (see **Ensure cyber-skills CLI**).
+2. Other sections only when grounded in existing project files (see usage notes below).
 
 ## Usage notes
 

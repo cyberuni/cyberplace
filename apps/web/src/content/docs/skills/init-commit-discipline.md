@@ -7,7 +7,7 @@ description: Inject commit discipline into AGENTS.md and register SessionStart h
 
 Injects always-on commit discipline into the repo: an AGENTS.md section for every agent, plus SessionStart hooks on agents that support them (Claude Code, Cursor, Codex).
 
-**Prerequisite:** Run [`init`](/skills/init/) first — `AGENTS.md` with Skill Augmentations must exist.
+**Prerequisite:** Run [`init`](/skills/init/) first — `AGENTS.md` must exist.
 
 ## What it does
 

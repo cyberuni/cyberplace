@@ -191,7 +191,7 @@ Canonical definition: **skill-design** governance § Narrow and composable.
 Warn if the skill body appears to implement more than one distinct workflow or covers multiple unrelated concerns. Each skill should do one thing. Signals: multiple top-level "## Workflow" sections with unrelated goals, or a description that lists many unrelated capabilities separated by "and also". Also warn when:
 
 - **Misplaced concern:** the body covers work that belongs in a **sibling composable skill** (e.g. repo AGENTS.md setup vs commit policy vs commit helper — three separate workflows).
-- **Duplication:** the same rule or section appears **twice** under different headings (e.g. two Skill Augmentations blocks).
+- **Duplication:** the same rule or section appears **twice** under different headings (e.g. two Commit Discipline blocks).
 - **Stale composition:** **Related skills** (or similar cross-links) describe capabilities a linked skill no longer provides.
 
 **Q8 — No obvious instructions (LOW)**

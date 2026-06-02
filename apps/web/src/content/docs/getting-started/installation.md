@@ -59,7 +59,7 @@ npx skills add cyberuni/cyber-skills --skill init --skill init-commit-discipline
 
 In Claude Code, Cursor, or another agent, ask to **run the `init` skill**. It will:
 
-- Create or improve **`AGENTS.md`** — Skill Augmentations first, then commands, architecture, and grounded sections
+- Create or improve **`AGENTS.md`** — commands, architecture, and grounded sections
 - **Symlink `CLAUDE.md` → `AGENTS.md`** so Claude Code picks up the same guidance
 - Ensure repo-internal skills under `.agents/skills/` include `metadata: internal: true`
 - List companion `init-*` skills and ask whether to run any
