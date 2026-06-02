@@ -2,16 +2,6 @@
 
 This file provides guidance to AI coding assistants when working with code in this repository.
 
-## Skill Augmentations
-
-When reading any `SKILL.md` file, check for augmentation files in the same directory and merge them in order:
-
-1. `SKILL.md` — base skill (lowest precedence)
-2. `SKILL.project.md` — project-level overrides (team-shared, checked into the consuming project)
-3. `SKILL.local.md` — machine-local overrides (highest precedence, gitignored)
-
-Later layers extend and override earlier ones. Both `SKILL.project.md` and `SKILL.local.md` are ignored during `skills add` installation.
-
 **Runtime hooks (this repo):** commit discipline is registered in `.claude/settings.json`. To re-register after changes, from the repo root:
 
 ```bash
@@ -21,7 +11,7 @@ node bin/cyber-skills.mjs hook register \
   --extract AGENTS.md --heading "Commit Discipline"
 ```
 
-Augmentations apply when a skill is loaded, per the **Skill Augmentations** rule above. Hooks run via `npx cyber-skills@<version> hook run --file|--glob|--extract`.
+Hooks run via `npx cyber-skills@<version> hook run --file|--glob|--extract`.
 
 When writing or editing any `SKILL.md` under `.agents/skills/`, always include `metadata: internal: true` in the frontmatter.
 
@@ -113,7 +103,7 @@ This repo is a skill library and CLI tool for AI agents (Claude Code, Cursor, Co
 - `dist/cli.mjs` — single bundled CLI (gitignored, built by tsdown); commands: `audit`, `awesome`, `commit`, `governance`, `hook`, `skill`
 - `skills/` — public skills shipped with the package
 
-**Skill lifecycle:** Skills are authored in `skills/<name>/SKILL.md`, validated by `audit-skill`, and surfaced to agents via the `skills` CLI or `npx skills add`. Runtime behavior (commit discipline) is handled by instruction hooks registered in `.claude/settings.json` and `.cursor/hooks.json`. Local skill augmentations (`SKILL.local.md`) are applied when a skill is loaded — see **Skill Augmentations** below.
+**Skill lifecycle:** Skills are authored in `skills/<name>/SKILL.md`, validated by `audit-skill`, and surfaced to agents via the `skills` CLI or `npx skills add`. Runtime behavior (commit discipline) is handled by instruction hooks registered in `.claude/settings.json` and `.cursor/hooks.json`.
 
 **`cyber-skills` CLI:** Used to register agent hooks and run scripts without adding it as a devDependency. In other repos, invoke via pinned npx with an exact version from `npm view cyber-skills version`. In this repo, build first, then use the local bin. Idempotent.
 

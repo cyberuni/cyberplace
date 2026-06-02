@@ -57,7 +57,6 @@ Ask your agent to run `init` when a repo needs agent instructions.
 What it does:
 
 - Creates or improves `AGENTS.md`
-- Puts **Skill Augmentations** first so agents merge `SKILL.md`, `SKILL.project.md`, and `SKILL.local.md` correctly
 - Adds grounded repo guidance such as commands and architecture
 - Symlinks `CLAUDE.md` to `AGENTS.md` where appropriate
 - Repairs `.agents/skills/` metadata when needed
@@ -130,7 +129,6 @@ your-repo/
 │       │   └── assets/
 │       └── release-helper/
 │           ├── SKILL.md
-│           ├── SKILL.project.md
 │           └── scripts/
 └── skills/
     └── init -> .agents/skills/init
@@ -144,25 +142,7 @@ Use this layout as a rule of thumb:
 - Treat `skills/<name>` in a consuming project as an optional symlink, not the source of truth
 - Put team-only workflows in `.agents/skills/`
 - Author installable/public skills in `skills/` when you are building a source repo for others to install from
-- Keep `SKILL.local.md` local and uncommitted
-- Use `SKILL.project.md` only in the consuming project, not inside a published public skill
 - Do not expect `.agents/governances/` or a shared `.agents/assets/` tree from `skills add`; governances are loaded from the installed `cyber-skills` CLI package, and assets stay inside each skill directory
-
-### Skill augmentations
-
-When a skill is loaded, the layers merge in this order:
-
-1. `SKILL.md`
-2. `SKILL.project.md`
-3. `SKILL.local.md`
-
-Higher layers override lower ones.
-
-This lets you:
-
-- Keep a reusable base skill in source control
-- Add team-specific overrides in the project
-- Add machine-local tweaks without committing them
 
 ## Install patterns
 

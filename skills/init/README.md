@@ -17,7 +17,6 @@ Good triggers include:
 
 The skill analyzes the codebase and writes or updates `AGENTS.md` with:
 
-- Skill Augmentations rules (always first)
 - Commands for build, lint, and test
 - Architecture overview grounded in the repo
 - Optional discipline sections and project-specific notes from existing docs

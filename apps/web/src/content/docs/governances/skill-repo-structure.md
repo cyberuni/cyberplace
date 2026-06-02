@@ -73,10 +73,6 @@ plugins/
 | **Project public** | `skills/<name>/` | Installed by consumers |
 
 - Upstream patches from a local install map to `skills/<name>/…` in the source repo — never `.agents/skills/` upstream
-- `SKILL.project.md` — team-shared overrides; checked into the consuming project only, never into public `skills/`
-- `SKILL.local.md` — stays local; never commit or push upstream
-
-Augmentation precedence: `SKILL.local.md` > `SKILL.project.md` > `SKILL.md`
 
 ## Discipline sections in AGENTS.md
 
@@ -103,5 +99,5 @@ Use `init-commit-discipline` to inject commit discipline.
 - Bloating `AGENTS.md` with full governance bodies — use `governance show` pointers instead
 - Rationale prose in governances, discipline sections, or public skills
 - `## Why`, `## Rationale`, `## Background` sections in agent-loaded artifacts
-- Committing `SKILL.local.md`, `SKILL.project.md`, or secrets into public skill trees
+- Committing `SKILL.local.md` or secrets into public skill trees
 - Running no CI on skill-only repos that accept external PRs

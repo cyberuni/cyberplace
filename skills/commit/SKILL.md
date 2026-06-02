@@ -7,7 +7,7 @@ description: "Use this skill when committing and you need Conventional Commits g
 
 Minimal commit helper for repos using commit discipline. For full staging/splitting workflows, use `commit-work` from [softaworks/agent-toolkit](https://github.com/softaworks/agent-toolkit) instead.
 
-Repo-specific rules (including auto-commit) may appear in AGENTS.md **Commit Discipline** or in `SKILL.local.md` augmentations for the commit helper skill.
+Repo-specific rules (including auto-commit) appear in AGENTS.md **Commit Discipline**.
 
 ## Rules
 

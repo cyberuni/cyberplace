@@ -32,7 +32,7 @@ Rules:
 - **Always** map upstream paths to `skills/<skill-name>/…`, even when `skills-lock.json` `skillPath` points at `.agents/skills/…` or another layout in the consumer repo.
 - **Never** update `.agents/skills/`, duplicate trees, or paths outside `skills/<skill-name>/` in the source repository.
 - Include every changed file under that skill folder (e.g. `scripts/*.mjs`), not only `SKILL.md`.
-- Never include `SKILL.local.md` — local augmentations stay local.
+- Never include `SKILL.local.md` — machine-local augmentations stay local.
 
 Derive paths:
 
@@ -75,7 +75,7 @@ For multiple related skills (user confirms one PR), repeat file discovery for ea
 | Global | `~/.agents/skills/<name>/` |
 | Repo internal | `.agents/skills/<name>/` |
 
-Collect files to contribute (exclude `SKILL.local.md`):
+Collect files to contribute (exclude machine-local files):
 
 ```bash
 find "<local-dir>" -type f ! -name 'SKILL.local.md' | sort

@@ -12,7 +12,6 @@ This skill **requires** the cyber-skills CLI — see **Ensure cyber-skills CLI**
 ## Prerequisites
 
 - `AGENTS.md` should exist (run the `init` skill first if missing).
-- AGENTS.md should include the **Skill Augmentations** section (run the `init` skill first if missing).
 
 ## Ensure cyber-skills CLI
 
@@ -104,6 +103,6 @@ For agents without hook support, AGENTS.md alone applies the rules.
 
 ## Related skills
 
-- **`init`** — create AGENTS.md (Skill Augmentations first) and symlink CLAUDE.md
+- **`init`** — create AGENTS.md and symlink CLAUDE.md
 - **`commit`** — bundled minimal commit helper (cyber-asana-style)
 - **`commit-work`** — full staging/splitting workflow from softaworks/agent-toolkit (recommended)
