@@ -1,56 +1,21 @@
 {
-	"name": "cyber-skills",
-	"version": "0.7.0",
-	"description": "Opinionated skills, hooks, and workflows for AI agents",
-	"keywords": [
-		"agent-skill",
-		"claude-code",
-		"cursor",
-		"codex"
-	],
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/cyberuni/cyber-skills.git"
-	},
-	"license": "MIT",
-	"author": "unional <homawong@gmail.com>",
+	"name": "cyber-skills-root",
+	"private": true,
 	"type": "module",
-	"bin": {
-		"cyber-skills": "./bin/cyber-skills.mjs"
-	},
-	"exports": {
-		"./package.json": "./package.json"
-	},
-	"files": [
-		"bin",
-		"dist",
-		"governances",
-		"skills"
-	],
 	"scripts": {
-		"build": "tsdown",
+		"build": "turbo build",
 		"check": "biome check --write .",
 		"cs": "changeset",
-		"dev": "tsx src/cli.ts",
 		"format": "biome format --write .",
-		"knip": "knip",
 		"lint": "biome check .",
-		"prepack": "pnpm build",
 		"prepare": "node -e \"if(!(process.env.CI||process.env.GITHUB_ACTIONS))require('child_process').execSync('husky',{stdio:'inherit'})\"",
-		"check:private-skills": "pnpm build && node bin/cyber-skills.mjs skill validate-private",
 		"release": "changeset publish",
-		"repair:private-skills": "pnpm build && node bin/cyber-skills.mjs skill repair-private",
-		"render:awesome-list": "pnpm build && node bin/cyber-skills.mjs awesome render",
-		"test": "pnpm build && vitest run src",
-		"test:audit": "pnpm build && node bin/cyber-skills.mjs audit validate",
-		"test:watch": "vitest",
-		"typecheck": "tsc --noEmit",
-		"verify": "pnpm typecheck && pnpm lint && pnpm test && pnpm test:audit",
+		"render:awesome-list": "pnpm --filter=cyber-skills render:awesome-list",
+		"test": "turbo test",
+		"typecheck": "turbo typecheck",
+		"verify": "turbo verify",
 		"version": "changeset version",
 		"web": "pnpm run --filter=web"
-	},
-	"dependencies": {
-		"commander": "^14.0.3"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.4.15",
@@ -58,21 +23,11 @@
 		"@commitlint/cli": "^21.0.1",
 		"@commitlint/config-conventional": "^21.0.1",
 		"@repobuddy/biome": "^2.3.1",
-		"@types/node": "^24.10.1",
 		"husky": "^9.1.7",
-		"knip": "^6.14.1",
-		"tsdown": "^0.22.0",
-		"tsx": "^4.22.3",
-		"turbo": "^2.9.14",
-		"typescript": "^6.0.0",
-		"vitest": "^4.1.7"
+		"turbo": "^2.9.14"
 	},
 	"packageManager": "pnpm@11.0.0",
 	"engines": {
 		"node": ">=22"
-	},
-	"publishConfig": {
-		"access": "public",
-		"provenance": true
 	}
 }

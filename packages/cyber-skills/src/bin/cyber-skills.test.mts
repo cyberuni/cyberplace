@@ -59,7 +59,7 @@ test('skill list lists init companion skills', () => {
 })
 
 test('skill source returns JSON for a skill in repo lock', () => {
-	const root = path.resolve('.')
+	const root = path.resolve('../..')
 	const result = run('skill', 'source', 'audit-skill', '--json', '--root', root)
 	expect(result.status).toBe(0)
 	const parsed = JSON.parse(result.stdout)
