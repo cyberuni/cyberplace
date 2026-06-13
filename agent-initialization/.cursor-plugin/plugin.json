@@ -1,8 +1,8 @@
 {
-  "name": "agent-initialization",
-  "description": "One-time repo setup. init and init-commit-discipline: global (-g); commit: project.",
-  "author": { "name": "unional" },
-  "homepage": "https://github.com/cyberuni/cyber-skills",
-  "repository": "https://github.com/cyberuni/cyber-skills",
-  "skills": ["../skills/init", "../skills/init-commit-discipline", "../skills/commit"]
+	"name": "agent-initialization",
+	"description": "One-time repo setup. init and init-commit-discipline: global (-g); commit: project.",
+	"author": { "name": "unional" },
+	"homepage": "https://github.com/cyberuni/cyber-skills",
+	"repository": "https://github.com/cyberuni/cyber-skills",
+	"skills": ["../skills/init", "../skills/init-commit-discipline", "../skills/commit"]
 }

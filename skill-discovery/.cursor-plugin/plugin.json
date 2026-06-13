@@ -1,8 +1,8 @@
 {
-  "name": "skill-discovery",
-  "description": "Find and evaluate skills before installing. Prefer global install (-g).",
-  "author": { "name": "unional" },
-  "homepage": "https://github.com/cyberuni/cyber-skills",
-  "repository": "https://github.com/cyberuni/cyber-skills",
-  "skills": ["../skills/find-awesome-skill", "../skills/audit-skill"]
+	"name": "skill-discovery",
+	"description": "Find and evaluate skills before installing. Prefer global install (-g).",
+	"author": { "name": "unional" },
+	"homepage": "https://github.com/cyberuni/cyber-skills",
+	"repository": "https://github.com/cyberuni/cyber-skills",
+	"skills": ["../skills/find-awesome-skill", "../skills/audit-skill"]
 }

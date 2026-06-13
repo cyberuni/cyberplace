@@ -1,10 +1,26 @@
 {
-  "name": "cyber-skills",
-  "owner": { "name": "unional" },
-  "plugins": [
-    { "name": "skill-discovery", "source": "skill-discovery", "description": "Find and evaluate skills before installing. Prefer global install (-g)." },
-    { "name": "skill-authoring", "source": "skill-authoring", "description": "Create, generalize, patch, persona, and audit skills. Prefer global install (-g)." },
-    { "name": "agent-initialization", "source": "agent-initialization", "description": "One-time repo setup. init and init-commit-discipline: global (-g); commit: project." },
-    { "name": "awesome-list-maintenance", "source": "awesome-list-maintenance", "description": "Manage curated awesome-list sources and entries." }
-  ]
+	"name": "cyber-skills",
+	"owner": { "name": "unional" },
+	"plugins": [
+		{
+			"name": "skill-discovery",
+			"source": "skill-discovery",
+			"description": "Find and evaluate skills before installing. Prefer global install (-g)."
+		},
+		{
+			"name": "skill-authoring",
+			"source": "skill-authoring",
+			"description": "Create, generalize, patch, persona, and audit skills. Prefer global install (-g)."
+		},
+		{
+			"name": "agent-initialization",
+			"source": "agent-initialization",
+			"description": "One-time repo setup. init and init-commit-discipline: global (-g); commit: project."
+		},
+		{
+			"name": "awesome-list-maintenance",
+			"source": "awesome-list-maintenance",
+			"description": "Manage curated awesome-list sources and entries."
+		}
+	]
 }
