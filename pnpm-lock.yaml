@@ -26,9 +26,15 @@ importers:
       husky:
         specifier: ^9.1.7
         version: 9.1.7
+      knip:
+        specifier: ^6.14.1
+        version: 6.14.2(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)
       turbo:
         specifier: ^2.9.14
         version: 2.9.14
+      typescript:
+        specifier: ^6.0.0
+        version: 6.0.3
 
   apps/web:
     dependencies:
@@ -52,18 +58,9 @@ importers:
         specifier: ^14.0.3
         version: 14.0.3
     devDependencies:
-      '@biomejs/biome':
-        specifier: ^2.4.15
-        version: 2.4.15
-      '@repobuddy/biome':
-        specifier: ^2.3.1
-        version: 2.3.1(@biomejs/biome@2.4.15)
       '@types/node':
         specifier: ^24.10.1
         version: 24.12.4
-      knip:
-        specifier: ^6.14.1
-        version: 6.14.2(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)
       tsdown:
         specifier: ^0.22.0
         version: 0.22.0(oxc-resolver@11.19.1(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0))(tsx@4.22.3)(typescript@6.0.3)

@@ -4,10 +4,9 @@
 	"type": "module",
 	"scripts": {
 		"build": "turbo build",
-		"check": "biome check --write .",
+		"check": "biome check --write",
 		"cs": "changeset",
-		"format": "biome format --write .",
-		"lint": "biome check .",
+		"knip": "knip",
 		"prepare": "node -e \"if(!(process.env.CI||process.env.GITHUB_ACTIONS))require('child_process').execSync('husky',{stdio:'inherit'})\"",
 		"release": "changeset publish",
 		"render:awesome-list": "pnpm --filter=cyber-skills render:awesome-list",
@@ -24,7 +23,9 @@
 		"@commitlint/config-conventional": "^21.0.1",
 		"@repobuddy/biome": "^2.3.1",
 		"husky": "^9.1.7",
-		"turbo": "^2.9.14"
+		"knip": "^6.14.1",
+		"turbo": "^2.9.14",
+		"typescript": "^6.0.0"
 	},
 	"packageManager": "pnpm@11.0.0",
 	"engines": {
