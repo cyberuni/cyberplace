@@ -1,4 +1,4 @@
-export type SpecType = 'repo' | 'npm' | 'git-url'
+type SpecType = 'repo' | 'npm' | 'git-url'
 
 export interface RepoSpec {
 	type: 'repo'
