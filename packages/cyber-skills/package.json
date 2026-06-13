@@ -25,8 +25,7 @@
 	"files": [
 		"bin",
 		"dist",
-		"governances",
-		"skills"
+		"governances"
 	],
 	"scripts": {
 		"build": "tsdown",
