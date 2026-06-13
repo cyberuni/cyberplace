@@ -30,35 +30,25 @@
 	],
 	"scripts": {
 		"build": "tsdown",
-		"check": "biome check --write .",
 		"dev": "tsx src/cli.ts",
-		"format": "biome format --write .",
-		"knip": "knip",
-		"lint": "biome check .",
 		"prepack": "pnpm build",
 		"check:private-skills": "pnpm build && node bin/cyber-skills.mjs skill validate-private --root ../..",
 		"repair:private-skills": "pnpm build && node bin/cyber-skills.mjs skill repair-private --root ../..",
 		"render:awesome-list": "pnpm build && node bin/cyber-skills.mjs awesome render",
 		"test": "pnpm build && vitest run src",
-		"test:audit": "pnpm build && node bin/cyber-skills.mjs audit validate --root ../..",
 		"test:watch": "vitest",
-		"typecheck": "tsc --noEmit",
-		"verify": "pnpm typecheck && pnpm lint && pnpm test && pnpm test:audit"
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"commander": "^14.0.3"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.4.15",
-		"@repobuddy/biome": "^2.3.1",
 		"@types/node": "^24.10.1",
-		"knip": "^6.14.1",
 		"tsdown": "^0.22.0",
 		"tsx": "^4.22.3",
 		"typescript": "^6.0.0",
 		"vitest": "^4.1.7"
 	},
-	"packageManager": "pnpm@11.0.0",
 	"engines": {
 		"node": ">=22"
 	},
