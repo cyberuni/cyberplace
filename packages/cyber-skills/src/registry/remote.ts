@@ -83,7 +83,7 @@ function copySkillDir(srcDir: string, destDir: string): string {
 	return skillMdContent
 }
 
-export function sparseCloneAndInstall(
+function sparseCloneAndInstall(
 	provider: Provider | null,
 	owner: string,
 	repo: string,

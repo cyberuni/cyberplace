@@ -1,7 +1,7 @@
 import { hookCommand } from './command.js'
 import type { HookDefinition } from './register.js'
 
-export type HookEvent = 'SessionStart' | 'PostToolUse'
+type HookEvent = 'SessionStart' | 'PostToolUse'
 
 export interface RegisterHookInput {
 	name: string
@@ -18,7 +18,7 @@ function shellQuote(value: string): string {
 	return `'${value.replace(/'/g, `'\\''`)}'`
 }
 
-export function buildRunArgs(input: RegisterHookInput): string {
+function buildRunArgs(input: RegisterHookInput): string {
 	const args = ['hook', 'run', '--name', input.name]
 	if (input.file) {
 		args.push('--file', shellQuote(input.file))

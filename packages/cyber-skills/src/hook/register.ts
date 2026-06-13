@@ -264,7 +264,7 @@ function registerAgentHooks(hooks: HookDefinition[], options: RegisterOptions = 
 	return results
 }
 
-export function registerHooks(hooks: HookDefinition[], options: RegisterOptions = {}): HookResult[] {
+function registerHooks(hooks: HookDefinition[], options: RegisterOptions = {}): HookResult[] {
 	return registerAgentHooks(hooks, options)
 }
 

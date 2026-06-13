@@ -1,6 +1,6 @@
 import type { Scope } from './scope.js'
 
-export interface MarketplacePlugin {
+interface MarketplacePlugin {
 	name: string
 	description: string
 	skills: string[]

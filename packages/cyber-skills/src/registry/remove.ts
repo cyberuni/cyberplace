@@ -34,7 +34,7 @@ export function removeSkill(name: string, options: RemoveOptions): RemoveResult 
 	return { name, removed: true, message: `Removed skill '${name}'` }
 }
 
-export function removeSkillDir(root: string, scope: Scope, name: string): void {
+function removeSkillDir(root: string, scope: Scope, name: string): void {
 	const installDir = getInstallDir(root, scope)
 	const skillDir = join(installDir, name)
 	if (fs.existsSync(skillDir)) {

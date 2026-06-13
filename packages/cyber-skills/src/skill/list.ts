@@ -4,7 +4,7 @@ import { join } from 'node:path'
 
 import { getPackageRoot } from '../hook/package-root.js'
 
-export type SkillLocation = 'repo' | 'global' | 'package'
+type SkillLocation = 'repo' | 'global' | 'package'
 
 export interface SkillSummary {
 	name: string

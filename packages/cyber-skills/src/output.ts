@@ -31,11 +31,11 @@ function getFormat(): string | undefined {
 	return undefined
 }
 
-export function isAgentOutput(): boolean {
+function isAgentOutput(): boolean {
 	return getFormat() === 'agent'
 }
 
-export function isJsonOutput(): boolean {
+function isJsonOutput(): boolean {
 	return getFormat() === 'json'
 }
 

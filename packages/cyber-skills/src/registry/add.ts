@@ -17,12 +17,12 @@ export interface AddOptions {
 	home?: string
 }
 
-export interface SkippedSymlink {
+interface SkippedSymlink {
 	name: string
 	path: string
 }
 
-export interface SkippedPackageManaged {
+interface SkippedPackageManaged {
 	name: string
 	packageName?: string
 }

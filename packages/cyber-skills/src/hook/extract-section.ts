@@ -1,5 +1,5 @@
 /** Normalize a heading to `## Title` form. */
-export function normalizeMarkdownHeading(heading: string): string {
+function normalizeMarkdownHeading(heading: string): string {
 	return heading.startsWith('#') ? heading : `## ${heading}`
 }
 

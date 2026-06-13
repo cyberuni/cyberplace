@@ -16,7 +16,7 @@ export interface UpdateResult {
 	message: string
 }
 
-export function extractMetadataLines(content: string): string[] {
+function extractMetadataLines(content: string): string[] {
 	const lines = content.split('\n')
 	let fmCount = 0
 	const result: string[] = []
@@ -50,7 +50,7 @@ export function extractMetadataLines(content: string): string[] {
 	return result
 }
 
-export function injectMetadataLines(content: string, metadataLines: string[]): string {
+function injectMetadataLines(content: string, metadataLines: string[]): string {
 	if (!metadataLines.length) return content
 
 	const lines = content.split('\n')

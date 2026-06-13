@@ -1,7 +1,7 @@
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 
-export interface RepairAction {
+interface RepairAction {
 	skill: string
 	action:
 		| 'removed_public_symlink'
@@ -18,7 +18,7 @@ export interface RepairResult {
 	actions: RepairAction[]
 }
 
-export interface PrivateSkillIssue {
+interface PrivateSkillIssue {
 	skill: string
 	issue: 'missing_metadata_internal' | 'public_skill_symlink' | 'missing_skill_file' | 'missing_frontmatter'
 	details?: string
