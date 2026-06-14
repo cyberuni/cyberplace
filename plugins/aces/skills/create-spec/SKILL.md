@@ -1,6 +1,6 @@
 ---
 name: create-spec
-description: Use this skill when the user wants to create an eval spec for one or more agent configurations (skills, AGENTS.md sections, subagent definitions, commands).
+description: Use this skill when the user wants to create or improve one or more agent configurations (skills, AGENTS.md sections, subagent definitions, commands).
 ---
 
 # create-spec
