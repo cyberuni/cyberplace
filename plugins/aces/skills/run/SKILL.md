@@ -21,7 +21,7 @@ For each file in `.evals/<name>/golden-set/`, sorted by filename:
 
 1. Read the test case
 2. Skip layers not listed in `eval.md`'s `layers` field
-3. Invoke `aces-judge` subagent with:
+3. Invoke `aces:judge` subagent with:
    - The full text of the target artifact
    - The test case scenario, expected behaviors, must-not-do list, and rubric
    - The layer (trigger / behavior / quality)
@@ -29,7 +29,7 @@ For each file in `.evals/<name>/golden-set/`, sorted by filename:
 
 Run all cases before reporting. Do not stop on first failure.
 
-## Invoking aces-judge
+## Invoking aces:judge
 
 Pass this context block to the judge:
 
