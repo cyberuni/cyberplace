@@ -1,0 +1,62 @@
+[
+	{
+		"id": "t-001",
+		"query": "Create an eval spec for the commit-work skill",
+		"should_trigger": true
+	},
+	{
+		"id": "t-002",
+		"query": "Generate a golden set for my AGENTS.md Commit Discipline section",
+		"should_trigger": true
+	},
+	{
+		"id": "t-003",
+		"query": "I want to add evals to the audit-skill skill",
+		"should_trigger": true
+	},
+	{
+		"id": "t-004",
+		"query": "Set up an eval spec for all my skills that don't have one yet",
+		"should_trigger": true
+	},
+	{
+		"id": "t-005",
+		"query": "make me a spec for the aces-spec-designer subagent",
+		"should_trigger": true
+	},
+	{
+		"id": "t-006",
+		"query": "I need trigger queries and a golden set for my create-persona-skill skill",
+		"should_trigger": true
+	},
+	{
+		"id": "n-001",
+		"query": "Run the existing evals for the commit-work skill and show me the scores",
+		"should_trigger": false
+	},
+	{
+		"id": "n-002",
+		"query": "Compare the audit-skill behavior before and after my recent changes",
+		"should_trigger": false
+	},
+	{
+		"id": "n-003",
+		"query": "List all the eval specs we have so far",
+		"should_trigger": false
+	},
+	{
+		"id": "n-004",
+		"query": "Improve the description in the create-spec skill",
+		"should_trigger": false
+	},
+	{
+		"id": "n-005",
+		"query": "Audit the add-changeset SKILL.md for structural issues",
+		"should_trigger": false
+	},
+	{
+		"id": "n-006",
+		"query": "Show me the golden-set cases for the tdd skill",
+		"should_trigger": false
+	}
+]
