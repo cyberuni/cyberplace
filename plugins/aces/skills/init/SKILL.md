@@ -1,5 +1,5 @@
 ---
-name: aces-init
+name: init
 description: Use this skill when setting up ACES evaluation for an agent configuration — a skill, AGENTS.md section, subagent definition, or command.
 ---
 
@@ -111,4 +111,4 @@ Report:
 - Path to `eval.md`
 - Count of trigger cases and behavior cases generated
 - Any structural issues found in step 2
-- Next step: run `aces-run` to score the golden set against the current artifact
+- Next step: run `run` to score the golden set against the current artifact

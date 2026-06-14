@@ -5,12 +5,12 @@
 	"homepage": "https://github.com/cyberuni/cyber-skills",
 	"repository": "https://github.com/cyberuni/cyber-skills",
 	"skills": [
-		"../skills/aces-init",
-		"../skills/aces-run",
-		"../skills/aces-add",
-		"../skills/aces-compare",
-		"../skills/aces-improve",
-		"../skills/aces-report"
+		"../skills/init",
+		"../skills/run",
+		"../skills/add",
+		"../skills/compare",
+		"../skills/improve",
+		"../skills/report"
 	],
 	"agents": ["../agents/aces-judge"]
 }

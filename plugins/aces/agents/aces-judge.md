@@ -1,6 +1,6 @@
 ---
 name: aces-judge
-description: Internal subagent for ACES. Scores simulated agent behavior against a rubric for a given test case and layer. Invoked by aces-run and aces-compare — not triggered by users directly.
+description: Internal subagent for ACES. Scores simulated agent behavior against a rubric for a given test case and layer. Invoked by run and compare — not triggered by users directly.
 ---
 
 # ACES Judge

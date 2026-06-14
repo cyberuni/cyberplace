@@ -1,5 +1,5 @@
 ---
-name: aces-add
+name: add
 description: Use this skill when adding a new test case to an ACES golden set — from a real failure, a production edge case, or a gap the user noticed.
 ---
 
@@ -71,4 +71,4 @@ Show the draft to the user and ask for confirmation before writing. Adjust based
 
 Determine the next sequence number from existing files in `.evals/<name>/golden-set/`. Write the file as `NNN-<slug>.md`.
 
-Report the file path and suggest running `aces-run` to score the new case against the current artifact.
+Report the file path and suggest running `run` to score the new case against the current artifact.
