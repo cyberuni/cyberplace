@@ -1,9 +1,9 @@
-# Design: ACES — Agent Config Evaluation System
+# Design: ACES — Agent Config Examination & Specification
 
 **Status:** Draft  
 **Authors:** unional  
 **Date:** 2026-06-13  
-**Scope:** eval framework for agent configuration artifacts — skills, AGENTS.md sections, subagent definitions, commands
+**Scope:** spec-driven quality system for agent configuration artifacts — skills, AGENTS.md sections, subagent definitions, commands
 
 ---
 
