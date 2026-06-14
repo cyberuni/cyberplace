@@ -352,7 +352,7 @@ Skills that already have an `evals/evals.json` file (the [agentskills.io](https:
 
 ## 6. Skills
 
-### 6.1 `aces-init`
+### 6.1 `init`
 
 **Trigger:** User asks to set up evals for an artifact.
 
@@ -368,11 +368,11 @@ Skills that already have an `evals/evals.json` file (the [agentskills.io](https:
    - 15–25 behavior cases (one per rule/step + edge cases + must-not-do guards)
 7. Report: file count, structural issues found, next step
 
-**Output:** `.evals/<artifact-path>/` populated, ready for `aces-run`.
+**Output:** `.evals/<artifact-path>/` populated, ready for `run`.
 
 ---
 
-### 6.2 `aces-run`
+### 6.2 `run`
 
 **Trigger:** User asks to run evals or validate after editing an artifact.
 
@@ -393,7 +393,7 @@ Skills that already have an `evals/evals.json` file (the [agentskills.io](https:
 
 ---
 
-### 6.3 `aces-add`
+### 6.3 `add`
 
 **Trigger:** User describes a new scenario, a production failure, or an edge case to cover.
 
@@ -407,7 +407,7 @@ Skills that already have an `evals/evals.json` file (the [agentskills.io](https:
 
 ---
 
-### 6.4 `aces-compare`
+### 6.4 `compare`
 
 **Trigger:** User wants to know if an edit improved or regressed behavior.
 
@@ -423,7 +423,7 @@ Skills that already have an `evals/evals.json` file (the [agentskills.io](https:
 
 ---
 
-### 6.5 `aces-improve`
+### 6.5 `improve`
 
 **Trigger:** Eval results have failing cases; user wants to fix the artifact.
 
@@ -432,13 +432,13 @@ Skills that already have an `evals/evals.json` file (the [agentskills.io](https:
 2. Invoke `aces-analyzer` with failing cases, feedback notes, and current artifact to extract improvement patterns
 3. Group by pattern (see §8) and prioritize by impact
 4. Present proposed diffs to the artifact — do not auto-apply
-5. After approval, apply edits and run `aces-compare` to verify
+5. After approval, apply edits and run `compare` to verify
 
 **Output:** Proposed artifact edits + post-edit comparison.
 
 ---
 
-### 6.6 `aces-report`
+### 6.6 `report`
 
 **Trigger:** User wants project-wide eval health.
 
