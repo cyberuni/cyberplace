@@ -31,10 +31,6 @@ function getFormat(): string | undefined {
 	return undefined
 }
 
-function isAgentOutput(): boolean {
-	return getFormat() === 'agent'
-}
-
 function isJsonOutput(): boolean {
 	return getFormat() === 'json'
 }
