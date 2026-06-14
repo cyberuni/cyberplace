@@ -58,7 +58,7 @@ pnpm lint        # check only
 pnpm check       # check and auto-fix
 ```
 
-Audit all skills (runs S1–S5, Q1–Q5, Q10–Q11, E1–E2, E6 checks mechanically):
+Audit all skills (runs S1–S5, Q1–Q5, Q10–Q11, E1–E2, E6, E9 checks mechanically):
 
 ```bash
 pnpm --filter=cyber-skills test:audit
@@ -73,7 +73,7 @@ Repair repo-private skills after `npx skills update` or other drift:
 pnpm --filter=cyber-skills repair:private-skills
 ```
 
-Full quality review (Q6–Q13, E3–E5, E7–E8, P1–P3) requires running the `audit-skill` agent skill.
+Full quality review (Q6–Q16, E3–E5, E7–E8, P1–P3) requires running the `audit-skill` agent skill.
 
 Run a single test file:
 
