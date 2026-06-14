@@ -24,19 +24,19 @@ Record any structural issues. A malformed artifact produces unreliable evals —
 
 Use path conventions from the ACES design:
 
-| Artifact type | Path under `.evals/` |
+| Artifact type | Path under `sdd/aces/` |
 |---|---|
 | Skill | `skills/<skill-name>/` |
 | AGENTS.md section | `<section-slug>/` |
 | Subagent definition | `agents/<agent-name>/` |
 | Command | `commands/<command-name>/` |
 
-For artifacts belonging to a plugin, nest under the plugin name: `.evals/<plugin-name>/skills/<skill-name>/`.
+For artifacts belonging to a plugin, nest under the plugin name: `sdd/aces/<plugin-name>/skills/<skill-name>/`.
 
 ### 3. Create the eval directory and `eval.md`
 
 ```
-.evals/<artifact-path>/
+sdd/aces/<artifact-path>/
   eval.md
   trigger/
   golden-set/

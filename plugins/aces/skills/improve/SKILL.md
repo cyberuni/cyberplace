@@ -9,7 +9,7 @@ Diagnose failing eval cases and propose targeted edits to the target artifact.
 
 ## Load context
 
-Find `.evals/<name>/`:
+Find `sdd/aces/<name>/`:
 - Read `eval.md` for the target artifact path
 - Read the target artifact in full
 - Read the most recent result file from `results/` (sort by filename descending, take first)

@@ -16,7 +16,7 @@ If the user named a specific artifact, resolve it directly:
 - **Subagent** — path to a subagent definition file
 - **Command** — path to a command definition file
 
-If no specific artifact was named, scan the project for agent configuration artifacts that have no `.evals/` entry yet. Collect the full list and present it to the user — ask them to select one, several, or all before continuing.
+If no specific artifact was named, scan the project for agent configuration artifacts that have no `sdd/aces/` entry yet. Collect the full list and present it to the user — ask them to select one, several, or all before continuing.
 
 ## For each selected artifact
 
