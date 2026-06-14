@@ -13,12 +13,12 @@ The skill lives at `plugins/aces/skills/create-spec/SKILL.md`.
 ## Expected behaviors
 
 - Passes `ARTIFACT_PATH` as `plugins/aces/skills/create-spec/SKILL.md`
-- The eval directory (created by aces-spec-designer) nests under plugin: `sdd/aces/plugins/aces/skills/create-spec/`
+- The eval directory (created by aces-spec-designer) nests under plugin: `artifacts/aces/plugins/aces/skills/create-spec/`
 - Does not flatten the plugin namespace into a top-level skills path
 
 ## Must NOT do
 
-- Use a path like `sdd/aces/skills/create-spec/` without the plugin prefix
+- Use a path like `artifacts/aces/skills/create-spec/` without the plugin prefix
 - Mistake the plugin skill for a package skill
 
 ## Rubric

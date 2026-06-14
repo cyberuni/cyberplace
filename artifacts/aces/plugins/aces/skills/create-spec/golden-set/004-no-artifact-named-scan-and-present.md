@@ -8,14 +8,14 @@ threshold: 4
 
 User says: "Create eval specs." No artifact is named.
 
-The repo contains these agent config artifacts with no existing `sdd/aces/` entry:
+The repo contains these artifacts with no existing `artifacts/aces/` entry:
 - `packages/cyber-skills/skills/tdd/SKILL.md`
 - `packages/cyber-skills/skills/commit-work/SKILL.md`
 - `.agents/skills/add-changeset/SKILL.md`
 
 ## Expected behaviors
 
-- Scans the project for agent configuration artifacts lacking an eval spec
+- Scans the project for artifacts lacking an eval spec
 - Presents the discovered list to the user
 - Asks the user to select one, several, or all before proceeding
 - Does not invoke `aces-spec-designer` until the user has made a selection

@@ -1,15 +1,15 @@
 ---
 name: run
-description: Use this skill when running ACES evals to score agent configuration behavior against its golden set — after editing a skill, AGENTS.md section, subagent, or command.
+description: Use this skill when running ACES evals to score artifact behavior against its golden set — after editing a skill, AGENTS.md section, subagent, or command.
 ---
 
 # ACES Run
 
-Run the eval suite for a target agent configuration and report results.
+Run the eval suite for a target artifact and report results.
 
 ## Locate the eval suite
 
-If the user specifies a target, find `sdd/aces/<artifact-name>/eval.md`. If no target is specified and only one `sdd/aces/` directory exists, use it. If multiple exist, ask which to run.
+If the user specifies a target, find `artifacts/aces/<artifact-name>/eval.md`. If no target is specified and only one `artifacts/aces/` directory exists, use it. If multiple exist, ask which to run.
 
 Read `eval.md` for: `target`, `judge_model`, `threshold`, `layers`.
 
@@ -17,7 +17,7 @@ Read the target artifact in full before evaluating — the judge needs the curre
 
 ## Run each test case
 
-For each file in `sdd/aces/<name>/golden-set/`, sorted by filename:
+For each file in `artifacts/aces/<name>/golden-set/`, sorted by filename:
 
 1. Read the test case
 2. Skip layers not listed in `eval.md`'s `layers` field
@@ -59,7 +59,7 @@ After all cases:
 
 ## Write results
 
-Write to `sdd/aces/<name>/results/<ISO8601-timestamp>.json`:
+Write to `artifacts/aces/<name>/results/<ISO8601-timestamp>.json`:
 
 ```json
 {

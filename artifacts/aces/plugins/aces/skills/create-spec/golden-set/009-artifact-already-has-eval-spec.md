@@ -8,7 +8,7 @@ threshold: 4
 
 User says: "Create an eval spec for the commit-work skill."
 
-`packages/cyber-skills/skills/commit-work/SKILL.md` exists. An eval spec already exists at `sdd/aces/packages/cyber-skills/skills/commit-work/eval.md`.
+`packages/cyber-skills/skills/commit-work/SKILL.md` exists. An eval spec already exists at `artifacts/aces/packages/cyber-skills/skills/commit-work/eval.md`.
 
 ## Expected behaviors
 

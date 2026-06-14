@@ -3,7 +3,7 @@
 **Status:** Draft  
 **Authors:** unional  
 **Date:** 2026-06-13  
-**Scope:** spec-driven quality system for agent configuration artifacts — skills, AGENTS.md sections, subagent definitions, commands
+**Scope:** spec-driven quality system for artifacts — skills, AGENTS.md sections, subagent definitions, commands
 
 ---
 
@@ -21,13 +21,13 @@ Three failure modes occur repeatedly:
 
 Existing tooling addresses only structure (`audit-skill` checks frontmatter and section presence) — not runtime behavior. There is no way to measure whether an artifact actually produces correct agent behavior.
 
-ACES applies spec-driven development (SDD) to agent configuration. In SDD, a spec (test cases + rubric) is written alongside the implementation and serves as the authoritative description of behavior. ACES does the same for agent config: the golden set is the spec, the artifact is the implementation, and `run` is the verification step. The current scope focuses on the **backfill path** — adding specs to existing artifacts — but the full SDD lifecycle (spec first, then implement) is the intended end state.
+ACES applies spec-driven development (SDD) to artifacts. In SDD, a spec (test cases + rubric) is written alongside the implementation and serves as the authoritative description of behavior. ACES does the same for artifacts: the golden set is the spec, the artifact is the implementation, and `run` is the verification step. The current scope focuses on the **backfill path** — adding specs to existing artifacts — but the full SDD lifecycle (spec first, then implement) is the intended end state.
 
 ---
 
 ## 2. Goals
 
-- **G1** — Define a test case format for agent configuration that captures scenario, expected behaviors, prohibited behaviors, and a scoring rubric.
+- **G1** — Define a test case format for artifacts that captures scenario, expected behaviors, prohibited behaviors, and a scoring rubric.
 - **G2** — Specify a golden set convention: a curated directory of test cases per artifact that serves as ground truth.
 - **G3** — Specify an eval run protocol: for each test case, score agent behavior against the rubric using an LLM judge, and produce a structured result.
 - **G4** — Specify a regression gate: detect when an artifact change drops scores below a threshold before committing.
@@ -87,8 +87,8 @@ Assertions and rubric are complementary. Assertions check mechanical properties 
 ### 4.4 Golden set
 
 The complete test suite for one artifact:
-- **Trigger queries**: stored in `sdd/aces/<artifact-path>/trigger/eval_queries.json` — a JSON array of `{query, should_trigger}` pairs, split into `train_queries.json` (60%) and `validation_queries.json` (40%) for optimization without overfitting.
-- **Behavior/quality cases**: stored in `sdd/aces/<artifact-path>/golden-set/*.md` — markdown test cases with scenarios, assertions, and rubric.
+- **Trigger queries**: stored in `artifacts/aces/<artifact-path>/trigger/eval_queries.json` — a JSON array of `{query, should_trigger}` pairs, split into `train_queries.json` (60%) and `validation_queries.json` (40%) for optimization without overfitting.
+- **Behavior/quality cases**: stored in `artifacts/aces/<artifact-path>/golden-set/*.md` — markdown test cases with scenarios, assertions, and rubric.
 
 Both are version-controlled and grow over time as new failure modes are discovered.
 
@@ -106,7 +106,7 @@ A single execution of the eval suite against the current artifact. Two run types
 - **Trigger run**: executes each query in `eval_queries.json` N times, measures trigger rate per query, produces a trigger result JSON.
 - **Behavior/quality run**: for each test case in `golden-set/`, invokes `aces-judge`, collecting scores, assertion results, and timing. Produces a behavior result JSON.
 
-Results are timestamped and stored in `sdd/aces/<artifact-path>/results/`. `benchmark.json` is rewritten after each run with aggregate stats.
+Results are timestamped and stored in `artifacts/aces/<artifact-path>/results/`. `benchmark.json` is rewritten after each run with aggregate stats.
 
 ### 4.6 Pass threshold
 
@@ -183,7 +183,7 @@ After the initial spec is established:
 ## 6. File Layout
 
 ```
-sdd/aces/
+artifacts/aces/
   <artifact-path>/
     eval.md                          ← suite config
     trigger/
@@ -213,14 +213,14 @@ Artifact path conventions:
 For artifacts that belong to a plugin, nest under the plugin name:
 
 ```
-sdd/aces/
+artifacts/aces/
   <plugin-name>/
     skills/<skill-name>/
     agents/<agent-name>/
     commands/<command-name>/
 ```
 
-Example: the `aces` plugin's `create-spec` skill lives at `sdd/aces/aces/skills/create-spec/`.
+Example: the `aces` plugin's `create-spec` skill lives at `artifacts/aces/aces/skills/create-spec/`.
 
 ### 6.1 `eval.md` schema
 
@@ -418,16 +418,16 @@ Skills that already have an `evals/evals.json` file (the [agentskills.io](https:
 
 ### 7.1 `create-spec`
 
-**Trigger:** User asks to create evals / a spec for one or more agent configuration artifacts.
+**Trigger:** User asks to create evals / a spec for one or more artifacts.
 
 **Steps:**
-1. Scan the project for agent configuration artifacts (skills, `AGENTS.md` sections, subagent definitions, commands) that have no `sdd/aces/` entry yet
+1. Scan the project for artifacts (skills, `AGENTS.md` sections, subagent definitions, commands) that have no `artifacts/aces/` entry yet
 2. If a specific artifact is named in the request, resolve it directly — skip scanning
 3. If multiple unevaluated artifacts are found, list them and ask the user to select one, several, or all
 4. For each selected artifact, invoke `aces-spec-designer` to perform analysis and generate the eval suite
 5. Report: artifacts processed, file counts, structural issues found, next step
 
-**Output:** One `sdd/aces/<artifact-path>/` per selected artifact, each populated and ready for `run`.
+**Output:** One `artifacts/aces/<artifact-path>/` per selected artifact, each populated and ready for `run`.
 
 ---
 
@@ -502,7 +502,7 @@ Skills that already have an `evals/evals.json` file (the [agentskills.io](https:
 **Trigger:** User wants project-wide eval health.
 
 **Steps:**
-1. Scan all `sdd/aces/*/results/` for latest and second-latest runs
+1. Scan all `artifacts/aces/*/results/` for latest and second-latest runs
 2. Compute per-suite: pass rate, mean score, trend (vs. previous run)
 3. Classify health: `healthy` (≥90%), `degraded` (70–89%), `critical` (<70%), `no-data`, `trending-down` (≥10% drop)
 4. Print summary table, call out suites needing attention
@@ -528,7 +528,7 @@ AGENTSKILLS_EVALS: <contents of evals/evals.json if present, else null>
 
 **Steps:**
 1. Run structural layer (`audit-skill`) — surface issues before writing behavioral tests
-2. Create `sdd/aces/<artifact-path>/` directory and `eval.md` (using path conventions from §6)
+2. Create `artifacts/aces/<artifact-path>/` directory and `eval.md` (using path conventions from §6)
 3. If `evals/evals.json` (agentskills.io format) provided: import it as initial golden set cases (see §6.8)
 4. Generate trigger queries in `trigger/eval_queries.json`:
    - ~20 queries: 8–10 should-trigger, 8–10 should-not-trigger (near-misses, not obviously irrelevant)
@@ -536,7 +536,7 @@ AGENTSKILLS_EVALS: <contents of evals/evals.json if present, else null>
 5. Generate initial golden set (if not imported from evals.json):
    - 15–25 behavior cases (one per rule/step + edge cases + must-not-do guards)
 
-**Output:** Populated `sdd/aces/<artifact-path>/` directory. Returns a summary (file count, structural issues found) to `create-spec`.
+**Output:** Populated `artifacts/aces/<artifact-path>/` directory. Returns a summary (file count, structural issues found) to `create-spec`.
 
 ---
 
