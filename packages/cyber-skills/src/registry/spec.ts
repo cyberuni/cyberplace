@@ -1,5 +1,3 @@
-type SpecType = 'repo' | 'npm' | 'git-url'
-
 export interface RepoSpec {
 	type: 'repo'
 	owner: string

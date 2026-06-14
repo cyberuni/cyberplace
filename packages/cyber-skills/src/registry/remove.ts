@@ -1,5 +1,5 @@
 import * as fs from 'node:fs'
-import { dirname, join } from 'node:path'
+import { join } from 'node:path'
 
 import { getLockEntry, removeLockEntry } from './lock.js'
 import { getInstallDir, type Scope } from './scope.js'
@@ -32,19 +32,4 @@ export function removeSkill(name: string, options: RemoveOptions): RemoveResult 
 	removeLockEntry(root, scope, name)
 
 	return { name, removed: true, message: `Removed skill '${name}'` }
-}
-
-function removeSkillDir(root: string, scope: Scope, name: string): void {
-	const installDir = getInstallDir(root, scope)
-	const skillDir = join(installDir, name)
-	if (fs.existsSync(skillDir)) {
-		fs.rmSync(skillDir, { recursive: true, force: true })
-	}
-	// clean up empty parent
-	if (fs.existsSync(dirname(skillDir))) {
-		const siblings = fs.readdirSync(dirname(skillDir))
-		if (siblings.length === 0) {
-			fs.rmdirSync(dirname(skillDir))
-		}
-	}
 }
