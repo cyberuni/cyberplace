@@ -1,19 +1,19 @@
 ---
 name: run
-description: Use this skill when running ACES evals to score artifact behavior against its golden set — after editing a skill, AGENTS.md section, subagent, or command.
+description: Use this skill when running ACES evals to score agent configuration behavior against its golden set — after editing a skill, AGENTS.md section, subagent, or command.
 ---
 
 # ACES Run
 
-Run the eval suite for a target artifact and report results.
+Run the eval suite for a target agent configuration and report results.
 
 ## Locate the eval suite
 
-If the user specifies a target, find `artifacts/aces/<artifact-name>/eval.md`. If no target is specified and only one `artifacts/aces/` directory exists, use it. If multiple exist, ask which to run.
+If the user specifies a target, find `artifacts/aces/<subject-name>/eval.md`. If no target is specified and only one `artifacts/aces/` directory exists, use it. If multiple exist, ask which to run.
 
 Read `eval.md` for: `target`, `judge_model`, `threshold`, `layers`.
 
-Read the target artifact in full before evaluating — the judge needs the current version.
+Read the target agent configuration in full before evaluating — the judge needs the current version.
 
 ## Run each test case
 
@@ -22,7 +22,7 @@ For each file in `artifacts/aces/<name>/golden-set/`, sorted by filename:
 1. Read the test case
 2. Skip layers not listed in `eval.md`'s `layers` field
 3. Invoke `aces-judge` subagent with:
-   - The full text of the target artifact
+   - The full text of the target agent configuration
    - The test case scenario, expected behaviors, must-not-do list, and rubric
    - The layer (trigger / behavior / quality)
 4. Collect: score (1–5), pass/fail (pass = score ≥ threshold), explanation
@@ -34,8 +34,8 @@ Run all cases before reporting. Do not stop on first failure.
 Pass this context block to the judge:
 
 ```
-ARTIFACT:
-<full artifact text>
+SUBJECT:
+<full agent configuration text>
 
 TEST CASE: <name>
 LAYER: <layer>
@@ -64,7 +64,7 @@ Write to `artifacts/aces/<name>/results/<ISO8601-timestamp>.json`:
 ```json
 {
   "timestamp": "<ISO8601>",
-  "target": "<artifact path>",
+  "target": "<agent configuration path>",
   "pass_rate": 0.82,
   "mean_score": 3.9,
   "std_dev": 0.8,
@@ -84,7 +84,7 @@ Write to `artifacts/aces/<name>/results/<ISO8601-timestamp>.json`:
 ## Report to user
 
 ```
-ACES Run — <artifact name>
+ACES Run — <name>
 ──────────────────────────
 Pass rate:  18/22 (82%)
 Mean score: 3.9 ± 0.8
@@ -99,7 +99,7 @@ FAILING CASES (worst first):
   ✗ 020-red-tests-block-commit        [score 3] — <explanation>
 
 Run improve to address failing cases.
-Run compare after editing the artifact.
+Run compare after editing the agent configuration.
 ```
 
 If pass rate is 100%, say so and suggest running `add` to expand edge case coverage.
