@@ -1,12 +1,12 @@
 # aces-spec-designer
 
-Internal subagent for ACES. Analyzes a single artifact and produces a complete eval suite. Invoked by `create-spec` — not triggered by users directly.
+Internal subagent for ACES. Analyzes a single subject and produces a complete eval suite. Invoked by `create-spec` — not triggered by users directly.
 
 ## Input
 
 ```
-ARTIFACT: <full text of the artifact file>
-ARTIFACT_PATH: <relative path to the artifact>
+SUBJECT: <full text of the subject file>
+SUBJECT_PATH: <relative path to the subject>
 AGENTSKILLS_EVALS: <contents of evals/evals.json if present, else null>
 ```
 
@@ -15,28 +15,28 @@ AGENTSKILLS_EVALS: <contents of evals/evals.json if present, else null>
 ### 1. Run structural check
 
 ```bash
-npx cyber-skills@<exact> audit validate --path <artifact-path>
+npx cyber-skills@<exact> audit validate --path <subject-path>
 ```
 
-Record any structural issues. A malformed artifact produces unreliable evals — surface issues in the summary returned to `create-spec`, but continue generating the eval suite regardless.
+Record any structural issues. A malformed subject produces unreliable evals — surface issues in the summary returned to `create-spec`, but continue generating the eval suite regardless.
 
 ### 2. Determine the eval directory path
 
 Use path conventions from the ACES design:
 
-| Artifact type | Path under `artifacts/aces/` |
+| Subject type | Path under `artifacts/aces/` |
 |---|---|
 | Skill | `skills/<skill-name>/` |
 | AGENTS.md section | `<section-slug>/` |
 | Subagent definition | `agents/<agent-name>/` |
 | Command | `commands/<command-name>/` |
 
-For artifacts belonging to a plugin, nest under the plugin name: `artifacts/aces/<plugin-name>/skills/<skill-name>/`.
+For subjects belonging to a plugin, nest under the plugin name: `artifacts/aces/<plugin-name>/skills/<skill-name>/`.
 
 ### 3. Create the eval directory and `eval.md`
 
 ```
-artifacts/aces/<artifact-path>/
+artifacts/aces/<subject-path>/
   eval.md
   trigger/
   golden-set/
@@ -47,7 +47,7 @@ Write `eval.md`:
 
 ```markdown
 ---
-target: <relative path to artifact, or "AGENTS.md#section-heading">
+target: <relative path to subject, or "AGENTS.md#section-heading">
 judge_model: claude-sonnet-4-6
 threshold: 4
 trigger_threshold: 0.5
@@ -83,12 +83,12 @@ Then split randomly into `trigger/train_queries.json` (60%) and `trigger/validat
 
 ### 6. Generate the golden set
 
-Read the artifact carefully. Write `golden-set/NNN-<slug>.md` files covering:
+Read the subject carefully. Write `golden-set/NNN-<slug>.md` files covering:
 
 **Behavior layer (15–25 cases):**
-- One case per major rule or step in the artifact
+- One case per major rule or step in the subject
 - 3–5 edge cases: conflicting signals, incomplete inputs, ambiguous situations
-- 2–3 must-not-do guards for behaviors explicitly prohibited in the artifact
+- 2–3 must-not-do guards for behaviors explicitly prohibited in the subject
 
 Use this format for each case:
 
@@ -134,7 +134,7 @@ Score 1–5:
 Return a summary to `create-spec`:
 
 ```
-ARTIFACT_PATH: <path>
+SUBJECT_PATH: <path>
 TRIGGER_QUERIES: <count>
 GOLDEN_SET_CASES: <count>
 STRUCTURAL_ISSUES: <list or "none">
