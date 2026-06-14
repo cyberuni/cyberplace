@@ -156,7 +156,7 @@ For artifacts that belong to a plugin, nest under the plugin name:
     commands/<command-name>/
 ```
 
-Example: the `aces` plugin's `init` skill lives at `.evals/aces/skills/init/`.
+Example: the `aces` plugin's `create-spec` skill lives at `.evals/aces/skills/create-spec/`.
 
 ### 5.1 `eval.md` schema
 
