@@ -9,7 +9,7 @@ Add one or more test cases to an existing golden set.
 
 ## Locate the eval suite
 
-Find `artifacts/aces/<subject-name>/` from user context or ask. Read `eval.md` for threshold and target.
+Find `artifacts/aces/<artifact-name>/` from user context or ask. Read `eval.md` for threshold and target.
 
 ## Gather input
 
@@ -69,6 +69,6 @@ Show the draft to the user and ask for confirmation before writing. Adjust based
 
 ## Write the file
 
-Determine the next sequence number from existing files in `artifacts/aces/<subject-name>/golden-set/`. Write the file as `NNN-<slug>.md`.
+Determine the next sequence number from existing files in `artifacts/aces/<name>/golden-set/`. Write the file as `NNN-<slug>.md`.
 
-Report the file path and suggest running `run` to score the new case against the current subject.
+Report the file path and suggest running `run` to score the new case against the current artifact.
