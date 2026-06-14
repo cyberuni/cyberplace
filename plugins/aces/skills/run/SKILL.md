@@ -1,5 +1,5 @@
 ---
-name: aces-run
+name: run
 description: Use this skill when running ACES evals to score agent configuration behavior against its golden set — after editing a skill, AGENTS.md section, subagent, or command.
 ---
 
@@ -98,8 +98,8 @@ FAILING CASES (worst first):
   ✗ 008-trigger-on-skill-creation     [score 3] — <explanation>
   ✗ 020-red-tests-block-commit        [score 3] — <explanation>
 
-Run aces-improve to address failing cases.
-Run aces-compare after editing the artifact.
+Run improve to address failing cases.
+Run compare after editing the artifact.
 ```
 
-If pass rate is 100%, say so and suggest running `aces-add` to expand edge case coverage.
+If pass rate is 100%, say so and suggest running `add` to expand edge case coverage.

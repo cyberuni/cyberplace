@@ -1,5 +1,5 @@
 ---
-name: aces-compare
+name: compare
 description: Use this skill when comparing two versions of an agent configuration to detect regressions or confirm improvements before committing a change.
 ---
 
@@ -23,7 +23,7 @@ Read both versions in full before proceeding.
 
 ## Run evals on both versions
 
-For each version, run every test case in `.evals/<name>/golden-set/` through `aces-judge` (same process as `aces-run`).
+For each version, run every test case in `.evals/<name>/golden-set/` through `aces-judge` (same process as `run`).
 
 Label results as **before** and **after**.
 
@@ -71,7 +71,7 @@ If any case regressed (score dropped or flipped from pass to fail), warn explici
   ✗ 008-trigger-on-skill-creation  5 → 3  (was passing, now failing)
 
 Do not commit this change until the regression is resolved.
-Run aces-improve to address it, or revert and try a different edit.
+Run improve to address it, or revert and try a different edit.
 ```
 
 If no regressions and net improvement: confirm the change is safe to commit.

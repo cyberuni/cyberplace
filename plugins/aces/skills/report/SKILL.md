@@ -1,5 +1,5 @@
 ---
-name: aces-report
+name: report
 description: Use this skill when the user wants a project-wide health summary of all ACES eval suites — pass rates, trends, and which agent configurations need attention.
 ---
 
@@ -14,7 +14,7 @@ Scan `.evals/` for subdirectories containing `eval.md`. For each, read:
 - The most recent file in `results/` (sort by filename descending)
 - The second-most-recent file in `results/` for trend (if it exists)
 
-If `.evals/` does not exist or is empty, report that no eval suites are initialized and suggest `aces-init`.
+If `.evals/` does not exist or is empty, report that no eval suites are initialized and suggest `init`.
 
 ## Compute per-suite metrics
 
@@ -49,9 +49,9 @@ ACES Project Report
 
 NEEDS ATTENTION:
   ✗ aces-judge (critical, trending down) — run aces-improve
-  ⚠ create-skill (degraded) — run aces-run for details
+  ⚠ create-skill (degraded) — run run for details
 
-Suites with no results: subagents/researcher — run aces-run to initialize
+Suites with no results: subagents/researcher — run run to initialize
 ```
 
 ## Optional: full detail mode
@@ -60,7 +60,7 @@ If the user asks for details on a specific suite, print all failing cases with s
 
 ## Suggest next actions
 
-- For `critical` or `trending-down`: suggest `aces-improve`
-- For `degraded`: suggest `aces-run` for details, then `aces-improve`
-- For `no-data`: suggest `aces-run`
-- For all `healthy` with no trend data: suggest `aces-add` to expand coverage
+- For `critical` or `trending-down`: suggest `improve`
+- For `degraded`: suggest `run` for details, then `improve`
+- For `no-data`: suggest `run`
+- For all `healthy` with no trend data: suggest `add` to expand coverage

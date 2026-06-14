@@ -1,5 +1,5 @@
 ---
-name: aces-improve
+name: improve
 description: Use this skill when ACES evals are failing and the user wants to diagnose why and get specific improvement proposals for the target agent configuration.
 ---
 
@@ -14,7 +14,7 @@ Find `.evals/<name>/`:
 - Read the target artifact in full
 - Read the most recent result file from `results/` (sort by filename descending, take first)
 
-If no results exist, run `aces-run` first.
+If no results exist, run `run` first.
 
 ## Identify failing cases
 
@@ -52,7 +52,7 @@ Examples of edit types:
 
 Show all proposed edits to the user. Ask for approval before writing any changes.
 
-After user approval, apply edits to the artifact. Then automatically run `aces-compare` (before = previous git revision, after = current working tree) to verify the changes improved scores without introducing regressions.
+After user approval, apply edits to the artifact. Then automatically run `compare` (before = previous git revision, after = current working tree) to verify the changes improved scores without introducing regressions.
 
 ## If no clear fix exists
 
