@@ -25,7 +25,7 @@ Invoke `aces-spec-designer` with:
 ```
 ARTIFACT: <full text of the artifact file>
 ARTIFACT_PATH: <relative path to the artifact>
-AGENTSKILLS_EVALS: <contents of evals/evals.json if present alongside the artifact, else null>
+AGENTSKILLS_EVALS: <contents of <artifact-dir>/evals/evals.json if present, else null>
 ```
 
 Wait for `aces-spec-designer` to complete before moving to the next artifact.
