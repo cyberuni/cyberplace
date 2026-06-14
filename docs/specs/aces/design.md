@@ -109,7 +109,7 @@ A check run by `aces-compare` that blocks an artifact change if any test case's 
 
 ```
 .evals/
-  <artifact-name>/
+  <artifact-path>/
     eval.md                     ← suite config
     golden-set/
       001-<slug>.md             ← test cases, zero-padded sequence
@@ -120,11 +120,26 @@ A check run by `aces-compare` that blocks an artifact change if any test case's 
       2026-06-13T16:05:00Z.json
 ```
 
-For `AGENTS.md` sections, the artifact name is a slug of the section heading: `commit-discipline`, `coding-conventions`.
+Artifact path conventions:
 
-For skills: the skill name (`create-skill`, `aces-run`).
+| Artifact type | Path |
+|---|---|
+| `AGENTS.md` section | `<section-slug>/` (e.g., `commit-discipline/`) |
+| Skill | `skills/<skill-name>/` (e.g., `skills/create-skill/`) |
+| Subagent definition | `agents/<agent-name>/` (e.g., `agents/aces-judge/`) |
+| Command | `commands/<command-name>/` |
 
-For subagent definitions: `agents/<agent-name>`.
+For artifacts that belong to a plugin, nest under the plugin name:
+
+```
+.evals/
+  <plugin-name>/
+    skills/<skill-name>/
+    agents/<agent-name>/
+    commands/<command-name>/
+```
+
+Example: the `aces` plugin's `init` skill lives at `.evals/aces/skills/init/`.
 
 ### 5.1 `eval.md` schema
 
@@ -206,7 +221,7 @@ Score 1–5:
 **Steps:**
 1. Identify the target artifact (ask if unclear)
 2. Run structural layer (`audit-skill`) — surface issues before writing behavioral tests
-3. Create `.evals/<name>/` directory and `eval.md`
+3. Create `.evals/<artifact-path>/` directory and `eval.md` (using path conventions from §5)
 4. Generate initial golden set:
    - 10–15 trigger cases (should-fire + should-not-fire)
    - 15–25 behavior cases (one per rule/step + edge cases + must-not-do guards)
