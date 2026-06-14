@@ -1,30 +1,12 @@
 {
+	"name": "cyber-skills-next",
+	"owner": { "name": "unional" },
+	"$schema": "https://raw.githubusercontent.com/cyberuni/marketplace/main/.claude-plugin/marketplace.schema.json",
 	"plugins": [
 		{
-			"name": "skill-discovery",
-			"description": "Find and evaluate skills before installing. Prefer global install (-g).",
-			"skills": ["./skills/find-awesome-skill", "./skills/audit-skill"]
-		},
-		{
-			"name": "skill-authoring",
-			"description": "Create, generalize, patch, persona, and audit skills. Prefer global install (-g).",
-			"skills": [
-				"./skills/create-skill",
-				"./skills/create-persona-skill",
-				"./skills/skillify",
-				"./skills/patch-skill",
-				"./skills/audit-skill"
-			]
-		},
-		{
-			"name": "agent-initialization",
-			"description": "One-time repo setup. init and init-commit-discipline: global (-g); commit: project.",
-			"skills": ["./skills/init", "./skills/init-commit-discipline", "./skills/commit"]
-		},
-		{
-			"name": "awesome-list-maintenance",
-			"description": "Manage curated awesome-list sources and entries. configure-awesome-sources: global; update-awesome-list: project.",
-			"skills": ["./skills/configure-awesome-sources", "./skills/update-awesome-list"]
+			"name": "aces",
+			"description": "Agent Config Evaluation System. Evaluate, test, and improve agent configurations: skills, AGENTS.md sections, subagent definitions, and commands.",
+			"source": "./plugins/aces"
 		}
 	]
 }
