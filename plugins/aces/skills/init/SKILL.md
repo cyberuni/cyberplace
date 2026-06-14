@@ -1,10 +1,8 @@
 ---
 name: init
-description: Use this skill when to setup ACES for agent configuration — a skill, AGENTS.md section, subagent definition, or command.
+description: Use this skill when to setup Agent Configuration Evaluation System (ACES).
 disable-model-invocation: true
 ---
-
-# ACES Init
 
 Initialize an eval suite for a target agent configuration artifact.
 
