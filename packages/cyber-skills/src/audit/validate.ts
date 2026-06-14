@@ -452,13 +452,13 @@ export function runChecks(filePath: string): CheckResult {
 		)
 	}
 
-	if (fmDesc && fmDesc.length > 120) {
+	if (fmDesc && fmDesc.length > 1024) {
 		warn(
-			'MEDIUM',
+			'HIGH',
 			'Q5',
-			'Description exceeds 120 characters',
+			'Description exceeds 1024 characters (spec hard limit)',
 			`description: ${fmDesc.slice(0, 80)}… (${fmDesc.length} chars)`,
-			'Trim to ≤120 chars; move example phrases to the skill body',
+			'Trim to ≤1024 chars; move example phrases to the skill body',
 		)
 	}
 
