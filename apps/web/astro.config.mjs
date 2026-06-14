@@ -52,6 +52,12 @@ export default defineConfig({
 					],
 				},
 				{
+					label: 'Concepts',
+					items: [
+						{ label: 'Agent Configuration', slug: 'concepts/agent-configuration' },
+					],
+				},
+				{
 					label: 'Disciplines',
 					items: [
 						{ label: 'Commit Discipline', slug: 'disciplines/commit-discipline' },
