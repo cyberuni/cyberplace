@@ -1,6 +1,6 @@
 ---
 name: compare
-description: Use this skill when comparing two versions of an agent configuration to detect regressions or confirm improvements before committing a change.
+description: Use this skill when comparing two versions of an artifact to detect regressions or confirm improvements before committing a change.
 ---
 
 # ACES Compare
@@ -23,7 +23,7 @@ Read both versions in full before proceeding.
 
 ## Run evals on both versions
 
-For each version, run every test case in `sdd/aces/<name>/golden-set/` through `aces-judge` (same process as `run`).
+For each version, run every test case in `artifacts/aces/<name>/golden-set/` through `aces-judge` (same process as `run`).
 
 Label results as **before** and **after**.
 

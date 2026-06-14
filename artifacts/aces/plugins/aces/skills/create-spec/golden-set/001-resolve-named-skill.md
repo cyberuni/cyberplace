@@ -8,7 +8,7 @@ threshold: 4
 
 User says: "Create an eval spec for the commit-work skill."
 
-The repo contains `packages/cyber-skills/skills/commit-work/SKILL.md`. No `sdd/aces/` entry exists for it yet. No `evals/evals.json` exists alongside the skill.
+The repo contains `packages/cyber-skills/skills/commit-work/SKILL.md`. No `artifacts/aces/` entry exists for it yet. No `evals/evals.json` exists alongside the skill.
 
 ## Expected behaviors
 

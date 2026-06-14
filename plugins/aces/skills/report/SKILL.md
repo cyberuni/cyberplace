@@ -1,6 +1,6 @@
 ---
 name: report
-description: Use this skill when the user wants a project-wide health summary of all ACES eval suites — pass rates, trends, and which agent configurations need attention.
+description: Use this skill when the user wants a project-wide health summary of all ACES eval suites — pass rates, trends, and which artifacts need attention.
 ---
 
 # ACES Report
@@ -9,12 +9,12 @@ Generate a project-wide health dashboard across all eval suites.
 
 ## Discover eval suites
 
-Scan `sdd/aces/` for subdirectories containing `eval.md`. For each, read:
+Scan `artifacts/aces/` for subdirectories containing `eval.md`. For each, read:
 - `eval.md` for target path and threshold
 - The most recent file in `results/` (sort by filename descending)
 - The second-most-recent file in `results/` for trend (if it exists)
 
-If `sdd/aces/` does not exist or is empty, report that no eval suites are initialized and suggest `create-spec`.
+If `artifacts/aces/` does not exist or is empty, report that no eval suites are initialized and suggest `create-spec`.
 
 ## Compute per-suite metrics
 

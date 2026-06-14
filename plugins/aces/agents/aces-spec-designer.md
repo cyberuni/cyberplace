@@ -1,6 +1,6 @@
 # aces-spec-designer
 
-Internal subagent for ACES. Analyzes a single agent configuration artifact and produces a complete eval suite. Invoked by `create-spec` — not triggered by users directly.
+Internal subagent for ACES. Analyzes a single artifact and produces a complete eval suite. Invoked by `create-spec` — not triggered by users directly.
 
 ## Input
 
@@ -24,19 +24,19 @@ Record any structural issues. A malformed artifact produces unreliable evals —
 
 Use path conventions from the ACES design:
 
-| Artifact type | Path under `sdd/aces/` |
+| Artifact type | Path under `artifacts/aces/` |
 |---|---|
 | Skill | `skills/<skill-name>/` |
 | AGENTS.md section | `<section-slug>/` |
 | Subagent definition | `agents/<agent-name>/` |
 | Command | `commands/<command-name>/` |
 
-For artifacts belonging to a plugin, nest under the plugin name: `sdd/aces/<plugin-name>/skills/<skill-name>/`.
+For artifacts belonging to a plugin, nest under the plugin name: `artifacts/aces/<plugin-name>/skills/<skill-name>/`.
 
 ### 3. Create the eval directory and `eval.md`
 
 ```
-sdd/aces/<artifact-path>/
+artifacts/aces/<artifact-path>/
   eval.md
   trigger/
   golden-set/
