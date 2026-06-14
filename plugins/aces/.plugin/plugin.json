@@ -1,16 +1,11 @@
 {
+	"$schema": "https://raw.githubusercontent.com/cyberuni/marketplace/main/schema/claude/plugin.json",
 	"name": "aces",
 	"description": "Agent Config Evaluation System. Evaluate, test, and improve agent configurations: skills, AGENTS.md sections, subagent definitions, and commands.",
 	"author": { "name": "unional" },
 	"homepage": "https://github.com/cyberuni/cyber-skills",
 	"repository": "https://github.com/cyberuni/cyber-skills",
-	"skills": [
-		"../skills/init",
-		"../skills/run",
-		"../skills/add",
-		"../skills/compare",
-		"../skills/improve",
-		"../skills/report"
-	],
-	"agents": ["../agents/aces-judge"]
+	"commands": "./commands",
+	"skills": "./skills",
+	"agents": "./agents"
 }
