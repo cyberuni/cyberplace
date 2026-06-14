@@ -59,14 +59,14 @@ The collective term for all instruction artifacts an agent runtime loads:
 
 A category of behavior being tested. Layers are ordered from cheapest to most expensive:
 
-| Layer | Question | Scored by |
-|---|---|---|
-| **Structural** | Does the artifact have required fields and format? | `audit-skill` (static) |
-| **Trigger** | Does the agent correctly decide when to invoke this artifact? | `aces-judge` |
-| **Behavior** | When invoked, does the agent follow the steps and rules? | `aces-judge` |
-| **Quality** | Is the output the agent produces actually good? | `aces-judge` |
+| Layer | Question | Scored by | Input format |
+|---|---|---|---|
+| **Structural** | Does the artifact have required fields and format? | `audit-skill` (static) | — |
+| **Trigger** | Does the agent correctly decide when to invoke this artifact? | trigger rate (run-based) | `eval_queries.json` |
+| **Behavior** | When invoked, does the agent follow the steps and rules? | `aces-judge` (rubric + assertions) | `golden-set/*.md` |
+| **Quality** | Is the output the agent produces actually good? | `aces-judge` (rubric + assertions) | `golden-set/*.md` |
 
-The structural layer delegates to `audit-skill` and runs free. The remaining three layers use `aces-judge`.
+The structural layer delegates to `audit-skill` and runs free. The trigger layer uses a different mechanism from behavior/quality: it runs real queries against the agent and measures whether the skill was invoked (trigger rate), not LLM simulation. Behavior and quality layers use `aces-judge`.
 
 ### 4.3 Test case
 
@@ -76,24 +76,35 @@ A single scenario that exercises one aspect of one artifact at one layer. A test
 - A concrete situation description
 - A list of expected behaviors (observable actions or outputs)
 - A list of prohibited behaviors
+- Optional assertions: verifiable pass/fail checks on observable outputs
 - A rubric (1–5 scoring criteria)
 - A pass threshold (default: 4)
 
+Assertions and rubric are complementary. Assertions check mechanical properties objectively ("output includes a bar chart file"); the rubric scores holistic quality. When assertions are present, a failed assertion caps the rubric score at 3 — the artifact cannot score 4 or 5 if a must-pass check failed.
+
 ### 4.4 Golden set
 
-The complete collection of test cases for one artifact. Stored in `.evals/<artifact-name>/golden-set/`. The golden set is version-controlled and grows over time as new failure modes are discovered.
+The complete test suite for one artifact:
+- **Trigger queries**: stored in `.evals/<artifact-path>/trigger/eval_queries.json` — a JSON array of `{query, should_trigger}` pairs, split into `train_queries.json` (60%) and `validation_queries.json` (40%) for optimization without overfitting.
+- **Behavior/quality cases**: stored in `.evals/<artifact-path>/golden-set/*.md` — markdown test cases with scenarios, assertions, and rubric.
 
-Coverage targets for a well-formed golden set:
+Both are version-controlled and grow over time as new failure modes are discovered.
+
+Coverage targets:
 
 | Layer | Min cases | Composition |
 |---|---|---|
-| Trigger | 10–15 | 5–8 should-fire, 5–7 should-not-fire |
+| Trigger | ~20 queries | 8–10 should-trigger, 8–10 should-not-trigger; include near-misses |
 | Behavior | 15–25 | 1 per major rule/step + 3–5 edge cases + 2–3 must-not-do cases |
 | Quality | optional | End-to-end output quality checks |
 
 ### 4.5 Eval run
 
-A single execution of the full golden set against the current artifact. Produces a result JSON with per-case scores, pass/fail, and judge explanations. Results are timestamped and stored in `.evals/<artifact-name>/results/`.
+A single execution of the eval suite against the current artifact. Two run types:
+- **Trigger run**: executes each query in `eval_queries.json` N times, measures trigger rate per query, produces a trigger result JSON.
+- **Behavior/quality run**: for each test case in `golden-set/`, invokes `aces-judge`, collecting scores, assertion results, and timing. Produces a behavior result JSON.
+
+Results are timestamped and stored in `.evals/<artifact-path>/results/`. `benchmark.json` is rewritten after each run with aggregate stats.
 
 ### 4.6 Pass threshold
 
@@ -110,14 +121,20 @@ A check run by `aces-compare` that blocks an artifact change if any test case's 
 ```
 .evals/
   <artifact-path>/
-    eval.md                     ← suite config
+    eval.md                          ← suite config
+    trigger/
+      eval_queries.json              ← full trigger query set
+      train_queries.json             ← 60% split for optimization
+      validation_queries.json        ← 40% split for generalization check
     golden-set/
-      001-<slug>.md             ← test cases, zero-padded sequence
+      001-<slug>.md                  ← behavior/quality test cases
       002-<slug>.md
       ...
     results/
-      2026-06-13T14:22:00Z.json ← timestamped run results
-      2026-06-13T16:05:00Z.json
+      trigger-<timestamp>.json       ← trigger run results
+      behavior-<timestamp>.json      ← behavior/quality run results
+    benchmark.json                   ← latest aggregate stats (overwritten each run)
+    feedback.json                    ← latest human review notes (overwritten each iteration)
 ```
 
 Artifact path conventions:
@@ -147,19 +164,40 @@ Example: the `aces` plugin's `init` skill lives at `.evals/aces/skills/init/`.
 ---
 target: <relative path to artifact, or "AGENTS.md#section-heading">
 judge_model: claude-sonnet-4-6
-threshold: 4
+threshold: 4           # rubric pass threshold (1–5); default 4
+trigger_threshold: 0.5 # fraction of runs that must trigger for a should-trigger query to pass
+trigger_runs: 3        # number of times each trigger query is executed
 layers:
   - trigger
   - behavior
 ---
 ```
 
-### 5.2 Test case format
+### 5.2 Trigger query format (`eval_queries.json`)
+
+```json
+[
+  {
+    "id": 1,
+    "query": "I have a CSV of monthly sales data in data/sales.csv — can you find the top 3 months by revenue?",
+    "should_trigger": true
+  },
+  {
+    "id": 2,
+    "query": "write a python script that reads a csv and uploads each row to postgres",
+    "should_trigger": false
+  }
+]
+```
+
+Good trigger queries vary phrasing (formal/casual), explicitness (names the domain vs. describes the need indirectly), and detail level. Should-not-trigger queries should be **near-misses** — same domain keywords, different intent — not obviously irrelevant prompts. `train_queries.json` and `validation_queries.json` are the same format, generated by `aces-init` as a 60/40 random split of `eval_queries.json`.
+
+### 5.3 Behavior/quality test case format
 
 ```markdown
 ---
 name: <slug>
-layer: trigger | behavior | quality
+layer: behavior | quality
 threshold: 4
 ---
 
@@ -178,6 +216,11 @@ simulate the situation without ambiguity.>
 
 - <Prohibited action>
 
+## Assertions
+
+- <Verifiable pass/fail check on the output — e.g., "output file is valid JSON">
+- <Another mechanical check>
+
 ## Rubric
 
 Score 1–5:
@@ -188,27 +231,122 @@ Score 1–5:
 1 — <complete failure or opposite behavior>
 ```
 
-### 5.3 Result JSON schema
+`Assertions` is optional. Good assertions are objectively verifiable ("output includes exactly 3 items", "no debug logging in output"). Avoid assertions that restate the rubric at 5 or that are too brittle (exact string matches). When assertions are present, any failed assertion caps the rubric score at 3.
+
+### 5.4 Trigger result JSON (`trigger-<timestamp>.json`)
 
 ```json
 {
   "timestamp": "2026-06-13T14:22:00Z",
-  "target": "skills/aces-run/SKILL.md",
+  "target": "skills/create-skill/SKILL.md",
+  "trigger_threshold": 0.5,
+  "runs_per_query": 3,
+  "split": "train",
+  "pass_rate": 0.80,
+  "queries": [
+    {
+      "id": 1,
+      "query": "...",
+      "should_trigger": true,
+      "trigger_count": 3,
+      "trigger_rate": 1.0,
+      "pass": true
+    },
+    {
+      "id": 2,
+      "query": "...",
+      "should_trigger": false,
+      "trigger_count": 1,
+      "trigger_rate": 0.33,
+      "pass": true
+    }
+  ]
+}
+```
+
+### 5.5 Behavior/quality result JSON (`behavior-<timestamp>.json`)
+
+```json
+{
+  "timestamp": "2026-06-13T14:22:00Z",
+  "target": "skills/create-skill/SKILL.md",
   "pass_rate": 0.82,
   "mean_score": 3.9,
   "std_dev": 0.8,
   "threshold": 4,
   "cases": [
     {
-      "name": "001-trigger-on-run-request",
-      "layer": "trigger",
+      "name": "001-creates-skill-file",
+      "layer": "behavior",
       "score": 5,
       "pass": true,
-      "explanation": "..."
+      "total_tokens": 4200,
+      "duration_ms": 18500,
+      "assertion_results": [
+        {
+          "text": "SKILL.md file was created",
+          "passed": true,
+          "evidence": "File written to .agents/skills/my-skill/SKILL.md"
+        }
+      ],
+      "what_worked": "...",
+      "what_failed": "nothing"
     }
   ]
 }
 ```
+
+### 5.6 `benchmark.json`
+
+Aggregate stats across the latest run, rewritten after each `aces-run`:
+
+```json
+{
+  "updated": "2026-06-13T14:22:00Z",
+  "trigger": {
+    "pass_rate": { "mean": 0.80, "stddev": 0.0 },
+    "split": "train"
+  },
+  "behavior": {
+    "pass_rate": { "mean": 0.82, "stddev": 0.06 },
+    "mean_score": { "mean": 3.9, "stddev": 0.8 },
+    "time_seconds": { "mean": 18.5, "stddev": 3.2 },
+    "tokens": { "mean": 4200, "stddev": 310 }
+  },
+  "delta": {
+    "behavior_pass_rate": 0.15
+  }
+}
+```
+
+`delta` compares the latest run against the previous result file. Empty on first run.
+
+### 5.7 `feedback.json`
+
+Human review notes per test case, rewritten after each review iteration:
+
+```json
+{
+  "001-creates-skill-file": "",
+  "002-audits-on-create": "Skill was created but audit step was skipped — not surfaced in output at all."
+}
+```
+
+Empty string means output looked fine. Non-empty is actionable feedback for `aces-improve`.
+
+### 5.8 agentskills.io compatibility
+
+Skills that already have an `evals/evals.json` file (the [agentskills.io](https://agentskills.io) format) can be imported by `aces-init`. The mapping:
+
+| agentskills.io field | ACES target |
+|---|---|
+| `evals[].prompt` | `## Scenario` |
+| `evals[].expected_output` | first `## Expected behaviors` bullet |
+| `evals[].assertions[]` | `## Assertions` list |
+| `evals[].files[]` | noted in `## Scenario` as input files |
+| `evals[].id` | zero-padded filename prefix |
+
+`aces-init` reads `evals/evals.json`, generates `golden-set/*.md` files from it, and leaves the original file in place. Subsequent `aces-add` calls append to the golden set, not to `evals.json`.
 
 ---
 
@@ -222,12 +360,15 @@ Score 1–5:
 1. Identify the target artifact (ask if unclear)
 2. Run structural layer (`audit-skill`) — surface issues before writing behavioral tests
 3. Create `.evals/<artifact-path>/` directory and `eval.md` (using path conventions from §5)
-4. Generate initial golden set:
-   - 10–15 trigger cases (should-fire + should-not-fire)
+4. If the skill has `evals/evals.json` (agentskills.io format): import it as initial golden set cases (see §5.8)
+5. Generate trigger queries in `trigger/eval_queries.json`:
+   - ~20 queries: 8–10 should-trigger, 8–10 should-not-trigger (near-misses, not obviously irrelevant)
+   - Randomly split into `train_queries.json` (60%) and `validation_queries.json` (40%)
+6. Generate initial golden set (if not imported from evals.json):
    - 15–25 behavior cases (one per rule/step + edge cases + must-not-do guards)
-5. Report: file count, structural issues found, next step
+7. Report: file count, structural issues found, next step
 
-**Output:** `.evals/<name>/` populated, ready for `aces-run`.
+**Output:** `.evals/<artifact-path>/` populated, ready for `aces-run`.
 
 ---
 
@@ -238,12 +379,17 @@ Score 1–5:
 **Steps:**
 1. Locate `eval.md` (from user context or by scan)
 2. Read the current artifact in full
-3. For each test case in `golden-set/`, invoke `aces-judge`
-4. Collect scores, compute pass rate and mean ± std dev per layer
-5. Write timestamped result JSON
-6. Report pass rate, failing cases (worst first), per-layer breakdown
+3. **Trigger layer** (if configured):
+   - Run each query in `train_queries.json` `trigger_runs` times; detect whether the skill was invoked each time
+   - Compute `trigger_rate` per query; a query passes if its rate meets `trigger_threshold`
+   - Write `trigger-<timestamp>.json`
+4. **Behavior/quality layers** (if configured):
+   - For each test case in `golden-set/`, invoke `aces-judge`; record score, assertion results, timing
+   - Write `behavior-<timestamp>.json`
+5. Update `benchmark.json` with aggregate stats and delta vs. previous run
+6. Report: trigger pass rate, behavior pass rate, failing cases (worst first), token/time cost
 
-**Output:** Result JSON + console report.
+**Output:** Result JSON(s) + updated `benchmark.json` + console report.
 
 ---
 
@@ -266,11 +412,12 @@ Score 1–5:
 **Trigger:** User wants to know if an edit improved or regressed behavior.
 
 **Steps:**
-1. Identify two versions (default: working tree vs. last git revision)
-2. Run golden set against both — do not write results unless user asks
-3. Compute per-case deltas and change type: `improved`, `regressed`, `unchanged`, `now-passing`, `now-failing`
-4. Report net pass rate delta, mean score delta, improved and regressed cases
-5. If any regression: warn, recommend resolving before committing
+1. Identify two versions: default is working tree vs. last git revision; `--baseline` flag compares with-artifact vs. without-artifact
+2. Run behavior/quality golden set against both versions **blind**: label outputs A and B without revealing which is which
+3. Invoke `aces-comparator` for each test case to pick a winner; then unblind and compute per-case change type: `improved`, `regressed`, `unchanged`, `now-passing`, `now-failing`
+4. If trigger layer configured: run `train_queries.json` against both versions, compare trigger rates
+5. Report net pass rate delta, comparator winner breakdown, improved and regressed cases
+6. If any regression: warn, recommend resolving before committing
 
 **Output:** Diff report. No result JSON written unless requested.
 
@@ -281,10 +428,10 @@ Score 1–5:
 **Trigger:** Eval results have failing cases; user wants to fix the artifact.
 
 **Steps:**
-1. Load latest result from `results/`, read failing test cases
-2. Group failures by pattern (see §8)
-3. Propose specific diffs to the artifact for each pattern
-4. Show proposals to user — do not auto-apply
+1. Load latest behavior result from `results/`, read failing test cases and `feedback.json`
+2. Invoke `aces-analyzer` with failing cases, feedback notes, and current artifact to extract improvement patterns
+3. Group by pattern (see §8) and prioritize by impact
+4. Present proposed diffs to the artifact — do not auto-apply
 5. After approval, apply edits and run `aces-compare` to verify
 
 **Output:** Proposed artifact edits + post-edit comparison.
@@ -305,39 +452,95 @@ Score 1–5:
 
 ---
 
-## 7. `aces-judge` Agent
+## 7. Internal Agents
 
-Internal agent invoked by `aces-run` and `aces-compare`. Not user-triggered.
+Three internal agents handle evaluation. None are user-triggered.
 
-**Role:** Impartial evaluator. Simulates agent behavior given a scenario and scores it against a rubric.
+### 7.1 `aces-executor`
 
-**Input block passed by caller:**
+Invoked by `aces-run` for each behavior/quality test case. Simulates agent behavior given a scenario and artifact, producing a structured output for grading.
+
+**Input:**
 ```
-ARTIFACT:
-<full artifact text>
-
-TEST CASE: <name>
-LAYER: <layer>
-SCENARIO: <scenario>
+ARTIFACT: <full artifact text>
+SCENARIO: <scenario from test case>
 EXPECTED BEHAVIORS: <list>
 MUST NOT DO: <list>
-RUBRIC: <rubric>
-THRESHOLD: <threshold>
 ```
 
-**Output format (exactly four lines, no preamble):**
-```
-SCORE: <1-5>
-PASS: <yes|no>
-WHAT WORKED: <one sentence>
-WHAT FAILED: <one sentence, or "nothing" if score is 5>
+**Output:** Simulated execution log — what the agent did step-by-step, what output it produced, whether it consulted the artifact and which parts. Saved alongside each case result so `aces-grader` can examine the "transcript".
+
+### 7.2 `aces-grader`
+
+Invoked by `aces-run` after `aces-executor`. Grades the simulated execution against assertions and rubric; also critiques the test case itself.
+
+**Input:** Executor transcript + test case (scenario, assertions, rubric, threshold)
+
+**Output JSON:**
+```json
+{
+  "score": 4,
+  "pass": true,
+  "what_worked": "...",
+  "what_failed": "nothing",
+  "assertion_results": [
+    { "text": "...", "passed": true, "evidence": "..." }
+  ],
+  "claims": [
+    { "claim": "...", "type": "factual", "verified": true, "evidence": "..." }
+  ],
+  "eval_feedback": {
+    "suggestions": [
+      { "assertion": "...", "reason": "Would pass even for a wrong output — consider tightening" }
+    ]
+  }
+}
 ```
 
-**Scoring principles:**
-- Score what the artifact would cause an agent to do — not what the judge considers ideal
+**Grading principles:**
+- Score what the artifact would cause an agent to do — not what the grader considers ideal
 - The rubric is the authority; do not override it
 - Ambiguous artifact language that produces inconsistent behavior should lower the score
-- Do not give 5 if any expected behavior was missed or any must-not-do was triggered
+- Any failed assertion caps the score at 3 — cannot score 4 or 5 if a must-pass check failed
+- Extract implicit claims from the simulated execution and verify them (catches issues that predefined assertions miss)
+- Flag assertions that would trivially pass regardless of skill quality — this is `eval_feedback`
+
+### 7.3 `aces-comparator`
+
+Invoked by `aces-compare`. Receives two outputs labeled A and B — without knowing which version produced which — and judges which is better using a content + structure rubric.
+
+**Input:** Two simulated execution outputs (A and B) + test case prompt + assertions
+
+**Output JSON:**
+```json
+{
+  "winner": "A",
+  "reasoning": "...",
+  "scores": { "A": 8.5, "B": 6.0 },
+  "assertion_results": { "A": { "pass_rate": 0.9 }, "B": { "pass_rate": 0.7 } }
+}
+```
+
+After all cases are judged, `aces-compare` unblids the results to attribute A/B to the actual artifact versions.
+
+### 7.4 `aces-analyzer`
+
+Invoked by `aces-improve`. Given failing cases, `feedback.json`, and the current artifact, produces prioritized improvement suggestions by examining which instruction gaps caused failures.
+
+**Output JSON:**
+```json
+{
+  "patterns": [
+    {
+      "pattern": "Ambiguous rule",
+      "cases": ["002-...", "007-..."],
+      "priority": "high",
+      "suggestion": "Replace '...' with explicit decision rule: ...",
+      "expected_impact": "..."
+    }
+  ]
+}
+```
 
 ---
 
@@ -359,11 +562,13 @@ WHAT FAILED: <one sentence, or "nothing" if score is 5>
 
 ## 9. Key Design Decisions
 
-### 9.1 LLM-as-judge, not code assertions
+### 9.1 LLM-as-judge with assertions, not pure code assertions
 
 Agent behavior is not structurally checkable. The output of following an artifact is natural language behavior, not a typed value. An LLM judge is the only practical scorer at the behavior and quality layers.
 
-**Tradeoff:** LLM judges are non-deterministic and can be wrong. Mitigations: temperature 0 on judge calls; rubrics are the authority (judge cannot override); score variance across runs is reported. The alternative (code assertions) only works for structural properties — not behavior.
+ACES uses a hybrid: verifiable **assertions** (pass/fail, graded by `aces-grader` with evidence) handle mechanical properties; the **rubric** (1–5) handles holistic quality. Assertions cap the rubric score at 3 when they fail — objective checks take precedence.
+
+**Tradeoff:** LLM judges are non-deterministic and can be wrong. Mitigations: temperature 0 on judge calls; rubrics are the authority; `aces-grader` critiques its own assertions (`eval_feedback`) so weak evals are caught. The alternative (code assertions only) can't handle behavior that emerges from instruction-following.
 
 ### 9.2 Pointwise scoring, not pairwise
 
@@ -387,6 +592,24 @@ ACES does not re-implement structural checks. `aces-init` runs `audit-skill` fir
 
 Compare is a diff operation, not a recorded eval run. Writing a result for "before" would pollute the history with a result that doesn't reflect the current artifact state.
 
+### 9.6 Blind comparison in `aces-compare`
+
+`aces-compare` uses `aces-comparator`, which judges A vs. B without knowing which version is which. This prevents the judge from being biased toward whatever it believes is "newer" or "better" before seeing the output.
+
+**Tradeoff:** Adds a round-trip through `aces-comparator` for each test case. Justified because bias in comparison scoring produces unreliable regression detection — the signal that drives whether to block a commit.
+
+### 9.7 Trigger layer uses run-based detection, not simulation
+
+For trigger testing, ACES actually runs the queries and detects skill invocation — it does not simulate with an LLM. This is more accurate because triggering depends on the agent runtime's skill selection logic, not on what any judge thinks is "correct".
+
+**Tradeoff:** Trigger runs are more expensive (real agent calls × `trigger_runs` per query). Mitigated by train/validation split: you only optimize against the 60% train set, preserving the 40% validation set as an honest generalization check. Overfitting the description to the train set produces inflated metrics that the validation set catches.
+
+### 9.8 agentskills.io format as first-class import
+
+Skills that ship `evals/evals.json` (the agentskills.io format) can be imported by `aces-init` without rewriting test cases. This ensures ACES is additive — authors who already have eval coverage don't need to duplicate it.
+
+**Tradeoff:** The agentskills.io format has no `layer` field or rubric. Imported cases default to `behavior` layer with a generic rubric. The author is expected to enrich them after import.
+
 ---
 
 ## 10. Open Questions
@@ -395,7 +618,10 @@ Compare is a diff operation, not a recorded eval run. Writing a result for "befo
 |---|---|---|
 | OQ1 | Should `aces-run` support running a subset of layers (e.g., trigger only)? | Affects `eval.md` schema and run performance |
 | OQ2 | Should results be gitignored by default or committed? Results are useful for trend tracking but add noise to PRs. | Affects `aces-report` trend feature |
-| OQ3 | Should `aces-judge` be a separate agent invocation or an inline prompt within `aces-run`? Separate agent adds isolation; inline is simpler. | Affects cost and latency per case |
 | OQ4 | Should the threshold be global (in `eval.md`) or per-layer? Some layers are harder to score consistently. | Affects `eval.md` schema |
 | OQ5 | Should `aces-compare` accept a git ref as "before" (not just HEAD~1)? | Affects `aces-compare` skill body |
 | OQ6 | Should `aces-improve` auto-run `aces-compare` after edits, or wait for user to invoke it manually? | Affects `aces-improve` workflow |
+| OQ7 | Should the trigger eval script be bundled as a `scripts/` file inside the ACES skill, or generated per-skill by `aces-init`? Bundled is reusable; generated can be customized per client. | Affects portability across agent runtimes |
+| OQ8 | Should `aces-executor` output a structured execution log or freeform prose? Structured is grader-friendly; prose is closer to what real agent sessions produce. | Affects `aces-grader` input parsing |
+| OQ9 | Should `eval_feedback` suggestions from `aces-grader` trigger a review flow (user confirms before the next run uses updated evals), or just be advisory notes? | Affects iteration workflow |
+| OQ10 | Should the validation set be used only for final selection (as in agentskills.io), or run every iteration for tracking? Running every iteration burns more calls but gives earlier signal on overfitting. | Affects cost and optimization loop design |
