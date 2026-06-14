@@ -55,6 +55,7 @@ export default defineConfig({
 					label: 'Concepts',
 					items: [
 						{ label: 'Agent Configuration', slug: 'concepts/agent-configuration' },
+						{ label: 'Commands', slug: 'concepts/commands' },
 					],
 				},
 				{
