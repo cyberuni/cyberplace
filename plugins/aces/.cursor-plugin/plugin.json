@@ -1,0 +1,18 @@
+{
+	"name": "aces",
+	"description": "ACES — Agent Config Evaluation System. Evaluate, test, and improve agent configurations: skills, AGENTS.md sections, subagent definitions, and commands.",
+	"author": { "name": "unional" },
+	"homepage": "https://github.com/cyberuni/cyber-skills",
+	"repository": "https://github.com/cyberuni/cyber-skills",
+	"skills": [
+		"../skills/aces-init",
+		"../skills/aces-run",
+		"../skills/aces-add",
+		"../skills/aces-compare",
+		"../skills/aces-improve",
+		"../skills/aces-report"
+	],
+	"subagents": [
+		"../subagents/aces-judge"
+	]
+}

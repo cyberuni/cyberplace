@@ -1,0 +1,66 @@
+---
+name: aces-report
+description: Use this skill when the user wants a project-wide health summary of all ACES eval suites — pass rates, trends, and which agent configurations need attention.
+---
+
+# ACES Report
+
+Generate a project-wide health dashboard across all eval suites.
+
+## Discover eval suites
+
+Scan `.evals/` for subdirectories containing `eval.md`. For each, read:
+- `eval.md` for target path and threshold
+- The most recent file in `results/` (sort by filename descending)
+- The second-most-recent file in `results/` for trend (if it exists)
+
+If `.evals/` does not exist or is empty, report that no eval suites are initialized and suggest `aces-init`.
+
+## Compute per-suite metrics
+
+For each suite:
+- Pass rate (latest run)
+- Mean score (latest run)
+- Pass rate delta vs. previous run (trend)
+- Worst-scoring failing case name and score
+
+## Classify health
+
+| Status | Condition |
+|---|---|
+| `healthy` | Pass rate ≥ 90% |
+| `degraded` | Pass rate 70–89% |
+| `critical` | Pass rate < 70% |
+| `no-data` | No results file yet |
+| `trending-down` | Pass rate dropped ≥ 10% vs. previous run |
+
+## Report
+
+```
+ACES Project Report
+═══════════════════════════════════════════════
+
+  Suite                  Status       Pass    Mean  Trend
+  ─────────────────────────────────────────────────────
+  commit-discipline      healthy      95%     4.6   ↑ +5%
+  create-skill           degraded     76%     3.7   → 0%
+  aces-judge             critical     58%     3.1   ↓ -12%
+  subagents/researcher   no-data       —       —    —
+
+NEEDS ATTENTION:
+  ✗ aces-judge (critical, trending down) — run aces-improve
+  ⚠ create-skill (degraded) — run aces-run for details
+
+Suites with no results: subagents/researcher — run aces-run to initialize
+```
+
+## Optional: full detail mode
+
+If the user asks for details on a specific suite, print all failing cases with scores and explanations from the latest result file.
+
+## Suggest next actions
+
+- For `critical` or `trending-down`: suggest `aces-improve`
+- For `degraded`: suggest `aces-run` for details, then `aces-improve`
+- For `no-data`: suggest `aces-run`
+- For all `healthy` with no trend data: suggest `aces-add` to expand coverage
