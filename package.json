@@ -28,7 +28,9 @@
 		"typescript": "^6.0.0"
 	},
 	"knip": {
-		"ignoreDependencies": ["husky"]
+		"ignoreDependencies": [
+			"husky"
+		]
 	},
 	"packageManager": "pnpm@11.0.0",
 	"engines": {
