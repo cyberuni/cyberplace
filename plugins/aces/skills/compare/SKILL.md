@@ -1,18 +1,18 @@
 ---
 name: compare
-description: Use this skill when comparing two versions of an artifact to detect regressions or confirm improvements before committing a change.
+description: Use this skill when comparing two versions of an agent configuration to detect regressions or confirm improvements before committing a change.
 ---
 
 # ACES Compare
 
-Run the golden set against two versions of a target artifact and diff the results.
+Run the golden set against two versions of a target agent configuration and diff the results.
 
 ## Identify the two versions
 
 Default: current working tree vs. previous git revision.
 
 ```bash
-git show HEAD:<relative-path-to-artifact> > /tmp/aces-compare-before.md
+git show HEAD:<relative-path-to-agent-config> > /tmp/aces-compare-before.md
 ```
 
 The user may also provide:
@@ -44,7 +44,7 @@ Aggregate:
 ## Report
 
 ```
-ACES Compare — <artifact name>
+ACES Compare — <name>
 ──────────────────────────────
 Before: 18/22 passing (82%)  mean 3.9
 After:  21/22 passing (95%)  mean 4.3

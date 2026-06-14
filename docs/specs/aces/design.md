@@ -3,13 +3,13 @@
 **Status:** Draft  
 **Authors:** unional  
 **Date:** 2026-06-13  
-**Scope:** spec-driven quality system for artifacts — skills, AGENTS.md sections, subagent definitions, commands
+**Scope:** spec-driven quality system for agent configurations — skills, AGENTS.md sections, subagent definitions, commands
 
 ---
 
 ## 1. Problem Statement
 
-Agent configuration artifacts (skills, `AGENTS.md` sections, subagent definitions, commands) shape how AI agents behave. When these artifacts are wrong or ambiguous, agents behave incorrectly — but there is no built-in way to detect this.
+Agent configuration agent configurations (skills, `AGENTS.md` sections, subagent definitions, commands) shape how AI agents behave. When these agent configurations are wrong or ambiguous, agents behave incorrectly — but there is no built-in way to detect this.
 
 Three failure modes occur repeatedly:
 
@@ -19,27 +19,27 @@ Three failure modes occur repeatedly:
 
 **Ambiguous rules.** `AGENTS.md` sections use vague language ("prefer X over Y") that agents interpret inconsistently across sessions. The same rule produces different behavior depending on phrasing of the user's message.
 
-Existing tooling addresses only structure (`audit-skill` checks frontmatter and section presence) — not runtime behavior. There is no way to measure whether an artifact actually produces correct agent behavior.
+Existing tooling addresses only structure (`audit-skill` checks frontmatter and section presence) — not runtime behavior. There is no way to measure whether an agent configuration actually produces correct agent behavior.
 
-ACES applies spec-driven development (SDD) to artifacts. In SDD, a spec (test cases + rubric) is written alongside the implementation and serves as the authoritative description of behavior. ACES does the same for artifacts: the golden set is the spec, the artifact is the implementation, and `run` is the verification step. The current scope focuses on the **backfill path** — adding specs to existing artifacts — but the full SDD lifecycle (spec first, then implement) is the intended end state.
+ACES applies spec-driven development (SDD) to agent configurations. In SDD, a spec (test cases + rubric) is written alongside the implementation and serves as the authoritative description of behavior. ACES does the same for agent configurations: the golden set is the spec, the agent configuration is the implementation, and `run` is the verification step. The current scope focuses on the **backfill path** — adding specs to existing agent configurations — but the full SDD lifecycle (spec first, then implement) is the intended end state.
 
 ---
 
 ## 2. Goals
 
-- **G1** — Define a test case format for artifacts that captures scenario, expected behaviors, prohibited behaviors, and a scoring rubric.
-- **G2** — Specify a golden set convention: a curated directory of test cases per artifact that serves as ground truth.
+- **G1** — Define a test case format for agent configurations that captures scenario, expected behaviors, prohibited behaviors, and a scoring rubric.
+- **G2** — Specify a golden set convention: a curated directory of test cases per agent configuration that serves as ground truth.
 - **G3** — Specify an eval run protocol: for each test case, score agent behavior against the rubric using an LLM judge, and produce a structured result.
-- **G4** — Specify a regression gate: detect when an artifact change drops scores below a threshold before committing.
-- **G5** — Specify a report format for project-wide eval health across all artifacts.
-- **G6** — Specify an improvement workflow: map failing test cases to patterns, propose targeted edits to the artifact.
+- **G4** — Specify a regression gate: detect when an agent configuration change drops scores below a threshold before committing.
+- **G5** — Specify a report format for project-wide eval health across all agent configurations.
+- **G6** — Specify an improvement workflow: map failing test cases to patterns, propose targeted edits to the agent configuration.
 
 ## 3. Non-Goals
 
 - **NG1** — Runtime monitoring of live agent sessions. ACES is an offline eval tool; online monitoring is a separate concern.
-- **NG2** — Automated artifact repair. ACES proposes edits; the user approves them. No auto-apply without confirmation.
+- **NG2** — Automated agent configuration repair. ACES proposes edits; the user approves them. No auto-apply without confirmation.
 - **NG3** — Evaluation of agent tool use or MCP server calls. ACES evaluates instruction-following behavior, not tool integration.
-- **NG4** — Cross-artifact conflict detection. Detecting that two skills give contradictory instructions is a future concern.
+- **NG4** — Cross-agent configuration conflict detection. Detecting that two skills give contradictory instructions is a future concern.
 - **NG5** — Benchmark comparison across agent runtimes (Claude Code vs. Cursor vs. Codex). ACES evaluates within one runtime.
 
 ---
@@ -48,7 +48,7 @@ ACES applies spec-driven development (SDD) to artifacts. In SDD, a spec (test ca
 
 ### 4.1 Agent configuration
 
-The collective term for all instruction artifacts an agent runtime loads:
+The collective term for all instruction agent configurations an agent runtime loads:
 
 | Artifact | When loaded | Examples |
 |---|---|---|
@@ -63,8 +63,8 @@ A category of behavior being tested. Layers are ordered from cheapest to most ex
 
 | Layer | Question | Scored by | Input format |
 |---|---|---|---|
-| **Structural** | Does the artifact have required fields and format? | `audit-skill` (static) | — |
-| **Trigger** | Does the agent correctly decide when to invoke this artifact? | trigger rate (run-based) | `eval_queries.json` |
+| **Structural** | Does the agent configuration have required fields and format? | `audit-skill` (static) | — |
+| **Trigger** | Does the agent correctly decide when to invoke this agent configuration? | trigger rate (run-based) | `eval_queries.json` |
 | **Behavior** | When invoked, does the agent follow the steps and rules? | `aces-judge` (rubric + assertions) | `golden-set/*.md` |
 | **Quality** | Is the output the agent produces actually good? | `aces-judge` (rubric + assertions) | `golden-set/*.md` |
 
@@ -72,7 +72,7 @@ The structural layer delegates to `audit-skill` and runs free. The trigger layer
 
 ### 4.3 Test case
 
-A single scenario that exercises one aspect of one artifact at one layer. A test case specifies:
+A single scenario that exercises one aspect of one agent configuration at one layer. A test case specifies:
 
 - Which layer it tests
 - A concrete situation description
@@ -82,13 +82,13 @@ A single scenario that exercises one aspect of one artifact at one layer. A test
 - A rubric (1–5 scoring criteria)
 - A pass threshold (default: 4)
 
-Assertions and rubric are complementary. Assertions check mechanical properties objectively ("output includes a bar chart file"); the rubric scores holistic quality. When assertions are present, a failed assertion caps the rubric score at 3 — the artifact cannot score 4 or 5 if a must-pass check failed.
+Assertions and rubric are complementary. Assertions check mechanical properties objectively ("output includes a bar chart file"); the rubric scores holistic quality. When assertions are present, a failed assertion caps the rubric score at 3 — the agent configuration cannot score 4 or 5 if a must-pass check failed.
 
 ### 4.4 Golden set
 
-The complete test suite for one artifact:
-- **Trigger queries**: stored in `artifacts/aces/<artifact-path>/trigger/eval_queries.json` — a JSON array of `{query, should_trigger}` pairs, split into `train_queries.json` (60%) and `validation_queries.json` (40%) for optimization without overfitting.
-- **Behavior/quality cases**: stored in `artifacts/aces/<artifact-path>/golden-set/*.md` — markdown test cases with scenarios, assertions, and rubric.
+The complete test suite for one agent configuration:
+- **Trigger queries**: stored in `artifacts/aces/<subject-path>/trigger/eval_queries.json` — a JSON array of `{query, should_trigger}` pairs, split into `train_queries.json` (60%) and `validation_queries.json` (40%) for optimization without overfitting.
+- **Behavior/quality cases**: stored in `artifacts/aces/<subject-path>/golden-set/*.md` — markdown test cases with scenarios, assertions, and rubric.
 
 Both are version-controlled and grow over time as new failure modes are discovered.
 
@@ -102,19 +102,19 @@ Coverage targets:
 
 ### 4.5 Eval run
 
-A single execution of the eval suite against the current artifact. Two run types:
+A single execution of the eval suite against the current agent configuration. Two run types:
 - **Trigger run**: executes each query in `eval_queries.json` N times, measures trigger rate per query, produces a trigger result JSON.
 - **Behavior/quality run**: for each test case in `golden-set/`, invokes `aces-judge`, collecting scores, assertion results, and timing. Produces a behavior result JSON.
 
-Results are timestamped and stored in `artifacts/aces/<artifact-path>/results/`. `benchmark.json` is rewritten after each run with aggregate stats.
+Results are timestamped and stored in `artifacts/aces/<subject-path>/results/`. `benchmark.json` is rewritten after each run with aggregate stats.
 
 ### 4.6 Pass threshold
 
-A score cutoff (1–5) that classifies a test case as passing or failing. Default: 4. Configurable per artifact in `eval.md` and overridable per test case in its frontmatter.
+A score cutoff (1–5) that classifies a test case as passing or failing. Default: 4. Configurable per agent configuration in `eval.md` and overridable per test case in its frontmatter.
 
 ### 4.7 Regression gate
 
-A check run by `aces-compare` that blocks an artifact change if any test case's score drops vs. the previous version. A regression is a pass→fail flip or a score drop of ≥2 on any case.
+A check run by `aces-compare` that blocks an agent configuration change if any test case's score drops vs. the previous version. A regression is a pass→fail flip or a score drop of ≥2 on any case.
 
 ---
 
@@ -122,11 +122,11 @@ A check run by `aces-compare` that blocks an artifact change if any test case's 
 
 ### 5.1 Backfill path (current scope)
 
-The backfill path starts with an existing artifact that has no spec yet.
+The backfill path starts with an existing agent configuration that has no spec yet.
 
 ```
 create-spec
-  └─ aces-spec-designer (per artifact)
+  └─ aces-spec-designer (per agent configuration)
        ├─ audit-skill        → structural issues (surfaced, not blocking)
        ├─ eval.md            → suite config
        ├─ trigger/           → eval_queries.json, train/validation splits
@@ -148,13 +148,13 @@ run
 
 **Step-by-step:**
 
-1. **`create-spec`** — scan for unevaluated artifacts (or resolve a named one); invoke `aces-spec-designer` per artifact; report file counts and structural issues.
+1. **`create-spec`** — scan for unevaluated agent configurations (or resolve a named one); invoke `aces-spec-designer` per agent configuration; report file counts and structural issues.
 
 2. **`run`** — execute trigger queries against the live agent (trigger layer) and simulate behavior cases through `aces-executor` + `aces-grader` (behavior/quality layers); write result JSONs and update `benchmark.json`.
 
 3. **Review** — examine failing cases, scores, and `eval_feedback` suggestions from `aces-grader`.
 
-4. **`improve`** (if failing cases) — invoke `aces-analyzer` to identify failure patterns; present proposed artifact diffs; apply after user approval.
+4. **`improve`** (if failing cases) — invoke `aces-analyzer` to identify failure patterns; present proposed agent configuration diffs; apply after user approval.
 
 5. **`compare`** (after edits) — blind A/B comparison via `aces-comparator`; reports improved / regressed / unchanged per case.
 
@@ -162,10 +162,10 @@ run
 
 ### 5.2 Forward path (future scope)
 
-The forward path writes the spec before the artifact exists — full SDD: spec first, then implement.
+The forward path writes the spec before the agent configuration exists — full SDD: spec first, then implement.
 
-1. **`create-spec`** for a not-yet-implemented artifact — generates behavioral spec from a description or requirements document.
-2. **Implement** the artifact (write `SKILL.md`, `AGENTS.md` section, etc.) to satisfy the golden set.
+1. **`create-spec`** for a not-yet-implemented agent configuration — generates behavioral spec from a description or requirements document.
+2. **Implement** the agent configuration (write `SKILL.md`, `AGENTS.md` section, etc.) to satisfy the golden set.
 3. **`run`** to verify the implementation passes its spec.
 4. **`add`** to extend coverage as new edge cases surface.
 
@@ -174,9 +174,9 @@ The forward path writes the spec before the artifact exists — full SDD: spec f
 After the initial spec is established:
 
 - **`add`** — add a case when a production failure or new edge case is discovered.
-- **`run`** — re-run after any artifact edit to catch regressions.
-- **`compare`** — verify an artifact change didn't regress before committing.
-- **`report`** — project-wide health dashboard across all artifact specs.
+- **`run`** — re-run after any agent configuration edit to catch regressions.
+- **`compare`** — verify an agent configuration change didn't regress before committing.
+- **`report`** — project-wide health dashboard across all agent configuration specs.
 
 ---
 
@@ -184,7 +184,7 @@ After the initial spec is established:
 
 ```
 artifacts/aces/
-  <artifact-path>/
+  <subject-path>/
     eval.md                          ← suite config
     trigger/
       eval_queries.json              ← full trigger query set
@@ -210,7 +210,7 @@ Artifact path conventions:
 | Subagent definition | `agents/<agent-name>/` (e.g., `agents/aces-judge/`) |
 | Command | `commands/<command-name>/` |
 
-For artifacts that belong to a plugin, nest under the plugin name:
+For agent configurations that belong to a plugin, nest under the plugin name:
 
 ```
 artifacts/aces/
@@ -226,7 +226,7 @@ Example: the `aces` plugin's `create-spec` skill lives at `artifacts/aces/aces/s
 
 ```markdown
 ---
-target: <relative path to artifact, or "AGENTS.md#section-heading">
+target: <relative path to agent configuration, or "AGENTS.md#section-heading">
 judge_model: claude-sonnet-4-6
 threshold: 4           # rubric pass threshold (1–5); default 4
 trigger_threshold: 0.5 # fraction of runs that must trigger for a should-trigger query to pass
@@ -418,26 +418,26 @@ Skills that already have an `evals/evals.json` file (the [agentskills.io](https:
 
 ### 7.1 `create-spec`
 
-**Trigger:** User asks to create evals / a spec for one or more artifacts.
+**Trigger:** User asks to create evals / a spec for one or more agent configurations.
 
 **Steps:**
-1. Scan the project for artifacts (skills, `AGENTS.md` sections, subagent definitions, commands) that have no `artifacts/aces/` entry yet
-2. If a specific artifact is named in the request, resolve it directly — skip scanning
-3. If multiple unevaluated artifacts are found, list them and ask the user to select one, several, or all
-4. For each selected artifact, invoke `aces-spec-designer` to perform analysis and generate the eval suite
-5. Report: artifacts processed, file counts, structural issues found, next step
+1. Scan the project for agent configurations (skills, `AGENTS.md` sections, subagent definitions, commands) that have no `artifacts/aces/` entry yet
+2. If a specific agent configuration is named in the request, resolve it directly — skip scanning
+3. If multiple unevaluated agent configurations are found, list them and ask the user to select one, several, or all
+4. For each selected agent configuration, invoke `aces-spec-designer` to perform analysis and generate the eval suite
+5. Report: agent configurations processed, file counts, structural issues found, next step
 
-**Output:** One `artifacts/aces/<artifact-path>/` per selected artifact, each populated and ready for `run`.
+**Output:** One `artifacts/aces/<subject-path>/` per selected agent configuration, each populated and ready for `run`.
 
 ---
 
 ### 7.2 `run`
 
-**Trigger:** User asks to run evals or validate after editing an artifact.
+**Trigger:** User asks to run evals or validate after editing an agent configuration.
 
 **Steps:**
 1. Locate `eval.md` (from user context or by scan)
-2. Read the current artifact in full
+2. Read the current agent configuration in full
 3. **Trigger layer** (if configured):
    - Run each query in `train_queries.json` `trigger_runs` times; detect whether the skill was invoked each time
    - Compute `trigger_rate` per query; a query passes if its rate meets `trigger_threshold`
@@ -471,7 +471,7 @@ Skills that already have an `evals/evals.json` file (the [agentskills.io](https:
 **Trigger:** User wants to know if an edit improved or regressed behavior.
 
 **Steps:**
-1. Identify two versions: default is working tree vs. last git revision; `--baseline` flag compares with-artifact vs. without-artifact
+1. Identify two versions: default is working tree vs. last git revision; `--baseline` flag compares with-agent configuration vs. without-agent configuration
 2. Run behavior/quality golden set against both versions **blind**: label outputs A and B without revealing which is which
 3. Invoke `aces-comparator` for each test case to pick a winner; then unblind and compute per-case change type: `improved`, `regressed`, `unchanged`, `now-passing`, `now-failing`
 4. If trigger layer configured: run `train_queries.json` against both versions, compare trigger rates
@@ -484,16 +484,16 @@ Skills that already have an `evals/evals.json` file (the [agentskills.io](https:
 
 ### 7.5 `improve`
 
-**Trigger:** Eval results have failing cases; user wants to fix the artifact.
+**Trigger:** Eval results have failing cases; user wants to fix the agent configuration.
 
 **Steps:**
 1. Load latest behavior result from `results/`, read failing test cases and `feedback.json`
-2. Invoke `aces-analyzer` with failing cases, feedback notes, and current artifact to extract improvement patterns
+2. Invoke `aces-analyzer` with failing cases, feedback notes, and current agent configuration to extract improvement patterns
 3. Group by pattern (see §9) and prioritize by impact
-4. Present proposed diffs to the artifact — do not auto-apply
+4. Present proposed diffs to the agent configuration — do not auto-apply
 5. After approval, apply edits and run `compare` to verify
 
-**Output:** Proposed artifact edits + post-edit comparison.
+**Output:** Proposed agent configuration edits + post-edit comparison.
 
 ---
 
@@ -517,18 +517,18 @@ Four internal agents handle evaluation. None are user-triggered.
 
 ### 8.1 `aces-spec-designer`
 
-Invoked by `create-spec` for each selected artifact. Analyzes the artifact and produces the full eval suite.
+Invoked by `create-spec` for each selected agent configuration. Analyzes the agent configuration and produces the full eval suite.
 
 **Input:**
 ```
-ARTIFACT: <full artifact text>
-ARTIFACT_PATH: <resolved path>
+SUBJECT: <full agent configuration text>
+SUBJECT_PATH: <resolved path>
 AGENTSKILLS_EVALS: <contents of evals/evals.json if present, else null>
 ```
 
 **Steps:**
 1. Run structural layer (`audit-skill`) — surface issues before writing behavioral tests
-2. Create `artifacts/aces/<artifact-path>/` directory and `eval.md` (using path conventions from §6)
+2. Create `artifacts/aces/<subject-path>/` directory and `eval.md` (using path conventions from §6)
 3. If `evals/evals.json` (agentskills.io format) provided: import it as initial golden set cases (see §6.8)
 4. Generate trigger queries in `trigger/eval_queries.json`:
    - ~20 queries: 8–10 should-trigger, 8–10 should-not-trigger (near-misses, not obviously irrelevant)
@@ -536,23 +536,23 @@ AGENTSKILLS_EVALS: <contents of evals/evals.json if present, else null>
 5. Generate initial golden set (if not imported from evals.json):
    - 15–25 behavior cases (one per rule/step + edge cases + must-not-do guards)
 
-**Output:** Populated `artifacts/aces/<artifact-path>/` directory. Returns a summary (file count, structural issues found) to `create-spec`.
+**Output:** Populated `artifacts/aces/<subject-path>/` directory. Returns a summary (file count, structural issues found) to `create-spec`.
 
 ---
 
 ### 8.2 `aces-executor`
 
-Invoked by `aces-run` for each behavior/quality test case. Simulates agent behavior given a scenario and artifact, producing a structured output for grading.
+Invoked by `aces-run` for each behavior/quality test case. Simulates agent behavior given a scenario and agent configuration, producing a structured output for grading.
 
 **Input:**
 ```
-ARTIFACT: <full artifact text>
+SUBJECT: <full agent configuration text>
 SCENARIO: <scenario from test case>
 EXPECTED BEHAVIORS: <list>
 MUST NOT DO: <list>
 ```
 
-**Output:** Simulated execution log — what the agent did step-by-step, what output it produced, whether it consulted the artifact and which parts. Saved alongside each case result so `aces-grader` can examine the "transcript".
+**Output:** Simulated execution log — what the agent did step-by-step, what output it produced, whether it consulted the agent configuration and which parts. Saved alongside each case result so `aces-grader` can examine the "transcript".
 
 ### 8.3 `aces-grader`
 
@@ -582,9 +582,9 @@ Invoked by `aces-run` after `aces-executor`. Grades the simulated execution agai
 ```
 
 **Grading principles:**
-- Score what the artifact would cause an agent to do — not what the grader considers ideal
+- Score what the agent configuration would cause an agent to do — not what the grader considers ideal
 - The rubric is the authority; do not override it
-- Ambiguous artifact language that produces inconsistent behavior should lower the score
+- Ambiguous agent configuration language that produces inconsistent behavior should lower the score
 - Any failed assertion caps the score at 3 — cannot score 4 or 5 if a must-pass check failed
 - Extract implicit claims from the simulated execution and verify them (catches issues that predefined assertions miss)
 - Flag assertions that would trivially pass regardless of skill quality — this is `eval_feedback`
@@ -605,11 +605,11 @@ Invoked by `aces-compare`. Receives two outputs labeled A and B — without know
 }
 ```
 
-After all cases are judged, `aces-compare` unblids the results to attribute A/B to the actual artifact versions.
+After all cases are judged, `aces-compare` unblids the results to attribute A/B to the actual agent configuration versions.
 
 ### 8.5 `aces-analyzer`
 
-Invoked by `aces-improve`. Given failing cases, `feedback.json`, and the current artifact, produces prioritized improvement suggestions by examining which instruction gaps caused failures.
+Invoked by `aces-improve`. Given failing cases, `feedback.json`, and the current agent configuration, produces prioritized improvement suggestions by examining which instruction gaps caused failures.
 
 **Output JSON:**
 ```json
@@ -638,8 +638,8 @@ Invoked by `aces-improve`. Given failing cases, `feedback.json`, and the current
 | Trigger false-negative | Trigger case doesn't fire when it should | Broaden `description:`, add synonym phrasings |
 | Missing step | Behavior case skips a step | Make step more prominent; add example |
 | Ambiguous rule | Multiple behavior cases fail inconsistently on same rule | Replace vague language with explicit decision rule |
-| Conflicting instruction | Agent follows one rule but violates another | Add explicit precedence rule; or split artifact |
-| Scope creep | Agent does more than the artifact specifies | Add explicit scope boundary |
+| Conflicting instruction | Agent follows one rule but violates another | Add explicit precedence rule; or split agent configuration |
+| Scope creep | Agent does more than the agent configuration specifies | Add explicit scope boundary |
 | Description mismatch | Trigger failures suggest `description:` doesn't match body | Rewrite `description:` to match what body actually instructs |
 
 ---
@@ -648,7 +648,7 @@ Invoked by `aces-improve`. Given failing cases, `feedback.json`, and the current
 
 ### 10.1 LLM-as-judge with assertions, not pure code assertions
 
-Agent behavior is not structurally checkable. The output of following an artifact is natural language behavior, not a typed value. An LLM judge is the only practical scorer at the behavior and quality layers.
+Agent behavior is not structurally checkable. The output of following an agent configuration is natural language behavior, not a typed value. An LLM judge is the only practical scorer at the behavior and quality layers.
 
 ACES uses a hybrid: verifiable **assertions** (pass/fail, graded by `aces-grader` with evidence) handle mechanical properties; the **rubric** (1–5) handles holistic quality. Assertions cap the rubric score at 3 when they fail — objective checks take precedence.
 
@@ -662,9 +662,9 @@ Each test case is scored independently (1–5), not compared against a reference
 
 ### 10.3 Golden set is versioned, not generated on demand
 
-Test cases are committed to the repo alongside the artifact. They are not regenerated each run.
+Test cases are committed to the repo alongside the agent configuration. They are not regenerated each run.
 
-**Tradeoff:** The golden set can go stale if the artifact changes without updating the cases. This is a feature, not a bug — stale cases catch regressions. The author is expected to update the golden set when intentionally changing behavior.
+**Tradeoff:** The golden set can go stale if the agent configuration changes without updating the cases. This is a feature, not a bug — stale cases catch regressions. The author is expected to update the golden set when intentionally changing behavior.
 
 ### 10.4 Structural layer delegates to `audit-skill`
 
@@ -674,7 +674,7 @@ ACES does not re-implement structural checks. `aces-spec-designer` runs `audit-s
 
 ### 10.5 `aces-compare` does not write results by default
 
-Compare is a diff operation, not a recorded eval run. Writing a result for "before" would pollute the history with a result that doesn't reflect the current artifact state.
+Compare is a diff operation, not a recorded eval run. Writing a result for "before" would pollute the history with a result that doesn't reflect the current agent configuration state.
 
 ### 10.6 Blind comparison in `aces-compare`
 

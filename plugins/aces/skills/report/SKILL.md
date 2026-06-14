@@ -1,6 +1,6 @@
 ---
 name: report
-description: Use this skill when the user wants a project-wide health summary of all ACES eval suites — pass rates, trends, and which artifacts need attention.
+description: Use this skill when the user wants a project-wide health summary of all ACES eval suites — pass rates, trends, and which agent configurations need attention.
 ---
 
 # ACES Report
