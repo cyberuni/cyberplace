@@ -9,12 +9,12 @@ Generate a project-wide health dashboard across all eval suites.
 
 ## Discover eval suites
 
-Scan `.evals/` for subdirectories containing `eval.md`. For each, read:
+Scan `sdd/aces/` for subdirectories containing `eval.md`. For each, read:
 - `eval.md` for target path and threshold
 - The most recent file in `results/` (sort by filename descending)
 - The second-most-recent file in `results/` for trend (if it exists)
 
-If `.evals/` does not exist or is empty, report that no eval suites are initialized and suggest `init`.
+If `sdd/aces/` does not exist or is empty, report that no eval suites are initialized and suggest `create-spec`.
 
 ## Compute per-suite metrics
 

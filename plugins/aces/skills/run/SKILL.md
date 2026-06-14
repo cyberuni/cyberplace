@@ -9,7 +9,7 @@ Run the eval suite for a target agent configuration and report results.
 
 ## Locate the eval suite
 
-If the user specifies a target, find `.evals/<artifact-name>/eval.md`. If no target is specified and only one `.evals/` directory exists, use it. If multiple exist, ask which to run.
+If the user specifies a target, find `sdd/aces/<artifact-name>/eval.md`. If no target is specified and only one `sdd/aces/` directory exists, use it. If multiple exist, ask which to run.
 
 Read `eval.md` for: `target`, `judge_model`, `threshold`, `layers`.
 
@@ -17,7 +17,7 @@ Read the target artifact in full before evaluating — the judge needs the curre
 
 ## Run each test case
 
-For each file in `.evals/<name>/golden-set/`, sorted by filename:
+For each file in `sdd/aces/<name>/golden-set/`, sorted by filename:
 
 1. Read the test case
 2. Skip layers not listed in `eval.md`'s `layers` field
@@ -59,7 +59,7 @@ After all cases:
 
 ## Write results
 
-Write to `.evals/<name>/results/<ISO8601-timestamp>.json`:
+Write to `sdd/aces/<name>/results/<ISO8601-timestamp>.json`:
 
 ```json
 {
