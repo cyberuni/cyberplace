@@ -9,10 +9,10 @@ description: User-invocable slash-command workflows — how they differ from aut
 
 Regular skills have a `description` field that agents read to decide when to load the skill automatically. Commands suppress that automatic invocation:
 
-| | Auto-invoked by model | User-invoked via `/name` |
-|---|---|---|
-| **Skill** (`SKILL.md`) | ✅ when description matches | ✅ |
-| **Command** | ❌ | ✅ |
+|                        | Auto-invoked by model      | User-invoked via `/name` |
+| ---------------------- | -------------------------- | ------------------------ |
+| **Skill** (`SKILL.md`) | ✅ when description matches | ✅                        |
+| **Command**            | ❌                          | ✅                        |
 
 ## Two mechanisms
 
@@ -48,25 +48,25 @@ This prevents automatic loading while keeping the skill accessible via `/deploy`
 
 ### Standalone skills
 
-| Harness | `disable-model-invocation` in `SKILL.md` | `commands/` folder |
-|---------|---|---|
-| **Claude Code** | ✅ | ✅ (deprecated, still works) |
-| **Cursor** | ⚠️ bug: hides plugin-delivered skills from `/` menu (Mar 2026) | — |
-| **Windsurf** | ✅ | — |
-| **GitHub Copilot CLI** | ❌ (skills) | ✅ (reads `.claude/commands/`) |
-| **Codex CLI** | ❌ (uses `agents/openai.yaml` instead) | — |
-| **Gemini CLI** | ❌ | — |
+| Harness                | `disable-model-invocation` in `SKILL.md`                      | `commands/` folder            |
+| ---------------------- | ------------------------------------------------------------- | ----------------------------- |
+| **Claude Code**        | ✅                                                             | ✅ (deprecated, still works)   |
+| **Cursor**             | ⚠️ bug: hides plugin-delivered skills from `/` menu (Mar 2026) | —                             |
+| **Windsurf**           | ✅                                                             | —                             |
+| **GitHub Copilot CLI** | ❌ (skills)                                                    | ✅ (reads `.claude/commands/`) |
+| **Codex CLI**          | ❌ (uses `agents/openai.yaml` instead)                         | —                             |
+| **Gemini CLI**         | ❌                                                             | —                             |
 
 ### Plugin commands
 
 Inside a [universal plugin](/governances/universal-plugin/), a `commands/` subfolder creates user-invocable slash commands across harnesses:
 
-| Component | Claude Code | Cursor | Codex |
-|-----------|-------------|--------|-------|
-| `skills/` | ✅ native | ✅ native | ✅ native |
-| `commands/` | ✅ native | ✅ native | silently ignored |
-| `agents/` | ✅ native | ✅ native | silently ignored |
-| `rules/` | silently ignored | ✅ native | silently ignored |
+| Component   | Claude Code      | Cursor   | Codex            |
+| ----------- | ---------------- | -------- | ---------------- |
+| `skills/`   | ✅ native         | ✅ native | ✅ native         |
+| `commands/` | ✅ native         | ✅ native | silently ignored |
+| `agents/`   | ✅ native         | ✅ native | silently ignored |
+| `rules/`    | silently ignored | ✅ native | silently ignored |
 
 Because Cursor supports `commands/` natively in plugins, and the `disable-model-invocation: true` frontmatter field has a known bug in Cursor (plugin-delivered skills with this flag are hidden from the `/` menu), the `commands/` folder is the safer choice for cross-harness plugin commands targeting both Claude Code and Cursor.
 
