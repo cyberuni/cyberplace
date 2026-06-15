@@ -12,7 +12,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node bin/cyber-skills.mjs hook run --name commit-discipline --extract AGENTS.md --heading 'Commit Discipline'"
+            "command": "node packages/cyber-skills/bin/cyber-skills.mjs hook run --name commit-discipline --extract AGENTS.md --heading 'Commit Discipline'"
           }
         ]
       }
