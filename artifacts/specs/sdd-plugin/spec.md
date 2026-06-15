@@ -39,7 +39,7 @@ SDD forces the "what" and "why" to be explicit before the "how" is written. This
 | `Implemented` | All scenarios satisfied by passing tests |
 | `Deprecated` | Feature removed or superseded; spec retained for history |
 
-A spec transitions from Draft → Approved via explicit review (PR approval, pair review, or recorded acknowledgment). Implementation begins only after Approved. The status field in the spec frontmatter tracks this.
+A spec transitions from Draft → Approved via explicit review (PR approval, pair review, or recorded acknowledgment). The status field in the spec frontmatter tracks this.
 
 ---
 
@@ -122,5 +122,5 @@ Steps:
 
 ## Governances
 
-- [`sdd-principles`](../governances/sdd-principles.md) — the core rules of SDD in brief
-- [`spec-template`](../governances/spec-template.md) — canonical `spec.md` template
+- [`sdd-principles`](./governances/sdd-principles.md) — the core rules of SDD in brief
+- [`spec-template`](./governances/spec-template.md) — canonical `spec.md` template
