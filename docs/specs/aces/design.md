@@ -126,11 +126,17 @@ The backfill path starts with an existing agent configuration that has no spec y
 
 ```
 create-spec
-  └─ aces-spec-designer (per agent configuration)
-       ├─ audit-skill        → structural issues (surfaced, not blocking)
-       ├─ eval.md            → suite config
-       ├─ trigger/           → eval_queries.json, train/validation splits
-       └─ golden-set/        → 001-*.md … NNN-*.md
+  └─ per agent configuration (sequential):
+       ├─ aces-spec-designer (iteration 0)
+       │    ├─ audit-skill        → structural issues (surfaced, not blocking)
+       │    ├─ eval.md            → suite config
+       │    ├─ trigger/           → eval_queries.json, train/validation splits
+       │    └─ golden-set/        → 001-*.md … NNN-*.md
+       └─ quality loop (max 3 iterations):
+            ├─ aces-spec-validator   → overall: pass | fail + user_questions
+            │    pass  → exit loop
+            │    fail  → (ask user questions if any) → aces-spec-designer (next iteration)
+            └─ after 3 iterations without pass → accepted-pending-review
 
          ↓
 
@@ -148,7 +154,7 @@ run
 
 **Step-by-step:**
 
-1. **`create-spec`** — scan for unevaluated agent configurations (or resolve a named one); invoke `aces-spec-designer` per agent configuration; report file counts and structural issues.
+1. **`create-spec`** — scan for unevaluated agent configurations (or resolve a named one); for each, invoke `aces-spec-designer` (iteration 0), then run a quality loop (max 3 iterations): invoke `aces-spec-validator`, exit on pass, otherwise surface any `user_questions` to the user and re-invoke `aces-spec-designer` with validator feedback and collected answers; report file counts, structural issues, quality gate outcome, and iteration count.
 
 2. **`run`** — execute trigger queries against the live agent (trigger layer) and simulate behavior cases through `aces-executor` + `aces-grader` (behavior/quality layers); write result JSONs and update `benchmark.json`.
 
@@ -424,8 +430,16 @@ Skills that already have an `evals/evals.json` file (the [agentskills.io](https:
 1. Scan the project for agent configurations (skills, `AGENTS.md` sections, subagent definitions, commands) that have no `artifacts/aces/` entry yet
 2. If a specific agent configuration is named in the request, resolve it directly — skip scanning
 3. If multiple unevaluated agent configurations are found, list them and ask the user to select one, several, or all
-4. For each selected agent configuration, invoke `aces-spec-designer` to perform analysis and generate the eval suite
-5. Report: agent configurations processed, file counts, structural issues found, next step
+4. For each selected agent configuration, process sequentially:
+   - **Iteration 0 (draft):** invoke `aces-spec-designer` with `SUBJECT`, `SUBJECT_PATH`, `AGENTSKILLS_EVALS`, `PRIOR_VALIDATOR_FEEDBACK: null`, `USER_ANSWERS: null`
+   - **Quality loop (max 3 iterations):**
+     1. Invoke `aces-spec-validator` with `SUBJECT`, `SUBJECT_PATH`, `ARTIFACTS_DIR`
+     2. If `overall == "pass"` → exit loop with quality gate `pass`
+     3. If `user_questions` non-empty → ask the user those questions and collect answers
+     4. Re-invoke `aces-spec-designer` with `PRIOR_VALIDATOR_FEEDBACK` set to the validator output and `USER_ANSWERS` set to collected answers (or null)
+     5. Repeat
+   - If the loop completes 3 iterations without pass → quality gate `accepted-pending-review`
+5. Report: agent configurations processed, file counts, structural issues found, quality gate outcome per configuration, unresolved dimension failures (if `accepted-pending-review`), iteration count, next step (`aces:run`)
 
 **Output:** One `artifacts/aces/<subject-path>/` per selected agent configuration, each populated and ready for `run`.
 
@@ -513,7 +527,7 @@ Skills that already have an `evals/evals.json` file (the [agentskills.io](https:
 
 ## 8. Internal Agents
 
-Four internal agents handle evaluation. None are user-triggered.
+Five internal agents handle evaluation. None are user-triggered.
 
 ### 8.1 `aces-spec-designer`
 
@@ -524,6 +538,8 @@ Invoked by `create-spec` for each selected agent configuration. Analyzes the age
 SUBJECT: <full agent configuration text>
 SUBJECT_PATH: <resolved path>
 AGENTSKILLS_EVALS: <contents of evals/evals.json if present, else null>
+PRIOR_VALIDATOR_FEEDBACK: <aces-spec-validator output JSON from previous iteration, else null>
+USER_ANSWERS: <answers to user_questions from previous validator run, else null>
 ```
 
 **Steps:**
@@ -625,6 +641,39 @@ Invoked by `aces-improve`. Given failing cases, `feedback.json`, and the current
   ]
 }
 ```
+
+---
+
+### 8.6 `aces-spec-validator`
+
+Invoked by `create-spec` after each `aces-spec-designer` iteration. Validates the generated eval suite against coverage and quality dimensions; optionally surfaces questions the spec-designer needs answered to improve.
+
+**Input:**
+```
+SUBJECT: <full agent configuration text>
+SUBJECT_PATH: <resolved path>
+ARTIFACTS_DIR: artifacts/aces/<subject-path>/
+```
+
+**Output JSON:**
+```json
+{
+  "overall": "pass | fail",
+  "dimensions": {
+    "trigger_coverage": { "pass": true, "notes": "" },
+    "negative_coverage": { "pass": true, "notes": "" },
+    "behavior_coverage": { "pass": false, "notes": "No must-not-do cases for the scan step" },
+    "rubric_specificity": { "pass": true, "notes": "" },
+    "scenario_concreteness": { "pass": true, "notes": "" }
+  },
+  "user_questions": [
+    "Should the golden set include a case where the user invokes the skill with no test framework configured?",
+    "Are there known failure modes on monorepo setups that should be covered?"
+  ]
+}
+```
+
+`overall` is `"pass"` only when all dimensions pass. `user_questions` is a list of questions for the user when the validator cannot resolve ambiguities from the subject alone — answered in the next designer iteration via `USER_ANSWERS`. Empty list when no questions are needed.
 
 ---
 
