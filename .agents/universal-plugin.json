@@ -1,0 +1,8 @@
+{
+	"sdd-plugins": [
+		{
+			"name": "aces",
+			"handles": ["agent evaluation", "skill evaluation"]
+		}
+	]
+}
