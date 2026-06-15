@@ -14,7 +14,7 @@ User says: "Create an eval spec for the tdd skill."
 
 - Reads the `evals/evals.json` file alongside the skill
 - Passes its contents as `AGENTSKILLS_EVALS` to `aces-spec-designer` (not null)
-- Passes the full SKILL.md text as `ARTIFACT`
+- Passes the full SKILL.md text as `SUBJECT`
 
 ## Must NOT do
 

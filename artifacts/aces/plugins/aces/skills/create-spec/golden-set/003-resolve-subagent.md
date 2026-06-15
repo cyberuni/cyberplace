@@ -14,7 +14,7 @@ The repo contains `plugins/aces/agents/aces-spec-designer.md`. No eval spec exis
 
 - Identifies the artifact type as a subagent definition
 - Reads the full text of `plugins/aces/agents/aces-spec-designer.md`
-- Invokes `aces-spec-designer` with that text as `ARTIFACT` and `plugins/aces/agents/aces-spec-designer.md` as `ARTIFACT_PATH`
+- Invokes `aces-spec-designer` with that text as `SUBJECT` and `plugins/aces/agents/aces-spec-designer.md` as `SUBJECT_PATH`
 
 ## Must NOT do
 
