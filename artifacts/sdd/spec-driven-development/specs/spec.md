@@ -98,10 +98,20 @@ specs/
 
 ## Process
 
-1. **Write the spec** — fill in What, Why, Design decisions, Command surface, and `.feature` scenarios.
+SDD operates in two modes separated by a single gate.
+
+**Exploration mode** (spec Status: Draft): all artifacts co-evolve freely. Code, plan, tasks, and scenarios may be created in any order and may change as understanding deepens. Goal: rapid understanding and test case discovery.
+
+**Implementation mode** (spec Status: Approved): validation bar rises. The `.feature` file is frozen. All scenarios must pass before the spec can be marked Implemented.
+
+**The single gate** is `spec.md → Approved`, enforced by `validate-spec` passing and a peer review.
+
+Steps:
+
+1. **Write the spec** — fill in What, Why, Design decisions, Command surface, and `.feature` scenarios. Code and other artifacts may already exist; that is fine.
 2. **Review the spec** — at least one other contributor (or the `validate-spec` skill) checks completeness.
-3. **Approve** — change status to `Approved`.
-4. **Implement** — write code to satisfy the scenarios. Do not change the spec to match the implementation; change the implementation to match the spec (or revise the spec via a new review cycle if requirements genuinely changed).
+3. **Approve** — change status to `Approved`. The `.feature` file is now frozen.
+4. **Implement** — write code to satisfy the frozen scenarios. Do not change the spec to match the implementation; change the implementation to match the spec (or revise the spec via a new Draft → Approved cycle if requirements genuinely changed).
 5. **Mark Implemented** — once all scenarios pass, update status to `Implemented`.
 
 ---
