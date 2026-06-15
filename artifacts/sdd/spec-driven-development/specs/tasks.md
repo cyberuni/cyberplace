@@ -32,3 +32,4 @@
 - [ ] Resolve project-level quality config design (needed for `verify-implementation`)
 - [ ] Resolve backfill gap analysis step in `create-spec`
 - [ ] Decide: `plan-spec` + `create-tasks` as one combined skill or two separate
+- [ ] Design plugin assignment inference in `plan-spec` (user prompt vs project config vs heuristic)

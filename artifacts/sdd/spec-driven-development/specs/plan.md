@@ -62,8 +62,40 @@ Whether `plan-spec` and `create-tasks` should be one combined skill or two separ
 
 Checks that passing tests exist for every scenario in the `.feature` file. Requires a project-level quality configuration to calibrate what "implementation quality" means (coverage floor, required test types, e2e requirements). Design of this config surface is unresolved.
 
+## Artifact organization: feature-first, not plugin-first
+
+SDD artifacts are organized by **feature/outcome**, not by SDD plugin. The feature is the subject — "Banner", "auth", "checkout flow". The SDD plugins involved are implementation choices, not the organizing axis.
+
+```
+specs/
+  banner/
+    spec.md          ← WHAT: observable behavior of Banner
+    banner.feature   ← scenarios from the user's perspective
+    plan.md          ← HOW: which SDD plugins, architecture, decisions
+    tasks.md
+```
+
+A `plan.md` for a cross-cutting feature declares which SDD plugin handles each sub-domain in a `## Plugin assignments` section:
+
+```markdown
+## Plugin assignments
+
+| Sub-domain | SDD plugin |
+|---|---|
+| React component | sdd-react |
+| Design token definitions | sdd-design-tokens |
+| Utility functions | (base SDD plugin) |
+```
+
+**Why plugin selection belongs in `plan.md`, not `spec.md`:**
+
+`spec.md` describes observable behavior — "the Banner displays a dismissible alert." This spec must survive rewriting from React to Web Components without changing. `plan.md` would change because the implementation tools changed. Plugin choice is strategy (the how), not contract (the what).
+
+Consequence for `plan-spec`: the skill must read the frozen `spec.md`, identify sub-domains from the command surface and scenarios, ask or infer which SDD plugin applies to each, and write `plan.md` with a `## Plugin assignments` section. This is the bridge between "what" and "which tools."
+
 ## Open design questions
 
 1. **Project-level quality config** — `verify-implementation` needs a config surface where projects declare their quality thresholds. No design yet.
 2. **Backfill gap analysis** — `create-spec` backfill path needs a step that places existing code in exploration or implementation mode and seeds `tasks.md`. No design yet.
 3. **`plan-spec` + `create-tasks`** — one combined skill or two? Unresolved.
+4. **Plugin assignment inference** — how does `plan-spec` determine which SDD plugin applies to a sub-domain? User prompt, project config, or heuristic from spec content? No design yet.
