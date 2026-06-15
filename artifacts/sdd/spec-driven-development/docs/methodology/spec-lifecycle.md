@@ -11,10 +11,11 @@ Draft → Approved → Implemented → Deprecated
 
 ## Draft
 
-The spec is being written. It may be incomplete. Implementation may be in progress alongside it.
+The spec is being written. All artifacts — code, plan, tasks, and scenarios — may co-evolve freely in any order. Goal is rapid understanding and test case discovery.
 
 **Rules:**
-- No implementation exists yet, OR a backfill is in progress (inferring spec from existing code)
+- Code, plan, tasks, and `.feature` scenarios may all exist and change
+- Exploration code is valid; it need not be at full implementation quality yet
 - Scenarios do not need to pass yet
 
 ## Approved
