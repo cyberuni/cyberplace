@@ -14,7 +14,7 @@ The command definition lives at `.agents/skills/add-changeset/SKILL.md`. The use
 
 - Locates the file regardless of whether the user called it a "command" or "skill"
 - Reads the file and passes it correctly to `aces-spec-designer`
-- Uses the correct `ARTIFACT_PATH` matching the actual file location
+- Uses the correct `SUBJECT_PATH` matching the actual file location
 
 ## Must NOT do
 
