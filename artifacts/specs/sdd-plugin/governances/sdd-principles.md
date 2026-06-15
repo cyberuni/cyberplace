@@ -21,3 +21,5 @@ Core rules for spec-driven development. Load this governance when writing, revie
 7. **Specs survive refactors.** The spec does not change when the implementation is restructured. It changes only when behavior changes — and behavior changes require a new review cycle.
 
 8. **One spec per domain.** A spec covers one coherent feature or command group. If a spec covers two unrelated concerns, split it.
+
+9. **Declare dependencies, not just prose.** When a spec cannot be implemented until another is done, record that in frontmatter as `blocked-by: [<slug>]`. Prose mentions in `Related` are for context; frontmatter is the machine-readable contract. Use `blocked-by` only (single direction) — the "blocks" view is derived by scanning all specs.

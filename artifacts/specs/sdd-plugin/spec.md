@@ -1,6 +1,10 @@
-# Spec-Driven Development
+---
+status: draft
+priority: 1
+blocked-by: []
+---
 
-**Status:** Draft
+# Spec-Driven Development
 
 ---
 
@@ -45,11 +49,20 @@ A spec transitions from Draft → Approved via explicit review (PR approval, pai
 
 ## What a spec must contain
 
-Every `spec.md` must have:
+Every `spec.md` must have YAML frontmatter and required body sections.
+
+**Frontmatter fields:**
+
+| Field | Required | Values |
+|---|---|---|
+| `status` | Yes | `draft`, `approved`, `implemented`, `deprecated` |
+| `priority` | Yes | Integer; `1` = highest. Used to sequence implementation across a set of specs. |
+| `blocked-by` | No | List of spec slugs (directory names) that must be implemented first. Omit or leave empty if none. |
+
+**Body sections:**
 
 | Section | Required | Content |
 |---|---|---|
-| `Status` | Yes | One of: Draft, Approved, Implemented, Deprecated |
 | `What` | Yes | What the feature does — behavior, not implementation |
 | `Why` | Yes | The problem it solves; why it is needed now |
 | `Design decisions` | Yes (if any choices were made) | Key choices with rationale; what was rejected and why |
@@ -57,6 +70,8 @@ Every `spec.md` must have:
 | Link to `.feature` | Yes | Reference to the Gherkin scenario file |
 
 Sections may be omitted only if genuinely not applicable (e.g. a pure config change has no command surface). Omitting "Why" is never acceptable.
+
+`blocked-by` is single-direction only. The "what does this spec block?" view is derived by scanning all specs for references to a given slug — do not maintain a `blocks` field.
 
 ---
 

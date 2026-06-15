@@ -1,7 +1,11 @@
-# <Feature Name>
+---
+status: draft
+priority: <1–n; lower number = higher priority>
+blocked-by:
+  - <spec-slug>   # omit section if no dependencies
+---
 
-**Status:** Draft
-**Commands / API:** `<command syntax>`
+# <Feature Name>
 
 ---
 
