@@ -73,7 +73,7 @@ Governances are **loaded into agent context** via `governance show`. They must e
 | --- | --- | --- |
 | **`governances/*.md`** | Version-pinned **standards** — requirements, archetypes, anti-patterns | Yes |
 | **`docs/research/*.md`** | **Evidence** — repo surveys, reference implementations, RFC/issue links | No — repo checkout only |
-| **`docs/adr/*.md`** | **Decisions** — rationale, options considered, consequences | No — repo checkout only |
+| **`artifacts/adr/*.md`** | **Decisions** — rationale, options considered, consequences | No — repo checkout only |
 
 **In governances, include:**
 
