@@ -1,6 +1,10 @@
-# Agent Governance Composition
+---
+status: draft
+priority: 1
+blocked-by: []
+---
 
-**Status:** Draft
+# Agent Governance Composition
 
 ---
 
