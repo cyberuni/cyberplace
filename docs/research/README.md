@@ -7,7 +7,7 @@ Durable reference material for architecture and governance decisions. Use this w
 | Artifact | Role | Loaded by agents via CLI? |
 | --- | --- | --- |
 | **`governances/*.md`** | Version-pinned **standards** (what is correct) | Yes — `governance show <name>` |
-| **`docs/adr/*.md`** | **Decisions** with rationale and consequences | No — read from repo |
+| **`artifacts/adr/*.md`** | **Decisions** with rationale and consequences | No — read from repo |
 | **`docs/research/*.md`** | **Background research** supporting ADRs and governances | No — read from repo |
 
 Governances, Discipline sections, and public Skills follow **agent-first** authoring: dense normative bodies, self-contained (no links to other repository files), references at end via `governance show` or external URLs. Research holds tables, repo surveys, issue links, and discussion summaries that must not be inlined into those bodies. ADRs record **why**; governances record **what**. See [ADR-0001](../adr/0001-governance-vs-discipline-taxonomy.md#governance-content-boundaries), [ADR-0003](../adr/0003-agent-first-authoring.md), and [ADR-0004](../adr/0004-cyber-skills-cli-output.md) (CLI output patterns split from `agent-tool-output` governance).

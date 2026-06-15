@@ -41,4 +41,4 @@ Do not embed reference-repo catalogs, issue surveys, or illustrative examples in
 | `agent-tool-output` | General output rules for scripts, hooks, and CLIs that agents invoke |
 | `cli-resolution` | Standard 3-tier strategy for invoking a Node CLI that may be global, repo-local, or absent |
 
-For cyber-skills CLI output archetypes (`output()` helper, subcommand inventory, markdown-on-stdout for `governance show`), see [ADR-0004](../docs/adr/0004-cyber-skills-cli-output.md).
+For cyber-skills CLI output archetypes (`output()` helper, subcommand inventory, markdown-on-stdout for `governance show`), see [ADR-0004](../../../artifacts/adr/0004-cyber-skills-cli-output.md).
