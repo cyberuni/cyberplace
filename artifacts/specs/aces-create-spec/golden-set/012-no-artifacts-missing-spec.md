@@ -8,7 +8,7 @@ threshold: 4
 
 User says: "Create eval specs." No artifact named.
 
-After scanning, every discovered artifact already has a corresponding `artifacts/aces/` entry with an `eval.md`.
+After scanning, every discovered artifact already has a corresponding eval spec under `artifacts/specs/` with an `eval.md`.
 
 ## Expected behaviors
 

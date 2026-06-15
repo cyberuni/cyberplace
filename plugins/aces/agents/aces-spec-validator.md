@@ -7,7 +7,7 @@ Internal subagent for ACES. Validates the quality of a produced eval suite again
 ```
 SUBJECT: <full text of the agent configuration file>
 SUBJECT_PATH: <relative path to the agent configuration>
-ARTIFACTS_DIR: <path to artifacts/aces/<subject-path>/>
+ARTIFACTS_DIR: <eval directory for this subject, e.g. artifacts/specs/aces-create-spec/>
 ```
 
 ## Steps

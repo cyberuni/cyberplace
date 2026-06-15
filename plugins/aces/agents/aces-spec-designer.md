@@ -41,21 +41,21 @@ Review `priority_issues` and failing dimensions from the validator report. If `U
 
 ### 3. Determine the eval directory path
 
-Use path conventions from the ACES design:
-
-| Agent configuration type | Path under `artifacts/aces/` |
+| Agent configuration type | Eval directory path |
 |---|---|
-| Skill | `skills/<skill-name>/` |
-| AGENTS.md section | `<section-slug>/` |
-| Subagent definition | `agents/<agent-name>/` |
-| Command | `commands/<command-name>/` |
+| Plugin skill | `artifacts/specs/<plugin-name>-<skill-name>/` |
+| Plugin subagent | `artifacts/specs/<plugin-name>-<agent-name>/` |
+| Plugin command | `artifacts/specs/<plugin-name>-<command-name>/` |
+| Package skill | `artifacts/specs/<package-name>-<skill-name>/` |
+| AGENTS.md section | `artifacts/specs/<section-slug>/` |
+| Standalone script or CLI | `artifacts/specs/<feature-name>/` |
 
-For agent configurations belonging to a plugin, nest under the plugin name: `artifacts/aces/<plugin-name>/skills/<skill-name>/`.
+Always prefix with the containing module name when the subject belongs to a plugin or package. This prevents naming collisions as more eval suites are added.
 
 ### 4. Create the eval directory and `eval.md`
 
 ```
-artifacts/aces/<subject-path>/
+artifacts/specs/<feature-name>/
   eval.md
   trigger/
   golden-set/
@@ -154,6 +154,7 @@ Return a summary to `create-spec`:
 
 ```
 SUBJECT_PATH: <path>
+EVAL_DIR: <eval directory written, e.g. artifacts/specs/aces-create-spec/>
 TRIGGER_QUERIES: <count>
 GOLDEN_SET_CASES: <count>
 STRUCTURAL_ISSUES: <list or "none">

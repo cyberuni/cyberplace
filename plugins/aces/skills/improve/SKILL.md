@@ -9,7 +9,7 @@ Diagnose failing eval cases and propose targeted edits to the target agent confi
 
 ## Load context
 
-Find `artifacts/aces/<subject-name>/`:
+Find `artifacts/specs/<feature-name>/`:
 - Read `eval.md` for the target agent configuration path
 - Read the target agent configuration in full
 - Read the most recent result file from `results/` (sort by filename descending, take first)

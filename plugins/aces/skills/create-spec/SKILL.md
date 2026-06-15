@@ -16,7 +16,7 @@ If the user named a specific agent configuration, resolve it directly:
 - **Subagent** — path to a subagent definition file
 - **Command** — path to a command definition file
 
-If no specific agent configuration was named, scan the project for agent configurations that have no `artifacts/aces/` entry yet. Collect the full list and present it to the user — ask them to select one, several, or all before continuing.
+If no specific agent configuration was named, scan the project for agent configurations that have no eval spec yet under `artifacts/specs/`. Collect the full list and present it to the user — ask them to select one, several, or all before continuing.
 
 ## For each selected agent configuration
 
@@ -42,7 +42,7 @@ Wait for `aces-spec-designer` to complete (including the grill-me conversation w
    ```
    SUBJECT: <full text of the agent configuration file>
    SUBJECT_PATH: <relative path to the agent configuration>
-   ARTIFACTS_DIR: artifacts/aces/<subject-path>/
+   ARTIFACTS_DIR: <EVAL_DIR from aces-spec-designer summary>
    ```
 2. If `overall == "pass"` → exit loop.
 3. If `user_questions` is non-empty → ask the user those questions and collect answers.
@@ -57,6 +57,8 @@ Wait for `aces-spec-designer` to complete (including the grill-me conversation w
 5. Repeat from step 1.
 
 If the loop completes 3 iterations without `overall == "pass"`, continue with status `accepted-pending-review`.
+
+`ARTIFACTS_DIR` for the validator is the `EVAL_DIR` returned by `aces-spec-designer` in its summary.
 
 ## Report
 
