@@ -1,0 +1,62 @@
+[
+  {
+    "id": "t01",
+    "query": "Fork this conversation into a new tmux pane on the right",
+    "should_trigger": true
+  },
+  {
+    "id": "t02",
+    "query": "Can you fork right so I can work on something else in parallel?",
+    "should_trigger": true
+  },
+  {
+    "id": "t03",
+    "query": "Split a new Claude session to the right in tmux",
+    "should_trigger": true
+  },
+  {
+    "id": "t05",
+    "query": "I want to continue this chat in a parallel pane. Fork it to the right.",
+    "should_trigger": true
+  },
+  {
+    "id": "t07",
+    "query": "open a forked claude session to the right in tmux",
+    "should_trigger": true
+  },
+  {
+    "id": "t09",
+    "query": "I need a new claude pane to the right that continues from here",
+    "should_trigger": true
+  },
+  {
+    "id": "n01",
+    "query": "Open a new tmux window for my project",
+    "should_trigger": false
+  },
+  {
+    "id": "n02",
+    "query": "Split the pane horizontally without starting Claude",
+    "should_trigger": false
+  },
+  {
+    "id": "n04",
+    "query": "Open a new terminal tab",
+    "should_trigger": false
+  },
+  {
+    "id": "n05",
+    "query": "How do I split panes in tmux?",
+    "should_trigger": false
+  },
+  {
+    "id": "n07",
+    "query": "Split this pane but don't fork the session",
+    "should_trigger": false
+  },
+  {
+    "id": "n09",
+    "query": "Can you move to a new window in tmux?",
+    "should_trigger": false
+  }
+]
