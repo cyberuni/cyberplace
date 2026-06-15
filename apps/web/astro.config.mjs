@@ -59,6 +59,12 @@ export default defineConfig({
 					],
 				},
 				{
+					label: 'ACES',
+					items: [
+						{ label: 'Overview', slug: 'aces/overview' },
+					],
+				},
+				{
 					label: 'Disciplines',
 					items: [
 						{ label: 'Commit Discipline', slug: 'disciplines/commit-discipline' },
