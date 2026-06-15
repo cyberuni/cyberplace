@@ -7,6 +7,11 @@
 			"name": "aces",
 			"description": "Agent Config Evaluation System. Evaluate, test, and improve agent configurations: skills, AGENTS.md sections, subagent definitions, and commands.",
 			"source": "./plugins/aces"
+		},
+		{
+			"name": "tmux",
+			"description": "tmux workflow skills for Claude Code — fork conversations into panes, manage sessions.",
+			"source": "./plugins/tmux"
 		}
 	]
 }
