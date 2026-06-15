@@ -116,6 +116,10 @@ Steps:
 
 ---
 
+**Gherkin scenarios:** [spec-driven-development.feature](./spec-driven-development.feature)
+
+---
+
 ## Governances
 
 - [`sdd-principles`](../governances/sdd-principles.md) — the core rules of SDD in brief
