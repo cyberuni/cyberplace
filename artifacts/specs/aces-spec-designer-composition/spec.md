@@ -1,6 +1,12 @@
-# aces-spec-designer Governance-Aware Flow
+---
+status: draft
+priority: 3
+blocked-by:
+  - governance-composition
+  - aces-skill-spec-schema
+---
 
-**Status:** Draft
+# aces-spec-designer Governance-Aware Flow
 
 ---
 

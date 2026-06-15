@@ -1,6 +1,10 @@
-# ACES Skill Spec Schema
+---
+status: draft
+priority: 2
+blocked-by: []
+---
 
-**Status:** Draft
+# ACES Skill Spec Schema
 
 ---
 
