@@ -1,11 +1,9 @@
-# Universal Plugin Format (deprecated)
+# Universal Plugin Format
 
-This governance has moved to `cyberuni/cyber-universal-agent-plugin` and is now named `plugin-design`.
+This governance has moved to `packages/universal-plugin/governances/plugin-design.md` in this repo.
 
-Load the current version:
+Load it:
 
 ```bash
-npx cyber-universal-agent-plugin governance show plugin-design
+npx cyber-skills@<version> governance show universal-plugin
 ```
-
-Or read directly: https://github.com/cyberuni/cyber-universal-agent-plugin/blob/main/governances/plugin-design.md
