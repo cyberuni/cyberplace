@@ -65,7 +65,7 @@ SDD isn't a single mode — it's a spectrum:
 - **Spec-Anchored** — the spec evolves with the code; automated tests enforce the contract; spec and code are always in sync
 - **Spec-as-Source** — humans never edit code directly; the spec is the only artifact maintained and code is fully generated, like a compiled binary[^6]
 
-Most teams start at Spec-First and move toward Spec-Anchored as tooling matures. Spec-as-Source is viable today only in domains with stable, well-understood generation tooling (AWS Kiro targets this end of the spectrum).
+Most teams start at Spec-First and move toward Spec-Anchored as tooling matures. Spec-as-Source exists today in narrow domains where generation tooling is mature and stable — AWS Kiro targets this end of the spectrum.
 
 ### When SDD doesn't work
 
@@ -89,6 +89,8 @@ So we adapt. We don't write complete specs upfront and hand them to implementers
 A builder implementing a CLI command writes the spec and the implementation together. A builder focused on security contributes threat scenarios and auth failure cases — before or after the MR, not in a separate planning phase. No single person owns the full spec. No single phase owns specification.
 
 This is also where we sit on the maturity spectrum: **Spec-Anchored**. The spec lives in the repo, versions with the code, and stays authoritative — but it co-evolves with implementation rather than fully preceding it.
+
+We deliberately don't chase Spec-as-Source. Natural language gains expressiveness by sacrificing precision — that tradeoff is fundamental, not a gap that better tooling will close. It echoes the fifth-generation language thesis: "specify what, not how" sounds compelling until you discover that the higher the abstraction, the more detail you lose. Well-written code is already precise and readable; it *is* the detailed artifact. Eliminating human-editable code doesn't raise the abstraction level productively — it adds indirection that costs more than it saves and creates barriers that aren't warranted.
 
 This preserves what matters about SDD — the spec is authoritative, behavior-oriented, and persistent — while fitting the reality of team collaboration.
 
