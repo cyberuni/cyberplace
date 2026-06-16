@@ -56,6 +56,8 @@ export default defineConfig({
 					items: [
 						{ label: 'Agent Configuration', slug: 'concepts/agent-configuration' },
 						{ label: 'Commands', slug: 'concepts/commands' },
+						{ label: 'Spec-Driven Development', slug: 'concepts/spec-driven-development' },
+						{ label: 'Test-Driven Development', slug: 'concepts/test-driven-development' },
 					],
 				},
 				{
