@@ -70,6 +70,15 @@ export default defineConfig({
 						{ label: 'Commit Discipline', slug: 'disciplines/commit-discipline' },
 					],
 				},
+				{
+					label: 'universal-plugin',
+					items: [
+						{ label: 'Introduction', slug: 'universal-plugin/getting-started/introduction' },
+						{ label: 'Installation', slug: 'universal-plugin/getting-started/installation' },
+						{ label: 'CLI Overview', slug: 'universal-plugin/cli/overview' },
+						{ label: 'build', slug: 'universal-plugin/cli/build' },
+					],
+				},
 			],
 		}),
 	],
