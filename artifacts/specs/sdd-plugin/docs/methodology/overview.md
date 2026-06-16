@@ -21,9 +21,9 @@ This means:
 
 A spec covers one domain (one feature or command group). It answers:
 
-- **What** — the observable behavior
 - **Why** — the problem being solved
-- **Command surface** — the CLI syntax or API signature
+- **What** — the observable behavior
+- **Command surface** — the CLI syntax or API signature; a behavioral contract, not an implementation detail
 - **Scenarios** — Gherkin scenarios describing success and failure cases
 
 ## What a spec is not
