@@ -1,21 +1,71 @@
 ---
 title: Spec-Driven Development
-description: What spec-driven development is, its core principles, and how a spec moves from Draft to Implemented.
+description: What spec-driven development is, its core principles, and how we apply it with the co-delivery model.
 ---
 
-Most teams have lived this: a requirements doc written before a sprint, followed by code that diverges from it within a week. The doc becomes an artifact of intent, not behavior. Nobody has time to keep it current. Eventually the code becomes the spec — which means the spec is wherever the implementation happens to land, not where anyone agreed it should be.
+Tell an AI to "build a dashboard." It will build one. It will look plausible. It will also invent APIs that don't exist, miss half the edge cases, and produce architecture that fights your existing system. Two weeks later, the code is working but nobody can explain *why* it does what it does, and changing anything breaks three things.
 
-Spec-driven development (SDD) is a practice built around one insight: **a spec that isn't verified against running behavior will lie to you**. So instead of separating specification from implementation, you keep them together — same artifact, same lifecycle, same merge request.
+This is vibe coding — prompt-first, intention-loose development. It gets you to a prototype fast and to a mess faster.
+
+Spec-driven development (SDD) is the structured alternative. The spec — not the prompt, not the code — is the primary source of truth. You define intent precisely before code is generated, and the spec stays authoritative as the system evolves.
 
 ## What spec-driven development is
 
-SDD describes software behavior from the outside — inputs, outputs, observable side effects. Not how the internals work; what the system does from a caller's perspective.
+SDD is a methodology where a **structured specification is written before coding begins**, and that spec anchors everything generated from it.
 
-That distinction is the whole game. Implementation details change constantly. Observable behavior changes far less often. A spec that describes internal behavior goes stale with every refactor. A spec that describes observable behavior stays accurate across them.
+The key move: treat the spec as the source, the code as a derivative. When requirements change, you update the spec and regenerate. When a reviewer wants to understand behavior, they read the spec — not the code. When an AI generates an implementation, it works from a precise artifact rather than a loose prompt.
 
-The practice has roots in BDD (Behavior-Driven Development), which introduced executable scenarios — Gherkin syntax verified against a running system. SDD extends that idea: specs aren't just test scaffolding. They're structured documents that capture *why* a feature exists, *what* it does, the command surface, and explicit success and failure scenarios. They live in the repo, version with the code, and follow a defined lifecycle from Draft to Implemented.
+This isn't a new idea. It has roots in formal specification, API-design-first (OpenAPI's contract-first model), and BDD (Behavior-Driven Development), which introduced executable Gherkin scenarios verified against running systems. What's new is the context: AI coding assistants make spec-first discipline *more* important, not less. A precise spec prevents the hallucination, drift, and architectural inconsistency that show up when AI works from ambiguous input.
 
-### What a spec describes
+### What a spec is
+
+A spec is:
+
+- **Structured** — consistent sections, machine-readable format
+- **Behavior-oriented** — describes what the system does from the outside, not how it works internally
+- **Testable** — every claim can be verified against a running system
+- **Persistent** — lives in the repo, versions with the code, survives the team member who wrote it
+
+A spec is not a design doc for implementation internals. It doesn't describe function signatures, class hierarchies, or database schemas. Those are implementation details. Observable behavior — what a user or caller sees — is what the spec pins down.
+
+### How SDD works
+
+Most SDD workflows follow a four-phase loop:
+
+1. **Specify** — write the structured spec: requirements, constraints, edge cases, acceptance criteria
+2. **Plan** — derive the architecture and task breakdown from the spec
+3. **Task** — create atomic implementation tasks from the plan
+4. **Implement** — generate or write code from the tasks
+
+Each phase has a human checkpoint. The spec doesn't auto-generate the plan; a person reviews and adjusts. The plan doesn't auto-generate tasks; a person refines scope. This is what keeps the system aligned with intent instead of drifting toward whatever an AI finds easiest to produce.
+
+### SDD vs. related practices
+
+**Vibe coding** starts with a prompt and iterates by feel. SDD starts with a spec and iterates against it. The difference isn't speed — it's what you're held accountable to.
+
+**TDD** (Test-Driven Development) writes tests before code. SDD writes full feature specifications before code. Tests are a subset of a spec, not the whole thing. A spec also captures *why* the feature exists, the command surface, and explicit failure scenarios — context that tests don't carry.
+
+**API-first / contract-first** is SDD applied to APIs: the OpenAPI definition is the spec, client and server are generated from it, and the contract is the source of truth. SDD generalizes this pattern beyond APIs to any software behavior.
+
+### Why it matters
+
+Early reports from teams adopting SDD with AI tooling show 3–10× improvement in first-pass success rates — implementations that match intent without requiring extensive rework cycles. The gains come from eliminating the ambiguity that causes AI drift, not from the AI working harder.
+
+Tools supporting SDD as of 2025–2026 include AWS Kiro, GitHub Spec Kit, Cursor Plan Mode, Tessl, and Claude Code's spec workflow.
+
+---
+
+## Our take: the co-delivery model
+
+SDD prescribes spec-first. That's the right default when AI is doing most of the implementation. Our situation is different: humans and AI are collaborating, multiple builders contribute across multiple angles (product, design, engineering, security), and specs need to stay current through active development — not just seed it.
+
+So we adapt. We don't write complete specs upfront and hand them to implementers. We **co-deliver**: spec and code arrive in the same merge request, written by the same builder from their angle of expertise.
+
+A builder implementing a CLI command writes the spec and the implementation together. A builder focused on security contributes threat scenarios and auth failure cases — before or after the MR, not in a separate planning phase. No single person owns the full spec. No single phase owns specification.
+
+This preserves what matters about SDD — the spec is authoritative, behavior-oriented, and persistent — while fitting the reality of team collaboration.
+
+### What our spec contains
 
 A spec covers one coherent domain — one feature or command group. It answers four questions:
 
@@ -29,7 +79,7 @@ The scenarios are the contract. They describe what a user or caller observes: ex
 ### What a spec is not
 
 - A design document for implementation internals
-- A complete upfront specification written before coding begins
+- A complete upfront specification (we co-deliver, not waterfall)
 - A substitute for code review
 - A test file — though every scenario maps to a test
 
@@ -37,9 +87,9 @@ The scenarios are the contract. They describe what a user or caller observes: ex
 
 **The spec owns the behavior.** If the implementation disagrees with the spec, the implementation is wrong — unless the spec is revised through a review cycle. This keeps the spec authoritative rather than decorative.
 
-**Scenarios are observable.** A scenario that says "function X returns Y" is describing an implementation detail. A scenario that says "the command exits with code 0 and prints the summary to stdout" is describing behavior. Write the second kind.
+**Scenarios are observable.** A scenario that says "function X returns Y" describes an implementation detail. A scenario that says "the command exits with code 0 and prints the summary to stdout" describes behavior. Write the second kind.
 
-**Specs survive refactors.** If you restructure the internals and have to update the spec, the spec was describing the wrong thing. The spec changes only when behavior changes — and behavior changes require a new review cycle.
+**Specs survive refactors.** If you restructure the internals and have to update the spec, the spec was describing the wrong thing. It changes only when behavior changes — and behavior changes require a new review cycle.
 
 **Why is not optional.** A spec without a "Why" section is incomplete. It documents what the system does but not why anyone cared — which makes it impossible to judge whether a proposed change is in scope or whether the feature is still needed at all.
 
@@ -48,23 +98,6 @@ The scenarios are the contract. They describe what a user or caller observes: ex
 **Status must be accurate.** Marking a spec Implemented when scenarios aren't passing is a violation. Marking it Approved before review is a violation. Status fields that can't be trusted are worse than no status fields.
 
 **One spec per domain.** If a spec covers two unrelated concerns, split it. A spec that sprawls becomes a spec nobody reads.
-
----
-
-## Our spin: the co-delivery model
-
-SDD is a practice. How you integrate it into your workflow is a choice. Here is ours.
-
-We don't write specs upfront and hand them to implementers. We don't write them after the fact to document what shipped. We co-deliver: spec and code arrive in the same merge request, written by the same builder working from their angle of expertise.
-
-A builder working on a CLI command writes the spec and the implementation together. A builder focused on security contributes their angle — threat scenarios, error cases around auth — before or after the MR, not in a separate planning phase. No single person owns the full spec. No single phase owns specification.
-
-This means:
-
-- The spec and the implementation are always in sync
-- Reviewers can verify behavior by reading the spec, not by reverse-engineering the code
-- Refactoring the implementation does not change the spec — only behavior changes do
-- Every angle of expertise (product, design, engineering, security) contributes to the spec from its own perspective
 
 ### Spec lifecycle
 
