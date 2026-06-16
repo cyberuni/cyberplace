@@ -141,3 +141,44 @@ Feature: Spec-Driven Development Plugin
     When an agent adds a third scenario to auth.feature
     Then the addition is accepted
     And no freeze warning is shown
+
+  # ── open questions ──────────────────────────────────────────────────────────
+
+  Scenario: Open question markup is accepted during Draft
+    Given specs/auth/spec.md has Status: Draft
+    And the What section contains "<!-- open: needs designer input on empty-state -->"
+    When the user runs validate-spec
+    Then validate-spec does not fail for the open question comment
+    And the report notes the open question as pending input
+
+  Scenario: Draft → Approved blocked when open questions remain
+    Given specs/auth/spec.md has Status: Draft
+    And the Why section contains "<!-- open: needs PM input on scope -->"
+    When the user runs validate-spec targeting Draft → Approved
+    Then validation fails
+    And the report identifies the unresolved open question as a blocker
+
+  # ── approval gate ────────────────────────────────────────────────────────────
+
+  Scenario: Draft → Approved requires acknowledgment from all required reviewers
+    Given specs/auth/spec.md has all required sections filled
+    And specs/auth/auth.feature has happy-path and error-case scenarios
+    And no open questions remain
+    When the user runs validate-spec targeting Draft → Approved
+    Then validate-spec asks the user to confirm each required reviewer has acknowledged
+    And advances to Approved only after the user confirms
+
+  # ── implementation gap handling ──────────────────────────────────────────────
+
+  Scenario: Minor gap discovered during implementation
+    Given specs/auth/spec.md has Status: Approved
+    And implementation reveals an edge case clearly implied by the existing spec
+    When the gap is added to auth.feature with a quick review note
+    Then spec.md status remains Approved
+
+  Scenario: Requirements change discovered during implementation
+    Given specs/auth/spec.md has Status: Approved
+    When implementation reveals the specified behavior cannot work as written
+    Then spec.md status must revert to Draft before behavior can change
+    And auth.feature becomes editable again
+    And validate-spec must pass before the spec can return to Approved
