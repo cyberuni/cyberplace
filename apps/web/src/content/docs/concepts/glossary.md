@@ -55,7 +55,7 @@ A reusable, on-demand workflow the agent loads when it matches a situation. Defi
 
 A class of always-on behavioral rules that shape how any agent (main or sub) operates — not loaded on demand, always active via any channel (hooks, `AGENTS.md`, or agent definitions). [Commit Discipline](/disciplines/commit-discipline/) is an example: rules about when and how to commit that apply in every session.
 
-Discipline and [Governance](#governance) are verified the same way: give the agent a scenario and observe what it does. The distinction is not how you test them — it is *when* the rule is active (always vs on demand) and *what kind of content* it encodes (cross-cutting habits vs domain-specific normative rules).
+Discipline and [Governance](#governance) are verified the same way: give the agent a scenario and observe what it does. The distinction is not how you test them — it is *when* the rule is active (always vs on demand) and *what kind of content* it encodes (cross-cutting habits vs domain-specific normative rules). See [Disciplines](/concepts/disciplines/).
 
 ## Subagent
 
