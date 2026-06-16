@@ -13,10 +13,10 @@ cyber-skills ships two related but distinct kinds of agent guidance:
 
 Both were initially labeled **discipline**, overloading one word for two different mechanisms:
 
-| Mechanism | Load model | Authority model | Naming |
-| --- | --- | --- | --- |
-| Standards | On demand per workflow | Version-pinned, auditable, stdout is source of truth | `governances/`, `governance show` |
-| Behavior | Every session (when hook registered) | Habitual, ambient context | `commit-discipline`, Commit Discipline |
+| Mechanism | Load model                           | Authority model                                      | Naming                                 |
+| --------- | ------------------------------------ | ---------------------------------------------------- | -------------------------------------- |
+| Standards | On demand per workflow               | Version-pinned, auditable, stdout is source of truth | `governances/`, `governance show`      |
+| Behavior  | Every session (when hook registered) | Habitual, ambient context                            | `commit-discipline`, Commit Discipline |
 
 The standards layer behaves like governance (canonical rules, audit enforcement, enterprise-familiar vocabulary). The behavior layer behaves like discipline (operating habits, self-regulation, lighter tone). Using one term for both creates confusion for contributors and obscures the architectural split.
 
@@ -56,12 +56,18 @@ Use **Governance** for version-pinned auditable standards and **Discipline** for
 
 Adopt the **split taxonomy**:
 
-| Layer | Term | Definition |
-| --- | --- | --- |
-| **Governance** | Version-pinned, auditable **standards** | Canonical rules loaded on demand via CLI; stdout is source of truth; enforced by audit tooling. |
-| **Discipline** | Session-injected **behavior** | Habitual rules injected into every session via hooks; ambient operating practice. |
+| Layer          | Term                           | When active                   | Content shape                                                        |
+| -------------- | ------------------------------ | ----------------------------- | -------------------------------------------------------------------- |
+| **Governance** | Version-pinned **standards**   | On demand, per workflow       | Normative rules for a specific domain; crisp enough for static analysis of artifacts |
+| **Discipline** | Ambient behavioral **habits**  | Always-on, any agent or sub   | Cross-cutting habits that shape how any agent (main or sub) operates |
 
 **Tagline:** Governance defines what is correct. Discipline defines what is habitual.
+
+### Compliance testing
+
+Both governance and discipline are verified the same way: give the agent a scenario (context, environment, prompt), observe what the agent does, verify the outcome. This is test-at-boundary — the same mechanism regardless of layer.
+
+The one asymmetry: governance's crisp rule text additionally enables **static artifact analysis** — `audit-skill` can check a `SKILL.md` document against governance rules without running an agent. Discipline rules describe habits that can only be verified by observing agent behavior.
 
 **Implementation status:** Implemented. Standards ship under `governances/` with CLI `governance list` and `governance show`. Session discipline (`commit-discipline`) is unchanged.
 
@@ -69,11 +75,11 @@ Adopt the **split taxonomy**:
 
 Governances are **loaded into agent context** via `governance show`. They must encode **what is correct**, not background reading. Illustrative material belongs elsewhere.
 
-| Artifact | Role | Loaded via `governance show`? |
-| --- | --- | --- |
-| **`governances/*.md`** | Version-pinned **standards** — requirements, archetypes, anti-patterns | Yes |
-| **`docs/research/*.md`** | **Evidence** — repo surveys, reference implementations, RFC/issue links | No — repo checkout only |
-| **`artifacts/adr/*.md`** | **Decisions** — rationale, options considered, consequences | No — repo checkout only |
+| Artifact                 | Role                                                                    | Loaded via `governance show`? |
+| ------------------------ | ----------------------------------------------------------------------- | ----------------------------- |
+| **`governances/*.md`**   | Version-pinned **standards** — requirements, archetypes, anti-patterns  | Yes                           |
+| **`docs/research/*.md`** | **Evidence** — repo surveys, reference implementations, RFC/issue links | No — repo checkout only       |
+| **`artifacts/adr/*.md`** | **Decisions** — rationale, options considered, consequences             | No — repo checkout only       |
 
 **In governances, include:**
 
@@ -102,6 +108,8 @@ When research informs a governance, extract the **rule** into the governance and
 Option 3 resolves the naming collision without forcing awkward phrasing on either layer. Governance accurately describes what `audit-skill` does with canonical stdout from `skill-design` and `agent-tool-output`. Discipline accurately describes what `commit-discipline` and `init-commit-discipline` enforce — habitual agent behavior, not organizational compliance.
 
 Option 1 was a reasonable v1 shortcut but does not scale as more standards and session disciplines are added. Option 2 over-corrects toward enterprise policy language and fits poorly for session habits.
+
+The split is not about how compliance is tested — both layers are verified by giving the agent a scenario and observing behavior. The split is about when the rule is active (on demand vs always-on) and what kind of content it encodes. Governance's crisp normative text additionally enables static artifact analysis; discipline's habits require behavioral observation to verify.
 
 ## Consequences
 

@@ -37,8 +37,21 @@ Pinning the version ensures agents always get rules that match the installed too
 | [cli-resolution](/governances/cli-resolution/) | Strategy for invoking a Node CLI that may be global, repo-local, or absent |
 | [universal-plugin](/governances/universal-plugin/) | Format spec for plugins that work across multiple agent harnesses |
 
+## Governance vs Discipline
+
+Both governance and discipline are verified the same way: give the agent a scenario, observe what it does, check the outcome. The distinction is not how you test compliance — it is:
+
+| | Governance | Discipline |
+|---|---|---|
+| **When active** | On demand, per workflow | Always-on, any agent or sub |
+| **Content shape** | Normative rules for a specific domain | Cross-cutting behavioral habits |
+| **Static analysis** | Yes — tools like `audit-skill` check artifacts against governance rules | No — only verifiable by observing behavior |
+
+**Tagline:** Governance defines what is correct. Discipline defines what is habitual.
+
 ## Related
 
 - [ADRs](/concepts/adrs/) — why the rules are what they are
+- [Discipline](/concepts/glossary/#discipline) — always-on behavioral habits
 - [Governances overview](/governances/overview/) — CLI usage and authoring rules
 - [Agent Configuration](/concepts/agent-configuration/) — where always-on rules live
