@@ -80,7 +80,7 @@ The practical upshot: with AI tooling, most of the overhead objections weaken �
 
 ## Our take: the co-delivery model
 
-SDD prescribes spec-first. That's the right default when AI is doing most of the implementation. Our situation is different: humans and AI are collaborating, multiple builders contribute across multiple angles (product, design, engineering, security), and specs need to stay current through active development — not just seed it.
+SDD prescribes spec-first. That's the right default when AI is doing most of the implementation. We aim for an SDD that works across the full range of how teams actually build: humans and AI collaborating, multiple builders contributing across multiple angles (product, design, engineering, security), and specs staying current through active development — not just seeding it.
 
 BDD failed many teams not because of its methodology but because of how it was adopted: QA engineers wrote `.feature` files alone, product managers rarely reviewed them, and developers treated them as "QA stuff." The spec became a document owned by one role instead of a shared contract. SDD faces the exact same risk.[^8]
 
