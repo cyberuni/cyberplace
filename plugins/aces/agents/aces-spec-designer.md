@@ -8,8 +8,6 @@ Internal subagent for ACES. Analyzes a single agent configuration and produces a
 SUBJECT: <full text of the agent configuration file>
 SUBJECT_PATH: <relative path to the agent configuration>
 AGENTSKILLS_EVALS: <contents of evals/evals.json if present, else null>
-PRIOR_VALIDATOR_FEEDBACK: <aces-spec-validator output JSON, or null on first run>
-USER_ANSWERS: <answers to validator's user_questions, or null>
 ```
 
 ## Steps
@@ -24,8 +22,6 @@ Record any structural issues. A malformed agent configuration produces unreliabl
 
 ### 2. Grill the user (domain elicitation)
 
-**First run only (PRIOR_VALIDATOR_FEEDBACK is null):**
-
 Read the subject carefully, then ask the user 3–5 targeted questions before drafting any artifacts. Ask about:
 
 - Known failure modes not described in the skill text ("What went wrong in practice when this misfired?")
@@ -34,10 +30,6 @@ Read the subject carefully, then ask the user 3–5 targeted questions before dr
 - Anything explicitly out of scope that a user might plausibly attempt
 
 Wait for the user's answers. Incorporate them when generating trigger queries and golden-set cases.
-
-**Revision pass (PRIOR_VALIDATOR_FEEDBACK non-null):**
-
-Review `priority_issues` and failing dimensions from the validator report. If `USER_ANSWERS` is provided, incorporate those answers. Determine which artifacts to update — update only the affected files (do not regenerate everything). If the validator's `user_questions` were not answered and are still relevant, ask the user before revising.
 
 ### 3. Determine the eval directory path
 
@@ -148,6 +140,21 @@ Score 1–5:
 
 `## Assertions` is optional — include only when there is a mechanical check that is objectively verifiable. Sequence numbers are zero-padded to three digits.
 
+### 8. Run quality loop
+
+After writing all artifacts, validate and iterate:
+
+1. Invoke `aces-spec-validator` with:
+   ```
+   SUBJECT: <full text of agent configuration>
+   SUBJECT_PATH: <path>
+   ARTIFACTS_DIR: <eval directory just written>
+   ```
+2. If `overall == "pass"` → exit loop.
+3. If `user_questions` is non-empty → ask the user those questions and collect answers.
+4. Review `priority_issues` and failing dimensions. Update only the affected files — do not regenerate everything.
+5. Repeat from step 1. Stop after 3 iterations regardless of outcome.
+
 ## Output
 
 Return a summary to `create-spec`:
@@ -158,4 +165,6 @@ EVAL_DIR: <eval directory written, e.g. artifacts/specs/aces-create-spec/>
 TRIGGER_QUERIES: <count>
 GOLDEN_SET_CASES: <count>
 STRUCTURAL_ISSUES: <list or "none">
+QUALITY_GATE: <pass | accepted-pending-review>
+ITERATIONS: <number of quality loop iterations taken>
 ```
