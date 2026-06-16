@@ -1,0 +1,15 @@
+{
+	"$schema": "https://raw.githubusercontent.com/cyberuni/universal-plugin/refs/heads/main/schema/v1.json",
+	"name": "python-pypi",
+	"description": "End-to-end skill for building, testing, linting, versioning, and publishing production-grade Python libraries to PyPI. Covers all four build backends and semantic versioning.",
+	"author": { "name": "GitHub" },
+	"keywords": ["python", "pypi", "packaging", "publishing"],
+	"skills": "./skills/",
+	"mcpServers": "./.mcp.json",
+	"vendorExtensions": {
+		"copilot-cli": {
+			"category": "development",
+			"tags": ["python", "pypi", "packaging"]
+		}
+	}
+}
