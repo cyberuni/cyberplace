@@ -1,0 +1,23 @@
+{
+	"skill_name": "publish-universal-plugin",
+	"evals": [
+		{
+			"id": 1,
+			"prompt": "I've finished building my plugin 'git-summary' — it's in ~/projects/git-summary-plugin. It has skills, hooks for all four runtimes, and I want to publish it to the universal plugin marketplace. Walk me through the full publish process.",
+			"expected_output": "Runs pre-flight validation checks on all four vendor manifests and plugin.json metadata, then prepares the registry entry JSON and guides opening a PR to the registry repo. Should check hook casing per vendor.",
+			"files": []
+		},
+		{
+			"id": 2,
+			"prompt": "I'm trying to submit my 'code-formatter' plugin to the marketplace but I think there might be validation errors. The plugin is at /tmp/code-formatter. Can you check if it's ready and fix any issues before submitting?",
+			"expected_output": "Runs pre-flight checks, identifies specific validation failures (e.g., missing Codex manifest, wrong hook casing on Cursor manifest, missing license field), reports them clearly, and asks user to fix before proceeding to Step 2.",
+			"files": []
+		},
+		{
+			"id": 3,
+			"prompt": "My plugin 'ai-commit' is already published in the universal marketplace at version 1.0.0. I've just released v1.1.0 with some new hooks. How do I update the marketplace listing?",
+			"expected_output": "Recognizes this as an update scenario, reads existing registry entry, runs pre-flight on new version, prepares updated entry preserving existing fields (especially curator_note and original publishedAt), adds updatedAt, submits an update PR.",
+			"files": []
+		}
+	]
+}

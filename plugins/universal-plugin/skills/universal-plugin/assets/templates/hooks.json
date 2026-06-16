@@ -1,0 +1,9 @@
+{
+	"description": "<plugin-name> hooks",
+	"hooks": {
+		"PreToolUse": [],
+		"PostToolUse": [],
+		"Stop": [],
+		"UserPromptSubmit": []
+	}
+}
