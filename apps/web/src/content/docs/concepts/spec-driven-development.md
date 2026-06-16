@@ -15,7 +15,7 @@ SDD is a methodology where a **structured specification is written before coding
 
 The key move: treat the spec as the source, the code as a derivative. When requirements change, you update the spec and regenerate. When a reviewer wants to understand behavior, they read the spec — not the code. When an AI generates an implementation, it works from a precise artifact rather than a loose prompt.
 
-This isn't a new idea. It has roots in formal specification, API-design-first (OpenAPI's contract-first model), and BDD (Behavior-Driven Development), which introduced executable Gherkin scenarios verified against running systems. What's new is the context: AI coding assistants make spec-first discipline *more* important, not less. A precise spec prevents the hallucination, drift, and architectural inconsistency that show up when AI works from ambiguous input.
+This isn't a new idea. It has roots in **Design by Contract** (Bertrand Meyer, 1986 — preconditions, postconditions, and invariants as first-class citizens), formal specification methods (Z notation, VDM), **API-design-first** (OpenAPI's contract-first model), and **BDD** (Behavior-Driven Development), which introduced executable Gherkin scenarios verified against running systems. What's new is the context: AI coding assistants make spec-first discipline *more* important, not less. A precise spec prevents the hallucination, drift, and architectural inconsistency that show up when AI works from ambiguous input.
 
 ### What a spec is
 
@@ -39,11 +39,15 @@ Most SDD workflows follow a four-phase loop:
 
 Each phase has a human checkpoint. The spec doesn't auto-generate the plan; a person reviews and adjusts. The plan doesn't auto-generate tasks; a person refines scope. This is what keeps the system aligned with intent instead of drifting toward whatever an AI finds easiest to produce.
 
+This loop is not waterfall. Waterfall has months-long feedback cycles between phases; the SDD loop can run in hours with AI assistance. The difference is that each phase is short and verifiable, not a long handoff between teams.
+
 ### SDD vs. related practices
 
 **Vibe coding** starts with a prompt and iterates by feel. SDD starts with a spec and iterates against it. The difference isn't speed — it's what you're held accountable to.
 
-**TDD** (Test-Driven Development) writes tests before code. SDD writes full feature specifications before code. Tests are a subset of a spec, not the whole thing. A spec also captures *why* the feature exists, the command surface, and explicit failure scenarios — context that tests don't carry.
+**TDD** (Test-Driven Development) writes tests before code. SDD writes full feature specifications before code. A spec captures *why* a feature exists, the command surface, architecture constraints, and non-functional requirements — context that a test suite alone doesn't carry. For human developers, TDD and SDD compose naturally: the spec establishes intent at the feature level, TDD drives the unit implementation beneath it.
+
+For AI agents the relationship is more complex. Research (TDAD, 2025) shows that naive TDD prompting — instructing an agent to "write a failing test first, then implement" — can make things *worse*: the procedural instructions consume context window space, crowding out repository context the model needs, and agents tend to game tests rather than derive intent from them. Tests work well for agents as *verification gates* (run the suite to confirm correctness) but poorly as the *specification interface* (derive what to build from a failing test). See [Test-Driven Development](./test-driven-development) for the full picture.
 
 **API-first / contract-first** is SDD applied to APIs: the OpenAPI definition is the spec, client and server are generated from it, and the contract is the source of truth. SDD generalizes this pattern beyond APIs to any software behavior.
 
@@ -53,15 +57,38 @@ Early reports from teams adopting SDD with AI tooling show 3–10× improvement 
 
 Tools supporting SDD as of 2025–2026 include AWS Kiro, GitHub Spec Kit, Cursor Plan Mode, Tessl, and Claude Code's spec workflow.
 
+### Maturity levels
+
+SDD isn't a single mode — it's a spectrum:
+
+- **Spec-First** — the spec guides initial development but may drift afterward as code changes accumulate
+- **Spec-Anchored** — the spec evolves with the code; automated tests enforce the contract; spec and code are always in sync
+- **Spec-as-Source** — humans never edit code directly; the spec is the only artifact maintained and code is fully generated, like a compiled binary
+
+Most teams start at Spec-First and move toward Spec-Anchored as tooling matures. Spec-as-Source is viable today only in domains with stable, well-understood generation tooling (AWS Kiro targets this end of the spectrum).
+
+### When SDD doesn't work
+
+SDD adds overhead. It's worth knowing where that overhead doesn't pay off:
+
+- **Exploratory and research work** — when you don't know what you're building yet, writing a spec first is premature; vibe coding or prototyping is the right tool for discovery
+- **Rapidly changing requirements** — if requirements shift weekly, maintaining a precise spec becomes documentation debt faster than it becomes value
+- **Novel algorithms** — when the solution isn't known upfront, the spec can't meaningfully precede the code
+- **Spec quality risk** — a wrong spec faithfully implemented produces wrong software; garbage in, garbage out. If the spec authors don't deeply understand the domain, SDD amplifies misunderstanding rather than preventing it
+
 ---
 
 ## Our take: the co-delivery model
 
 SDD prescribes spec-first. That's the right default when AI is doing most of the implementation. Our situation is different: humans and AI are collaborating, multiple builders contribute across multiple angles (product, design, engineering, security), and specs need to stay current through active development — not just seed it.
 
+BDD failed many teams not because of its methodology but because of how it was adopted: QA engineers wrote `.feature` files alone, product managers rarely reviewed them, and developers treated them as "QA stuff." The spec became a document owned by one role instead of a shared contract. SDD faces the exact same risk.
+
 So we adapt. We don't write complete specs upfront and hand them to implementers. We **co-deliver**: spec and code arrive in the same merge request, written by the same builder from their angle of expertise.
 
 A builder implementing a CLI command writes the spec and the implementation together. A builder focused on security contributes threat scenarios and auth failure cases — before or after the MR, not in a separate planning phase. No single person owns the full spec. No single phase owns specification.
+
+This is also where we sit on the maturity spectrum: **Spec-Anchored**. The spec lives in the repo, versions with the code, and stays authoritative — but it co-evolves with implementation rather than fully preceding it.
 
 This preserves what matters about SDD — the spec is authoritative, behavior-oriented, and persistent — while fitting the reality of team collaboration.
 
