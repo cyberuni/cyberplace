@@ -71,8 +71,7 @@ Most teams start at Spec-First and move toward Spec-Anchored as tooling matures.
 
 SDD adds overhead. With AI assistance, many of those costs drop — AI can draft and update specs quickly, so the bar for when spec-first pays off is lower than it used to be. But there are still cases where it doesn't fit, and one risk gets sharper:
 
-- **Exploratory and research work** — when you don't know what you're building yet, writing a spec first is premature. The right move is to prototype quickly — with AI help — and extract the spec from what you learn, not front-load it
-- **Novel algorithms** — when the solution isn't known upfront, the spec can't meaningfully precede the code; stub the interface and write the spec once the approach is settled
+- **Exploratory and research work** — when you don't know what you're building or what its observable behavior should look like, writing a spec first is premature. Prototype or experiment first, then extract the spec from what you learn
 - **Spec quality risk** — a wrong spec faithfully implemented produces wrong software. With AI this risk is *worse*: an AI implements a wrong spec quickly, thoroughly, and without the gut-check a human developer might apply midway through. If the spec authors don't deeply understand the domain, SDD amplifies misunderstanding rather than preventing it, at speed[^7]
 
 The practical upshot: with AI tooling, most of the overhead objections weaken — spec-first makes sense in more situations than it did when humans bore the full writing cost. But spec quality becomes the dominant risk. A precise, correct spec is the lever; an imprecise or wrong one is a force multiplier in the wrong direction.
