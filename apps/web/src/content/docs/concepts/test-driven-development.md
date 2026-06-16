@@ -5,7 +5,7 @@ description: What TDD is, how it relates to spec-driven development, and why nai
 
 Write a failing test. Watch it fail. Write the minimum code to make it pass. Refactor. Repeat.
 
-That loop — red, green, refactor — is Test-Driven Development. It's been one of the most influential practices in software engineering since Kent Beck formalized it in the early 2000s, and its core insight still holds: **a test written before code is a micro-specification**, forcing you to define expected behavior before you decide how to produce it.
+That loop — red, green, refactor — is Test-Driven Development. It's been one of the most influential practices in software engineering since Kent Beck formalized it in the early 2000s[^1], and its core insight still holds: **a test written before code is a micro-specification**, forcing you to define expected behavior before you decide how to produce it.
 
 ## What TDD is
 
@@ -55,7 +55,7 @@ TDD was designed for human developers. The discipline works because of something
 
 When a developer writes a failing test, they hold the intent in their head. They know what the test is *for*. They write code to satisfy that intent, not just to satisfy the assertion. The test and the understanding travel together.
 
-An AI agent doesn't carry that commitment. Research published in 2025 (TDAD, Test-Driven Agentic Development) found that naive TDD prompting — instructing an agent to "write a failing test first, then implement" — produced worse results than vanilla prompting:
+An AI agent doesn't carry that commitment. Research published in 2025 (TDAD: Test-Driven Agentic Development)[^2] found that naive TDD prompting — instructing an agent to "write a failing test first, then implement" — produced worse results than vanilla prompting:
 
 - On one benchmark task, TDD prompting caused 352 out of 352 test failures; vanilla prompting caused 4
 - Agents given TDD instructions touched more files, attempting more ambitious fixes, but caused more regressions in code they weren't supposed to change
@@ -108,3 +108,8 @@ In our [co-delivery model](./spec-driven-development), specs and implementation 
 Agents generating implementation use the spec as input and the test suite as a verification gate. When an agent breaks a test, that's a clear signal — not a guessing game about what "failing test" means.
 
 TDD's discipline — design through testability, small verifiable steps, regression safety — remains valuable. What changes in an AI-assisted workflow is *who* drives the red-green-refactor cycle (humans for complex logic, agents for mechanical tasks) and *what* the agent receives as its specification interface (a structured spec, not a raw failing test).
+
+## References
+
+[^1]: Kent Beck, *Test-Driven Development: By Example* (Addison-Wesley, 2002).
+[^2]: Abdelfattah et al., ["TDAD: Test-Driven Agentic Development — Reducing Code Regressions in AI Coding Agents via Graph-Based Impact Analysis"](https://arxiv.org/abs/2603.17973), arXiv:2603.17973 (2025).
