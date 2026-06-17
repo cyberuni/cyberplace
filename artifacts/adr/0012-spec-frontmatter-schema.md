@@ -1,4 +1,4 @@
-# ADR 002: Spec Frontmatter Schema for Status, Priority, and Dependencies
+# ADR 0012: Spec Frontmatter Schema for Status, Priority, and Dependencies
 
 **Status:** Accepted  
 **Date:** 2026-06-15
