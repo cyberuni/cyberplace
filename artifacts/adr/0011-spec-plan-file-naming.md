@@ -1,4 +1,4 @@
-# ADR 001: Use `spec/plan` as the Core File Name Pair
+# ADR 0011: Use `spec/plan` as the Core File Name Pair
 
 **Status:** Accepted  
 **Date:** 2026-06-04

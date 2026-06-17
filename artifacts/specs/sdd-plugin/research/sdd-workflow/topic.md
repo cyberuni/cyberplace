@@ -193,7 +193,7 @@ Three plugin design requirements identified but not yet resolved:
 - `governances/sdd-principles.md` (this repo)
 - `apps/web/src/content/docs/methodology/spec-lifecycle.md` (this repo)
 - `specs/spec.md` (this repo)
-- `adrs/001-spec-plan-file-naming.md` (this repo)
+- `artifacts/adr/0011-spec-plan-file-naming.md` (this repo)
 - [[spec-driven-development]] research (cross-tool pipeline patterns)
 - [[sdd-file-templates]] research (artifact structure and content)
 - Iterative author refinement session, June 2026
