@@ -31,23 +31,56 @@ Around abundant generation sit four roles, forming a control loop: someone decid
 | **Architect** | **Structure** — shape the whole so it stays legible and evolvable | The organizing principles, boundaries, and conventions that keep the product comprehensible and maintainable as it grows |
 | **Curator**   | **Accumulate** — make knowledge compound                          | The durable, reusable knowledge every other role draws on                                                                |
 
-The motive is what makes each a real actor: each motive generates use cases the others don't. The Framer's signature output is a *kill decision*; the Builder's is a *working artifact*; the Curator's is *reuse*. Distinct motives, distinct use cases, distinct interfaces.
+The motive is what makes each a real actor: each motive generates use cases the others don't. The Framer's signature output is a *kill decision*; the Builder's is a *working artifact*; the Architect's is a *boundary or convention*; the Curator's is *reuse*. Distinct motives, distinct use cases, distinct interfaces.
 
-**What separates Architect from Builder is *object*, not scope.** A Builder — at any zoom level — produces a *part*; a whole subsystem is still a bigger part. The Architect's output is the *relations between parts*: boundaries, conventions, the composition law over everything the Builders make. That is why "Builder at system scope" is a category error (see *Resolved*) — scope was never the separator. **Conway's Law** is the empirical backdrop: a system's structure is constrained to mirror the communication structure that produced it [conway], so owning the relations is a distinct, system-shaping job rather than a large instance of building a part. And the Architect's motive is constructive, not just defensive. An architect does more than forbid — they decide that structure should *scream the domain* [screaming], choose boundaries that make intent obvious, and shape the system so it survives change. Constraints are the half that protects those decisions; the organizing act is the half that creates them.
+One scale runs through three of them and is worth stating up front, because it is where the roles are most often confused. **Generalization is just abstraction; what differs is the scope of reuse and where the result lives** — a ladder that also captures the classic *design vs architecture* distinction:
 
-### Curator is the foundation tier — and still an actor
+| Generalize across…              | Result lives in…                       | Actor         | Concern                                          |
+| ------------------------------- | -------------------------------------- | ------------- | ------------------------------------------------ |
+| parts **within one feature**    | the feature                            | **Builder**   | *design* — how it works                          |
+| **features within one product** | the product (a shared abstraction)     | **Architect** | *architecture* — how it's organized              |
+| **products, over time**         | the corpus (template, skill, plugin)   | **Curator**   | *curation* — knowledge that outlives the product |
 
-The three roles above operate on the *product*. Curator does not — and that raises a fair objection: if its output simply underlies everyone else's, is it a separate actor at all, or just the maintenance each actor owes its own surface over time?
+The *mechanism* each uses to add value keeps the rungs apart: **design changes behavior directly** (write better logic); **architecture changes behavior through structure** (extract the shared path, and every feature inherits the consistency); **curation changes future capability through knowledge** (the next project starts warmer). An app crammed into a single file *works* — design is satisfied — yet is unmaintainable, because the behavior was bought directly, without the structural leverage that lets the rest of the system inherit the quality. That gap is the Architect's reason to exist.
 
-It is a separate actor, because there is work no individual actor does for their own surface:
+### Framer — intend
 
-- **Cross-surface coherence** — making the brief, the shape, and the bar read as *one* body of knowledge, not several maintained in isolation.
-- **Pruning** — deciding what is stale or contradictory and removing it. Each actor is biased to *keep* their own surface, so subtraction needs a separate owner.
-- **Cross-instance distillation** — turning fifty concrete contracts into one reusable pattern. Producing one and generalizing across many are different acts.
+- **Motive:** decide what is worth doing, and what success means.
+- **Object:** the problem and its definition of done — including the authority to decide *not* to build.
+- **Signature output:** a **kill decision** — the cheapest, highest-leverage thing a team can produce.
+- **Forward / backward:** forward, frames the problem and sets the bar for success; backward, makes the kill-or-ship call at the gate.
+- **Boundary (vs Builder):** the Framer owns *whether and why*; the Builder owns *how*. A Builder who redefines the goal has stepped into the Framer role.
 
-Distinct motive, Curator-only use cases — it passes the actor test. The reason it *feels* like a layer is that its output is the substrate every other actor's delegate reads from. But that is precisely the position of a **platform or infrastructure team**: a role whose *product* is a layer, "made available via self-service capabilities… easy for the [other] teams to consume" [team-topologies]. Nobody says platform engineering "isn't a role, it's a layer." Curator is the team's **infrastructure actor**. (Its capability-raising has an *enabling-team* flavor; but unlike an enabling team — which is time-boxed and owns no product — Curator is permanent and owns a product, the corpus, which is the **platform** pattern, not the enabling one [team-topologies].)
+### Builder — generate
 
-So the model has two tiers:
+- **Motive:** make the thing work, from one angle of expertise.
+- **Object:** a **part** — a working contribution (a feature, a fix, a UI, a control). This is *design*: how it works.
+- **Signature output:** a working artifact, co-delivered with the contract (test or spec) that defines its behavior.
+- **Variant:** *Explorer* — generates to *discard* (breadth, speed, low attachment), versus the default Builder who generates to *keep* (depth, craft, correctness).
+- **Boundary (vs Architect):** the Builder makes a part; the moment the work is about the *relations between* parts, it is an Architect act — even when the same person does it in the same minute.
+
+### Architect — structure
+
+- **Motive:** keep the whole legible and evolvable as it grows — *architecture*: how things are organized, for maintainability.
+- **Object:** the **relations between parts** — boundaries, conventions, the composition law over everything the Builders make. Not a bigger part; a different *kind* of thing — which is why "Builder at system scope" is a category error (see *Resolved*): scope was never the separator. **Conway's Law** is the backdrop — a system's structure mirrors the communication structure that built it [conway].
+- **Active, and it *is* governance.** The Architect does not tidy what landed; it **draws the lines ahead of time** — chooses that structure should *scream the domain* [screaming], leans on SOLID or clean-architecture boundaries, decides which principle outranks which for *this* system, and authors the rules the Builders then build under. Constraints are the defensive half; choosing and imposing the organizing principles is the constructive half.
+- **Generalizes across features, inside the product.** Noticing three features each roll their own auth and extracting one shared path is Architect work — and it pays a *behavioral* dividend (every feature now authenticates consistently and correctly). That dividend is the **fruit of organizing**, not a separate design act; it is *why* architecture earns its keep.
+- **Signature output:** a boundary or convention. **Variant:** *Conductor* — structures at runtime, orchestrating delegates and people in parallel.
+- **Boundary (vs Curator):** the Architect's abstraction lives in *this* product and dies with it. The moment the output is lifted out as knowledge meant to outlive the product, it is Curator work.
+
+### Curator — accumulate (the foundation tier)
+
+The three roles above operate on the *product*. Curator does not — its object is **knowledge designed to outlive any single product**. That raises the objection that recurs every time: isn't keeping the corpus organized just *architecture at another tier*?
+
+**Partly — and worth saying plainly.** Organizing the corpus (keeping it coherent, DRY, legible) *is* architecture-of-the-corpus, and a Curator performs it constantly — the way every actor borrows skills across roles. But the role is named for the part architecture does **not** contain. Three acts are Curator-only, and none is "organize":
+
+- **Selection for durability** — deciding which lessons are *durable enough to encode* versus transient noise. Architecture organizes the parts that exist; it never judges which *experiences* earn a permanent place.
+- **Generalization across products and time** — lifting a specific solution into a transferable form for problems that *don't exist yet* (a template, a convention, an agent skill or plugin). In-product DRY stops at the product boundary; this crosses it.
+- **Pruning for truth** — removing what is *no longer true*, not merely what is structurally incoherent. Truth-decay over time, not present fit.
+
+These are *accumulate* — grow a compounding, reusable asset — not *structure*. That is the motive architecture lacks, and it is why a corpus-maintainer flipping into Architect-of-the-corpus no more makes Curator a sub-case of Architect than a Builder reviewing code makes review a sub-case of Building.
+
+Its output *feels* like a layer because every other actor's delegate reads from it — precisely the position of a **platform or infrastructure team**: a role whose *product* is a layer, "made available via self-service capabilities… easy for the [other] teams to consume" [team-topologies]. (Its capability-raising has an *enabling-team* flavor; but unlike an enabling team — time-boxed, product-less — Curator is permanent and owns a product, the corpus, which is the **platform** pattern [team-topologies].) So the model has two tiers:
 
 - **Delivery actors** — Framer, Builder, Architect — operate on the *product*.
 - **Foundation actor** — Curator — operates on the team's *capacity to deliver*: the corpus the other three's delegates draw from.
@@ -268,7 +301,7 @@ The framework's load-bearing terms, in dependency order — earlier terms ground
 | **Actor** | A human role defined by an intrinsic **motive**: Framer, Builder, Architect, Curator. Holds accountability, which never delegates. *Collision to note: unlike a UML use-case "actor" (which may be a non-human system) or the actor-model actor, our actor is **always human** — agents are delegates.* |
 | **Delegate** | An agent acting on an actor's behalf. No motive of its own — *capacity*, not a *party*. Never accountable. Adapts agency theory's agent, minus the self-interest [agency]. |
 | **Motive** | The intrinsic want that defines an actor: intend (Framer), generate (Builder), structure (Architect), accumulate (Curator). |
-| **Object** | *What an actor's output is.* A Builder's object is a **part**; the Architect's object is the **relations between parts**. Object — not scope — is what separates Architect from Builder. |
+| **Object** | *What an actor's output is.* A Builder's object is a **part**; the Architect's, the **relations between parts**; the Curator's, **knowledge that outlives the product**. Object — not scope — separates them. |
 | **Face** | The *direction* an actor's expertise points — **forward** (produce) or **backward** (evaluate). Every actor has both. *Reserved: never used for anything else — switching motive is switching actor, not face.* |
 | **Variant** | A specialization of an actor's *forward face* that needs different preparation. Only non-default variants are named: **Explorer** (of Builder), **Conductor** (of Architect). |
 | **Angle** (domain) | The subject-matter expertise an actor works in — security, UX, performance, process, quality, AI/harness. An actor always acts *from an angle*; angle is orthogonal to actor. |
