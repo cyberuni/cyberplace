@@ -2,6 +2,16 @@
 
 One section per claim the framework asserts. Status/confidence reflect how well established theory grounds the claim. Caveats and divergences are kept, not smoothed.
 
+> **Alignment review (2026-06-19).** A term-vs-source comparison found several places where the dossier had stretched a term past its source or cited something that cut against it. Resolved in the dossier and reflected below:
+> - **dev-inner-outer-loop** — the DevEx *outer* loop is CI/CD integration, **not** the Curator's distillation loop. Citation now used for the *inner*-loop analogy only.
+> - **single-double-loop** — the Curator *spans both*: routine codification is single-loop, revision is double-loop. "Curator owns double-loop" softened to "double-loop is its distinctive mode."
+> - **separation-of-duties** — `producer ≠ judge` is an *echo* of four-eyes, not the strict (two-party) thing. The model's real contribution is a **time-split of judgment**: thorough-but-general criteria authored ahead of time (the bar, delegate-enforced) + focused human judgment in the loop.
+> - **walking-skeleton** — it is real-but-thin, **not** a fake; recast as the *contrast* to stub/rework, not a sibling.
+> - **test-stub** — "stub" generalized to a production **placeholder** (stub / workaround / rougher MVP); term borrowed loosely, flagged.
+> - **team-topologies** — Curator is **platform** (permanent, owns the corpus-product), with an *enabling*-team echo (capability-raising); enabling team is time-boxed and product-less, so platform is the correct primary match.
+> - **ai-roles** — Gartner measures *outcome* (modest productivity); the premise is about *capability* (abundant production) — distinct claims, not a contradiction.
+> - **multi-agent** — Anthropic's "weak on tightly interdependent work" caveat bounds the Conductor's fan-out (needs a clean seam). The **orchestrator** (delegate pattern) is kept distinct from the **Conductor** (actor) — they do not merge.
+
 ---
 
 ## agency-theory
