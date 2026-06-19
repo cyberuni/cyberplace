@@ -86,7 +86,13 @@ BDD failed many teams not because of its methodology but because of how it was a
 
 So we adapt. We don't write complete specs upfront and hand them to implementers. We **co-deliver**: spec and code arrive in the same merge request, written by the same builder from their angle of expertise.
 
+### What is a builder
+
+A **builder** is anyone — human or AI — who contributes a coherent angle to a feature: implementation, security, UX, performance, documentation. The term is deliberately role-agnostic. A backend engineer is a builder. A security reviewer is a builder. An AI assistant drafting the initial spec and scaffolding the implementation is a builder. What defines a builder is contributing *from an angle of expertise*, not a job title or a phase in a process.
+
 A builder implementing a CLI command writes the spec and the implementation together. A builder focused on security contributes threat scenarios and auth failure cases — before or after the MR, not in a separate planning phase. No single person owns the full spec. No single phase owns specification.
+
+This is where AI changes the economics of co-delivery. An AI assistant working on a feature can read the project's governances — version-pinned contracts that capture accumulated team knowledge on CLI output format, skill design, tool behavior, and other cross-cutting concerns — and draw on patterns already present in the codebase. A builder creating a new command doesn't need full security or UX expertise to get a mostly-complete spec from the start: the AI fills in the common scenarios, known failure modes, and constraint categories that the governances encode. What would otherwise require four specialists reviewing four angles can often start as a solid single-builder draft, with other builders refining rather than originating their sections.
 
 This is also where we sit on the maturity spectrum: **Spec-Anchored**. The spec lives in the repo, versions with the code, and stays authoritative — but it co-evolves with implementation rather than fully preceding it.
 
