@@ -1,5 +1,14 @@
 # Changes — The Actor–Delegate Model
 
+## 2026-06-19 — Resolve the open questions
+
+- **Variant taxonomy (Q1) → Resolved.** The membership gates *are* the bound; the count is discovered, not fixed. Verdicts: Explorer (Builder) confirmed; Conductor (Architect) forming; **Scout (Framer)** added as forming — the Framer's divergent/discovery variant, by the Explorer parallel; **Curator has no variant** (its three acts share one cognitive profile → sub-roles, not variants). Named the generative pattern (original): variants come off two axes — divergent/convergent and design-time/runtime. Updated the variants table, Variant glossary row, and downstream-artifacts row.
+- **Human-to-human delegation surface (Q2) → Resolved.** The surface is medium-agnostic (any availability gap: delegate now / teammate / future self). A strength, not a thin claim — AI's weight sits in *abundance* (economics) and *fidelity* (a new delegate class), not in the surface itself.
+- **Delegate fidelity shape (Q4) → Resolved.** Not a fifth actor (no motive) and not a third face (points at the worker, not the work): a delegate-directed check riding every delegation surface — the mirror of the bar — and the home of human–agent interface design. Updated the Delegate-fidelity body section and glossary row.
+- **Abundance breadth (Q3) → structurally resolved, empirically open.** Abundance is a dial, not a switch; the framework is abundance-relative and degrades gracefully to the decoupled scenario where generation stays expensive. The decoupled↔compressed axis *is* the dial. The residual empirical question (how far/fast abundance reaches novel-hard generation) stays in Open questions, plus a watch on whether the *forming* variants harden.
+- **Conclusion changed materially?** No verdict change. Resolves three of four dossier open questions into the Resolved section; one empirical watch item remains. Adds one new original claim (the two-axis variant generator) and one new forming variant (Scout).
+
+
 ## 2026-06-19 — De-overload the Framer; fix gate outcomes; clean the loop section
 
 - **Framer is product intent, not general scheduling.** Deferred work re-enters as its *owning* actor's object (feature → Framer, refactor → Architect); sequencing it is a **decision rule** (product priority vs rework-cost), not a Framer call. Fixed the control-loop diagram (deferred → backlog, re-prioritized), the scheduling subsection, the three-loops bullet, the glossary "Scheduling decision," and the How-it-composes chain.
