@@ -65,7 +65,7 @@ The *mechanism* each uses to add value keeps the rungs apart: **design changes b
 - **Object:** the **relations between parts** — boundaries, conventions, the composition law over everything the Builders make. Not a bigger part; a different *kind* of thing — which is why "Builder at system scope" is a category error (see *Resolved*): scope was never the separator. **Conway's Law** is the backdrop — a system's structure mirrors the communication structure that built it [conway].
 - **Active, and it *is* governance.** The Architect does not tidy what landed; it **draws the lines ahead of time** — chooses that structure should *scream the domain* [screaming], leans on SOLID or clean-architecture boundaries, decides which principle outranks which for *this* system, and authors the rules the Builders then build under. Constraints are the defensive half; choosing and imposing the organizing principles is the constructive half.
 - **Generalizes across features, inside the product.** Noticing three features each roll their own auth and extracting one shared path is Architect work — and it pays a *behavioral* dividend (every feature now authenticates consistently and correctly). That dividend is the **fruit of organizing**, not a separate design act; it is *why* architecture earns its keep.
-- **Signature output:** a boundary or convention. **Variant:** *Conductor* — structures at runtime, orchestrating delegates and people in parallel.
+- **Signature output:** a boundary or convention. **Variant:** *Conductor* (forming) — structures at runtime, orchestrating delegates and people in parallel; much of it is codifiable into a delegate (see *Two resolutions*).
 - **Boundary (vs Curator):** the Architect's abstraction lives in *this* product and dies with it. The moment the output is lifted out as knowledge meant to outlive the product, it is Curator work.
 
 ### Curator — accumulate (the foundation tier)
@@ -131,7 +131,7 @@ A **placeholder** — a stub (in the test-double sense [test-double], generalize
 
 The determining factor is a cost comparison: **rework cost** (stub now, redo later) versus **switch/blocking cost** (stop current, build prerequisite first). Scope and complexity drive both sides — a large, high-blast-radius concern makes a rushed inline fix dangerous *and* makes rework expensive, which is why big architectural debt is deferred to a deliberate effort rather than either ignored or forced in-line.
 
-**Capacity used to decide this — and abundance is exactly what changes it.** Pre-AI, "build the prerequisite first" meant *stop everything*, because no hands were spare; so teams defaulted to workaround-now and accumulated debt. With delegates, the **Conductor** (the runtime Architect variant) **fans the dependency out to a delegate** while the current thread keeps moving — the orchestrator-worker pattern, where a lead "dynamically breaks down tasks, delegates them to worker [agents]… and synthesizes their results" [multi-agent]. "Build the dependency first" stops meaning "stop everything" and becomes "parallelize." This is the Conductor's signature move, and a direct instance of the abundance premise: abundance does not remove the dependency tree; it lets you walk it without serializing. The boundary condition is real, and it bites right here: fan-out works when the dependency is *separable behind a stable interface* (loose coupling at the seam), and works worst when the dependency is tightly interwoven with the current thread — exactly the *tightly interdependent* case orchestration handles least well [multi-agent]. So the Conductor's move is available precisely when the seam is clean; when it is not, the scheduling choice tightens toward *defer current work*.
+**Capacity used to decide this — and abundance is exactly what changes it.** Pre-AI, "build the prerequisite first" meant *stop everything*, because no hands were spare; so teams defaulted to workaround-now and accumulated debt. With delegates, the human — conducting, in the Architect's runtime mode — **directs an orchestrator-delegate to fan the dependency out** while the current thread keeps moving (the orchestrator-worker pattern, where a lead "dynamically breaks down tasks, delegates them to worker [agents]… and synthesizes their results" [multi-agent]). "Build the dependency first" stops meaning "stop everything" and becomes "parallelize." This is the **conducting** move, and a direct instance of the abundance premise: abundance does not remove the dependency tree; it lets you walk it without serializing. The boundary condition is real, and it bites right here: fan-out works when the dependency is *separable behind a stable interface* (loose coupling at the seam), and works worst when the dependency is tightly interwoven with the current thread — exactly the *tightly interdependent* case orchestration handles least well [multi-agent]. So the move is available precisely when the seam is clean; when it is not, the scheduling choice tightens toward *defer current work*.
 
 A naming distinction the metaphor invites: the **Conductor is the *actor*** — the human, holding motive and accountability — while the **orchestrator is the *delegate pattern*** it wields (a lead delegate that breaks down and directs workers [multi-agent]). They do not merge. Collapsing them would fold an actor back into a delegate — the one move the model forbids.
 
@@ -156,14 +156,26 @@ The table reads two ways. Across a row: how far one position can now stretch. Do
 
 The four actors are the right unit **for the machine** — for generating use cases, scenarios, and human-agent interfaces. At that resolution, finer distinctions are noise.
 
-But humans need a finer resolution, because **roles that share a motive can still demand opposite preparation.** Each actor has a default form plus named **variants** — specializations that fold away for the machine but matter enormously for human capacity, training, and growth, since each is a different body of knowledge held at a different depth. Only the non-default variants are named:
+But humans need a finer resolution, because **roles that share a motive can still demand opposite preparation.** Each actor has a default form plus named **variants** — specializations that fold away for the machine but matter enormously for human capacity, training, and growth.
 
-| Actor         | Variant                                | How it differs — and why preparation differs                                                                                          |
-| ------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| **Builder**   | *Explorer* — generates to *discard*    | Breadth across many solutions, pattern recognition, low attachment, speed over polish — versus the default Builder who generates to *keep* (depth, craft, correctness) |
-| **Architect** | *Conductor* — structures at *runtime*  | Orchestrates many delegates and people into one whole, fanning work out in parallel [multi-agent] — versus the default Architect who structures the *artifact* at design time |
+Not every specialization earns a name. A candidate — actor, variant, or sub-role — must clear three **membership gates**, and they are what keep the taxonomy from sprawling:
+
+- **Distinct motive** — for an *actor*; a *variant* instead shares its actor's motive.
+- **Capacity differentiation** — inhabiting it must require a *substantial, distinct* body of knowledge. If the preparation delta is small, it is not a role; it is a function to **codify**.
+- **Persistence** — the need must *recur and aggregate* into a standing demand a human specializes toward. (Not continuous occupancy — a Framer's kill is a split-second act; the *need* is what must aggregate.) A momentary, absorbable need is a sub-role: a *janitor*, not a *cleaner-of-the-flush-handle*.
+
+| Actor         | Variant                               | Status    | How it differs — and why preparation differs                                                                                          |
+| ------------- | ------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **Builder**   | *Explorer* — generates to *discard*   | confirmed | Breadth, pattern recognition, low attachment, speed over polish — versus the default Builder who generates to *keep* (depth, craft, correctness). Clears both gates: a near-opposite cognitive profile, and a recurring, aggregated need. |
+| **Architect** | *Conductor* — structures at *runtime* | forming   | Orchestrates many delegates and people into one whole at runtime — versus the default Architect who structures the *artifact* at design time. **Borderline today:** much of it is codifiable (the orchestrator-worker pattern is already a *delegate*, not a human role), and the non-codifiable residual decomposes into Framer (reprioritize) and Architect (re-seam) acts. It strengthens as fleets grow — at large scale, coordinating many agents in real time may cross an *air-traffic-control* threshold into a distinct capacity. |
 
 Explorer and the default Builder are nearly opposite cognitive profiles — the same *motive* (generate), incompatible *training*. That is why a single framework needs both resolutions: collapse to actors to design the system, expand to variants to develop the people. Variants live on the forward face; the backward (evaluative) face is a separate axis again — an actor can be a deep Builder yet still turn that depth backward to review.
+
+### Codification moves the actor/delegate line
+
+The capacity gate has a consequence worth stating on its own: **a role is worth naming only where the human capacity is substantial *and* not-yet-codifiable.** The moment a function becomes codifiable, its codifiable slice crosses the **actor/delegate line** and becomes **agent configuration** — the delegation surface, materialized for an AI delegate. (Codify a Curator and you get skills and conventions; a Builder, specs; a Conductor, orchestration config.) So codifiability is *where* the actor/delegate boundary sits, and it moves over time — the same engine as the abundance premise, now applied to coordination rather than production.
+
+This is why "isn't a Conductor just someone who *builds* the orchestration?" is half-right. Building that agent configuration is a real job — but it is a **Builder at the toolchain tier**, whose object is a *part* (the orchestration feature), because **agent configuration is itself a product**, built by its own Framer, Builder, Architect, and Curator. *(Concretely in this repository: the "agent orchestration" feature of the ACES plugin is the codified Conductor, built by a Builder of ACES — a product the framework describes building, not a part of the framework.)*
 
 ## Delegation surfaces
 
@@ -235,7 +247,7 @@ Reading: one human (contributor) plays Framer + Explorer + Builder forward; anot
 - **Builder** (producer) — a delegate implements the chosen approach; the inner loop runs against tests.
 - *— boundary: the developer reads the diff —*
 - **The gate** — the same human, now turning their expertise backward on the delegate's output. `producer ≠ judge` still holds, because the *delegate* produced and the *human* judges.
-- **Architect / Conductor** — the developer notices it should follow an existing convention and directs a refactor under green; if the convention requires a not-yet-built helper, the Conductor fans that dependency out to a second delegate rather than stalling the feature (the scheduling decision in miniature).
+- **Architect (conducting)** — the developer notices it should follow an existing convention and directs a refactor under green; if the convention requires a not-yet-built helper, they direct an orchestrator-delegate to build it in parallel rather than stalling the feature (the scheduling decision in miniature).
 - **Curator** — at the end, the developer encodes the new convention so the next feature starts warmer — or, more often, a Curator-delegate flags "you've done this three times" and the human approves the entry.
 
 Reading: one human spans all four actors, forward and backward, in an afternoon — impossible before AI, when production consumed all their focus. Delegates supply the production capacity, freeing the human to move through the roles while holding motive and accountability throughout. This is the thesis in miniature: abundance does not replace the human; it lets one human *be* the team.
@@ -266,7 +278,7 @@ Get the actors and motives right and the rest is downstream. Get them wrong — 
 
 ## Open questions
 
-1. **How many variants, and for which actors?** Explorer (of Builder) and Conductor (of Architect) are confirmed. Framer and Curator presumably take variants too — but enumerating them risks an open-ended taxonomy. What stops the variant list from sprawling? (Note: forward/backward *faces* are a separate axis from variants — both multiply the surface area.)
+1. **How many variants, and for which actors?** The three **membership gates** (distinct motive, capacity differentiation, persistence) bound the list — that is what stops it sprawling. Under them, **Explorer** (of Builder) clears both variant gates; **Conductor** (of Architect) is *forming* — borderline until fleet scale raises the coordination capacity required. Whether **Framer** and **Curator** have variants that clear the gates is the open part. (Note: forward/backward *faces* are a separate axis from variants — both multiply the surface area.)
 
 2. **Does the delegation surface serve human-to-human as well as human-to-agent?** A brief hands intent to a teammate as readily as to an agent. If the surface is medium-agnostic, the framework describes *all* delegation, not just delegation to AI — which is either a strength (generality) or a sign the AI-specific part is thinner than claimed.
 
@@ -287,7 +299,7 @@ This dossier is the single source of truth. Two artifacts are generated from it;
 | Deferred branch / scheduling over dependency tree | orchestration + scheduling policy; Conductor fan-out | the dependency-tree narrative |
 | Delegation surfaces + bar | the surface/criteria contracts | what each role hands off |
 | Curator and the loop (three loops) | when each loop fires; Curator-delegate interface | the learning-compounds story |
-| Variants (Explorer, Conductor) | folds away (machine uses actors) | **primary** — capacity, training, growth |
+| Variants (Explorer; Conductor — forming) | folds away (machine uses actors) | **primary** — capacity, training, growth |
 | Positions are not roles | — | **primary** — the reader's on-ramp |
 | Scenarios | trace-checks for the use cases | **primary** — concrete walk-throughs |
 | Delegate fidelity | the fidelity-check axis of every interface | the open frontier |
@@ -303,7 +315,10 @@ The framework's load-bearing terms, in dependency order — earlier terms ground
 | **Motive** | The intrinsic want that defines an actor: intend (Framer), generate (Builder), structure (Architect), accumulate (Curator). |
 | **Object** | *What an actor's output is.* A Builder's object is a **part**; the Architect's, the **relations between parts**; the Curator's, **knowledge that outlives the product**. Object — not scope — separates them. |
 | **Face** | The *direction* an actor's expertise points — **forward** (produce) or **backward** (evaluate). Every actor has both. *Reserved: never used for anything else — switching motive is switching actor, not face.* |
-| **Variant** | A specialization of an actor's *forward face* that needs different preparation. Only non-default variants are named: **Explorer** (of Builder), **Conductor** (of Architect). |
+| **Variant** | A specialization of an actor's *forward face* that needs different preparation and clears the **membership gates**. **Explorer** (of Builder) is confirmed; **Conductor** (of Architect) is *forming* — much of it is codifiable into a delegate today. |
+| **Membership gates** | What a candidate role must clear to be named: **distinct motive** (for actors), **capacity differentiation** (a substantial distinct body of knowledge, else codify), **persistence** (a recurring, aggregated need, else a sub-role). Bounds the taxonomy. |
+| **Codifiability / actor–delegate line** | A role is worth naming only where human capacity is substantial *and* not-yet-codifiable. The codifiable slice crosses into a delegate as **agent configuration**; the boundary moves as codification advances. |
+| **Agent configuration** | A delegation surface materialized for an AI delegate — skills, specs, conventions, orchestration config. The codified form of an actor's capacity; itself a toolchain-tier product built by a Builder. |
 | **Angle** (domain) | The subject-matter expertise an actor works in — security, UX, performance, process, quality, AI/harness. An actor always acts *from an angle*; angle is orthogonal to actor. |
 | **Gate** | A boundary (pull request, release) where several actors' **backward faces** converge on one change. An activity, not an actor — "Gatekeeper" names this activity, never a role. |
 | **Verdict** | The gate's first axis: `accept` / `block`. Governed by the decision rule. |
