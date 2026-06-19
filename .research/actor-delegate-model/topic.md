@@ -47,7 +47,7 @@ Most of the framework's spine is grounded: the Actor/Delegate split mirrors **ag
 
 ## Open questions
 
-Carried in the dossier's own "Open questions" section (variant taxonomy bounds; human-to-human delegation surfaces; breadth of the abundance premise; formal shape of delegate fidelity).
+Three of the original four are now resolved in the dossier's "Resolved" section (variant taxonomy bounds → the gates discover the count, Scout added/Curator none; human-to-human surfaces → medium-agnostic, AI weight in abundance+fidelity; delegate fidelity → delegate-directed check on every surface, mirror of the bar). Remaining in "Open questions": the *empirical* breadth/speed of abundance, and whether the forming variants (Conductor, Scout) harden.
 
 ## Adjacent topics (spun out)
 

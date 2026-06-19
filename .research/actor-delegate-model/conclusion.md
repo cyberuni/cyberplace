@@ -41,5 +41,6 @@ High on the borrowed spine (most rows high-confidence, primary or encyclopedic-q
 
 ## Recheck later
 
-- Whether AI's "abundance" reaches *novel/hard* generation or stays confined to *common* generation — the premise's reach (dossier open question).
+- Whether AI's "abundance" reaches *novel/hard* generation or stays confined to *common* generation — the premise's *empirical* reach. (The *structural* half is now resolved in the dossier: abundance is a dial, the framework is abundance-relative and degrades gracefully; only the magnitude/speed stays open.)
+- Whether the *forming* variants (Conductor, Scout) harden into confirmed standing roles or stay codifiable and fold into delegates.
 - Newer empirical work on multi-agent orchestration for interdependent coding tasks, which would strengthen or weaken the Conductor claim.
