@@ -143,7 +143,7 @@ flowchart LR
 | **accept**  | clean merge                 | merge **+ work** (within-PR nit, or deferred follow-up) |
 | **block**   | **kill** — nothing fixes it | **request changes** (work is within-PR by necessity)  |
 
-Two corners earn names. `block + none` is a **kill** — no incremental fix saves this attempt — but *what* dies depends on the rejecting face: a **Framer** kill abandons the goal (*this should not exist*), while an **Architect** or **Builder** kill rejects the approach or the artifact (*not like this*) with the goal still standing. `accept + deferred` is the **feedback edge**: merge now, spin off work that re-enters the loop later (see *How it composes*).
+Two corners earn names. `block + none` is a **kill** — no incremental fix saves this attempt — but *what* dies depends on the rejecting face: a **Framer** kill abandons the goal (*this should not exist*), while an **Architect** or **Builder** kill rejects the approach or the artifact (*not like this*) with the goal still standing. How often it fires at all depends on how *editable* the upstream is: when the artifact is regenerated from a spec (spec-driven development), an Architect or Builder rejection usually becomes *revise the spec and retry* — an iteration, not a kill — leaving the **Framer** kill (a goal no spec edit saves) as the main residual. `accept + deferred` is the **feedback edge**: merge now, spin off work that re-enters the loop later (see *How it composes*).
 
 ```mermaid
 flowchart TB
