@@ -1,5 +1,12 @@
 # Changes — The Actor–Delegate Model
 
+## 2026-06-19 — Reframe recursion as overlapping sets (not levels)
+
+- **What changed:** Dropped the "axis / levels / elevator / stack" framing for product/process/toolchain. They are **overlapping sets** that intersect, union, and mutually influence — *not* a vertical hierarchy (process and toolchain interpenetrate; a discipline-as-a-hook is both). What survives: the framework is *self-applying* (recursion), and **product is the concrete, substantive outcome** the other two serve and are refined by. Codification recast from "elevator between levels" to "the Curator carrying knowledge across the seams between sets." Replaced the stacked-levels diagram with an overlap/mutual-influence diagram. Renamed the section to "Recursion: the framework turns on itself"; glossary "Level" → "Recursion"; fixed the Tier cross-reference and the Resolved/How-it-composes pointers.
+- **Why:** User correction — process→toolchain has no up/down relationship; the relationship is set-theoretic, not leveled.
+- **Conclusion changed materially?** No verdict change; corrects the *topology* of the recursion (sets, not stack).
+
+
 ## 2026-06-19 — The recursion axis (levels); diagrams
 
 - **What changed:** Added "The recursion axis" — the four actors are invariant; only the *object* changes, giving three canonical **levels** (product / process / toolchain). Resolved the past-Architect breadth (codebase + process + harness = Architect at three levels). Named the unifying pattern: *the foundation supplies the surface*, holding both **within** a level (Curator → other actors) and **across** levels (toolchain/process → product) — so Curator-foundation, codification, agent configuration, and recursion are one pattern at two scales, with **codification as the elevator** and **Curator as the bridge**. Disambiguated *level* (recursion) from *tier* (delivery vs foundation). Began a Mermaid diagram layer (recursion stack first; control loop, gate, ladder, loops, actor/delegate backfilled).
