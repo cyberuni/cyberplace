@@ -22,12 +22,12 @@ This is the load-bearing distinction. An agent is not a teammate in the way a pe
 
 Around abundant generation sit four roles, forming a control loop: someone decides what's worth making, someone makes candidates, someone keeps the whole coherent, someone makes the learning compound. And each of them also *judges* — turns its expertise backward to evaluate — so there is no separate "judge" role; judging is a face every actor has, described below.
 
-| Actor | Motive | What they own |
-|---|---|---|
-| **Framer** | **Intend** — what's worth doing | The problem worth solving and what success means; the authority to decide *not* to build |
-| **Builder** | **Generate** — make the thing | A working contribution from one angle of expertise |
+| Actor         | Motive                                                            | What they own                                                                                                            |
+| ------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| **Framer**    | **Intend** — what's worth doing                                   | The problem worth solving and what success means; the authority to decide *not* to build                                 |
+| **Builder**   | **Generate** — make the thing                                     | A working contribution from one angle of expertise                                                                       |
 | **Architect** | **Structure** — shape the whole so it stays legible and evolvable | The organizing principles, boundaries, and conventions that keep the product comprehensible and maintainable as it grows |
-| **Curator** | **Accumulate** — make knowledge compound | The durable, reusable knowledge every other role draws on |
+| **Curator**   | **Accumulate** — make knowledge compound                          | The durable, reusable knowledge every other role draws on                                                                |
 
 The motive is what makes each a real actor: each motive generates use cases the others don't. The Framer's signature output is a *kill decision*; the Builder's is a *working artifact*; the Curator's is *reuse*. Distinct motives, distinct use cases, distinct interfaces.
 
@@ -66,42 +66,40 @@ One constraint governs the faces: **producer ≠ judge**, applied per artifact a
 
 The thesis, made concrete. A job title used to name a single contribution because production was scarce and focus was finite. With delegates supplying production, each position can now act across many roles — the title becomes a *default*, not a boundary. ("Gatekeeper" below names the evaluative activity — a backward face — not a separate actor.)
 
-| Position | Default role (pre-AI) | Roles AI now opens |
-|---|---|---|
-| **PM** | Framer | Explorer (prototype directly with a delegate), Gatekeeper (own acceptance), Curator (encode product knowledge) |
-| **Designer** | Builder + Explorer (of UX) | Framer (own the *why*), Gatekeeper (the taste and quality bar), Curator (the design system as a curated corpus) |
-| **Engineer** | Builder | Architect, Gatekeeper (review), Conductor (orchestrate delegate fleets), Curator (write the conventions) |
-| **QA** | Gatekeeper | Architect (of acceptance criteria), Curator (golden sets and the regression corpus), Explorer (adversarial probing) |
+| Position     | Default role (pre-AI)      | Roles AI now opens                                                                                                  |
+| ------------ | -------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| **PM**       | Framer                     | Explorer (prototype directly with a delegate), Gatekeeper (own acceptance), Curator (encode product knowledge)      |
+| **Designer** | Builder + Explorer (of UX) | Framer (own the *why*), Gatekeeper (the taste and quality bar), Curator (the design system as a curated corpus)     |
+| **Engineer** | Builder                    | Architect, Gatekeeper (review), Conductor (orchestrate delegate fleets), Curator (write the conventions)            |
+| **QA**       | Gatekeeper                 | Architect (of acceptance criteria), Curator (golden sets and the regression corpus), Explorer (adversarial probing) |
 
 QA is the sharpest case: when delegates write the tests, QA stops being the one who *writes* checks and becomes the one who *owns the acceptance contract and curates the corpus it draws on* — gatekeeping plus Curator.
 
 The table reads two ways. Across a row: how far one position can now stretch. Down the **Gatekeeper** column: why review is everyone's part-time role, not a department — every position turns its expertise backward at the gate.
 
-## Two resolutions: actors for machines, modes for humans
+## Two resolutions: actors for machines, variants for humans
 
 The four actors are the right unit **for the machine** — for generating use cases, scenarios, and human-agent interfaces. At that resolution, finer distinctions are noise.
 
-But humans need a finer resolution, because **roles that share a motive can still demand opposite preparation.** Each actor decomposes into *modes* — specializations that fold away for architecture but matter enormously for human capacity, training, and growth, since each mode is a different body of knowledge held at a different depth.
+But humans need a finer resolution, because **roles that share a motive can still demand opposite preparation.** Each actor has a default form plus named **variants** — specializations that fold away for the machine but matter enormously for human capacity, training, and growth, since each is a different body of knowledge held at a different depth. Only the non-default variants are named:
 
-| Actor | Mode | Why the mode demands different preparation |
-|---|---|---|
-| **Builder** | *Producer* — generate to keep | Depth and craft in one domain; correctness; low tolerance for error |
-| | *Explorer* — generate to discard | Breadth across many solutions; pattern recognition; low attachment; speed over polish |
-| **Architect** | *Designer* — static structure | System-level depth; knows the whole artifact and its evolution |
-| | *Conductor* — runtime orchestration | Delegation skill; context transfer; composing the work of many delegates and people into one whole |
+| Actor         | Variant                                | How it differs — and why preparation differs                                                                                          |
+| ------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **Builder**   | *Explorer* — generates to *discard*    | Breadth across many solutions, pattern recognition, low attachment, speed over polish — versus the default Builder who generates to *keep* (depth, craft, correctness) |
+| **Architect** | *Conductor* — structures at *runtime*  | Orchestrates many delegates and people into one whole — versus the default Architect who structures the *artifact* at design time      |
 
-Producer and Explorer are nearly opposite cognitive profiles — the same *motive* (generate), incompatible *training*. That is why a single framework needs both resolutions: collapse to actors to design the system, expand to modes to develop the people. Modes live on the forward face; the backward (evaluative) face is a separate axis again — an actor can be deep as a Producer yet still turn that depth backward to review.
+Explorer and the default Builder are nearly opposite cognitive profiles — the same *motive* (generate), incompatible *training*. That is why a single framework needs both resolutions: collapse to actors to design the system, expand to variants to develop the people. Variants live on the forward face; the backward (evaluative) face is a separate axis again — an actor can be a deep Builder yet still turn that depth backward to review.
 
 ## Delegation surfaces
 
 Every actor extends itself through a **delegation surface** — the artifact by which it transmits intent across an availability gap: to a delegate now, to a teammate, or to its own future self.
 
-| Actor | Delegation surface | What it carries |
-|---|---|---|
-| **Framer** | **The brief** | The problem, the *why*, the definition of success |
-| **Builder** | **The contract + exemplars** | A behavioral spec for one angle, plus reference patterns to imitate |
-| **Architect** | **The shape** | Organizing principles, boundaries, conventions, and the constraints that protect them |
-| **Curator** | **The corpus** | Distilled, reusable knowledge every other delegate reads from |
+| Actor         | Delegation surface           | What it carries                                                                       |
+| ------------- | ---------------------------- | ------------------------------------------------------------------------------------- |
+| **Framer**    | **The brief**                | The problem, the *why*, the definition of success                                     |
+| **Builder**   | **The contract + exemplars** | A behavioral spec for one angle, plus reference patterns to imitate                   |
+| **Architect** | **The shape**                | Organizing principles, boundaries, conventions, and the constraints that protect them |
+| **Curator**   | **The corpus**               | Distilled, reusable knowledge every other delegate reads from                         |
 
 Each surface has a backward face too — its **bar**, the acceptance criteria the same expertise applies when judging. The bar is not a separate surface; it is the *criteria face* of every surface: the brief's definition of success, the shape's fitness rules, the contract's behavioral checks. Stated as instruction it guides production; stated as criteria it gates acceptance — two faces of one artifact.
 
@@ -148,10 +146,10 @@ Reading: one human (contributor) plays Framer + Explorer + Builder forward; anot
 ### Compressed: a solo developer and their delegates ship a feature
 
 - **Framer** — the developer fixes the feature's *why* and what success looks like, sometimes as a written brief, sometimes only in their head.
-- **Explorer** (Builder mode) — a delegate spikes three approaches in parallel; the developer, applying expertise *backward*, keeps one and kills two. (That pick is the Builder's own backward face — evaluation inside the Builder phase.)
+- **Explorer** (Builder variant) — a delegate spikes three approaches in parallel; the developer, applying expertise *backward*, keeps one and kills two. (That pick is the Builder's own backward face — evaluation inside the Builder phase.)
 - **Builder** (producer) — a delegate implements the chosen approach; the inner loop runs against tests.
 - *— boundary: the developer reads the diff —*
-- **The gate** — the same human, now turning their expertise backward on the delegate's output. Producer ≠ judge still holds, because the *delegate* produced and the *human* judges.
+- **The gate** — the same human, now turning their expertise backward on the delegate's output. `producer ≠ judge` still holds, because the *delegate* produced and the *human* judges.
 - **Architect** — the developer notices it should follow an existing convention and directs a refactor under green.
 - **Curator** — at the end, the developer encodes the new convention so the next feature starts warmer — or, more often, a Curator-delegate flags "you've done this three times" and the human approves the entry.
 
@@ -180,10 +178,30 @@ Get the actors and motives right and the rest is downstream. Get them wrong — 
 
 1. **Is Architect a distinct actor or Builder at system scope?** Architect survived the motive test only at cross-feature scale; at feature scale a Builder co-delivering a spec is already doing architecture. If scope alone separates them, the delivery set may be two, with Architect as Builder-zoomed-out.
 
-2. **How many modes, and for which actors?** Producer/Explorer and Designer/Conductor are confirmed. Framer and Curator presumably decompose too — but enumerating modes risks an open-ended taxonomy. What stops the mode list from sprawling? (Note: forward/backward *faces* are a separate axis from modes — both multiply the surface area.)
+2. **How many variants, and for which actors?** Explorer (of Builder) and Conductor (of Architect) are confirmed. Framer and Curator presumably take variants too — but enumerating them risks an open-ended taxonomy. What stops the variant list from sprawling? (Note: forward/backward *faces* are a separate axis from variants — both multiply the surface area.)
 
 3. **Does the delegation surface serve human-to-human as well as human-to-agent?** A brief hands intent to a teammate as readily as to an agent. If the surface is medium-agnostic, the framework describes *all* delegation, not just delegation to AI — which is either a strength (generality) or a sign the AI-specific part is thinner than claimed.
 
 4. **How broad is the abundance premise?** AI makes *common* generation cheap; *novel or hard* generation stays expensive, and there the old title-equals-contribution model partly survives. The framework's reach is exactly as wide as abundance actually is.
 
 5. **What is the formal shape of delegate fidelity?** It is named here as an orthogonal axis but not modeled. Is it a fifth concern, a property of every delegation surface, or the true home of the human-agent interface?
+
+## Glossary
+
+The framework's load-bearing terms, in dependency order — earlier terms ground later ones. Each word means exactly one thing; collisions are called out where they were tempting.
+
+| Term | Definition |
+| --- | --- |
+| **Actor** | A human role defined by an intrinsic **motive**: Framer, Builder, Architect, Curator. Holds accountability, which never delegates. |
+| **Delegate** | An agent acting on an actor's behalf. No motive of its own — *capacity*, not a *party*. Never accountable. |
+| **Motive** | The intrinsic want that defines an actor: intend (Framer), generate (Builder), structure (Architect), accumulate (Curator). |
+| **Face** | The *direction* an actor's expertise points — **forward** (produce) or **backward** (evaluate). Every actor has both. *Reserved: never used for anything else — switching motive is switching actor, not face.* |
+| **Variant** | A specialization of an actor's *forward face* that needs different preparation. Only non-default variants are named: **Explorer** (of Builder), **Conductor** (of Architect). |
+| **Angle** (domain) | The subject-matter expertise an actor works in — security, UX, performance, process, quality, AI/harness. An actor always acts *from an angle*. |
+| **Gate** | A boundary (pull request, release) where several actors' **backward faces** converge on one change. An activity, not an actor — "Gatekeeper" names this activity, never a role. |
+| **Decision rule** | The governance policy that combines backward-face judgments at the gate into one ship-or-no-ship call — from unanimous veto to a single decider. |
+| **producer ≠ judge** | The constraint that the instance which produced an artifact is not its independent judge. Applied per artifact across time. |
+| **Delegation surface** | The artifact an actor transmits intent through: **brief** (Framer), **contract + exemplars** (Builder), **shape** (Architect), **corpus** (Curator). Categories, not products — a team picks the medium (a governance or discipline file is one such medium). |
+| **Bar** | The *criteria face* of a delegation surface — the same artifact stated as acceptance criteria rather than instruction. Not a separate surface. |
+| **Tier** | The *dependency* split: **delivery** actors (Framer/Builder/Architect, act on the product) versus the **foundation** actor (Curator, acts on the capacity to deliver). Distinct from *recursion* — see open questions. |
+| **Delegate fidelity** | Verifying a delegate did what its actor intended — judging the worker, not the work. Orthogonal to the actors. |
