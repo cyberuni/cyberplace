@@ -59,6 +59,21 @@ The bar has two faces — instruction and criteria. So does the actor who holds 
 
 Yet Gatekeeper does **not** fold into Builder the way Explorer does. Explorer is the same *motive* (generate) at a different setting; Gatekeeper is a *different motive* (select) drawing on the same expertise. And the separation must hold even when one person could do both, because the integrity of the loop depends on **producer ≠ judge** — the instance that made a thing is not the sole authority that it is good. So: shared expertise, distinct actors, deliberately kept apart.
 
+## Positions are not roles
+
+The thesis, made concrete. A job title used to name a single contribution because production was scarce and focus was finite. With delegates supplying production, each position can now act across many roles — the title becomes a *default*, not a boundary.
+
+| Position | Default role (pre-AI) | Roles AI now opens |
+|---|---|---|
+| **PM** | Framer | Explorer (prototype directly with a delegate), Gatekeeper (own acceptance), Curator (encode product knowledge) |
+| **Designer** | Builder + Explorer (of UX) | Framer (own the *why*), Gatekeeper (the taste and quality bar), Curator (the design system as a curated corpus) |
+| **Engineer** | Builder | Architect, Gatekeeper (review), Conductor (orchestrate delegate fleets), Curator (write the conventions) |
+| **QA** | Gatekeeper | Architect (of acceptance criteria), Curator (golden sets and the regression corpus), Explorer (adversarial probing) |
+
+QA is the sharpest case: when delegates write the tests, QA stops being the one who *writes* checks and becomes the one who *owns the acceptance contract and curates the corpus it draws on* — Gatekeeper plus Curator.
+
+The table reads two ways. Across a row: how far one position can now stretch. Down the **Gatekeeper** column: why review is everyone's part-time role, not a department — every position turns its expertise backward at the gate.
+
 ## Two resolutions: actors for machines, modes for humans
 
 The five actors are the right unit **for the machine** — for generating use cases, scenarios, and human-agent interfaces. At that resolution, finer distinctions are noise.
