@@ -20,6 +20,14 @@ So the unit of a team is no longer the *title*. It is the **role** — the kind 
 
 This is the load-bearing distinction, and it adapts a known idea. **Agency theory** describes exactly this shape — "one party (the principal) delegates work to another (the agent), who performs that work on behalf of the principal" [agency] — and it is the backbone of how we reason about delegation. But the classic theory assumes the agent is *self-interested*: it has its own goals, withholds information, and may shirk — the "agency problem." **Our delegate is the opposite, and deliberately so (original):** it has no goals of its own, so the agency problem dissolves by construction. An agent is not a teammate in the way a person is. It is a faithful extension of a person. The whole framework is about how humans-in-roles extend themselves through delegates, and how those extended roles compose into building a product.
 
+```mermaid
+flowchart LR
+    A["Actor — human<br/>motive · accountability"] -->|authors| S["Delegation surface<br/>brief · contract · shape · corpus"]
+    S -->|configures| D["Delegate — agent<br/>capacity · no motive"]
+    D -->|returns work| A
+    A -.->|checks fidelity| D
+```
+
 ## The four actors
 
 Around abundant generation sit four roles, forming a control loop: someone decides what's worth making, someone makes candidates, someone keeps the whole coherent, someone makes the learning compound. The set is held to **MECE** — mutually exclusive (motives don't overlap), collectively exhaustive (nothing essential falls outside) [mece]. And each of them also *judges* — turns its expertise backward to evaluate — so there is no separate "judge" role; judging is a face every actor has, described below.
@@ -42,6 +50,14 @@ One scale runs through three of them and is worth stating up front, because it i
 | **products, over time**         | the corpus (template, skill, plugin)   | **Curator**   | *curation* — knowledge that outlives the product |
 
 The *mechanism* each uses to add value keeps the rungs apart: **design changes behavior directly** (write better logic); **architecture changes behavior through structure** (extract the shared path, and every feature inherits the consistency); **curation changes future capability through knowledge** (the next project starts warmer). An app crammed into a single file *works* — design is satisfied — yet is unmaintainable, because the behavior was bought directly, without the structural leverage that lets the rest of the system inherit the quality. That gap is the Architect's reason to exist.
+
+```mermaid
+flowchart TB
+    B["Builder — design<br/>generalize within a feature<br/>lives in: the feature"]
+    AR["Architect — architecture<br/>generalize across features<br/>lives in: the product"]
+    C["Curator — curation<br/>generalize across products<br/>lives in: the corpus · outlives the product"]
+    B -->|"scope of reuse widens"| AR -->|"scope of reuse widens"| C
+```
 
 ### Framer — intend
 
@@ -95,6 +111,23 @@ So there is **no standalone Gatekeeper actor.** "Gatekeeping" is what any actor'
 
 One constraint governs the faces: **`producer ≠ judge`** — an *echo* of the **separation-of-duties / four-eyes principle** [sod], not the strict thing. Strict four-eyes needs two different parties; here a single actor can serve both faces, flipping forward to backward on the same artifact in split seconds. The boundary is genuinely weaker — but it is real, and humans run it constantly. What the model *adds* is a **split of judgment across time** that beats the limit of real-time review. Criteria authored *ahead of time*, under no time pressure, can be thorough — but only *generally*, not specifically; these live in the **bar** and fire automatically through the delegate. *In the loop*, where attention is scarce and the clock runs, the human is freed from re-deriving the general checks and spends that scarce attention on the **specific and important** — which is where judgment quality is actually won. Switching forward-to-backward on the *same* artifact still *spends* your standing as an arm's-length reviewer, which is why, when a reviewer pushes a fix, someone else approves.
 
+*The control loop — forward production, backward faces converging at the gate, and the feedback edge:*
+
+```mermaid
+flowchart LR
+    F["Framer<br/>intend"] -->|brief| B["Builder<br/>generate"]
+    B -->|artifact| AR["Architect<br/>structure"]
+    AR -->|shape| B
+    F -.->|backward face| G{{"the gate"}}
+    B -.->|backward face| G
+    AR -.->|backward face| G
+    G -->|ship| OUT(["product"])
+    G -.->|"deferred work = new intent"| F
+    C["Curator<br/>foundation · corpus"] -.-> F
+    C -.-> B
+    C -.-> AR
+```
+
 ## The gate: a two-axis decision
 
 > **Feeds:** machine artifact (decision rules, interface contracts) primarily.
@@ -110,6 +143,17 @@ One constraint governs the faces: **`producer ≠ judge`** — an *echo* of the 
 | **block**   | **kill** — nothing fixes it | **request changes** (work is within-PR by necessity)  |
 
 Two corners earn names. `block + none` is the **Framer's kill surfacing at the gate** — *this should not exist* — the Framer's signature output, not a request to revise. `accept + deferred` is the **feedback edge**: merge now, spin off work that re-enters the loop later (see *How it composes*).
+
+```mermaid
+flowchart TB
+    G{{"backward faces converge"}} --> V{"verdict?"}
+    V -->|"block · nothing fixes it"| K["kill — Framer"]
+    V -->|"block · change"| RC["request changes<br/>within-PR"]
+    V -->|"accept · none"| M["clean merge"]
+    V -->|"accept · change"| MW{"timing?"}
+    MW -->|within-PR| M
+    MW -->|deferred| FB["to Framer:<br/>schedule"]
+```
 
 The first axis is governed by a **decision rule** — how the backward faces combine into one verdict, anywhere from an all-pass unanimous veto to a single senior decider (in practice, often a senior engineer weighting the Architect face, or a domain expert weighting the Framer face). The rule is *governance*, a policy choice, not an actor. The second axis is *generated output*, not a combination rule — so the two stay distinct.
 
@@ -208,6 +252,16 @@ This is single- versus double-loop learning [argyris]: the inner loop corrects *
 - **Inner loop** — `within-PR` correction (Builder under the bar). Single-loop.
 - **Product feedback edge** — `deferred` work on *this* product (the Architect→Framer handoff from the gate). New intent, same product.
 - **Outer loop** — the Curator distilling reusable knowledge for *any* product. Double-loop at its distinctive best; single-loop when merely codifying.
+
+```mermaid
+flowchart LR
+    B["Builder produces"] --> BAR{"bar fires"}
+    BAR -->|correct| B
+    BAR -->|"accept + deferred"| FR["Framer schedules<br/>this product"]
+    FR -.-> B
+    BAR -->|lands| CUR["Curator distills<br/>any product · outer loop"]
+    CUR -.->|"warmer start"| B
+```
 
 The middle loop is *not* the Curator's: deferred product work changes *this* product, while the Curator changes the *capacity to build any product*. The discriminator stays sharp.
 
