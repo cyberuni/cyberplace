@@ -1,5 +1,14 @@
 # Changes — The Actor–Delegate Model
 
+## 2026-06-19 — De-overload the Framer; fix gate outcomes; clean the loop section
+
+- **Framer is product intent, not general scheduling.** Deferred work re-enters as its *owning* actor's object (feature → Framer, refactor → Architect); sequencing it is a **decision rule** (product priority vs rework-cost), not a Framer call. Fixed the control-loop diagram (deferred → backlog, re-prioritized), the scheduling subsection, the three-loops bullet, the glossary "Scheduling decision," and the How-it-composes chain.
+- **`block + none` is not universally a Framer kill.** It is a kill *by whichever face* rejected the attempt: Framer kills the intent (abandon), Architect/Builder kill the approach/artifact (restart, goal stands). Fixed prose and the gate diagram.
+- **`within-PR` change is an iteration, not a terminal merge.** The gate's true terminal states are merge / merge+deferred / kill; any "change needed now" loops back through the inner loop to re-gate. Rewired the gate-branches diagram.
+- **Cleaned up "Curator and the loop":** led with the three distinct loops (cadence / object / owner), folded the single-/double-loop mapping in, dropped the confusing DevEx outer-loop digression, simplified the diagram.
+- **Conclusion changed materially?** No verdict change; corrects role attribution and diagram wiring.
+
+
 ## 2026-06-19 — Reframe recursion as overlapping sets (not levels)
 
 - **What changed:** Dropped the "axis / levels / elevator / stack" framing for product/process/toolchain. They are **overlapping sets** that intersect, union, and mutually influence — *not* a vertical hierarchy (process and toolchain interpenetrate; a discipline-as-a-hook is both). What survives: the framework is *self-applying* (recursion), and **product is the concrete, substantive outcome** the other two serve and are refined by. Codification recast from "elevator between levels" to "the Curator carrying knowledge across the seams between sets." Replaced the stacked-levels diagram with an overlap/mutual-influence diagram. Renamed the section to "Recursion: the framework turns on itself"; glossary "Level" → "Recursion"; fixed the Tier cross-reference and the Resolved/How-it-composes pointers.
