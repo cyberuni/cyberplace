@@ -122,7 +122,8 @@ flowchart LR
     B -.->|backward face| G
     AR -.->|backward face| G
     G -->|ship| OUT(["product"])
-    G -.->|"deferred work = new intent"| F
+    G -.->|"deferred work"| BL["backlog<br/>re-prioritized · decision rule"]
+    BL -.->|"re-enters as owning actor's work"| F
     C["Curator<br/>foundation · corpus"] -.-> F
     C -.-> B
     C -.-> AR
@@ -142,17 +143,17 @@ flowchart LR
 | **accept**  | clean merge                 | merge **+ work** (within-PR nit, or deferred follow-up) |
 | **block**   | **kill** — nothing fixes it | **request changes** (work is within-PR by necessity)  |
 
-Two corners earn names. `block + none` is the **Framer's kill surfacing at the gate** — *this should not exist* — the Framer's signature output, not a request to revise. `accept + deferred` is the **feedback edge**: merge now, spin off work that re-enters the loop later (see *How it composes*).
+Two corners earn names. `block + none` is a **kill** — no incremental fix saves this attempt — but *what* dies depends on the rejecting face: a **Framer** kill abandons the goal (*this should not exist*), while an **Architect** or **Builder** kill rejects the approach or the artifact (*not like this*) with the goal still standing. `accept + deferred` is the **feedback edge**: merge now, spin off work that re-enters the loop later (see *How it composes*).
 
 ```mermaid
 flowchart TB
     G{{"backward faces converge"}} --> V{"verdict?"}
-    V -->|"block · nothing fixes it"| K["kill — Framer"]
-    V -->|"block · change"| RC["request changes<br/>within-PR"]
-    V -->|"accept · none"| M["clean merge"]
-    V -->|"accept · change"| MW{"timing?"}
-    MW -->|within-PR| M
-    MW -->|deferred| FB["to Framer:<br/>schedule"]
+    V -->|"accept · no change"| M["clean merge"]
+    V -->|"accept · deferred change"| MD["merge now<br/>+ new work to backlog"]
+    V -->|"change needed now"| IT["iterate<br/>fix → bar → re-gate"]
+    V -->|"reject the attempt"| K["kill<br/>intent / approach / artifact"]
+    IT -.->|"re-gate"| G
+    MD -.->|"re-enters as owning actor's work"| G
 ```
 
 The first axis is governed by a **decision rule** — how the backward faces combine into one verdict, anywhere from an all-pass unanimous veto to a single senior decider (in practice, often a senior engineer weighting the Architect face, or a domain expert weighting the Framer face). The rule is *governance*, a policy choice, not an actor. The second axis is *generated output*, not a combination rule — so the two stay distinct.
@@ -161,7 +162,7 @@ One coupling, stated honestly: **`block` forces `within-PR`.** You cannot defer 
 
 ### The deferred branch is a scheduling decision over a dependency tree
 
-`accept + deferred` is richer than "file a ticket." It hands the **Framer** a scheduling decision, because *what's worth doing now versus later* is an intend decision — the same motive as the kill, on the time axis. The **Architect** detects the concern and estimates it (scope, complexity → rework cost); the Framer decides the order. So the deferred branch is a **backward-face → Framer handoff**.
+`accept + deferred` is richer than "file a ticket." It emits **new work that re-enters as its owning actor's object** — a deferred *feature* is a Framer concern (product intent), a deferred *refactor* an Architect concern (structure). **Sequencing it against everything else is a decision rule** — governance weighing the Framer's product priority against the Architect's structural urgency, not one actor's call. The **Architect** detects a structural concern and estimates it (scope, complexity → rework cost); the rule weighs that estimate against product priority to set the order.
 
 The decision runs over two trees that can diverge:
 
@@ -240,30 +241,23 @@ The Curator's surface is special: its output *is* the substrate every other dele
 
 ## Curator and the loop
 
-Agentic "loop engineering" has an inner and an outer loop, and the actors split across them.
+The model has **three distinct loops.** Keeping them separate is the point — they fire at different cadences, on different objects, owned by different actors:
 
-- **Inner loop** (within a task): generate → test → correct. Builder produces, the **bar** — an actor's backward face made executable — fires as the signal, Builder corrects, Architect reshapes under green. Fast, delivery tier. Mirrors the developer **inner loop**: rapid local iteration before integration [dev-loop]. Curator does not fire here.
-- **Outer loop** (across tasks): harvest the durable lessons, distill, prune, and encode them into the corpus, so the next inner loop starts warmer. This is the Curator's loop — and *not* the DevEx "outer loop" of CI/CD integration and deploy, which is delivery plumbing, not knowledge distillation. Only the inner-loop analogy carries over [dev-loop].
-
-This is single- versus double-loop learning [argyris]: the inner loop corrects *actions* under fixed assumptions (single-loop — "carry on its present policies… single-loop learning"); the outer loop can revise the *knowledge and assumptions* themselves (double-loop — "modification of an organization's underlying norms, policies and objectives") [argyris]. Curator owns the outer loop and spans both modes: routine **codification** — encoding what already works for reuse (a lint rule for a thrice-solved pattern) — is single-loop; **revision** — pruning a now-false convention, resolving a contradiction — is double-loop. Double-loop is the Curator's distinctive, highest-value mode, not its only one.
-
-**Three loops now sit in the model, and they are distinct:**
-
-- **Inner loop** — `within-PR` correction (Builder under the bar). Single-loop.
-- **Product feedback edge** — `deferred` work on *this* product (the Architect→Framer handoff from the gate). New intent, same product.
-- **Outer loop** — the Curator distilling reusable knowledge for *any* product. Double-loop at its distinctive best; single-loop when merely codifying.
+- **Inner loop** — *within a task.* Builder produces, the **bar** (a backward face made executable) fires, Builder corrects, Architect reshapes under green. Fast; every iteration — the developer inner loop [dev-loop]. This is **single-loop** learning [argyris]: correcting *actions* under fixed assumptions. The Curator does not fire here.
+- **Product feedback edge** — *across tasks, same product.* Work deferred at the gate re-enters as its owning actor's object (a refactor → Architect, a feature → Framer), sequenced by a decision rule. New work, same product.
+- **Outer loop** — *across products.* The Curator distills durable lessons into the corpus so the next inner loop starts warmer. This is **double-loop** learning [argyris]: revising the *assumptions* themselves.
 
 ```mermaid
 flowchart LR
     B["Builder produces"] --> BAR{"bar fires"}
-    BAR -->|correct| B
-    BAR -->|"accept + deferred"| FR["Framer schedules<br/>this product"]
-    FR -.-> B
-    BAR -->|lands| CUR["Curator distills<br/>any product · outer loop"]
+    BAR -->|"correct · inner loop"| B
+    BAR -->|"accept + deferred"| BL["backlog · this product<br/>re-prioritized"]
+    BL -.-> B
+    BAR -->|"durable lesson"| CUR["Curator distills → corpus<br/>outer loop · any product"]
     CUR -.->|"warmer start"| B
 ```
 
-The middle loop is *not* the Curator's: deferred product work changes *this* product, while the Curator changes the *capacity to build any product*. The discriminator stays sharp.
+The middle and outer loops are easy to confuse but distinct: deferred work changes *this* product; the Curator changes the *capacity to build any product*. And the Curator spans both learning modes — routine **codification** (encode what works — a lint rule for a thrice-solved pattern) is single-loop; **revision** (prune a now-false convention, resolve a contradiction) is double-loop, its distinctive mode.
 
 Firing Curator every iteration is **premature codification** — you encode transient noise and thrash the corpus before you know which lessons are durable. So the human Curator is episodic, triggered at boundaries: a pattern solved three times, the same correction repeated across loops, a contradiction or staleness that needs pruning, a milestone retro.
 
@@ -316,8 +310,8 @@ Actors (humans + motives)
         └─ generate Scenarios (how it plays out, who delegates what)
              └─ shape Human–agent interfaces (the surfaces + fidelity checks)
 
-   ▲ the loop closes: at the gate, backward faces emit new intent —
-   └────── deferred work → Framer (scheduling) → new use cases ──────┘
+   ▲ the loop closes: at the gate, evaluation emits new work —
+   └──── deferred work → backlog (re-prioritized) → next round ────┘
 ```
 
 Get the actors and motives right and the rest is downstream. Get them wrong — by treating agents as actors, or by organizing on a timeline instead of by motive — and the use cases overlap, the scenarios blur, and the interfaces inherit the confusion. The back-edge is what makes this a control loop and not a one-way pipeline: evaluation does not just gate, it *generates* the next round of intent. And this whole chain applies to each of product, process, and toolchain — overlapping sets, not the product alone (see *Recursion*).
@@ -420,7 +414,7 @@ The framework's load-bearing terms, in dependency order — earlier terms ground
 | **Decision rule** | The governance policy that combines backward-face judgments into the verdict — from unanimous veto to a single decider. |
 | **`producer ≠ judge`** | The constraint that the instance which produced an artifact is not its independent judge. An *echo* of separation of duties / four-eyes [sod] — not strict (one actor may serve both faces); the model's contribution is splitting judgment across time (thorough-but-general criteria ahead of time via the **bar**; focused human judgment in the loop). |
 | **Dependency order vs work order** | *Dependency order*: A needs B (the Architect's object). *Work order*: the sequence we actually build in. A **placeholder** (stub, workaround, or rougher MVP) lets work-order diverge from dependency-order, at the cost of **rework**. |
-| **Scheduling decision** | The Framer's call (informed by the Architect's estimate) on the deferred branch: *defer new work* (placeholder now, rework later) vs *defer current work* (build prerequisite first). Driven by rework-cost vs switch-cost. |
+| **Scheduling decision** | On the deferred branch: *defer new work* (placeholder now, rework later) vs *defer current work* (build prerequisite first). A **decision rule** — product priority vs rework-cost, informed by the Architect's estimate — not a single actor's call. |
 | **Delegation surface** | The artifact an actor transmits intent through: **brief** (Framer), **contract + exemplars** (Builder), **shape** (Architect), **corpus** (Curator). Categories, not products — a team picks the medium. |
 | **Bar** | The *criteria face* of a delegation surface — the same artifact stated as acceptance criteria rather than instruction. Not a separate surface. |
 | **Tier** | The *dependency* split among the four actors *within one build*: **delivery** actors (Framer/Builder/Architect, act on the object) versus the **foundation** actor (Curator, acts on the capacity to deliver). Distinct from the product/process/toolchain sets. |
