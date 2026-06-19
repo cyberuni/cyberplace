@@ -439,3 +439,18 @@ The framework's load-bearing terms, in dependency order — earlier terms ground
 | `[multi-agent]` | Orchestrator-worker pattern; parallel subagents. [Anthropic, *Building Effective Agents*](https://www.anthropic.com/research/building-effective-agents); [*Multi-agent research system*](https://www.anthropic.com/engineering/multi-agent-research-system). *Anthropic notes orchestration is weakest on tightly interdependent work — a real boundary on the Conductor's fan-out (needs a clean seam). The **orchestrator** is a delegate pattern, distinct from the **Conductor** actor.* |
 
 *Research workspace (evidence log, confidence, caveats): `.research/actor-delegate-model/`.*
+
+<!-- Citation link definitions: resolve the inline [key] shortcut references used throughout. -->
+
+[agency]: https://www.ebsco.com/research-starters/economics/agency-theory-organizational-economics "Agency theory (Eisenhardt 1989; Jensen & Meckling 1976)"
+[argyris]: https://infed.org/dir/welcome/chris-argyris-theories-of-action-double-loop-learning-and-organizational-learning/ "Argyris & Schön — single-/double-loop learning"
+[team-topologies]: https://itrevolution.com/articles/four-team-types/ "Team Topologies — the four team types"
+[conway]: https://en.wikipedia.org/wiki/Conway%27s_law "Conway's law"
+[screaming]: https://blog.cleancoder.com/uncle-bob/2011/09/30/Screaming-Architecture.html "Robert C. Martin — Screaming Architecture"
+[mece]: https://en.wikipedia.org/wiki/MECE_principle "MECE principle (Minto)"
+[sod]: https://www.flagsmith.com/blog/what-is-the-four-eyes-principle "Separation of duties / four-eyes principle"
+[walking-skeleton]: https://www.oreilly.com/library/view/growing-object-oriented-software/9780321574442/ch10.html "Freeman & Pryce — the Walking Skeleton (GOOS, ch. 10)"
+[test-double]: https://martinfowler.com/bliki/TestDouble.html "Martin Fowler — TestDouble"
+[dev-loop]: https://developers.redhat.com/articles/2024/09/05/platform-engineers-role-devsecops-inner-and-outer-loops "Developer inner/outer loop"
+[ai-roles]: https://www.gartner.com/en/newsroom/press-releases/2024-10-03-gartner-says-generative-ai-will-require-80-percent-of-engineering-workforce-to-upskill-through-2027 "Gartner — generative AI and engineering roles (2024-10-03)"
+[multi-agent]: https://www.anthropic.com/research/building-effective-agents "Anthropic — Building Effective Agents"
