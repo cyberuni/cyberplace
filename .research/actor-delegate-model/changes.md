@@ -1,5 +1,12 @@
 # Changes — The Actor–Delegate Model
 
+## 2026-06-19 — The recursion axis (levels); diagrams
+
+- **What changed:** Added "The recursion axis" — the four actors are invariant; only the *object* changes, giving three canonical **levels** (product / process / toolchain). Resolved the past-Architect breadth (codebase + process + harness = Architect at three levels). Named the unifying pattern: *the foundation supplies the surface*, holding both **within** a level (Curator → other actors) and **across** levels (toolchain/process → product) — so Curator-foundation, codification, agent configuration, and recursion are one pattern at two scales, with **codification as the elevator** and **Curator as the bridge**. Disambiguated *level* (recursion) from *tier* (delivery vs foundation). Began a Mermaid diagram layer (recursion stack first; control loop, gate, ladder, loops, actor/delegate backfilled).
+- **Why:** A concrete picture that makes the framework one object rather than a set of separate insights; diagrams to illustrate.
+- **Conclusion changed materially?** No new verdict; this is the synthesis layer.
+
+
 ## 2026-06-19 — Membership gates, codification law, Conductor demoted to "forming"
 
 - **What changed:** Added three **membership gates** that bound the taxonomy (distinct motive · capacity differentiation · persistence) — this answers the former open question on variant sprawl. Added the **codification law**: a role is worth naming only where capacity is substantial AND not-yet-codifiable; the codifiable slice crosses the actor/delegate line and becomes **agent configuration** (a delegation surface materialized for an AI), itself a toolchain-tier product built by a Builder. Demoted **Conductor** from confirmed variant to **forming** (its core is already a delegate — the orchestrator-worker pattern; its residual decomposes into Framer + Architect; it strengthens at fleet scale — air-traffic-control threshold). Retightened the scheduling and scenario text to "the human directs an orchestrator-delegate" (human conducts, machine orchestrates). Added glossary rows: Membership gates, Codifiability/actor–delegate line, Agent configuration.
