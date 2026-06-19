@@ -320,52 +320,51 @@ Actors (humans + motives)
    └────── deferred work → Framer (scheduling) → new use cases ──────┘
 ```
 
-Get the actors and motives right and the rest is downstream. Get them wrong — by treating agents as actors, or by organizing on a timeline instead of by motive — and the use cases overlap, the scenarios blur, and the interfaces inherit the confusion. The back-edge is what makes this a control loop and not a one-way pipeline: evaluation does not just gate, it *generates* the next round of intent. And this whole chain runs at every **level** — product, process, toolchain — not the product alone (see *The recursion axis*).
+Get the actors and motives right and the rest is downstream. Get them wrong — by treating agents as actors, or by organizing on a timeline instead of by motive — and the use cases overlap, the scenarios blur, and the interfaces inherit the confusion. The back-edge is what makes this a control loop and not a one-way pipeline: evaluation does not just gate, it *generates* the next round of intent. And this whole chain applies to each of product, process, and toolchain — overlapping sets, not the product alone (see *Recursion*).
 
-## The recursion axis: one framework, every level
+## Recursion: the framework turns on itself
 
-Everything above describes building *a product*. But the four actors, the two faces, the delegation surfaces, and the gate are **invariant** — run the same machine on a different **object** and you get a different **level** of the same framework. Three are canonical:
+Everything above describes building *a product*. But the four actors, the two faces, the delegation surfaces, and the gate are **invariant** — point the same machine at a different *object* and it still runs. And the framework is **self-applying**: it builds not only the product but the **process** and the **toolchain** that build the product. Three objects matter:
 
-| Level         | Object                          | Framer decides   | Builder makes              | Architect structures   | Curator distills            |
-| ------------- | ------------------------------- | ---------------- | -------------------------- | ---------------------- | --------------------------- |
-| **Product**   | the product (user value)        | which product    | a feature                  | the codebase           | product & domain knowledge  |
+| Object        | What it is                        | Framer decides   | Builder makes              | Architect structures   | Curator distills            |
+| ------------- | --------------------------------- | ---------------- | -------------------------- | ---------------------- | --------------------------- |
+| **Product**   | the concrete, substantive outcome | which product    | a feature                  | the codebase           | product & domain knowledge  |
 | **Process**   | the way of working              | which practices  | a workflow or runbook      | how the practices fit  | process lessons             |
 | **Toolchain** | tools & agent configuration     | which tooling    | a skill, plugin, or harness | the toolchain          | tooling patterns            |
 
-The loop in each row is identical; only its object differs. So a "senior" anyone is not a *bigger* role — it is the same role operated across more levels.
+The loop is identical in each; only its object differs. So a "senior" anyone is not a *bigger* role — it is the same role worked across more of them.
+
+**They are overlapping sets, not stacked levels.** Process and toolchain interpenetrate — a commit discipline encoded as a hook is *process and toolchain at once*; the toolchain is often *how* the process is enacted. A domain pattern codified as a skill is *product knowledge and toolchain*. The three intersect, union, and influence one another, and the same artifact frequently lives in more than one.
 
 ```mermaid
 flowchart TB
-    subgraph PROD["PRODUCT level — object: the product"]
-      P["Framer · Builder · Architect · Curator"]
-    end
-    subgraph PROC["PROCESS level — object: the way of working"]
-      PR["Framer · Builder · Architect · Curator"]
-    end
-    subgraph TOOL["TOOLCHAIN level — object: tools & agent configuration"]
-      T["Framer · Builder · Architect · Curator"]
-    end
-    PROD -->|"distill & codify experience — down"| PROC
-    PROD -->|"distill & codify experience — down"| TOOL
-    TOOL -->|"capability wielded as delegates — up"| PROD
-    PROC -->|"governance constrains the gate — up"| PROD
+    PROC["PROCESS<br/>the way of working"]
+    TOOL["TOOLCHAIN<br/>tools & agent configuration"]
+    PROD["PRODUCT<br/>the concrete, substantive outcome"]
+    PROC <-->|"overlap & co-evolve"| TOOL
+    PROD -->|"experience distilled · Curator"| PROC
+    PROD -->|"experience distilled · Curator"| TOOL
+    PROC -->|"capability supplied"| PROD
+    TOOL -->|"capability supplied"| PROD
 ```
 
-Three things fall out:
+The one asymmetry: **product is the concrete, substantive outcome — the thing that ships.** Process and toolchain are *means* that serve it and are refined by it. Influence runs every way at once: building the product teaches process and tooling (the Curator distills), while better process and tooling make the next product cheaper.
 
-**Your past Architect definition resolves.** "Own codebase health, *and* the process governing AI contributions, *and* the AI workflow/harness" was never one outsized role — it is the **Architect motive at the product, process, and toolchain levels.** One motive, three objects.
+Three things this clears up:
 
-**Codification is the elevator between levels.** Experience rides **down**: a product-level Curator distills a recurring lesson into a process convention or a toolchain artifact — *agent configuration*. Capability rides **up**: toolchain output is *wielded* as delegates; process output *constrains* the gate as governance. The codification law (above) is just this down-elevator, seen for one class of delegate.
+**Your past Architect definition resolves.** "Own codebase health, *and* the process governing AI contributions, *and* the AI workflow/harness" was never one outsized role — it is the **Architect motive worked across all three sets.** One motive, three objects.
 
-**Curator is the bridge — and this unifies the model.** "Accumulate" *is* the act of moving product experience into a reusable process or toolchain asset. So four things we built separately — the **Curator foundation tier**, the **codification law**, **agent configuration**, and **recursion** — are one pattern at two scales: *the foundation supplies the surface.* It holds **within** a level (Curator → the other three actors) and **across** levels (toolchain & process → product). That is why Curator kept reading as "architecture at another tier": it lives on the seam between levels.
+**Codification is how knowledge crosses between the sets** — not an elevator up a ladder. The Curator distills a product lesson into a process convention or a toolchain artifact — *agent configuration* — which lands in process, toolchain, or their overlap, and is *wielded* back in product-building. The codification law (above) is one instance of this crossing.
 
-> **Two words, two axes — do not merge them.** A **level** is the recursion (product / process / toolchain); a **tier** is the delivery-vs-foundation split *within* a level (Framer/Builder/Architect over Curator). Curator is the foundation tier of every level *and* the actor that bridges levels — which is precisely why it sits at both seams.
+**Curator carries knowledge across boundaries — and that unifies the model.** "Accumulate" *is* lifting product experience into a reusable process or toolchain asset. So the **Curator foundation tier**, the **codification law**, **agent configuration**, and this **self-application** are one pattern: knowledge made reusable and carried across a seam — the seam between *actors* (Curator → the other three, within one build) and the seams between *sets* (product ↔ process ↔ toolchain). Same motive, two kinds of seam.
+
+> **Term guard.** *Tier* is the delivery-vs-foundation split among the four actors, *within* one build. Product / process / toolchain are a different thing — three **overlapping sets** the framework is applied to, not a stack and not a tier.
 
 ## Resolved
 
 - **Is Architect a distinct actor or Builder at system scope?** Distinct — and the original framing hid the real separator. *Scope* was a red herring: a Builder zoomed out still produces a **part**, just a bigger one. The Architect's **object** is different — *relations between parts* (boundaries, conventions, the composition law), not a slice of the product [conway]. That holds at every scope, so "Builder at system scope" is a category error. Operationally the Architect also differs on **deliverability** (realized only *through* others' work — a convention exists only when Builders follow it), **feedback latency** (slow and global — felt at the next change, not in a passing test), and **cadence** (per structural decision, not per contribution). Feature-scale fuzziness — "a Builder co-delivering a spec is already doing architecture" — is one *person* flipping roles, not the actors merging: switching motive is switching actor.
 
-- **Is the Architect's breadth (codebase + process + harness) one big role?** No — it is the Architect motive at three **levels** (product, process, toolchain); see *The recursion axis*. *Level* (recursion) and *tier* (delivery vs foundation actor) are distinct axes that meet at the **Curator** — the foundation tier of every level and the actor that bridges levels.
+- **Is the Architect's breadth (codebase + process + harness) one big role?** No — it is the Architect motive worked across three **overlapping sets** (product, process, toolchain); see *Recursion*. That set split and *tier* (delivery vs foundation actor, within one build) are different things; they meet at the **Curator** — the foundation tier within a build and the actor that carries knowledge between the sets.
 
 - **Is Curator a peer actor or a layer?** Both — the question was a false choice. *Actor* asks whether a distinct motive generates distinct use cases (it does); *layer* asks where the output sits in the dependency graph (foundational). Curator is the team's **infrastructure actor**: a full actor whose product is a layer, like a platform team [team-topologies]. The model is two-tiered — three delivery actors over one foundation actor — not actors plus a non-actor substrate.
 
@@ -424,8 +423,8 @@ The framework's load-bearing terms, in dependency order — earlier terms ground
 | **Scheduling decision** | The Framer's call (informed by the Architect's estimate) on the deferred branch: *defer new work* (placeholder now, rework later) vs *defer current work* (build prerequisite first). Driven by rework-cost vs switch-cost. |
 | **Delegation surface** | The artifact an actor transmits intent through: **brief** (Framer), **contract + exemplars** (Builder), **shape** (Architect), **corpus** (Curator). Categories, not products — a team picks the medium. |
 | **Bar** | The *criteria face* of a delegation surface — the same artifact stated as acceptance criteria rather than instruction. Not a separate surface. |
-| **Tier** | The *dependency* split *within a level*: **delivery** actors (Framer/Builder/Architect, act on the object) versus the **foundation** actor (Curator, acts on the capacity to deliver). Distinct from *level*. |
-| **Level** (recursion) | The framework run on a different *object*: **product** / **process** / **toolchain**. The four actors are invariant across levels; only the object changes. Codification is the elevator between levels; Curator bridges them. Distinct from *tier*. |
+| **Tier** | The *dependency* split among the four actors *within one build*: **delivery** actors (Framer/Builder/Architect, act on the object) versus the **foundation** actor (Curator, acts on the capacity to deliver). Distinct from the product/process/toolchain sets. |
+| **Recursion** | The framework is self-applying: the same four actors build not just the **product** but the **process** and **toolchain** that build it. These three are *overlapping sets* — they intersect and mutually influence — not stacked levels, with product the concrete outcome the others serve. |
 | **Delegate fidelity** | Verifying a delegate did what its actor intended — judging the worker, not the work. Orthogonal to the actors. |
 
 ## References
