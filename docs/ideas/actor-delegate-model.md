@@ -2,11 +2,13 @@
 
 A general framework for orchestrating human–agent teams that build a product — any product — seen fresh from the change AI introduces.
 
+> **What this document is.** A research-centric **single source of truth**. It is neither of the two artifacts it exists to generate — it *feeds* both: a **machine artifact** (agent configuration: actors, motives, decision rules, interfaces) and a **human artifact** (an essay: variants, scenarios, narrative). Claims that lean on established theory carry inline citation keys like `[conway]`, resolved in **References**. Two claims are the framework's *own* and are marked **(original)** where they appear. The `## Downstream artifacts` map near the end says which parts feed which artifact.
+
 ## Premise
 
 For as long as products have been built by teams, a *position* described a *contribution*: "Engineer" meant the person who produced the code, "Designer" the one who produced the design, "QA" the one who produced the checks. Position equaled contribution because **production was scarce**, and a human had the focus and capacity to be good at producing exactly one kind of thing.
 
-AI breaks that equation. When generation becomes abundant, producing the artifact stops being the scarce, defining act — and the limit that confined a person to a single contribution dissolves. A human in any position can now span several kinds of contribution, because delegates extend their reach past their own focus and capability.
+AI breaks that equation. When generation becomes abundant, producing the artifact stops being the scarce, defining act — and the limit that confined a person to a single contribution dissolves. The shift is observable already: as AI automates portions of coding and testing, the work moves toward collaborating, translating intent, and shaping how systems are built, and analysts expect it to *spawn new roles* rather than simply delete old ones [ai-roles]. A human in any position can now span several kinds of contribution, because delegates extend their reach past their own focus and capability.
 
 So the unit of a team is no longer the *title*. It is the **role** — the kind of contribution a person makes right now — and the **delegate** they direct to make it on their behalf.
 
@@ -16,11 +18,11 @@ So the unit of a team is no longer the *title*. It is the **role** — the kind 
 
 **Delegates are agents that act on an actor's behalf.** A delegate has no intrinsic motive. It is *given* one — through artifacts the actor authors — and it executes that intent, filling the gap when the human is unavailable. Given good artifacts, a delegate often works faster and more thoroughly than the actor would alone. But it is never accountable; it is *capacity*, not a *party*.
 
-This is the load-bearing distinction. An agent is not a teammate in the way a person is. It is a faithful extension of a person. The whole framework is about how humans-in-roles extend themselves through delegates, and how those extended roles compose into building a product.
+This is the load-bearing distinction, and it adapts a known idea. **Agency theory** describes exactly this shape — "one party (the principal) delegates work to another (the agent), who performs that work on behalf of the principal" [agency] — and it is the backbone of how we reason about delegation. But the classic theory assumes the agent is *self-interested*: it has its own goals, withholds information, and may shirk — the "agency problem." **Our delegate is the opposite, and deliberately so (original):** it has no goals of its own, so the agency problem dissolves by construction. An agent is not a teammate in the way a person is. It is a faithful extension of a person. The whole framework is about how humans-in-roles extend themselves through delegates, and how those extended roles compose into building a product.
 
 ## The four actors
 
-Around abundant generation sit four roles, forming a control loop: someone decides what's worth making, someone makes candidates, someone keeps the whole coherent, someone makes the learning compound. And each of them also *judges* — turns its expertise backward to evaluate — so there is no separate "judge" role; judging is a face every actor has, described below.
+Around abundant generation sit four roles, forming a control loop: someone decides what's worth making, someone makes candidates, someone keeps the whole coherent, someone makes the learning compound. The set is held to **MECE** — mutually exclusive (motives don't overlap), collectively exhaustive (nothing essential falls outside) [mece]. And each of them also *judges* — turns its expertise backward to evaluate — so there is no separate "judge" role; judging is a face every actor has, described below.
 
 | Actor         | Motive                                                            | What they own                                                                                                            |
 | ------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
@@ -31,7 +33,7 @@ Around abundant generation sit four roles, forming a control loop: someone decid
 
 The motive is what makes each a real actor: each motive generates use cases the others don't. The Framer's signature output is a *kill decision*; the Builder's is a *working artifact*; the Curator's is *reuse*. Distinct motives, distinct use cases, distinct interfaces.
 
-Architect's motive is deliberately constructive, not just defensive. An architect does more than forbid — they decide that structure should *shout the domain*, choose boundaries that make intent obvious, and shape the system so it survives change. Constraints are the half that protects those decisions; the organizing act is the half that creates them.
+**What separates Architect from Builder is *object*, not scope.** A Builder — at any zoom level — produces a *part*; a whole subsystem is still a bigger part. The Architect's output is the *relations between parts*: boundaries, conventions, the composition law over everything the Builders make. That is why "Builder at system scope" is a category error (see *Resolved*) — scope was never the separator. **Conway's Law** is the empirical backdrop: a system's structure is constrained to mirror the communication structure that produced it [conway], so owning the relations is a distinct, system-shaping job rather than a large instance of building a part. And the Architect's motive is constructive, not just defensive. An architect does more than forbid — they decide that structure should *scream the domain* [screaming], choose boundaries that make intent obvious, and shape the system so it survives change. Constraints are the half that protects those decisions; the organizing act is the half that creates them.
 
 ### Curator is the foundation tier — and still an actor
 
@@ -43,7 +45,7 @@ It is a separate actor, because there is work no individual actor does for their
 - **Pruning** — deciding what is stale or contradictory and removing it. Each actor is biased to *keep* their own surface, so subtraction needs a separate owner.
 - **Cross-instance distillation** — turning fifty concrete contracts into one reusable pattern. Producing one and generalizing across many are different acts.
 
-Distinct motive, Curator-only use cases — it passes the actor test. The reason it *feels* like a layer is that its output is the substrate every other actor's delegate reads from. But that is precisely the position of a **platform or infrastructure team**: a role whose *product* is a layer. Nobody says platform engineering "isn't a role, it's a layer." Curator is the team's **infrastructure actor**.
+Distinct motive, Curator-only use cases — it passes the actor test. The reason it *feels* like a layer is that its output is the substrate every other actor's delegate reads from. But that is precisely the position of a **platform or infrastructure team**: a role whose *product* is a layer, "made available via self-service capabilities… easy for the [other] teams to consume" [team-topologies]. Nobody says platform engineering "isn't a role, it's a layer." Curator is the team's **infrastructure actor**.
 
 So the model has two tiers:
 
@@ -58,11 +60,49 @@ The same expertise points two ways. Applied **forward**, it produces — a Build
 
 So there is **no standalone Gatekeeper actor.** "Gatekeeping" is what any actor's expertise does when turned backward; a thing with no domain of its own is a direction, not a role. The word survives as the name of an *activity*, not a party.
 
-**The gate** is the boundary — a pull request, a release — where those backward faces converge on one change: correctness (Builder, backward), fit-to-structure (Architect, backward), and worth-shipping (Framer, backward) are judged together. The single ship-or-no-ship call that comes out is a **decision rule** over those faces — anywhere from an all-pass unanimous veto to a single senior decider (in practice, often a senior engineer weighting the Architect face, or a domain expert weighting the Framer face). The rule is *governance* — a policy choice — not an actor.
+One constraint governs the faces: **`producer ≠ judge`**, the **separation-of-duties / four-eyes principle** [sod] applied per artifact across time. The instance that produced a change is not its independent judge — "the developer can't approve their own change" [sod]. Switching from forward to backward on the *same* artifact is free in principle but *spends* your standing as its arm's-length reviewer — which is why, when a reviewer pushes a fix, someone else approves.
 
-One constraint governs the faces: **producer ≠ judge**, applied per artifact across time. The instance that produced a change is not its independent judge. Switching from forward to backward on the *same* artifact is free in principle but *spends* your standing as its arm's-length reviewer — which is why, when a reviewer pushes a fix, someone else approves.
+## The gate: a two-axis decision
+
+> **Feeds:** machine artifact (decision rules, interface contracts) primarily.
+
+**The gate** is the boundary — a pull request, a release — where backward faces converge on one change: correctness (Builder, backward), fit-to-structure (Architect, backward), and worth-shipping (Framer, backward) are judged together. What comes out is **not a single bit.** It is two decisions on two axes:
+
+- **Verdict** — does this change pass *now*? `accept` / `block`.
+- **Change request** — does the gate emit new work? `none` / `yes`, and if yes, with a **timing**: `within-PR` or `deferred`.
+
+|             | no change request           | change request                                        |
+| ----------- | --------------------------- | ----------------------------------------------------- |
+| **accept**  | clean merge                 | merge **+ work** (within-PR nit, or deferred follow-up) |
+| **block**   | **kill** — nothing fixes it | **request changes** (work is within-PR by necessity)  |
+
+Two corners earn names. `block + none` is the **Framer's kill surfacing at the gate** — *this should not exist* — the Framer's signature output, not a request to revise. `accept + deferred` is the **feedback edge**: merge now, spin off work that re-enters the loop later (see *How it composes*).
+
+The first axis is governed by a **decision rule** — how the backward faces combine into one verdict, anywhere from an all-pass unanimous veto to a single senior decider (in practice, often a senior engineer weighting the Architect face, or a domain expert weighting the Framer face). The rule is *governance*, a policy choice, not an actor. The second axis is *generated output*, not a combination rule — so the two stay distinct.
+
+One coupling, stated honestly: **`block` forces `within-PR`.** You cannot defer the thing that blocks — deferring it *means* it stopped blocking. So timing has freedom only under `accept`; a `block + deferred` cell would be dead. Timing is therefore a flavor of the change-request axis, not a third independent axis.
+
+### The deferred branch is a scheduling decision over a dependency tree
+
+`accept + deferred` is richer than "file a ticket." It hands the **Framer** a scheduling decision, because *what's worth doing now versus later* is an intend decision — the same motive as the kill, on the time axis. The **Architect** detects the concern and estimates it (scope, complexity → rework cost); the Framer decides the order. So the deferred branch is a **backward-face → Framer handoff**.
+
+The decision runs over two trees that can diverge:
+
+- **Dependency order** — A *needs* B. This is the Architect's object: relations between parts.
+- **Work order** — the sequence we actually build in.
+
+A **stub** is what lets work-order diverge from dependency-order: you build A before B by standing in a fake B [test-double], and pay **rework** when the real B lands. (Same instinct as a *walking skeleton* — a thin end-to-end slice stood up before its parts are real, to get feedback early [walking-skeleton].) That gives the two flavors of defer **(original — the trade-off is the framework's own inference, not a sourced result):**
+
+- **Defer the new work** — workaround/stub now, build the dependency later, accept the rework.
+- **Defer the current work** — stop, build the prerequisite first, no rework, at the cost of interrupting the current thread.
+
+The determining factor is a cost comparison: **rework cost** (stub now, redo later) versus **switch/blocking cost** (stop current, build prerequisite first). Scope and complexity drive both sides — a large, high-blast-radius concern makes a rushed inline fix dangerous *and* makes rework expensive, which is why big architectural debt is deferred to a deliberate effort rather than either ignored or forced in-line.
+
+**Capacity used to decide this — and abundance is exactly what changes it.** Pre-AI, "build the prerequisite first" meant *stop everything*, because no hands were spare; so teams defaulted to workaround-now and accumulated debt. With delegates, the **Conductor** (the runtime Architect variant) **fans the dependency out to a delegate** while the current thread keeps moving — the orchestrator-worker pattern, where a lead "dynamically breaks down tasks, delegates them to worker [agents]… and synthesizes their results" [multi-agent]. "Build the dependency first" stops meaning "stop everything" and becomes "parallelize." This is the Conductor's signature move, and a direct instance of the abundance premise: abundance does not remove the dependency tree; it lets you walk it without serializing. (Caveat worth keeping: orchestration pays off best on parallelizable strands and less on *tightly interdependent* work [multi-agent].)
 
 ## Positions are not roles
+
+> **Feeds:** human artifact (essay) primarily.
 
 The thesis, made concrete. A job title used to name a single contribution because production was scarce and focus was finite. With delegates supplying production, each position can now act across many roles — the title becomes a *default*, not a boundary. ("Gatekeeper" below names the evaluative activity — a backward face — not a separate actor.)
 
@@ -86,7 +126,7 @@ But humans need a finer resolution, because **roles that share a motive can stil
 | Actor         | Variant                                | How it differs — and why preparation differs                                                                                          |
 | ------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | **Builder**   | *Explorer* — generates to *discard*    | Breadth across many solutions, pattern recognition, low attachment, speed over polish — versus the default Builder who generates to *keep* (depth, craft, correctness) |
-| **Architect** | *Conductor* — structures at *runtime*  | Orchestrates many delegates and people into one whole — versus the default Architect who structures the *artifact* at design time      |
+| **Architect** | *Conductor* — structures at *runtime*  | Orchestrates many delegates and people into one whole, fanning work out in parallel [multi-agent] — versus the default Architect who structures the *artifact* at design time |
 
 Explorer and the default Builder are nearly opposite cognitive profiles — the same *motive* (generate), incompatible *training*. That is why a single framework needs both resolutions: collapse to actors to design the system, expand to variants to develop the people. Variants live on the forward face; the backward (evaluative) face is a separate axis again — an actor can be a deep Builder yet still turn that depth backward to review.
 
@@ -111,10 +151,18 @@ The Curator's surface is special: its output *is* the substrate every other dele
 
 Agentic "loop engineering" has an inner and an outer loop, and the actors split across them.
 
-- **Inner loop** (within a task): generate → test → correct. Builder produces, the **bar** — an actor's backward face made executable — fires as the signal, Builder corrects, Architect reshapes under green. Fast, delivery tier. Curator does not fire here.
-- **Outer loop** (across tasks): harvest the durable lessons, distill, prune, and encode them into the corpus, so the next inner loop starts warmer. This is the Curator's loop.
+- **Inner loop** (within a task): generate → test → correct. Builder produces, the **bar** — an actor's backward face made executable — fires as the signal, Builder corrects, Architect reshapes under green. Fast, delivery tier. Mirrors the developer **inner loop**: rapid local iteration before integration [dev-loop]. Curator does not fire here.
+- **Outer loop** (across tasks): harvest the durable lessons, distill, prune, and encode them into the corpus, so the next inner loop starts warmer. This is the Curator's loop, and it parallels the delivery **outer loop** — integrating contributions into the larger system [dev-loop].
 
-This is single- versus double-loop learning (Argyris & Schön): the inner loop corrects *actions* under fixed assumptions; the outer loop revises the *knowledge and assumptions* themselves. Curator owns double-loop learning.
+This is single- versus double-loop learning [argyris]: the inner loop corrects *actions* under fixed assumptions (single-loop — "carry on its present policies… single-loop learning"); the outer loop revises the *knowledge and assumptions* themselves (double-loop — "modification of an organization's underlying norms, policies and objectives") [argyris]. Curator owns double-loop learning.
+
+**Three loops now sit in the model, and they are distinct:**
+
+- **Inner loop** — `within-PR` correction (Builder under the bar). Single-loop.
+- **Product feedback edge** — `deferred` work on *this* product (the Architect→Framer handoff from the gate). New intent, same product.
+- **Outer loop** — the Curator distilling reusable knowledge for *any* product. Double-loop.
+
+The middle loop is *not* the Curator's: deferred product work changes *this* product, while the Curator changes the *capacity to build any product*. The discriminator stays sharp.
 
 Firing Curator every iteration is **premature codification** — you encode transient noise and thrash the corpus before you know which lessons are durable. So the human Curator is episodic, triggered at boundaries: a pattern solved three times, the same correction repeated across loops, a contradiction or staleness that needs pruning, a milestone retro.
 
@@ -130,6 +178,8 @@ Fidelity is distinct from evaluation. A backward face judges *the product*; fide
 
 ## Scenarios: how the actors actually show up
 
+> **Feeds:** human artifact (essay) primarily.
+
 Actor involvement has a topology. Who plays which actor, and when, runs along an axis from **fully decoupled** — roles spread across people, gated by asynchronous boundaries — to **fully compressed** — one human spans every role while delegates supply the production. Real work sits between.
 
 ### Decoupled: a bug fix in an open-source project
@@ -138,7 +188,7 @@ Actor involvement has a topology. Who plays which actor, and when, runs along an
 - **Explorer** (Builder, divergent) — the contributor reproduces it, reads unfamiliar code, tries a couple of approaches, discards the dead ends.
 - **Builder** (producer) — writes the fix and a regression test; the test is the contract, co-delivered.
 - *— boundary: the pull request —*
-- **The gate** — the maintainer enters *only now*, turning expertise backward against the change: correctness (Builder face) against the bar, fit-to-structure (Architect face), and worth-merging (Framer face). Note the asymmetry — the contributor produced for days with no evaluation present; the gate is async and late.
+- **The gate** — the maintainer enters *only now*, turning expertise backward against the change: correctness (Builder face) against the bar, fit-to-structure (Architect face), and worth-merging (Framer face). The two-axis verdict applies: accept-or-block, with or without change requests — and a recurring-class concern may be `accept + deferred`, filed as a follow-up. Note the asymmetry — the contributor produced for days with no evaluation present; the gate is async and late.
 - **Curator** — if the bug is one of a recurring class, the maintainer encodes a lint rule, a test pattern, or a CONTRIBUTING note so the next contributor avoids it. Frequently deferred or skipped — infrastructure neglect in the wild.
 
 Reading: one human (contributor) plays Framer + Explorer + Builder forward; another (maintainer) judges at the gate — the Builder, Architect, and Framer faces turned backward — and curates. Roles cluster by *position in the contribution flow*, not by job. And the same maintainer who judges here is a Builder on their own commits — the verb, not the person.
@@ -150,41 +200,62 @@ Reading: one human (contributor) plays Framer + Explorer + Builder forward; anot
 - **Builder** (producer) — a delegate implements the chosen approach; the inner loop runs against tests.
 - *— boundary: the developer reads the diff —*
 - **The gate** — the same human, now turning their expertise backward on the delegate's output. `producer ≠ judge` still holds, because the *delegate* produced and the *human* judges.
-- **Architect** — the developer notices it should follow an existing convention and directs a refactor under green.
+- **Architect / Conductor** — the developer notices it should follow an existing convention and directs a refactor under green; if the convention requires a not-yet-built helper, the Conductor fans that dependency out to a second delegate rather than stalling the feature (the scheduling decision in miniature).
 - **Curator** — at the end, the developer encodes the new convention so the next feature starts warmer — or, more often, a Curator-delegate flags "you've done this three times" and the human approves the entry.
 
 Reading: one human spans all four actors, forward and backward, in an afternoon — impossible before AI, when production consumed all their focus. Delegates supply the production capacity, freeing the human to move through the roles while holding motive and accountability throughout. This is the thesis in miniature: abundance does not replace the human; it lets one human *be* the team.
 
 ## How it composes
 
-The chain the framework is meant to drive:
+The chain the framework is meant to drive — and the edge that closes it into the control loop named at the top:
 
 ```
 Actors (humans + motives)
    └─ generate Use cases (what each motive needs to accomplish)
         └─ generate Scenarios (how it plays out, who delegates what)
              └─ shape Human–agent interfaces (the surfaces + fidelity checks)
+
+   ▲ the loop closes: at the gate, backward faces emit new intent —
+   └────── deferred work → Framer (scheduling) → new use cases ──────┘
 ```
 
-Get the actors and motives right and the rest is downstream. Get them wrong — by treating agents as actors, or by organizing on a timeline instead of by motive — and the use cases overlap, the scenarios blur, and the interfaces inherit the confusion.
+Get the actors and motives right and the rest is downstream. Get them wrong — by treating agents as actors, or by organizing on a timeline instead of by motive — and the use cases overlap, the scenarios blur, and the interfaces inherit the confusion. The back-edge is what makes this a control loop and not a one-way pipeline: evaluation does not just gate, it *generates* the next round of intent.
 
 ## Resolved
 
-- **Is Curator a peer actor or a layer?** Both — the question was a false choice. *Actor* asks whether a distinct motive generates distinct use cases (it does); *layer* asks where the output sits in the dependency graph (foundational). Curator is the team's **infrastructure actor**: a full actor whose product is a layer, like a platform team. The model is two-tiered — three delivery actors over one foundation actor — not actors plus a non-actor substrate.
+- **Is Architect a distinct actor or Builder at system scope?** Distinct — and the original framing hid the real separator. *Scope* was a red herring: a Builder zoomed out still produces a **part**, just a bigger one. The Architect's **object** is different — *relations between parts* (boundaries, conventions, the composition law), not a slice of the product [conway]. That holds at every scope, so "Builder at system scope" is a category error. Operationally the Architect also differs on **deliverability** (realized only *through* others' work — a convention exists only when Builders follow it), **feedback latency** (slow and global — felt at the next change, not in a passing test), and **cadence** (per structural decision, not per contribution). Feature-scale fuzziness — "a Builder co-delivering a spec is already doing architecture" — is one *person* flipping roles, not the actors merging: switching motive is switching actor.
 
-- **Is Gatekeeper a standalone actor?** No. Judging is expertise turned backward, so *every* actor has an evaluative face — there is no role with judging as its own domain. **The gate** is the boundary where those backward faces converge on a change; the single ship-or-no-ship call is a **decision rule** over them (unanimous veto → single senior decider), i.e. governance, not a party. "Gatekeeper" survives as the name of the *activity*. `producer ≠ judge` holds per artifact across time. Net: **four actors** (Framer, Builder, Architect + Curator foundation), each with a forward and a backward face.
+- **Is Curator a peer actor or a layer?** Both — the question was a false choice. *Actor* asks whether a distinct motive generates distinct use cases (it does); *layer* asks where the output sits in the dependency graph (foundational). Curator is the team's **infrastructure actor**: a full actor whose product is a layer, like a platform team [team-topologies]. The model is two-tiered — three delivery actors over one foundation actor — not actors plus a non-actor substrate.
+
+- **Is Gatekeeper a standalone actor?** No. Judging is expertise turned backward, so *every* actor has an evaluative face — there is no role with judging as its own domain. **The gate** is the boundary where those backward faces converge; the verdict is a two-axis decision (accept/block × change-request) governed by a **decision rule** (unanimous veto → single senior decider), i.e. governance, not a party. "Gatekeeper" survives as the name of the *activity*. `producer ≠ judge` holds per artifact across time [sod]. Net: **four actors** (Framer, Builder, Architect + Curator foundation), each with a forward and a backward face.
 
 ## Open questions
 
-1. **Is Architect a distinct actor or Builder at system scope?** Architect survived the motive test only at cross-feature scale; at feature scale a Builder co-delivering a spec is already doing architecture. If scope alone separates them, the delivery set may be two, with Architect as Builder-zoomed-out.
+1. **How many variants, and for which actors?** Explorer (of Builder) and Conductor (of Architect) are confirmed. Framer and Curator presumably take variants too — but enumerating them risks an open-ended taxonomy. What stops the variant list from sprawling? (Note: forward/backward *faces* are a separate axis from variants — both multiply the surface area.)
 
-2. **How many variants, and for which actors?** Explorer (of Builder) and Conductor (of Architect) are confirmed. Framer and Curator presumably take variants too — but enumerating them risks an open-ended taxonomy. What stops the variant list from sprawling? (Note: forward/backward *faces* are a separate axis from variants — both multiply the surface area.)
+2. **Does the delegation surface serve human-to-human as well as human-to-agent?** A brief hands intent to a teammate as readily as to an agent. If the surface is medium-agnostic, the framework describes *all* delegation, not just delegation to AI — which is either a strength (generality) or a sign the AI-specific part is thinner than claimed.
 
-3. **Does the delegation surface serve human-to-human as well as human-to-agent?** A brief hands intent to a teammate as readily as to an agent. If the surface is medium-agnostic, the framework describes *all* delegation, not just delegation to AI — which is either a strength (generality) or a sign the AI-specific part is thinner than claimed.
+3. **How broad is the abundance premise?** AI makes *common* generation cheap; *novel or hard* generation stays expensive, and there the old title-equals-contribution model partly survives. The framework's reach is exactly as wide as abundance actually is.
 
-4. **How broad is the abundance premise?** AI makes *common* generation cheap; *novel or hard* generation stays expensive, and there the old title-equals-contribution model partly survives. The framework's reach is exactly as wide as abundance actually is.
+4. **What is the formal shape of delegate fidelity?** It is named here as an orthogonal axis but not modeled. Is it a fifth concern, a property of every delegation surface, or the true home of the human-agent interface?
 
-5. **What is the formal shape of delegate fidelity?** It is named here as an orthogonal axis but not modeled. Is it a fifth concern, a property of every delegation surface, or the true home of the human-agent interface?
+## Downstream artifacts
+
+This dossier is the single source of truth. Two artifacts are generated from it; this map says which parts feed which.
+
+| Dossier part | → Machine artifact (agent config) | → Human artifact (essay) |
+| --- | --- | --- |
+| Two kinds of thing (Actors/Delegates) | core type definitions; the delegate-has-no-motive rule | the framing chapter |
+| The four actors + motives | the actor enum that seeds use cases | the conceptual spine |
+| Two faces; `producer ≠ judge` | review/governance constraints | the "verbs not titles" argument |
+| The gate (two-axis decision, decision rule) | **primary** — gating logic, branch handling, interfaces | illustrated via scenarios |
+| Deferred branch / scheduling over dependency tree | orchestration + scheduling policy; Conductor fan-out | the dependency-tree narrative |
+| Delegation surfaces + bar | the surface/criteria contracts | what each role hands off |
+| Curator and the loop (three loops) | when each loop fires; Curator-delegate interface | the learning-compounds story |
+| Variants (Explorer, Conductor) | folds away (machine uses actors) | **primary** — capacity, training, growth |
+| Positions are not roles | — | **primary** — the reader's on-ramp |
+| Scenarios | trace-checks for the use cases | **primary** — concrete walk-throughs |
+| Delegate fidelity | the fidelity-check axis of every interface | the open frontier |
 
 ## Glossary
 
@@ -193,15 +264,39 @@ The framework's load-bearing terms, in dependency order — earlier terms ground
 | Term | Definition |
 | --- | --- |
 | **Actor** | A human role defined by an intrinsic **motive**: Framer, Builder, Architect, Curator. Holds accountability, which never delegates. |
-| **Delegate** | An agent acting on an actor's behalf. No motive of its own — *capacity*, not a *party*. Never accountable. |
+| **Delegate** | An agent acting on an actor's behalf. No motive of its own — *capacity*, not a *party*. Never accountable. Adapts agency theory's agent, minus the self-interest [agency]. |
 | **Motive** | The intrinsic want that defines an actor: intend (Framer), generate (Builder), structure (Architect), accumulate (Curator). |
+| **Object** | *What an actor's output is.* A Builder's object is a **part**; the Architect's object is the **relations between parts**. Object — not scope — is what separates Architect from Builder. |
 | **Face** | The *direction* an actor's expertise points — **forward** (produce) or **backward** (evaluate). Every actor has both. *Reserved: never used for anything else — switching motive is switching actor, not face.* |
 | **Variant** | A specialization of an actor's *forward face* that needs different preparation. Only non-default variants are named: **Explorer** (of Builder), **Conductor** (of Architect). |
-| **Angle** (domain) | The subject-matter expertise an actor works in — security, UX, performance, process, quality, AI/harness. An actor always acts *from an angle*. |
+| **Angle** (domain) | The subject-matter expertise an actor works in — security, UX, performance, process, quality, AI/harness. An actor always acts *from an angle*; angle is orthogonal to actor. |
 | **Gate** | A boundary (pull request, release) where several actors' **backward faces** converge on one change. An activity, not an actor — "Gatekeeper" names this activity, never a role. |
-| **Decision rule** | The governance policy that combines backward-face judgments at the gate into one ship-or-no-ship call — from unanimous veto to a single decider. |
-| **producer ≠ judge** | The constraint that the instance which produced an artifact is not its independent judge. Applied per artifact across time. |
-| **Delegation surface** | The artifact an actor transmits intent through: **brief** (Framer), **contract + exemplars** (Builder), **shape** (Architect), **corpus** (Curator). Categories, not products — a team picks the medium (a governance or discipline file is one such medium). |
+| **Verdict** | The gate's first axis: `accept` / `block`. Governed by the decision rule. |
+| **Change request** | The gate's second axis: `none` / `yes`, with a **timing** (`within-PR` or `deferred`). Generated output, not a combination rule. `block` forces `within-PR`. |
+| **Decision rule** | The governance policy that combines backward-face judgments into the verdict — from unanimous veto to a single decider. |
+| **`producer ≠ judge`** | The constraint that the instance which produced an artifact is not its independent judge. Separation of duties / four-eyes [sod], applied per artifact across time. |
+| **Dependency order vs work order** | *Dependency order*: A needs B (the Architect's object). *Work order*: the sequence we actually build in. A **stub** lets work-order diverge from dependency-order, at the cost of **rework**. |
+| **Scheduling decision** | The Framer's call (informed by the Architect's estimate) on the deferred branch: *defer new work* (stub now, rework later) vs *defer current work* (build prerequisite first). Driven by rework-cost vs switch-cost. |
+| **Delegation surface** | The artifact an actor transmits intent through: **brief** (Framer), **contract + exemplars** (Builder), **shape** (Architect), **corpus** (Curator). Categories, not products — a team picks the medium. |
 | **Bar** | The *criteria face* of a delegation surface — the same artifact stated as acceptance criteria rather than instruction. Not a separate surface. |
-| **Tier** | The *dependency* split: **delivery** actors (Framer/Builder/Architect, act on the product) versus the **foundation** actor (Curator, acts on the capacity to deliver). Distinct from *recursion* — see open questions. |
+| **Tier** | The *dependency* split: **delivery** actors (Framer/Builder/Architect, act on the product) versus the **foundation** actor (Curator, acts on the capacity to deliver). |
 | **Delegate fidelity** | Verifying a delegate did what its actor intended — judging the worker, not the work. Orthogonal to the actors. |
+
+## References
+
+| Key | Source |
+| --- | --- |
+| `[agency]` | Agency / principal–agent theory — Eisenhardt (1989); Jensen & Meckling (1976). [EBSCO Research Starters](https://www.ebsco.com/research-starters/economics/agency-theory-organizational-economics). *Adapted: the framework's delegate has no self-interest, removing the agency problem.* |
+| `[argyris]` | Argyris & Schön, *Organizational Learning* (1978) — single-/double-loop learning. [infed.org](https://infed.org/dir/welcome/chris-argyris-theories-of-action-double-loop-learning-and-organizational-learning/). |
+| `[team-topologies]` | Skelton & Pais, *Team Topologies* — the platform team as self-service product. [IT Revolution](https://itrevolution.com/articles/four-team-types/). |
+| `[conway]` | Conway, "How Do Committees Invent?" (1968); MIT/Harvard mirroring study. [Wikipedia: Conway's law](https://en.wikipedia.org/wiki/Conway%27s_law). |
+| `[screaming]` | Robert C. Martin, "Screaming Architecture" (2011); *Clean Architecture* (2017) ch. 21. [cleancoder.com](https://blog.cleancoder.com/uncle-bob/2011/09/30/Screaming-Architecture.html). |
+| `[mece]` | Barbara Minto, MECE / the Pyramid Principle (McKinsey, late 1960s). [Wikipedia: MECE principle](https://en.wikipedia.org/wiki/MECE_principle). |
+| `[sod]` | Separation of duties / four-eyes principle; ISO 27001 Annex A 5.3. [Flagsmith](https://www.flagsmith.com/blog/what-is-the-four-eyes-principle). |
+| `[walking-skeleton]` | Freeman & Pryce, *Growing Object-Oriented Software, Guided by Tests* (ch. 10). [O'Reilly](https://www.oreilly.com/library/view/growing-object-oriented-software/9780321574442/ch10.html). |
+| `[test-double]` | Martin Fowler, *TestDouble* (stubs supply canned answers for absent dependencies). [martinfowler.com](https://martinfowler.com/bliki/TestDouble.html). *The rework/ordering trade-off built on this is the framework's own inference.* |
+| `[dev-loop]` | Developer inner/outer loop. [Red Hat Developer](https://developers.redhat.com/articles/2024/09/05/platform-engineers-role-devsecops-inner-and-outer-loops); [Speedscale](https://docs.speedscale.com/concepts/inner-outer/). |
+| `[ai-roles]` | Generative AI augmentation vs automation; new roles, ~80% upskilling through 2027. [Gartner (2024-10-03)](https://www.gartner.com/en/newsroom/press-releases/2024-10-03-gartner-says-generative-ai-will-require-80-percent-of-engineering-workforce-to-upskill-through-2027). |
+| `[multi-agent]` | Orchestrator-worker pattern; parallel subagents. [Anthropic, *Building Effective Agents*](https://www.anthropic.com/research/building-effective-agents); [*Multi-agent research system*](https://www.anthropic.com/engineering/multi-agent-research-system). |
+
+*Research workspace (evidence log, confidence, caveats): `.research/actor-delegate-model/`.*
