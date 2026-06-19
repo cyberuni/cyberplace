@@ -49,6 +49,10 @@ Most of the framework's spine is grounded: the Actor/Delegate split mirrors **ag
 
 Carried in the dossier's own "Open questions" section (variant taxonomy bounds; human-to-human delegation surfaces; breadth of the abundance premise; formal shape of delegate fidelity).
 
+## Adjacent topics (spun out)
+
+- **Cross-project knowledge sharing** — how the Curator's transferable knowledge crosses project boundaries (templates, agent plugins/skills, conventions, starter kits). Own topic: `.research/cross-project-knowledge-sharing/`.
+
 ## Sources consulted
 
 See `evidence.md` for the full list with quotes, types, and confidence.

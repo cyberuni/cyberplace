@@ -1,5 +1,12 @@
 # Changes — The Actor–Delegate Model
 
+## 2026-06-19 — Per-actor sections; sharpen Architect/Curator boundary
+
+- **What changed:** Restructured "The four actors" into a dedicated subsection per actor (Framer/Builder/Architect/Curator), each with motive, object, signature output, variant, and an explicit boundary line to its neighbor. Added a **generalization ladder** (within-feature → Builder/design; across-features → Architect/architecture; across-products → Curator/curation) keyed on *scope of reuse* and *where the result lives*, with the mechanism distinction (behavior-directly / behavior-through-structure / capability-through-knowledge). Made the Architect **active/governance-setting** (draws the lines ahead of time), not passive. Replaced the three weak Curator bullets (which described architecture-of-the-corpus) with three accumulate-only acts: selection-for-durability, generalization-across-products, pruning-for-truth. Named the recursion explicitly (organizing the corpus is an Architect sub-act the Curator also performs).
+- **Why:** A boundary review found the Curator was justified with architectural examples, and "generalization across features" needed a verdict (it is Architect, not Curator — the abstraction lives in and dies with the product).
+- **Conclusion changed materially?** No — Curator stays a distinct actor; the distinction is now carried by *what the output outlives* rather than by shared pattern-recognition skill.
+- **Spun out:** "Cross-project knowledge sharing" to its own topic (`.research/cross-project-knowledge-sharing/`).
+
 ## 2026-06-19 — Initial research dossier
 
 - **What changed:** Created the research workspace (topic, evidence, conclusion) and grounded the framework's non-obvious claims against authoritative sources via three parallel research forks.
