@@ -333,7 +333,7 @@ The loop is identical in each; only its object differs. So a "senior" anyone is 
 ```mermaid
 flowchart TB
     PROC["PROCESS<br/>the way of working"]
-    TOOL["TOOLCHAIN<br/>tools & agent configuration"]
+    TOOL["TOOLCHAIN<br/>tools and agent configuration"]
     PROD["PRODUCT<br/>the concrete, substantive outcome"]
     PROC <-->|"overlap & co-evolve"| TOOL
     PROD -->|"experience distilled · Curator"| PROC
