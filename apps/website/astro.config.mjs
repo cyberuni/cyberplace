@@ -20,6 +20,20 @@ export default defineConfig({
 					],
 				},
 				{
+					label: 'The Motive Model',
+					items: [
+						{ label: 'Overview', slug: 'motive-model/overview' },
+						{ label: 'Positions Are Not Roles', slug: 'motive-model/positions-are-not-roles' },
+						{ label: 'The Four Actors', slug: 'motive-model/four-actors' },
+						{ label: 'Two Faces and the Gate', slug: 'motive-model/faces-and-the-gate' },
+						{ label: 'Delegates and Surfaces', slug: 'motive-model/delegates-and-surfaces' },
+						{ label: 'Variants and How People Grow', slug: 'motive-model/variants' },
+						{ label: 'Scenarios', slug: 'motive-model/scenarios' },
+						{ label: 'Recursion', slug: 'motive-model/recursion' },
+						{ label: 'Glossary', slug: 'motive-model/glossary' },
+					],
+				},
+				{
 					label: 'Skills',
 					items: [
 						{ label: 'Overview', slug: 'skills/overview' },

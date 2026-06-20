@@ -1,0 +1,75 @@
+---
+title: Two Faces and the Gate
+description: Every actor both produces and judges — the same expertise pointed forward or backward. Where those backward faces converge is the gate, and its verdict is a two-axis decision, not a single bit.
+---
+
+The same expertise points two ways. This is "verbs, not titles" at its sharpest.
+
+- Applied **forward**, it produces — a Builder writes code, an Architect designs structure, a Framer frames a problem.
+- Applied **backward**, the same expertise *judges* — the Builder reviews code, the Architect runs a design review, the Framer makes a kill-or-ship call.
+
+Nothing about the person or their knowledge changes between the two. Only the **direction** does. So there is **no standalone Gatekeeper actor** — "gatekeeping" is just any actor's expertise turned backward. A thing with no domain of its own is a direction, not a role. The word survives as the name of an *activity*, not a party.
+
+## The one rule on the faces: `producer ≠ judge`
+
+The instance that produced an artifact should not be its own independent judge. This is an *echo* of the four-eyes / separation-of-duties principle — not the strict version. Strict four-eyes needs two different parties; here a single actor can serve both faces, flipping forward to backward on the same artifact in seconds.
+
+The boundary is genuinely weaker — but it is real, and the model adds something that beats real-time review: a **split of judgment across time.**
+
+- Criteria authored **ahead of time**, under no clock pressure, can be thorough — but only *generally*. These live in the **bar** and fire automatically through the delegate.
+- **In the loop**, where attention is scarce and the clock runs, the human is freed from re-deriving the general checks and spends that scarce attention on the **specific and important** — which is where judgment quality is actually won.
+
+A delegate changes who produced. When a delegate produces and a human judges, `producer ≠ judge` still holds even with one person in the room — because the *delegate* produced and the *human* judged.
+
+## The gate
+
+**The gate** is the boundary — a pull request, a release — where the backward faces converge on one change: correctness (Builder, backward), fit-to-structure (Architect, backward), and worth-shipping (Framer, backward) are judged together.
+
+What comes out is **not a single bit.** It is two decisions on two axes:
+
+- **Verdict** — does this change pass *now*? `accept` / `block`.
+- **Change request** — does the gate emit new work? `none` / `yes` — and if yes, with a **timing**: `within-PR` or `deferred`.
+
+| | no change request | change request |
+| --- | --- | --- |
+| **accept** | clean merge | merge **+ work** (a within-PR nit, or a deferred follow-up) |
+| **block** | **kill** — nothing fixes it | **request changes** (work is within-PR by necessity) |
+
+Two corners earn names:
+
+- **`block + none` is a kill** — no incremental fix saves this attempt. *What* dies depends on the rejecting face: a **Framer** kill abandons the goal (*this should not exist*); an **Architect** or **Builder** kill rejects the approach or artifact (*not like this*) with the goal still standing.
+- **`accept + deferred` is the feedback edge** — merge now, spin off work that re-enters the loop later.
+
+One honest coupling: **`block` forces `within-PR`.** You cannot defer the thing that blocks — deferring it *means* it stopped blocking. So timing has freedom only under `accept`. A `block + deferred` cell would be dead.
+
+## Who combines the faces into one verdict
+
+The verdict axis is governed by a **decision rule** — how the backward faces combine, anywhere from an all-pass unanimous veto to a single senior decider (in practice, often a senior engineer weighting the Architect face, or a domain expert weighting the Framer face). The rule is **governance** — a policy choice, not an actor.
+
+The second axis — the change request — is *generated output*, not a combination rule. So the two stay distinct.
+
+## The deferred branch is a scheduling decision
+
+`accept + deferred` is richer than "file a ticket." It emits **new work that re-enters as its owning actor's object** — a deferred *feature* is a Framer concern, a deferred *refactor* an Architect concern. Sequencing it against everything else is again a **decision rule**, weighing product priority against structural urgency.
+
+The choice runs over two trees that can diverge:
+
+- **Dependency order** — A *needs* B. This is the Architect's object: relations between parts.
+- **Work order** — the sequence you actually build in.
+
+A **placeholder** — a stub, a workaround, or a rougher MVP — is what lets work-order diverge from dependency-order: you build A against a stand-in for B, and pay **rework** when the real B lands. That gives two flavors of defer:
+
+- **Defer the new work** — stub now, build the dependency later, accept the rework.
+- **Defer the current work** — stop, build the prerequisite first, no rework, at the cost of interrupting the current thread.
+
+The determining factor is a cost comparison: **rework cost** versus **switch/blocking cost**.
+
+### Abundance changes the default
+
+Pre-AI, "build the prerequisite first" meant *stop everything*, because no hands were spare — so teams defaulted to workaround-now and accumulated debt. With delegates, the human directs an orchestrator-delegate to fan the dependency out while the current thread keeps moving. "Build the dependency first" stops meaning "stop everything" and becomes "parallelize."
+
+The boundary is real and it bites here: fan-out works when the dependency is **separable behind a stable interface**, and works worst when the dependency is tightly interwoven with the current thread. So the move is available precisely when the seam is clean; when it isn't, the choice tightens toward *defer current work*. The human doing this — conducting — is the actor; the orchestrator is the *delegate pattern* they wield. They do not merge.
+
+---
+
+*Next: [Delegates and surfaces →](/motive-model/delegates-and-surfaces/)*

@@ -1,0 +1,51 @@
+---
+title: Variants and How People Grow
+description: The four actors are the right unit for the machine. Humans need a finer resolution — because roles that share a motive can still demand opposite preparation. Variants are where careers specialize.
+---
+
+The four actors are the right unit **for the machine** — for generating the work each motive needs, the scenarios, and the human–agent interfaces. At that resolution, finer distinctions are noise.
+
+But humans need a finer resolution, because **roles that share a motive can still demand opposite preparation.** Each actor has a default form plus named **variants** — specializations that fold away for the machine but matter enormously for human capacity, training, and growth.
+
+A variant is a **lateral** specialization, not an advancement. It can require *less* total capacity, differently geared — an Explorer needs no build environment or working code, only a delegate to prompt, where the default Builder must make the thing actually run. There is no leveling between an actor and its variants; the difference is *which* capacity, not *how much*.
+
+## The membership gates
+
+Not every specialization earns a name. A candidate — actor, variant, or sub-role — must clear three gates. They are what keep the taxonomy from sprawling.
+
+- **Distinct motive** — for an *actor*. A *variant* instead shares its actor's motive.
+- **Capacity differentiation** — inhabiting it must require a *substantial, distinct* body of knowledge. If the preparation delta is small, it is not a role; it is a function to **codify**.
+- **Persistence** — the need must *recur and aggregate* into a standing demand a human specializes toward. (Not continuous occupancy — a Framer's kill is a split-second act; the *need* is what aggregates.) A momentary, absorbable need is a sub-role — a *janitor*, not a *cleaner-of-the-flush-handle*.
+
+## The confirmed and forming variants
+
+A variant can specialize on *either* face — forward (produce differently) or backward (evaluate differently).
+
+| Actor | Variant | Status | How it differs |
+| --- | --- | --- | --- |
+| **Builder** | *Explorer* — generates to *discard* | confirmed | Breadth, pattern recognition, low attachment, speed over polish — versus the default Builder who generates to *keep* (depth, craft, correctness). A near-opposite cognitive profile, recurring need. (Forward face.) |
+| **Builder** | *QA* — *evaluates* the product | confirmed | Deep training in verifying the product — test design, coverage, edge-case and regression reasoning, judging against the bar — versus producing it. Same motive (the thing working), turned backward. The proof that variants are not forward-only. (Backward face.) |
+| **Framer** | *Scout* — discovers problems | forming | Problem *discovery* — divergent, exploratory, low-attachment user/market sensing — versus the default Framer's convergent value *judgment* (the kill-or-ship call). The Framer's Explorer; *forming* until AI-assisted discovery aggregates into a settled practice. |
+| **Architect** | *Conductor* — structures at *runtime* | forming | Orchestrates many delegates and people into one whole at runtime — versus the default Architect who structures the *artifact* at design time. Borderline today: much of it is codifiable, and the residual decomposes into Framer and Architect acts. Strengthens as fleets grow. |
+
+Explorer and the default Builder are nearly opposite cognitive profiles — the same *motive* (generate), incompatible *training*. That is why one model needs both resolutions: **collapse to actors to design the system, expand to variants to develop the people.**
+
+## Why the Curator has no variant
+
+The Curator's three signature acts — selection-for-durability, generalization-across-products, pruning-for-truth — share **one cognitive profile**: judgment about what is *durably true*. Splitting them yields sub-roles with a small preparation delta, not variants. The gates, not a number, hold the line.
+
+## Codification moves the actor/delegate line
+
+The capacity gate has a consequence worth stating on its own: **a role is worth naming only where the human capacity is substantial *and* not-yet-codifiable.** The moment a function becomes codifiable, its codifiable slice crosses the **actor/delegate line** and becomes **agent configuration** — the delegation surface, materialized for an AI delegate.
+
+- Codify a Curator → skills and conventions.
+- Codify a Builder → specs.
+- Codify a Conductor → orchestration config.
+
+So codifiability is *where* the actor/delegate boundary sits, and it moves over time — the same engine as the abundance premise, now applied to coordination rather than production.
+
+This is why "isn't a Conductor just someone who *builds* the orchestration?" is half-right. Building that configuration is a real job — but it is a **Builder at the toolchain tier**, whose object is a *part* (the orchestration feature), because agent configuration is itself a product. (See [Recursion](/motive-model/recursion/).)
+
+---
+
+*Next: [Scenarios →](/motive-model/scenarios/)*

@@ -1,0 +1,80 @@
+---
+title: The Four Actors
+description: Around abundant generation sit four actors — Framer, Builder, Architect, Curator — each defined by a distinct motive. The generalize ladder keeps the three product roles apart.
+---
+
+An **actor** is a human holding one of four base motives. The four are chosen to be **MECE** — mutually exclusive (the motives don't overlap) and collectively exhaustive (nothing essential falls outside). Around abundant generation they form a control loop: someone decides what's worth making, someone makes candidates, someone keeps the whole coherent, someone makes the learning compound.
+
+| Actor | Motive | What they own |
+| --- | --- | --- |
+| **Framer** | **Intend** — what's worth doing | The problem worth solving and what success means; the authority to decide *not* to build |
+| **Builder** | **Generate** — make the thing | A working contribution from one angle of expertise |
+| **Architect** | **Structure** — keep the whole legible and evolvable | The boundaries and conventions that keep the product comprehensible as it grows |
+| **Curator** | **Accumulate** — make knowledge compound | The durable, reusable knowledge every other role draws on |
+
+The motive is what makes each a real actor: each one generates work the others don't. The Framer's signature output is a **kill decision**. The Builder's is a **working artifact**. The Architect's is a **boundary or convention**. The Curator's is **reuse**.
+
+## The generalize ladder
+
+Three of the actors are most often confused, so state the difference up front. **Generalization is just abstraction; what differs is the scope of reuse and where the result lives.**
+
+| Generalize across… | Result lives in… | Actor | Concern |
+| --- | --- | --- | --- |
+| parts **within one feature** | the feature | **Builder** | *design* — how it works |
+| **features within one product** | the product (a shared abstraction) | **Architect** | *architecture* — how it's organized |
+| **products, over time** | the corpus (template, skill, plugin) | **Curator** | *curation* — knowledge that outlives the product |
+
+What keeps the rungs apart is the *mechanism* each uses to add value:
+
+- **Design changes behavior directly** — write better logic.
+- **Architecture changes behavior through structure** — extract the shared path, and every feature inherits the consistency.
+- **Curation changes future capability through knowledge** — the next project starts warmer.
+
+An app crammed into a single file *works* — design is satisfied — yet is unmaintainable, because the behavior was bought directly, without the structural leverage that lets the rest of the system inherit the quality. That gap is the Architect's reason to exist.
+
+## Framer — intend
+
+- **Motive:** decide what is worth doing, and what success means.
+- **Owns:** the problem and its definition of done — including the authority to decide *not* to build.
+- **Signature output:** a **kill decision** — the cheapest, highest-leverage thing a team can produce.
+- **Boundary (vs Builder):** the Framer owns *whether and why*; the Builder owns *how*. A Builder who redefines the goal has stepped into the Framer role.
+
+## Builder — generate
+
+- **Motive:** make the thing work, from one angle of expertise.
+- **Owns:** a **part** — a working contribution (a feature, a fix, a UI, a control). This is *design*: how it works.
+- **Signature output:** a working artifact, co-delivered with the contract (test or spec) that defines its behavior.
+- **Boundary (vs Architect):** the Builder makes a part; the moment the work is about the *relations between* parts, it is an Architect act — even when the same person does it in the same minute.
+
+## Architect — structure
+
+- **Motive:** keep the whole legible and evolvable as it grows.
+- **Owns:** the **relations between parts** — boundaries, conventions, the composition law over everything the Builders make. Not a bigger part; a different *kind* of thing. This is why "Builder at system scope" is a category error: **scope was never the separator — the object is.**
+- **Active, and it *is* governance.** The Architect doesn't tidy what already landed. It **draws the lines ahead of time** — picks the organizing principles, decides which one outranks which for *this* system, and authors the rules the Builders then build under.
+- **Pays a behavioral dividend.** Noticing three features each roll their own auth and extracting one shared path is Architect work — and every feature now authenticates consistently. That dividend is the *fruit of organizing*, not a separate design act.
+- **Signature output:** a boundary or convention.
+
+## Curator — accumulate
+
+The three roles above operate on the *product*. The Curator does not — its object is **knowledge designed to outlive any single product**. That raises the question that recurs every time: isn't keeping the corpus organized just *architecture at another tier*?
+
+Partly — and worth saying plainly. Organizing the corpus *is* architecture-of-the-corpus, and a Curator does it constantly. But the role is named for the part architecture does **not** contain. Three acts are Curator-only, and none is "organize":
+
+- **Selection for durability** — deciding which lessons are *durable enough to encode* versus transient noise. Architecture organizes the parts that exist; it never judges which *experiences* earn a permanent place.
+- **Generalization across products and time** — lifting a specific solution into a transferable form for problems that *don't exist yet* (a template, a convention, a skill, a plugin). In-product DRY stops at the product boundary; this crosses it.
+- **Pruning for truth** — removing what is *no longer true*, not merely what is structurally incoherent.
+
+These are *accumulate* — grow a compounding, reusable asset — not *structure*. That is the motive architecture lacks.
+
+### Two tiers
+
+The Curator's output *feels* like a layer because every other actor's delegate reads from it — exactly the position of a platform team, whose product is a layer made available for others to consume. So the model has two tiers:
+
+- **Delivery actors** — Framer, Builder, Architect — operate on the *product*.
+- **Foundation actor** — Curator — operates on the team's *capacity to deliver*: the corpus the other three's delegates draw from.
+
+A prediction falls out of the tiering: infrastructure is the first thing a team neglects, and a decaying corpus forces every delegate, in every role, to start cold.
+
+---
+
+*Next: [Two faces and the gate →](/motive-model/faces-and-the-gate/)*
