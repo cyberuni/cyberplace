@@ -3,20 +3,48 @@ title: The Four Actors
 description: Around abundant generation sit four actors — Framer, Builder, Architect, Curator — each defined by a distinct motive. The generalize ladder keeps the three product roles apart.
 ---
 
+import { Card, CardGrid, Aside } from '@astrojs/starlight/components'
+import Mermaid from '../../../components/Mermaid.astro'
+
 An **actor** is a human holding one of four base motives. The four are chosen to be **MECE** — mutually exclusive (the motives don't overlap) and collectively exhaustive (nothing essential falls outside). Around abundant generation they form a control loop: someone decides what's worth making, someone makes candidates, someone keeps the whole coherent, someone makes the learning compound.
 
-| Actor | Motive | What they own |
-| --- | --- | --- |
-| **Framer** | **Intend** — what's worth doing | The problem worth solving and what success means; the authority to decide *not* to build |
-| **Builder** | **Generate** — make the thing | A working contribution from one angle of expertise |
-| **Architect** | **Structure** — keep the whole legible and evolvable | The boundaries and conventions that keep the product comprehensible as it grows |
-| **Curator** | **Accumulate** — make knowledge compound | The durable, reusable knowledge every other role draws on |
+<CardGrid>
+	<Card title="Framer" icon="seti:default">
+		**Intend** — what's worth doing.
+		Owns the problem worth solving and what success means, including the authority to decide *not* to build.
+		Signature output: a **kill decision**.
+	</Card>
+	<Card title="Builder" icon="seti:plan">
+		**Generate** — make the thing.
+		Owns a working contribution from one angle of expertise.
+		Signature output: a **working artifact** + its contract.
+	</Card>
+	<Card title="Architect" icon="seti:project">
+		**Structure** — keep the whole legible and evolvable.
+		Owns the boundaries and conventions that keep the product comprehensible as it grows.
+		Signature output: a **boundary or convention**.
+	</Card>
+	<Card title="Curator" icon="seti:db">
+		**Accumulate** — make knowledge compound.
+		Owns the durable, reusable knowledge every other role draws on.
+		Signature output: **reuse**.
+	</Card>
+</CardGrid>
 
-The motive is what makes each a real actor: each one generates work the others don't. The Framer's signature output is a **kill decision**. The Builder's is a **working artifact**. The Architect's is a **boundary or convention**. The Curator's is **reuse**.
+The motive is what makes each a real actor: each one generates work the others don't. Distinct motives, distinct work, distinct hand-offs.
 
 ## The generalize ladder
 
 Three of the actors are most often confused, so state the difference up front. **Generalization is just abstraction; what differs is the scope of reuse and where the result lives.**
+
+<Mermaid
+	caption="Scope of reuse widens down the ladder — and the result lives somewhere more durable at each rung."
+	code={`flowchart TB
+    B["<b>Builder</b> · design<br/>generalize within a feature<br/><i>lives in: the feature</i>"]
+    AR["<b>Architect</b> · architecture<br/>generalize across features<br/><i>lives in: the product</i>"]
+    C["<b>Curator</b> · curation<br/>generalize across products<br/><i>lives in: the corpus — outlives the product</i>"]
+    B -->|scope of reuse widens| AR -->|scope of reuse widens| C`}
+/>
 
 | Generalize across… | Result lives in… | Actor | Concern |
 | --- | --- | --- | --- |
@@ -37,14 +65,20 @@ An app crammed into a single file *works* — design is satisfied — yet is unm
 - **Motive:** decide what is worth doing, and what success means.
 - **Owns:** the problem and its definition of done — including the authority to decide *not* to build.
 - **Signature output:** a **kill decision** — the cheapest, highest-leverage thing a team can produce.
-- **Boundary (vs Builder):** the Framer owns *whether and why*; the Builder owns *how*. A Builder who redefines the goal has stepped into the Framer role.
+
+<Aside type="note" title="Boundary vs Builder">
+The Framer owns *whether and why*; the Builder owns *how*. A Builder who redefines the goal has stepped into the Framer role.
+</Aside>
 
 ## Builder — generate
 
 - **Motive:** make the thing work, from one angle of expertise.
 - **Owns:** a **part** — a working contribution (a feature, a fix, a UI, a control). This is *design*: how it works.
 - **Signature output:** a working artifact, co-delivered with the contract (test or spec) that defines its behavior.
-- **Boundary (vs Architect):** the Builder makes a part; the moment the work is about the *relations between* parts, it is an Architect act — even when the same person does it in the same minute.
+
+<Aside type="note" title="Boundary vs Architect">
+The Builder makes a part; the moment the work is about the *relations between* parts, it is an Architect act — even when the same person does it in the same minute.
+</Aside>
 
 ## Architect — structure
 
@@ -70,10 +104,25 @@ These are *accumulate* — grow a compounding, reusable asset — not *structure
 
 The Curator's output *feels* like a layer because every other actor's delegate reads from it — exactly the position of a platform team, whose product is a layer made available for others to consume. So the model has two tiers:
 
+<Mermaid
+	caption="Three delivery actors operate on the product; one foundation actor operates on the capacity to deliver it."
+	code={`flowchart TB
+    subgraph delivery [Delivery actors — operate on the product]
+        direction LR
+        F[Framer] ~~~ B[Builder] ~~~ A[Architect]
+    end
+    subgraph foundation [Foundation actor — operates on capacity to deliver]
+        CU[Curator · the corpus]
+    end
+    CU -. "every delegate reads from the corpus" .-> delivery`}
+/>
+
 - **Delivery actors** — Framer, Builder, Architect — operate on the *product*.
 - **Foundation actor** — Curator — operates on the team's *capacity to deliver*: the corpus the other three's delegates draw from.
 
-A prediction falls out of the tiering: infrastructure is the first thing a team neglects, and a decaying corpus forces every delegate, in every role, to start cold.
+<Aside type="tip" title="A prediction falls out of the tiering">
+Infrastructure is the first thing a team neglects, and a decaying corpus forces every delegate, in every role, to start cold.
+</Aside>
 
 ---
 

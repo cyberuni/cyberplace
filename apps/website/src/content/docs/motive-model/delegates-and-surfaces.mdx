@@ -3,6 +3,9 @@ title: Delegates and Surfaces
 description: An actor is a human with a motive; a delegate is an agent that acts on the actor's behalf and has no motive of its own. How you hand a delegate intent — and how you check it stayed faithful.
 ---
 
+import { Card, CardGrid, Aside } from '@astrojs/starlight/components'
+import Mermaid from '../../../components/Mermaid.astro'
+
 The model has exactly two kinds of thing. Keeping them apart is the load-bearing move.
 
 **Actors are humans, defined by motive.** An actor wants something — to solve the right problem, to make the thing work, to keep the whole coherent. The motive is intrinsic; it is *theirs*. Accountability lives with the actor and never leaves: an actor is answerable for the outcome whether they did the work themselves or delegated it.
@@ -13,6 +16,14 @@ The model has exactly two kinds of thing. Keeping them apart is the load-bearing
 
 Each side is a raw substrate that *becomes* a party by entering the relationship:
 
+<Mermaid
+	caption="A human becomes an actor by taking on a motive; an agent becomes a delegate by being given that intent through a surface."
+	code={`flowchart LR
+    H[a human] -->|"takes on a motive<br/>+ accountability"| A[<b>an actor</b>]
+    AG[an agent] -->|"is given intent through<br/>a delegation surface"| D[<b>a delegate</b>]
+    A -.->|wields| D`}
+/>
+
 | Substrate | Becomes… | by… |
 | --- | --- | --- |
 | a **human** | an **actor** | taking on a motive and the accountability for it |
@@ -20,13 +31,9 @@ Each side is a raw substrate that *becomes* a party by entering the relationship
 
 So **agent** names the raw capacity — an AI system, apart from any task — while **delegate** names that same agent once an actor has wielded it. This is why **delegate** is first a *verb*: to *delegate* is the act an actor performs — authoring the governance and criteria that transmit responsibility to an agent, turning it into a delegate. The noun is just the agent caught mid-relation.
 
-### Concretely, for an AI delegate
-
-The abstraction lands on familiar artifacts. A **delegation surface** materialized for an agent *is* an **agent definition** — a skill, an `AGENTS.md` section, a slash command, or a `.claude/agents/*.md` subagent definition: static configuration authored ahead of time that carries the brief, contract, shape, and corpus in machine-readable form. The **delegate** is the running agent or subagent that definition configures.
-
-> *Agent definition* stands to *running subagent* as a **contract** stands to the **worker** who fills it: one is the authored surface, the other the running capacity.
-
-This is why **agent configuration is itself a product** — built by its own Framer, Builder, Architect, and Curator.
+<Aside type="note" title="Concretely, for an AI delegate">
+A **delegation surface** materialized for an agent *is* an **agent definition** — a skill, an `AGENTS.md` section, a slash command, or a `.claude/agents/*.md` subagent definition: static configuration authored ahead of time. The **delegate** is the running agent or subagent that definition configures. *Agent definition* stands to *running subagent* as a **contract** stands to the **worker** who fills it. This is why agent configuration is itself a product.
+</Aside>
 
 ## Why the AI delegate is the opposite of agency theory's agent
 
@@ -38,12 +45,20 @@ Our delegate is the opposite, and deliberately so: **it has no goals of its own,
 
 Every actor extends itself through a **delegation surface** — the artifact by which it transmits intent across a gap: to a delegate now, to a teammate next week, or to its own future self.
 
-| Actor | Delegation surface | What it carries |
-| --- | --- | --- |
-| **Framer** | **The brief** | The problem, the *why*, the definition of success |
-| **Builder** | **The contract + exemplars** | A behavioral spec for one angle, plus reference patterns to imitate |
-| **Architect** | **The shape** | Organizing principles, boundaries, conventions, and the constraints that protect them |
-| **Curator** | **The corpus** | Distilled, reusable knowledge every other delegate reads from |
+<CardGrid>
+	<Card title="The brief — Framer" icon="seti:default">
+		The problem, the *why*, the definition of success.
+	</Card>
+	<Card title="The contract + exemplars — Builder" icon="seti:plan">
+		A behavioral spec for one angle, plus reference patterns to imitate.
+	</Card>
+	<Card title="The shape — Architect" icon="seti:project">
+		Organizing principles, boundaries, conventions, and the constraints that protect them.
+	</Card>
+	<Card title="The corpus — Curator" icon="seti:db">
+		Distilled, reusable knowledge every other delegate reads from.
+	</Card>
+</CardGrid>
 
 These are **categories, not products.** A team instantiates them in whatever form fits — a one-page brief or a chartered intent doc; convention files or decision records; checklists or executable acceptance tests. The model names the surface; the team picks the medium.
 
@@ -57,12 +72,22 @@ Each surface has a backward face: its **bar**, the acceptance criteria the same 
 
 Delegating is only half the relationship. The other half is **verifying the delegate is faithful** — that it did what the actor would have done, and intended.
 
+<Mermaid
+	caption="The bar turns a surface's criteria on the artifact; fidelity turns the same criteria on the delegate that produced it."
+	code={`flowchart TB
+    S[Delegation surface<br/>brief · contract · shape · corpus]
+    S -->|criteria on the artifact| BAR["<b>the bar</b><br/>judges the work"]
+    S -->|criteria on the delegate| FID["<b>fidelity</b><br/>judges the worker"]
+    BAR --> WORK([the artifact])
+    FID --> WORKER([the delegate])`}
+/>
+
 Fidelity is distinct from evaluation:
 
 - A **backward face** (the bar) judges *the work* — the artifact.
 - **Fidelity** judges *the worker* — the delegate that produced it.
 
-Different objects, different levels. Fidelity is **neither a fifth actor** (it has no motive — it is a relation, not a party) **nor a third face** (a face points at the work; fidelity points at the worker). It is a **delegate-directed check riding every delegation surface — the mirror of the bar.** Where the bar turns a surface's criteria on the artifact, fidelity turns the same criteria on the delegate: *given this brief, contract, shape, or corpus, does the delegate do what the actor would have done and intended?*
+Different objects, different levels. Fidelity is **neither a fifth actor** (it has no motive — it is a relation, not a party) **nor a third face** (a face points at the work; fidelity points at the worker). It is a **delegate-directed check riding every delegation surface — the mirror of the bar.** *Given this brief, contract, shape, or corpus, does the delegate do what the actor would have done and intended?*
 
 This is also where the human–agent interface lives. The interface *is* the fidelity instrument — how an actor inspects, calibrates, and trusts the capacity it wields.
 

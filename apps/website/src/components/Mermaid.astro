@@ -1,0 +1,96 @@
+---
+interface Props {
+	/** The mermaid diagram definition. */
+	code: string
+	/** Optional caption rendered under the diagram. */
+	caption?: string
+}
+
+const { code, caption } = Astro.props
+---
+
+<figure class="mermaid-figure">
+	<pre class="mermaid" data-source={code}>{code}</pre>
+	{caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<script>
+	import mermaid from 'mermaid'
+
+	function currentTheme(): 'dark' | 'base' {
+		return document.documentElement.dataset.theme === 'light' ? 'base' : 'dark'
+	}
+
+	async function render() {
+		const nodes = document.querySelectorAll<HTMLElement>('pre.mermaid')
+		if (nodes.length === 0) return
+
+		mermaid.initialize({
+			startOnLoad: false,
+			theme: currentTheme(),
+			securityLevel: 'loose',
+			fontFamily: 'inherit',
+			flowchart: { htmlLabels: true, curve: 'basis', useMaxWidth: true },
+			themeVariables: {
+				primaryColor: 'var(--sl-color-accent-low)',
+				lineColor: 'var(--sl-color-gray-3)',
+			},
+		})
+
+		// Restore original source so a theme switch can re-render cleanly.
+		nodes.forEach((el) => {
+			const source = el.dataset.source
+			if (source) {
+				el.removeAttribute('data-processed')
+				el.classList.remove('mermaid-rendered')
+				el.innerHTML = source
+			}
+		})
+
+		try {
+			await mermaid.run({ querySelector: 'pre.mermaid' })
+		} catch {
+			/* a malformed diagram should not break the page */
+		} finally {
+			// Reveal regardless of mermaid internals, so a render never leaves
+			// a diagram permanently hidden by the anti-flash rule below.
+			nodes.forEach((el) => el.classList.add('mermaid-rendered'))
+		}
+	}
+
+	render()
+
+	// Re-render when Starlight toggles light/dark.
+	new MutationObserver((mutations) => {
+		if (mutations.some((m) => m.attributeName === 'data-theme')) render()
+	}).observe(document.documentElement, { attributes: true })
+
+	// Re-render after Astro view transitions.
+	document.addEventListener('astro:after-swap', render)
+</script>
+
+<style>
+	.mermaid-figure {
+		margin: 1.5rem 0;
+		text-align: center;
+	}
+	.mermaid-figure :global(svg) {
+		height: auto;
+		max-width: 100%;
+	}
+	.mermaid-figure figcaption {
+		margin-top: 0.5rem;
+		font-size: var(--sl-text-sm);
+		color: var(--sl-color-gray-3);
+		font-style: italic;
+	}
+	/* Hide the raw source flash before hydration; revealed once rendered. */
+	pre.mermaid:not(.mermaid-rendered) {
+		visibility: hidden;
+	}
+	pre.mermaid {
+		background: none;
+		border: none;
+		padding: 0;
+	}
+</style>
