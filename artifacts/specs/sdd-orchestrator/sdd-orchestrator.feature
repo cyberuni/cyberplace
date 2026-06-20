@@ -87,3 +87,67 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     Given a plugin author wants to implement a new implementer delegate
     When they read the sdd-orchestrator definition and the sdd-implementer default
     Then the input and output contract is fully specified without a separate governance file
+
+  # ── suspend / resume ─────────────────────────────────────────────────────
+
+  Scenario: Orchestrator suspends at a user-input checkpoint instead of asking
+    Given sdd-orchestrator is running an autonomous segment for the "auth" domain
+    When it reaches a point that requires user input to proceed
+    Then it returns STATUS needs-input with the questions batched
+    And it does not attempt to ask the user directly
+
+  Scenario: The skill resumes the orchestrator after collecting answers
+    Given the orchestrator returned STATUS needs-input with two questions
+    When the skill asks the user and collects the answers
+    Then the skill re-invokes the orchestrator with the answers included
+    And the orchestrator reconstructs its state by reading spec.md and the .feature
+
+  Scenario: Questions are batched within a segment, not asked one at a time
+    Given three open questions block progress in the current segment
+    When the orchestrator returns to the skill
+    Then all three questions are returned in one batch
+
+  Scenario: The workflow cursor is derived from artifact state across sessions
+    Given a spec with status draft, aligned false, and two open markers
+    When the orchestrator is invoked cold in a new session
+    Then it determines the phase and remaining blockers from the files alone
+    And no separate workflow journal is required
+
+  # ── question persistence ─────────────────────────────────────────────────
+
+  Scenario: A content gap persists as an inline marker, not a separate file
+    Given the orchestrator cannot fill the Why section without PM input
+    When the segment ends
+    Then a "<!-- open: needs PM input -->" marker is written in spec.md
+    And no questions.md file is created
+
+  Scenario: A workflow-procedural question is not persisted
+    Given the skill must know whether this is a new feature or a backfill
+    When the skill asks the user and receives an answer
+    Then the answer is used for this run
+    And it is not written into spec.md or any other artifact
+
+  # ── observations: the deferred axis ──────────────────────────────────────
+
+  Scenario: A structural concern is emitted as a non-blocking observation
+    Given the scenario-writer notices the "auth" scenarios duplicate the "billing" domain shape
+    When it returns
+    Then the concern is returned in OBSERVATIONS with owner architect
+    And STATUS is not blocked by the concern
+
+  Scenario: Observations bubble up and only the skill surfaces them
+    Given a plugin delegate returned an OBSERVATIONS entry
+    When the orchestrator aggregates delegate results
+    Then it forwards the observation to the skill
+    And the orchestrator does not write to the backlog or the corpus
+
+  Scenario: An accepted structural observation lands in the product backlog
+    Given the skill surfaced an architect observation at the spec gate
+    When the user accepts it as deferred work
+    Then the skill records it at product level, not in the triggering spec's markers
+
+  Scenario: Curator observations accumulate and surface only at boundaries
+    Given a delegate emits a curator observation during an ordinary segment
+    When the segment completes
+    Then the observation is appended to the candidate queue
+    And it is not surfaced to the user until a Curator boundary is reached
