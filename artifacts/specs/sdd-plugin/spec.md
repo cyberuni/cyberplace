@@ -2,6 +2,7 @@
 status: draft
 priority: 1
 blocked-by: []
+aligned: false
 ---
 
 # Spec-Driven Development
@@ -58,6 +59,7 @@ Every `spec.md` must have YAML frontmatter and required body sections.
 | `status` | Yes | `draft`, `approved`, `implemented`, `deprecated` |
 | `priority` | Yes | Integer; `1` = highest. Used to sequence implementation across a set of specs. |
 | `blocked-by` | No | List of spec slugs (directory names) that must be implemented first. Omit or leave empty if none. |
+| `aligned` | Yes | `true` / `false`. `false` when any artifact is being updated; `true` only when all listed artifacts are in sync. |
 
 **Body sections:**
 
@@ -68,10 +70,41 @@ Every `spec.md` must have YAML frontmatter and required body sections.
 | `Design decisions` | Yes (if any choices were made) | Key choices with rationale; what was rejected and why |
 | `Command surface / API` | Yes | The public interface: CLI syntax, function signatures, events |
 | Link to `.feature` | Yes | Reference to the Gherkin scenario file |
+| `Artifacts` | Yes, once any implementation artifact exists | Table of all artifacts that must stay in sync with this spec. Paths are project-root-relative. |
 
 Sections may be omitted only if genuinely not applicable (e.g. a pure config change has no command surface). Omitting "Why" is never acceptable.
 
 `blocked-by` is single-direction only. The "what does this spec block?" view is derived by scanning all specs for references to a given slug — do not maintain a `blocks` field.
+
+---
+
+## Artifact alignment
+
+A spec does not stand alone. It links to scenarios, plans, tasks, implementation code, docs, and agent/skill definitions. When any one changes, the others may need to change too. A unit of work that updates one artifact is not complete until all affected artifacts are updated.
+
+**`aligned` field:**
+
+- Set to `false` at the start of any work that touches one or more artifacts.
+- Set to `true` only after every listed artifact reflects the same state of understanding.
+- A commit must not be made while `aligned: false`.
+
+**`## Artifacts` section:**
+
+Lists every artifact belonging to this spec. Paths are project-root-relative. A folder path means "all files under it" — list a folder when a whole package or directory belongs to the spec rather than enumerating every file.
+
+```markdown
+## Artifacts
+
+| Label | Path |
+|---|---|
+| Spec | `specs/governance/spec.md` |
+| Scenarios | `specs/governance/governance.feature` |
+| Plan | `specs/governance/plan.md` |
+| Tasks | `specs/governance/tasks.md` |
+| Implementation | `src/governance/` |
+```
+
+When a new artifact is created, add a row and set `aligned: false` until every other artifact is reviewed and updated if needed.
 
 ---
 
@@ -247,3 +280,17 @@ Status → implemented
 
 - [`sdd-principles`](./governances/sdd-principles.md) — the core rules of SDD in brief
 - [`spec-template`](./governances/spec-template.md) — canonical `spec.md` template
+
+---
+
+## Artifacts
+
+| Label | Path |
+|---|---|
+| Spec | `artifacts/specs/sdd-plugin/spec.md` |
+| Scenarios | `artifacts/specs/sdd-plugin/spec-driven-development.feature` |
+| Plan | `artifacts/specs/sdd-plugin/plan.md` |
+| Tasks | `artifacts/specs/sdd-plugin/tasks.md` |
+| Governances | `artifacts/specs/sdd-plugin/governances/` |
+| Plugin agents | `plugins/sdd/agents/` |
+| Plugin skills | `plugins/sdd/skills/` |
