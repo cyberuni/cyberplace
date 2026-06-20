@@ -44,7 +44,13 @@ When a delegate produces and a human judges, `producer ≠ judge` still holds ev
     BL -.->|re-enters as owning actor's work| F
     C["Curator<br/>foundation · corpus"] -.-> F
     C -.-> B
-    C -.-> AR`}
+    C -.-> AR
+    class F,B,AR,C actor
+    class G gate
+    class OUT,BL artifact
+    classDef actor stroke-width:2px
+    classDef gate stroke:#d97706,stroke-width:2px
+    classDef artifact stroke:#0d9488,stroke-width:1.75px`}
 />
 
 What comes out is **not a single bit.** It is two decisions on two axes:
@@ -71,7 +77,11 @@ Two corners earn names:
     V -->|change needed now| IT["iterate<br/>fix → bar → re-gate"]
     V -->|reject the attempt| K["kill<br/>intent / approach / artifact"]
     IT -.->|re-gate| G
-    MD -.->|re-enters as owning actor's work| G`}
+    MD -.->|re-enters as owning actor's work| G
+    class G gate
+    class M,MD artifact
+    classDef gate stroke:#d97706,stroke-width:2px
+    classDef artifact stroke:#0d9488,stroke-width:1.75px`}
 />
 
 <Aside type="note" title="One honest coupling">

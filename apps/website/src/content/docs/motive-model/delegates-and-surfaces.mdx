@@ -21,7 +21,11 @@ Each side is a raw substrate that *becomes* a party by entering the relationship
 	code={`flowchart LR
     H[a human] -->|"takes on a motive<br/>+ accountability"| A[<b>an actor</b>]
     AG[an agent] -->|"is given intent through<br/>a delegation surface"| D[<b>a delegate</b>]
-    A -.->|wields| D`}
+    A -.->|wields| D
+    class A actor
+    class D delegate
+    classDef actor stroke-width:2px
+    classDef delegate stroke-dasharray:6 4`}
 />
 
 | Substrate | Becomes… | by… |
@@ -79,7 +83,13 @@ Delegating is only half the relationship. The other half is **verifying the dele
     S -->|criteria on the artifact| BAR["<b>the bar</b><br/>judges the work"]
     S -->|criteria on the delegate| FID["<b>fidelity</b><br/>judges the worker"]
     BAR --> WORK([the artifact])
-    FID --> WORKER([the delegate])`}
+    FID --> WORKER([the delegate])
+    class S,WORK artifact
+    class BAR gate
+    class WORKER delegate
+    classDef gate stroke:#d97706,stroke-width:2px
+    classDef artifact stroke:#0d9488,stroke-width:1.75px
+    classDef delegate stroke-dasharray:6 4`}
 />
 
 Fidelity is distinct from evaluation:
