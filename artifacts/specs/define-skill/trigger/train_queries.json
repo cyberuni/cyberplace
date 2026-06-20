@@ -1,0 +1,52 @@
+[
+  {
+    "id": "t001",
+    "query": "Create a new skill that helps agents write better commit messages",
+    "should_trigger": true
+  },
+  {
+    "id": "t002",
+    "query": "Write a skill for agents to use when reviewing pull requests",
+    "should_trigger": true
+  },
+  {
+    "id": "t004",
+    "query": "Define a persona skill that acts as a senior security engineer",
+    "should_trigger": true
+  },
+  {
+    "id": "t006",
+    "query": "Add a project-private skill for our internal release checklist workflow",
+    "should_trigger": true
+  },
+  {
+    "id": "t008",
+    "query": "Make a tool-based skill for interacting with our Asana board",
+    "should_trigger": true
+  },
+  {
+    "id": "t010",
+    "query": "I need a skill for our CI triage workflow",
+    "should_trigger": true
+  },
+  {
+    "id": "n001",
+    "query": "Create an agent that reviews code and posts inline PR comments",
+    "should_trigger": false
+  },
+  {
+    "id": "n003",
+    "query": "Generate an eval spec for my commit-work skill",
+    "should_trigger": false
+  },
+  {
+    "id": "n006",
+    "query": "Audit my create-issue skill for quality issues",
+    "should_trigger": false
+  },
+  {
+    "id": "n009",
+    "query": "Create a subagent definition for autonomous code review",
+    "should_trigger": false
+  }
+]
