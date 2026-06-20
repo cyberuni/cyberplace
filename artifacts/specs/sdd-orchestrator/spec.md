@@ -20,7 +20,7 @@ The architecture has four moving parts:
    - **scenario-writer** — produces the `.feature` (pure boolean Gherkin) for a domain.
    - **implementer** — verifies the implementation and returns a **boolean pass/fail per scenario**.
 3. **Default delegates** — `sdd-scenario-writer` and `sdd-implementer` — the built-in fallback implementations of those two interfaces, invoked only when no plugin delegate is declared for a sub-domain.
-4. **Plugin delegates** — `aces-scenario-writer`, `aces-implementer`, `quill-implementer` — each its own agent definition, so each chooses its own model, effort, and context to match its workload.
+4. **Plugin delegates** — `aces-scenario-writer`, `aces-implementer`, `quill-writer`, `quill-implementer` — each its own agent definition, so each chooses its own model, effort, and context to match its workload. A participating plugin always provides a writer; the default writer runs only when no plugin is declared.
 
 Dispatch is uniform: the orchestrator invokes a writer-delegate (plugin-named or the `sdd-scenario-writer` default), then an implementer-delegate (plugin-named or the `sdd-implementer` default). Same input/output contract either way.
 
@@ -42,9 +42,11 @@ The existing design split each act into a dispatcher agent plus a contract gover
 
 SDD owning the `.feature` format means SDD owns the **validation gate** — any `.feature`, whoever wrote it, must pass `validate-spec` (valid Gherkin, boolean scenarios, lifecycle rules). It does **not** mean SDD writes the file. Once format authority is located in validation, the act of writing can safely be delegated, because SDD still polices the output.
 
-### The interface is the act; information is its criteria
+### The interface is the act; criteria are the plugin's bar
 
-The plug-in point is a **behavior** — "write the `.feature` for this domain in this folder" — not a data hand-off. The former advisory data (required fields, forbidden patterns, examples) is demoted to two non-interface jobs: the **input to the default writer**, and the **criteria `validate-spec` enforces** even against a plugin-written `.feature`. Information survives as discipline, not as the contract. Simple domains (Quill) plug in by supplying criteria and using the default writer; domains that must *generate* scenarios (ACES near-misses) override the act with their own writer.
+The plug-in point is a **behavior** — "write the `.feature` for this domain in this folder" — not a data hand-off. A participating plugin **always provides a writer** (an agent definition); SDD never classifies a domain as simple or complex. This mirrors the implementer side exactly: a domain either declares a writer (it acts) or it doesn't, in which case `sdd-scenario-writer` (the default) runs as the **no-plugin fallback** for plain code/lib/config. Quill's writer is thin (emits straightforward doc scenarios); ACES's is heavy (generates trigger near-misses) — same interface, different weight, no branch in SDD.
+
+Criteria do not survive as an alternative to acting. They are the plugin's **bar** — the backward face every delegation surface carries. So a plugin provides both faces: the **writer** (forward, the act, always present) and its **criteria** (backward, enforced by `validate-spec` against the produced `.feature`, keeping `producer ≠ judge`). SDD's own bar is the universal format gate (valid Gherkin, boolean scenarios, lifecycle); the plugin's bar adds domain criteria (e.g., every agent scenario carries trigger context).
 
 ### Scenario-writer and implementer are symmetric act-interfaces with default fallbacks
 
@@ -161,8 +163,8 @@ Sequenced so the stable interface lands first, the cheap consumer proves it, the
 - Delete `governances/`; fold I/O docs into the orchestrator + default delegates. `sdd-principles` → static AGENTS.md section.
 - Update `artifacts/specs/sdd-plugin` spec + `.feature` to the orchestrator model.
 
-**2. Quill (cheap consumer, proves the default path).**
-- Reframe `quill-scenario-advisor` as the criteria contribution to the default writer; Quill uses the default writer.
+**2. Quill (cheap consumer, proves a thin writer).**
+- Replace `quill-scenario-advisor` with `quill-writer` — a thin writer agent-def that emits doc scenarios; its doc criteria become the plugin's bar enforced by validate-spec.
 - Keep `quill-implementer`; confirm boolean-per-scenario output.
 - Update Quill spec + `.feature`.
 
