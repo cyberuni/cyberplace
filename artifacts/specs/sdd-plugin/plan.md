@@ -199,6 +199,34 @@ A concrete agent in the SDD plugin that routes the implementer contract invocati
 
 If no implementer is declared for a sub-domain, `sdd-implementer` falls back to checking that passing tests exist for every scenario — the pre-contract behavior.
 
+## Defer / build model
+
+An alternative to the runtime dispatch model. Instead of `sdd-author` resolving contracts via registry lookup at invocation time, domain plugin `init`/`update` skills generate concrete agent files into the project at setup time. `sdd-author` then invokes them by known name — no registry lookup, no dispatcher needed.
+
+### What gets generated
+
+When `aces init-sdd` runs under the defer model, it writes two files into the project:
+
+```
+.agents/
+  aces-sdd-implementer.md    ← generated from plugins/aces/agents/aces-sdd-implementer.md
+  aces-scenario-advisor.md   ← generated from plugins/aces/agents/aces-scenario-advisor.md
+```
+
+These files contain the same content as the plugin source. After generation they are project files — editable, committable, and surviv­able without the plugin installed.
+
+### How sdd-author uses generated files
+
+`sdd-author` invokes the agent by the name declared in `plan.md ## Plugin assignments` or resolved from the registry. With the defer model, it makes the same call — the difference is that the file exists locally rather than being loaded from the plugin. The dispatch model and defer model are compatible with the same `sdd-author` logic.
+
+### Update story
+
+Re-running `init` or `update` regenerates the files from the plugin source, overwriting local edits. A project that has customized a generated file should track the diff and re-apply after updates, or switch to the runtime model for that domain.
+
+### Mix-and-match
+
+A project may use defer-generated files for some domains (offline use, customization) and registry-resolved agents for others (always-current). The resolution order in `sdd-author` handles both: `plan.md ## Plugin assignments` names the agent; if a matching local file exists it is used, otherwise the plugin-loaded agent is used.
+
 ## Open design questions
 
 1. **Project-level quality config** — `verify-implementation` needs a config surface where projects declare their quality thresholds. No design yet.
