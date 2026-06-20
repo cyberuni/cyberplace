@@ -184,18 +184,18 @@ A naming distinction the metaphor invites: the **Conductor is the *actor*** — 
 
 > **Feeds:** human artifact (essay) primarily.
 
-The thesis, made concrete. A job title used to name a single contribution because production was scarce and focus was finite. With delegates supplying production, each position can now act across many roles — the title becomes a *default*, not a boundary. ("Gatekeeper" below names the evaluative activity — a backward face — not a separate actor.)
+The thesis, made concrete. A position used to be one **bundle** — one actor working one **object** through one **angle** — because production was scarce and focus finite: PM *framed* the product, Engineer *built* the code, Designer *built* the UX, QA *evaluated* quality. With delegates supplying production, the bundle comes apart: each position can act as more actors, and reach past its default object into process and toolchain (see *Recursion*). The title becomes a *default*, not a boundary.
 
-| Position     | Default role (pre-AI)      | Roles AI now opens                                                                                                  |
-| ------------ | -------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| **PM**       | Framer                     | Explorer (prototype directly with a delegate), Gatekeeper (own acceptance), Curator (encode product knowledge)      |
-| **Designer** | Builder + Explorer (of UX) | Framer (own the *why*), Gatekeeper (the taste and quality bar), Curator (the design system as a curated corpus)     |
-| **Engineer** | Builder                    | Architect, Gatekeeper (review), Conductor (orchestrate delegate fleets), Curator (write the conventions)            |
-| **QA**       | Gatekeeper                 | Architect (of acceptance criteria), Curator (golden sets and the regression corpus), Explorer (adversarial probing) |
+| Position     | Object · angle (default bundle) | Default actor · face   | Actors AI now opens                                                                                          |
+| ------------ | ------------------------------- | ---------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **PM**       | product · intent                | Framer · forward       | Builder (prototype with a delegate), Curator (encode product knowledge)                                      |
+| **Designer** | product · UX                    | Builder · forward      | Framer (own the *why*), Architect (the design system), Curator (the design corpus)                          |
+| **Engineer** | product · code                  | Builder · forward      | Architect (structure), Curator (conventions); reaches process & toolchain                                    |
+| **QA**       | product · quality               | Builder · **backward** | Architect (acceptance criteria), Curator (golden sets & regression corpus), Explorer (adversarial probing)   |
 
-QA is the sharpest case: when delegates write the tests, QA stops being the one who *writes* checks and becomes the one who *owns the acceptance contract and curates the corpus it draws on* — gatekeeping plus Curator.
+QA is the sharpest case: its default is the **backward-face Builder** — the trained quality specialist. When delegates write the checks, QA stops being the one who *writes* them and becomes the one who *owns the acceptance contract and curates the corpus it draws on* — backward Builder plus Architect and Curator.
 
-The table reads two ways. Across a row: how far one position can now stretch. Down the **Gatekeeper** column: why review is everyone's part-time role, not a department — every position turns its expertise backward at the gate.
+Two things the table no longer says. There is **no Gatekeeper column**: the backward face is *universal* — every position turns its expertise backward on whatever it touches, so review is everyone's part-time act, not a role one position owns. And the default actor now carries a **face**, which is how QA enters as a Builder turned backward rather than as a phantom "Gatekeeper actor."
 
 ## Two resolutions: actors for machines, variants for humans
 
