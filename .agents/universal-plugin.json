@@ -4,6 +4,11 @@
 			"name": "aces",
 			"scenario-advisor": ["agent-config", "skill"],
 			"implementer": ["agent-config", "skill"]
+		},
+		{
+			"name": "quill",
+			"scenario-advisor": ["documentation", "guide", "tutorial", "article", "reference"],
+			"implementer": ["documentation", "guide", "tutorial", "article", "reference"]
 		}
 	]
 }
