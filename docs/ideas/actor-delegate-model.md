@@ -1,6 +1,8 @@
-# The Actor–Delegate Model
+# The Motive Model
 
-A general framework for orchestrating human–agent teams that build a product — any product — seen fresh from the change AI introduces.
+*A mental model for building with AI — where motive, not job title, says who you are on a team.*
+
+A framework for building any product with AI, organized around **motive** rather than job title. Production used to be scarce, so a *title* fixed a person to one contribution; AI makes production abundant and dissolves that limit — so the unit of a team becomes the **motive** a person holds and extends through an AI **delegate**. Seen fresh from the change AI introduces.
 
 > **What this document is.** A research-centric **single source of truth**. It is neither of the two artifacts it exists to generate — it *feeds* both: a **machine artifact** (agent configuration: actors, motives, decision rules, interfaces) and a **human artifact** (an essay: variants, scenarios, narrative). Claims that lean on established theory carry inline citation keys like `[conway]`, resolved in **References**. Two claims are the framework's *own* and are marked **(original)** where they appear. The `## Downstream artifacts` map near the end says which parts feed which artifact.
 
