@@ -2,7 +2,8 @@
 	"sdd-plugins": [
 		{
 			"name": "aces",
-			"handles": ["agent evaluation", "skill evaluation"]
+			"scenario-advisor": ["agent-config", "skill"],
+			"implementer": ["agent-config", "skill"]
 		}
 	]
 }
