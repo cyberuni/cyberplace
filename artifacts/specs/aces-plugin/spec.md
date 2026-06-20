@@ -12,14 +12,25 @@ blocked-by: []
 
 ACES (Agent Config Examination & Specification) is a plugin that covers the full lifecycle of **agent configuration** — the skills, `AGENTS.md` sections, subagent definitions, governance files, and commands that shape how AI agents behave.
 
-It provides two complementary surfaces:
+Agent configuration arrives from many sources: files written for one harness (Claude Code, Cursor, Codex, Copilot), scattered across harness-specific folders, or authored in harness-specific syntax. ACES provides four complementary surfaces to bring any agent configuration under discipline:
 
 ### Authoring
 
-Scaffold and refine agent configuration artifacts following SDD discipline:
+Scaffold new agent configuration artifacts following SDD discipline:
 
 1. **Define** — create a new artifact (agent definition, governance file) with the right structure, placement, and runtime wiring.
-2. **Improve** — edit an existing artifact based on eval failures, review feedback, or changed requirements.
+
+### Migration
+
+Normalize existing agent configuration — regardless of where it came from — into a harness-neutral canonical structure:
+
+1. **Normalize** — detect existing agent config files across harness folders; move them to the canonical `.agents/` layout; create harness-specific symlinks so all runtimes still resolve them.
+
+### Build
+
+Transform canonical definitions to harness-specific syntax when symlinks alone are insufficient:
+
+1. **Build** — read canonical harness-neutral definitions and emit harness-specific output files (e.g., MDC frontmatter for Cursor rules, Codex-specific format) without duplicating the source.
 
 ### Evaluation
 
@@ -43,18 +54,33 @@ Agent configuration has no type-checker, linter, or test runner. Silent regressi
 - Vague rules in `AGENTS.md` cause inconsistent behavior that only surfaces in real sessions.
 - Subagent definitions can silently diverge from what callers expect.
 - New agent configuration gets written without a spec, so there's no baseline to regress against.
+- Existing agent configuration is often scattered across harness-specific folders with no canonical source of truth; changes must be duplicated per harness.
+- Harness-specific syntax (MDC frontmatter, Codex YAML blocks) locks content to one runtime and makes cross-harness reuse manual and error-prone.
 
 Code has CI. Agent configuration does not — until ACES.
 
-SDD is the natural fit: define the artifact with the right structure, write a behavioral spec (golden set) alongside it, then run the spec to validate correctness. ACES applies SDD discipline end-to-end to the agent configuration layer.
+SDD is the natural fit: define the artifact in a canonical structure, normalize what already exists, build harness-specific outputs without duplicating content, and validate behavior via a golden set. ACES applies that discipline end-to-end to the agent configuration layer.
 
 ---
 
 ## Design decisions
 
-### Authoring and evaluation in one plugin
+### Canonical `.agents/` layout as source of truth
 
-Both surfaces operate on the same domain (agent configuration artifacts). Keeping them in one plugin means a single install covers the full lifecycle: define → spec → run → improve. The skills remain narrow — each one does one thing — but they compose naturally.
+All agent configuration lives canonically under `.agents/` (skills, agents, commands, governance). Harness-specific folders (`.claude/`, `.cursor/`, `.codex/`) hold symlinks or built outputs — never the source. This makes the canonical definition the single file to edit, review, and eval.
+
+### Normalize vs. Build
+
+Two different strategies bridge the gap between canonical definitions and harness runtimes:
+
+- **Symlink** (preferred) — harness folder contains a symlink to the canonical file. Works when the harness accepts the canonical format without modification.
+- **Build** — harness folder contains a generated output file. Required when the harness demands a different syntax (e.g., MDC frontmatter for Cursor rules, Codex YAML blocks). The canonical file is still the source; the output is regenerated, never edited directly.
+
+`normalize` migrates existing files into canonical paths and creates symlinks. `build` generates harness-specific outputs from canonical files. Both are idempotent.
+
+### All surfaces operate on the same domain
+
+Authoring, migration, build, and evaluation all operate on agent configuration artifacts. One plugin covers the full lifecycle: define (or normalize) → build → spec → run → improve.
 
 ### SDD-first authoring
 
@@ -90,6 +116,18 @@ Eval suite generation is itself validated before use. `aces-spec-designer` produ
 |---|---|---|
 | `define-agent` | User wants to create or improve an agent definition | Gathers requirements; scaffolds agent file + optional companion command; creates runtime symlinks; runs quality checks |
 | `define-governance` | User wants to create or improve a governance file | Gathers requirements; scaffolds governance file; creates runtime symlinks; runs quality checks |
+
+### Migration skills
+
+| Skill | Trigger situation | Core action |
+|---|---|---|
+| `normalize` | User has existing agent config scattered across harness folders | Detects files in harness-specific locations; moves them to canonical `.agents/` paths; creates symlinks back to harness folders; reports what moved |
+
+### Build skills
+
+| Skill | Trigger situation | Core action |
+|---|---|---|
+| `build` | User wants to emit harness-specific output from canonical definitions | Reads canonical files; transforms to harness-specific syntax per target (Cursor MDC, Codex YAML, etc.); writes to harness folders; never overwrites canonical source |
 
 ### Evaluation skills
 
