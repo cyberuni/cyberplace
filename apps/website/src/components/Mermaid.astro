@@ -25,18 +25,6 @@ const { code, caption } = Astro.props
 		const nodes = document.querySelectorAll<HTMLElement>('pre.mermaid')
 		if (nodes.length === 0) return
 
-		mermaid.initialize({
-			startOnLoad: false,
-			theme: currentTheme(),
-			securityLevel: 'loose',
-			fontFamily: 'inherit',
-			flowchart: { htmlLabels: true, curve: 'basis', useMaxWidth: true },
-			themeVariables: {
-				primaryColor: 'var(--sl-color-accent-low)',
-				lineColor: 'var(--sl-color-gray-3)',
-			},
-		})
-
 		// Restore original source so a theme switch can re-render cleanly.
 		nodes.forEach((el) => {
 			const source = el.dataset.source
@@ -48,6 +36,13 @@ const { code, caption } = Astro.props
 		})
 
 		try {
+			mermaid.initialize({
+				startOnLoad: false,
+				theme: currentTheme(),
+				securityLevel: 'loose',
+				fontFamily: 'inherit',
+				flowchart: { htmlLabels: true, curve: 'basis', useMaxWidth: true },
+			})
 			await mermaid.run({ querySelector: 'pre.mermaid' })
 		} catch {
 			/* a malformed diagram should not break the page */
