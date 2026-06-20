@@ -9,6 +9,11 @@
 			"source": "./plugins/aces"
 		},
 		{
+			"name": "quill",
+			"description": "Documentation SDD plugin. Verifies guides, tutorials, articles, and reference docs against specs — existence, required headings, completeness, and reader-path continuity.",
+			"source": "./plugins/quill"
+		},
+		{
 			"name": "tmux",
 			"description": "tmux workflow skills for Claude Code — fork conversations into panes, manage sessions.",
 			"source": "./plugins/tmux"
