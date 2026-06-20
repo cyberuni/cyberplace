@@ -2,24 +2,43 @@
 
 ## Architecture
 
-**Skill/agent split** — skills are user-facing workflow coordinators; agents are specialist workers invoked by skills, not directly by users.
+**Three-layer split:**
+- **Skills** — user-facing workflow coordinators; invoke `sdd-author`, never specialist agents directly.
+- **`sdd-author`** — the Conductor delegate; orchestrates all specialist agents and contracts for a given phase. See below.
+- **Specialist agents / contracts** — do one thing; return structured output to `sdd-author`.
 
 ```
 User
   │
-  ├── create-spec ──────────────→ sdd-spec-designer (writes spec.md + .feature)
-  │                   └───────→ sdd-spec-validator (quality loop)
+  ├── create-spec ────→ sdd-author ─┬─→ sdd-spec-designer  (writes spec.md + .feature)
+  │                   (Conductor)   ├─→ sdd-spec-validator  (quality loop)
+  │                                 ├─→ sdd-scenario-advisor (TBD, contract — domain plugin implements)
+  │                                 └─→ sdd-implementer     (TBD, contract — domain plugin implements)
   │
-  ├── validate-spec ───────────→ sdd-spec-validator
+  ├── validate-spec ──→ sdd-author (Conductor)
   │
   ├── init-sdd ──── (no agent; writes AGENTS.md section + registers hook)
   │
-  ├── plan-spec ─────────────── sdd-plan-designer (TBD) → plan.md + research.md
+  ├── plan-spec ────→ sdd-author ──→ sdd-plan-designer  (TBD)
   │
-  ├── create-tasks ────────────  sdd-task-planner (TBD) → tasks.md
+  ├── create-tasks ─→ sdd-author ──→ sdd-task-planner   (TBD)
   │
-  └── verify-implementation ──── sdd-impl-verifier (TBD) → spec.md → Implemented
+  └── verify-implementation → sdd-author (dispatches via implementer contract)
 ```
+
+## sdd-author: the Conductor delegate
+
+`sdd-author` is the **codified Conductor** for the SDD workflow — the orchestrator-worker delegate pattern materialized as agent configuration. Per the Motive Model: "the orchestrator-worker pattern is already a *delegate*, not a human role."
+
+It never does specialist work itself. It:
+
+1. Reads context (spec.md, plan.md Plugin assignments)
+2. Resolves which contracts apply for this domain
+3. Dispatches to the right specialist agent or contract in the right order
+4. Collects structured output and decides the next step
+5. Reports to the calling skill
+
+`sdd-author` knows about the **contracts** (what inputs/outputs they have) but never about their implementations (ACES, sdd-react, etc.). Domain plugins register by being named in `plan.md`'s `## Plugin assignments` table.
 
 ## Agent governance layer
 
@@ -47,9 +66,18 @@ Each `spec.md` carries an `aligned` field (boolean) and an `## Artifacts` sectio
 **Agent enforcement chain:**
 
 ```
-sdd-author (phase start)   → set aligned: false
-sdd-spec-designer           → writes/maintains ## Artifacts section; keeps aligned: false
-sdd-author (phase end)      → checks all artifacts, sets aligned: true, reports ALIGNED: true
+sdd-author (phase start)    → set aligned: false
+sdd-spec-designer            → writes/maintains ## Artifacts section; keeps aligned: false
+
+Exploration / Approval:
+  sdd-author (phase end)    → aligned: true when sdd-spec-designer reports all
+                               spec artifacts created/updated
+
+Implementation:
+  sdd-author                → dispatches to implementer contract (via sdd-implementer)
+  implementer contract      → reports IMPLEMENTATION_PASS: true | false
+  sdd-author (phase end)    → aligned: true only when IMPLEMENTATION_PASS: true
+
 create-spec / validate-spec → must not commit while ALIGNED is false
 ```
 
@@ -98,23 +126,78 @@ specs/
     tasks.md
 ```
 
-A `plan.md` for a cross-cutting feature declares which SDD plugin handles each sub-domain in a `## Plugin assignments` section:
+A `plan.md` for a cross-cutting feature declares which SDD plugin handles each sub-domain in a `## Plugin assignments` section. Each sub-domain names both contracts it satisfies:
 
 ```markdown
 ## Plugin assignments
 
-| Sub-domain | SDD plugin |
-|---|---|
-| React component | sdd-react |
-| Design token definitions | sdd-design-tokens |
-| Utility functions | (base SDD plugin) |
+| Sub-domain | Scenario advisor | Implementer |
+|---|---|---|
+| Agent configuration | aces-scenario-advisor | aces-implementer |
+| React component | sdd-react-advisor | sdd-react-implementer |
+| Utility functions | (none) | sdd-generic-implementer |
 ```
+
+`sdd-author` reads this table to resolve which contract implementations to invoke for each phase.
 
 **Why plugin selection belongs in `plan.md`, not `spec.md`:**
 
 `spec.md` describes observable behavior — "the Banner displays a dismissible alert." This spec must survive rewriting from React to Web Components without changing. `plan.md` would change because the implementation tools changed. Plugin choice is strategy (the how), not contract (the what).
 
 Consequence for `plan-spec`: the skill must read the frozen `spec.md`, identify sub-domains from the command surface and scenarios, ask or infer which SDD plugin applies to each, and write `plan.md` with a `## Plugin assignments` section. This is the bridge between "what" and "which tools."
+
+## Contracts
+
+SDD defines two contracts that domain plugins implement. `sdd-author` invokes both; domain plugins register by being named in `## Plugin assignments`. Neither contract names a concrete implementation — DIP is preserved in both directions.
+
+### Contract 1: Scenario Advisor
+
+Invoked by `sdd-author` before `sdd-spec-designer` writes the `.feature` file. Provides domain-specific constraints that generic Gherkin writing cannot know.
+
+```
+Input:
+  DOMAIN            — domain name
+  COMMAND_SURFACE   — from spec.md Command surface / API section
+  DESIGN_DECISIONS  — from spec.md Design decisions section
+
+Output:
+  REQUIRED_FIELDS      — context fields every scenario must carry
+  FORBIDDEN_PATTERNS   — Gherkin patterns that won't be scoreable/evaluatable
+  EXAMPLE_SCENARIOS    — 1-3 well-formed examples the designer should imitate
+  NOTES                — any domain constraints not captured above
+```
+
+`sdd-author` passes the advisor output to `sdd-spec-designer` as ADVISOR_CONSTRAINTS. If no advisor is declared, `sdd-spec-designer` proceeds without constraints.
+
+### Contract 2: Implementer
+
+Invoked by `sdd-author` during the implementation phase. Owns everything domain-specific: reading `.feature`, running the implementation, verifying pass/fail against scenarios.
+
+```
+Input:
+  DOMAIN                — domain name
+  DOMAIN_PATH           — path to specs/<domain>/
+  SPEC_PATH             — path to spec.md
+  FEATURE_PATH          — path to .feature file
+  PLAN_PATH             — path to plan.md (or null)
+  TASKS_PATH            — path to tasks.md (or null)
+  IMPLEMENTATION_PATHS  — paths from ## Artifacts table, layer=impl
+
+Output:
+  IMPLEMENTATION_PASS   — true | false
+  SCENARIOS_PASSING     — list
+  SCENARIOS_FAILING     — list
+  CHANGES_MADE          — summary of what was changed
+  BLOCKER               — reason if PASS is false, else null
+```
+
+`sdd-author` sets `aligned: true` only when `IMPLEMENTATION_PASS: true` from every declared implementer.
+
+### sdd-implementer: the dispatcher
+
+A concrete agent in the SDD plugin that routes the implementer contract invocation to the declared domain plugin. `sdd-author` invokes `sdd-implementer` with the plugin assignments table; `sdd-implementer` reads it, invokes the right implementer, and returns the contract output. This keeps `sdd-author` unaware of routing logic.
+
+If no implementer is declared for a sub-domain, `sdd-implementer` falls back to checking that passing tests exist for every scenario — the pre-contract behavior.
 
 ## Open design questions
 
