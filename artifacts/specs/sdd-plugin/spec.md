@@ -276,6 +276,29 @@ Status → implemented
 
 ---
 
+## Design decisions
+
+### Domain-plugin integration: runtime dispatch vs. defer/build
+
+When `sdd-author` needs to invoke a domain-specific scenario advisor or implementer, two models are viable:
+
+**Runtime dispatch model** — `sdd-author` reads `.agents/universal-plugin.json` or `plan.md ## Plugin assignments` at the moment of invocation and routes to the registered agent (e.g., `aces-implementer`, `quill-implementer`). The registry is the source of truth at runtime; no files are generated.
+
+**Defer / build model** — The domain plugin's `init` (or `update`) skill generates concrete agent files into the project (e.g., `.agents/sdd-implementer.md`, or a project-local `aces-scenario-advisor.md`) at setup time. `sdd-author` invokes known names; the generated files implement the contracts. Re-running `init` or `update` regenerates the files from the plugin source.
+
+| Dimension | Runtime dispatch | Defer / build |
+|---|---|---|
+| Project footprint | Registry entry only | Generated agent files in `.agents/` |
+| Up-to-date guarantee | Always current (reads live plugin) | Stale until user re-runs init/update |
+| sdd-author complexity | Registry lookup on every invocation | Direct agent call — no resolution step |
+| Customizability | Per-spec `plan.md` override | Edit generated file after generation |
+| Works offline / without plugin | No — needs plugin agents loaded | Yes — generated files are self-contained |
+| Update story | No action needed | Must re-run init/update after plugin upgrade |
+
+Both models are open. The defer model is preferable when projects want self-contained agent definitions or when `sdd-author` should not depend on runtime availability of the plugin. The runtime model is preferable when staying current with plugin updates automatically matters more than self-containment. A project may use both: defer-generated files for customized domains, registry resolution as fallback.
+
+---
+
 ## Governances
 
 - [`sdd-principles`](./governances/sdd-principles.md) — the core rules of SDD in brief
