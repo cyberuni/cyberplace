@@ -8,11 +8,17 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     Then it invokes the aces-scenario-writer delegate
     And it does not invoke the sdd-scenario-writer default
 
-  Scenario: Orchestrator falls back to the default writer when none is declared
+  Scenario: Orchestrator falls back to the default writer when no plugin is declared
     Given plan.md declares no writer for the "parser" domain
     When sdd-orchestrator runs the design phase for the "parser" domain
     Then it invokes the sdd-scenario-writer default delegate
-    And the default writer is fed the domain criteria as input
+    And the default writer produces generic boolean Gherkin with no domain criteria
+
+  Scenario: A participating plugin always provides its own writer
+    Given the "guide" domain is handled by the Quill plugin
+    When sdd-orchestrator runs the design phase for the "guide" domain
+    Then it invokes the quill-writer delegate
+    And SDD does not classify the domain as simple or complex
 
   # ── dispatch: implementer ────────────────────────────────────────────────
 
