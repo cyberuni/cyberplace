@@ -3,6 +3,9 @@ title: Positions Are Not Roles
 description: Your job title used to bundle one motive, one object, one angle — because production was scarce. With AI delegates supplying production, the bundle comes apart and the title becomes a default, not a boundary.
 ---
 
+import { Aside } from '@astrojs/starlight/components'
+import Mermaid from '../../../components/Mermaid.astro'
+
 Find yourself in this page first. The model is easiest to grasp from the job title you already hold.
 
 A **position** is a job title — PM, Designer, Engineer, QA. A **role** is something narrower: the kind of contribution you make *right now*, defined by what you want from the work. Pre-AI, a position was one fixed **bundle** — one motive, one object, one angle — because production was scarce and focus was finite:
@@ -17,6 +20,18 @@ One title, one job. That held because nobody had spare capacity to do a second k
 ## What AI changes
 
 With delegates supplying production, the bundle comes apart. Each position can now act as **more than one motive**, and reach past its default object. The title becomes a *default*, not a boundary.
+
+<Mermaid
+	caption="One position used to be one bundle. With delegates supplying production, it fans out into several motives."
+	code={`flowchart LR
+    P["A position<br/>(one title)"] --> BUNDLE["was: one bundle<br/>one motive · one object · one angle"]
+    BUNDLE --> NOW["now: a default, not a boundary"]
+    NOW --> M1[intend]
+    NOW --> M2[generate]
+    NOW --> M3[structure]
+    NOW --> M4[accumulate]
+    NOW --> M5[evaluate]`}
+/>
 
 | Position | Default bundle (object · motive) | Motives AI now opens |
 | --- | --- | --- |
@@ -33,9 +48,13 @@ QA's default is **evaluation** — the trained quality specialist whose whole jo
 
 ## Two things the old org chart no longer says
 
-**There is no Gatekeeper position.** Judging isn't a job someone owns — it's what *any* expertise does when you turn it backward on a result. Every position reviews whatever it touches. Review is everyone's part-time act, not one person's title. (More in [Two faces and the gate](/motive-model/faces-and-the-gate/).)
+<Aside type="note" title="There is no Gatekeeper position">
+Judging isn't a job someone owns — it's what *any* expertise does when you turn it backward on a result. Every position reviews whatever it touches. Review is everyone's part-time act, not one person's title. (More in [Two faces and the gate](/motive-model/faces-and-the-gate/).)
+</Aside>
 
-**The title is a starting point, not a fence.** An Engineer who notices three features each rolling their own auth and extracts one shared path has stepped into a *structuring* motive — same person, different role, same minute. The model lets you name that without a promotion or a re-org.
+<Aside type="tip" title="The title is a starting point, not a fence">
+An Engineer who notices three features each rolling their own auth and extracts one shared path has stepped into a *structuring* motive — same person, different role, same minute. The model lets you name that without a promotion or a re-org.
+</Aside>
 
 ---
 
