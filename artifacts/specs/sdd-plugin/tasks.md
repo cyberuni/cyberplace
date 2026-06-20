@@ -21,16 +21,16 @@
 - [x] Fix `spec-lifecycle.md` Draft section (same error)
 - [x] Add `aligned` field + `## Artifacts` section to spec format (`spec.md`, `spec-template.md`)
 - [x] Document artifact alignment rules and unit-of-work enforcement in `spec.md` and `plan.md`
-- [ ] Update `sdd-spec-validator` to check `aligned` field, `## Artifacts` section, and artifact path existence
-- [ ] Update `sdd-spec-designer` to write/maintain `## Artifacts` section and set `aligned: false` when writing
-- [ ] Update `sdd-author` as Conductor delegate: fix alignment steps — exploration/approval set `aligned: true` from sdd-spec-designer output; implementation dispatches via implementer contract, sets `aligned: true` only on `IMPLEMENTATION_PASS: true`
-- [ ] Update `create-spec` skill to surface ALIGNED status and not commit while `aligned: false`
-- [ ] Update `validate-spec` skill to report `aligned` status
-- [ ] Create `init-sdd` skill (include artifact alignment rule in the AGENTS.md section it writes)
-- [ ] Write scenario-advisor contract governance doc (`sdd-scenario-advisor-contract.md`)
-- [ ] Write implementer contract governance doc (`sdd-implementer-contract.md`)
-- [ ] Create `sdd-implementer` dispatcher agent (reads Plugin assignments, routes to declared implementer, falls back to test-existence check)
-- [ ] Update Plugin assignments table format in plan.md spec: two columns (advisor + implementer)
+- [x] Update `sdd-spec-validator` to check `aligned` field, `## Artifacts` section, and artifact path existence
+- [x] Update `sdd-spec-designer` to write/maintain `## Artifacts` section and set `aligned: false` when writing
+- [x] Update `sdd-author` as Conductor delegate: fix alignment steps — exploration/approval set `aligned: true` from sdd-spec-designer output; implementation dispatches via implementer contract, sets `aligned: true` only on `IMPLEMENTATION_PASS: true`
+- [x] Update `create-spec` skill to surface ALIGNED status and not commit while `aligned: false`
+- [x] Update `validate-spec` skill to report `aligned` status
+- [x] Create `init-sdd` skill (include artifact alignment rule in the AGENTS.md section it writes)
+- [x] Write scenario-advisor contract governance doc (`sdd-scenario-advisor-contract.md`)
+- [x] Write implementer contract governance doc (`sdd-implementer-contract.md`)
+- [x] Create `sdd-implementer` dispatcher agent (reads Plugin assignments, routes to declared implementer, falls back to test-existence check)
+- [x] Update Plugin assignments table format in plan.md spec: two columns (advisor + implementer)
 
 ## Phase 3 — Full lifecycle
 
