@@ -3,6 +3,7 @@ status: draft
 priority: <1–n; lower number = higher priority>
 blocked-by:
   - <spec-slug>   # omit section if no dependencies
+aligned: false
 ---
 
 # <Feature Name>
@@ -39,3 +40,13 @@ blocked-by:
 - `1` — <primary error case>
 
 **Gherkin scenarios:** [<domain>.feature](./<domain>.feature)
+
+---
+
+## Artifacts
+
+| Label | Path |
+|---|---|
+| Spec | `specs/<domain>/spec.md` |
+| Scenarios | `specs/<domain>/<domain>.feature` |
+<!-- Add rows as plan, tasks, implementation, docs, etc. are created -->

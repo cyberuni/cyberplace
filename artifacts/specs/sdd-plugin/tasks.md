@@ -19,7 +19,14 @@
 
 - [x] Fix `specs/spec.md` Process section (sequential-gate doc error)
 - [x] Fix `spec-lifecycle.md` Draft section (same error)
-- [ ] Create `init-sdd` skill
+- [x] Add `aligned` field + `## Artifacts` section to spec format (`spec.md`, `spec-template.md`)
+- [x] Document artifact alignment rules and unit-of-work enforcement in `spec.md` and `plan.md`
+- [ ] Update `sdd-spec-validator` to check `aligned` field, `## Artifacts` section, and artifact path existence
+- [ ] Update `sdd-spec-designer` to write/maintain `## Artifacts` section and set `aligned: false` when writing
+- [ ] Update `sdd-author` to set `aligned: false` at phase start, `aligned: true` at phase completion; add `ALIGNED` to output; block GOAL_ACHIEVED when `aligned: false`
+- [ ] Update `create-spec` skill to surface ALIGNED status and not commit while `aligned: false`
+- [ ] Update `validate-spec` skill to report `aligned` status
+- [ ] Create `init-sdd` skill (include artifact alignment rule in the AGENTS.md section it writes)
 
 ## Phase 3 — Full lifecycle
 

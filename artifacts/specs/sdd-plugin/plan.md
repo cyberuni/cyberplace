@@ -36,6 +36,29 @@ Agent governance rules (`.feature` freeze, spec-owns-behavior, two-mode model) m
 | Spec owns behavior | Agent definition (AGENTS.md via `init-sdd`) |
 | Approved → Implemented requires passing tests | `verify-implementation` skill (future) |
 | Status accuracy | `sdd-spec-validator` status consistency checks |
+| All artifacts in sync before commit | `aligned` field + `## Artifacts` section; `sdd-author` sets `aligned: false` at phase start, `aligned: true` at phase completion after all artifacts updated |
+
+## Artifact alignment
+
+Each `spec.md` carries an `aligned` field (boolean) and an `## Artifacts` section listing every artifact that belongs to the spec. Paths are project-root-relative; folder paths mean "all files under it."
+
+**Unit-of-work rule:** touching any artifact sets `aligned: false`. The work unit is not complete — and a commit must not be made — until every listed artifact is reviewed, updated if needed, and `aligned: true` is set.
+
+**Agent enforcement chain:**
+
+```
+sdd-author (phase start)   → set aligned: false
+sdd-spec-designer           → writes/maintains ## Artifacts section; keeps aligned: false
+sdd-author (phase end)      → checks all artifacts, sets aligned: true, reports ALIGNED: true
+create-spec / validate-spec → must not commit while ALIGNED is false
+```
+
+**Path conventions:**
+
+- Project-root-relative (no leading `/`)
+- Folder paths for whole packages: `plugins/sdd/` means every agent and skill file under it
+- File paths for individually tracked artifacts: `artifacts/specs/sdd-plugin/plan.md`
+- No globs — keep paths readable by humans; agents can walk a listed folder
 
 ## Missing skills (future phases)
 
