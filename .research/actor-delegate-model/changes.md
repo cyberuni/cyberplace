@@ -1,5 +1,14 @@
 # Changes — The Actor–Delegate Model
 
+## 2026-06-19 — Variants span both faces; drop the two-axis overreach
+
+- **Variant redefined: specialization of an actor, *either* face.** Corrected the prior "variants live on the forward face" claim. A variant is a specialization sharing its actor's motive, differentiated by required *training*, and it can anchor to forward (Explorer/Scout/Conductor) **or** backward.
+- **QA added as the confirmed backward-face Builder variant** — deep training in evaluating the product (test design, coverage, regression). Grounds why *generic* gatekeeping is a face (universal, not a role) while *QA* is a trained specialization (a role): the capacity gate is the separator. Symmetry: Explorer and QA are both Builder variants, one per face.
+- **Removed the two-axis "variant generator" claim** (divergent/convergent · design-time/runtime) that a prior edit wrongly marked **(original)**. It manufactured a taxonomy from n=3 and inflated the original-claim count past the "two" promised in the framing note. Back to two original claims (no-motive delegate; stub→rework trade-off) — consistent with `conclusion.md`.
+- **Conclusion changed materially?** No verdict change; the two-original-claims count is restored, and the variant definition is corrected (faces, not forward-only).
+- **Still pending:** the Positions table overhaul (Gatekeeper-as-role still present in that table; QA's default is now cleanly "backward-face Builder").
+
+
 ## 2026-06-19 — Resolve the open questions
 
 - **Variant taxonomy (Q1) → Resolved.** The membership gates *are* the bound; the count is discovered, not fixed. Verdicts: Explorer (Builder) confirmed; Conductor (Architect) forming; **Scout (Framer)** added as forming — the Framer's divergent/discovery variant, by the Explorer parallel; **Curator has no variant** (its three acts share one cognitive profile → sub-roles, not variants). Named the generative pattern (original): variants come off two axes — divergent/convergent and design-time/runtime. Updated the variants table, Variant glossary row, and downstream-artifacts row.
