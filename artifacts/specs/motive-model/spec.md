@@ -6,25 +6,11 @@ blocked-by: []
 
 # The Motive Model
 
-*A mental model for building with AI — where the **direction** you set (a motive, from your angle of expertise), not your job title, says who you are on a team.*
+*A mental model for building with AI — where the **direction** you set (a motive, from your angle of expertise), not your job title (PM, Engineer, Designer, QA), says who you are on a team.*
 
-A framework for building any product with AI, organized around **motive** rather than job title (PM, Engineer, Designer, QA). Building a product takes more than one kind of expertise — someone to frame what's worth making, someone to build it, someone to keep it coherent, someone to test it. A person is good at one. So no one advanced a product alone: you formed a **team**, and the work waited on whoever held the discipline you lacked. That waiting — not the typing — was the real cost of building.
+Building a product takes more than one kind of expertise — someone to frame what's worth making, someone to build it, someone to keep it coherent, someone to test it. A person is good at one. So no one advanced a product alone: you formed a **team**, and the work waited on whoever held the discipline you lacked. That waiting — not the typing — was the real cost of building.
 
 AI changes who has to be present. A discipline can be **codified** — written down once — and run by an AI **delegate** that acts **on your behalf**, putting the engineer's, designer's, and tester's judgment within your reach on demand. One person can now carry a product far past their own expertise without stopping to wait for the rest of the team. With progress no longer gated by who's in the room, a **title** stops being a boundary: what defines your place on a team is no longer the job you hold but the **role** you take on right now — a **motive**, the **direction** you set from your **angle** of expertise. That shift — from **title** to **motive** — is the move everything else here is built on.
-
----
-
-## Outputs
-
-This spec generates two distinct artifacts:
-
-**Output 1 — Human artifact: The Motive Model documentation**
-An essay and doc set explaining the framework for human readers. Currently live at `apps/website/src/content/docs/motive-model/`. Covers the conceptual framework: premise, actors, faces, gate, delegation surfaces, variants, scenarios, recursion, glossary.
-
-**Output 2 — Machine artifact: Agent configuration system**
-Machine-readable definitions that encode the framework for AI agents. Includes: actor enum with motives/objects/surfaces, bar criteria per surface, gate decision rules, loop firing conditions, and the delegate-has-no-motive governance rule. Materialized as governance files consumable via `cyber-skills governance show`.
-
-**Gherkin scenarios:** [motive-model.feature](./motive-model.feature)
 
 ---
 
@@ -408,6 +394,10 @@ Three things this clears up:
 
 ---
 
+**Gherkin scenarios:** [motive-model.feature](./motive-model.feature)
+
+---
+
 ## Design decisions
 
 - **Architect is distinct by OBJECT, not scope.** *Scope* was a red herring: a Builder zoomed out still produces a **part**, just a bigger one. The Architect's **object** is different — *relations between parts* (boundaries, conventions, the composition law), not a slice of the product [conway]. That holds at every scope, so "Builder at system scope" is a category error. Operationally the Architect also differs on **deliverability** (realized only *through* others' work), **feedback latency** (slow and global), and **cadence** (per structural decision, not per contribution). Feature-scale fuzziness — "a Builder co-delivering a spec is already doing architecture" — is one *person* flipping roles, not the actors merging: switching motive is switching actor.
@@ -500,3 +490,14 @@ Three things this clears up:
 [dev-loop]: https://developers.redhat.com/articles/2024/09/05/platform-engineers-role-devsecops-inner-and-outer-loops "Developer inner/outer loop"
 [ai-roles]: https://www.gartner.com/en/newsroom/press-releases/2024-10-03-gartner-says-generative-ai-will-require-80-percent-of-engineering-workforce-to-upskill-through-2027 "Gartner — generative AI and engineering roles (2024-10-03)"
 [multi-agent]: https://www.anthropic.com/research/building-effective-agents "Anthropic — Building Effective Agents"
+
+---
+
+## Artifacts
+
+| Label | Path |
+|---|---|
+| Spec | `artifacts/specs/motive-model/spec.md` |
+| Scenarios | `artifacts/specs/motive-model/motive-model.feature` |
+| Human artifact — documentation | `apps/website/src/content/docs/motive-model/` |
+| Machine artifact — governance | _planned — governance files consumable via `cyber-skills governance show`_ |
