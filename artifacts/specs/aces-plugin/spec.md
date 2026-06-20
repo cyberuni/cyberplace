@@ -10,12 +10,23 @@ blocked-by: []
 
 ## What
 
-ACES (Agent Config Examination & Specification) is a plugin that applies spec-driven evaluation to **agent configuration** — the skills, `AGENTS.md` sections, subagent definitions, and commands that shape how AI agents behave.
+ACES (Agent Config Examination & Specification) is a plugin that covers the full lifecycle of **agent configuration** — the skills, `AGENTS.md` sections, subagent definitions, governance files, and commands that shape how AI agents behave.
 
-It provides a golden-set evaluation pipeline:
+It provides two complementary surfaces:
 
-1. **Spec** — build a labeled test suite (trigger queries + golden-set cases) for one agent configuration artifact.
-2. **Run** — score the current agent configuration against the golden set using an LLM judge on a 1–5 rubric.
+### Authoring
+
+Scaffold and refine agent configuration artifacts following SDD discipline:
+
+1. **Define** — create a new artifact (agent definition, governance file) with the right structure, placement, and runtime wiring.
+2. **Improve** — edit an existing artifact based on eval failures, review feedback, or changed requirements.
+
+### Evaluation
+
+Validate that artifacts behave as intended via a golden-set eval pipeline:
+
+1. **Spec** — build a labeled test suite (trigger queries + golden-set cases) for one artifact.
+2. **Run** — score the current artifact against the golden set using an LLM judge on a 1–5 rubric.
 3. **Compare** — diff scores before and after an edit; block commits on regression.
 4. **Improve** — diagnose failing cases by pattern and propose specific edits.
 5. **Report** — project-wide health dashboard across all eval suites.
@@ -31,14 +42,23 @@ Agent configuration has no type-checker, linter, or test runner. Silent regressi
 - Editing a skill's `description:` field changes when the agent invokes it — with no signal that something broke.
 - Vague rules in `AGENTS.md` cause inconsistent behavior that only surfaces in real sessions.
 - Subagent definitions can silently diverge from what callers expect.
+- New agent configuration gets written without a spec, so there's no baseline to regress against.
 
 Code has CI. Agent configuration does not — until ACES.
 
-SDD is the natural fit: write a behavioral spec (golden set) before or alongside the artifact, then run the spec to validate correctness. ACES is SDD applied to the agent configuration layer.
+SDD is the natural fit: define the artifact with the right structure, write a behavioral spec (golden set) alongside it, then run the spec to validate correctness. ACES applies SDD discipline end-to-end to the agent configuration layer.
 
 ---
 
 ## Design decisions
+
+### Authoring and evaluation in one plugin
+
+Both surfaces operate on the same domain (agent configuration artifacts). Keeping them in one plugin means a single install covers the full lifecycle: define → spec → run → improve. The skills remain narrow — each one does one thing — but they compose naturally.
+
+### SDD-first authoring
+
+`define-*` skills end with a suggested next step: run `aces:create-spec`. This nudges authors toward writing a spec immediately after defining an artifact, before any behavior has drifted.
 
 ### Golden-set evaluation over live simulation
 
@@ -64,18 +84,25 @@ Eval suite generation is itself validated before use. `aces-spec-designer` produ
 
 ## Command surface
 
-All entry points are user-facing skills in the `aces` plugin namespace:
+### Authoring skills
 
 | Skill | Trigger situation | Core action |
 |---|---|---|
-| `create-spec` | User wants an eval suite for an agent configuration | Runs designer/validator loop; writes `eval.md` + golden-set cases |
+| `define-agent` | User wants to create or improve an agent definition | Gathers requirements; scaffolds agent file + optional companion command; creates runtime symlinks; runs quality checks |
+| `define-governance` | User wants to create or improve a governance file | Gathers requirements; scaffolds governance file; creates runtime symlinks; runs quality checks |
+
+### Evaluation skills
+
+| Skill | Trigger situation | Core action |
+|---|---|---|
+| `create-spec` | User wants an eval suite for an agent configuration artifact | Runs designer/validator loop; writes `eval.md` + golden-set cases |
 | `add` | User has a new failure or edge case to capture | Scaffolds a test case file; writes to `golden-set/` |
-| `run` | User wants to score the current agent configuration | Invokes `aces-judge` per case; writes `results/<timestamp>.json` |
-| `compare` | User edited an agent configuration and wants a regression check | Runs eval on two versions; diffs scores; warns on regression |
+| `run` | User wants to score the current artifact | Invokes `aces-judge` per case; writes `results/<timestamp>.json` |
+| `compare` | User edited an artifact and wants a regression check | Runs eval on two versions; diffs scores; warns on regression |
 | `improve` | Eval failures exist; user wants targeted fixes | Groups failures by pattern; proposes before/after diffs; runs `compare` after apply |
 | `report` | User wants project-wide health across all suites | Reads all `eval.md` + latest results; prints health dashboard |
 
-Internal subagents (not user-triggered):
+### Internal subagents (not user-triggered)
 
 | Agent | Role |
 |---|---|
@@ -106,6 +133,6 @@ Suites live in `artifacts/specs/` alongside SDD specs. Naming convention: `<plug
 
 ## Related
 
-- `artifacts/specs/sdd-plugin/spec.md` — SDD plugin spec; ACES is SDD applied to agent configuration
+- `artifacts/specs/sdd-plugin/spec.md` — SDD plugin spec; ACES applies SDD to agent configuration
 - `apps/web/src/content/docs/concepts/agent-configuration.md` — what agent configuration is
 - `apps/web/src/content/docs/aces/overview.md` — website overview
