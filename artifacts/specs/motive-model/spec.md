@@ -8,7 +8,7 @@ blocked-by: []
 
 *A mental model for building with AI — where the **direction** you set (a motive, from your angle of expertise), not your job title, says who you are on a team.*
 
-A framework for building any product with AI, organized around **motive** rather than job title. Production used to be scarce, so a *title* fixed a person to one kind of contribution; AI makes production abundant and dissolves that limit — so what a person holds and extends through an AI **delegate** is no longer a fixed contribution but a **direction**: the **role** (a motive) they take on right now, set from their **angle** of expertise.
+A framework for building any product with AI, organized around **motive** rather than job title. Production used to be scarce, so a *title* fixed a person to one kind of contribution; AI makes it cheap and abundant, dissolving that limit — so what a person holds and extends through an AI **delegate** is no longer a fixed contribution but a **direction**: the **role** (a motive) they take on right now, set from their **angle** of expertise.
 
 ---
 
@@ -30,7 +30,7 @@ Machine-readable definitions that encode the framework for AI agents. Includes: 
 
 For as long as products have been built by teams, a *position* described a *contribution*: "Engineer" meant the person who produced the code, "Designer" the one who produced the design, "QA" the one who produced the checks. Position equaled contribution because **production was scarce**, and a human had the focus and capacity to be good at producing exactly one kind of thing.
 
-AI breaks that equation. When generation becomes abundant, producing the artifact stops being the scarce, defining act — and the limit that confined a person to a single contribution dissolves. The shift is observable already: as AI automates portions of coding and testing, the work moves toward collaborating, translating intent, and shaping how systems are built, and analysts expect it to *spawn new roles* rather than simply delete old ones [ai-roles]. A human in any position can now span several kinds of contribution, because delegates extend their reach past their own focus and capability.
+AI breaks that equation. When generation becomes cheap and abundant, producing the artifact stops being the scarce, defining act — and the limit that confined a person to a single kind of contribution dissolves. The shift is observable already: as AI automates portions of coding and testing, the work moves toward collaborating, translating intent, and shaping how systems are built, and analysts expect it to *spawn new roles* rather than simply delete old ones [ai-roles]. A human in any position can now span several kinds of contribution, because delegates extend their reach past their own focus and capability.
 
 So the unit of a team is no longer a *fixed contribution* — the single kind of work a title named. It is the **role** — the kind of contribution a person makes right now, defined by **motive** — fulfilled by an **actor** (the person, defined next) who brings their own **angle** of expertise and wields a **delegate** (an agent) they direct to make it on their behalf. The role's motive and the actor's angle together are the **direction** they set and transmit.
 
