@@ -17,5 +17,9 @@
         ]
       }
     ]
+  },
+  "enabledPlugins": {
+    "aces@cyber-skills-next": true,
+    "quill@cyber-skills-next": true
   }
 }
