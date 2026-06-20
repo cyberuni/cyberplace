@@ -8,7 +8,7 @@ Is the Actor–Delegate Model — a general framework for orchestrating human–
 
 **In scope:** sourcing the framework's non-obvious claims against authoritative theory; recording the design verdicts reached in session; identifying which claims are original adaptations vs grounded borrowings.
 
-**Out of scope:** building the two downstream artifacts (machine/agent-configuration spec; human essay). Those are generated *from* the dossier once the framework stabilizes. The dossier (`docs/ideas/actor-delegate-model.md`) is the single source of truth.
+**Out of scope:** building the two outputs (machine/agent-configuration system; human documentation). Those are generated *from* the spec once the framework stabilizes. The spec (`artifacts/ai-era/motive-model/spec.md`) is the single source of truth.
 
 ## Source angles
 
@@ -34,7 +34,7 @@ Most of the framework's spine is grounded: the Actor/Delegate split mirrors **ag
 1. **Delegate has no intrinsic motive.** Agency theory's agent is self-interested (the agency problem). The framework's delegate is "capacity, not a party," which *removes* the agency problem by design. This is the model's core adaptation, not a borrowed claim.
 2. **Stub → rework / dependency-ordering trade-off.** Stubs-stand-in-for-absent-dependencies is sourced; the *scheduling cost trade-off* built on it is the framework's own inference.
 
-### Session verdicts folded into the dossier
+### Session verdicts folded into the spec
 
 - **Architect is distinct by OBJECT, not scope.** "Builder at system scope" is a category error: a Builder zoomed out still makes a *part*; the Architect makes *relations between parts*. Resolves former open question #1.
 - **The gate is a two-axis decision:** verdict (accept/block) × change-request (none/yes, timing within-PR/deferred). `block+none` = Framer's kill at the gate; `accept+deferred` = the feedback edge. Timing is free only under `accept` (block forces within-PR).
