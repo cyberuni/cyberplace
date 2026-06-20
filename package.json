@@ -14,7 +14,7 @@
 		"typecheck": "turbo typecheck",
 		"verify": "turbo verify",
 		"version": "changeset version",
-		"web": "pnpm run --filter=web"
+		"web": "pnpm run --filter=website"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.4.15",
