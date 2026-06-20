@@ -76,7 +76,13 @@ Both walk-throughs run the same three loops — they just fire at different cade
     BAR -->|accept + deferred| BL["backlog · this product<br/>re-prioritized"]
     BL -.-> B
     BAR -->|durable lesson| CUR["Curator distills → corpus<br/>outer loop · any product"]
-    CUR -.->|warmer start| B`}
+    CUR -.->|warmer start| B
+    class B,CUR actor
+    class BAR gate
+    class BL artifact
+    classDef actor stroke-width:2px
+    classDef gate stroke:#d97706,stroke-width:2px
+    classDef artifact stroke:#0d9488,stroke-width:1.75px`}
 />
 
 - **Inner loop** — *within a task.* Builder produces, the bar fires, Builder corrects, Architect reshapes under green. Fast; every iteration. Correcting *actions* under fixed assumptions.

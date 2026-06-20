@@ -43,7 +43,9 @@ Three of the actors are most often confused, so state the difference up front. *
     B["<b>Builder</b> · design<br/>generalize within a feature<br/><i>lives in: the feature</i>"]
     AR["<b>Architect</b> · architecture<br/>generalize across features<br/><i>lives in: the product</i>"]
     C["<b>Curator</b> · curation<br/>generalize across products<br/><i>lives in: the corpus — outlives the product</i>"]
-    B -->|scope of reuse widens| AR -->|scope of reuse widens| C`}
+    B -->|scope of reuse widens| AR -->|scope of reuse widens| C
+    class B,AR,C actor
+    classDef actor stroke-width:2px`}
 />
 
 | Generalize across… | Result lives in… | Actor | Concern |
@@ -114,7 +116,9 @@ The Curator's output *feels* like a layer because every other actor's delegate r
     subgraph foundation [Foundation actor — operates on capacity to deliver]
         CU[Curator · the corpus]
     end
-    CU -. "every delegate reads from the corpus" .-> delivery`}
+    CU -. "every delegate reads from the corpus" .-> delivery
+    class F,B,A,CU actor
+    classDef actor stroke-width:2px`}
 />
 
 - **Delivery actors** — Framer, Builder, Architect — operate on the *product*.
