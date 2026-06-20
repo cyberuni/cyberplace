@@ -17,8 +17,59 @@ const { code, caption } = Astro.props
 <script>
 	import mermaid from 'mermaid'
 
-	function currentTheme(): 'dark' | 'base' {
-		return document.documentElement.dataset.theme === 'light' ? 'base' : 'dark'
+	// Normalize any CSS color (hex, hsl, oklch, named) to an rgb() string the
+	// mermaid color engine can parse — resolving Starlight's design tokens
+	// through the browser avoids the "Unsupported color format" failure.
+	function resolveColor(value: string, fallback: string): string {
+		if (!value) return fallback
+		const probe = document.createElement('span')
+		probe.style.color = ''
+		probe.style.color = value
+		if (!probe.style.color) return fallback
+		probe.style.display = 'none'
+		document.body.appendChild(probe)
+		const rgb = getComputedStyle(probe).color
+		probe.remove()
+		return rgb || fallback
+	}
+
+	// Build mermaid theme variables from the live Starlight palette, so diagrams
+	// track both the light/dark toggle and the site's accent color.
+	function themeVariables() {
+		const css = getComputedStyle(document.documentElement)
+		const token = (name: string, fallback: string) =>
+			resolveColor(css.getPropertyValue(name).trim(), fallback)
+
+		const accent = token('--sl-color-accent', '#3b82f6')
+		const accentLow = token('--sl-color-accent-low', '#1e3a5f')
+		const text = token('--sl-color-text', '#e5e7eb')
+		const bg = token('--sl-color-bg', '#0d1117')
+		const gray3 = token('--sl-color-gray-3', '#9ca3af')
+		const gray5 = token('--sl-color-gray-5', '#374151')
+		const gray6 = token('--sl-color-gray-6', '#1f2937')
+
+		return {
+			fontSize: '15px',
+			// Primary nodes — accent-tinted fill, accent border, readable text.
+			primaryColor: accentLow,
+			primaryBorderColor: accent,
+			primaryTextColor: text,
+			mainBkg: accentLow,
+			nodeBorder: accent,
+			nodeTextColor: text,
+			textColor: text,
+			titleColor: text,
+			// Edges and their labels.
+			lineColor: gray3,
+			edgeLabelBackground: bg,
+			// Subgraph (cluster) framing and alternate surfaces.
+			clusterBkg: gray6,
+			clusterBorder: gray5,
+			secondaryColor: gray6,
+			tertiaryColor: gray6,
+			secondaryBorderColor: gray5,
+			tertiaryBorderColor: gray5,
+		}
 	}
 
 	async function render() {
@@ -38,10 +89,18 @@ const { code, caption } = Astro.props
 		try {
 			mermaid.initialize({
 				startOnLoad: false,
-				theme: currentTheme(),
+				theme: 'base',
+				themeVariables: themeVariables(),
 				securityLevel: 'loose',
 				fontFamily: 'inherit',
-				flowchart: { htmlLabels: true, curve: 'basis', useMaxWidth: true },
+				flowchart: {
+					htmlLabels: true,
+					curve: 'basis',
+					useMaxWidth: true,
+					padding: 14,
+					nodeSpacing: 44,
+					rankSpacing: 52,
+				},
 			})
 			await mermaid.run({ querySelector: 'pre.mermaid' })
 		} catch {
@@ -67,6 +126,10 @@ const { code, caption } = Astro.props
 <style>
 	.mermaid-figure {
 		margin: 1.5rem 0;
+		padding: 1.25rem 1rem 1rem;
+		border: 1px solid var(--sl-color-gray-5);
+		border-radius: 0.75rem;
+		background: var(--sl-color-gray-6);
 		text-align: center;
 	}
 	.mermaid-figure :global(svg) {
@@ -74,7 +137,9 @@ const { code, caption } = Astro.props
 		max-width: 100%;
 	}
 	.mermaid-figure figcaption {
-		margin-top: 0.5rem;
+		margin-top: 0.75rem;
+		padding-top: 0.75rem;
+		border-top: 1px solid var(--sl-color-gray-5);
 		font-size: var(--sl-text-sm);
 		color: var(--sl-color-gray-3);
 		font-style: italic;
