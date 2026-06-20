@@ -8,7 +8,7 @@ blocked-by: []
 
 *A mental model for building with AI — where the **direction** you set (a motive, from your angle of expertise), not your job title, says who you are on a team.*
 
-A framework for building any product with AI, organized around **motive** rather than job title. Production used to be scarce, so a *title* fixed a person to one contribution; AI makes production abundant and dissolves that limit — so what a person holds and extends through an AI **delegate** is no longer a fixed contribution but a **direction**: the **role** (a motive) they take on right now, set from their **angle** of expertise.
+A framework for building any product with AI, organized around **motive** rather than job title. Production used to be scarce, so a *title* fixed a person to one kind of contribution; AI makes production abundant and dissolves that limit — so what a person holds and extends through an AI **delegate** is no longer a fixed contribution but a **direction**: the **role** (a motive) they take on right now, set from their **angle** of expertise.
 
 ---
 
