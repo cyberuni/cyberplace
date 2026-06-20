@@ -39,8 +39,8 @@
 - [ ] Design and create `verify-implementation` skill (now delegates to implementer contract)
 - [ ] Create `aces-implementer` agent in ACES plugin (implements implementer contract for agent config)
 - [ ] Create `aces-scenario-advisor` agent in ACES plugin (implements scenario-advisor contract for agent config)
-- [ ] Create `quill` plugin (`plugins/quill/`) with `init-quill` skill and `quill-implementer` + `quill-scenario-advisor` agents
-- [ ] `aces init-sdd` and `quill init` write entry to `.agents/universal-plugin.json` `sdd-plugins` (spec: `artifacts/specs/universal-plugin/`)
+- [x] Create `quill` plugin (`plugins/quill/`) with `init-quill` skill and `quill-implementer` + `quill-scenario-advisor` agents
+- [x] `aces init-sdd` and `quill init` write entry to `.agents/universal-plugin.json` `sdd-plugins` (spec: `artifacts/specs/universal-plugin/`)
 - [ ] Update `sdd-author` to read `.agents/universal-plugin.json` `sdd-plugins` as fallback when `plan.md` has no Plugin assignments
 
 ## Phase 4 — Open design questions
