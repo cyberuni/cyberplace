@@ -1,0 +1,36 @@
+---
+title: Recursion
+description: The four actors, two faces, surfaces, and gate are invariant — point the same machine at a different object and it still runs. The model builds not just the product but the process and toolchain that build it.
+---
+
+Everything in the rest of the model describes building *a product*. But the four actors, the two faces, the delegation surfaces, and the gate are **invariant** — point the same machine at a different *object* and it still runs. The model is **self-applying**: it builds not only the product but the **process** and the **toolchain** that build the product.
+
+Three objects matter:
+
+| Object | What it is | Framer decides | Builder makes | Architect structures | Curator distills |
+| --- | --- | --- | --- | --- | --- |
+| **Product** | the concrete, substantive outcome | which product | a feature | the codebase | product & domain knowledge |
+| **Process** | the way of working | which practices | a workflow or runbook | how the practices fit | process lessons |
+| **Toolchain** | tools & agent configuration | which tooling | a skill, plugin, or harness | the toolchain | tooling patterns |
+
+The loop is identical in each; only its object differs. So a "senior" anyone is not a *bigger* role — it is the same role worked across more of these objects.
+
+## Overlapping sets, not stacked levels
+
+Process and toolchain interpenetrate — a commit discipline encoded as a hook is *process and toolchain at once*; the toolchain is often *how* the process is enacted. A domain pattern codified as a skill is *product knowledge and toolchain*. The three intersect, union, and influence one another, and the same artifact frequently lives in more than one.
+
+The one asymmetry: **product is the concrete, substantive outcome — the thing that ships.** Process and toolchain are *means* that serve it and are refined by it. Influence runs every way at once: building the product teaches process and tooling (the Curator distills), while better process and tooling make the next product cheaper.
+
+## Three things this clears up
+
+**An outsized "Architect" definition resolves.** "Own codebase health, *and* the process governing AI contributions, *and* the AI workflow/harness" was never one giant role — it is the **Architect motive worked across all three sets.** One motive, three objects.
+
+**Codification is how knowledge crosses between the sets** — not an elevator up a ladder. The Curator distills a product lesson into a process convention or a toolchain artifact — *agent configuration* — which lands in process, toolchain, or their overlap, and is *wielded* back in product-building.
+
+**The Curator unifies the model.** "Accumulate" *is* lifting product experience into a reusable process or toolchain asset. So the **Curator foundation tier**, the **codification law**, **agent configuration**, and this **self-application** are one pattern: knowledge made reusable and carried across a seam — the seam between *actors* (Curator → the other three, within one build) and the seams between *sets* (product ↔ process ↔ toolchain). Same motive, two kinds of seam.
+
+> **Term guard.** *Tier* is the delivery-vs-foundation split among the four actors, *within* one build. Product / process / toolchain are a different thing — three **overlapping sets** the model is applied to, not a stack and not a tier.
+
+---
+
+*Next: [Glossary →](/motive-model/glossary/)*
