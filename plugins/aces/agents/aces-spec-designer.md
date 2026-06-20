@@ -1,3 +1,8 @@
+---
+name: aces-spec-designer
+description: Internal subagent for ACES. Analyzes a single agent configuration and produces a complete eval suite. Invoked by `create-spec` — not triggered by users directly.
+---
+
 # aces-spec-designer
 
 Internal subagent for ACES. Analyzes a single agent configuration and produces a complete eval suite. Invoked by `create-spec` — not triggered by users directly.

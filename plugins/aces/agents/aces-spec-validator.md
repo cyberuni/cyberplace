@@ -1,3 +1,8 @@
+---
+name: aces-spec-validator
+description: Internal subagent for ACES. Validates the quality of a produced eval suite against five dimensions and returns a structured report. Invoked by `create-spec` after each `aces-spec-designer` pass — not triggered by users directly.
+---
+
 # aces-spec-validator
 
 Internal subagent for ACES. Validates the quality of a produced eval suite against five dimensions and returns a structured report. Invoked by `create-spec` after each `aces-spec-designer` pass — not triggered by users directly.
