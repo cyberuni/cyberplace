@@ -31,13 +31,8 @@ function getFormat(): string | undefined {
 	return undefined
 }
 
-export function isJsonOutput(): boolean {
+function isJsonOutput(): boolean {
 	return getFormat() === 'json'
-}
-
-export function isAutomatedOutput(): boolean {
-	const fmt = getFormat()
-	return fmt === 'json' || fmt === 'agent'
 }
 
 export function output(data: unknown, readable: () => void) {

@@ -2,7 +2,6 @@ import * as os from 'node:os'
 import * as path from 'node:path'
 
 export const ASSET_DIRS = ['governances', 'disciplines', 'guidelines', 'templates'] as const
-export type AssetDir = (typeof ASSET_DIRS)[number]
 
 export function globalStorePath(): string {
 	return path.join(os.homedir(), '.agents', '.universal-plugin', 'plugins')

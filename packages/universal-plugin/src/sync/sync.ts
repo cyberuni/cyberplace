@@ -7,7 +7,7 @@ export interface SyncFs {
 	shell(command: string): number
 }
 
-export type SyncOutcome = 'applied' | 'failed' | 'manual' | 'not-found'
+type SyncOutcome = 'applied' | 'failed' | 'manual' | 'not-found'
 
 export interface SyncResult {
 	outcome: SyncOutcome
