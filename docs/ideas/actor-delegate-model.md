@@ -10,13 +10,24 @@ For as long as products have been built by teams, a *position* described a *cont
 
 AI breaks that equation. When generation becomes abundant, producing the artifact stops being the scarce, defining act — and the limit that confined a person to a single contribution dissolves. The shift is observable already: as AI automates portions of coding and testing, the work moves toward collaborating, translating intent, and shaping how systems are built, and analysts expect it to *spawn new roles* rather than simply delete old ones [ai-roles]. A human in any position can now span several kinds of contribution, because delegates extend their reach past their own focus and capability.
 
-So the unit of a team is no longer the *title*. It is the **role** — the kind of contribution a person makes right now — and the **delegate** they direct to make it on their behalf.
+So the unit of a team is no longer the *title*. It is the **role** — the kind of contribution a person makes right now — fulfilled by an **actor** (the person, defined next) wielding a **delegate** (an agent) they direct to make it on their behalf.
 
 ## Two kinds of thing: Actors and Delegates
 
 **Actors are humans, defined by motive.** An actor wants something — to solve the right problem, to make the thing work, to keep the whole coherent. The motive is intrinsic; it is *theirs*. Accountability lives with the actor and never leaves: an actor is answerable for the outcome of their role whether they did the work themselves or delegated it.
 
 **Delegates are agents that act on an actor's behalf.** A delegate has no intrinsic motive. It is *given* one — through artifacts the actor authors — and it executes that intent, filling the gap when the human is unavailable. Given good artifacts, a delegate often works faster and more thoroughly than the actor would alone. But it is never accountable; it is *capacity*, not a *party*.
+
+**Substrate vs party — two words each, on purpose.** Each side is a substrate that *becomes* a party by entering the relationship:
+
+| Substrate    | Becomes…        | by…                                                  |
+| ------------ | --------------- | ---------------------------------------------------- |
+| a **human**  | an **actor**    | taking on a motive and the accountability for it     |
+| an **agent** | a **delegate**  | being given that intent through a delegation surface |
+
+So **agent** names the raw capacity — an AI system, apart from any task — while **delegate** names that same agent once an actor has wielded it; the distinction mirrors the one **actor** draws over a *human*. This is why **delegate** is first a *verb*: to *delegate* is the act an actor performs — authoring the governance and criteria (the **delegation surface** and its **bar**) that transmit its responsibility to an agent, turning that agent into a delegate. The noun is just the agent caught mid-relation.
+
+**Actor vs role.** *Role* is the wider word — the kind of contribution a person makes, the unit that replaced the title. An **actor** is the narrow case: one of the four motive-distinct base roles, and the human end of the actor/delegate pair. **Variants** and **sub-roles** are roles too, but not actors — every actor is a role, not every role an actor. The machine reasons in actors; humans grow along the wider field of roles (see *Two resolutions*).
 
 This is the load-bearing distinction, and it adapts a known idea. **Agency theory** describes exactly this shape — "one party (the principal) delegates work to another (the agent), who performs that work on behalf of the principal" [agency] — and it is the backbone of how we reason about delegation. But the classic theory assumes the agent is *self-interested*: it has its own goals, withholds information, and may shirk — the "agency problem." **Our delegate is the opposite, and deliberately so (original):** it has no goals of its own, so the agency problem dissolves by construction. An agent is not a teammate in the way a person is. It is a faithful extension of a person. The whole framework is about how humans-in-roles extend themselves through delegates, and how those extended roles compose into building a product.
 
@@ -30,7 +41,7 @@ flowchart LR
 
 ## The four actors
 
-Around abundant generation sit four roles, forming a control loop: someone decides what's worth making, someone makes candidates, someone keeps the whole coherent, someone makes the learning compound. The set is held to **MECE** — mutually exclusive (motives don't overlap), collectively exhaustive (nothing essential falls outside) [mece]. And each of them also *judges* — turns its expertise backward to evaluate — so there is no separate "judge" role; judging is a face every actor has, described below.
+Around abundant generation sit four actors, forming a control loop: someone decides what's worth making, someone makes candidates, someone keeps the whole coherent, someone makes the learning compound. The set is held to **MECE** — mutually exclusive (motives don't overlap), collectively exhaustive (nothing essential falls outside) [mece]. And each of them also *judges* — turns its expertise backward to evaluate — so there is no separate "judge" role; judging is a face every actor has, described below.
 
 | Actor         | Motive                                                            | What they own                                                                                                            |
 | ------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
@@ -408,8 +419,10 @@ The framework's load-bearing terms, in dependency order — earlier terms ground
 
 | Term | Definition |
 | --- | --- |
-| **Actor** | A human role defined by an intrinsic **motive**: Framer, Builder, Architect, Curator. Holds accountability, which never delegates. *Collision to note: unlike a UML use-case "actor" (which may be a non-human system) or the actor-model actor, our actor is **always human** — agents are delegates.* |
-| **Delegate** | An agent acting on an actor's behalf. No motive of its own — *capacity*, not a *party*. Never accountable. Adapts agency theory's agent, minus the self-interest [agency]. |
+| **Role** | The genus — *a kind of contribution a person makes*, defined by **motive**. Spans **actors** (the four motive-distinct base roles), their **variants**, and **sub-roles**. Every actor is a role; not every role is an actor. The unit of a team that replaced the *title*. |
+| **Actor** | The narrow case of a **role**: one of the four motive-distinct base roles — Framer, Builder, Architect, Curator — and the human party in the **actor/delegate** pair. Holds accountability, which never delegates. *Collision to note: unlike a UML use-case "actor" (which may be a non-human system) or the actor-model actor, our actor is **always human** — agents are delegates.* |
+| **Agent** | The *substrate* of a delegate: an AI system apart from any task. An agent **becomes a delegate** when an actor gives it intent through a **delegation surface** — the mirror of how a human becomes an **actor** by taking on a motive. (**Agent configuration** is that materialized surface, not the agent itself.) |
+| **Delegate** | *(noun)* An **agent** acting on an actor's behalf — the agent caught in-relation; no motive of its own, *capacity*, not a *party*, never accountable. Adapts agency theory's agent, minus the self-interest [agency]. *(verb)* To **delegate** is the act an actor performs: authoring the governance and criteria — the **delegation surface** and its **bar** — that transmit its responsibility to an agent. |
 | **Motive** | The intrinsic want that defines an actor: intend (Framer), generate (Builder), structure (Architect), accumulate (Curator). |
 | **Object** | *What an actor's output is.* A Builder's object is a **part**; the Architect's, the **relations between parts**; the Curator's, **knowledge that outlives the product**. Object — not scope — separates them. |
 | **Face** | The *direction* an actor's expertise points — **forward** (produce) or **backward** (evaluate). Every actor has both. *Reserved: never used for anything else — switching motive is switching actor, not face.* |
