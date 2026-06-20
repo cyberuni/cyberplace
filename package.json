@@ -28,6 +28,9 @@
 		"typescript": "^6.0.0"
 	},
 	"knip": {
+		"ignore": [
+			".vscode/cucumber-glue.js"
+		],
 		"ignoreDependencies": [
 			"husky"
 		]
