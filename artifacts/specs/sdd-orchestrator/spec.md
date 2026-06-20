@@ -74,22 +74,71 @@ The SDD-family contract and criteria governances are removed. The interface I/O 
 
 ---
 
+## Runtime workflow
+
+### Suspend/resume: the skill owns the user-loop, the orchestrator owns one autonomous segment
+
+A subagent has no user channel, yet the loops hit user-input checkpoints (grilling, reviewer confirmation, mid-loop clarifications). So the loop splits across two layers. Each orchestrator invocation runs **one autonomous segment** — as far as it can without the user — then returns either `complete` / `blocked`, or `needs-input` with the questions **batched**. The skill (main thread, has a user channel) asks the user and **re-invokes the orchestrator to resume**. The skill owns the loop-with-user and the iteration cap (session-local); the orchestrator stays stateless across segments.
+
+Batch within a segment (never one question per iteration); expect **waves** across segments, since some questions only emerge after earlier ones are answered.
+
+### Files are the state store; the workflow cursor is derived, not stored
+
+Re-invocation is cold, but SDD already persists everything to disk, so "resume" = read the current files + the new answers. The workflow position is a **function of artifact state**, not a separate variable:
+
+| Where you are | Read from |
+|---|---|
+| which phase | `status:` field |
+| work in progress | `aligned: false` |
+| what's blocking | count of `<!-- open: -->` markers |
+| design done | `.feature` exists and passes validate-spec |
+
+So no `questions.md`, no workflow journal — the process is resumable across sessions for free. Only the iteration count is session-local in the skill (the cap guards thrashing within one sitting; a deliberate return next session resetting it is acceptable).
+
+### Questions: two kinds, two homes
+
+- **Content gaps** (about the spec's content) → inline `<!-- open: ... -->` markers in the artifact that has the gap. Durable; they block Draft→Approved. The returned `QUESTIONS` batch is **derived** from these markers, not a parallel store. The marker rule generalizes by abstraction level: a spec-content gap → marker in `spec.md`; a plan/sequencing gap → marker in `plan.md`; a task ambiguity → marker in `tasks.md`.
+- **Workflow-procedural questions** (reviewer set, mode, phase) → answered by the skill in the main thread; transient; never persisted; re-asked if unanswered.
+
+### Four tiers of feedback, one per loop
+
+The inner loop (writer → validator → implementer) is only one of three loops. Architect- and Curator-level concerns are `accept + deferred`, never blocking, and must **not** land in the triggering spec's markers:
+
+| Tier | Loop | Owner | Blocks this spec? | Persists in |
+|---|---|---|---|---|
+| content gap | inner | Builder | yes | in-spec `<!-- open: -->` marker |
+| workflow question | — | skill/human | no | nowhere (transient) |
+| structural concern | product feedback edge | Architect | no (deferred) | product backlog (a new spec with `priority`/`blocked-by`, or `artifacts/backlog.md`) |
+| durable lesson | outer loop | Curator | no (deferred) | append-only candidate queue → corpus (skill/governance/convention) |
+
+Delegates emit a non-blocking **`OBSERVATIONS`** channel — the gate's `accept + deferred` axis — typed by owning actor (`architect` | `curator`). Detection is continuous and cheap (any delegate, as a side effect of its narrow job); the **decision is episodic and human**. Observations bubble plugin → orchestrator → skill → human; on accept the **skill** routes them out. The orchestrator never writes outside the spec it owns. Architect observations are surfaced at the spec's gate; Curator observations are appended to the candidate queue continuously but surfaced **only at boundaries** (the premature-codification guard — recurrence like "solved three times" needs the queue's memory to detect).
+
+---
+
 ## Command surface / API
 
 No CLI surface. The interface is the agent-dispatch I/O the orchestrator sends and each delegate returns.
+
+**Uniform delegate output** — every delegate (writer, validator, implementer, plugin or default) returns these alongside its specific fields:
+```
+STATUS:       complete | needs-input | blocked
+QUESTIONS:    [ batched user questions, derived from open markers ]   # when needs-input
+OBSERVATIONS: [ { owner: architect | curator, note, evidence } ]      # non-blocking; may be empty
+```
+The orchestrator **aggregates** child `QUESTIONS` and `OBSERVATIONS` and returns them up to the skill; only the skill surfaces either to the user.
 
 **scenario-writer delegate**
 ```
 in:  DOMAIN, DOMAIN_PATH, SPEC_PATH, COMMAND_SURFACE, DESIGN_DECISIONS
 out: writes <DOMAIN_PATH>/<DOMAIN>.feature (pure boolean Gherkin)
-     returns SCENARIOS_WRITTEN, NOTES
+     returns SCENARIOS_WRITTEN, NOTES + uniform output
 rule: output must pass validate-spec; must not modify spec.md
 ```
 
 **implementer delegate**
 ```
 in:  DOMAIN, DOMAIN_PATH, SPEC_PATH, FEATURE_PATH, PLAN_PATH, TASKS_PATH, IMPLEMENTATION_PATHS
-out: IMPLEMENTATION_PASS, SCENARIOS_PASSING, SCENARIOS_FAILING, CHANGES_MADE, BLOCKER
+out: IMPLEMENTATION_PASS, SCENARIOS_PASSING, SCENARIOS_FAILING, CHANGES_MADE, BLOCKER + uniform output
 rule: owns the scenario→evaluation mapping; reports actual pass/fail per scenario;
       must not modify spec.md or the .feature
 ```
@@ -103,7 +152,9 @@ rule: owns the scenario→evaluation mapping; reports actual pass/fail per scena
 Sequenced so the stable interface lands first, the cheap consumer proves it, then the complex consumer.
 
 **1. SDD interface (do first).**
-- Rename `sdd-author` → `sdd-orchestrator`; absorb discovery + dispatch + synthesis into it.
+- Rename `sdd-author` → `sdd-orchestrator`; reduce it to one autonomous segment (discovery + dispatch + synthesis), no user interaction.
+- **Extract the user-loop into the skills.** create-spec owns the grill; validate-spec owns the reviewer-confirm gate and the `status: approved` write. Each skill *is* its phase, so the `GOAL: auto` derivation drops out. The skill re-invokes the orchestrator to resume after each batched answer and owns the iteration cap.
+- Add the uniform delegate output (`STATUS` / `QUESTIONS` / `OBSERVATIONS`); orchestrator aggregates and bubbles up. Skill routes `OBSERVATIONS` to backlog/corpus on human accept.
 - Add default delegates `sdd-scenario-writer` (generic boolean Gherkin from criteria) and `sdd-implementer` (passing-tests check) as agent definitions.
 - Repurpose `sdd-spec-designer` into the default writer's generation logic.
 - `validate-spec` enforces criteria against any `.feature`, plugin-written or default.
