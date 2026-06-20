@@ -76,6 +76,7 @@ description: [Use this skill when | Internal skill:] <trigger and summary>
 ```
 
 Frontmatter rules:
+- `description` is a plain single-line string — never use YAML block scalars (`|` or `>`) as they break markdown parsing
 - `description` starts with `"Use this skill when"` for user-facing skills; `"Internal skill:"` for sub-skills
 - `metadata.internal: true` for project-private skills (`.agents/skills/`)
 - `metadata.persona: "true"` for Persona pattern
@@ -107,7 +108,14 @@ ln -sf <relative-path-to-canonical> .claude/skills/<name>
 
 Verify each symlink resolves correctly.
 
-For project-public skills: also write `README.md` beside `SKILL.md` with: title, when to use, what it does, install command.
+### README
+
+Write `README.md` beside every `SKILL.md`:
+
+- **Title** — skill name
+- **When to use** — trigger phrases
+- **What it does** — brief human overview (not the full agent body)
+- **Install** — `npx skills add owner/repo --skill <name>` (project-public only)
 
 ### Report
 
