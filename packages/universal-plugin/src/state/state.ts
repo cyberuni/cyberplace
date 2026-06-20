@@ -1,5 +1,5 @@
-export type ActionType = 'install' | 'upgrade' | 'remove'
-export type DismissalReason = 'version-skipped' | 'keep'
+type ActionType = 'install' | 'upgrade' | 'remove'
+type DismissalReason = 'version-skipped' | 'keep'
 
 export interface PendingAction {
 	id: string
@@ -12,18 +12,18 @@ export interface PendingAction {
 	detectedAt: string
 }
 
-export interface DismissedEntry {
+interface DismissedEntry {
 	reason: DismissalReason
 	version: string | null
 	dismissedAt: string
 }
 
-export interface ScopeSnapshot {
+interface ScopeSnapshot {
 	takenAt: string
 	plugins: Record<string, string>
 }
 
-export interface UniPluginUpdateEntry {
+interface UniPluginUpdateEntry {
 	current: string
 	available: string
 	detectedAt: string

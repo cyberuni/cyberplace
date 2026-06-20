@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto'
 
-export interface SourceHandlerConfig {
+interface SourceHandlerConfig {
 	hosts?: string[]
 	registries?: string[]
 }

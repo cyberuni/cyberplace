@@ -1,16 +1,16 @@
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 
-export type VendorId = 'claude-code' | 'cursor' | 'codex' | 'copilot-cli'
+type VendorId = 'claude-code' | 'cursor' | 'codex' | 'copilot-cli'
 
-export const VENDOR_OUTPUT: Record<VendorId, string> = {
+const VENDOR_OUTPUT: Record<VendorId, string> = {
 	'claude-code': '.claude-plugin/plugin.json',
 	cursor: '.cursor-plugin/plugin.json',
 	codex: '.codex-plugin/plugin.json',
 	'copilot-cli': 'plugin.json',
 }
 
-export const KNOWN_VENDORS = new Set<string>(Object.keys(VENDOR_OUTPUT))
+const KNOWN_VENDORS = new Set<string>(Object.keys(VENDOR_OUTPUT))
 
 export interface PluginManifest {
 	$schema?: string

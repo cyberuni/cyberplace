@@ -4,14 +4,14 @@ import { fileURLToPath } from 'node:url'
 import type { StateFile } from '../state/state.js'
 import type { GovernanceFs } from './fs.js'
 
-export type Scope = 'managed' | 'project' | 'local' | 'user' | 'package' | 'store'
+type Scope = 'managed' | 'project' | 'local' | 'user' | 'package' | 'store'
 
 export interface AssetStoreOpts {
 	state: StateFile
 	globalStorePath: string
 }
 
-export interface ScopedPath {
+interface ScopedPath {
 	scope: Scope
 	dir: string
 }
@@ -50,7 +50,7 @@ export function getPackageDir(): string {
 	return path.join(path.dirname(thisFile), '..', 'governances')
 }
 
-export function getScopedPaths(root: string): ScopedPath[] {
+function getScopedPaths(root: string): ScopedPath[] {
 	return [
 		{ scope: 'managed', dir: getManagedDir() },
 		{ scope: 'project', dir: getProjectDir(root) },

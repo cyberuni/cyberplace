@@ -4,7 +4,7 @@ import * as path from 'node:path'
 import type { SourcesConfig } from './source-registry.js'
 import { DEFAULT_SOURCES } from './source-registry.js'
 
-export function sourcesConfigPath(): string {
+function sourcesConfigPath(): string {
 	return path.join(os.homedir(), '.agents', '.universal-plugin', 'sources.json')
 }
 
