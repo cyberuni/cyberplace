@@ -20,7 +20,7 @@ It adds four cooperating pieces:
 1. **The leash** — how far the agent may self-assert before a human gate (`gated` | `auto-to-spec` | `auto`), **derived** from a per-gate risk assessment and capped by an optional human ceiling.
 2. **Gate attribution** — `approved-by` records *who* passed each gate; agent-attributed gates are provisional, awaiting human ratification.
 3. **An enforced state machine** — `validate-spec` rejects any illegal `(status, aligned, markers, .feature)` tuple, so states like `draft + aligned:true`-meaning-implemented can't be committed.
-4. **The gate report** — on reaching a gate under autonomy the agent emits a structured checklist (verdict per backward face + the contestable defaults it chose) so the human can ratify fast.
+4. **The gate report** — a **decidable**, regenerated-on-demand checklist (verdict per face + leash derivation + open markers as questions + a decision menu) so the human can approve / change / reject fast.
 
 ```mermaid
 flowchart LR
@@ -116,14 +116,17 @@ The incident's real error was therefore not the field's meaning but **committing
 
 ### The gate report: a ratification checklist
 
-When the agent reaches a gate under any autonomy level, it emits a **gate report** — the same two-axis verdict a judge produces, made reviewable. Its sections:
+When the agent reaches a gate under any autonomy level, it emits a **gate report** — the same two-axis verdict a judge produces, made reviewable and **decidable**. Its sections:
 
 - **Verdict per backward face**: Framer (scope — still worth shipping?), Builder (contract/impl complete & testable against the bar?), Architect (fit — conventions, no dup/conflict).
 - **Leash derivation** (the reasoning home): the four-dimension assessment (reversibility, blast radius, decision novelty, confidence) for each gate, the **derived** leash, the **effective** leash after any human ceiling, and a one-line reason per dimension. This is *why the agent stopped where it did*, made auditable.
-- **Contestable defaults**: the decisions a human might have made differently, listed explicitly.
+- **Open markers as questions** — each blocking marker phrased as a question **with the agent's proposed answer**, so "approve" can mean "accept my proposals" and the human only engages where they disagree.
+- **Contestable defaults**: the decisions a human might have made differently, listed explicitly with a jump link (`file:line` / marker) to each decision point.
+- **Diff since last report** — on a re-review (after a "change"), only what moved, so re-review is incremental, not a full re-read.
+- **Decision menu** — the gate's three actions, each with its concrete consequence and the agent's **recommendation**.
 - `STATUS`, and when a gate was self-asserted, the flag **"agent-asserted — ratify or kick back."**
 
-The human runs the checklist and either ratifies (sets `approved-by`) or returns it with changes. This standardizes the ad-hoc gate summary into a fixed artifact; on ratification the leash derivation is captured in the approval record (commit / PR).
+**The report is a derived view, not stored.** Like the workflow cursor and `graph.md`, it is **regenerated on demand** from current artifact state — never a parallel journal. The only durable record is the **ratification**: the `approved-by` pointer plus the **approval commit/PR**, whose body snapshots the report at approve-time. The review queue is just the specs with `approved-by: agent`; opening one regenerates the report.
 
 **Example** — this spec, reported at its own spec gate:
 
@@ -133,7 +136,7 @@ STATUS: ready for spec gate · agent-asserted — ratify or kick back
 
 Verdict
   Framer  (scope)    PASS — real incident, contained, worth shipping
-  Builder (contract) PASS — 11 scenarios cover leash / attribution / FSM / report
+  Builder (contract) PASS — 17 scenarios cover leash / attribution / FSM / report / gate-actions
   Architect (fit)    PASS — extends orchestrator + sdd-plugin; reuses aligned as-is
 
 Leash derivation
@@ -147,16 +150,42 @@ Leash derivation
     novelty        new gate model, human has not ratified            → risky
     confidence     one open marker unresolved                        → risky
 
+Open markers as questions (block Draft → Approved)
+  Q1 approved-by shape: gate-keyed map, or two flat fields?
+     proposed → gate-keyed map { spec, impl }   (spec.md:94)
+
 Contestable defaults
-  - new spec instead of editing sdd-orchestrator inline
-  - leash held in the prompt / main thread, not frontmatter
+  - new spec instead of editing sdd-orchestrator inline   (spec.md:7)
+  - leash held in the prompt / main thread, not frontmatter (spec.md:79)
   - no human ceiling set — derivation stands
 
-Open markers (block Draft → Approved)
-  - approved-by shape: gate-keyed map vs two flat fields
+Diff since last report
+  + leash now derived from a 4-dimension risk assessment
+  + gate report gains decision menu + markers-as-questions
+  - removed the aligned open marker (already resolved upstream)
+
+Decision menu
+  approve → accept Q1 proposal, set approved-by.spec, freeze .feature   [recommended]
+  change  → tell me a different Q1 answer or edit a contestable default; stays Draft
+  reject  → drop the spec / back to Draft (scope kill)
 ```
 
 One risky dimension is enough to make a gate non-self-assertable, so the spec gate reads RISKY and the derived leash is `gated` — the agent stops here and asks, which is exactly the correct behavior for this change.
+
+### Both gates take the same three actions — with different meaning
+
+`approve` / `change` / `reject` are the verbs at **both** gates, so the human's decision surface is uniform. What each verb *does* differs by gate, because the gates judge different objects:
+
+| Action | Spec gate (judges the contract) | Impl gate (judges the code vs frozen contract) |
+|---|---|---|
+| **approve** | → Approved; **freeze** the `.feature`; set `approved-by.spec` | → Implemented; set `approved-by.impl` |
+| **change** | revise the **contract** (`spec.md` / `.feature`); stays Draft | fix the **code** against the frozen `.feature`; contract **stays frozen** |
+| **reject** | scope-kill — drop or return to Draft | redo the implementation — **or** the **Framer-revert**: building proved the contract wrong, so **unfreeze** and return to Draft |
+
+Two asymmetries matter:
+
+- At the spec gate **change edits the contract**; at the impl gate **change edits the code** (the frozen contract is off-limits — that is the whole point of freezing).
+- The impl gate is the **only** place a frozen `.feature` can reopen, via the Framer-revert. It is rare and deliberate: a scenario that passed every check but turns out fatal sends the whole spec back to Draft (per *Freeze is a strength* in sdd-orchestrator).
 
 ### Skill-domain implementation is ACES-delegated
 
