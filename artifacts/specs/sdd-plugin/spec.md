@@ -295,24 +295,34 @@ Status → implemented
 
 ## Design decisions
 
-### Domain-plugin integration: runtime dispatch vs. defer/build
+### Domain-plugin integration: resolved lockfile at setup
 
-When `sdd-author` needs to invoke a domain-specific scenario advisor or implementer, two models are viable:
+When `sdd-orchestrator` needs to invoke a domain-specific production-chain role (spec-producer, plan-producer, spec-judge, impl-producer, impl-judge), the resolution happens **at setup**, not at runtime.
 
-**Runtime dispatch model** — `sdd-author` reads `.agents/universal-plugin.json` or `plan.md ## Plugin assignments` at the moment of invocation and routes to the registered agent (e.g., `aces-implementer`, `quill-implementer`). The registry is the source of truth at runtime; no files are generated.
+**Resolved-lockfile model** — Each plugin's `init-<plugin>` skill (ships with the plugin, knows its agents) writes a canonical entry to `.agents/universal-plugin.json` at setup time: domain coverage, the resolved role→agent map (the five production-chain roles), actor governances, and the plugin version. On re-run it **rewrites** any old-shape entry to the current role-map shape (rewrite-on-init migration). At runtime the `sdd-orchestrator` reads **only** `.agents/universal-plugin.json` — one small project-local file. No plugin-directory scanning, no per-session resolution cost, and `plan.md` is never the resolution source (it is the functional spec, downstream of resolution).
 
-**Defer / build model** — The domain plugin's `init` (or `update`) skill generates concrete agent files into the project (e.g., `.agents/sdd-implementer.md`, or a project-local `aces-scenario-advisor.md`) at setup time. `sdd-author` invokes known names; the generated files implement the contracts. Re-running `init` or `update` regenerates the files from the plugin source.
+| Dimension | Resolved lockfile |
+|---|---|
+| Project footprint | One registry entry in `.agents/universal-plugin.json` |
+| Up-to-date guarantee | Refreshed on `init-<plugin>` re-run (install / upgrade / manual) |
+| Orchestrator complexity | Single file read; role→agent map is pre-resolved |
+| Drift handling | `init-<plugin>` compares version stamp and rewrites on mismatch |
+| Works offline | Yes — the lockfile is the persistent cache |
 
-| Dimension | Runtime dispatch | Defer / build |
-|---|---|---|
-| Project footprint | Registry entry only | Generated agent files in `.agents/` |
-| Up-to-date guarantee | Always current (reads live plugin) | Stale until user re-runs init/update |
-| sdd-author complexity | Registry lookup on every invocation | Direct agent call — no resolution step |
-| Customizability | Per-spec `plan.md` override | Edit generated file after generation |
-| Works offline / without plugin | No — needs plugin agents loaded | Yes — generated files are self-contained |
-| Update story | No action needed | Must re-run init/update after plugin upgrade |
+Entry shape (see orchestrator spec *Discovery* section for the full schema):
 
-Both models are open. The defer model is preferable when projects want self-contained agent definitions or when `sdd-author` should not depend on runtime availability of the plugin. The runtime model is preferable when staying current with plugin updates automatically matters more than self-containment. A project may use both: defer-generated files for customized domains, registry resolution as fallback.
+```json
+{ "sdd-plugins": [
+  { "name": "<plugin>", "version": "x.y.z",
+    "domains": ["..."],
+    "roles": { "spec-producer": "<agent>", "plan-producer": null,
+               "spec-judge": null, "impl-producer": "<agent>",
+               "impl-judge": "<agent>" },
+    "governances": { "framer": null, "builder": "<skill>", "architect": null } }
+] }
+```
+
+`null` in a role cell means degenerate — no plugin agent for that role; the orchestrator falls back to the SDD default. When two plugins claim the same domain the orchestrator returns `needs-input`; the skill asks the user and writes the choice to the `domain-plugin` frontmatter map in `spec.md`.
 
 ---
 
