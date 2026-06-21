@@ -86,23 +86,31 @@ This is exactly the reasoning from the incident post-mortem: *autonomous-to-the-
 
 **The reasoning has a home: the gate report.** Every gate report carries a **Leash derivation** block — the four-dimension assessment for each gate, the derived value, the effective value after any ceiling, and the one-line reasoning per dimension. This is the auditable place the agent explains *why it stopped where it did*; on ratification it is captured in the approval record (commit / PR). (See *The gate report* below.)
 
-### Accountability stays human: `approved-by`
+### Accountability stays human: `approved-by` (who **and** why)
 
-Each gate transition records its approver in a frontmatter map keyed by gate:
+Each gate records, in a frontmatter map **keyed by gate**, both the approver and — when the gate was self-asserted — the leash derivation that justified it:
 
 ```yaml
 approved-by:
-  spec: agent          # provisional — awaiting human ratification
-  impl: homa           # ratified by the human
+  spec:
+    by: agent          # provisional — awaiting human ratification
+    leash: gated       # effective leash at this gate
+    why:               # the derivation (present only for an agent self-assertion)
+      reversibility: "safe — docs only, revert is cheap"
+      blast-radius:  "risky — edits sibling specs"
+      novelty:       "risky — new model, unratified"
+      confidence:    "safe — no open markers"
+  impl:
+    by: homa           # ratified by the human; no `why` needed
 ```
 
-- `agent` = **provisionally** past that gate; the act is done, accountability is **not yet reconciled**.
-- a human name = ratified.
-- The set of specs with any `agent` value **is the human's review queue** — no separate backlog file.
+- `by: agent` = **provisionally** past that gate; the act is done, accountability is **not yet reconciled**. The `why` block is the recorded reasoning.
+- `by: <human name>` = ratified.
+- The set of specs with any `by: agent` **is the human's review queue** — no separate backlog file.
 
-Ratifying flips the value from `agent` to the human's name. This is the motive model made concrete: the act is delegable, the accountability is not — `approved-by` tracks exactly the reconciliation gap.
+This is the motive model made concrete: the act is delegable, the accountability is not — `approved-by` tracks exactly the reconciliation gap. The map is **keyed by gate** so each gate carries its own approver and reasoning; the frontmatter is the gate-status hub for both layers (alongside `status` and `aligned`), so the impl-gate reasoning lives here too — it is metadata *about* the layer, not contract content, so no layer conflation.
 
-<!-- open: confirm frontmatter shape — `approved-by` map keyed by gate (this proposal) vs. two flat fields `spec-approved-by` / `impl-approved-by`? -->
+**Who writes it.** The **orchestrator** writes a self-assertion (`by: agent` + `why`) as part of its autonomous synthesis — the same boundary by which it writes `aligned`. The **skill** writes a human ratification (`by: <name>`, clearing or keeping `why`) at the gate — the same boundary by which it writes `status`.
 
 ### State integrity: the cursor table becomes an enforced FSM
 
@@ -126,12 +134,7 @@ When the agent reaches a gate under any autonomy level, it emits a **gate report
 - **Decision menu** — the gate's three actions, each with its concrete consequence and the agent's **recommendation**.
 - `STATUS`, and when a gate was self-asserted, the flag **"agent-asserted — ratify or kick back."**
 
-**The live report is a derived view; the agent's self-assertion is durable.** As a *current-state view* the report is regenerated on demand (like the cursor and `graph.md`) — no parallel journal. But when the agent **self-asserts** a gate, the leash derivation that justified it is a **historical fact, not recomputable later**, and it is the accountability record this spec exists for — so it is preserved, split by layer:
-
-- **Attribution — who** (`approved-by { spec, impl }`) lives in `spec.md` frontmatter: a small pointer, layer-scoped *exactly like `aligned`*.
-- **Derivation — why** rides the **self-assertion commit body**, which is automatically layer-appropriate. The spec-gate derivation is in the commit that wrote `spec.md` / `.feature`; the **impl-gate derivation is in the commit that wrote the implementation**, *not* `spec.md`. Putting impl-gate reasoning in `spec.md` would reconflate the contract and impl layers; only the `approved-by.impl` pointer belongs there. Git is the dated, attributed journal we already have.
-
-The review queue is the specs with any `approved-by: agent`; opening one surfaces the self-assertion commit(s) (the recorded reasoning) and/or a freshly regenerated current-state report.
+**The live report is a derived view; an agent self-assertion is durable in frontmatter.** As a *current-state view* the report is regenerated on demand (like the cursor and `graph.md`) — no parallel journal. But when the agent **self-asserts** a gate, the leash derivation that justified it is a **historical fact, not recomputable later**, and it is the accountability record this spec exists for — so it is persisted in the `approved-by.<gate>.why` block (see *Accountability stays human* above), written by the orchestrator. It sits in `spec.md` frontmatter next to the `by` pointer because the frontmatter is the gate-status hub for both layers — accessible state, not buried in git history. The review queue is the specs with any `by: agent`; opening one reads the recorded `why` and/or a freshly regenerated current-state report.
 
 **Example** — this spec, reported at its own spec gate:
 
@@ -141,37 +144,36 @@ STATUS: ready for spec gate · agent-asserted — ratify or kick back
 
 Verdict
   Framer  (scope)    PASS — real incident, contained, worth shipping
-  Builder (contract) PASS — 18 scenarios cover leash / attribution / FSM / report / gate-actions
+  Builder (contract) PASS — 19 scenarios cover leash / attribution / FSM / report / gate-actions
   Architect (fit)    PASS — extends orchestrator + sdd-plugin; reuses aligned as-is
 
 Leash derivation
   gate        reversibility  blast       novelty  confidence   read
-  spec gate   safe           cross-spec  novel    1 marker     RISKY
+  spec gate   safe           cross-spec  novel    none         RISKY
   impl gate   — not reached —
   derived: gated   ceiling: none   effective: gated
   reasons
     reversibility  docs only, revert is cheap                       → safe
     blast radius   edits sdd-orchestrator + sdd-plugin (other specs) → risky
     novelty        new gate model, human has not ratified            → risky
-    confidence     one open marker unresolved                        → risky
+    confidence     no open markers                                   → safe
 
 Open markers as questions (block Draft → Approved)
-  Q1 approved-by shape: gate-keyed map, or two flat fields?
-     proposed → gate-keyed map { spec, impl }   (spec.md:94)
+  none — approved-by shape resolved to the gate-keyed map { spec, impl }
 
 Contestable defaults
   - new spec instead of editing sdd-orchestrator inline   (spec.md:7)
-  - leash held in the prompt / main thread, not frontmatter (spec.md:79)
+  - approved-by carries who + why in frontmatter, not git history
   - no human ceiling set — derivation stands
 
 Diff since last report
-  + leash now derived from a 4-dimension risk assessment
-  + gate report gains decision menu + markers-as-questions
-  - removed the aligned open marker (already resolved upstream)
+  + derivation persisted in approved-by.<gate>.why (was: commit body)
+  + orchestrator writes self-assertions, skill writes ratifications
+  - resolved the approved-by-shape open marker
 
 Decision menu
-  approve → accept Q1 proposal, set approved-by.spec, freeze .feature   [recommended]
-  change  → tell me a different Q1 answer or edit a contestable default; stays Draft
+  approve → set approved-by.spec (by: <you>), freeze .feature           [recommended]
+  change  → edit a contestable default or a scenario; stays Draft
   reject  → drop the spec / back to Draft (scope kill)
 ```
 
@@ -204,13 +206,15 @@ Where implementing this spec modifies SDD **skills** (e.g., `validate-spec`) or 
 
 | Field | Values | Meaning |
 |---|---|---|
-| `approved-by` | map `{ spec, impl }` → `agent` \| `<human>` | who passed each gate; `agent` = provisional |
+| `approved-by` | map keyed by gate (`spec`, `impl`); each entry `{ by: agent \| <human>, leash, why? }` | who passed each gate, and (for an agent self-assertion) the recorded leash derivation; `by: agent` = provisional |
+
+`approved-by.<gate>.by` is the pointer; `approved-by.<gate>.why` is the four-dimension derivation, present only when `by: agent`. The **orchestrator** writes self-assertions; the **skill** writes human ratifications.
 
 **Leash** — declared in the prompt to the create-spec / validate-spec skills (default `gated`); held in the main thread, not persisted.
 
 **`validate-spec` new checks:**
 - the `(status, aligned, markers, .feature)` tuple is a legal cursor-table row;
-- `approved-by` values are well-formed; an `agent` value surfaces the spec in the review queue;
+- `approved-by` entries are well-formed (a `by: agent` entry carries a `why`); a `by: agent` value surfaces the spec in the review queue;
 - `aligned` is enforced as layer-scoped (per sdd-orchestrator), not re-decided here.
 
 **Gate report** — structured output of the orchestrator at a gate (see uniform delegate output in sdd-orchestrator); not a CLI.

@@ -47,17 +47,23 @@ Feature: Gate autonomy and accountability
     Then the gate report is regenerated from current artifact state
     And no stored gate-report file exists
 
-  Scenario: a self-assertion records its derivation in the commit
+  Scenario: a self-assertion records its derivation in frontmatter
     Given the agent self-asserts a gate
-    When it commits the work
-    Then the commit body carries the leash derivation that justified it
-    And approved-by for that gate is "agent"
+    When the orchestrator records it
+    Then approved-by for that gate has by "agent"
+    And approved-by for that gate has a why block with the four-dimension derivation
 
-  Scenario: the impl-gate derivation rides the impl commit, not spec.md
-    Given the agent self-asserts the impl gate
-    When it records the self-assertion
-    Then the derivation is in the commit that wrote the implementation
-    And spec.md frontmatter holds only the approved-by.impl pointer
+  Scenario: a human ratification carries no derivation
+    Given the human ratifies a gate
+    When the skill records it
+    Then approved-by for that gate has by the human's name
+    And no why block is required
+
+  Scenario: the orchestrator writes self-assertions and the skill writes ratifications
+    Given a gate is self-asserted then later ratified
+    When each record is written
+    Then the orchestrator wrote the agent self-assertion and its why
+    And the skill wrote the human ratification
 
   Scenario: change at the spec gate edits the contract
     Given the spec gate report is returned with "change"
