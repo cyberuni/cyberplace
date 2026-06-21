@@ -218,3 +218,28 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     Given specs/auth has Status Approved and a frozen .feature
     When the impl gate evaluates alignment
     Then aligned requires the impl layer to conform to the frozen .feature
+
+  # ── discovery: the resolved lockfile ─────────────────────────────────────
+
+  Scenario: The orchestrator resolves roles from the project registry only
+    Given .agents/universal-plugin.json lists quill with its role-to-agent map
+    When sdd-orchestrator resolves delegates for a Quill-owned domain
+    Then it reads only .agents/universal-plugin.json
+    And it does not scan user-global, project-global, or project-local plugin directories
+
+  Scenario: init-plugin writes the resolved role map at setup
+    Given the user runs init-quill
+    When the registry entry is written
+    Then it includes the domain coverage, the role-to-agent map, and the plugin version
+
+  Scenario: A stale registry is detected by version mismatch
+    Given .agents/universal-plugin.json records quill version 1.2.0
+    And the installed quill plugin is version 1.3.0
+    When the versions are compared
+    Then the entry is flagged stale
+    And re-running init-quill re-resolves it
+
+  Scenario: An omitted role cell falls back to convention or degenerates
+    Given a registry entry omits the impl-producer cell
+    When the orchestrator resolves impl-producer
+    Then it falls back to the convention name or treats the cell as degenerate
