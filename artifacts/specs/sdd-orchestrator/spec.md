@@ -15,7 +15,7 @@ SDD owns the spec-driven workflow and runs the loop. Domain plugins (ACES for ag
 
 The architecture has four moving parts:
 
-1. **`sdd-orchestrator`** (renamed from `sdd-author`) — the lead delegate. It runs the loop, discovers plugin delegates from `plan.md` Plugin assignments, dispatches each act, and synthesizes results (sets `aligned`). It does discovery and dispatch itself; there is no separate dispatcher agent.
+1. **`sdd-orchestrator`** (renamed from `sdd-author`) — the lead delegate. It runs the loop, resolves plugin delegates from the registry's domain coverage, dispatches each act, and synthesizes results (sets `aligned`). It does discovery and dispatch itself; there is no separate dispatcher agent.
 2. **Four roles in a 2×2** — two objects (the **spec** = `.feature`, the **impl** = the built artifact) × two faces (**produce** / **judge**). The orchestrator dispatches to whichever are declared:
 
    | | Produce (forward) | Judge (backward) |
@@ -126,6 +126,8 @@ The orchestrator must **not** scan plugin directories (user-global, project-glob
 - **Source of truth** — each plugin's `init-<plugin>` skill (ships with the plugin, knows its agents) writes a canonical entry to the project registry `.agents/universal-plugin.json`: domain coverage **plus** the resolved role→agent map **plus** the plugin version.
 - **Runtime** — the orchestrator reads **only** `.agents/universal-plugin.json` (one small project-local file). No scanning, no cross-scope lookup, no per-session cost; the file is the persistent cache.
 - **Drift** — only `init-<plugin>` reconciles. It ships inside the plugin, so it knows its own version for free (no scan), and on install/upgrade/manual re-run it compares against the recorded stamp and rewrites on mismatch. The orchestrator never compares versions at runtime — that would force the plugin-dir read the no-scan rule forbids; it trusts the stamp.
+
+**Domain→plugin from the registry, not `plan.md`.** A plugin's `domains[]` declares its coverage; the orchestrator matches the spec's domain against it, then resolves role→agent from that plugin's entry. `plan.md` is the functional spec — it describes the solution, tied to implementation — and sits **downstream** of resolution (flow: `spec.md` → `.feature` → `plan.md`); it is never the resolution source. When **two plugins claim the same domain**, the orchestrator cannot decide: it returns `needs-input`, the skill asks the user, and the chosen mapping is recorded in `spec.md` so later resolution reads the choice without re-asking.
 
 Readable agent names stay safe: the registry binds role→name explicitly, so the orchestrator resolves by role and invokes by the bound name (convention `<plugin>-<role>` is only a fallback when a cell is omitted; `null` means the cell degenerates — no agent). Entry shape:
 
