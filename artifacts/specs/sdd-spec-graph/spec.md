@@ -2,7 +2,7 @@
 status: draft
 blocked-by:
   - sdd-plugin
-aligned: true
+aligned: false
 ---
 
 # Spec Graph Renderer
