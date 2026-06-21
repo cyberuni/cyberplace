@@ -42,7 +42,7 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     Then it resolves the producer and judge roles from the delegate definitions
     And it makes no governance show call
 
-  # ── exploratory loop: produce & judge the spec (the spec row) ────────────
+  # ── exploratory loop: shape the spec, and probe it by attempting the build ─
 
   Scenario: Orchestrator dispatches to the plugin that covers the domain
     Given the registry maps the "skill" domain to the aces plugin
@@ -70,10 +70,37 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     Then it invokes the quill-writer delegate
     And SDD does not classify the domain as simple or complex
 
-  Scenario: The exploratory loop is the spec row
+  Scenario: The exploratory loop shapes the spec and probes it by building
     Given the "auth" domain is in the exploratory loop
     When the spec-producer and spec-judge iterate
+    And the orchestrator also runs forward producers in explore mode
     Then they shape the .feature until the spec gate freezes it
+
+  Scenario: An explore-mode producer builds against the draft, not a frozen contract
+    Given the "auth" .feature is still a draft
+    When the orchestrator dispatches the impl-producer in explore mode
+    Then the producer spikes against the draft .feature
+    And its output is throwaway scaffolding
+    And no impl-judge runs because there is no frozen bar
+
+  Scenario: Explore-mode discoveries feed back into the spec row
+    Given an explore-mode impl-producer finds the .feature omits a token-refresh case
+    When it returns
+    Then the discovery is returned as a content-gap and an OBSERVATIONS entry
+    And the orchestrator writes an open marker in spec.md and re-invokes the spec-producer
+
+  Scenario: The planner produces plan and tasks but is not judged
+    Given the "auth" domain needs a solution design
+    When the orchestrator dispatches the plan-producer
+    Then it writes plan.md and tasks.md
+    And no plan-judge or task-judge is invoked
+    And the plan and tasks are validated transitively by the implementation test result
+
+  Scenario: Forward producers load the judges' governance skills to self-align
+    Given the impl gate's testability bar is codified as a governance skill
+    When the impl-producer runs
+    Then it loads the testability governance skill
+    And it shapes its output to meet that bar before the impl-judge runs
 
   Scenario: Scenarios are ordered to trace the workflow
     Given a .feature with scenarios for several lifecycle stages
@@ -190,7 +217,7 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     When the spec advances to Approved and auth.feature is frozen
     Then the impl gate judges the implementation against auth.feature as the bar
 
-  # ── implementation loop: produce & judge the impl (the impl row) ─────────
+  # ── implementation loop: plan, build, and judge against the frozen contract ─
 
   Scenario: Orchestrator dispatches to the plugin impl-judge that covers the domain
     Given the registry maps the "guide" domain to the quill plugin
@@ -205,10 +232,25 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     Then it invokes the sdd-implementer default delegate
     And the default reports IMPLEMENTATION_PASS true only when every scenario has a passing test
 
-  Scenario: The implementation loop is the impl row
+  Scenario: The implementation loop plans, builds, and judges against the frozen contract
     Given the "auth" .feature is frozen
-    When the impl-producer and impl-judge iterate
-    Then they build and verify the artifact against the frozen .feature
+    When the plan-producer, impl-producer, and impl-judge run
+    Then the planner writes plan.md and tasks.md in implement mode
+    And the impl-producer builds the artifact against the frozen .feature
+    And the impl-judge verifies it against the frozen .feature
+
+  Scenario: The impl-judge produces and runs the test result
+    Given the impl gate evaluates the "auth" implementation
+    When the impl-judge runs
+    Then it produces the verification from the frozen .feature and runs it
+    And the test result combines functional tests and structural checks
+    And the impl-producer does not author its own pass verdict
+
+  Scenario: Product and test separation stays inside the impl-producer
+    Given a security domain wants separate product-code and test-code writers
+    When the orchestrator dispatches the impl-producer
+    Then the split is handled inside the plugin's impl-producer
+    And the orchestrator does not learn whether the split happened
 
   Scenario: The .feature carries no rubric
     Given aces-implementer owns a 1-5 rubric for a scenario
@@ -240,14 +282,20 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     Then sdd-orchestrator leaves aligned false
     And it surfaces the BLOCKER to the user
 
-  # ── model invariants: the 2x2 and producer ≠ judge ───────────────────────
+  # ── model invariants: the production chain and producer ≠ judge ───────────
 
-  Scenario: The orchestrator resolves all four roles per cell
+  Scenario: The orchestrator resolves every production-chain role
     Given the "skill" domain is fully handled by the ACES plugin
     When sdd-orchestrator runs the full loop
-    Then it resolves spec-producer, spec-judge, impl-producer, and impl-judge to ACES agents
+    Then it resolves spec-producer, plan-producer, impl-producer, spec-judge, and impl-judge to ACES agents
 
-  Scenario: Degenerate cells fall back without a plugin agent
+  Scenario: ACES evals belong to the impl-judge, not the impl-producer
+    Given the "skill" domain uses ACES
+    When the orchestrator resolves who authors the evals
+    Then the evals are owned by aces-implementer as the impl-judge
+    And the impl-producer that writes the agent config does not author its own evals
+
+  Scenario: Degenerate roles fall back without a plugin agent
     Given the "guide" domain declares no impl-producer and a static spec-judge
     When sdd-orchestrator runs the full loop
     Then impl-producing is done by the generic Builder with no agent

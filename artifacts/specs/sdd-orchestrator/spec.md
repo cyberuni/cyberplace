@@ -2,7 +2,7 @@
 status: draft
 priority: 1
 blocked-by: []
-aligned: true
+aligned: false
 ---
 
 # SDD Orchestrator & the Plugin-Delegate Model
@@ -11,22 +11,26 @@ aligned: true
 
 ## What
 
-SDD owns the spec-driven workflow and runs the loop. Domain plugins (ACES for agent configurations, Quill for documentation) augment that loop by supplying **delegates** for the roles SDD does not hard-code — producing and judging the `.feature`, and producing and judging the implementation against it (the 2×2 below).
+SDD owns the spec-driven workflow and runs the loop. Domain plugins (ACES for agent configurations, Quill for documentation) augment that loop by supplying **delegates** for the roles SDD does not hard-code — the producers along the chain and the judges at the gates (the production chain below).
 
 The architecture has four moving parts:
 
 1. **`sdd-orchestrator`** (renamed from `sdd-author`) — the lead delegate. It runs the loop, resolves plugin delegates from the registry's domain coverage, dispatches each act, and synthesizes results (sets `aligned`). It does discovery and dispatch itself; there is no separate dispatcher agent.
-2. **Four roles in a 2×2** — two objects (the **spec** = `.feature`, the **impl** = the built artifact) × two faces (**produce** / **judge**). The orchestrator dispatches to whichever are declared:
+2. **The production chain — five co-delivered artifacts, three forward producers, two judges.** The orchestrator dispatches whichever producers are declared and gathers the judges at the two gates:
 
-   | | Produce (forward) | Judge (backward) |
+   | Artifact | Producer (forward) | Judged |
    |---|---|---|
-   | **Spec** | spec-producer | spec-judge |
-   | **Impl** | impl-producer | impl-judge |
+   | `spec.md` (intent) | human + orchestrator | — |
+   | `.feature` (contract) | **spec-producer** | **spec-judge** — spec gate |
+   | `plan.md` (solution) | **plan-producer** ("planner") | — (transitive) |
+   | `tasks.md` (breakdown) | **plan-producer** | — (transitive) |
+   | implementation | **impl-producer** (product + test split hidden) | **impl-judge** — impl gate |
 
-3. **Default delegates** — `sdd-scenario-writer` (spec-producer) and `sdd-implementer` (impl-judge) — the built-in fallbacks, invoked only when no plugin fills the cell.
-4. **Plugin delegates** — each its own agent definition (own model/effort/context). A full domain plugin fills all four cells; thin domains let cells degenerate (see *The 2×2* under Design decisions).
+   Plan and tasks get **no judge of their own**: the five artifacts co-deliver, and the implementation's **test result** validates them transitively. The forward producers run in two **modes** — `explore` (throwaway, against the draft) and `implement` (kept, against the frozen `.feature`).
+3. **Default delegates** — `sdd-scenario-writer` (spec-producer), `sdd-planner` (plan-producer), `sdd-implementer` (impl-judge) — the built-in fallbacks, invoked only when no plugin fills the role. The default impl-producer is the generic Builder (no agent).
+4. **Plugin delegates** — each its own agent definition (own model/effort/context). A full domain plugin fills every producer and judge; thin domains let roles degenerate (see *The production chain* under Design decisions).
 
-Dispatch is uniform and per-cell: the orchestrator resolves each role to a plugin agent or the SDD default, and invokes it through one identical I/O surface.
+Dispatch is uniform and per-role: the orchestrator resolves each role to a plugin agent or the SDD default, and invokes it through one identical I/O surface.
 
 ---
 
@@ -48,36 +52,59 @@ SDD owning the `.feature` format means SDD owns the **validation gate** — any 
 
 ### The interface is the act, not data
 
-The plug-in point is a **behavior** — "produce the `.feature` for this domain" — not a data hand-off. SDD never classifies a domain as simple or complex: a cell is either filled by a plugin agent (it acts) or it isn't (it degenerates — see *The 2×2*). The **spec-producer** is always filled — by a plugin agent or the `sdd-scenario-writer` default; the other three cells fill or degenerate per domain.
+The plug-in point is a **behavior** — "produce the `.feature` for this domain", "plan the solution", "build the artifact" — not a data hand-off. SDD never classifies a domain as simple or complex: a role is either filled by a plugin agent (it acts) or it isn't (it degenerates). The **spec-producer** is always filled — by a plugin agent or the `sdd-scenario-writer` default; the other roles fill or degenerate per domain.
 
-Criteria do not survive as a separate plug-in path. They are the **bar** — the judge face of each object (spec-judge, impl-judge). SDD's own bar is the universal format gate (valid Gherkin, boolean scenarios, lifecycle), enforced by `validate-spec` and keeping `producer ≠ judge`. A domain's bar adds its own criteria (e.g., every agent scenario carries trigger context), enforced by its **spec-judge** — a judge agent when the bar needs judgment, static criteria when it does not.
+Criteria do not survive as a separate plug-in path. They are the **bar** — codified by the judges (spec-judge, impl-judge). SDD's own bar is the universal format gate (valid Gherkin, boolean scenarios, lifecycle), enforced by `validate-spec` and keeping `producer ≠ judge`. A domain's bar adds its own criteria (e.g., every agent scenario carries trigger context).
 
-### The 2×2: two objects × two faces — the four roles
+### The production chain: five artifacts, three producers, two judges
 
-The plug-in surface is not "two act-interfaces" but a **2×2**: two objects (the **spec** = `.feature`, the **impl** = the built artifact) × two faces (**produce** / **judge**). Four roles:
+The plug-in surface is not a 2×2 of one spec object and one impl object. The forward chain has **distinct acts that need distinct skills**, so each is its own delegate the orchestrator sequences:
 
-| | Produce (forward) | Judge (backward) |
-|---|---|---|
-| **Spec** | **spec-producer** — writes the `.feature` | **spec-judge** — judges the `.feature` against the domain bar |
-| **Impl** | **impl-producer** — builds the artifact | **impl-judge** — judges the artifact against the frozen `.feature` |
+| Artifact | Producer | The skill it needs | Judged by |
+|---|---|---|---|
+| `spec.md` (intent) | human + orchestrator (Framer-fwd) | scope, motive | — |
+| `.feature` (contract) | **spec-producer** | behavioral criteria | **spec-judge** (spec gate) |
+| `plan.md` (solution) | **plan-producer** | domain knowledge + brainstorm + research | — (transitive) |
+| `tasks.md` (breakdown) | **plan-producer** | decompose → units, prioritize, schedule | — (transitive) |
+| implementation | **impl-producer** | heavy domain knowledge; **product + test split hidden** | **impl-judge** (impl gate) |
 
-Naming is **producer / judge**, not writer: the motive model's forward-face verb is *produce* and its named constraint is **`producer ≠ judge`** (the four-eyes echo). The role names make that constraint self-documenting — spec-producer ≠ spec-judge, impl-producer ≠ impl-judge. Concrete agents may keep readable names (`aces-scenario-writer` *is* the spec-producer); only the role keys are fixed vocabulary.
+Naming is **producer / judge** (the motive model's forward verb is *produce*; its named constraint is **`producer ≠ judge`** — the four-eyes echo). Concrete agents keep readable names (`aces-scenario-writer` *is* the spec-producer); only role keys are fixed vocabulary.
 
-**Each row is a gate's inner loop** — produce ⇄ judge → gate. These are the two loops SDD is built on:
+**Plan and tasks get no judge.** The five artifacts **co-deliver**; the implementation's **test result** validates plan and tasks transitively — if the build passes, the plan was good enough. Only two objects are gated: the `.feature` (spec gate) and the implementation (impl gate).
 
-- **Exploratory loop** = the spec row: spec-producer ⇄ spec-judge → spec gate → freeze `.feature`.
-- **Implementation loop** = the impl row: impl-producer ⇄ impl-judge → impl gate → Implemented.
+**One planner, for now.** `plan.md` and `tasks.md` are one `plan-producer` agent today. *Hypothesis (to revisit): split into `plan-producer` (research) and `task-producer` (scheduling) if the two skills diverge enough to want separate model/effort.*
 
-**A full domain plugin fills all four cells; thin domains let cells degenerate:**
+**What stays hidden below the orchestration line: product vs test.** Whether the impl-producer uses one agent or separates the product-code writer from the test-code writer (so the builder can't edit tests to pass) is **plugin implementation detail** — needed for, say, security logic, pointless for Quill. The orchestrator never learns it. The four-eyes split it *must* guarantee — the grader is independent of the builder — is already secured by impl-producer ≠ impl-judge.
 
-| Cell | ACES (agent config) | Quill (documentation) | Plain code (no plugin) |
+### Producers run in two modes: `explore` and `implement`
+
+The forward producers (`plan-producer`, `impl-producer`) take a **mode**, so exploration can *attempt the build* to discover what the spec missed:
+
+- **`explore`** — against the **draft** `.feature`. Output is throwaway scaffolding (plan/tasks/spike). The act's goal is discovery: it returns gaps as content-gaps + `OBSERVATIONS`, which the orchestrator routes back into the spec row (markers in `spec.md`, re-invoke spec-producer). No impl-judge runs — there is no frozen bar yet.
+- **`implement`** — against the **frozen** `.feature`. Output is kept; the impl-judge verifies it.
+
+This is why the exploratory loop is **more than the spec row**: it is the spec row *plus* throwaway `explore`-mode runs whose discoveries feed back. The two loops differ by draft-vs-frozen, throwaway-vs-kept, and feedback-up-vs-down — not by which artifact.
+
+### The judge is productive: backward faces codify the bar as governance skills
+
+A backward face does not just read the artifact — it **produces the verification** and **codifies the bar**. Two outputs:
+
+- **Durable: a governance skill** (ADR-0013) — the bar in loadable form. Builder-backward → testability/coverage bar; Architect-backward → structural-fit bar (cyclomatic complexity, dup/conflict); Framer-backward → scope/kill bar. Forward producers **load** the relevant governance skills to self-align; the judge **loads** them to verify.
+- **Per-run: the test result** — the bar executed against this artifact. "Test result" is loose: Builder's functional tests *and* Architect's structural reading *and* Framer's scope check, combined into one verdict.
+
+This collapses the gate's three backward actors into **three governance skills + a thin judge**, not three runtime judge agents — the efficiency the actors-as-agents model would lose. How many judge agents actually fire is the plugin's call.
+
+**A full domain plugin fills every producer; thin domains let roles degenerate:**
+
+| Role | ACES (agent config) | Quill (documentation) | Plain code (no plugin) |
 |---|---|---|---|
 | spec-producer | `aces-scenario-writer` | `quill-writer` | `sdd-scenario-writer` (default) |
+| plan-producer | `aces-planner` | `quill-planner` or default | `sdd-planner` (default) |
 | spec-judge | `aces-spec-validator` | static doc criteria | format gate (`validate-spec`) |
 | impl-producer | `define-agent` / `improve` | **`quill-doc-writer`** (missing — to add) | the generic Builder (no agent) |
-| impl-judge | `aces-implementer` | `quill-implementer` | `sdd-implementer` (default) |
+| impl-judge | `aces-implementer` (owns the **evals** — the "written tests") | `quill-implementer` | `sdd-implementer` (default) |
 
-Two cells commonly degenerate: **spec-judge** → static criteria when the bar needs no judgment; **impl-producer** → the generic Builder when the impl is ordinary code (there is no "generic code-writer agent" — open-ended building is the unstructured Builder act). So the interface is the 2×2; how many cells materialize as agents depends on how specialized the domain's objects are.
+**ACES evals sit with the impl-judge, not the impl-producer.** Evals are "written tests"; authoring the test is a backward-face act, kept independent of the config-writer (four-eyes). `aces-implementer` owns the scenario→rubric map and runs it. Common degeneracies: **spec-judge** → static criteria; **impl-producer** → the generic Builder for ordinary code.
 
 ### Default delegates are agent definitions, not skills
 
@@ -253,18 +280,29 @@ out: SCENARIOS_PASSING, SCENARIOS_FAILING, BLOCKER + uniform
 rule: judges contract quality (testability, coverage, domain criteria); must not modify spec.md or .feature
 ```
 
-**impl-producer** (builds the artifact; degenerates to the generic Builder for code)
+**plan-producer** ("planner": writes the solution and its breakdown; degenerates to `sdd-planner`)
 ```
-in:  DOMAIN, DOMAIN_PATH, SPEC_PATH, FEATURE_PATH, PLAN_PATH, TASKS_PATH
-out: ARTIFACTS_WRITTEN, CHANGES_MADE + uniform
-rule: builds against the frozen .feature; must not modify spec.md or the .feature
+in:  DOMAIN, DOMAIN_PATH, SPEC_PATH, FEATURE_PATH, PLAN_PATH, TASKS_PATH, MODE
+out: writes <PLAN_PATH> and <TASKS_PATH>; PLAN_SUMMARY + uniform
+rule: loads the structural-fit governance skill to self-align; explore→draft/throwaway,
+      implement→against the frozen .feature; must not modify spec.md or the .feature
 ```
 
-**impl-judge** (judges the artifact against the frozen `.feature`)
+**impl-producer** (builds the artifact; product/test split hidden; degenerates to the generic Builder)
+```
+in:  DOMAIN, DOMAIN_PATH, SPEC_PATH, FEATURE_PATH, PLAN_PATH, TASKS_PATH, MODE
+out: ARTIFACTS_WRITTEN, CHANGES_MADE + uniform
+rule: loads the testability governance skill to self-align; explore→spike against the DRAFT,
+      returns discoveries as content-gaps/OBSERVATIONS; implement→builds against the FROZEN .feature;
+      must not modify spec.md or the .feature
+```
+
+**impl-judge** (produces and runs the test result; judges the artifact against the frozen `.feature`)
 ```
 in:  DOMAIN, DOMAIN_PATH, SPEC_PATH, FEATURE_PATH, PLAN_PATH, TASKS_PATH, IMPLEMENTATION_PATHS
 out: IMPLEMENTATION_PASS, SCENARIOS_PASSING, SCENARIOS_FAILING, CHANGES_MADE, BLOCKER + uniform
-rule: owns the scenario→evaluation mapping; reports pass/fail per scenario;
+rule: produces the verification (tests/evals/structural checks) and runs it; owns the
+      scenario→evaluation mapping; reports pass/fail per scenario;
       must not modify spec.md or the .feature
 ```
 
@@ -280,10 +318,12 @@ Sequenced so the stable interface lands first, the cheap consumer proves it, the
 - Rename `sdd-author` → `sdd-orchestrator`; reduce it to one autonomous segment (discovery + dispatch + synthesis), no user interaction.
 - **Extract the user-loop into the skills.** create-spec owns the grill; validate-spec owns the reviewer-confirm gate and the `status: approved` write. Each skill *is* its phase, so the `GOAL: auto` derivation drops out. The skill re-invokes the orchestrator to resume after each batched answer and owns the iteration cap.
 - Add the uniform delegate output (`STATUS` / `QUESTIONS` / `OBSERVATIONS`); orchestrator aggregates and bubbles up. Skill routes `OBSERVATIONS` to backlog/corpus on human accept.
-- Establish the four roles (spec-producer, spec-judge, impl-producer, impl-judge); orchestrator resolves each per-cell to a plugin agent or SDD default.
+- Establish the production-chain roles (spec-producer, plan-producer, impl-producer, spec-judge, impl-judge); orchestrator resolves each per-role to a plugin agent or SDD default.
+- Add the `MODE` (`explore` / `implement`) parameter to the forward producers; the orchestrator routes `explore`-mode discoveries back into the spec row as content-gaps/OBSERVATIONS.
+- Codify the judges' bars as governance skills (testability, structural-fit, scope); forward producers load them to self-align, the thin judge loads them to verify.
 - Make `aligned` layer-scoped: spec gate checks the contract layer, impl gate checks the impl layer; exploratory artifacts are excluded as scaffolding.
 - Extend `init-<plugin>` to write the resolved role→agent map + version into `.agents/universal-plugin.json`; the orchestrator reads only that file at runtime (no plugin-dir scanning).
-- Add default delegates `sdd-scenario-writer` (generic boolean Gherkin from criteria) and `sdd-implementer` (passing-tests check) as agent definitions.
+- Add default delegates `sdd-scenario-writer` (generic boolean Gherkin from criteria), `sdd-planner` (plan + tasks), and `sdd-implementer` (test result) as agent definitions.
 - Repurpose `sdd-spec-designer` into the default spec-producer's (`sdd-scenario-writer`) generation logic.
 - `validate-spec` enforces criteria against any `.feature`, plugin-written or default.
 - Fold contract I/O into the orchestrator + default delegates. Create `sdd:spec-governance` (`user-invocable: false` + `Internal skill:` prefix) holding the format bar + scenario-ordering convention; SDD agents and plugin spec-producers load it (ADR-0013). Retire `plugins/sdd/governances/`.
