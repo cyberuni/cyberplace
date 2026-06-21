@@ -23,6 +23,9 @@ importers:
       '@repobuddy/biome':
         specifier: ^2.3.1
         version: 2.3.1(@biomejs/biome@2.4.15)
+      '@types/node':
+        specifier: ^24.12.4
+        version: 24.12.4
       husky:
         specifier: ^9.1.7
         version: 9.1.7

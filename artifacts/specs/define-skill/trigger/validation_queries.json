@@ -1,42 +1,42 @@
 [
-  {
-    "id": "t003",
-    "query": "I need a skill that runs at session start to inject our commit discipline rules",
-    "should_trigger": true
-  },
-  {
-    "id": "t005",
-    "query": "Build a process skill for our ticket estimation workflow",
-    "should_trigger": true
-  },
-  {
-    "id": "t007",
-    "query": "I want to improve my existing create-issue skill",
-    "should_trigger": true
-  },
-  {
-    "id": "t009",
-    "query": "Create a standard skill that enforces how agents format code comments",
-    "should_trigger": true
-  },
-  {
-    "id": "n002",
-    "query": "Write governance rules for how agents handle user data",
-    "should_trigger": false
-  },
-  {
-    "id": "n005",
-    "query": "Create a command that loads a code review persona",
-    "should_trigger": false
-  },
-  {
-    "id": "n007",
-    "query": "Write an ADR explaining why we chose this skill design pattern",
-    "should_trigger": false
-  },
-  {
-    "id": "n010",
-    "query": "Set up evals for my existing define-governance skill",
-    "should_trigger": false
-  }
+	{
+		"id": "t003",
+		"query": "I need a skill that runs at session start to inject our commit discipline rules",
+		"should_trigger": true
+	},
+	{
+		"id": "t005",
+		"query": "Build a process skill for our ticket estimation workflow",
+		"should_trigger": true
+	},
+	{
+		"id": "t007",
+		"query": "I want to improve my existing create-issue skill",
+		"should_trigger": true
+	},
+	{
+		"id": "t009",
+		"query": "Create a standard skill that enforces how agents format code comments",
+		"should_trigger": true
+	},
+	{
+		"id": "n002",
+		"query": "Write governance rules for how agents handle user data",
+		"should_trigger": false
+	},
+	{
+		"id": "n005",
+		"query": "Create a command that loads a code review persona",
+		"should_trigger": false
+	},
+	{
+		"id": "n007",
+		"query": "Write an ADR explaining why we chose this skill design pattern",
+		"should_trigger": false
+	},
+	{
+		"id": "n010",
+		"query": "Set up evals for my existing define-governance skill",
+		"should_trigger": false
+	}
 ]
