@@ -17,12 +17,13 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     When the registry entry is written
     Then it includes the domain coverage, the role-to-agent map, and the plugin version
 
-  Scenario: A stale registry is detected by version mismatch
+  Scenario: init reconciles a stale registry entry against its own version
     Given .agents/universal-plugin.json records quill version 1.2.0
-    And the installed quill plugin is version 1.3.0
-    When the versions are compared
-    Then the entry is flagged stale
-    And re-running init-quill re-resolves it
+    And init-quill ships inside quill at version 1.3.0
+    When init-quill runs on install, upgrade, or manual re-run
+    Then it compares its own version against the recorded entry
+    And it rewrites the entry when they differ
+    And the orchestrator never compares versions at runtime
 
   Scenario: An omitted role cell falls back to convention or degenerates
     Given a registry entry omits the impl-producer cell
