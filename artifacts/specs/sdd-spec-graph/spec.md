@@ -54,6 +54,10 @@ Scripts are authored in `.mts` and run with plain `node` (v24 strips TypeScript 
 
 Given the same `blocked-by` edges the renderer always emits byte-identical `graph.md`: nodes and edges are emitted in a stable sort order. Determinism is what makes `--check` a reliable staleness gate.
 
+### Nested specs are part of the graph
+
+The renderer must discover `spec.md` files anywhere under `<root>/**/spec.md`, not only at the first folder level. Each node slug is the root-relative folder path that contains the spec, so a spec at `artifacts/specs/sdd/sdd-skill/spec.md` renders as `sdd/sdd-skill`.
+
 ### `--check` is the staleness gate
 
 `--check` renders to memory and compares against the committed `graph.md`. It writes nothing and exits non-zero when they differ — the CI guarantee that the graph can never merge drifted. The default mode writes the file.
