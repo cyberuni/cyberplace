@@ -125,6 +125,39 @@ When the agent reaches a gate under any autonomy level, it emits a **gate report
 
 The human runs the checklist and either ratifies (sets `approved-by`) or returns it with changes. This standardizes the ad-hoc gate summary into a fixed artifact; on ratification the leash derivation is captured in the approval record (commit / PR).
 
+**Example** — this spec, reported at its own spec gate:
+
+```
+GATE REPORT — sdd-gate-autonomy @ spec gate
+STATUS: ready for spec gate · agent-asserted — ratify or kick back
+
+Verdict
+  Framer  (scope)    PASS — real incident, contained, worth shipping
+  Builder (contract) PASS — 11 scenarios cover leash / attribution / FSM / report
+  Architect (fit)    PASS — extends orchestrator + sdd-plugin; reuses aligned as-is
+
+Leash derivation
+  gate        reversibility  blast       novelty  confidence   read
+  spec gate   safe           cross-spec  novel    1 marker     RISKY
+  impl gate   — not reached —
+  derived: gated   ceiling: none   effective: gated
+  reasons
+    reversibility  docs only, revert is cheap                       → safe
+    blast radius   edits sdd-orchestrator + sdd-plugin (other specs) → risky
+    novelty        new gate model, human has not ratified            → risky
+    confidence     one open marker unresolved                        → risky
+
+Contestable defaults
+  - new spec instead of editing sdd-orchestrator inline
+  - leash held in the prompt / main thread, not frontmatter
+  - no human ceiling set — derivation stands
+
+Open markers (block Draft → Approved)
+  - approved-by shape: gate-keyed map vs two flat fields
+```
+
+One risky dimension is enough to make a gate non-self-assertable, so the spec gate reads RISKY and the derived leash is `gated` — the agent stops here and asks, which is exactly the correct behavior for this change.
+
 ### Skill-domain implementation is ACES-delegated
 
 Where implementing this spec modifies SDD **skills** (e.g., `validate-spec`) or writes any skill/agent, that work is **agent-configuration domain** and belongs to the ACES production chain (spec-producer → plan-producer → impl-producer → impl-judge), per the orchestrator model. This is **documented delegation**: until the orchestrator-model ACES agents exist, the work is executed inline, but the owning roles are ACES's.
