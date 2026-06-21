@@ -65,14 +65,16 @@ The plug-in surface is not a 2×2 of one spec object and one impl object. The fo
 | `spec.md` (intent) | human + orchestrator (Framer-fwd) | scope, motive | — |
 | `.feature` (contract) | **spec-producer** | behavioral criteria | **spec-judge** (spec gate) |
 | `plan.md` (solution) | **plan-producer** | domain knowledge + brainstorm + research | — (transitive) |
-| `tasks.md` (breakdown) | **plan-producer** | decompose → units, prioritize, schedule | — (transitive) |
+| `tasks.md` (breakdown, a DAG) | **plan-producer** | decompose → executable units; dependencies, parallelism, scenario traceability | — (transitive) |
 | implementation | **impl-producer** | heavy domain knowledge; **product + test split hidden** | **impl-judge** (impl gate) |
 
 Naming is **producer / judge** (the motive model's forward verb is *produce*; its named constraint is **`producer ≠ judge`** — the four-eyes echo). Concrete agents keep readable names (`aces-scenario-writer` *is* the spec-producer); only role keys are fixed vocabulary.
 
 **Plan and tasks get no judge.** The five artifacts **co-deliver**; the implementation's **test result** validates plan and tasks transitively — if the build passes, the plan was good enough. Only two objects are gated: the `.feature` (spec gate) and the implementation (impl gate).
 
-**One planner, for now.** `plan.md` and `tasks.md` are one `plan-producer` agent today. *Hypothesis (to revisit): split into `plan-producer` (research) and `task-producer` (scheduling) if the two skills diverge enough to want separate model/effort.*
+**One planner, for now.** `plan.md` and `tasks.md` are one `plan-producer` agent today. *Hypothesis (to revisit): split into `plan-producer` (research) and `task-producer` (scheduling) if the two skills diverge enough to want separate model/effort.* The planner **runs in explore** (co-delivery — the plan is produced and spiked alongside the spec, not after a gate).
+
+**`tasks.md` is a DAG, not a flat todo.** Each task is an executable unit with an ID, dependency edges (enabling parallel "waves"), traceability to the `.feature` scenario it serves, and target file paths; priority/order is **emergent** from the graph, not authored. It is the **live** end of the chain — regenerated as the plan changes, status-tracked during implementation, never hard-frozen.
 
 **What stays hidden below the orchestration line: product vs test.** Whether the impl-producer uses one agent or separates the product-code writer from the test-code writer is **plugin implementation detail** — needed for, say, security logic, pointless for Quill. The orchestrator never learns it. But that intra-producer split is **not** the four-eyes guarantee — those tests are the Builder grading its own lens (see below).
 
@@ -138,7 +140,19 @@ A scenario's outcome is **boolean**: the spec says the agent *does* X, not *does
 - **Spec gate** — `aligned: true` means the **contract layer** is in sync (`spec.md` ↔ `.feature`). Impl-layer is *not* required; a spec can be Approved with no code.
 - **Impl gate** — `aligned: true` means the **impl layer** conforms to the frozen `.feature`.
 
-**Exploratory artifacts are scaffolding** — plan drafts, feature drafts, spike code: the Explorer's generate-to-discard output, meant to *pressure-test* the spec, not be in sync with it. They are excluded from spec-gate alignment, and promoted at the freeze (draft `.feature` → frozen `.feature`; spike code → deliberate impl). This is why checking impl at the spec gate is forbidden — it would collapse Approved into Implemented. Layer-scoping keeps the two gates judging two objects (the gate section's result), giving two natural unit-of-work boundaries — two commits.
+This is why checking impl at the spec gate is forbidden — it would collapse Approved into Implemented. The two gates judge two ends of the chain, giving two natural unit-of-work boundaries — two commits.
+
+### Freeze is a strength, not a lock — co-delivery, not phase gates
+
+The motive model's **co-delivery** is non-negotiable: the five artifacts are produced *together* in exploration, never in sequential gated phases. So we **reject a plan-gate** (and any per-artifact gate). A plan-gate is waterfall — which every surveyed SDD system except lean is built on (see `.research/sdd-freeze-boundary`); it breaks co-delivery.
+
+"Freeze" is therefore a **commitment strength, never absolute**. Any artifact can be scrapped if a deal-breaker emerges — even the contract: one scenario that passes every check but turns out fatal sends the whole spec back to Draft (the Framer revert). Strength **descends along the chain**:
+
+`spec.md` / `.feature` (firmest) → `plan.md` (firm) → `tasks.md` (live) → implementation spike (softest)
+
+The **two gates set the strength at the two ends**, they do not split the chain into phases: the **spec gate** firms the contract end (and co-commits plan/tasks at lower strength); the **impl gate** firms the implementation end. So Approval co-freezes all five at *descending* strength — the "how" is committed without a separate plan gate, and the soft middle stays adaptable (the lean "last responsible moment", not the waterfall trap).
+
+**The chain co-evolves; it is not one-way.** A `plan` change usually ripples back to the `.feature` — a different solution is *tested differently* — while the behavioral **essence** the scenarios guarantee stays intact. So `.feature` scenarios carry a stable **essence** (the intent) and a solution-shaped **expression** (how it is checked); the essence anchors the chain, the expression follows the plan. Derivation `spec → .feature → plan → tasks` is the default *flow*, not a one-way lock.
 
 ### The orchestrator is a delegate; the Conductor is the human
 
@@ -235,10 +249,12 @@ SDD has **two gates**, judging **two different objects**:
 | | Spec gate | Impl gate |
 |---|---|---|
 | Transition | Draft → Approved | Approved → Implemented |
-| Object judged | the contract (`spec.md` + `.feature`) | the implementation |
+| Object judged | the contract end (`spec.md` + `.feature`) | the implementation end |
 | The bar is | each actor's surface criteria | the **frozen `.feature`** |
-| Freezes | the `.feature` | "code meets contract" |
+| Firms | the contract end (and co-commits plan/tasks softer) | the implementation end |
 | Weight | Framer-heavy, multi-face | Builder-heavy |
+
+Both gates act on the **same co-delivered chain** (all five artifacts move together); each only sets the **strength** at its end (see *Freeze is a strength*). Neither splits the chain into phases.
 
 (`none → Draft` is not a gate — scaffolding. `Implemented → Deprecated` is a Framer-kill gate.)
 
