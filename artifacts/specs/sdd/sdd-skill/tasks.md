@@ -11,9 +11,9 @@ Each task is an executable unit; dependencies are noted. Order is emergent from 
 
 ## Phase 2 - Skill implementation
 
-- [ ] Expand `plugins/sdd/skills/sdd/SKILL.md` into decision-complete context guidance — deps: spec.md, scenarios — serves: all skill scenarios
-- [ ] Ensure the skill describes lifecycle-state reads and routing without mutating project files — deps: skill expansion — serves: no project mutation
-- [ ] Run mechanical skill audit for `plugins/sdd/skills/sdd` — deps: skill expansion
+- [x] Expand `plugins/sdd/skills/sdd/SKILL.md` into decision-complete context guidance — deps: spec.md, scenarios — serves: all skill scenarios
+- [x] Ensure the skill describes lifecycle-state reads and routing without mutating project files — deps: skill expansion — serves: no project mutation
+- [x] Run mechanical skill audit for `plugins/sdd/skills/sdd` — deps: skill expansion
 
 ## Phase 3 - Nested spec graph support
 
