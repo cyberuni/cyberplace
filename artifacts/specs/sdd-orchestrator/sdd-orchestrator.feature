@@ -6,10 +6,10 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
 
   # ── setup: resolve plugins (the lockfile) ────────────────────────────────
 
-  Scenario: The orchestrator resolves roles from the project registry only
+  Scenario: The orchestrator resolves roles from the registry without scanning
     Given .agents/universal-plugin.json lists quill with its role-to-agent map
     When sdd-orchestrator resolves delegates for a Quill-owned domain
-    Then it reads only .agents/universal-plugin.json
+    Then it resolves the role-to-agent map from .agents/universal-plugin.json
     And it does not scan user-global, project-global, or project-local plugin directories
 
   Scenario: init-plugin writes the resolved role map at setup
@@ -44,17 +44,25 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
 
   # ── exploratory loop: produce & judge the spec (the spec row) ────────────
 
-  Scenario: Orchestrator dispatches to a declared plugin spec-producer
-    Given plan.md Plugin assignments names "aces-scenario-writer" as the spec-producer for the "skill" domain
+  Scenario: Orchestrator dispatches to the plugin that covers the domain
+    Given the registry maps the "skill" domain to the aces plugin
+    And aces declares "aces-scenario-writer" as its spec-producer
     When sdd-orchestrator runs the design phase for the "skill" domain
     Then it invokes the aces-scenario-writer delegate
     And it does not invoke the sdd-scenario-writer default
 
-  Scenario: Orchestrator falls back to the default spec-producer when no plugin is declared
-    Given plan.md declares no spec-producer for the "parser" domain
+  Scenario: Orchestrator falls back to the default spec-producer when no plugin covers the domain
+    Given no registered plugin covers the "parser" domain
     When sdd-orchestrator runs the design phase for the "parser" domain
     Then it invokes the sdd-scenario-writer default delegate
     And the default spec-producer produces generic boolean Gherkin with no domain criteria
+
+  Scenario: A domain claimed by two plugins is disambiguated by the user and recorded
+    Given both the aces and quill plugins cover the "guide" domain in the registry
+    When sdd-orchestrator resolves the delegate for the "guide" domain
+    Then it returns STATUS needs-input asking which plugin owns the domain
+    And the chosen mapping is recorded in spec.md
+    And later resolution reads the choice from spec.md without re-asking
 
   Scenario: A participating plugin always provides its own spec-producer
     Given the "guide" domain is handled by the Quill plugin
@@ -184,14 +192,15 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
 
   # ── implementation loop: produce & judge the impl (the impl row) ─────────
 
-  Scenario: Orchestrator dispatches to a declared plugin impl-judge
-    Given plan.md Plugin assignments names "quill-implementer" as the impl-judge for the "guide" domain
+  Scenario: Orchestrator dispatches to the plugin impl-judge that covers the domain
+    Given the registry maps the "guide" domain to the quill plugin
+    And quill declares "quill-implementer" as its impl-judge
     When sdd-orchestrator runs the implementation phase for the "guide" domain
     Then it invokes the quill-implementer delegate
     And it does not invoke the sdd-implementer default
 
-  Scenario: Orchestrator falls back to the default impl-judge when none is declared
-    Given plan.md declares no impl-judge for the "parser" domain
+  Scenario: Orchestrator falls back to the default impl-judge when no plugin covers the domain
+    Given no registered plugin covers the "parser" domain
     When sdd-orchestrator runs the implementation phase for the "parser" domain
     Then it invokes the sdd-implementer default delegate
     And the default reports IMPLEMENTATION_PASS true only when every scenario has a passing test
