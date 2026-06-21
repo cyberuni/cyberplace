@@ -116,11 +116,18 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     Then the discovery is returned as a content-gap and an OBSERVATIONS entry
     And the orchestrator writes an open marker in spec.md and re-invokes the spec-producer
 
-  Scenario: The impl-judge functional check derives from the frozen scenarios
+  Scenario: The impl-producer co-produces the verification with the implementation
     Given the "auth" .feature is frozen with five scenarios
-    When the impl-judge produces its functional verification
-    Then it derives one check per frozen scenario
-    And it does not free-author checks from the builder's own sense of done
+    When the orchestrator dispatches the impl-producer in implement mode
+    Then it writes the implementation and one functional test or eval per frozen scenario
+    And the verification is anchored to the frozen scenarios, not free-authored from its own sense of done
+
+  Scenario: The impl-judge runs the producer's verification rather than authoring it
+    Given the impl-producer has written one functional test or eval per frozen scenario
+    When the impl-judge runs at the impl gate
+    Then it runs the producer's verification and reports pass or fail per scenario
+    And it does not author the functional tests or evals
+    And it adds its own orthogonal structural and scope reading
 
   Scenario: The planner runs in explore alongside the spec, not after a gate
     Given the "auth" domain is in the exploratory loop
@@ -337,15 +344,16 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     Given the "auth" .feature is frozen
     When the plan-producer, impl-producer, and impl-judge run
     Then the planner writes plan.md and tasks.md in implement mode
-    And the impl-producer builds the artifact against the frozen .feature
-    And the impl-judge verifies it against the frozen .feature
+    And the impl-producer builds the artifact and its verification against the frozen .feature
+    And the impl-judge runs that verification against the frozen .feature
 
-  Scenario: The impl-judge produces and runs the test result
+  Scenario: The impl-judge runs the test result the producer authored
     Given the impl gate evaluates the "auth" implementation
+    And the impl-producer has written the functional verification from the frozen .feature
     When the impl-judge runs
-    Then it produces the verification from the frozen .feature and runs it
-    And the test result combines functional tests and structural checks
-    And the impl-producer does not author its own pass verdict
+    Then it runs the producer's verification rather than authoring it
+    And the test result combines the producer's functional tests with the judge's own structural checks
+    And the impl-producer does not declare its own pass verdict
 
   Scenario: Product and test separation stays inside the impl-producer
     Given a security domain wants separate product-code and test-code writers
@@ -354,13 +362,13 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     And the orchestrator does not learn whether the split happened
 
   Scenario: The .feature carries no rubric
-    Given aces-implementer owns a 1-5 rubric for a scenario
+    Given the impl-producer authored a 1-5 rubric for a scenario
     When the .feature file is inspected
     Then it contains only boolean Given/When/Then scenarios
     And no rubric, threshold, or score appears in the .feature
 
   Scenario: A graded subject still yields a boolean per scenario
-    Given aces-implementer evaluates a scenario with a rubric and a threshold over N runs
+    Given aces-implementer runs a scenario's rubric and threshold over N runs
     When the aggregate score meets or exceeds the threshold
     Then the impl-judge reports that scenario as passing
     And reports failing when the aggregate score is below the threshold
@@ -390,11 +398,12 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     When sdd-orchestrator runs the full loop
     Then it resolves spec-producer, plan-producer, impl-producer, spec-judge, and impl-judge to ACES agents
 
-  Scenario: ACES evals belong to the impl-judge, not the impl-producer
+  Scenario: ACES evals are authored by the impl-producer and run by the impl-judge
     Given the "skill" domain uses ACES
     When the orchestrator resolves who authors the evals
-    Then the evals are owned by aces-implementer as the impl-judge
-    And the impl-producer that writes the agent config does not author its own evals
+    Then the evals are authored by the impl-producer that writes the agent config
+    And aces-implementer as the impl-judge runs the evals rather than authoring them
+    And independence holds because the evals are anchored to the frozen .feature and run by a separate runner
 
   Scenario: Degenerate roles fall back without a plugin agent
     Given the "guide" domain declares no impl-producer and a static spec-judge
