@@ -1,14 +1,25 @@
 Feature: Spec-Driven Development Plugin
 
-  # ── init-sdd ─────────────────────────────────────────────────────────────
+  # Scenarios trace the plugin-owned workflow surface: install → create/resume
+  # → spec gate → implementation → impl gate → graph and observation invariants.
 
-  Scenario: Initialize SDD governance in a repo
+  # -- install -------------------------------------------------------------
+
+  Scenario: Initialize SDD project guidance
     Given a repo with AGENTS.md present
     When the user runs the init-sdd skill
     Then AGENTS.md contains a "## Spec-Driven Development" section
-    And the section includes the .feature freeze rule
+    And the section includes the frozen .feature rule
     And the section includes the spec-owns-behavior rule
+    And the section includes the artifact alignment rule
     And a SessionStart hook named "sdd" is registered
+
+  Scenario: init-sdd installs governance as a skill
+    Given the SDD plugin is installed in a repo
+    When the user runs init-sdd
+    Then sdd:spec-governance is available as a user-invocable false skill
+    And its description begins with "Internal skill:"
+    And runtime SDD work does not require a governance show command
 
   Scenario: init-sdd is idempotent
     Given AGENTS.md already contains a "## Spec-Driven Development" section
@@ -22,163 +33,202 @@ Feature: Spec-Driven Development Plugin
     Then init-sdd tells the user to run the init skill first
     And no files are written
 
-  # ── create-spec — new feature ────────────────────────────────────────────
+  # -- registry setup ------------------------------------------------------
 
-  Scenario: Scaffold a spec for a new feature
+  Scenario: Domain plugin init writes the resolved role map
+    Given the Quill plugin ships an init-quill skill
+    When init-quill runs in an SDD project
+    Then .agents/universal-plugin.json contains a quill entry under sdd-plugins
+    And the entry includes domains, version, roles, and governances
+    And the roles map uses spec-producer, plan-producer, spec-judge, impl-producer, and impl-judge
+
+  Scenario: Domain plugin init rewrites old registry shape
+    Given .agents/universal-plugin.json contains a quill entry with scenario-advisor and implementer keys
+    When init-quill runs
+    Then the quill entry is rewritten to the five-role map
+    And the orchestrator does not need to read the old shape
+
+  Scenario: Runtime resolution does not read plan.md plugin assignments
+    Given .agents/universal-plugin.json maps the "guide" domain to quill
+    And plan.md contains an obsolete Plugin assignments table
+    When create-spec resumes the orchestrator for the "guide" domain
+    Then the orchestrator resolves delegates from .agents/universal-plugin.json
+    And it ignores plan.md for plugin resolution
+
+  Scenario: Ambiguous domain coverage is resolved by the skill
+    Given both aces and quill claim the "guide" domain
+    And spec.md has no domain-plugin frontmatter choice
+    When create-spec invokes the orchestrator
+    Then the orchestrator returns STATUS needs-input with a batched domain choice question
+    And create-spec asks the user which plugin owns the domain
+    And create-spec writes the answer to the domain-plugin frontmatter map
+
+  # -- create-spec exploration -------------------------------------------
+
+  Scenario: Scaffold the co-delivered artifact chain for a new feature
     Given a project with no spec for the "auth" domain
-    When the user runs create-spec for "auth" providing What, Why, and command surface
-    Then specs/auth/spec.md is created with Status: Draft
-    And specs/auth/auth.feature is created with at least one happy-path scenario
-    And specs/auth/auth.feature contains at least one error-case scenario
-    And validate-spec runs and reports the quality gate outcome before the skill exits
+    When the user runs create-spec for "auth" with enough What, Why, and surface detail
+    Then specs/auth/spec.md is created with status draft
+    And specs/auth/auth.feature is created with behavioral scenarios
+    And specs/auth/plan.md is created when planning output exists
+    And specs/auth/tasks.md is created when task output exists
+    And the Artifacts section lists the created files
 
-  Scenario: create-spec does not scaffold until What, Why, and command surface are all provided
+  Scenario: create-spec suspends before writing when core intent is missing
     Given a new feature with no existing implementation
     When the user runs create-spec for "auth" but provides only What
-    Then create-spec asks for Why and command surface before writing any file
+    Then create-spec asks for the missing Why and public surface in one batch
+    And no spec files are written before the missing intent is supplied
 
-  # ── create-spec — backfill ───────────────────────────────────────────────
+  Scenario: create-spec resumes the orchestrator after batched answers
+    Given create-spec received STATUS needs-input with two questions
+    When the user answers both questions
+    Then create-spec invokes sdd-orchestrator again with those answers
+    And the orchestrator reconstructs workflow state from the artifact files
 
-  Scenario: Backfill a spec from existing code
+  Scenario: Backfill explores existing implementation before writing a contract
     Given implementation code exists at src/auth with tests
     And no spec exists for the "auth" domain
     When the user runs create-spec in backfill mode for "auth"
-    Then create-spec reads source files, tests, and commit history to infer content
-    And presents inferred What, Why, design decisions, and command surface for user review
-    And writes specs/auth/spec.md only after the user confirms
+    Then create-spec asks the orchestrator to inspect source files, tests, and history
+    And inferred What, Why, decisions, and surface are presented for user review
+    And the spec-producer writes the contract only after the user confirms the inferred intent
 
-  # ── validate-spec — Draft → Approved ────────────────────────────────────
+  Scenario: Explore-mode implementation discoveries become content gaps
+    Given specs/auth/spec.md has status draft
+    And the impl-producer discovers the draft scenarios omit token refresh behavior
+    When the orchestrator returns from the explore segment
+    Then the discovery is represented as a CONTENT_GAPS item
+    And an open marker is written in the owning artifact
+    And create-spec surfaces the gap before the spec gate
 
-  Scenario: Validate a complete spec for approval
-    Given specs/auth/spec.md exists with all required sections filled and no placeholder text
-    And specs/auth/auth.feature exists with happy-path and error-case scenarios
-    When the user runs validate-spec targeting Draft → Approved
-    Then all checks pass
-    And the report confirms the spec is ready to advance to Approved
+  Scenario: Observations are surfaced without blocking the current spec
+    Given a plan-producer returns an OBSERVATIONS item owned by architect
+    When create-spec receives the orchestrator result
+    Then create-spec reports the observation separately from content gaps
+    And the current spec is not blocked by that observation
 
-  Scenario: Validate a spec with a missing Why section
-    Given specs/auth/spec.md exists but has no Why section
-    When the user runs validate-spec
-    Then the "why-section-present" check fails
-    And the priority issues list includes "spec.md is missing a ## Why section"
-    And the user questions include "What problem does this feature solve?"
+  # -- spec gate -----------------------------------------------------------
 
-  Scenario: Validate a spec with placeholder text
-    Given specs/auth/spec.md contains "TBD" in the What section
-    When the user runs validate-spec
-    Then the "no-placeholder-text" check fails
-    And the report identifies the section containing placeholder text
+  Scenario: validate-spec runs the spec gate against the contract layer
+    Given specs/auth/spec.md has status draft and aligned false
+    And specs/auth/auth.feature exists
+    When the user runs validate-spec targeting the spec gate
+    Then validate-spec invokes sdd-spec-judge through the orchestrator
+    And it checks spec.md and auth.feature without requiring implementation artifacts
+    And it reports whether the contract is ready for approval
 
-  Scenario: Validate a spec where the linked .feature file is missing
-    Given specs/auth/spec.md links to specs/auth/auth.feature
-    And specs/auth/auth.feature does not exist
-    When the user runs validate-spec
-    Then validation fails immediately
-    And the priority issues list names the missing .feature file
+  Scenario: validate-spec rejects unresolved open markers at the spec gate
+    Given specs/auth/spec.md has status draft
+    And the Why section contains "<!-- open: needs PM input on scope -->"
+    When the user runs validate-spec targeting the spec gate
+    Then validation fails
+    And the report identifies the unresolved open marker
+    And status remains draft
 
-  Scenario: Validate a spec for Approved → Implemented
-    Given specs/auth/spec.md has Status: Approved
-    And specs/auth/auth.feature contains three scenarios
-    And passing tests exist for all three scenarios
-    When the user runs validate-spec targeting Approved → Implemented
-    Then the "tests-cover-all-scenarios" check passes
-    And the report confirms the spec is ready to be marked Implemented
+  Scenario: validate-spec accepts draft aligned true as ready for the spec gate
+    Given specs/auth/spec.md has status draft
+    And aligned is true
+    And auth.feature passes the spec-judge checks
+    When the user runs validate-spec targeting the spec gate
+    Then validate-spec treats the tuple as ready for human approval
+    And it does not interpret aligned true as implemented
 
-  Scenario: Validate a spec for Approved → Implemented with missing test coverage
-    Given specs/auth/spec.md has Status: Approved
-    And specs/auth/auth.feature contains three scenarios
-    And passing tests exist for only two of the three scenarios
-    When the user runs validate-spec targeting Approved → Implemented
-    Then the "tests-cover-all-scenarios" check fails
-    And the report identifies the uncovered scenario
+  Scenario: validate-spec freezes scenarios after human approval
+    Given specs/auth/spec.md has status draft
+    And auth.feature passes the spec-judge checks
+    And all required reviewers have acknowledged the contract
+    When the user approves the spec gate
+    Then validate-spec writes status approved in spec.md
+    And validate-spec records the spec approval provenance
+    And auth.feature becomes frozen
 
-  # ── .feature freeze ──────────────────────────────────────────────────────
+  Scenario: A plugin-written feature must pass the universal format bar
+    Given aces-scenario-writer produced specs/skill/skill.feature
+    When validate-spec runs the spec gate
+    Then sdd-spec-judge checks valid boolean Gherkin and scenario ordering
+    And the check applies regardless of which spec-producer wrote the file
 
-  Scenario: Agent refuses to modify .feature when spec is Approved
-    Given specs/auth/spec.md has Status: Approved
+  Scenario: Domain criteria are enforced at the spec gate
+    Given the "skill" domain requires every scenario to carry trigger context
+    And skill.feature has a scenario without trigger context
+    When validate-spec runs the spec gate
+    Then validation fails
+    And the report names the scenario missing the required domain criterion
+
+  Scenario: validate-spec can run without NodeJS
+    Given npx is unavailable in the environment
+    When validate-spec runs the spec gate
+    Then sdd-spec-judge performs the required checks at agent level
+    And the gate report is still produced
+
+  # -- frozen contract -----------------------------------------------------
+
+  Scenario: Agent refuses to modify .feature while Approved
+    Given specs/auth/spec.md has status approved
     And specs/auth/auth.feature exists
     When an agent attempts to add or remove a scenario in auth.feature
     Then the agent refuses the modification
-    And explains that the .feature file is frozen while the spec is Approved
-    And tells the user to revert the spec to Draft to change scenarios
+    And explains that the .feature file is frozen while the spec is approved
+    And tells the user to revert the spec to draft to change scenarios
 
-  # ── requirements change after Approved ───────────────────────────────────
+  Scenario: Fatal contract gap reopens the spec through a gate
+    Given specs/auth/spec.md has status approved
+    And implementation reveals the specified behavior cannot work as written
+    When the user accepts the Framer revert
+    Then validate-spec writes status draft in spec.md
+    And auth.feature becomes editable again
+    And the spec must pass the spec gate before returning to approved
 
-  Scenario: Change behavior after spec is Approved
-    Given specs/auth/spec.md has Status: Approved
-    When a user must change the behavior specified in the spec
-    Then the user changes Status to Draft in spec.md
-    And the .feature file becomes editable again
-    And validate-spec must pass before the spec can return to Approved
+  # -- implementation and impl gate ---------------------------------------
 
-  # ── command surface edge cases ───────────────────────────────────────────
+  Scenario: Implementation runs against the frozen feature
+    Given specs/auth/spec.md has status approved
+    And specs/auth/auth.feature is frozen with three scenarios
+    When validate-spec targets the impl gate
+    Then the orchestrator dispatches forward producers in implement mode
+    And the impl-producer writes implementation and verification derived from the frozen scenarios
+
+  Scenario: Impl gate passes only when every frozen scenario passes
+    Given specs/auth/spec.md has status approved
+    And auth.feature contains three frozen scenarios
+    And the impl-judge reports all three scenarios passing
+    When the user approves the impl gate
+    Then validate-spec writes status implemented in spec.md
+    And validate-spec records the impl approval provenance
+    And aligned is true for the implementation layer
+
+  Scenario: Impl gate reports uncovered scenarios
+    Given specs/auth/spec.md has status approved
+    And auth.feature contains three frozen scenarios
+    And passing verification exists for only two scenarios
+    When validate-spec targets the impl gate
+    Then validation fails
+    And the report identifies the uncovered scenario
+    And status remains approved
+
+  # -- surfaces and graph invariants --------------------------------------
 
   Scenario: Spec a TypeScript library with no CLI surface
-    Given a TypeScript module that exposes only function exports
+    Given a TypeScript module exposes only function exports
     When create-spec scaffolds specs/parser/spec.md
-    Then the Command surface section is marked N/A with justification
-    And validate-spec does not fail for an absent command surface
-    And .feature scenarios use return values and thrown errors as observable behavior
+    Then the surface section documents the library API
+    And parser.feature scenarios use return values and thrown errors as observable behavior
 
   Scenario: Spec a config-only change with no public interface
-    Given a change that only modifies project configuration
+    Given a change only modifies project configuration
     When create-spec scaffolds specs/config/spec.md
-    Then the Command surface section is marked N/A with justification
-    And validate-spec does not fail for an absent command surface
+    Then the surface section is marked N/A with justification
+    And validate-spec does not fail for an absent public interface
 
-  # ── two-mode model ───────────────────────────────────────────────────────
+  Scenario: blocked-by defines the spec DAG
+    Given specs/report/spec.md has blocked-by containing "auth"
+    When render-spec-graph runs
+    Then artifacts/specs/graph.md contains the edge "auth --> report"
+    And no blocks field is required in either spec
 
-  Scenario: Exploration code exists alongside a Draft spec
-    Given specs/auth/spec.md has Status: Draft
-    And exploratory implementation code already exists in src/auth
-    When the user continues working on both the spec and the code
-    Then validate-spec does not require implementation to be absent
-    And the spec may advance to Approved regardless of whether code exists
-
-  Scenario: .feature scenarios remain editable during Draft
-    Given specs/auth/spec.md has Status: Draft
-    And specs/auth/auth.feature exists with two scenarios
-    When an agent adds a third scenario to auth.feature
-    Then the addition is accepted
-    And no freeze warning is shown
-
-  # ── open questions ──────────────────────────────────────────────────────────
-
-  Scenario: Open question markup is accepted during Draft
-    Given specs/auth/spec.md has Status: Draft
-    And the What section contains "<!-- open: needs designer input on empty-state -->"
-    When the user runs validate-spec
-    Then validate-spec does not fail for the open question comment
-    And the report notes the open question as pending input
-
-  Scenario: Draft → Approved blocked when open questions remain
-    Given specs/auth/spec.md has Status: Draft
-    And the Why section contains "<!-- open: needs PM input on scope -->"
-    When the user runs validate-spec targeting Draft → Approved
-    Then validation fails
-    And the report identifies the unresolved open question as a blocker
-
-  # ── approval gate ────────────────────────────────────────────────────────────
-
-  Scenario: Draft → Approved requires acknowledgment from all required reviewers
-    Given specs/auth/spec.md has all required sections filled
-    And specs/auth/auth.feature has happy-path and error-case scenarios
-    And no open questions remain
-    When the user runs validate-spec targeting Draft → Approved
-    Then validate-spec asks the user to confirm each required reviewer has acknowledged
-    And advances to Approved only after the user confirms
-
-  # ── implementation gap handling ──────────────────────────────────────────────
-
-  Scenario: Minor gap discovered during implementation
-    Given specs/auth/spec.md has Status: Approved
-    And implementation reveals an edge case clearly implied by the existing spec
-    When the gap is added to auth.feature with a quick review note
-    Then spec.md status remains Approved
-
-  Scenario: Requirements change discovered during implementation
-    Given specs/auth/spec.md has Status: Approved
-    When implementation reveals the specified behavior cannot work as written
-    Then spec.md status must revert to Draft before behavior can change
-    And auth.feature becomes editable again
-    And validate-spec must pass before the spec can return to Approved
+  Scenario: tasks.md is a DAG with scenario traceability
+    Given specs/auth/auth.feature contains a scenario named "Refresh an expired token"
+    When the plan-producer writes specs/auth/tasks.md
+    Then tasks.md contains executable task IDs and dependency edges
+    And at least one task traces to "Refresh an expired token"
