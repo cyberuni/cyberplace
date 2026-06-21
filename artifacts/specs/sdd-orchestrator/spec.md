@@ -98,10 +98,12 @@ This is why the exploratory loop is **more than the spec row**: it is the spec r
 
 A backward face does not just read the artifact — it **produces the verification** and **codifies the bar**. Two outputs:
 
-- **Durable: a governance skill** (ADR-0013) — the bar in loadable form. Builder-backward → testability/coverage bar; Architect-backward → structural-fit bar (cyclomatic complexity, dup/conflict); Framer-backward → scope/kill bar. Forward producers **load** the relevant governance skills to self-align; the judge **loads** them to verify.
+- **Durable: a governance skill** (ADR-0013) — the bar in loadable form, **keyed by actor, not by SDD**: `framer` (scope/kill), `builder` (testability/coverage), `architect` (structural-fit — cyclomatic complexity, dup/conflict). Each is **registry-resolvable** (a plugin may bind its own; SDD ships the defaults) — the same resolution pattern as role→agent. Forward producers **load** the actor governances they embody to self-align; the judge **loads** them to verify.
 - **Per-run: the test result** — the bar executed against this artifact. "Test result" is loose: Builder's functional tests *and* Architect's structural reading *and* Framer's scope check, combined into one verdict.
 
-This collapses the gate's three backward actors into **three governance skills + a thin judge**, not three runtime judge agents — the efficiency the actors-as-agents model would lose. How many judge agents actually fire is the plugin's call.
+**Producer → actor-governance load matrix:** spec-producer → `framer` (it writes the intent) + `builder` (it writes the testable `.feature`); plan-producer → `architect`; impl-producer → `builder` + `architect`. (This is where `scope` is loaded — by the spec-producer, as the Framer governance.)
+
+This collapses the gate's three backward actors into **three actor governances + a thin judge**, not three runtime judge agents — the efficiency the actors-as-agents model would lose. How many judge agents actually fire is the plugin's call.
 
 **A full domain plugin fills every producer; thin domains let roles degenerate:**
 
@@ -173,10 +175,11 @@ Readable agent names stay safe: the registry binds role→name explicitly, so th
     "domains": ["documentation","guide","..."],
     "roles": { "spec-producer": "quill-writer", "plan-producer": null,
                "spec-judge": null, "impl-producer": "quill-doc-writer",
-               "impl-judge": "quill-implementer" } }
+               "impl-judge": "quill-implementer" },
+    "governances": { "framer": null, "builder": "quill-doc-bar", "architect": null } }
 ] }
 ```
-The top-level key is `sdd-plugins`; each role value is an agent name or `null` (degenerate — no agent). All five role keys appear (a missing key falls back to the `<plugin>-<role>` convention; `null` degenerates).
+The top-level key is `sdd-plugins`. Each `roles` value is an agent name or `null` (degenerate — no agent); a missing role key falls back to the `<plugin>-<role>` convention. Each `governances` value is an actor-governance skill name or `null` (use the SDD default for that actor).
 
 ---
 
@@ -199,7 +202,7 @@ Re-invocation is cold, but SDD already persists everything to disk, so "resume" 
 | what's blocking | count of `<!-- open: -->` markers |
 | design done | `.feature` exists and passes validate-spec |
 
-So no `questions.md`, no workflow journal — the process is resumable across sessions for free. Only the iteration count is session-local in the skill (the cap guards thrashing within one sitting; a deliberate return next session resetting it is acceptable).
+So no `questions.md`, no workflow journal — the process is resumable across sessions for free. Only the iteration count is session-local in the skill (the cap guards thrashing within one sitting; a deliberate return next session resetting it is acceptable). The cap defaults to **3** and is **configurable via the prompt**. On cap-hit the producer⇄judge loop has failed to converge — genuinely **blocked by nature** — so the skill returns `STATUS: blocked` with the failing scenarios batched and **asks the user** (accept-as-is, keep looping, or change the spec); it never auto-accepts.
 
 ### Questions: two kinds, two homes
 
@@ -214,10 +217,12 @@ The inner loop (writer → validator → implementer) is only one of three loops
 |---|---|---|---|---|
 | content gap | inner | Builder | yes | in-spec `<!-- open: -->` marker |
 | workflow question | — | skill/human | no | nowhere (transient) |
-| structural concern | product feedback edge | Architect | no (deferred) | product backlog (a new spec with `priority`/`blocked-by`, or `artifacts/backlog.md`) |
-| durable lesson | outer loop | Curator | no (deferred) | append-only candidate queue → corpus (skill/governance/convention) |
+| structural concern | product feedback edge | Architect | no (deferred) | **a new spec** (`priority`/`blocked-by`) |
+| durable lesson | outer loop | Curator | no (deferred) | **a new spec** — may target another project in the monorepo |
 
-Delegates emit a non-blocking **`OBSERVATIONS`** channel — the gate's `accept + deferred` axis — typed by owning actor (`architect` | `curator`). Detection is continuous and cheap (any delegate, as a side effect of its narrow job); the **decision is episodic and human**. Observations bubble plugin → orchestrator → skill → human; on accept the **skill** routes them out. The orchestrator never writes outside the spec it owns. Architect observations are surfaced at the spec's gate; Curator observations are appended to the candidate queue continuously but surfaced **only at boundaries** (the premature-codification guard — recurrence like "solved three times" needs the queue's memory to detect).
+**The spec is the universal sink.** Both Architect and Curator observations route to **new specs**, not to side files (no `backlog.md`, no `curator-queue.md`). A Curator lesson can land in **another project's** spec folder (monorepo). A spawned spec may carry an **external-routing flag** (e.g. `route: jira | asana | kb`) so the skill can sync it to an external tracker or knowledge base.
+
+Delegates emit a non-blocking **`OBSERVATIONS`** channel — the gate's `accept + deferred` axis — typed by owning actor (`architect` | `curator`). Detection is continuous and cheap (any delegate, as a side effect of its narrow job); the **decision is episodic and human**. Observations bubble plugin → orchestrator → skill → human; on accept the **skill** spawns the spec. The orchestrator never writes outside the spec it owns. Architect observations are surfaced at the spec's gate; Curator observations surface **only at boundaries** (the premature-codification guard). Recurrence ("solved three times") is detected against the **existing candidate specs** — the Curator bumps a matching candidate's recurrence rather than spawning a duplicate, so the spec set *is* the queue's memory.
 
 ---
 
@@ -273,7 +278,9 @@ The model leans on a fixed vocabulary the rest of the spec only gestures at. Thi
 
 **Role keys (closed set):** `spec-producer`, `plan-producer`, `spec-judge`, `impl-producer`, `impl-judge`. These are the registry keys and the dispatch keys; concrete agent names are free (`aces-scenario-writer` *is* the spec-producer).
 
-**Registry:** `.agents/universal-plugin.json`, top-level `sdd-plugins[]`, entry = `{ name, version, domains[], roles{<the five keys>} }`, each role = agent name or `null`. `init-<plugin>` writes and rewrites it (rewrite-on-init migration). The orchestrator reads only this file.
+**Registry:** `.agents/universal-plugin.json`, top-level `sdd-plugins[]`, entry = `{ name, version, domains[], roles{<the five keys>}, governances{framer, builder, architect} }`. Each role = agent name or `null`; each governance = actor-governance skill name or `null` (SDD default). `init-<plugin>` writes and rewrites it (rewrite-on-init migration). The orchestrator reads only this file.
+
+**Actor governances (closed set):** `framer`, `builder`, `architect` — the bar in loadable-skill form, resolved like roles. Curator's "governance" is the corpus itself (outer loop), not a gate bar.
 
 **Who writes `spec.md`** (the boundary both dogfood agents flagged):
 
@@ -373,7 +380,7 @@ Sequenced so the stable interface lands first, the cheap consumer proves it, the
 - Add the uniform delegate output (`STATUS` / `QUESTIONS` / `OBSERVATIONS`); orchestrator aggregates and bubbles up. Skill routes `OBSERVATIONS` to backlog/corpus on human accept.
 - Establish the production-chain roles (spec-producer, plan-producer, impl-producer, spec-judge, impl-judge); orchestrator resolves each per-role to a plugin agent or SDD default.
 - Add the `MODE` (`explore` / `implement`) parameter to the forward producers; the orchestrator routes `explore`-mode discoveries back into the spec row as content-gaps/OBSERVATIONS.
-- Codify the judges' bars as governance skills (testability, structural-fit, scope); forward producers load them to self-align, the thin judge loads them to verify.
+- Codify the judges' bars as **actor governances** (`framer`, `builder`, `architect`), resolved via the registry `governances{}` map with SDD defaults; forward producers load the actor governances they embody, the thin judge loads them to verify.
 - Make `aligned` layer-scoped: spec gate checks the contract layer, impl gate checks the impl layer; exploratory artifacts are excluded as scaffolding.
 - Extend `init-<plugin>` to write the resolved role→agent map + version into `.agents/universal-plugin.json` under `sdd-plugins[]`, **rewriting** any old-shape entry (rewrite-on-init migration); the orchestrator reads only that file at runtime (no plugin-dir scanning).
 - Settle the write boundary: spec-producer writes the `spec.md` body + `.feature`; the skill owns `status`/`domain-plugin` frontmatter; the orchestrator owns `aligned`; impl-side roles never touch `spec.md`/`.feature` (see *Vocabulary & wiring*).
