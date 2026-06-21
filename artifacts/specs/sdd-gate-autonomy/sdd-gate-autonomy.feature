@@ -1,27 +1,39 @@
 Feature: Gate autonomy and accountability
 
-  Scenario: default leash is gated
-    Given the Conductor declares no autonomy level
-    When the orchestrator finishes one autonomous segment at the spec gate
-    Then it stops and returns needs-input for the human verdict
+  Scenario: a novel contract decision derives gated
+    Given the spec encodes a contestable decision the human has not seen
+    When the agent assesses the spec gate
+    Then the derived leash is "gated"
+    And it stops at the spec gate for the human verdict
 
-  Scenario: auto-to-spec stops before implementing
-    Given the autonomy level is "auto-to-spec"
-    When the spec gate is reached and the spec passes the spec-judge
-    Then the orchestrator self-asserts the spec gate
-    And it does not begin implementation
+  Scenario: settled contract but risky implementation derives auto-to-spec
+    Given the contract decisions are already ratified by the human
+    And the implementation is irreversible or high blast radius
+    When the agent assesses both gates
+    Then the derived leash is "auto-to-spec"
+    And it self-asserts the spec gate but stops before implementing
 
-  Scenario: auto runs through the impl gate
-    Given the autonomy level is "auto"
-    And the change is low blast radius
-    When implementation passes the impl-judge
-    Then the orchestrator self-asserts the impl gate
+  Scenario: reversible low-blast work derives auto
+    Given the contract decisions are ratified or trivial
+    And the implementation is reversible and local to this spec
+    And the verdict is a clear pass
+    When the agent assesses both gates
+    Then the derived leash is "auto"
+    And both gates are self-asserted
 
-  Scenario: the leash is a ceiling and downgrades on high blast radius
-    Given the autonomy level is "auto"
-    And the change modifies a frozen contract or an installed public surface
-    When the gate is reached
-    Then the orchestrator stops for the human verdict regardless of the leash
+  Scenario: the human ceiling caps the derived leash
+    Given the derived leash is "auto"
+    And the Conductor capped the run at the spec gate
+    When the effective leash is computed
+    Then it is the minimum of the ceiling and the derivation
+    And the agent stops at the spec gate
+
+  Scenario: the gate report records the leash derivation
+    Given the agent reaches a gate
+    When it emits the gate report
+    Then the report contains a leash-derivation block
+    And the block shows the four-dimension assessment per gate
+    And it shows the derived and effective leash with a reason per dimension
 
   Scenario: an agent-asserted gate is provisional
     Given the orchestrator self-asserts the spec gate

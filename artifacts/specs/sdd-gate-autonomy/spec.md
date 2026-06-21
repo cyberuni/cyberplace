@@ -17,7 +17,7 @@ A model for **how far an agent may advance a spec without the human**, how that 
 
 It adds four cooperating pieces:
 
-1. **The leash** — an autonomy *ceiling* the Conductor sets per run (`gated` | `auto-to-spec` | `auto`).
+1. **The leash** — how far the agent may self-assert before a human gate (`gated` | `auto-to-spec` | `auto`), **derived** from a per-gate risk assessment and capped by an optional human ceiling.
 2. **Gate attribution** — `approved-by` records *who* passed each gate; agent-attributed gates are provisional, awaiting human ratification.
 3. **An enforced state machine** — `validate-spec` rejects any illegal `(status, aligned, markers, .feature)` tuple, so states like `draft + aligned:true`-meaning-implemented can't be committed.
 4. **The gate report** — on reaching a gate under autonomy the agent emits a structured checklist (verdict per backward face + the contestable defaults it chose) so the human can ratify fast.
@@ -51,19 +51,40 @@ The motive model already gives the principle: the human (Conductor) holds **moti
 
 ## Design decisions
 
-### The leash is a ceiling, not a floor
+### The leash is derived per gate, not just declared
 
-The Conductor declares an autonomy level per run; it is **transient and procedural**, so the skill (main thread) holds it — like the reviewer set and the iteration cap — never spec frontmatter.
+The three leash values are not a free choice — they **fall out of a risk assessment** the agent runs on each gate. The human may cap the result, but the default behavior is the agent reasoning about how far it can safely go and **showing its work**.
 
-| Level | Agent may | Default |
+**The leash values map to "the furthest gate the agent may self-assert":**
+
+| Level | Self-asserts | Stops at |
 |---|---|---|
-| `gated` | run one autonomous segment, then stop at **every** gate for the human verdict | ✅ |
-| `auto-to-spec` | explore and self-assert the **spec gate**, stop before implementing | |
-| `auto` | run through the **impl gate** too | |
+| `gated` | nothing | the **spec gate** |
+| `auto-to-spec` | the spec gate | the **impl gate** |
+| `auto` | both gates | nothing (both provisional) |
 
-It is a **ceiling**: even under `auto`, the agent **downgrades to a stop** when it detects high blast radius — a change to a frozen contract, a public/installed surface, a cross-spec ripple, or anything irreversible or security-sensitive. The agent may always stop earlier than the leash; it may never go further. Absent a declared level, the default is `gated` — the agent asks.
+**A gate is self-assertable only when all four risk dimensions read *safe*:**
 
-**How it is declared.** The leash is set in **natural language in the kickoff prompt** to the create-spec / validate-spec skill — no new flag or syntax. "Draft this and stop for my review" ⇒ `gated`/`auto-to-spec`; "build it end to end" ⇒ `auto`. The skill holds the user channel, so it interprets the intent, fixes the level for that invocation, and — if the prompt is silent and the work would cross a gate — asks once rather than assuming. **"Per run" = per skill invocation / sitting**, the same session-local granularity as the iteration cap: a fresh invocation re-declares, and an unstated level falls back to `gated`. There is no persisted or project-wide level (no baked-in config); the ceiling-and-downgrade rule keeps even a broad leash safe.
+| Dimension | Safe → self-assert | Risky → stop and ask |
+|---|---|---|
+| **Reversibility** | cheap revert, no external effect | irreversible / published / external side effect |
+| **Blast radius** | local to this spec | frozen contract, installed/public surface, another spec, prod, security |
+| **Decision novelty** | trivial / defaulted, or already ratified by the human | new contestable choices the human has not seen |
+| **Confidence** | clear pass on the judge bar | marginal verdict, unresolved markers |
+
+**Deriving the value** is then mechanical — the leash is the furthest gate reachable where every gate up to it reads safe:
+
+- spec gate risky → `gated`
+- spec gate safe, impl gate risky → `auto-to-spec`
+- both safe → `auto`
+
+This is exactly the reasoning from the incident post-mortem: *autonomous-to-the-end is OK when the work is reversible, low-blast, the decisions are already ratified, and the verdict is confident.* Each dimension is one of those conditions; the gate they gate is the leash.
+
+**Why an aggressive derived leash is still safe.** A self-asserted gate is **provisional** (`approved-by: agent`) and lands in the review queue. So the leash only chooses **stop-and-ask-now** (synchronous) versus **self-assert-and-continue, leaving a review marker** (asynchronous). It never makes a decision *final* — the human still ratifies the trail. That is what lets the agent lean autonomous without stealing accountability.
+
+**The human sets a ceiling; the agent may only go lower.** In the kickoff prompt the Conductor may cap the derived leash ("stop at the spec gate regardless"). Effective leash = `min(ceiling, derived)`. The agent may always stop earlier than both the ceiling and its own derivation; it may never go further. Absent any cap, the derivation stands. The leash is **per run / sitting** (session-local, like the iteration cap), not persisted — no project-wide config.
+
+**The reasoning has a home: the gate report.** Every gate report carries a **Leash derivation** block — the four-dimension assessment for each gate, the derived value, the effective value after any ceiling, and the one-line reasoning per dimension. This is the auditable place the agent explains *why it stopped where it did*; on ratification it is captured in the approval record (commit / PR). (See *The gate report* below.)
 
 ### Accountability stays human: `approved-by`
 
@@ -95,13 +116,14 @@ The incident's real error was therefore not the field's meaning but **committing
 
 ### The gate report: a ratification checklist
 
-When the agent reaches a gate under any autonomy level, it emits a **gate report** — the same two-axis verdict a judge produces, made reviewable:
+When the agent reaches a gate under any autonomy level, it emits a **gate report** — the same two-axis verdict a judge produces, made reviewable. Its sections:
 
-- **per backward face**: Framer (scope — still worth shipping?), Builder (contract/impl complete & testable against the bar?), Architect (fit — conventions, no dup/conflict).
-- **the contestable defaults it chose** (the decisions a human might have made differently), listed explicitly.
-- `STATUS` and, when self-asserted, the flag **"agent-asserted — ratify or kick back."**
+- **Verdict per backward face**: Framer (scope — still worth shipping?), Builder (contract/impl complete & testable against the bar?), Architect (fit — conventions, no dup/conflict).
+- **Leash derivation** (the reasoning home): the four-dimension assessment (reversibility, blast radius, decision novelty, confidence) for each gate, the **derived** leash, the **effective** leash after any human ceiling, and a one-line reason per dimension. This is *why the agent stopped where it did*, made auditable.
+- **Contestable defaults**: the decisions a human might have made differently, listed explicitly.
+- `STATUS`, and when a gate was self-asserted, the flag **"agent-asserted — ratify or kick back."**
 
-The human runs the checklist and either ratifies (sets `approved-by`) or returns it with changes. This standardizes the ad-hoc gate summary into a fixed artifact.
+The human runs the checklist and either ratifies (sets `approved-by`) or returns it with changes. This standardizes the ad-hoc gate summary into a fixed artifact; on ratification the leash derivation is captured in the approval record (commit / PR).
 
 ### Skill-domain implementation is ACES-delegated
 
