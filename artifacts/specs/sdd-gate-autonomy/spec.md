@@ -68,9 +68,11 @@ The three leash values are not a free choice — they **fall out of a risk asses
 | Dimension | Safe → self-assert | Risky → stop and ask |
 |---|---|---|
 | **Reversibility** | cheap revert, no external effect | irreversible / published / external side effect |
-| **Blast radius** | local to this spec | frozen contract, installed/public surface, another spec, prod, security |
+| **Blast radius** | contained to the artifacts **this spec owns** (its Artifacts table) | reaches beyond — another spec, a shared/frozen contract, an installed/public surface, prod, security |
 | **Decision novelty** | trivial / defaulted, or already ratified by the human | new contestable choices the human has not seen |
 | **Confidence** | clear pass on the judge bar | marginal verdict, unresolved markers |
+
+"This spec" is the unit-of-work boundary, not the `spec.md` file: its **subject** — the artifacts it owns — may be code, a skill, docs, or a config. Blast radius asks whether the change stays inside that boundary or ripples outside it. (For `sdd-gate-autonomy` the subject is the gate model, and it edits sibling specs — so blast radius reads risky.)
 
 **Deriving the value** is then mechanical — the leash is the furthest gate reachable where every gate up to it reads safe:
 
