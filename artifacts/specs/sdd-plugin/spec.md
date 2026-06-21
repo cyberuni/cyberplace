@@ -10,7 +10,7 @@ aligned: true
 
 ## What
 
-The SDD plugin installs the spec-driven workflow into a project and exposes the user-facing skills that drive it. `init-sdd` installs the persistent project guidance and governance skill; `create-spec` and `validate-spec` own the human-facing loop; `sdd-orchestrator` owns one autonomous segment at a time; domain plugins supply delegates for the production chain through the project registry. A spec is not just `spec.md` plus `.feature`: SDD co-delivers `spec.md`, `.feature`, `plan.md`, `tasks.md`, and implementation artifacts, with the spec gate firming the contract end and the impl gate firming the implementation end.
+The SDD plugin loads the spec-driven workflow into agent context and exposes the user-facing skills that drive it. `sdd` is the context skill that brings the SDD governance, workflow rules, and related skill map into the current conversation; `create-spec` and `validate-spec` own the human-facing loop; `sdd-orchestrator` owns one autonomous segment at a time; domain plugins supply delegates for the production chain through the project registry. A spec is not just `spec.md` plus `.feature`: SDD co-delivers `spec.md`, `.feature`, `plan.md`, `tasks.md`, and implementation artifacts, with the spec gate firming the contract end and the impl gate firming the implementation end.
 
 ---
 
@@ -24,7 +24,7 @@ The earlier plugin model encoded SDD as a two-artifact, single-gate practice and
 
 ### Skills own the user channel
 
-User-facing skills (`create-spec`, `validate-spec`, and `init-sdd`) are the only SDD components that ask the user questions or write user-verdict frontmatter. The orchestrator is invoked by those skills, runs one autonomous segment, and returns `complete`, `needs-input`, or `blocked` with batched questions, content gaps, and observations.
+User-facing skills (`sdd`, `create-spec`, and `validate-spec`) are the only SDD components that ask the user questions or write user-verdict frontmatter. The orchestrator is invoked by those skills, runs one autonomous segment, and returns `complete`, `needs-input`, or `blocked` with batched questions, content gaps, and observations.
 
 ### The orchestrator owns autonomous workflow synthesis
 
@@ -44,13 +44,17 @@ Every SDD work unit is modeled as a co-delivered chain:
 
 Plan and tasks have no separate gate. They are produced with the contract during exploration, updated as understanding changes, and validated transitively when the implementation passes.
 
-### The plugin installs SDD governance as a skill
+### The plugin exposes SDD governance as skills
 
 Reference rules are delivered as `sdd:spec-governance`, a non-user-invocable governance skill with an `Internal skill:` description. It contains the universal `.feature` format bar, scenario-ordering convention, and human-readable `spec.md` enrichment rules. SDD agents and plugin spec-producers load this skill through the harness. Runtime SDD work does not call `governance show`.
 
-### `init-sdd` installs project guidance, not the whole contract
+### `sdd` is the context-loading entry point
 
-`init-sdd` writes or replaces the SDD section in `AGENTS.md` and registers the SessionStart hook so agents see the persistent freeze, ownership, and artifact-alignment rules. Detailed criteria live in `sdd:spec-governance`; `AGENTS.md` carries only the small always-on rules needed outside explicit SDD skill execution.
+`sdd` replaces `init-sdd` as the plugin's default entry point. It does not edit project guidance, register hooks, or require the `cyber-skills` CLI. It loads `sdd:spec-governance` plus the SDD workflow contract into context, then routes feature work to `create-spec` for draft contract creation, `validate-spec` for gates, and `render-spec-graph` for graph refreshes.
+
+### SDD workflow is active for feature work
+
+When the user wants to add, change, backfill, validate, implement, or deprecate a feature under SDD, the agent first invokes the `sdd` context skill. After the context is loaded, the agent follows the SDD lifecycle: draft the contract, pass the spec gate, implement against the frozen `.feature`, pass the impl gate, and keep `aligned` truthful for the current layer.
 
 ### Domain plugins register resolved delegates at setup
 
@@ -183,9 +187,9 @@ Deprecation is a Framer decision. The spec remains in the graph for history, but
 No CLI surface is required. The plugin exposes skills and agents.
 
 ```text
-init-sdd
-  in: project root
-  out: AGENTS.md SDD section, SessionStart hook registration, sdd:spec-governance available
+sdd
+  in: user intent to work on a feature under SDD
+  out: SDD governance and workflow loaded into context; routing to create-spec, validate-spec, or render-spec-graph
 
 create-spec <domain-or-path>
   in: user brief, existing artifacts if any, optional iteration cap
