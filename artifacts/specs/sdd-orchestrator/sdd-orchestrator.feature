@@ -122,11 +122,12 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     Then it derives one check per frozen scenario
     And it does not free-author checks from the builder's own sense of done
 
-  Scenario: The planner produces plan and tasks but is not judged
-    Given the "auth" domain needs a solution design
-    When the orchestrator dispatches the plan-producer
-    Then it writes plan.md and tasks.md
+  Scenario: The planner runs in explore alongside the spec, not after a gate
+    Given the "auth" domain is in the exploratory loop
+    When the orchestrator dispatches the plan-producer in explore mode
+    Then it writes plan.md and tasks.md co-delivered with the spec and .feature
     And no plan-judge or task-judge is invoked
+    And there is no plan gate between the spec and the plan
     And the plan and tasks are validated transitively by the implementation test result
 
   Scenario: Forward producers load the actor governances they embody
@@ -270,13 +271,40 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     Then the skill spawns a new spec with priority and blocked-by
     And it does not record the concern in the triggering spec's markers
 
-  # ── freeze: the contract locks (Approved ≠ Implemented) ──────────────────
+  # ── freeze: a strength gradient, co-delivered (Approved ≠ Implemented) ─────
 
   Scenario: A spec can be Approved with no implementation
     Given specs/auth/spec.md has passed the spec gate
     When its status is Approved
     Then no implementation is required for Approved
     And the status is not Implemented
+
+  Scenario: Approval co-freezes the whole chain at descending strength
+    Given the auth spec is co-delivered with spec.md, .feature, plan.md, and tasks.md
+    When the spec gate firms the contract end
+    Then spec.md and .feature are frozen firmest
+    And plan.md is committed at lower strength
+    And tasks.md stays live
+    And there is no separate plan gate
+
+  Scenario: Freeze is reversible when a deal-breaker emerges
+    Given an Approved spec with a frozen .feature
+    When implementation reveals one scenario is a fatal deal-breaker
+    Then the spec reverts to Draft
+    And the freeze did not make the contract absolute
+
+  Scenario: A plan change ripples to the .feature expression but not its essence
+    Given a frozen .feature and a chosen solution in plan.md
+    When the plan changes to a different solution
+    Then the .feature scenarios are re-expressed to test the new solution
+    And the behavioral essence the scenarios guarantee stays intact
+
+  Scenario: tasks.md is a dependency DAG, not a flat todo
+    Given tasks.md for the auth domain
+    When it is inspected
+    Then each task has an id, dependency edges, and traceability to a .feature scenario
+    And task order is emergent from the graph rather than authored
+    And tasks.md is regenerated as the plan changes rather than hard-frozen
 
   Scenario: The .feature is the object at the spec gate and the bar at the impl gate
     Given the spec gate judged auth.feature against the domain criteria
