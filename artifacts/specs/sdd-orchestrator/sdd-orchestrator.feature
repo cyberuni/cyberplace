@@ -80,14 +80,27 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     Given the "auth" .feature is still a draft
     When the orchestrator dispatches the impl-producer in explore mode
     Then the producer spikes against the draft .feature
-    And its output is throwaway scaffolding
-    And no impl-judge runs because there is no frozen bar
+    And its output is scaffolding that may be discarded or promoted at the freeze
+    And the ship-quality impl-judge does not run during explore
 
-  Scenario: Explore-mode discoveries feed back into the spec row
+  Scenario: An explore discovery is judged before it reshapes the contract
+    Given an explore-mode impl-producer finds the .feature omits a token-refresh case
+    When the discovery is routed back into the spec row
+    Then it becomes a proposed .feature change judged by the spec-judge
+    And the human at the spec gate decides whether the behavior is wanted
+    And it is not absorbed into the contract unjudged
+
+  Scenario: Explore-mode discoveries feed back as markers
     Given an explore-mode impl-producer finds the .feature omits a token-refresh case
     When it returns
     Then the discovery is returned as a content-gap and an OBSERVATIONS entry
     And the orchestrator writes an open marker in spec.md and re-invokes the spec-producer
+
+  Scenario: The impl-judge functional check derives from the frozen scenarios
+    Given the "auth" .feature is frozen with five scenarios
+    When the impl-judge produces its functional verification
+    Then it derives one check per frozen scenario
+    And it does not free-author checks from the builder's own sense of done
 
   Scenario: The planner produces plan and tasks but is not judged
     Given the "auth" domain needs a solution design
