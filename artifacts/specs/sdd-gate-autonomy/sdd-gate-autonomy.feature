@@ -35,6 +35,42 @@ Feature: Gate autonomy and accountability
     And the block shows the four-dimension assessment per gate
     And it shows the derived and effective leash with a reason per dimension
 
+  Scenario: the gate report is decidable
+    Given the agent reaches a gate with one blocking open marker
+    When it emits the gate report
+    Then each blocking marker appears as a question with a proposed answer
+    And a decision menu lists approve, change, and reject with their consequences
+
+  Scenario: the gate report is regenerated, not stored
+    Given a spec with approved-by.spec of "agent" awaiting review
+    When the human opens the review
+    Then the gate report is regenerated from current artifact state
+    And no stored gate-report file exists
+
+  Scenario: ratification snapshots the report into the approval record
+    Given the human approves a self-asserted gate
+    When the approval is recorded
+    Then approved-by is set to the human's name
+    And the approval commit body carries the gate report snapshot
+
+  Scenario: change at the spec gate edits the contract
+    Given the spec gate report is returned with "change"
+    When the agent acts on it
+    Then it revises spec.md or the .feature
+    And the status stays draft
+
+  Scenario: change at the impl gate edits the code, not the contract
+    Given the impl gate report is returned with "change"
+    When the agent acts on it
+    Then it fixes the implementation against the frozen .feature
+    And the .feature is not modified
+
+  Scenario: reject at the impl gate can trigger a Framer-revert
+    Given building reveals a frozen scenario is fatal
+    When the impl gate is rejected as a Framer-revert
+    Then the .feature is unfrozen
+    And the status returns to draft
+
   Scenario: an agent-asserted gate is provisional
     Given the orchestrator self-asserts the spec gate
     When the spec is written
