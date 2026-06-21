@@ -84,7 +84,7 @@ Naming is **producer / judge** (the motive model's forward verb is *produce*; it
 
 `producer ≠ judge` as an *agent* separation is only anti-tampering hygiene — it stops the crude cheat (editing a test to go green). It does **not** give independent perspective, because for the **Builder** the impl-producer and impl-judge are two faces of **one actor** loading the **same** testability bar. If the builder misreads the spec, its implementation *and* its tests embed the same misread; same-lens tests pass against the wrong understanding. Real independence comes from two other places:
 
-- **An independent bar (Builder).** The impl-judge's functional check is independent only because it is **anchored to the frozen `.feature`** — a bar the builder did not set. So "owns the scenario→evaluation mapping" means **derived from the scenarios, one per scenario**, never free-authored from the builder's own sense of done.
+- **An independent bar (Builder).** The functional check is independent only because it is **anchored to the frozen `.feature`** — a bar the builder did not set. The impl-producer **writes** the scenario→evaluation mapping (one eval per scenario, never free-authored from its own sense of done) and the impl-judge **runs** it; both are bound to the frozen `.feature`, so authoring and execution split across two agents without either escaping the anchor.
 - **An orthogonal axis (Framer, Architect).** Their backward faces judge a property the builder was not optimizing — scope (still worth shipping?), structure (cyclomatic complexity, dup/conflict) — so they catch the builder's blind spot even from the same hand.
 
 Inside the one impl-judge the three parts of the test result have **different** independence sources: functional → anchored to `.feature`; structural and scope → orthogonal. Only the functional part shares the builder's lens, and that is exactly the part the frozen `.feature` makes independent.
@@ -98,12 +98,14 @@ The forward producers (`plan-producer`, `impl-producer`) take a **mode**, so exp
 
 This is why the exploratory loop is **more than the spec row**: it is the spec row *plus* throwaway `explore`-mode runs whose discoveries feed back. The two loops differ by draft-vs-frozen, throwaway-vs-kept, and feedback-up-vs-down — not by which artifact.
 
-### The judge is productive: backward faces codify the bar as governance skills
+### The backward face is productive — but the producer writes the verification, the judge runs it
 
-A backward face does not just read the artifact — it **produces the verification** and **codifies the bar**. Two outputs:
+A backward face does not just read the artifact — it **produces the verification** (the Builder-backward face *writes the tests*; for ACES, *writes the evals*) and **codifies the bar**. The correction: this productive backward face is carried by the **impl-producer**, not the judge. The impl-producer embodies **both faces of the Builder** — the forward face writes the implementation, the backward face writes its verification — so it co-produces **two artifacts** (implementation + test/eval), both derived from the frozen `.feature`. The **impl-judge reads that backward-face artifact and runs it** — it executes the producer's tests/evals and reports the result; it does not author them.
 
-- **Durable: a governance skill** (ADR-0013) — the bar in loadable form, **keyed by actor, not by SDD**: `framer` (scope/kill), `builder` (testability/coverage), `architect` (structural-fit — cyclomatic complexity, dup/conflict). Each is **registry-resolvable** (a plugin may bind its own; SDD ships the defaults) — the same resolution pattern as role→agent. Forward producers **load** the actor governances they embody to self-align; the judge **loads** them to verify.
-- **Per-run: the test result** — the bar executed against this artifact. "Test result" is loose: Builder's functional tests *and* Architect's structural reading *and* Framer's scope check, combined into one verdict.
+The backward face yields two things:
+
+- **Durable: a governance skill** (ADR-0013) — the bar in loadable form, **keyed by actor, not by SDD**: `framer` (scope/kill), `builder` (testability/coverage), `architect` (structural-fit — cyclomatic complexity, dup/conflict). Each is **registry-resolvable** (a plugin may bind its own; SDD ships the defaults) — the same resolution pattern as role→agent. The impl-producer **loads** the builder governance it embodies both to self-align *and to write the verification*; the impl-judge **loads** it to run that verification.
+- **Per-run: the test result** — the producer's verification *executed by the judge* against this artifact. "Test result" is loose: the Builder's functional tests/evals (written by the impl-producer, run by the impl-judge) *plus* the judge's own orthogonal reading — Architect's structural check, Framer's scope check — combined into one verdict.
 
 **Producer → actor-governance load matrix:** spec-producer → `framer` (it writes the intent) + `builder` (it writes the testable `.feature`); plan-producer → `architect`; impl-producer → `builder` + `architect`. (This is where `scope` is loaded — by the spec-producer, as the Framer governance.)
 
@@ -116,18 +118,18 @@ This collapses the gate's three backward actors into **three actor governances +
 | spec-producer | `aces-scenario-writer` | `quill-writer` | `sdd-scenario-writer` (default) |
 | plan-producer | `aces-planner` | `quill-planner` or default | `sdd-planner` (default) |
 | spec-judge | `aces-spec-validator` | static doc criteria | format gate (`validate-spec`) |
-| impl-producer | `define-agent` / `improve` | **`quill-doc-writer`** (missing — to add) | the generic Builder (no agent) |
-| impl-judge | `aces-implementer` (owns the **evals** — the "written tests") | `quill-implementer` | `sdd-implementer` (default) |
+| impl-producer | `define-agent` / `improve` (writes the config **and its evals** — the "written tests") | **`quill-doc-writer`** (missing — to add) | the generic Builder (writes product **and tests**) |
+| impl-judge | `aces-implementer` (**runs** the evals over N runs → boolean) | `quill-implementer` | `sdd-implementer` (default) |
 
-**ACES evals sit with the impl-judge, not the impl-producer.** Evals are "written tests"; authoring the test is a backward-face act, kept independent of the config-writer (four-eyes). `aces-implementer` owns the scenario→rubric map and runs it. Common degeneracies: **spec-judge** → static criteria; **impl-producer** → the generic Builder for ordinary code.
+**ACES evals are produced by the impl-producer; the impl-judge runs them.** Evals are "written tests" — the Builder's backward-face artifact — so the impl-producer (`define-agent`/`improve`) writes the scenario→rubric map alongside the agent config, both derived from the frozen `.feature`. `aces-implementer` (impl-judge) **runs** that map over N runs and collapses score-vs-threshold to a boolean per scenario; it does not author it. Independence comes not from an authoring split but from the verification being anchored to the frozen `.feature` and executed by a **separate runner** — the producer cannot declare its own pass. Common degeneracies: **spec-judge** → static criteria; **impl-producer** → the generic Builder for ordinary code.
 
 ### Default delegates are agent definitions, not skills
 
 `sdd-scenario-writer` and `sdd-implementer` are agent definitions so dispatch is uniform — the orchestrator invokes default and plugin delegates through one identical I/O surface, and each default can set its own model/effort like any plugin delegate.
 
-### The rubric is a validation-detail, owned by the impl-judge
+### The rubric is a validation-detail — written by the impl-producer, run by the impl-judge
 
-A scenario's outcome is **boolean**: the spec says the agent *does* X, not *does X some of the time*. For a non-deterministic subject, the impl-judge reaches that boolean through a rubric + judge + threshold over N runs — `score >= threshold` collapses the grade back to pass/fail. The rubric is the impl-judge's private evaluation suite, keyed to scenario by name, never embedded in the `.feature`. This mirrors implementation-detail: the scenario hides *how it is built* (code) and equally hides *how it is judged* (rubric). The three impl-judges are one interface, three verification methods:
+A scenario's outcome is **boolean**: the spec says the agent *does* X, not *does X some of the time*. For a non-deterministic subject, the boolean is reached through a rubric + judge + threshold over N runs — `score >= threshold` collapses the grade back to pass/fail. The rubric is the Builder's backward-face artifact: the **impl-producer writes** it (one per frozen scenario, keyed by name, never embedded in the `.feature`); the **impl-judge runs** it. This mirrors implementation-detail: the scenario hides *how it is built* (code) and equally hides *how it is judged* (rubric) — both produced together, both kept out of the contract. The three impl-judges are one interface, three verification methods (each runs the producer's verification):
 
 | impl-judge | Scenario passes when | Subject |
 |---|---|---|
@@ -372,19 +374,21 @@ rule: loads the structural-fit governance skill to self-align; explore→draft/t
 **impl-producer** (builds the artifact; product/test split hidden; degenerates to the generic Builder)
 ```
 in:  DOMAIN, DOMAIN_PATH, SPEC_PATH, FEATURE_PATH, PLAN_PATH, TASKS_PATH, MODE
-out: ARTIFACTS_WRITTEN, CHANGES_MADE + uniform
-rule: loads the testability governance skill to self-align; explore→spike against the DRAFT,
-      returns discoveries as content-gaps/OBSERVATIONS; implement→builds against the FROZEN .feature;
-      must not modify spec.md or the .feature
+out: ARTIFACTS_WRITTEN, VERIFICATION_WRITTEN, CHANGES_MADE + uniform
+rule: loads the testability governance skill to self-align AND to WRITE the verification;
+      co-produces the implementation AND its tests/evals (one per frozen scenario), both derived
+      from the frozen .feature — the impl-judge runs them, never authors them;
+      explore→spike against the DRAFT, returns discoveries as content-gaps/OBSERVATIONS;
+      implement→builds against the FROZEN .feature; must not modify spec.md or the .feature
 ```
 
-**impl-judge** (produces and runs the test result; judges the artifact against the frozen `.feature`)
+**impl-judge** (runs the test result; judges the artifact against the frozen `.feature`)
 ```
-in:  DOMAIN, DOMAIN_PATH, SPEC_PATH, FEATURE_PATH, PLAN_PATH, TASKS_PATH, IMPLEMENTATION_PATHS
+in:  DOMAIN, DOMAIN_PATH, SPEC_PATH, FEATURE_PATH, PLAN_PATH, TASKS_PATH, IMPLEMENTATION_PATHS, VERIFICATION_PATHS
 out: IMPLEMENTATION_PASS, SCENARIOS_PASSING, SCENARIOS_FAILING, CHANGES_MADE, BLOCKER + uniform
-rule: produces the verification (tests/evals/structural checks) and runs it; the functional
-      checks are DERIVED FROM the frozen .feature scenarios (one per scenario), not free-authored;
-      owns the scenario→evaluation mapping; reports pass/fail per scenario;
+rule: RUNS the functional verification authored by the impl-producer (the scenario→evaluation
+      mapping, one per frozen scenario) and adds its own orthogonal structural/scope reading;
+      does NOT author the functional tests/evals; reports pass/fail per scenario;
       must not modify spec.md or the .feature
 ```
 
@@ -420,7 +424,7 @@ Sequenced so the stable interface lands first, the cheap consumer proves it, the
 
 **3. ACES (act-override consumer, proves rubric-as-validation-detail).**
 - Split `aces-spec-designer` → `aces-scenario-writer` (writes boolean Gherkin: trigger near-misses + behavior cases); delete its spec.md-authoring half.
-- Add `aces-implementer` (Builder-backward at the impl gate) owning the scenario→rubric map; `aces-judge` becomes its internal.
+- Add `aces-implementer` (Builder-backward at the impl gate) that **runs** the scenario→rubric map; the map itself is authored by the ACES impl-producer (`define-agent`/`improve`) alongside the agent config. `aces-judge` becomes `aces-implementer`'s internal.
 - **Retain `aces-spec-validator`** as the **spec-judge** (Builder-backward at the spec gate) — not absorbed by SDD. Delete `aces:create-spec` (absorbed by SDD); `run`/`compare`/`report` become thin reporting over impl-judge output.
 - Reframe `aces:skill-spec-schema` as agent-scenario criteria inside `aces-scenario-writer`. Retire `aces:define-governance` deferred to the repo-wide call.
 - Update ACES specs + `.feature` files.
