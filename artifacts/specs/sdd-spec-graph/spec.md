@@ -11,7 +11,7 @@ aligned: false
 
 ## What
 
-An SDD capability that renders the **spec DAG** to a derived `graph.md`. It reads every `spec.md` under a specs root, parses the `blocked-by` frontmatter edges, detects cycles, computes a topological order, and emits a Mermaid diagram plus a node table.
+An SDD capability that renders the **spec DAG** to a derived `graph.md`. It reads every `spec.md` under a specs root, including nested spec folders, parses the `blocked-by` frontmatter edges, detects cycles, computes a topological order, and emits a Mermaid diagram plus a node table.
 
 The source of truth is the `blocked-by` field in each spec (see the *spec DAG* in `sdd-plugin/spec.md`); `graph.md` is a **derived view** that must never be hand-edited.
 
@@ -19,7 +19,7 @@ It ships as a **non-user-invocable SDD skill** — `render-spec-graph` — with 
 
 ```mermaid
 flowchart LR
-  specs[specs/*/spec.md<br/>blocked-by edges] --> render[render-spec-graph.mts]
+  specs[specs/**/spec.md<br/>blocked-by edges] --> render[render-spec-graph.mts]
   render --> graph[graph.md<br/>Mermaid + node table]
   render -->|--check| ci{stale?}
   ci -->|yes| fail[exit 1]
@@ -68,7 +68,7 @@ node <skill>/scripts/render-spec-graph.mts [--root <dir>] [--out <file>] [--chec
 
 | Flag | Default | Meaning |
 |---|---|---|
-| `--root <dir>` | `artifacts/specs` | Directory whose immediate children are spec folders |
+| `--root <dir>` | `artifacts/specs` | Directory whose descendants may contain spec folders |
 | `--out <file>` | `<root>/graph.md` | Output path for the rendered graph |
 | `--check` | off | Render and compare only; exit 1 if `--out` is stale or missing; write nothing |
 
@@ -79,7 +79,7 @@ Exported functions (for `node:test` and future reuse):
 | Function | Contract |
 |---|---|
 | `parseFrontmatter(text)` | `{ status, blockedBy[] }` from a `spec.md`'s YAML frontmatter; tolerates inline `[a, b]`, block `- a`, and empty |
-| `collectSpecs(root)` | `[{ slug, status, blockedBy[] }]` for every `<root>/*/spec.md`, sorted by slug |
+| `collectSpecs(root)` | `[{ slug, status, blockedBy[] }]` for every `<root>/**/spec.md`, sorted by root-relative slug |
 | `detectCycle(nodes)` | a cycle path `string[]` or `null` |
 | `renderGraph(nodes)` | the full `graph.md` content string (deterministic) |
 

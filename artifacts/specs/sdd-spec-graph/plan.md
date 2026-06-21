@@ -7,7 +7,7 @@ A single self-contained `.mts` module that is both an importable library (pure f
 The module separates concerns so each is testable in isolation:
 
 1. **Parse** — `parseFrontmatter(text)` extracts `status` and `blockedBy[]` from a spec's YAML frontmatter, tolerating inline, block-list, and empty forms. No YAML dependency; a small hand-rolled reader scoped to the two fields.
-2. **Collect** — `collectSpecs(root)` lists `<root>/*/spec.md`, parses each, returns `{ slug, status, blockedBy }[]` sorted by slug. Folders without `spec.md` are skipped.
+2. **Collect** — `collectSpecs(root)` walks `<root>/**/spec.md`, parses each, returns `{ slug, status, blockedBy }[]` sorted by root-relative slug. Folders without `spec.md` are skipped.
 3. **Validate** — `detectCycle(nodes)` runs a DFS coloring; returns the cycle path or `null`.
 4. **Render** — `renderGraph(nodes)` emits the deterministic `graph.md`: intro, Mermaid block (bare nodes sorted, then edges sorted), node table sorted by slug.
 5. **Drive** — `main(argv)` parses flags, wires the above, handles `--check` vs write, sets exit codes.
@@ -31,7 +31,7 @@ This makes `renderGraph` a pure function of the edge set, which is what makes `-
 
 ## Agent fallback
 
-The SKILL.md documents the deterministic invocation first and, below it, the fallback: if `node` cannot run, the agent reads every `<root>/*/spec.md`, parses `blocked-by`, and writes `graph.md` in the exact documented format. Dual-mode, mirroring `sdd-spec-judge`.
+The SKILL.md documents the deterministic invocation first and, below it, the fallback: if `node` cannot run, the agent reads every `<root>/**/spec.md`, parses `blocked-by`, and writes `graph.md` in the exact documented format. Dual-mode, mirroring `sdd-spec-judge`.
 
 ## Test strategy
 
@@ -40,7 +40,7 @@ The SKILL.md documents the deterministic invocation first and, below it, the fal
 - `parseFrontmatter`: inline `[a,b]`, block list, empty `[]`, missing field, status read.
 - `detectCycle`: acyclic → null; 2-node cycle; self-loop; longer cycle.
 - `renderGraph`: edge emitted; bare node emitted; multiple blockers; table rows; idempotent (same input → same output).
-- `collectSpecs`: skips folders without `spec.md`; sorts by slug.
+- `collectSpecs`: skips folders without `spec.md`; sorts flat and nested root-relative slugs.
 
 ## Out of scope
 

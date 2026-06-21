@@ -17,12 +17,12 @@ Each task is an executable unit; dependencies are noted. Order is emergent from 
 
 ## Phase 3 - Nested spec graph support
 
-- [ ] Update `collectSpecs(root)` to find nested `spec.md` files recursively — deps: workflow path
-- [ ] Use root-relative folder paths as graph node slugs — deps: recursive discovery
-- [ ] Add `node:test` coverage for nested specs and unchanged flat slugs — deps: recursive discovery
-- [ ] Regenerate `artifacts/specs/graph.md` — deps: recursive discovery
+- [x] Update `collectSpecs(root)` to find nested `spec.md` files recursively — deps: workflow path
+- [x] Use root-relative folder paths as graph node slugs — deps: recursive discovery
+- [x] Add `node:test` coverage for nested specs and unchanged flat slugs — deps: recursive discovery
+- [x] Regenerate `artifacts/specs/graph.md` — deps: recursive discovery
 
 ## Phase 4 - Validation
 
-- [ ] Run `node --test plugins/sdd/skills/render-spec-graph/scripts/render-spec-graph.test.mts` — deps: nested graph support
+- [x] Run `node --test plugins/sdd/skills/render-spec-graph/scripts/render-spec-graph.test.mts` — deps: nested graph support
 - [ ] Run `pnpm verify` — deps: all implementation tasks

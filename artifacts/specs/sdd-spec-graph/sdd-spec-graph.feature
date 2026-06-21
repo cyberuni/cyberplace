@@ -64,3 +64,9 @@ Feature: Render the spec DAG to graph.md
     Given a directory "empty-folder" under the specs root with no spec.md
     When the renderer runs
     Then "empty-folder" is not a node in graph.md
+
+  Scenario: a nested spec uses its relative path as the node slug
+    Given a spec at "sdd/sdd-skill/spec.md"
+    When the renderer runs
+    Then graph.md has a node table row for "sdd/sdd-skill"
+    And graph.md contains the edge "sdd-plugin --> sdd/sdd-skill"
