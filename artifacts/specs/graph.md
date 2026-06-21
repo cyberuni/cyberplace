@@ -27,7 +27,7 @@ graph TD
 | `define-skill` | — | draft |
 | `governance-composition` | — | draft |
 | `motive-model` | — | draft |
-| `sdd-gate-autonomy` | `sdd-orchestrator`, `sdd-plugin` | draft |
+| `sdd-gate-autonomy` | `sdd-orchestrator`, `sdd-plugin` | approved |
 | `sdd-orchestrator` | — | draft |
 | `sdd-plugin` | — | draft |
 | `sdd-spec-graph` | `sdd-plugin` | draft |
