@@ -1,13 +1,29 @@
-Feature: SDD context skill
+Feature: SDD gateway skill
 
-  # -- context loading -----------------------------------------------------
+  # -- activation and intake ----------------------------------------------
 
-  Scenario: Load SDD context before feature work
+  Scenario: Activate SDD before feature work
     Given the user wants to work on a software feature under SDD
+    When the agent invokes the sdd skill
+    Then SDD is active for the current workflow
+    And the SDD lifecycle rules are loaded into context
+    And sdd:spec-governance is identified as required context for spec authoring and judging
+    And the skill surfaces create-spec, validate-spec, render-spec-graph, and sdd-orchestrator as the active workflow surface
+
+  Scenario: Ask for SDD intent on empty invocation
+    Given the user invokes "$sdd"
+    And the user provides no feature, artifact, or action
+    When the agent invokes the sdd skill
+    Then the agent asks what SDD work the user wants to do
+    And the choices include creating a new feature, backfilling an existing feature, revising or validating a spec, implementing an approved spec, managing or deprecating specs, and refreshing the graph
+    And implementation does not start before the user selects a route
+
+  Scenario: Route explicit SDD request with enough detail
+    Given the user says "use SDD to create a spec for auth"
     When the agent invokes the sdd skill
     Then the SDD lifecycle rules are loaded into context
     And sdd:spec-governance is identified as required context for spec authoring and judging
-    And the skill surfaces create-spec, validate-spec, render-spec-graph, and sdd-orchestrator as the active workflow surface
+    And the next action is create-spec for auth
 
   Scenario: sdd does not mutate project setup
     Given a repo with AGENTS.md present

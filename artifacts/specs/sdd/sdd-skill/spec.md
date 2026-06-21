@@ -3,31 +3,35 @@ status: draft
 aligned: true
 ---
 
-# SDD Context Skill
+# SDD Gateway Skill
 
 ---
 
 ## What
 
-`sdd` is the context skill for Spec-Driven Development feature work. It loads the SDD governance, lifecycle rules, and workflow surfaces into the active agent context, then routes the current user request to the correct SDD path. It applies when a user wants to add, change, backfill, validate, implement, or deprecate a software feature under SDD. The skill reads existing SDD artifacts when present, determines the current lifecycle state, preserves approved `.feature` files as frozen contracts, and reports the next SDD action without mutating project guidance.
+`sdd` is the gateway skill for Spec-Driven Development feature work. It is the explicit user-invoked entrypoint that activates SDD for the current work, gathers missing intent, loads the SDD governance and lifecycle rules, and routes the request to the correct SDD path. It applies when a user wants to add, change, backfill, validate, implement, deprecate, or inspect a software feature under SDD. The skill reads existing SDD artifacts when present, determines the current lifecycle state, preserves approved `.feature` files as frozen contracts, and reports or performs the next SDD action without mutating global project guidance.
 
 ---
 
 ## Why
 
-SDD feature work depends on rules that must be present before an agent writes specs, scenarios, plans, tasks, or implementation. A dedicated context skill makes that workflow explicit at the moment the user starts feature work, so agents consistently load the governance bar, respect lifecycle state, route gate work correctly, and avoid treating setup or hook installation as part of feature execution.
+SDD feature work depends on rules that must be present before an agent writes specs, scenarios, plans, tasks, or implementation. A gateway skill makes that workflow explicit at the moment the user opts in, so agents consistently load the governance bar, ask for missing workflow intent, respect lifecycle state, route gate work correctly, and avoid treating setup or hook installation as part of feature execution.
 
 ---
 
 ## Design decisions
 
-### The skill is context only
+### The skill is the SDD workflow gateway
 
-`sdd` loads workflow context and routing rules. It must not edit `AGENTS.md`, register SessionStart hooks, install packages, or require the `cyber-skills` CLI.
+`sdd` owns the front door for opt-in SDD work. It activates SDD for the current request, conducts brief intake when the user invokes `$sdd` without enough detail, loads workflow context and routing rules, then routes to the appropriate SDD skill, tool, or implementation path. It must not edit `AGENTS.md`, register SessionStart hooks, install packages, or require the `cyber-skills` CLI.
 
-### Trigger language is feature-work oriented
+### Trigger language is explicit and workflow-oriented
 
-The skill triggers when the user asks to work on a software feature with SDD, including new feature creation, backfill, draft revision, contract approval, implementation, implementation approval, behavior change after approval, deprecation, or SDD graph refresh. It does not trigger for general SDD explanation unless the user asks to apply the workflow to feature work.
+The skill triggers when the user explicitly invokes `$sdd`, says to use SDD, or asks to work on a software feature with Spec-Driven Development. Triggered work includes new feature creation, backfill, draft revision, contract approval, implementation, implementation approval, behavior change after approval, deprecation, or SDD graph refresh. It does not trigger for general SDD explanation unless the user asks to apply the workflow to feature work.
+
+### Empty invocation conducts intake
+
+When the user invokes `$sdd` with no feature, artifact, or action, the skill should not guess. It should ask what SDD work the user wants to do, offering the main routes: create a new feature, backfill an existing feature, revise or validate an existing spec, implement an approved spec, manage or deprecate specs, or refresh the spec graph.
 
 ### SDD governance is loaded before authoring or judging
 
@@ -49,9 +53,9 @@ The skill routes by artifact state:
 
 When `spec.md` is `approved`, the skill must not add, remove, or rewrite scenarios. Any behavior change after approval requires returning the spec to `draft` and passing the spec gate again.
 
-### User questions stay at skill boundaries
+### User questions stay at gateway and skill boundaries
 
-`sdd-orchestrator` has no user channel. The `sdd` skill routes work to `create-spec` or `validate-spec`, and those skills ask batched user questions when needed.
+`sdd-orchestrator` has no user channel. The `sdd` skill handles gateway intake, then routes work to `create-spec` or `validate-spec`. Those skills ask batched user questions when deeper workflow input is needed.
 
 ### The spec graph must include nested specs
 
@@ -64,13 +68,15 @@ This spec lives at `artifacts/specs/sdd/sdd-skill/`. `render-spec-graph` must di
 The skill description uses this trigger contract:
 
 ```text
-Use this skill when the user wants to work on a software feature with Spec-Driven Development.
+Use this skill when the user explicitly invokes SDD or wants to work on a software feature with Spec-Driven Development.
 ```
 
 Examples that trigger the skill:
 
 | User intent | Expected route |
 |---|---|
+| "$sdd" | Intake prompt for the desired SDD work |
+| "Use SDD for auth" | Intake or route based on discovered auth state |
 | "Create an SDD spec for auth" | `create-spec` |
 | "Backfill SDD for this existing parser" | `create-spec` in backfill mode |
 | "Approve this draft spec" | `validate-spec --target spec` |
@@ -82,15 +88,16 @@ Examples that trigger the skill:
 
 ## Skill surface
 
-No CLI surface is required. The public surface is the user-invoked `sdd` skill.
+No CLI surface is required. The public surface is the user-invoked `sdd` gateway skill.
 
 ```text
 sdd
-  in: user intent to work on a software feature under SDD
+  in: explicit SDD invocation or user intent to work on a software feature under SDD
+  intake: asks for the desired SDD route when intent is missing
   reads: existing spec.md, .feature, plan.md, tasks.md when present
   loads: sdd:spec-governance and SDD lifecycle rules
   routes: create-spec, validate-spec, render-spec-graph, or frozen-feature implementation path
-  out: next SDD action and loaded workflow constraints
+  out: next SDD action, active route, and loaded workflow constraints
 ```
 
 **Scenarios:** [sdd-skill.feature](./sdd-skill.feature)
@@ -101,7 +108,8 @@ sdd
 
 - `artifacts/specs/sdd-plugin/spec.md` — defines the SDD plugin skill surface and lifecycle.
 - `artifacts/specs/sdd-spec-graph/spec.md` — defines the derived graph view that must learn nested specs.
-- `plugins/sdd/skills/sdd/SKILL.md` — the context skill specified here.
+- `apps/website/src/content/docs/concepts/gateway-skill.md` — defines the gateway skill concept.
+- `plugins/sdd/skills/sdd/SKILL.md` — the gateway skill specified here.
 
 ---
 
