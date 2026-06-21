@@ -1,10 +1,12 @@
 ---
-status: draft
+status: approved
 blocked-by:
   - sdd-orchestrator
   - sdd-plugin
 aligned: false
-approved-by: {}
+approved-by:
+  spec:
+    by: unional
 ---
 
 # Gate Autonomy & Accountability
@@ -110,7 +112,7 @@ approved-by:
       novelty:       "risky — new model, unratified"
       confidence:    "safe — no open markers"
   impl:
-    by: homa           # ratified by the human; no `why` needed
+    by: unional           # ratified by the human; no `why` needed
 ```
 
 - `by: agent` = **provisionally** past that gate; the act is done, accountability is **not yet reconciled**. The `why` block is the recorded reasoning.
@@ -201,7 +203,7 @@ Verdict
 
 Leash derivation
   gate        reversibility  blast        novelty       confidence    read
-  spec gate   (ratified by homa — Run 1)
+  spec gate   (ratified by unional — Run 1)
   impl gate   safe           local-only   settled       tests green   SAFE
   derived: auto   ceiling: none   effective: auto
   reasons
