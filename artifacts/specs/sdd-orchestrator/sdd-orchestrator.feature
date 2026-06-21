@@ -129,11 +129,18 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     And no plan-judge or task-judge is invoked
     And the plan and tasks are validated transitively by the implementation test result
 
-  Scenario: Forward producers load the judges' governance skills to self-align
-    Given the impl gate's testability bar is codified as a governance skill
+  Scenario: Forward producers load the actor governances they embody
+    Given the builder bar is codified as the builder actor governance
     When the impl-producer runs
-    Then it loads the testability governance skill
-    And it shapes its output to meet that bar before the impl-judge runs
+    Then it loads the builder and architect actor governances
+    And it shapes its output to meet those bars before the impl-judge runs
+
+  Scenario: An actor governance is resolved from the registry with an SDD default
+    Given the registry binds the aces plugin's builder governance to "aces-eval-bar"
+    And it leaves the architect governance null
+    When the orchestrator resolves governances for an aces domain
+    Then the builder governance resolves to aces-eval-bar
+    And the architect governance falls back to the SDD default
 
   Scenario: Scenarios are ordered to trace the workflow
     Given a .feature with scenarios for several lifecycle stages
@@ -157,6 +164,13 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     Given three open questions block progress in the current segment
     When the orchestrator returns to the skill
     Then all three questions are returned in one batch
+
+  Scenario: The iteration cap blocks and asks rather than auto-accepting
+    Given the producer and judge have iterated the configured cap of three times without converging
+    When the cap is hit
+    Then the skill returns STATUS blocked with the failing scenarios batched
+    And it asks the user to accept, keep looping, or change the spec
+    And it never auto-accepts the unconverged result
 
   Scenario: The workflow cursor is derived from artifact state across sessions
     Given a spec with status draft, aligned false, and two open markers
@@ -192,13 +206,19 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     Given a plugin delegate returned an OBSERVATIONS entry
     When the orchestrator aggregates delegate results
     Then it forwards the observation to the skill
-    And the orchestrator does not write to the backlog or the corpus
+    And the orchestrator does not spawn specs or write outside the spec it owns
 
-  Scenario: Curator observations accumulate and surface only at boundaries
-    Given a delegate emits a curator observation during an ordinary segment
-    When the segment completes
-    Then the observation is appended to the candidate queue
-    And it is not surfaced to the user until a Curator boundary is reached
+  Scenario: Curator observations surface only at boundaries and dedupe by recurrence
+    Given a delegate emits a curator observation matching an existing candidate spec
+    When a Curator boundary is reached
+    Then the skill bumps the candidate spec's recurrence instead of spawning a duplicate
+    And it is not surfaced to the user until that boundary
+
+  Scenario: A curator lesson spawns a spec that may target another monorepo project
+    Given an accepted curator lesson applies to a sibling project in the monorepo
+    When the skill spawns the spec
+    Then the spec is created under that sibling project
+    And it may carry an external-routing flag to sync to an external tracker
 
   # ── spec gate: Draft → Approved ──────────────────────────────────────────
 
@@ -244,10 +264,11 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     Then aligned considers only spec.md and the .feature
     And the spike code does not block the spec from reaching Approved
 
-  Scenario: An accepted structural observation lands in the product backlog
+  Scenario: An accepted structural observation spawns a new spec
     Given the skill surfaced an architect observation at the spec gate
     When the user accepts it as deferred work
-    Then the skill records it at product level, not in the triggering spec's markers
+    Then the skill spawns a new spec with priority and blocked-by
+    And it does not record the concern in the triggering spec's markers
 
   # ── freeze: the contract locks (Approved ≠ Implemented) ──────────────────
 
