@@ -159,20 +159,24 @@ Repo-wide governance retirement (`packages/cyber-skills/governances/`, the `defi
 
 The orchestrator must **not** scan plugin directories (user-global, project-global, project-local) at runtime — that is slow, token-heavy, and repeats on every cold subagent start. Resolution happens at **setup**, the lockfile pattern (cf. `.agents/cyber-skills-lock.json`):
 
-- **Source of truth** — each plugin's `init-<plugin>` skill (ships with the plugin, knows its agents) writes a canonical entry to the project registry `.agents/universal-plugin.json`: domain coverage **plus** the resolved role→agent map **plus** the plugin version.
+- **Source of truth** — each plugin's `init-<plugin>` skill (ships with the plugin, knows its agents) writes a canonical entry to the project registry `.agents/universal-plugin.json`: domain coverage **plus** the resolved role→agent map **plus** the plugin version. On run it **rewrites** any old-shape entry (the pre-orchestrator `scenario-advisor`/`implementer` keys) to the role-map shape — the migration is rewrite-on-init, not a dual-reader in the orchestrator.
 - **Runtime** — the orchestrator reads **only** `.agents/universal-plugin.json` (one small project-local file). No scanning, no cross-scope lookup, no per-session cost; the file is the persistent cache.
 - **Drift** — only `init-<plugin>` reconciles. It ships inside the plugin, so it knows its own version for free (no scan), and on install/upgrade/manual re-run it compares against the recorded stamp and rewrites on mismatch. The orchestrator never compares versions at runtime — that would force the plugin-dir read the no-scan rule forbids; it trusts the stamp.
 
-**Domain→plugin from the registry, not `plan.md`.** A plugin's `domains[]` declares its coverage; the orchestrator matches the spec's domain against it, then resolves role→agent from that plugin's entry. `plan.md` is the functional spec — it describes the solution, tied to implementation — and sits **downstream** of resolution (flow: `spec.md` → `.feature` → `plan.md`); it is never the resolution source. When **two plugins claim the same domain**, the orchestrator cannot decide: it returns `needs-input`, the skill asks the user, and the chosen mapping is recorded in `spec.md` so later resolution reads the choice without re-asking.
+**Domain→plugin from the registry, not `plan.md`.** A plugin's `domains[]` declares its coverage; the orchestrator matches the spec's domain against it, then resolves role→agent from that plugin's entry. `plan.md` is the functional spec — it describes the solution, tied to implementation — and sits **downstream** of resolution (flow: `spec.md` → `.feature` → `plan.md`); it is never the resolution source. When **two plugins claim the same domain**, the orchestrator cannot decide: it returns `needs-input`, the **skill** asks the user and writes the choice to the `domain-plugin` frontmatter map in `spec.md` (the skill holds the user channel and owns frontmatter — see *Who writes `spec.md`*); the resolver reads that map **before** counting candidates, so resume is decisive and the suspend does not loop.
 
 Readable agent names stay safe: the registry binds role→name explicitly, so the orchestrator resolves by role and invokes by the bound name (convention `<plugin>-<role>` is only a fallback when a cell is omitted; `null` means the cell degenerates — no agent). Entry shape:
 
 ```json
-{ "name": "quill", "version": "1.2.0",
-  "domains": ["documentation","guide","..."],
-  "roles": { "spec-producer": "quill-writer", "spec-judge": null,
-             "impl-producer": "quill-doc-writer", "impl-judge": "quill-implementer" } }
+{ "sdd-plugins": [
+  { "name": "quill", "version": "1.2.0",
+    "domains": ["documentation","guide","..."],
+    "roles": { "spec-producer": "quill-writer", "plan-producer": null,
+               "spec-judge": null, "impl-producer": "quill-doc-writer",
+               "impl-judge": "quill-implementer" } }
+] }
 ```
+The top-level key is `sdd-plugins`; each role value is an agent name or `null` (degenerate — no agent). All five role keys appear (a missing key falls back to the `<plugin>-<role>` convention; `null` degenerates).
 
 ---
 
@@ -263,6 +267,42 @@ Same faculty, two gates (for ACES both use rubric → threshold → boolean, con
 
 ---
 
+## Vocabulary & wiring (normative)
+
+The model leans on a fixed vocabulary the rest of the spec only gestures at. This section is the single normative source.
+
+**Role keys (closed set):** `spec-producer`, `plan-producer`, `spec-judge`, `impl-producer`, `impl-judge`. These are the registry keys and the dispatch keys; concrete agent names are free (`aces-scenario-writer` *is* the spec-producer).
+
+**Registry:** `.agents/universal-plugin.json`, top-level `sdd-plugins[]`, entry = `{ name, version, domains[], roles{<the five keys>} }`, each role = agent name or `null`. `init-<plugin>` writes and rewrites it (rewrite-on-init migration). The orchestrator reads only this file.
+
+**Who writes `spec.md`** (the boundary both dogfood agents flagged):
+
+| Region | Writer | When |
+|---|---|---|
+| body — intent narrative, contract prose, `<!-- open: -->` markers | **spec-producer** (re-invoked) | design / routing a discovery |
+| frontmatter `status` | **skill** | the gate (human verdict) |
+| frontmatter `aligned` | **orchestrator** | synthesis |
+| frontmatter `domain-plugin` map | **skill** | after user disambiguates |
+| `.feature` | **spec-producer** | design |
+
+Impl-side roles (`impl-producer`, `impl-judge`) and `plan-producer` **never** write `spec.md` or `.feature` — four-eyes (the builder does not set its own bar). `plan-producer` writes `plan.md` / `tasks.md` only.
+
+**MODE derivation:** draft / unfrozen `.feature` ⇒ `explore`; Approved / frozen `.feature` ⇒ `implement`. The orchestrator derives it from artifact state; producers never guess.
+
+**Workflow cursor** (the resume function — `status` + `aligned` + marker count + `.feature` → phase + next role):
+
+| `status` | `aligned` | markers | `.feature` | → phase / next |
+|---|---|---|---|---|
+| (none) | — | — | absent | design not started → spec-producer (explore) |
+| draft | false | > 0 | any | exploring, blocked → resolve markers (spec-producer + explore producers) |
+| draft | false | 0 | passes spec-judge | ready for spec gate → human verdict |
+| approved | false | — | frozen | implementing → plan/impl producers (implement), impl-judge |
+| approved | true | — | frozen | implemented |
+
+**`validate-spec` / the default spec-judge** is one **dual-mode invokable agent def** (rename to convention, e.g. `sdd-spec-judge`; the user-facing `validate-spec` skill triggers it at the gate). It splits work to optimize speed and tokens: an **optional deterministic** step (a NodeJS static-analysis CLI — Gherkin validity, boolean form, ordering) plus **non-deterministic** agent-level reasoning (coverage, testability, domain criteria). The NodeJS step is **optional**: if `npx` is unavailable the agent runs an equivalent check itself — so the loop never hard-depends on NodeJS (the deterministic path is only an accelerator).
+
+---
+
 ## Command surface / API
 
 No CLI surface. The interface is the agent-dispatch I/O the orchestrator sends and each delegate returns.
@@ -271,15 +311,17 @@ No CLI surface. The interface is the agent-dispatch I/O the orchestrator sends a
 ```
 STATUS:       complete | needs-input | blocked
 QUESTIONS:    [ batched user questions, derived from open markers ]   # when needs-input
-OBSERVATIONS: [ { owner: architect | curator, note, evidence } ]      # non-blocking; may be empty
+CONTENT_GAPS: [ { artifact, location, gap } ]   # become <!-- open: --> markers; may be empty
+OBSERVATIONS: [ { owner: architect | curator, note, evidence: string|path|scenario } ]  # non-blocking
 ```
-The orchestrator **aggregates** child `QUESTIONS` and `OBSERVATIONS` and returns them up to the skill; only the skill surfaces either to the user.
+The orchestrator **aggregates** child `QUESTIONS`, `CONTENT_GAPS`, and `OBSERVATIONS` and returns them up to the skill; only the skill surfaces them to the user. `CONTENT_GAPS` are converted to `<!-- open: -->` markers by re-invoking the spec-producer (the spec.md-body writer), not by the orchestrator writing the body directly.
 
-**spec-producer** (writes the `.feature`)
+**spec-producer** (writes the contract: `spec.md` body + the `.feature`)
 ```
 in:  DOMAIN, DOMAIN_PATH, SPEC_PATH, COMMAND_SURFACE, DESIGN_DECISIONS
-out: writes <DOMAIN_PATH>/<DOMAIN>.feature (pure boolean Gherkin); SCENARIOS_WRITTEN, NOTES + uniform
-rule: output must pass validate-spec; must not modify spec.md
+out: writes the spec.md body and <DOMAIN_PATH>/<DOMAIN>.feature (pure boolean Gherkin); SCENARIOS_WRITTEN, NOTES + uniform
+rule: output must pass the spec-judge; writes the spec.md body and the .feature;
+      must not write spec.md frontmatter control fields (status, aligned, domain-plugin)
 ```
 
 **spec-judge** (judges the `.feature` against the domain bar; degenerates to static criteria)
@@ -332,7 +374,8 @@ Sequenced so the stable interface lands first, the cheap consumer proves it, the
 - Add the `MODE` (`explore` / `implement`) parameter to the forward producers; the orchestrator routes `explore`-mode discoveries back into the spec row as content-gaps/OBSERVATIONS.
 - Codify the judges' bars as governance skills (testability, structural-fit, scope); forward producers load them to self-align, the thin judge loads them to verify.
 - Make `aligned` layer-scoped: spec gate checks the contract layer, impl gate checks the impl layer; exploratory artifacts are excluded as scaffolding.
-- Extend `init-<plugin>` to write the resolved role→agent map + version into `.agents/universal-plugin.json`; the orchestrator reads only that file at runtime (no plugin-dir scanning).
+- Extend `init-<plugin>` to write the resolved role→agent map + version into `.agents/universal-plugin.json` under `sdd-plugins[]`, **rewriting** any old-shape entry (rewrite-on-init migration); the orchestrator reads only that file at runtime (no plugin-dir scanning).
+- Settle the write boundary: spec-producer writes the `spec.md` body + `.feature`; the skill owns `status`/`domain-plugin` frontmatter; the orchestrator owns `aligned`; impl-side roles never touch `spec.md`/`.feature` (see *Vocabulary & wiring*).
 - Add default delegates `sdd-scenario-writer` (generic boolean Gherkin from criteria), `sdd-planner` (plan + tasks), and `sdd-implementer` (test result) as agent definitions.
 - Repurpose `sdd-spec-designer` into the default spec-producer's (`sdd-scenario-writer`) generation logic.
 - `validate-spec` enforces criteria against any `.feature`, plugin-written or default.
@@ -354,7 +397,8 @@ Sequenced so the stable interface lands first, the cheap consumer proves it, the
 
 **4. NodeJS sweep.**
 - `init-sdd` drops `governance show`; SDD principles move to the `sdd:spec-governance` skill (harness-loaded), not AGENTS.md.
-- Keep NodeJS only for CI-time numeric aggregation (pass-rate, threshold math), which never re-enters the runtime loop.
+- Recast `validate-spec` as a dual-mode invokable agent def (rename toward `sdd-spec-judge`): an **optional** deterministic NodeJS static-analysis step plus non-deterministic agent reasoning, with an agent-level fallback when `npx` is absent — the loop never hard-depends on NodeJS.
+- Keep NodeJS only as that optional deterministic accelerator and for CI-time numeric aggregation (pass-rate, threshold math), which never re-enters the runtime loop.
 
 ---
 
