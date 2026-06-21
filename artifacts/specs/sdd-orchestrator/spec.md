@@ -16,13 +16,17 @@ SDD owns the spec-driven workflow and runs the loop. Domain plugins (ACES for ag
 The architecture has four moving parts:
 
 1. **`sdd-orchestrator`** (renamed from `sdd-author`) — the lead delegate. It runs the loop, discovers plugin delegates from `plan.md` Plugin assignments, dispatches each act, and synthesizes results (sets `aligned`). It does discovery and dispatch itself; there is no separate dispatcher agent.
-2. **Two act-interfaces** the orchestrator dispatches to, symmetric to each other:
-   - **scenario-writer** — produces the `.feature` (pure boolean Gherkin) for a domain.
-   - **implementer** — verifies the implementation and returns a **boolean pass/fail per scenario**.
-3. **Default delegates** — `sdd-scenario-writer` and `sdd-implementer` — the built-in fallback implementations of those two interfaces, invoked only when no plugin delegate is declared for a sub-domain.
-4. **Plugin delegates** — `aces-scenario-writer`, `aces-implementer`, `quill-writer`, `quill-implementer` — each its own agent definition, so each chooses its own model, effort, and context to match its workload. A participating plugin always provides a writer; the default writer runs only when no plugin is declared.
+2. **Four roles in a 2×2** — two objects (the **spec** = `.feature`, the **impl** = the built artifact) × two faces (**produce** / **judge**). The orchestrator dispatches to whichever are declared:
 
-Dispatch is uniform: the orchestrator invokes a writer-delegate (plugin-named or the `sdd-scenario-writer` default), then an implementer-delegate (plugin-named or the `sdd-implementer` default). Same input/output contract either way.
+   | | Produce (forward) | Judge (backward) |
+   |---|---|---|
+   | **Spec** | spec-producer | spec-judge |
+   | **Impl** | impl-producer | impl-judge |
+
+3. **Default delegates** — `sdd-scenario-writer` (spec-producer) and `sdd-implementer` (impl-judge) — the built-in fallbacks, invoked only when no plugin fills the cell.
+4. **Plugin delegates** — each its own agent definition (own model/effort/context). A full domain plugin fills all four cells; thin domains let cells degenerate (see *The 2×2* under Design decisions).
+
+Dispatch is uniform and per-cell: the orchestrator resolves each role to a plugin agent or the SDD default, and invokes it through one identical I/O surface.
 
 ---
 
@@ -48,9 +52,32 @@ The plug-in point is a **behavior** — "write the `.feature` for this domain in
 
 Criteria do not survive as an alternative to acting. They are the plugin's **bar** — the backward face every delegation surface carries. So a plugin provides both faces: the **writer** (forward, the act, always present) and its **criteria** (backward, enforced by `validate-spec` against the produced `.feature`, keeping `producer ≠ judge`). SDD's own bar is the universal format gate (valid Gherkin, boolean scenarios, lifecycle); the plugin's bar adds domain criteria (e.g., every agent scenario carries trigger context).
 
-### Scenario-writer and implementer are symmetric act-interfaces with default fallbacks
+### The 2×2: two objects × two faces — the four roles
 
-Both interfaces have the same shape: a plugin delegate may implement them, or the SDD default delegate runs. The implementer side already had this fallback ("when no implementer declared, check passing tests exist"); the writer side now gets the same — a default writer driven by criteria.
+The plug-in surface is not "two act-interfaces" but a **2×2**: two objects (the **spec** = `.feature`, the **impl** = the built artifact) × two faces (**produce** / **judge**). Four roles:
+
+| | Produce (forward) | Judge (backward) |
+|---|---|---|
+| **Spec** | **spec-producer** — writes the `.feature` | **spec-judge** — judges the `.feature` against the domain bar |
+| **Impl** | **impl-producer** — builds the artifact | **impl-judge** — judges the artifact against the frozen `.feature` |
+
+Naming is **producer / judge**, not writer: the motive model's forward-face verb is *produce* and its named constraint is **`producer ≠ judge`** (the four-eyes echo). The role names make that constraint self-documenting — spec-producer ≠ spec-judge, impl-producer ≠ impl-judge. Concrete agents may keep readable names (`aces-scenario-writer` *is* the spec-producer); only the role keys are fixed vocabulary.
+
+**Each row is a gate's inner loop** — produce ⇄ judge → gate. These are the two loops SDD is built on:
+
+- **Exploratory loop** = the spec row: spec-producer ⇄ spec-judge → spec gate → freeze `.feature`.
+- **Implementation loop** = the impl row: impl-producer ⇄ impl-judge → impl gate → Implemented.
+
+**A full domain plugin fills all four cells; thin domains let cells degenerate:**
+
+| Cell | ACES (agent config) | Quill (documentation) | Plain code (no plugin) |
+|---|---|---|---|
+| spec-producer | `aces-scenario-writer` | `quill-writer` | `sdd-scenario-writer` (default) |
+| spec-judge | `aces-spec-validator` | static doc criteria | format gate (`validate-spec`) |
+| impl-producer | `define-agent` / `improve` | **`quill-doc-writer`** (missing — to add) | the generic Builder (no agent) |
+| impl-judge | `aces-implementer` | `quill-implementer` | `sdd-implementer` (default) |
+
+Two cells commonly degenerate: **spec-judge** → static criteria when the bar needs no judgment; **impl-producer** → the generic Builder when the impl is ordinary code (there is no "generic code-writer agent" — open-ended building is the unstructured Builder act). So the interface is the 2×2; how many cells materialize as agents depends on how specialized the domain's objects are.
 
 ### Default delegates are agent definitions, not skills
 
@@ -58,13 +85,22 @@ Both interfaces have the same shape: a plugin delegate may implement them, or th
 
 ### The rubric is a validation-detail, owned by the implementer
 
-A scenario's outcome is **boolean**: the spec says the agent *does* X, not *does X some of the time*. For a non-deterministic subject, the implementer reaches that boolean through a rubric + judge + threshold over N runs — `score >= threshold` collapses the grade back to pass/fail. The rubric is the implementer's private evaluation suite, keyed to scenario by name, never embedded in the `.feature`. This mirrors implementation-detail: the scenario hides *how it is built* (code) and equally hides *how it is judged* (rubric). The three implementers are one interface, three verification methods:
+A scenario's outcome is **boolean**: the spec says the agent *does* X, not *does X some of the time*. For a non-deterministic subject, the implementer reaches that boolean through a rubric + judge + threshold over N runs — `score >= threshold` collapses the grade back to pass/fail. The rubric is the impl-judge's private evaluation suite, keyed to scenario by name, never embedded in the `.feature`. This mirrors implementation-detail: the scenario hides *how it is built* (code) and equally hides *how it is judged* (rubric). The three impl-judges are one interface, three verification methods:
 
-| Implementer | Scenario passes when | Subject |
+| impl-judge | Scenario passes when | Subject |
 |---|---|---|
 | `sdd-implementer` (default) | a passing test exists | deterministic code |
 | `quill-implementer` | static doc inspection holds | deterministic doc |
 | `aces-implementer` | judge-score ≥ threshold over N runs | non-deterministic agent |
+
+### `aligned` is layer-scoped to the gate
+
+`aligned` conflates two sync relationships that belong to two different gates, so it is **scoped by layer** (the Artifacts table already tags each artifact's layer):
+
+- **Spec gate** — `aligned: true` means the **contract layer** is in sync (`spec.md` ↔ `.feature`). Impl-layer is *not* required; a spec can be Approved with no code.
+- **Impl gate** — `aligned: true` means the **impl layer** conforms to the frozen `.feature`.
+
+**Exploratory artifacts are scaffolding** — plan drafts, feature drafts, spike code: the Explorer's generate-to-discard output, meant to *pressure-test* the spec, not be in sync with it. They are excluded from spec-gate alignment, and promoted at the freeze (draft `.feature` → frozen `.feature`; spike code → deliberate impl). This is why checking impl at the spec gate is forbidden — it would collapse Approved into Implemented. Layer-scoping keeps the two gates judging two objects (the gate section's result), giving two natural unit-of-work boundaries — two commits.
 
 ### The orchestrator is a delegate; the Conductor is the human
 
@@ -175,19 +211,32 @@ OBSERVATIONS: [ { owner: architect | curator, note, evidence } ]      # non-bloc
 ```
 The orchestrator **aggregates** child `QUESTIONS` and `OBSERVATIONS` and returns them up to the skill; only the skill surfaces either to the user.
 
-**scenario-writer delegate**
+**spec-producer** (writes the `.feature`)
 ```
 in:  DOMAIN, DOMAIN_PATH, SPEC_PATH, COMMAND_SURFACE, DESIGN_DECISIONS
-out: writes <DOMAIN_PATH>/<DOMAIN>.feature (pure boolean Gherkin)
-     returns SCENARIOS_WRITTEN, NOTES + uniform output
+out: writes <DOMAIN_PATH>/<DOMAIN>.feature (pure boolean Gherkin); SCENARIOS_WRITTEN, NOTES + uniform
 rule: output must pass validate-spec; must not modify spec.md
 ```
 
-**implementer delegate**
+**spec-judge** (judges the `.feature` against the domain bar; degenerates to static criteria)
+```
+in:  DOMAIN, DOMAIN_PATH, FEATURE_PATH, SPEC_PATH
+out: SCENARIOS_PASSING, SCENARIOS_FAILING, BLOCKER + uniform
+rule: judges contract quality (testability, coverage, domain criteria); must not modify spec.md or .feature
+```
+
+**impl-producer** (builds the artifact; degenerates to the generic Builder for code)
+```
+in:  DOMAIN, DOMAIN_PATH, SPEC_PATH, FEATURE_PATH, PLAN_PATH, TASKS_PATH
+out: ARTIFACTS_WRITTEN, CHANGES_MADE + uniform
+rule: builds against the frozen .feature; must not modify spec.md or the .feature
+```
+
+**impl-judge** (judges the artifact against the frozen `.feature`)
 ```
 in:  DOMAIN, DOMAIN_PATH, SPEC_PATH, FEATURE_PATH, PLAN_PATH, TASKS_PATH, IMPLEMENTATION_PATHS
-out: IMPLEMENTATION_PASS, SCENARIOS_PASSING, SCENARIOS_FAILING, CHANGES_MADE, BLOCKER + uniform output
-rule: owns the scenario→evaluation mapping; reports actual pass/fail per scenario;
+out: IMPLEMENTATION_PASS, SCENARIOS_PASSING, SCENARIOS_FAILING, CHANGES_MADE, BLOCKER + uniform
+rule: owns the scenario→evaluation mapping; reports pass/fail per scenario;
       must not modify spec.md or the .feature
 ```
 
@@ -203,15 +252,18 @@ Sequenced so the stable interface lands first, the cheap consumer proves it, the
 - Rename `sdd-author` → `sdd-orchestrator`; reduce it to one autonomous segment (discovery + dispatch + synthesis), no user interaction.
 - **Extract the user-loop into the skills.** create-spec owns the grill; validate-spec owns the reviewer-confirm gate and the `status: approved` write. Each skill *is* its phase, so the `GOAL: auto` derivation drops out. The skill re-invokes the orchestrator to resume after each batched answer and owns the iteration cap.
 - Add the uniform delegate output (`STATUS` / `QUESTIONS` / `OBSERVATIONS`); orchestrator aggregates and bubbles up. Skill routes `OBSERVATIONS` to backlog/corpus on human accept.
+- Establish the four roles (spec-producer, spec-judge, impl-producer, impl-judge); orchestrator resolves each per-cell to a plugin agent or SDD default.
+- Make `aligned` layer-scoped: spec gate checks the contract layer, impl gate checks the impl layer; exploratory artifacts are excluded as scaffolding.
 - Add default delegates `sdd-scenario-writer` (generic boolean Gherkin from criteria) and `sdd-implementer` (passing-tests check) as agent definitions.
 - Repurpose `sdd-spec-designer` into the default writer's generation logic.
 - `validate-spec` enforces criteria against any `.feature`, plugin-written or default.
 - Delete `governances/`; fold I/O docs into the orchestrator + default delegates. `sdd-principles` → static AGENTS.md section.
 - Update `artifacts/specs/sdd-plugin` spec + `.feature` to the orchestrator model.
 
-**2. Quill (cheap consumer, proves a thin writer).**
-- Replace `quill-scenario-advisor` with `quill-writer` — a thin writer agent-def that emits doc scenarios; its doc criteria become the plugin's bar enforced by validate-spec.
-- Keep `quill-implementer`; confirm boolean-per-scenario output.
+**2. Quill (cheap consumer, proves a thin spec-producer).**
+- Replace `quill-scenario-advisor` with `quill-writer` (spec-producer) — a thin agent-def that emits doc scenarios; its doc criteria become the **spec-judge** bar, enforced by validate-spec (static, no judge agent).
+- Add **`quill-doc-writer` (impl-producer)** — the missing cell; writes docs against the frozen `.feature`.
+- Keep `quill-implementer` (impl-judge); confirm boolean-per-scenario output.
 - Update Quill spec + `.feature`.
 
 **3. ACES (act-override consumer, proves rubric-as-validation-detail).**
