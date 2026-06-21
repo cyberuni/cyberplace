@@ -1,7 +1,10 @@
 ---
-status: draft
+status: approved
 blocked-by: []
-aligned: false
+aligned: true
+approved-by:
+  spec:
+    by: unional
 ---
 
 # SDD Orchestrator & the Plugin-Delegate Model
