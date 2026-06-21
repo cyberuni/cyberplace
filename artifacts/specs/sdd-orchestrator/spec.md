@@ -144,7 +144,7 @@ This is why checking impl at the spec gate is forbidden — it would collapse Ap
 
 ### Freeze is a strength, not a lock — co-delivery, not phase gates
 
-The motive model's **co-delivery** is non-negotiable: the five artifacts are produced *together* in exploration, never in sequential gated phases. So we **reject a plan-gate** (and any per-artifact gate). A plan-gate is waterfall — which every surveyed SDD system except lean is built on (see `.research/sdd-freeze-boundary`); it breaks co-delivery.
+The motive model's **co-delivery** is non-negotiable: the five artifacts are produced *together* in exploration, never in sequential gated phases. So we **reject a plan-gate** (and any per-artifact gate). A plan-gate is waterfall — which every surveyed SDD system except lean is built on (see `research/sdd-freeze-boundary/`); it breaks co-delivery.
 
 "Freeze" is therefore a **commitment strength, never absolute**. Any artifact can be scrapped if a deal-breaker emerges — even the contract: one scenario that passes every check but turns out fatal sends the whole spec back to Draft (the Framer revert). Strength **descends along the chain**:
 
