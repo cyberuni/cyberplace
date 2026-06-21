@@ -84,7 +84,14 @@ This is exactly the reasoning from the incident post-mortem: *autonomous-to-the-
 
 **The human sets a ceiling; the agent may only go lower.** In the kickoff prompt the Conductor may cap the derived leash ("stop at the spec gate regardless"). Effective leash = `min(ceiling, derived)`. The agent may always stop earlier than both the ceiling and its own derivation; it may never go further. Absent any cap, the derivation stands. The leash is **per run / sitting** (session-local, like the iteration cap), not persisted — no project-wide config.
 
-**The reasoning has a home: the gate report.** Every gate report carries a **Leash derivation** block — the four-dimension assessment for each gate, the derived value, the effective value after any ceiling, and the one-line reasoning per dimension. This is the auditable place the agent explains *why it stopped where it did*; on ratification it is captured in the approval record (commit / PR). (See *The gate report* below.)
+**The leash is re-derived at each gate, each run — the gates are independent.** The three values describe *one run's* reach across the gates it meets; they do not bind a future run. A gated spec gate does **not** make the impl gate gated. The common pattern:
+
+- **Run 1** (exploration → spec gate): the contract is novel, so the spec gate derives `gated`; the human ratifies the *what*.
+- **Run 2** (implementation, after approval → impl gate): the contract is now **ratified** (novelty settled), so if the *how* is reversible, low-blast, and the tests pass, the impl gate independently derives `auto` and the agent **self-asserts the impl gate** — "approve the *what*, auto-deliver a low-risk *how*."
+
+That self-assertion is still **provisional** (`approved-by.impl: { by: agent }` → review queue), so blowing through the impl gate is safe: the human ratified the contract synchronously and reviews the implementation asynchronously. (If Run 2's implementation instead made big contestable choices, novelty would read risky and the impl gate would derive `gated` — the assessment handles it either way.)
+
+**The reasoning has a home: the gate report.** Every gate report carries a **Leash derivation** block — the four-dimension assessment for each gate, the derived value, the effective value after any ceiling, and the one-line reasoning per dimension. This is the auditable place the agent explains *why it stopped (or didn't)*; it is persisted to `approved-by.<gate>.why` on a self-assertion (see *Accountability stays human* below).
 
 ### Accountability stays human: `approved-by` (who **and** why)
 
@@ -144,7 +151,7 @@ STATUS: ready for spec gate · agent-asserted — ratify or kick back
 
 Verdict
   Framer  (scope)    PASS — real incident, contained, worth shipping
-  Builder (contract) PASS — 19 scenarios cover leash / attribution / FSM / report / gate-actions
+  Builder (contract) PASS — 20 scenarios cover leash / attribution / FSM / report / gate-actions
   Architect (fit)    PASS — extends orchestrator + sdd-plugin; reuses aligned as-is
 
 Leash derivation
@@ -178,6 +185,39 @@ Decision menu
 ```
 
 One risky dimension is enough to make a gate non-self-assertable, so the spec gate reads RISKY and the derived leash is `gated` — the agent stops here and asks, which is exactly the correct behavior for this change.
+
+**Example — the impl gate, self-asserted** (a later run, after the contract was human-ratified). This is the "stop at spec, auto-deliver the how" case, shown for a small reversible skill:
+
+```
+GATE REPORT — render-spec-graph @ impl gate
+STATUS: implemented · agent-asserted — ratify or kick back
+
+Verdict
+  Builder (impl)     PASS — 14 node:test cases green; every .feature scenario maps to a test
+  Architect (fit)    PASS — self-contained skill, no new deps, biome clean
+  Framer (scope)     PASS — contract unchanged, no goal drift
+
+Leash derivation
+  gate        reversibility  blast        novelty       confidence    read
+  spec gate   (ratified by homa — Run 1)
+  impl gate   safe           local-only   settled       tests green   SAFE
+  derived: auto   ceiling: none   effective: auto
+  reasons
+    reversibility  new files only, revert is cheap                  → safe
+    blast radius   one skill folder; no shared or frozen surface    → safe
+    novelty        contract ratified; impl is mechanical            → safe
+    confidence     every scenario passes as a test                  → safe
+
+Contestable defaults
+  - node:test over the pure functions (no vitest dependency)
+
+Decision menu
+  approve → set approved-by.impl (by: <you>); status stays implemented   [recommended]
+  change  → point me at a weak/failing scenario; I fix code vs the frozen .feature
+  reject  → redo impl — or Framer-revert if building proved the contract wrong
+```
+
+Here both gates' reads diverge: the spec gate was `gated` and human-ratified in Run 1, while the impl gate independently derives `auto` and is self-asserted in Run 2 — provisional until the human ratifies `approved-by.impl`.
 
 ### Both gates take the same three actions — with different meaning
 
