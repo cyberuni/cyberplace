@@ -7,10 +7,10 @@ The SDD plugin is the installable workflow surface around `sdd-orchestrator`.
 ```text
 User
   |
-  |-- init-sdd
-  |     writes AGENTS.md guidance
-  |     registers the SDD SessionStart hook
-  |     exposes sdd:spec-governance
+  |-- sdd
+  |     loads the SDD context skill
+  |     loads the SDD workflow rules
+  |     routes to create-spec, validate-spec, or render-spec-graph
   |
   |-- create-spec
   |     owns grilling, batched user questions, and resume
@@ -39,11 +39,11 @@ The spec gate judges the contract end. The impl gate judges the implementation e
 
 ## Skills
 
-### `init-sdd`
+### `sdd`
 
-Writes or replaces the SDD section in `AGENTS.md` and registers a SessionStart hook that extracts that section. The section stays small: `.feature` freeze, spec owns behavior, artifact alignment, and gate discipline.
+Loads SDD as active context for feature work. It does not write `AGENTS.md`, register hooks, or require the `cyber-skills` CLI. It brings the core SDD rules into the conversation: `.feature` freeze, spec owns behavior, artifact alignment, open markers, and gate discipline.
 
-`init-sdd` also makes the `sdd:spec-governance` skill available. This skill carries the reference bar: universal `.feature` format, scenario ordering, and `spec.md` enrichment. Runtime work loads it through the harness, not with `governance show`.
+`sdd` points writers and judges at `sdd:spec-governance`. This skill carries the reference bar: universal `.feature` format, scenario ordering, and `spec.md` enrichment. Runtime work loads it through the harness, not with `governance show`.
 
 ### `create-spec`
 
