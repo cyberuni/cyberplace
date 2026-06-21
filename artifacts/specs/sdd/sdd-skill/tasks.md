@@ -25,4 +25,4 @@ Each task is an executable unit; dependencies are noted. Order is emergent from 
 ## Phase 4 - Validation
 
 - [x] Run `node --test plugins/sdd/skills/render-spec-graph/scripts/render-spec-graph.test.mts` — deps: nested graph support
-- [ ] Run `pnpm verify` — deps: all implementation tasks
+- [x] Run `pnpm verify` — deps: all implementation tasks
