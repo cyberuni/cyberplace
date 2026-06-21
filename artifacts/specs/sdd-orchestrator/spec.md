@@ -1,6 +1,5 @@
 ---
 status: draft
-priority: 1
 blocked-by: []
 aligned: false
 ---
@@ -235,7 +234,7 @@ The inner loop (writer → validator → implementer) is only one of three loops
 |---|---|---|---|---|
 | content gap | inner | Builder | yes | in-spec `<!-- open: -->` marker |
 | workflow question | — | skill/human | no | nowhere (transient) |
-| structural concern | product feedback edge | Architect | no (deferred) | **a new spec** (`priority`/`blocked-by`) |
+| structural concern | product feedback edge | Architect | no (deferred) | **a new spec** (`blocked-by` edge in the spec DAG) |
 | durable lesson | outer loop | Curator | no (deferred) | **a new spec** — may target another project in the monorepo |
 
 **The spec is the universal sink.** Both Architect and Curator observations route to **new specs**, not to side files (no `backlog.md`, no `curator-queue.md`). A Curator lesson can land in **another project's** spec folder (monorepo). A spawned spec may carry an **external-routing flag** (e.g. `route: jira | asana | kb`) so the skill can sync it to an external tracker or knowledge base.

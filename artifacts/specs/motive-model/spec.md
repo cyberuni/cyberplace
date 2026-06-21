@@ -1,6 +1,5 @@
 ---
 status: draft
-priority: 1
 blocked-by: []
 ---
 

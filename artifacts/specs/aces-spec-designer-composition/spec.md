@@ -1,6 +1,5 @@
 ---
 status: draft
-priority: 3
 blocked-by:
   - governance-composition
   - aces-skill-spec-schema
