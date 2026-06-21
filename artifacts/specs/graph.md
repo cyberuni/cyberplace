@@ -12,7 +12,9 @@ graph TD
   aces-skill-spec-schema --> aces-spec-designer-composition
   governance-composition --> aces-spec-designer-composition
   sdd-orchestrator --> sdd-gate-autonomy
+  sdd-orchestrator --> sdd-provenance
   sdd-plugin --> sdd-gate-autonomy
+  sdd-plugin --> sdd-provenance
   sdd-plugin --> sdd-spec-graph
   sdd-plugin --> universal-plugin
 ```
@@ -30,5 +32,6 @@ graph TD
 | `sdd-gate-autonomy` | `sdd-orchestrator`, `sdd-plugin` | approved |
 | `sdd-orchestrator` | — | draft |
 | `sdd-plugin` | — | draft |
+| `sdd-provenance` | `sdd-orchestrator`, `sdd-plugin` | draft |
 | `sdd-spec-graph` | `sdd-plugin` | draft |
 | `universal-plugin` | `sdd-plugin` | draft |
