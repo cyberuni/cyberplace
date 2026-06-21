@@ -1,24 +1,21 @@
 ---
 status: draft
-blocked-by:
-  - sdd-plugin
-  - sdd-spec-graph
 aligned: true
 ---
 
-# SDD Skill Context Workflow
+# SDD Context Skill
 
 ---
 
 ## What
 
-Improve `plugins/sdd/skills/sdd/SKILL.md` into the authoritative context skill for Spec-Driven Development feature work. When a user wants to add, change, backfill, validate, implement, or deprecate a feature under SDD, the skill loads the SDD governance and workflow into context, determines the current lifecycle state from existing artifacts, and routes the agent to the correct SDD skill without mutating project guidance.
+`sdd` is the context skill for Spec-Driven Development feature work. It loads the SDD governance, lifecycle rules, and workflow surfaces into the active agent context, then routes the current user request to the correct SDD path. It applies when a user wants to add, change, backfill, validate, implement, or deprecate a software feature under SDD. The skill reads existing SDD artifacts when present, determines the current lifecycle state, preserves approved `.feature` files as frozen contracts, and reports the next SDD action without mutating project guidance.
 
 ---
 
 ## Why
 
-The current `sdd` skill is a thin context loader. It names the main surfaces, but it does not yet give agents enough decision-complete workflow guidance to consistently follow SDD across new features, backfills, draft revisions, spec gates, implementation gates, graph refreshes, and behavior changes after approval.
+SDD feature work depends on rules that must be present before an agent writes specs, scenarios, plans, tasks, or implementation. A dedicated context skill makes that workflow explicit at the moment the user starts feature work, so agents consistently load the governance bar, respect lifecycle state, route gate work correctly, and avoid treating setup or hook installation as part of feature execution.
 
 ---
 
@@ -27,6 +24,10 @@ The current `sdd` skill is a thin context loader. It names the main surfaces, bu
 ### The skill is context only
 
 `sdd` loads workflow context and routing rules. It must not edit `AGENTS.md`, register SessionStart hooks, install packages, or require the `cyber-skills` CLI.
+
+### Trigger language is feature-work oriented
+
+The skill triggers when the user asks to work on a software feature with SDD, including new feature creation, backfill, draft revision, contract approval, implementation, implementation approval, behavior change after approval, deprecation, or SDD graph refresh. It does not trigger for general SDD explanation unless the user asks to apply the workflow to feature work.
 
 ### SDD governance is loaded before authoring or judging
 
@@ -54,7 +55,28 @@ When `spec.md` is `approved`, the skill must not add, remove, or rewrite scenari
 
 ### The spec graph must include nested specs
 
-This workflow lives at `artifacts/specs/sdd/sdd-skill/`. `render-spec-graph` must discover nested `spec.md` files under `artifacts/specs/**/spec.md` and use the relative folder path as the node slug, for example `sdd/sdd-skill`.
+This spec lives at `artifacts/specs/sdd/sdd-skill/`. `render-spec-graph` must discover nested `spec.md` files under `artifacts/specs/**/spec.md` and use the relative folder path as the node slug, for example `sdd/sdd-skill`.
+
+---
+
+## Trigger surface
+
+The skill description uses this trigger contract:
+
+```text
+Use this skill when the user wants to work on a software feature with Spec-Driven Development.
+```
+
+Examples that trigger the skill:
+
+| User intent | Expected route |
+|---|---|
+| "Create an SDD spec for auth" | `create-spec` |
+| "Backfill SDD for this existing parser" | `create-spec` in backfill mode |
+| "Approve this draft spec" | `validate-spec --target spec` |
+| "Implement the approved auth spec" | frozen-feature implementation, then `validate-spec --target impl` |
+| "Change this approved behavior" | draft re-open path before scenario edits |
+| "Refresh the SDD graph" | `render-spec-graph` |
 
 ---
 
@@ -79,7 +101,7 @@ sdd
 
 - `artifacts/specs/sdd-plugin/spec.md` — defines the SDD plugin skill surface and lifecycle.
 - `artifacts/specs/sdd-spec-graph/spec.md` — defines the derived graph view that must learn nested specs.
-- `plugins/sdd/skills/sdd/SKILL.md` — the skill being improved.
+- `plugins/sdd/skills/sdd/SKILL.md` — the context skill specified here.
 
 ---
 
