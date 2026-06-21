@@ -2,6 +2,8 @@
 "cyber-skills": minor
 ---
 
-Add `sdd-orchestrator` lifecycle orchestrator to the `sdd` plugin. The orchestrator owns the full SDD state machine (exploration → approval → implementation), letting users fully delegate spec work with a single invocation. `create-spec` and `validate-spec` skills are now thin entry points that invoke `sdd-orchestrator` and relay its output.
+Add the `sdd-orchestrator` plugin-delegate model to the `sdd` plugin. The orchestrator is the lead delegate: it runs **one autonomous segment** — resolving the five production-chain roles (`spec-producer`, `plan-producer`, `spec-judge`, `impl-producer`, `impl-judge`) from the `.agents/universal-plugin.json` registry, deriving the workflow cursor and MODE from artifact state, dispatching each role through one uniform I/O surface, and synthesizing layer-scoped `aligned`. It has no user channel — it returns `needs-input` with batched questions for the skill to surface.
 
-Also aligns the `sdd` plugin with the updated SDD process spec: open-questions markup (`<!-- open: needs <role> input on <topic> -->`), a fixed section-to-role mapping (Why→PM, What→Designer, Command surface→Engineer), explicit approval-gate criteria requiring all required reviewers to acknowledge, and `init-sdd` AGENTS.md injection now includes open-questions and author-responsibility rules.
+The skills own the user loop and the gates: `create-spec` runs the grill and drives exploration with a session-local iteration cap; `validate-spec` runs both gates, confirming reviewers and writing `status` / `approved-by` on the human verdict.
+
+Default delegates ship as agent definitions — `sdd-scenario-writer` (spec-producer), `sdd-planner` (plan-producer), `sdd-implementer` (impl-judge), and the dual-mode `sdd-spec-judge` (spec-judge). Reference content moves to harness-loaded `user-invocable: false` skills: `sdd:spec-governance` (the `.feature` format bar, scenario ordering, and `spec.md` enrichment) and the `framer` / `builder` / `architect` actor governances. The contract governances and the `governance show` call are retired (ADR-0013).
