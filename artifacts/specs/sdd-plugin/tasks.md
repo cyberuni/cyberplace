@@ -11,7 +11,7 @@
 - [x] Create initial `create-spec` skill
 - [x] Create initial `validate-spec` skill
 - [x] Create initial SDD authoring and validation agents
-- [x] Create `init-sdd` skill
+- [x] Create `sdd` context skill
 - [x] Create Quill plugin prototype with SDD registry entries
 - [x] Add `.agents/universal-plugin.json` `sdd-plugins` registry support in plugin init paths
 
@@ -34,6 +34,7 @@
 
 ## Wave 3: Governance Skills
 
+- [x] Replace `init-sdd` with `sdd` context skill
 - [ ] Create `sdd:spec-governance` as a non-user-invocable governance skill
 - [ ] Move universal `.feature` format rules into `sdd:spec-governance`
 - [ ] Move scenario-ordering rules into `sdd:spec-governance`
