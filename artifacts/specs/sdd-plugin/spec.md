@@ -91,6 +91,8 @@ The rendered graph lives at **`artifacts/specs/graph.md`** — the entry point f
 
 Every node is named `spec.md`, so Obsidian's wikilink graph view cannot disambiguate them — do not rely on it. `graph.md` uses **Mermaid** instead (GitHub, Obsidian, and VS Code all preview it). Each edge `A --> B` reads "A blocks B" (B is `blocked-by: [A]`). The diagram is a **derived view** generated from the `blocked-by` fields, which remain the source of truth — regenerate it when edges change rather than hand-editing.
 
+The renderer is the **`render-spec-graph`** SDD skill (spec: `sdd-spec-graph`): a deterministic `node` script with an agent fallback, plus a `--check` mode that fails when `graph.md` is stale.
+
 ---
 
 ## Artifact alignment
