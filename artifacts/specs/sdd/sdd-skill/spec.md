@@ -41,10 +41,6 @@ The gateway skill does not choose producer or judge roles, load artifact authori
 
 `sdd-orchestrator` has no user channel. The `sdd` skill handles gateway intake and user-facing clarification, then hands off into the SDD workflow. Deeper workflow questions belong to the narrower skills beneath the gateway.
 
-### The spec graph must include nested specs
-
-This spec lives at `artifacts/specs/sdd/sdd-skill/`. `render-spec-graph` must discover nested `spec.md` files under `artifacts/specs/**/spec.md` and use the relative folder path as the node slug, for example `sdd/sdd-skill`.
-
 ---
 
 ## Trigger surface
@@ -92,7 +88,7 @@ sdd
 ## Related
 
 - `artifacts/specs/sdd-plugin/spec.md` — defines the SDD plugin skill surface and lifecycle.
-- `artifacts/specs/sdd-spec-graph/spec.md` — defines the derived graph view that must learn nested specs.
+- `artifacts/specs/sdd-spec-graph/spec.md` — defines the derived graph view for SDD specs.
 - `apps/website/src/content/docs/concepts/gateway-skill.md` — defines the gateway skill concept.
 - `plugins/sdd/skills/sdd/SKILL.md` — the gateway skill specified here.
 
