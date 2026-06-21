@@ -15,7 +15,14 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
   Scenario: init-plugin writes the resolved role map at setup
     Given the user runs init-quill
     When the registry entry is written
-    Then it includes the domain coverage, the role-to-agent map, and the plugin version
+    Then it includes the domain coverage, the five-role map, and the plugin version
+    And the top-level container is the sdd-plugins array
+
+  Scenario: init rewrites a pre-orchestrator registry entry to the role map
+    Given the registry holds an old-shape quill entry with scenario-advisor and implementer keys
+    When init-quill runs
+    Then it rewrites the entry to the role-to-agent map shape
+    And the orchestrator never reads the old shape
 
   Scenario: init reconciles a stale registry entry against its own version
     Given .agents/universal-plugin.json records quill version 1.2.0
@@ -25,10 +32,15 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     And it rewrites the entry when they differ
     And the orchestrator never compares versions at runtime
 
-  Scenario: An omitted role cell falls back to convention or degenerates
-    Given a registry entry omits the impl-producer cell
+  Scenario: An omitted role key falls back to the naming convention
+    Given a registry entry omits the impl-producer key entirely
     When the orchestrator resolves impl-producer
-    Then it falls back to the convention name or treats the cell as degenerate
+    Then it falls back to the convention name plugin-impl-producer
+
+  Scenario: A null role value degenerates with no agent
+    Given a registry entry sets the impl-producer key to null
+    When the orchestrator resolves impl-producer
+    Then the role degenerates to the generic Builder with no agent
 
   Scenario: Spec-producers load the SDD governance skill for format rules
     Given sdd:spec-governance is a user-invocable:false skill in the sdd plugin
@@ -57,12 +69,20 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     Then it invokes the sdd-scenario-writer default delegate
     And the default spec-producer produces generic boolean Gherkin with no domain criteria
 
-  Scenario: A domain claimed by two plugins is disambiguated by the user and recorded
+  Scenario: A domain claimed by two plugins is disambiguated without looping
     Given both the aces and quill plugins cover the "guide" domain in the registry
     When sdd-orchestrator resolves the delegate for the "guide" domain
     Then it returns STATUS needs-input asking which plugin owns the domain
-    And the chosen mapping is recorded in spec.md
-    And later resolution reads the choice from spec.md without re-asking
+    And the skill writes the choice to the domain-plugin frontmatter map in spec.md
+    And on resume the resolver reads that map before counting candidates
+    And the suspend does not loop
+
+  Scenario: The spec-producer writes the spec.md body and the impl side cannot
+    Given the orchestrator dispatches the spec-producer for the "auth" domain
+    When the spec-producer runs
+    Then it may write the spec.md body and the .feature
+    And it does not write the status, aligned, or domain-plugin frontmatter fields
+    And neither the impl-producer nor the impl-judge may write spec.md or the .feature
 
   Scenario: A participating plugin always provides its own spec-producer
     Given the "guide" domain is handled by the Quill plugin
@@ -144,6 +164,12 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     Then it determines the phase and remaining blockers from the files alone
     And no separate workflow journal is required
 
+  Scenario: MODE is derived from whether the .feature is frozen
+    Given the orchestrator is about to dispatch a forward producer
+    When the .feature is still a draft
+    Then it dispatches in explore mode
+    And when the .feature is frozen it dispatches in implement mode
+
   Scenario: A content gap persists as an inline marker, not a separate file
     Given the orchestrator cannot fill the Why section without PM input
     When the segment ends
@@ -181,6 +207,12 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     When validate-spec runs against the spec
     Then the .feature is checked for valid boolean Gherkin regardless of which delegate wrote it
 
+  Scenario: validate-spec runs without NodeJS when npx is unavailable
+    Given npx is not available in the environment
+    When validate-spec runs the deterministic checks
+    Then it falls back to an equivalent agent-level check
+    And the gate still completes without a hard NodeJS dependency
+
   Scenario: validate-spec enforces domain criteria against a plugin-written .feature
     Given the "skill" domain criteria require every scenario to carry a trigger context
     And a scenario in skill.feature omits the trigger context
@@ -188,11 +220,11 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     Then validation fails
     And the report names the scenario missing the required field
 
-  Scenario: A spec-producer that modifies spec.md is rejected
+  Scenario: A spec-producer that writes frontmatter control fields is rejected
     Given a spec-producer runs for the "skill" domain
-    When the delegate attempts to modify spec.md
+    When the delegate attempts to write the status, aligned, or domain-plugin frontmatter
     Then the change is rejected
-    And only the .feature file may be written by a spec-producer
+    And the spec-producer may write only the spec.md body and the .feature
 
   Scenario: The spec-gate judge is a domain delegate, not SDD
     Given the "skill" domain declares aces-spec-validator
