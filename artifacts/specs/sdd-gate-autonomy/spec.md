@@ -281,3 +281,5 @@ Where implementing this spec modifies SDD **skills** (e.g., `validate-spec`) or 
 |---|---|
 | Spec | `artifacts/specs/sdd-gate-autonomy/spec.md` |
 | Scenarios | `artifacts/specs/sdd-gate-autonomy/sdd-gate-autonomy.feature` |
+| Tasks | `artifacts/specs/sdd-gate-autonomy/tasks.md` |
+| Enforcement | `plugins/sdd/skills/validate-spec/scripts/check-spec-state.mts` |
