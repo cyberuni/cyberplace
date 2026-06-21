@@ -1,51 +1,74 @@
 # Tasks: Spec-Driven Development Plugin
 
-## Phase 1 — Foundation
+## Done
 
 - [x] Research existing SDD tools and pipeline patterns
-- [x] Research SDD workflow (two-mode model, artifact co-evolution)
+- [x] Research SDD workflow and artifact co-evolution
 - [x] Research EARS vs. Gherkin notation choice
 - [x] Research SDD file templates and section content
-- [x] Write `sdd-principles.md` governance
-- [x] Write `spec-template.md` governance
-- [x] Create `create-spec` skill
-- [x] Create `validate-spec` skill
-- [x] Create `sdd-spec-designer` subagent
-- [x] Create `sdd-spec-validator` subagent
-- [x] Write `plan.md` (this repo's SDD plugin design plan)
-- [x] Write `tasks.md` (this file)
+- [x] Write legacy `sdd-principles.md` governance
+- [x] Write legacy `spec-template.md` governance
+- [x] Create initial `create-spec` skill
+- [x] Create initial `validate-spec` skill
+- [x] Create initial SDD authoring and validation agents
+- [x] Create `init-sdd` skill
+- [x] Create Quill plugin prototype with SDD registry entries
+- [x] Add `.agents/universal-plugin.json` `sdd-plugins` registry support in plugin init paths
 
-## Phase 2 — Agent governance
+## Wave 1: Orchestrator Model Migration
 
-- [x] Fix `specs/spec.md` Process section (sequential-gate doc error)
-- [x] Fix `spec-lifecycle.md` Draft section (same error)
-- [x] Add `aligned` field + `## Artifacts` section to spec format (`spec.md`, `spec-template.md`)
-- [x] Document artifact alignment rules and unit-of-work enforcement in `spec.md` and `plan.md`
-- [x] Update `sdd-spec-validator` to check `aligned` field, `## Artifacts` section, and artifact path existence
-- [x] Update `sdd-spec-designer` to write/maintain `## Artifacts` section and set `aligned: false` when writing
-- [x] Update `sdd-author` as Conductor delegate: fix alignment steps — exploration/approval set `aligned: true` from sdd-spec-designer output; implementation dispatches via implementer contract, sets `aligned: true` only on `IMPLEMENTATION_PASS: true`
-- [x] Update `create-spec` skill to surface ALIGNED status and not commit while `aligned: false`
-- [x] Update `validate-spec` skill to report `aligned` status
-- [x] Create `init-sdd` skill (include artifact alignment rule in the AGENTS.md section it writes)
-- [x] Write scenario-advisor contract governance doc (`sdd-scenario-advisor-contract.md`)
-- [x] Write implementer contract governance doc (`sdd-implementer-contract.md`)
-- [x] Create `sdd-implementer` dispatcher agent (reads Plugin assignments, routes to declared implementer, falls back to test-existence check)
-- [x] Update Plugin assignments table format in plan.md spec: two columns (advisor + implementer)
+- [ ] Rename remaining `sdd-author` references and implementation surfaces to `sdd-orchestrator`
+- [ ] Reduce `sdd-orchestrator` to one autonomous segment with `complete`, `needs-input`, and `blocked` returns
+- [ ] Move all user questions and gate confirmations into `create-spec` and `validate-spec`
+- [ ] Add uniform delegate output aggregation: `QUESTIONS`, `CONTENT_GAPS`, and `OBSERVATIONS`
+- [ ] Enforce the write boundary for `spec.md`, `.feature`, `plan.md`, `tasks.md`, and implementation artifacts
 
-## Phase 3 — Full lifecycle
+## Wave 2: Delegate Roles
 
-- [ ] Design and create `plan-spec` skill
-- [ ] Design and create `create-tasks` skill
-- [ ] Design and create `verify-implementation` skill (now delegates to implementer contract)
-- [ ] Create `aces-implementer` agent in ACES plugin (implements implementer contract for agent config)
-- [ ] Create `aces-scenario-advisor` agent in ACES plugin (implements scenario-advisor contract for agent config)
-- [x] Create `quill` plugin (`plugins/quill/`) with `init-quill` skill and `quill-implementer` + `quill-scenario-advisor` agents
-- [x] `aces init-sdd` and `quill init` write entry to `.agents/universal-plugin.json` `sdd-plugins` (spec: `artifacts/specs/universal-plugin/`)
-- [ ] Update `sdd-author` to read `.agents/universal-plugin.json` `sdd-plugins` as fallback when `plan.md` has no Plugin assignments
+- [ ] Add role resolution for `spec-producer`, `plan-producer`, `spec-judge`, `impl-producer`, and `impl-judge`
+- [ ] Add default `sdd-scenario-writer` agent for the spec-producer role
+- [ ] Add default `sdd-planner` agent for the plan-producer role
+- [ ] Reframe `sdd-spec-validator` as `sdd-spec-judge`
+- [ ] Keep `sdd-implementer` as the default impl-judge
+- [ ] Use the generic Builder as the default impl-producer
 
-## Phase 4 — Open design questions
+## Wave 3: Governance Skills
 
-- [ ] Resolve project-level quality config design (needed for `verify-implementation`)
-- [ ] Resolve backfill gap analysis step in `create-spec`
-- [ ] Decide: `plan-spec` + `create-tasks` as one combined skill or two separate
-- [ ] Design plugin assignment inference in `plan-spec` (user prompt vs project config vs heuristic)
+- [ ] Create `sdd:spec-governance` as a non-user-invocable governance skill
+- [ ] Move universal `.feature` format rules into `sdd:spec-governance`
+- [ ] Move scenario-ordering rules into `sdd:spec-governance`
+- [ ] Move `spec.md` human-readability and enrichment rules into `sdd:spec-governance`
+- [ ] Stop runtime SDD paths from calling `governance show`
+- [ ] Retire or migrate legacy files under `artifacts/specs/sdd-plugin/governances/`
+
+## Wave 4: Registry and Resolution
+
+- [ ] Update each `init-<plugin>` path to write the five-role map and actor governances
+- [ ] Rewrite old-shape registry entries on plugin init
+- [ ] Resolve duplicate domain claims through `needs-input` and `domain-plugin` frontmatter
+- [ ] Remove `plan.md ## Plugin assignments` as a resolution source
+- [ ] Ensure runtime resolution reads only `.agents/universal-plugin.json`
+
+## Wave 5: Gates and Validation
+
+- [ ] Validate legal `(status, aligned, markers, .feature)` tuples
+- [ ] Make `validate-spec` target the spec gate for `draft` specs
+- [ ] Make `validate-spec` target the impl gate for `approved` specs
+- [ ] Record spec approval provenance when moving to `approved`
+- [ ] Record impl approval provenance when moving to `implemented`
+- [ ] Keep NodeJS deterministic checks optional with an agent-level fallback
+
+## Wave 6: Consumer Plugins
+
+- [ ] Update Quill from `quill-scenario-advisor` to `quill-writer`
+- [ ] Add `quill-doc-writer` as impl-producer
+- [ ] Keep `quill-implementer` as impl-judge
+- [ ] Update ACES from `aces-spec-designer` to `aces-scenario-writer`
+- [ ] Retain `aces-spec-validator` as spec-judge
+- [ ] Move ACES eval authoring into the impl-producer and eval execution into `aces-implementer`
+
+## Deferred
+
+- [ ] Decide whether `plan-producer` should split into plan and task producers
+- [ ] Design project-specific quality thresholds for the default impl path
+- [ ] Design external routing for accepted architect and curator observations
