@@ -1,37 +1,43 @@
 Feature: Spec-Driven Development Plugin
 
-  # Scenarios trace the plugin-owned workflow surface: install → create/resume
+  # Scenarios trace the plugin-owned workflow surface: context → create/resume
   # → spec gate → implementation → impl gate → graph and observation invariants.
 
-  # -- install -------------------------------------------------------------
+  # -- context -------------------------------------------------------------
 
-  Scenario: Initialize SDD project guidance
-    Given a repo with AGENTS.md present
-    When the user runs the init-sdd skill
-    Then AGENTS.md contains a "## Spec-Driven Development" section
-    And the section includes the frozen .feature rule
-    And the section includes the spec-owns-behavior rule
-    And the section includes the artifact alignment rule
-    And a SessionStart hook named "sdd" is registered
+  Scenario: Load SDD context for feature work
+    Given the user wants to work on a feature under SDD
+    When the user invokes the sdd skill
+    Then the SDD workflow contract is loaded into context
+    And the frozen .feature rule is loaded
+    And the spec-owns-behavior rule is loaded
+    And the artifact alignment rule is loaded
 
-  Scenario: init-sdd installs governance as a skill
+  Scenario: sdd loads governance from skill context
     Given the SDD plugin is installed in a repo
-    When the user runs init-sdd
-    Then sdd:spec-governance is available as a user-invocable false skill
-    And its description begins with "Internal skill:"
+    When the user invokes the sdd skill
+    Then sdd:spec-governance is loaded as a context dependency
+    And sdd explains that spec-producers and spec-judges load the governance bar
     And runtime SDD work does not require a governance show command
 
-  Scenario: init-sdd is idempotent
-    Given AGENTS.md already contains a "## Spec-Driven Development" section
-    When the user runs init-sdd again
-    Then the section body is replaced with the current content
-    And no duplicate "## Spec-Driven Development" sections exist in AGENTS.md
+  Scenario: sdd does not modify project files
+    Given a repo with AGENTS.md present
+    When the user invokes the sdd skill
+    Then AGENTS.md is unchanged
+    And no SessionStart hook is registered
+    And no cyber-skills CLI command is required
 
-  Scenario: init-sdd requires AGENTS.md to exist
-    Given a repo with no AGENTS.md
-    When the user runs init-sdd
-    Then init-sdd tells the user to run the init skill first
-    And no files are written
+  Scenario: sdd routes feature creation to create-spec
+    Given the user wants to start a new feature under SDD
+    When the user invokes the sdd skill
+    Then sdd directs the agent to run create-spec before implementation
+    And the agent does not edit implementation before a draft contract exists
+
+  Scenario: sdd routes approved feature work to validate-spec
+    Given specs/auth/spec.md has status approved
+    When the user invokes the sdd skill to implement auth
+    Then sdd directs the agent to keep auth.feature frozen
+    And implementation proceeds through validate-spec targeting the impl gate
 
   # -- registry setup ------------------------------------------------------
 
