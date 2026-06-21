@@ -156,4 +156,4 @@ Summarize:
 - Runtime symlinks created
 - Companion command path (Invokable mode only)
 - Quality check outcome
-- Suggested next step: run `aces:create-spec` to build an eval suite for this agent definition
+- Suggested next step: run `sdd:create-spec` (the orchestrator resolves the ACES roles) to spec and eval for this agent definition

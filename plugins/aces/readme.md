@@ -21,33 +21,38 @@ Evaluation runs in layers:
 
 | Skill | When to use |
 |---|---|
-| `create-spec` | Build a golden-set eval suite for an agent configuration |
+| `init-aces` | Register ACES as the SDD plugin for agent-configuration domain types |
 | `add` | Add a new test case from a real failure or edge case |
 | `run` | Score the golden set against the current agent configuration |
 | `compare` | Diff scores before/after an edit — regression gate |
 | `improve` | Diagnose failing cases and propose targeted edits |
 | `report` | Project-wide health dashboard across all eval suites |
 
-## Agents
+Spec creation is owned by the `sdd` plugin's `create-spec` / `validate-spec`: once ACES is registered, the orchestrator resolves the ACES production-chain roles automatically. The `run`/`compare`/`add`/`report` skills are thin reporting over the impl-judge's eval suite.
+
+## Agents (production-chain roles)
 
 | Agent | Role |
 |---|---|
-| `aces-spec-designer` | Generates eval suites (trigger queries + golden-set cases) |
-| `aces-spec-validator` | Validates eval suite quality; surfaces gaps and structural issues |
-| `aces-judge` | Scores individual test cases on a 1–5 rubric |
+| `aces-scenario-writer` | spec-producer — writes the spec.md body and a boolean `.feature` (trigger near-misses + behavior cases) |
+| `aces-spec-validator` | spec-judge — judges the `.feature` against the agent-scenario criteria |
+| `aces-implementer` | impl-judge — owns the scenario→rubric map (the evals), scores over N runs, collapses to a boolean per scenario |
+| `aces-judge` | internal scorer for `aces-implementer` — scores one scenario on a 1–5 rubric |
+
+The impl-producer (writing the agent config) is the `define-agent` / `improve` skills or the generic Builder; ACES does not bind a plan-producer (SDD default).
 
 ## Workflow
 
 ```
-create-spec → run → compare → improve → run
-                                 ↑
-                           add (new cases)
-                                 ↑
-                           report (project-wide)
+sdd:create-spec → sdd:validate-spec (spec gate) → implement → run/compare → improve
+                                                                   ↑
+                                                             add (new cases)
+                                                                   ↑
+                                                             report (project-wide)
 ```
 
-1. **`create-spec`** — generates an eval suite by eliciting domain knowledge from the user and drafting trigger queries and golden-set cases through an `aces-spec-designer` / `aces-spec-validator` loop.
-2. **`run`** — scores each case using `aces-judge` and writes results to `artifacts/specs/<suite>/results/`.
+1. **`sdd:create-spec`** — the orchestrator resolves `aces-scenario-writer` to write the `.feature`; `aces-spec-validator` judges it at the spec gate.
+2. **implement** — `aces-implementer` authors the scenario→rubric map and scores each scenario via `aces-judge`, writing results to `artifacts/specs/<suite>/results/`.
 3. **`compare`** — before committing an edit, diff the before/after scores. Warns on regressions.
 4. **`improve`** — reads failing cases, groups by failure pattern, proposes before/after diffs to the agent configuration. Automatically runs `compare` after edits.
 5. **`add`** — adds test cases from production failures, edge cases, or gaps. Writes to the golden set.
