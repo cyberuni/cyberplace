@@ -1,6 +1,5 @@
 ---
 status: draft
-priority: 1
 blocked-by: []
 aligned: false
 ---
@@ -57,8 +56,7 @@ Every `spec.md` must have YAML frontmatter and required body sections.
 | Field | Required | Values |
 |---|---|---|
 | `status` | Yes | `draft`, `approved`, `implemented`, `deprecated` |
-| `priority` | Yes | Integer; `1` = highest. Used to sequence implementation across a set of specs. |
-| `blocked-by` | No | List of spec slugs (directory names) that must be implemented first. Omit or leave empty if none. |
+| `blocked-by` | No | List of spec slugs (directory names) that must be implemented first — the spec DAG's dependency edges. Omit or leave empty if none. |
 | `aligned` | Yes | `true` / `false`. `false` when any artifact is being updated; `true` only when all listed artifacts are in sync. |
 
 **Body sections:**
@@ -74,7 +72,24 @@ Every `spec.md` must have YAML frontmatter and required body sections.
 
 Sections may be omitted only if genuinely not applicable (e.g. a pure config change has no command surface). Omitting "Why" is never acceptable.
 
-`blocked-by` is single-direction only. The "what does this spec block?" view is derived by scanning all specs for references to a given slug — do not maintain a `blocks` field.
+---
+
+## The spec DAG
+
+The set of specs is itself a directed acyclic graph, the same shape as `tasks.md` one level down. A project is not a flat list of specs to be picked by a hand-authored number; it is a dependency graph from which order **emerges**.
+
+- **Node = the spec folder.** Each `specs/<slug>/` is one node.
+- **ID = the slug.** The folder name is the node's identity. `blocked-by` entries reference slugs, so the folder name is already the stable ID — no separate `id` field.
+- **Edges = `blocked-by`.** A spec lists the slugs that must be `implemented` before it can start. These are the only authored edges.
+- **Order is emergent, not authored.** Execution order is a topological sort of the graph; the ready set is every spec whose `blocked-by` are all `implemented`. There is **no `priority` field** — priority across ready specs is the human Conductor's call at selection time, not a number baked into frontmatter. (Removed; reintroduce only if an automated scheduler needs a tiebreak.)
+
+`blocked-by` is **single-direction only**. The "what does this spec block?" view is derived by scanning all specs for references to a given slug — do not maintain a `blocks` field. The graph must stay **acyclic**: a cycle in `blocked-by` is an authoring error.
+
+### Rendering the graph
+
+The rendered graph lives at **`artifacts/specs/graph.md`** — the entry point for seeing the whole spec DAG at a glance, not buried in any one spec.
+
+Every node is named `spec.md`, so Obsidian's wikilink graph view cannot disambiguate them — do not rely on it. `graph.md` uses **Mermaid** instead (GitHub, Obsidian, and VS Code all preview it). Each edge `A --> B` reads "A blocks B" (B is `blocked-by: [A]`). The diagram is a **derived view** generated from the `blocked-by` fields, which remain the source of truth — regenerate it when edges change rather than hand-editing.
 
 ---
 

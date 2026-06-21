@@ -1,6 +1,5 @@
 ---
 status: draft
-priority: 2
 blocked-by:
   - sdd-plugin
 aligned: false
