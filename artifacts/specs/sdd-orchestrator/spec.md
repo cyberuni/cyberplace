@@ -110,6 +110,23 @@ Per the motive model, the **Conductor is the actor** (the human holding motive a
 
 The SDD-family contract and criteria governances are removed. The interface I/O lives in the orchestrator definition plus the default delegates as reference implementations. `sdd-principles` becomes the static `## Spec-Driven Development` section in AGENTS.md (no `governance show`). Repo-wide governance retirement (`packages/cyber-skills/governances/`, the `define-governance` skill) is a separate, larger decision and is out of scope here.
 
+### Discovery: the project registry is a resolved lockfile
+
+The orchestrator must **not** scan plugin directories (user-global, project-global, project-local) at runtime — that is slow, token-heavy, and repeats on every cold subagent start. Resolution happens at **setup**, the lockfile pattern (cf. `.agents/cyber-skills-lock.json`):
+
+- **Source of truth** — each plugin's `init-<plugin>` skill (ships with the plugin, knows its agents) writes a canonical entry to the project registry `.agents/universal-plugin.json`: domain coverage **plus** the resolved role→agent map **plus** the plugin version.
+- **Runtime** — the orchestrator reads **only** `.agents/universal-plugin.json` (one small project-local file). No scanning, no cross-scope lookup, no per-session cost; the file is the persistent cache.
+- **Drift** — the version stamp flags staleness; re-running `init-<plugin>` on upgrade re-resolves.
+
+Readable agent names stay safe: the registry binds role→name explicitly, so the orchestrator resolves by role and invokes by the bound name (convention `<plugin>-<role>` is only a fallback when a cell is omitted; `null` means the cell degenerates — no agent). Entry shape:
+
+```json
+{ "name": "quill", "version": "1.2.0",
+  "domains": ["documentation","guide","..."],
+  "roles": { "spec-producer": "quill-writer", "spec-judge": null,
+             "impl-producer": "quill-doc-writer", "impl-judge": "quill-implementer" } }
+```
+
 ---
 
 ## Runtime workflow
@@ -254,6 +271,7 @@ Sequenced so the stable interface lands first, the cheap consumer proves it, the
 - Add the uniform delegate output (`STATUS` / `QUESTIONS` / `OBSERVATIONS`); orchestrator aggregates and bubbles up. Skill routes `OBSERVATIONS` to backlog/corpus on human accept.
 - Establish the four roles (spec-producer, spec-judge, impl-producer, impl-judge); orchestrator resolves each per-cell to a plugin agent or SDD default.
 - Make `aligned` layer-scoped: spec gate checks the contract layer, impl gate checks the impl layer; exploratory artifacts are excluded as scaffolding.
+- Extend `init-<plugin>` to write the resolved role→agent map + version into `.agents/universal-plugin.json`; the orchestrator reads only that file at runtime (no plugin-dir scanning).
 - Add default delegates `sdd-scenario-writer` (generic boolean Gherkin from criteria) and `sdd-implementer` (passing-tests check) as agent definitions.
 - Repurpose `sdd-spec-designer` into the default writer's generation logic.
 - `validate-spec` enforces criteria against any `.feature`, plugin-written or default.
