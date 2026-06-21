@@ -28,6 +28,9 @@
 		"typescript": "^6.0.0"
 	},
 	"knip": {
+		"entry": [
+			"plugins/*/skills/*/scripts/*.mts"
+		],
 		"ignore": [
 			".vscode/cucumber-glue.js"
 		],
