@@ -41,11 +41,11 @@ Feature: Gate autonomy and accountability
     Then it reports the state tuple is illegal
     And the spec cannot be committed
 
-  Scenario: aligned is read gate-relative at draft
+  Scenario: validate-spec enforces layer-scoped aligned at draft
     Given a spec with status "draft" whose spec.md and .feature are in sync
     When validate-spec runs
-    Then aligned true means ready for the spec gate
-    And it does not mean implemented
+    Then aligned true is accepted as contract-layer sync, ready for the spec gate
+    And it is not treated as implemented
 
   Scenario: the gate report lists faces and contestable defaults
     Given the orchestrator reaches a gate
