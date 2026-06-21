@@ -182,3 +182,39 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     When the spec gate evaluates guide.feature
     Then validate-spec runs the static criteria directly
     And no spec-gate judge agent is invoked
+
+  # ── the 2x2: four roles ──────────────────────────────────────────────────
+
+  Scenario: The orchestrator resolves all four roles per cell
+    Given the "skill" domain is fully handled by the ACES plugin
+    When sdd-orchestrator runs the full loop
+    Then it resolves spec-producer, spec-judge, impl-producer, and impl-judge to ACES agents
+
+  Scenario: Degenerate cells fall back without a plugin agent
+    Given the "guide" domain declares no impl-producer and a static spec-judge
+    When sdd-orchestrator runs the full loop
+    Then impl-producing is done by the generic Builder with no agent
+    And spec-judging runs as static criteria with no judge agent
+
+  Scenario: The exploratory loop is the spec row
+    Given the "auth" domain is in the exploratory loop
+    When the spec-producer and spec-judge iterate
+    Then they shape the .feature until the spec gate freezes it
+
+  Scenario: The implementation loop is the impl row
+    Given the "auth" .feature is frozen
+    When the impl-producer and impl-judge iterate
+    Then they build and verify the artifact against the frozen .feature
+
+  # ── layer-scoped aligned ─────────────────────────────────────────────────
+
+  Scenario: aligned at the spec gate checks only the contract layer
+    Given exploratory spike code exists alongside a Draft spec
+    When the spec gate evaluates alignment
+    Then aligned considers only spec.md and the .feature
+    And the spike code does not block the spec from reaching Approved
+
+  Scenario: aligned at the impl gate checks the impl layer
+    Given specs/auth has Status Approved and a frozen .feature
+    When the impl gate evaluates alignment
+    Then aligned requires the impl layer to conform to the frozen .feature
