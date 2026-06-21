@@ -126,7 +126,12 @@ When the agent reaches a gate under any autonomy level, it emits a **gate report
 - **Decision menu** — the gate's three actions, each with its concrete consequence and the agent's **recommendation**.
 - `STATUS`, and when a gate was self-asserted, the flag **"agent-asserted — ratify or kick back."**
 
-**The report is a derived view, not stored.** Like the workflow cursor and `graph.md`, it is **regenerated on demand** from current artifact state — never a parallel journal. The only durable record is the **ratification**: the `approved-by` pointer plus the **approval commit/PR**, whose body snapshots the report at approve-time. The review queue is just the specs with `approved-by: agent`; opening one regenerates the report.
+**The live report is a derived view; the agent's self-assertion is durable.** As a *current-state view* the report is regenerated on demand (like the cursor and `graph.md`) — no parallel journal. But when the agent **self-asserts** a gate, the leash derivation that justified it is a **historical fact, not recomputable later**, and it is the accountability record this spec exists for — so it is preserved, split by layer:
+
+- **Attribution — who** (`approved-by { spec, impl }`) lives in `spec.md` frontmatter: a small pointer, layer-scoped *exactly like `aligned`*.
+- **Derivation — why** rides the **self-assertion commit body**, which is automatically layer-appropriate. The spec-gate derivation is in the commit that wrote `spec.md` / `.feature`; the **impl-gate derivation is in the commit that wrote the implementation**, *not* `spec.md`. Putting impl-gate reasoning in `spec.md` would reconflate the contract and impl layers; only the `approved-by.impl` pointer belongs there. Git is the dated, attributed journal we already have.
+
+The review queue is the specs with any `approved-by: agent`; opening one surfaces the self-assertion commit(s) (the recorded reasoning) and/or a freshly regenerated current-state report.
 
 **Example** — this spec, reported at its own spec gate:
 
@@ -136,7 +141,7 @@ STATUS: ready for spec gate · agent-asserted — ratify or kick back
 
 Verdict
   Framer  (scope)    PASS — real incident, contained, worth shipping
-  Builder (contract) PASS — 17 scenarios cover leash / attribution / FSM / report / gate-actions
+  Builder (contract) PASS — 18 scenarios cover leash / attribution / FSM / report / gate-actions
   Architect (fit)    PASS — extends orchestrator + sdd-plugin; reuses aligned as-is
 
 Leash derivation

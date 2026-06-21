@@ -47,11 +47,17 @@ Feature: Gate autonomy and accountability
     Then the gate report is regenerated from current artifact state
     And no stored gate-report file exists
 
-  Scenario: ratification snapshots the report into the approval record
-    Given the human approves a self-asserted gate
-    When the approval is recorded
-    Then approved-by is set to the human's name
-    And the approval commit body carries the gate report snapshot
+  Scenario: a self-assertion records its derivation in the commit
+    Given the agent self-asserts a gate
+    When it commits the work
+    Then the commit body carries the leash derivation that justified it
+    And approved-by for that gate is "agent"
+
+  Scenario: the impl-gate derivation rides the impl commit, not spec.md
+    Given the agent self-asserts the impl gate
+    When it records the self-assertion
+    Then the derivation is in the commit that wrote the implementation
+    And spec.md frontmatter holds only the approved-by.impl pointer
 
   Scenario: change at the spec gate edits the contract
     Given the spec gate report is returned with "change"
