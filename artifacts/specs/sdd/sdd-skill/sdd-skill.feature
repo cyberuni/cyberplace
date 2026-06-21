@@ -2,8 +2,8 @@ Feature: SDD gateway skill
 
   # -- activation and intake ----------------------------------------------
 
-  Scenario: Activate SDD before feature work
-    Given the user wants to work on a software feature under SDD
+  Scenario: Activate SDD before creation work
+    Given the user wants to work on a creation artifact under SDD
     When the agent invokes the sdd skill
     Then SDD is active for the current workflow
     And the SDD lifecycle rules are loaded into context
@@ -12,10 +12,10 @@ Feature: SDD gateway skill
 
   Scenario: Ask for SDD intent on empty invocation
     Given the user invokes "$sdd"
-    And the user provides no feature, artifact, or action
+    And the user provides no work item, artifact, or action
     When the agent invokes the sdd skill
     Then the agent asks what SDD work the user wants to do
-    And the choices include creating a new feature, backfilling an existing feature, revising or validating a spec, implementing an approved spec, managing or deprecating specs, and refreshing the graph
+    And the choices include creating a new artifact, backfilling an existing artifact, revising or validating a spec, implementing an approved spec, managing or deprecating specs, and refreshing the graph
     And implementation does not start before the user selects a route
 
   Scenario: Route explicit SDD request with enough detail
@@ -34,15 +34,15 @@ Feature: SDD gateway skill
 
   # -- routing -------------------------------------------------------------
 
-  Scenario: Route a new feature to create-spec
-    Given no spec exists for the requested feature
+  Scenario: Route a new artifact to create-spec
+    Given no spec exists for the requested artifact
     When the agent invokes the sdd skill
     Then the next action is create-spec
     And implementation does not start before a draft contract exists
 
-  Scenario: Route a backfill feature to create-spec
-    Given implementation exists for the requested feature
-    And no spec exists for that feature
+  Scenario: Route a backfill artifact to create-spec
+    Given realization already exists for the requested artifact
+    And no spec exists for that artifact
     When the agent invokes the sdd skill
     Then the next action is create-spec in backfill mode
     And the inferred contract is presented for user confirmation before scenarios are frozen

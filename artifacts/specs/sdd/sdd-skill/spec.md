@@ -9,13 +9,13 @@ aligned: true
 
 ## What
 
-`sdd` is the gateway skill for Spec-Driven Development feature work. It is the explicit user-invoked entrypoint that activates SDD for the current work, gathers missing intent, classifies the requested SDD action, and invokes the SDD system entrypoint for that action. It applies when a user wants to add, change, backfill, validate, implement, deprecate, or inspect a software feature under SDD. The skill reports the next user-visible SDD step without mutating global project guidance or owning the workflow's internal control logic.
+`sdd` is the gateway skill for Spec-Driven Development work. It is the explicit user-invoked entrypoint that activates SDD for the current work, gathers missing intent, classifies the requested SDD action, and invokes the SDD system entrypoint for that action. It applies when a user wants to add, change, backfill, validate, implement, deprecate, or inspect a creation artifact under SDD. SDD is not limited to software features; it is a formal process for creation work wherever the actor needs to direct expertise outside their own angle through delegates and explicit artifacts. The skill reports the next user-visible SDD step without mutating global project guidance or owning the workflow's internal control logic.
 
 ---
 
 ## Why
 
-SDD feature work is optional and user-invoked, but once activated it needs a clear entrypoint. A gateway skill makes that workflow explicit at the moment the user opts in, so agents consistently gather missing workflow intent, classify the requested action at the right abstraction level, and avoid treating setup or hook installation as part of feature execution.
+SDD work is optional and user-invoked, but once activated it needs a clear entrypoint. A gateway skill makes that workflow explicit at the moment the user opts in, so agents consistently gather missing workflow intent, classify the requested action at the right abstraction level, and avoid treating setup or hook installation as part of execution. This broader framing also aligns SDD with the motive model: the actor stays accountable for the work, while specs, plans, tasks, and governances become the delegation surface that lets delegates carry expert creation work beyond the actor's native discipline.
 
 ---
 
@@ -27,11 +27,11 @@ SDD feature work is optional and user-invoked, but once activated it needs a cle
 
 ### Trigger language is explicit and workflow-oriented
 
-The skill triggers when the user explicitly invokes `$sdd`, says to use SDD, or asks to work on a software feature with Spec-Driven Development. Triggered work includes new feature creation, backfill, draft revision, contract approval, implementation, implementation approval, behavior change after approval, deprecation, or SDD graph refresh. It does not trigger for general SDD explanation unless the user asks to apply the workflow to feature work.
+The skill triggers when the user explicitly invokes `$sdd`, says to use SDD, or asks to work on a creation artifact with Spec-Driven Development. Triggered work includes new artifact creation, backfill, draft revision, contract approval, implementation, implementation approval, behavior change after approval, deprecation, or SDD graph refresh. It does not trigger for general SDD explanation unless the user asks to apply the workflow to a concrete piece of creation work.
 
 ### Empty invocation conducts intake
 
-When the user invokes `$sdd` with no feature, artifact, or action, the skill should not guess. It should ask what SDD work the user wants to do, offering the main routes: create a new feature, backfill an existing feature, revise or validate an existing spec, implement an approved spec, manage or deprecate specs, or refresh the spec graph.
+When the user invokes `$sdd` with no work item, artifact, or action, the skill should not guess. It should ask what SDD work the user wants to do, offering the main routes: create a new artifact, backfill an existing artifact, revise or validate an existing spec, implement an approved spec, manage or deprecate specs, or refresh the spec graph.
 
 ### The gateway owns intent, not internal workflow control
 
@@ -52,7 +52,7 @@ This spec lives at `artifacts/specs/sdd/sdd-skill/`. `render-spec-graph` must di
 The skill description uses this trigger contract:
 
 ```text
-Use this skill when the user explicitly invokes SDD or wants to work on a software feature with Spec-Driven Development.
+Use this skill when the user explicitly invokes SDD or wants to work on a creation artifact with Spec-Driven Development.
 ```
 
 Examples that trigger the skill:
@@ -61,8 +61,9 @@ Examples that trigger the skill:
 |---|---|
 | "$sdd" | Intake prompt for the desired SDD work |
 | "Use SDD for auth" | Intake or invoke SDD with the user's coarse intent |
-| "Create an SDD spec for auth" | Invoke SDD for spec creation |
+| "Create an SDD spec for this onboarding flow" | Invoke SDD for spec creation |
 | "Backfill SDD for this existing parser" | Invoke SDD for backfill |
+| "Use SDD to formalize this hiring workflow" | Invoke SDD for non-software creation work |
 | "Approve this draft spec" | Invoke SDD for spec approval |
 | "Implement the approved auth spec" | Invoke SDD for implementation |
 | "Change this approved behavior" | Invoke SDD for behavior-change handling |
@@ -76,7 +77,7 @@ No CLI surface is required. The public surface is the user-invoked `sdd` gateway
 
 ```text
 sdd
-  in: explicit SDD invocation or user intent to work on a software feature under SDD
+  in: explicit SDD invocation or user intent to work on a creation artifact under SDD
   intake: asks for the desired SDD route when intent is missing
   reads: only enough user and local context to classify the requested SDD action
   loads: the SDD gateway surface and action vocabulary
