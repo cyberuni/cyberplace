@@ -1,12 +1,10 @@
 {
 	"$schema": "https://unpkg.com/knip@6/schema.json",
-	"entry": [
-		"plugins/*/skills/*/scripts/*.mts"
-	],
-	"ignore": [
-		".vscode/cucumber-glue.js"
-	],
-	"ignoreDependencies": [
-		"husky"
-	]
+	"ignore": [".vscode/cucumber-glue.js"],
+	"ignoreDependencies": ["husky"],
+	"workspaces": {
+		"plugins/sdd": {
+			"entry": ["skills/*/scripts/*.mts"]
+		}
+	}
 }
