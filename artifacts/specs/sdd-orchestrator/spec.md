@@ -11,7 +11,7 @@ aligned: false
 
 ## What
 
-SDD owns the spec-driven workflow and runs the loop. Domain plugins (ACES for agent configurations, Quill for documentation) augment that loop by supplying **delegates** that perform two acts SDD does not hard-code: writing the `.feature` scenarios and verifying the implementation against them.
+SDD owns the spec-driven workflow and runs the loop. Domain plugins (ACES for agent configurations, Quill for documentation) augment that loop by supplying **delegates** for the roles SDD does not hard-code — producing and judging the `.feature`, and producing and judging the implementation against it (the 2×2 below).
 
 The architecture has four moving parts:
 
@@ -46,11 +46,11 @@ The existing design split each act into a dispatcher agent plus a contract gover
 
 SDD owning the `.feature` format means SDD owns the **validation gate** — any `.feature`, whoever wrote it, must pass `validate-spec` (valid Gherkin, boolean scenarios, lifecycle rules). It does **not** mean SDD writes the file. Once format authority is located in validation, the act of writing can safely be delegated, because SDD still polices the output.
 
-### The interface is the act; criteria are the plugin's bar
+### The interface is the act, not data
 
-The plug-in point is a **behavior** — "write the `.feature` for this domain in this folder" — not a data hand-off. A participating plugin **always provides a writer** (an agent definition); SDD never classifies a domain as simple or complex. This mirrors the implementer side exactly: a domain either declares a writer (it acts) or it doesn't, in which case `sdd-scenario-writer` (the default) runs as the **no-plugin fallback** for plain code/lib/config. Quill's writer is thin (emits straightforward doc scenarios); ACES's is heavy (generates trigger near-misses) — same interface, different weight, no branch in SDD.
+The plug-in point is a **behavior** — "produce the `.feature` for this domain" — not a data hand-off. SDD never classifies a domain as simple or complex: a cell is either filled by a plugin agent (it acts) or it isn't (it degenerates — see *The 2×2*). The **spec-producer** is always filled — by a plugin agent or the `sdd-scenario-writer` default; the other three cells fill or degenerate per domain.
 
-Criteria do not survive as an alternative to acting. They are the plugin's **bar** — the backward face every delegation surface carries. So a plugin provides both faces: the **writer** (forward, the act, always present) and its **criteria** (backward, enforced by `validate-spec` against the produced `.feature`, keeping `producer ≠ judge`). SDD's own bar is the universal format gate (valid Gherkin, boolean scenarios, lifecycle); the plugin's bar adds domain criteria (e.g., every agent scenario carries trigger context).
+Criteria do not survive as a separate plug-in path. They are the **bar** — the judge face of each object (spec-judge, impl-judge). SDD's own bar is the universal format gate (valid Gherkin, boolean scenarios, lifecycle), enforced by `validate-spec` and keeping `producer ≠ judge`. A domain's bar adds its own criteria (e.g., every agent scenario carries trigger context), enforced by its **spec-judge** — a judge agent when the bar needs judgment, static criteria when it does not.
 
 ### The 2×2: two objects × two faces — the four roles
 
@@ -83,9 +83,9 @@ Two cells commonly degenerate: **spec-judge** → static criteria when the bar n
 
 `sdd-scenario-writer` and `sdd-implementer` are agent definitions so dispatch is uniform — the orchestrator invokes default and plugin delegates through one identical I/O surface, and each default can set its own model/effort like any plugin delegate.
 
-### The rubric is a validation-detail, owned by the implementer
+### The rubric is a validation-detail, owned by the impl-judge
 
-A scenario's outcome is **boolean**: the spec says the agent *does* X, not *does X some of the time*. For a non-deterministic subject, the implementer reaches that boolean through a rubric + judge + threshold over N runs — `score >= threshold` collapses the grade back to pass/fail. The rubric is the impl-judge's private evaluation suite, keyed to scenario by name, never embedded in the `.feature`. This mirrors implementation-detail: the scenario hides *how it is built* (code) and equally hides *how it is judged* (rubric). The three impl-judges are one interface, three verification methods:
+A scenario's outcome is **boolean**: the spec says the agent *does* X, not *does X some of the time*. For a non-deterministic subject, the impl-judge reaches that boolean through a rubric + judge + threshold over N runs — `score >= threshold` collapses the grade back to pass/fail. The rubric is the impl-judge's private evaluation suite, keyed to scenario by name, never embedded in the `.feature`. This mirrors implementation-detail: the scenario hides *how it is built* (code) and equally hides *how it is judged* (rubric). The three impl-judges are one interface, three verification methods:
 
 | impl-judge | Scenario passes when | Subject |
 |---|---|---|
@@ -205,14 +205,14 @@ The backward face is a **faculty** (judge-against-criteria), not a verdict bound
 
 Different objects → different verdicts → they never collapse. The pivot makes it precise: the **`.feature` is the object judged at the spec gate, then becomes the bar at the impl gate.** Graduating from artifact-under-judgment to criteria is exactly what makes Approved a prerequisite for Implemented without making them equal — you cannot judge code against a contract that isn't frozen.
 
-### The feature-bar judge and the implementer are one actor's backward face
+### The spec-judge and the impl-judge are one actor's backward face
 
 What looked like two interfaces are **Builder-backward at the two gates**:
 
-- **feature-bar judge** (e.g., `aces-spec-validator`) = Builder-backward at the **spec gate**: bar = domain criteria, object = the `.feature`.
-- **implementer** (e.g., `aces-implementer`) = Builder-backward at the **impl gate**: bar = the `.feature`, object = the code.
+- **spec-judge** (e.g., `aces-spec-validator`) = Builder-backward at the **spec gate**: bar = domain criteria, object = the `.feature`.
+- **impl-judge** (e.g., `aces-implementer`) = Builder-backward at the **impl gate**: bar = the `.feature`, object = the code.
 
-Same faculty, two gates (for ACES both use rubric → threshold → boolean, confirming one faculty). So `aces-spec-validator` is **retained** — it is the Builder's backward face at the spec gate, not absorbed by SDD; SDD's generic `validate-spec` cannot judge domain contract quality. When the domain bar is static (Quill), the spec-gate judgment is declarative criteria `validate-spec` runs, and no judge agent is needed.
+Same faculty, two gates (for ACES both use rubric → threshold → boolean, confirming one faculty). So `aces-spec-validator` is **retained** — it is the Builder's backward face at the spec gate, not absorbed by SDD; SDD's generic `validate-spec` cannot judge domain contract quality. When the domain bar is static (Quill), the spec-judge is declarative criteria `validate-spec` runs, and no judge agent is needed.
 
 ---
 
@@ -273,7 +273,7 @@ Sequenced so the stable interface lands first, the cheap consumer proves it, the
 - Make `aligned` layer-scoped: spec gate checks the contract layer, impl gate checks the impl layer; exploratory artifacts are excluded as scaffolding.
 - Extend `init-<plugin>` to write the resolved role→agent map + version into `.agents/universal-plugin.json`; the orchestrator reads only that file at runtime (no plugin-dir scanning).
 - Add default delegates `sdd-scenario-writer` (generic boolean Gherkin from criteria) and `sdd-implementer` (passing-tests check) as agent definitions.
-- Repurpose `sdd-spec-designer` into the default writer's generation logic.
+- Repurpose `sdd-spec-designer` into the default spec-producer's (`sdd-scenario-writer`) generation logic.
 - `validate-spec` enforces criteria against any `.feature`, plugin-written or default.
 - Delete `governances/`; fold I/O docs into the orchestrator + default delegates. `sdd-principles` → static AGENTS.md section.
 - Update `artifacts/specs/sdd-plugin` spec + `.feature` to the orchestrator model.
@@ -287,7 +287,7 @@ Sequenced so the stable interface lands first, the cheap consumer proves it, the
 **3. ACES (act-override consumer, proves rubric-as-validation-detail).**
 - Split `aces-spec-designer` → `aces-scenario-writer` (writes boolean Gherkin: trigger near-misses + behavior cases); delete its spec.md-authoring half.
 - Add `aces-implementer` (Builder-backward at the impl gate) owning the scenario→rubric map; `aces-judge` becomes its internal.
-- **Retain `aces-spec-validator`** as Builder-backward at the **spec gate** (the feature-bar judge) — not absorbed by SDD. Delete `aces:create-spec` (absorbed by SDD); `run`/`compare`/`report` become thin reporting over implementer output.
+- **Retain `aces-spec-validator`** as the **spec-judge** (Builder-backward at the spec gate) — not absorbed by SDD. Delete `aces:create-spec` (absorbed by SDD); `run`/`compare`/`report` become thin reporting over impl-judge output.
 - Reframe `aces:skill-spec-schema` as agent-scenario criteria inside `aces-scenario-writer`. Retire `aces:define-governance` deferred to the repo-wide call.
 - Update ACES specs + `.feature` files.
 

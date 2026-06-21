@@ -3,7 +3,7 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
   # ── dispatch: writer ─────────────────────────────────────────────────────
 
   Scenario: Orchestrator dispatches to a declared plugin writer
-    Given plan.md Plugin assignments names "aces-scenario-writer" as the writer for the "skill" domain
+    Given plan.md Plugin assignments names "aces-scenario-writer" as the spec-producer for the "skill" domain
     When sdd-orchestrator runs the design phase for the "skill" domain
     Then it invokes the aces-scenario-writer delegate
     And it does not invoke the sdd-scenario-writer default
@@ -23,7 +23,7 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
   # ── dispatch: implementer ────────────────────────────────────────────────
 
   Scenario: Orchestrator dispatches to a declared plugin implementer
-    Given plan.md Plugin assignments names "quill-implementer" as the implementer for the "guide" domain
+    Given plan.md Plugin assignments names "quill-implementer" as the impl-judge for the "guide" domain
     When sdd-orchestrator runs the implementation phase for the "guide" domain
     Then it invokes the quill-implementer delegate
     And it does not invoke the sdd-implementer default
@@ -61,11 +61,11 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     Then validation fails
     And the report names the scenario missing the required field
 
-  Scenario: A writer delegate that modifies spec.md is rejected
-    Given a writer delegate runs for the "skill" domain
+  Scenario: A spec-producer that modifies spec.md is rejected
+    Given a spec-producer runs for the "skill" domain
     When the delegate attempts to modify spec.md
     Then the change is rejected
-    And only the .feature file may be written by a writer delegate
+    And only the .feature file may be written by a spec-producer
 
   # ── rubric is a validation-detail ────────────────────────────────────────
 
@@ -78,7 +78,7 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
   Scenario: A graded subject still yields a boolean per scenario
     Given aces-implementer evaluates a scenario with a rubric and a threshold over N runs
     When the aggregate score meets or exceeds the threshold
-    Then the implementer reports that scenario as passing
+    Then the impl-judge reports that scenario as passing
     And reports failing when the aggregate score is below the threshold
 
   # ── governance dissolution ───────────────────────────────────────────────
@@ -86,11 +86,11 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
   Scenario: The loop runs without a governance-show call
     Given no governances/ directory exists for the SDD plugin
     When sdd-orchestrator runs the full loop
-    Then it resolves the writer and implementer interfaces from the delegate definitions
+    Then it resolves the producer and judge roles from the delegate definitions
     And it makes no governance show call
 
   Scenario: A plugin author reads the interface from the orchestrator and default delegates
-    Given a plugin author wants to implement a new implementer delegate
+    Given a plugin author wants to implement a new impl-judge delegate
     When they read the sdd-orchestrator definition and the sdd-implementer default
     Then the input and output contract is fully specified without a separate governance file
 
