@@ -279,7 +279,8 @@ The model leans on a fixed vocabulary the rest of the spec only gestures at. Thi
 
 | Region | Writer | When |
 |---|---|---|
-| body — intent narrative, contract prose, `<!-- open: -->` markers | **spec-producer** (re-invoked) | design / routing a discovery |
+| body — intent narrative, contract prose | **spec-producer** | design / resolving a marker |
+| body — `<!-- open: -->` markers | **orchestrator** or spec-producer | routing a discovery |
 | frontmatter `status` | **skill** | the gate (human verdict) |
 | frontmatter `aligned` | **orchestrator** | synthesis |
 | frontmatter `domain-plugin` map | **skill** | after user disambiguates |
@@ -314,7 +315,7 @@ QUESTIONS:    [ batched user questions, derived from open markers ]   # when nee
 CONTENT_GAPS: [ { artifact, location, gap } ]   # become <!-- open: --> markers; may be empty
 OBSERVATIONS: [ { owner: architect | curator, note, evidence: string|path|scenario } ]  # non-blocking
 ```
-The orchestrator **aggregates** child `QUESTIONS`, `CONTENT_GAPS`, and `OBSERVATIONS` and returns them up to the skill; only the skill surfaces them to the user. `CONTENT_GAPS` are converted to `<!-- open: -->` markers by re-invoking the spec-producer (the spec.md-body writer), not by the orchestrator writing the body directly.
+The orchestrator **aggregates** child `QUESTIONS`, `CONTENT_GAPS`, and `OBSERVATIONS` and returns them up to the skill; only the skill surfaces them to the user. The orchestrator **may write `<!-- open: -->` markers directly** into `spec.md` (markers are coordination annotations, not contract content); resolving a marker into narrative/contract is the spec-producer's job.
 
 **spec-producer** (writes the contract: `spec.md` body + the `.feature`)
 ```
