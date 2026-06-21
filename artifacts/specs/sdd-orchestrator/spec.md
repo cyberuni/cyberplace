@@ -152,7 +152,7 @@ The motive model's **co-delivery** is non-negotiable: the five artifacts are pro
 
 The **two gates set the strength at the two ends**, they do not split the chain into phases: the **spec gate** firms the contract end (and co-commits plan/tasks at lower strength); the **impl gate** firms the implementation end. So Approval co-freezes all five at *descending* strength — the "how" is committed without a separate plan gate, and the soft middle stays adaptable (the lean "last responsible moment", not the waterfall trap).
 
-**The chain co-evolves; it is not one-way.** A `plan` change usually ripples back to the `.feature` — a different solution is *tested differently* — while the behavioral **essence** the scenarios guarantee stays intact. So `.feature` scenarios carry a stable **essence** (the intent) and a solution-shaped **expression** (how it is checked); the essence anchors the chain, the expression follows the plan. Derivation `spec → .feature → plan → tasks` is the default *flow*, not a one-way lock.
+**The chain co-evolves; it is not one-way.** A `plan` change usually ripples back to the `.feature` — a different solution is *tested differently* — while the behavioral **essence** the scenarios guarantee stays intact. So `.feature` scenarios carry a stable **essence** (the intent) and a solution-shaped **expression** (how it is checked); the essence anchors the chain, the expression follows the plan. Derivation `spec → .feature → plan → tasks` is the default *flow*, not a one-way lock. The impl-judge always derives its functional checks from the **current expression**; the **essence** is the invariant that must survive when a plan-ripple rewrites that expression.
 
 ### The orchestrator is a delegate; the Conductor is the human
 
@@ -327,7 +327,7 @@ Impl-side roles (`impl-producer`, `impl-judge`) and `plan-producer` **never** wr
 | approved | false | — | frozen | implementing → plan/impl producers (implement), impl-judge |
 | approved | true | — | frozen | implemented |
 
-**`validate-spec` / the default spec-judge** is one **dual-mode invokable agent def** (rename to convention, e.g. `sdd-spec-judge`; the user-facing `validate-spec` skill triggers it at the gate). It splits work to optimize speed and tokens: an **optional deterministic** step (a NodeJS static-analysis CLI — Gherkin validity, boolean form, ordering) plus **non-deterministic** agent-level reasoning (coverage, testability, domain criteria). The NodeJS step is **optional**: if `npx` is unavailable the agent runs an equivalent check itself — so the loop never hard-depends on NodeJS (the deterministic path is only an accelerator).
+**The default spec-judge is `sdd-spec-judge`** — a **dual-mode invokable agent**; the user-facing `validate-spec` skill triggers it at the gate (the skill name stays; the agent is `sdd-spec-judge`). It splits work to optimize speed and tokens: an **optional deterministic** step (a NodeJS static-analysis CLI — Gherkin validity, boolean form, ordering) plus **non-deterministic** agent-level reasoning (coverage, testability, domain criteria). The NodeJS step is **optional**: if `npx` is unavailable the agent runs an equivalent check itself — so the loop never hard-depends on NodeJS (the deterministic path is only an accelerator).
 
 ---
 
@@ -425,7 +425,7 @@ Sequenced so the stable interface lands first, the cheap consumer proves it, the
 
 **4. NodeJS sweep.**
 - `init-sdd` drops `governance show`; SDD principles move to the `sdd:spec-governance` skill (harness-loaded), not AGENTS.md.
-- Recast `validate-spec` as a dual-mode invokable agent def (rename toward `sdd-spec-judge`): an **optional** deterministic NodeJS static-analysis step plus non-deterministic agent reasoning, with an agent-level fallback when `npx` is absent — the loop never hard-depends on NodeJS.
+- Name the default spec-judge `sdd-spec-judge` (the `validate-spec` skill triggers it): a dual-mode invokable agent — an **optional** deterministic NodeJS static-analysis step plus non-deterministic agent reasoning, with an agent-level fallback when `npx` is absent — the loop never hard-depends on NodeJS.
 - Keep NodeJS only as that optional deterministic accelerator and for CI-time numeric aggregation (pass-rate, threshold math), which never re-enters the runtime loop.
 
 ---
