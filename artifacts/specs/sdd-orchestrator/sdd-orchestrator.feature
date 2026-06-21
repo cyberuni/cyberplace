@@ -157,3 +157,28 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     When the segment completes
     Then the observation is appended to the candidate queue
     And it is not surfaced to the user until a Curator boundary is reached
+
+  # ── two gates, one backward face per actor ───────────────────────────────
+
+  Scenario: A spec can be Approved with no implementation
+    Given specs/auth/spec.md has passed the spec gate
+    When its status is Approved
+    Then no implementation is required for Approved
+    And the status is not Implemented
+
+  Scenario: The .feature is the object at the spec gate and the bar at the impl gate
+    Given the spec gate judged auth.feature against the domain criteria
+    When the spec advances to Approved and auth.feature is frozen
+    Then the impl gate judges the implementation against auth.feature as the bar
+
+  Scenario: The spec-gate judge is a domain delegate, not SDD
+    Given the "skill" domain declares aces-spec-validator
+    When the spec gate evaluates skill.feature against domain criteria
+    Then SDD delegates the domain judgment to aces-spec-validator
+    And SDD's generic validate-spec does not judge domain contract quality
+
+  Scenario: A static-bar domain needs no spec-gate judge agent
+    Given the "guide" domain declares only static doc criteria
+    When the spec gate evaluates guide.feature
+    Then validate-spec runs the static criteria directly
+    And no spec-gate judge agent is invoked

@@ -117,6 +117,52 @@ Delegates emit a non-blocking **`OBSERVATIONS`** channel — the gate's `accept 
 
 ---
 
+## The gate
+
+**A gate** is a discrete status-transition decision where backward faces converge on one artifact level and emit a two-axis verdict (accept/block × change-request) under a decision rule, with `producer ≠ judge`. It is **not** the inner loop (which fires every iteration, advisory) and not continuous — it fires **once**, at a transition request via `validate-spec`. The decision is always the human's; delegates only advise.
+
+SDD has **two gates**, judging **two different objects**:
+
+| | Spec gate | Impl gate |
+|---|---|---|
+| Transition | Draft → Approved | Approved → Implemented |
+| Object judged | the contract (`spec.md` + `.feature`) | the implementation |
+| The bar is | each actor's surface criteria | the **frozen `.feature`** |
+| Freezes | the `.feature` | "code meets contract" |
+| Weight | Framer-heavy, multi-face | Builder-heavy |
+
+(`none → Draft` is not a gate — scaffolding. `Implemented → Deprecated` is a Framer-kill gate.)
+
+### One backward face per actor — the gates differ by object, not by face
+
+An actor does **not** grow a second backward face for the second gate. Each keeps its single faculty (one backward face per motive). The two gates apply the **same faculties to two objects at two times**:
+
+| Backward face | Spec gate (judges the contract) | Impl gate (judges the code vs frozen contract) |
+|---|---|---|
+| Framer — kill-or-ship | is the intent/scope worth committing? | rarely — fires only if building reveals the goal was wrong (→ revert to Draft) |
+| Architect — fit-to-structure | does the spec fit conventions; no dup/conflict? | does the **code** fit structure (different object) |
+| Builder — validate vs bar | is the `.feature` a complete, testable contract? (bar = domain criteria) | does the code pass every scenario? (bar = the `.feature`) |
+
+### Why Approved ≠ Implemented
+
+The backward face is a **faculty** (judge-against-criteria), not a verdict bound to an object. Applied to two objects it yields two verdicts:
+
+- **Approved** = the *contract* passed — a claim about `spec.md` + `.feature`. A spec can be Approved with **no code at all**.
+- **Implemented** = the *implementation* passed against the frozen `.feature` — a claim about the code.
+
+Different objects → different verdicts → they never collapse. The pivot makes it precise: the **`.feature` is the object judged at the spec gate, then becomes the bar at the impl gate.** Graduating from artifact-under-judgment to criteria is exactly what makes Approved a prerequisite for Implemented without making them equal — you cannot judge code against a contract that isn't frozen.
+
+### The feature-bar judge and the implementer are one actor's backward face
+
+What looked like two interfaces are **Builder-backward at the two gates**:
+
+- **feature-bar judge** (e.g., `aces-spec-validator`) = Builder-backward at the **spec gate**: bar = domain criteria, object = the `.feature`.
+- **implementer** (e.g., `aces-implementer`) = Builder-backward at the **impl gate**: bar = the `.feature`, object = the code.
+
+Same faculty, two gates (for ACES both use rubric → threshold → boolean, confirming one faculty). So `aces-spec-validator` is **retained** — it is the Builder's backward face at the spec gate, not absorbed by SDD; SDD's generic `validate-spec` cannot judge domain contract quality. When the domain bar is static (Quill), the spec-gate judgment is declarative criteria `validate-spec` runs, and no judge agent is needed.
+
+---
+
 ## Command surface / API
 
 No CLI surface. The interface is the agent-dispatch I/O the orchestrator sends and each delegate returns.
@@ -170,8 +216,8 @@ Sequenced so the stable interface lands first, the cheap consumer proves it, the
 
 **3. ACES (act-override consumer, proves rubric-as-validation-detail).**
 - Split `aces-spec-designer` → `aces-scenario-writer` (writes boolean Gherkin: trigger near-misses + behavior cases); delete its spec.md-authoring half.
-- Add `aces-implementer` owning the scenario→rubric map; `aces-judge` becomes its internal.
-- Delete `aces-spec-validator` and `aces:create-spec` (absorbed by SDD); `run`/`compare`/`report` become thin reporting over implementer output.
+- Add `aces-implementer` (Builder-backward at the impl gate) owning the scenario→rubric map; `aces-judge` becomes its internal.
+- **Retain `aces-spec-validator`** as Builder-backward at the **spec gate** (the feature-bar judge) — not absorbed by SDD. Delete `aces:create-spec` (absorbed by SDD); `run`/`compare`/`report` become thin reporting over implementer output.
 - Reframe `aces:skill-spec-schema` as agent-scenario criteria inside `aces-scenario-writer`. Retire `aces:define-governance` deferred to the repo-wide call.
 - Update ACES specs + `.feature` files.
 
