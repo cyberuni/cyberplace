@@ -2,7 +2,7 @@
 status: draft
 priority: 1
 blocked-by: []
-aligned: false
+aligned: true
 ---
 
 # SDD Orchestrator & the Plugin-Delegate Model
