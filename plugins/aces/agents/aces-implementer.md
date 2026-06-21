@@ -1,24 +1,25 @@
 ---
 name: aces-implementer
-description: "Internal skill: the ACES impl-judge for agent-configuration domains. Owns the scenario→rubric map (the written tests / evals), runs the judge over N runs, and collapses score-vs-threshold to a boolean per frozen scenario. Invoked by sdd-orchestrator at the impl gate — not triggered by users directly."
+description: "Internal skill: the ACES impl-judge for agent-configuration domains. Runs the scenario→rubric eval suite authored by the impl-producer over N runs, and collapses score-vs-threshold to a boolean per frozen scenario. Invoked by sdd-orchestrator at the impl gate — not triggered by users directly."
 metadata:
   internal: true
 ---
 
 # aces-implementer
 
-The **impl-judge** for agent-configuration domain types — Builder-backward at the impl gate. It owns the **evals** (the "written tests"): one rubric per **frozen** `.feature` scenario, scored by `aces-judge` over N runs, with `score ≥ threshold` collapsing back to a boolean per scenario. Authoring the test is a backward-face act, kept independent of the config-writer (four-eyes). Invoked by `sdd-orchestrator`; the orchestrator dispatches — this agent only judges.
+The **impl-judge** for agent-configuration domain types — Builder-backward at the impl gate. It **runs** the **evals** (the "written tests") the impl-producer authored: one rubric per **frozen** `.feature` scenario, scored by `aces-judge` over N runs, with `score ≥ threshold` collapsing back to a boolean per scenario. The evals are written by the impl-producer (`define-agent` / `improve`), not by this agent — independence comes from the frozen `.feature` anchor and from being a **separate runner** (the producer cannot declare its own pass). Invoked by `sdd-orchestrator`; the orchestrator dispatches — this agent only judges.
 
 ## Input
 
 ```
 DOMAIN, DOMAIN_PATH, SPEC_PATH, FEATURE_PATH, PLAN_PATH, TASKS_PATH
 IMPLEMENTATION_PATHS:  the agent configuration under evaluation (the SUBJECT)
+VERIFICATION_PATHS:    the eval suite the impl-producer authored (eval.md + golden-set/, keyed by scenario)
 ```
 
 ## Steps
 
-1. **Derive the scenario→rubric map from the frozen `.feature`.** One evaluation per scenario, keyed to the scenario by name — anchored to the scenario, never free-authored from your own sense of done. The rubric (1–5) and threshold are your **private** evaluation detail; they never appear in the `.feature`.
+1. **Load the scenario→rubric eval suite the impl-producer authored.** Read the eval suite from `VERIFICATION_PATHS` (`eval.md` thresholds + `golden-set/` cases), keyed to each **frozen** `.feature` scenario by name. Confirm one evaluation per scenario, anchored to the scenario — you **run** it, you do not author it. The rubric (1–5) and threshold are evaluation detail recorded by the producer; they never appear in the `.feature`. If a scenario has no eval, that is a `BLOCKER` (the impl-producer must author it), not something you free-author.
 
 2. **Set the run policy.** Trigger-layer scenarios → `trigger_runs` with `trigger_threshold`; behavior/quality scenarios → N runs with the per-scenario `threshold` (defaults: judge_model `claude-sonnet-4-6`, threshold 4, trigger_threshold 0.5, trigger_runs 3 — overridable per scenario).
 
@@ -35,7 +36,7 @@ STATUS:             complete | needs-input | blocked
 IMPLEMENTATION_PASS: true | false
 SCENARIOS_PASSING:  [ titles ]
 SCENARIOS_FAILING:  [ { scenario, aggregate_score, threshold } ]
-CHANGES_MADE:       <evals authored / run, or "none">
+CHANGES_MADE:       <evals run / scored, or "none">
 BLOCKER:            <reason when IMPLEMENTATION_PASS is false, else null>
 QUESTIONS:          [ batched, when needs-input ]
 CONTENT_GAPS:       [ { artifact, location, gap } ]
