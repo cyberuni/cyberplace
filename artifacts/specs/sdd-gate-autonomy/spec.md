@@ -42,7 +42,7 @@ flowchart LR
 A spec was just driven from blank to "implemented" in one autonomous run with no recorded human verdict, and left in `status: draft + aligned: true` — a state the workflow-cursor table does not define. Three gaps surfaced:
 
 - **No declared autonomy boundary.** The agent assumed `auto`; the human never set a leash. Approval, where it existed, was diffuse in conversation, not a discrete act.
-- **`aligned` is overloaded.** It conflates "contract layer in sync" with "implementation in sync," so the same `aligned: true` can mean *ready for the spec gate* or *implemented*. Nothing catches the contradiction.
+- **`aligned` was misread, not undefined.** It is already resolved — sdd-orchestrator scopes it by layer (contract layer at the spec gate, impl layer at the impl gate). The agent read `draft + aligned:true` as *implemented* when, layer-scoped, it only means *contract synced, ready for the spec gate*. The gap is that **nothing enforces** the legal states, so a misread lands uncaught.
 - **No representation of "advanced by agent alone."** There was no way to mark the spec as provisionally advanced and owed a human review — so it silently looked done.
 
 The motive model already gives the principle: the human (Conductor) holds **motive and accountability**; a delegate may be handed the **act**, never the accountability. Autonomous completion is delegating the act ahead of reconciling accountability. These four pieces make that gap **explicit, legal, and visible**.
@@ -62,6 +62,8 @@ The Conductor declares an autonomy level per run; it is **transient and procedur
 | `auto` | run through the **impl gate** too | |
 
 It is a **ceiling**: even under `auto`, the agent **downgrades to a stop** when it detects high blast radius — a change to a frozen contract, a public/installed surface, a cross-spec ripple, or anything irreversible or security-sensitive. The agent may always stop earlier than the leash; it may never go further. Absent a declared level, the default is `gated` — the agent asks.
+
+**How it is declared.** The leash is set in **natural language in the kickoff prompt** to the create-spec / validate-spec skill — no new flag or syntax. "Draft this and stop for my review" ⇒ `gated`/`auto-to-spec`; "build it end to end" ⇒ `auto`. The skill holds the user channel, so it interprets the intent, fixes the level for that invocation, and — if the prompt is silent and the work would cross a gate — asks once rather than assuming. **"Per run" = per skill invocation / sitting**, the same session-local granularity as the iteration cap: a fresh invocation re-declares, and an unstated level falls back to `gated`. There is no persisted or project-wide level (no baked-in config); the ceiling-and-downgrade rule keeps even a broad leash safe.
 
 ### Accountability stays human: `approved-by`
 
@@ -85,16 +87,11 @@ Ratifying flips the value from `agent` to the human's name. This is the motive m
 
 The sdd-orchestrator **workflow-cursor table** already enumerates the legal `(status, aligned, markers, .feature)` rows. This spec **lifts it to normative**: `validate-spec` rejects any tuple that is not a legal row. An illegal state is a validation failure → red → commit discipline already forbids committing it. The contradiction becomes uncommittable rather than relying on discipline.
 
-### Resolve the `aligned` overload
+### `aligned` is already layer-scoped — this spec only enforces it
 
-The incident proved `aligned` is ambiguous. Resolution (recommended): **`aligned` is gate-relative** — it always means "the artifacts for the **current** gate are in sync."
+`aligned` is **not** redefined here. sdd-orchestrator already scopes it by layer: at the spec gate `aligned: true` means the contract layer (`spec.md ↔ .feature`) is in sync; at the impl gate it means the impl layer conforms to the frozen `.feature`. Under that definition `draft + aligned:true` legally means "contract synced, ready for the spec gate" — **not** implemented.
 
-- at `draft`, current gate = spec gate → `aligned: true` means `spec.md ↔ .feature` are in sync (**ready for the spec gate**, *not* implemented).
-- at `approved`, current gate = impl gate → `aligned: true` means the implementation conforms to the frozen `.feature`.
-
-Under this reading the prior incident's real error was **not** the `draft + aligned:true` tuple (which legally means "ready for the spec gate") but **committing an implementation against an unapproved, unfrozen `.feature`** and treating `aligned` as "done."
-
-<!-- open: pick the resolution — gate-relative `aligned` (this proposal, one field) vs. split into `contract-aligned` / `impl-aligned` (two fields, explicit, no overloading). Needs the human verdict at the gate. -->
+The incident's real error was therefore not the field's meaning but **committing an implementation against an unapproved, unfrozen `.feature` while reading `aligned` as "done."** The FSM enforcement above is the fix: it makes the legal `(status, aligned, markers, .feature)` rows the only committable states, so a misread cannot land.
 
 ### The gate report: a ratification checklist
 
@@ -125,7 +122,7 @@ Where implementing this spec modifies SDD **skills** (e.g., `validate-spec`) or 
 **`validate-spec` new checks:**
 - the `(status, aligned, markers, .feature)` tuple is a legal cursor-table row;
 - `approved-by` values are well-formed; an `agent` value surfaces the spec in the review queue;
-- `aligned` is interpreted gate-relative (pending the open decision).
+- `aligned` is enforced as layer-scoped (per sdd-orchestrator), not re-decided here.
 
 **Gate report** — structured output of the orchestrator at a gate (see uniform delegate output in sdd-orchestrator); not a CLI.
 
