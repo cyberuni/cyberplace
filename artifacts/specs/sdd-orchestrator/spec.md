@@ -171,6 +171,10 @@ Repo-wide governance retirement (`packages/cyber-skills/governances/`, the `defi
 
 `.feature` scenarios are ordered to trace the workflow top-to-bottom (step-down): each lifecycle stage in sequence, happy path first then its branches/errors, grouped with a section comment per stage. A human reads top-to-bottom and can see every stage is covered — completeness becomes auditable. This is a universal SDD format rule, so it lives in `sdd:spec-governance` (loaded by every spec-producer) and is enforced by `validate-spec`; it is not a per-domain criterion.
 
+### Spec enrichment and human-readability, in the governance skill
+
+`sdd:spec-governance` also requires the spec-producer to **actively enrich `spec.md` for human consumption** — not emit a wall of prose. Where a diagram carries the idea better than words (architecture, sequence, state, data flow, decision tree), the producer **draws it** (Mermaid or equivalent fenced diagrams). The spec must be **formatted for humans**: clear heading hierarchy, tables for structured comparisons, short paragraphs, and callouts — the `spec.md` is a document a person reviews at the gate, so its legibility is part of the bar. (The `.feature` stays plain boolean Gherkin; enrichment is for `spec.md`.)
+
 ### Discovery: the project registry is a resolved lockfile
 
 The orchestrator must **not** scan plugin directories (user-global, project-global, project-local) at runtime — that is slow, token-heavy, and repeats on every cold subagent start. Resolution happens at **setup**, the lockfile pattern (cf. `.agents/cyber-skills-lock.json`):
@@ -403,7 +407,7 @@ Sequenced so the stable interface lands first, the cheap consumer proves it, the
 - Add default delegates `sdd-scenario-writer` (generic boolean Gherkin from criteria), `sdd-planner` (plan + tasks), and `sdd-implementer` (test result) as agent definitions.
 - Repurpose `sdd-spec-designer` into the default spec-producer's (`sdd-scenario-writer`) generation logic.
 - `validate-spec` enforces criteria against any `.feature`, plugin-written or default.
-- Fold contract I/O into the orchestrator + default delegates. Create `sdd:spec-governance` (`user-invocable: false` + `Internal skill:` prefix) holding the format bar + scenario-ordering convention; SDD agents and plugin spec-producers load it (ADR-0013). Retire `plugins/sdd/governances/`.
+- Fold contract I/O into the orchestrator + default delegates. Create `sdd:spec-governance` (`user-invocable: false` + `Internal skill:` prefix) holding the format bar + scenario-ordering convention + the spec-enrichment/human-readability rule (diagrams, formatting); SDD agents and plugin spec-producers load it (ADR-0013). Retire `plugins/sdd/governances/`.
 - Update `artifacts/specs/sdd-plugin` spec + `.feature` to the orchestrator model.
 
 **2. Quill (cheap consumer, proves a thin spec-producer).**

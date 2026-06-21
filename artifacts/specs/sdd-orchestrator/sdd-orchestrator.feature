@@ -149,6 +149,13 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     Then they are ordered top-to-bottom by workflow stage
     And each stage is grouped under a section comment
 
+  Scenario: The spec-producer enriches spec.md for human consumption
+    Given the spec-governance enrichment rule is loaded
+    When a spec-producer writes spec.md and an idea is clearer as a picture
+    Then it includes a diagram rather than a wall of prose
+    And spec.md is formatted with headings, tables, and short paragraphs
+    And the .feature stays plain boolean Gherkin
+
   Scenario: Orchestrator suspends at a user-input checkpoint instead of asking
     Given sdd-orchestrator is running an autonomous segment for the "auth" domain
     When it reaches a point that requires user input to proceed
