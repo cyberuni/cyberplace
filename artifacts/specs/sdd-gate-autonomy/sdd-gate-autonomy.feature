@@ -21,6 +21,13 @@ Feature: Gate autonomy and accountability
     Then the derived leash is "auto"
     And both gates are self-asserted
 
+  Scenario: a gated spec gate does not bind the impl gate
+    Given the spec gate was derived gated and ratified by the human in an earlier run
+    And the implementation is reversible, local, and its tests pass
+    When the agent reaches the impl gate in a later run
+    Then the impl gate independently derives "auto"
+    And the agent self-asserts the impl gate as provisional
+
   Scenario: the human ceiling caps the derived leash
     Given the derived leash is "auto"
     And the Conductor capped the run at the spec gate
