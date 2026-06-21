@@ -2,13 +2,29 @@
 	"sdd-plugins": [
 		{
 			"name": "aces",
-			"scenario-advisor": ["agent-config", "skill"],
-			"implementer": ["agent-config", "skill"]
+			"version": "0.7.0",
+			"domains": ["skill", "subagent", "command", "agents-section"],
+			"roles": {
+				"spec-producer": "aces-scenario-writer",
+				"plan-producer": null,
+				"spec-judge": "aces-spec-validator",
+				"impl-producer": null,
+				"impl-judge": "aces-implementer"
+			},
+			"governances": { "framer": null, "builder": null, "architect": null }
 		},
 		{
 			"name": "quill",
-			"scenario-advisor": ["documentation", "guide", "tutorial", "article", "reference"],
-			"implementer": ["documentation", "guide", "tutorial", "article", "reference"]
+			"version": "0.7.0",
+			"domains": ["documentation", "guide", "tutorial", "article", "reference"],
+			"roles": {
+				"spec-producer": "quill-writer",
+				"plan-producer": null,
+				"spec-judge": null,
+				"impl-producer": "quill-doc-writer",
+				"impl-judge": "quill-implementer"
+			},
+			"governances": { "framer": null, "builder": null, "architect": null }
 		}
 	]
 }
