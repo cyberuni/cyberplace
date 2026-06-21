@@ -48,6 +48,82 @@ The existing design split each act into a dispatcher agent plus a contract gover
 
 ## Design decisions
 
+### The five roles at a glance — verb, artifact, who fills it
+
+Every act on the chain is one of **five roles**. The dividing line is simple: **producers write artifacts; judges run a bar and advise** (a judge never writes `spec.md` or the `.feature`). The orchestrator resolves each role to a plugin agent or the SDD default and dispatches it; the **human (Conductor)** holds motive and makes every gate verdict.
+
+| Role | Verb — what it does | Produces / runs | Writes to | Default filler | Plugin examples |
+|---|---|---|---|---|---|
+| **spec-producer** | **writes the contract** | produces the intent prose + boolean Gherkin | `spec.md` body, `.feature` | `sdd-scenario-writer` | `aces-scenario-writer`, `quill-writer` |
+| **spec-judge** | **judges the contract** | runs the domain bar against the `.feature` (testability, coverage, criteria) | nothing — advises | static format gate (`validate-spec`) | `aces-spec-validator`, Quill static criteria |
+| **plan-producer** | **plans the solution** | produces the solution + its DAG breakdown | `plan.md`, `tasks.md` | `sdd-planner` | `aces-planner`, Quill default |
+| **impl-producer** | **builds the artifact + its verification** | produces the implementation **and** its tests/evals (one per frozen scenario) | code / docs / config **+** tests / evals / rubric | the generic Builder (no agent) | `define-agent` / `improve`, `quill-doc-writer` |
+| **impl-judge** | **runs the verification** | runs the producer's tests/evals + an orthogonal structural/scope read; reports pass/fail | nothing — advises | `sdd-implementer` | `aces-implementer`, `quill-implementer` |
+
+Naming is **producer / judge** with one constraint: **`producer ≠ judge`**. Concrete agents keep readable names — only the five role keys are fixed vocabulary. A role is either **filled** (a plugin agent acts) or it **degenerates** to the SDD default; the `spec-producer` is always filled. The full filler matrix per plugin is in *The backward face is productive* below; the normative I/O contract is in *Vocabulary & wiring*.
+
+**The production chain — producers write left-to-right, two gates judge the two ends:**
+
+```mermaid
+flowchart LR
+  H([Conductor / human]):::human
+
+  subgraph FWD["Forward producers — WRITE artifacts"]
+    direction LR
+    SP["spec-producer<br/>spec.md + .feature"]:::prod
+    PP["plan-producer<br/>plan.md + tasks.md"]:::prod
+    IP["impl-producer<br/>implementation + verification"]:::prod
+  end
+
+  H --> SP
+  SP --> PP --> IP
+
+  SG{{"SPEC GATE<br/>Draft → Approved"}}:::gate
+  IG{{"IMPL GATE<br/>Approved → Implemented"}}:::gate
+
+  SP -- "the .feature" --> SG
+  IP -- "the implementation" --> IG
+
+  SJ["spec-judge<br/>RUNS domain bar on .feature"]:::judge
+  IJ["impl-judge<br/>RUNS producer's tests/evals"]:::judge
+
+  SG -. advises .-> SJ
+  IG -. advises .-> IJ
+  SJ -. verdict .-> H
+  IJ -. verdict .-> H
+
+  classDef prod fill:#dbeafe,stroke:#1e40af,color:#1e3a8a;
+  classDef judge fill:#fef3c7,stroke:#b45309,color:#7c2d12;
+  classDef gate fill:#ede9fe,stroke:#6d28d9,color:#4c1d95;
+  classDef human fill:#dcfce7,stroke:#15803d,color:#14532d;
+```
+
+**The impl-producer co-produces; the impl-judge runs (never authors):** the corrected backbone of the model.
+
+```mermaid
+flowchart LR
+  FF[".feature (frozen)<br/>the bar — set by neither"]:::feat
+
+  FF --> IP["impl-producer<br/>(Builder: both faces)"]:::prod
+  IP -- "forward face writes" --> IMPL["implementation<br/>(code / docs / config)"]:::art
+  IP -- "backward face writes" --> VER["verification<br/>(tests / evals / rubric)<br/>one per scenario"]:::art
+
+  IMPL --> IJ["impl-judge<br/>RUNS — does not author"]:::judge
+  VER --> IJ
+  IJ --> RES["pass / fail<br/>per frozen scenario"]:::res
+
+  FF -. "anchors (independence)" .-> VER
+  FF -. "anchors (independence)" .-> IJ
+
+  classDef feat fill:#fee2e2,stroke:#b91c1c,color:#7f1d1d;
+  classDef prod fill:#dbeafe,stroke:#1e40af,color:#1e3a8a;
+  classDef judge fill:#fef3c7,stroke:#b45309,color:#7c2d12;
+  classDef art fill:#f1f5f9,stroke:#475569,color:#0f172a;
+  classDef res fill:#dcfce7,stroke:#15803d,color:#14532d;
+```
+
+Independence does **not** come from the producer/judge agent-split (same actor, same bar). It comes from the **frozen `.feature`** anchoring the verification plus a **separate runner** — the producer cannot declare its own pass. (Detail: *Grader-independence comes from the bar or an orthogonal axis*.)
+
 ### Format authority is validation, not a write monopoly
 
 SDD owning the `.feature` format means SDD owns the **validation gate** — any `.feature`, whoever wrote it, must pass `validate-spec` (valid Gherkin, boolean scenarios, lifecycle rules). It does **not** mean SDD writes the file. Once format authority is located in validation, the act of writing can safely be delegated, because SDD still polices the output.
