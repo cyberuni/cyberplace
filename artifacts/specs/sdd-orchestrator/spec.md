@@ -36,7 +36,7 @@ The existing design split each act into a dispatcher agent plus a contract gover
 
 - **The dispatcher layer is dead weight.** A plugin knows how heavy its own work is, so it must own its delegation surface — an agent definition that picks its own model and effort. Routing through a generic dispatcher agent adds an indirection that owns nothing.
 - **The write side was asymmetric to the verify side.** Verification already delegated the *act* to a plugin implementer; scenario-writing kept the act in SDD and let plugins only *advise* with data. The two sides should be the same shape.
-- **Governances had nothing left to be.** Once the interface is "an agent the orchestrator invokes," the contract is just the orchestrator's documented I/O plus the default delegates as reference implementations. Criteria-style governances become either delegate behavior or `validate-spec` checks. So the `governances/` layer dissolves — which also removes a `governance show` runtime call, a step toward eliminating the NodeJS dependency from the loop.
+- **Governances stop being a CLI call.** Once the interface is "an agent the orchestrator invokes," the contract folds into the orchestrator's documented I/O plus the default delegates as reference implementations. Reference content (the format bar, conventions) moves to a **governance skill** loaded by the harness — not `governance show` — removing a NodeJS runtime call from the loop (ADR-0013).
 
 ---
 
@@ -106,9 +106,18 @@ A scenario's outcome is **boolean**: the spec says the agent *does* X, not *does
 
 Per the motive model, the **Conductor is the actor** (the human holding motive and accountability) and the **orchestrator is the delegate pattern** it wields; collapsing them folds an actor into a delegate. `sdd-author` is that orchestrating delegate, so it is renamed `sdd-orchestrator`, not `sdd-conductor`. The human running SDD is the Conductor.
 
-### Governances dissolve into delegates and validator checks
+### Governances split: contracts fold in, references become governance skills
 
-The SDD-family contract and criteria governances are removed. The interface I/O lives in the orchestrator definition plus the default delegates as reference implementations. `sdd-principles` becomes the static `## Spec-Driven Development` section in AGENTS.md (no `governance show`). Repo-wide governance retirement (`packages/cyber-skills/governances/`, the `define-governance` skill) is a separate, larger decision and is out of scope here.
+Two kinds of governance, two fates (ADR-0013):
+
+- **Contract / interface** governances (the I/O between SDD and plugins) fold into the orchestrator + delegate definitions.
+- **Reference / criteria** governances (SDD principles, the universal `.feature` format bar, the scenario-ordering convention) become a **governance skill** — `sdd:spec-governance`, marked `user-invocable: false` with an `Internal skill:` description prefix, body = pure reference. It is loaded the harness-native way (Skill) by SDD's own agents (default spec-producer, validate-spec) **and** by plugin spec-producers (aces, quill), which assume `sdd-plugin` exists. No `governance show` (NodeJS), and **not** `AGENTS.md` — that is project-global and would tax non-SDD work; the governance skill loads only for SDD work.
+
+Repo-wide governance retirement (`packages/cyber-skills/governances/`, the `define-governance` skill) is a separate, larger decision and out of scope here.
+
+### Scenario ordering: a workflow step-down, in the governance skill
+
+`.feature` scenarios are ordered to trace the workflow top-to-bottom (step-down): each lifecycle stage in sequence, happy path first then its branches/errors, grouped with a section comment per stage. A human reads top-to-bottom and can see every stage is covered — completeness becomes auditable. This is a universal SDD format rule, so it lives in `sdd:spec-governance` (loaded by every spec-producer) and is enforced by `validate-spec`; it is not a per-domain criterion.
 
 ### Discovery: the project registry is a resolved lockfile
 
@@ -275,7 +284,7 @@ Sequenced so the stable interface lands first, the cheap consumer proves it, the
 - Add default delegates `sdd-scenario-writer` (generic boolean Gherkin from criteria) and `sdd-implementer` (passing-tests check) as agent definitions.
 - Repurpose `sdd-spec-designer` into the default spec-producer's (`sdd-scenario-writer`) generation logic.
 - `validate-spec` enforces criteria against any `.feature`, plugin-written or default.
-- Delete `governances/`; fold I/O docs into the orchestrator + default delegates. `sdd-principles` → static AGENTS.md section.
+- Fold contract I/O into the orchestrator + default delegates. Create `sdd:spec-governance` (`user-invocable: false` + `Internal skill:` prefix) holding the format bar + scenario-ordering convention; SDD agents and plugin spec-producers load it (ADR-0013). Retire `plugins/sdd/governances/`.
 - Update `artifacts/specs/sdd-plugin` spec + `.feature` to the orchestrator model.
 
 **2. Quill (cheap consumer, proves a thin spec-producer).**
@@ -292,7 +301,7 @@ Sequenced so the stable interface lands first, the cheap consumer proves it, the
 - Update ACES specs + `.feature` files.
 
 **4. NodeJS sweep.**
-- `init-sdd` drops `governance show`; principles go static in AGENTS.md.
+- `init-sdd` drops `governance show`; SDD principles move to the `sdd:spec-governance` skill (harness-loaded), not AGENTS.md.
 - Keep NodeJS only for CI-time numeric aggregation (pass-rate, threshold math), which never re-enters the runtime loop.
 
 ---
@@ -302,7 +311,8 @@ Sequenced so the stable interface lands first, the cheap consumer proves it, the
 - `artifacts/specs/sdd-plugin/spec.md` — the SDD practice this orchestrates
 - `artifacts/specs/motive-model/spec.md` — Conductor (actor) vs orchestrator (delegate pattern); the delegation-surface vocabulary
 - `artifacts/specs/aces-skill-spec-schema/spec.md` — agent-scenario criteria, to be reframed into `aces-scenario-writer`
-- `plugins/sdd/governances/` — to be dissolved
+- `artifacts/adr/0013-governance-skills.md` — governance skills (`user-invocable: false`) replace `governance show`
+- `plugins/sdd/governances/` — contract I/O folds into agents; reference content moves to `sdd:spec-governance`
 - `plugins/quill/` , `plugins/aces/` — the two consumer plugins to migrate
 
 ---
