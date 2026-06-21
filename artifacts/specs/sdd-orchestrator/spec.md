@@ -74,13 +74,22 @@ Naming is **producer / judge** (the motive model's forward verb is *produce*; it
 
 **One planner, for now.** `plan.md` and `tasks.md` are one `plan-producer` agent today. *Hypothesis (to revisit): split into `plan-producer` (research) and `task-producer` (scheduling) if the two skills diverge enough to want separate model/effort.*
 
-**What stays hidden below the orchestration line: product vs test.** Whether the impl-producer uses one agent or separates the product-code writer from the test-code writer (so the builder can't edit tests to pass) is **plugin implementation detail** — needed for, say, security logic, pointless for Quill. The orchestrator never learns it. The four-eyes split it *must* guarantee — the grader is independent of the builder — is already secured by impl-producer ≠ impl-judge.
+**What stays hidden below the orchestration line: product vs test.** Whether the impl-producer uses one agent or separates the product-code writer from the test-code writer is **plugin implementation detail** — needed for, say, security logic, pointless for Quill. The orchestrator never learns it. But that intra-producer split is **not** the four-eyes guarantee — those tests are the Builder grading its own lens (see below).
+
+### Grader-independence comes from the bar or an orthogonal axis — not the agent-split
+
+`producer ≠ judge` as an *agent* separation is only anti-tampering hygiene — it stops the crude cheat (editing a test to go green). It does **not** give independent perspective, because for the **Builder** the impl-producer and impl-judge are two faces of **one actor** loading the **same** testability bar. If the builder misreads the spec, its implementation *and* its tests embed the same misread; same-lens tests pass against the wrong understanding. Real independence comes from two other places:
+
+- **An independent bar (Builder).** The impl-judge's functional check is independent only because it is **anchored to the frozen `.feature`** — a bar the builder did not set. So "owns the scenario→evaluation mapping" means **derived from the scenarios, one per scenario**, never free-authored from the builder's own sense of done.
+- **An orthogonal axis (Framer, Architect).** Their backward faces judge a property the builder was not optimizing — scope (still worth shipping?), structure (cyclomatic complexity, dup/conflict) — so they catch the builder's blind spot even from the same hand.
+
+Inside the one impl-judge the three parts of the test result have **different** independence sources: functional → anchored to `.feature`; structural and scope → orthogonal. Only the functional part shares the builder's lens, and that is exactly the part the frozen `.feature` makes independent.
 
 ### Producers run in two modes: `explore` and `implement`
 
 The forward producers (`plan-producer`, `impl-producer`) take a **mode**, so exploration can *attempt the build* to discover what the spec missed:
 
-- **`explore`** — against the **draft** `.feature`. Output is throwaway scaffolding (plan/tasks/spike). The act's goal is discovery: it returns gaps as content-gaps + `OBSERVATIONS`, which the orchestrator routes back into the spec row (markers in `spec.md`, re-invoke spec-producer). No impl-judge runs — there is no frozen bar yet.
+- **`explore`** — against the **draft** `.feature`. Output is **scaffolding — discard or promote** (plan/tasks/spike): generate-to-discard, but a good spike can be cleaned into the real implementation at the freeze. The act's goal is discovery: it returns gaps as content-gaps + `OBSERVATIONS`, which the orchestrator routes back into the spec row (markers in `spec.md`, re-invoke spec-producer). The **impl-judge (ship-quality gate) does not run** — forcing final quality on a spike would kill the speed exploration exists for. But discoveries are **not** absorbed unjudged: a discovery becomes a *proposed* `.feature` change and must survive the **spec-judge** (is it a well-formed, testable contract change?) and the **human at the spec gate** (is the missing behavior actually wanted?). The line: explore is held to the **spec-judge bar** (legit contract change), not the impl-judge bar (ship quality). A promoted spike meets the impl-judge later, at the impl gate.
 - **`implement`** — against the **frozen** `.feature`. Output is kept; the impl-judge verifies it.
 
 This is why the exploratory loop is **more than the spec row**: it is the spec row *plus* throwaway `explore`-mode runs whose discoveries feed back. The two loops differ by draft-vs-frozen, throwaway-vs-kept, and feedback-up-vs-down — not by which artifact.
@@ -301,8 +310,9 @@ rule: loads the testability governance skill to self-align; explore→spike agai
 ```
 in:  DOMAIN, DOMAIN_PATH, SPEC_PATH, FEATURE_PATH, PLAN_PATH, TASKS_PATH, IMPLEMENTATION_PATHS
 out: IMPLEMENTATION_PASS, SCENARIOS_PASSING, SCENARIOS_FAILING, CHANGES_MADE, BLOCKER + uniform
-rule: produces the verification (tests/evals/structural checks) and runs it; owns the
-      scenario→evaluation mapping; reports pass/fail per scenario;
+rule: produces the verification (tests/evals/structural checks) and runs it; the functional
+      checks are DERIVED FROM the frozen .feature scenarios (one per scenario), not free-authored;
+      owns the scenario→evaluation mapping; reports pass/fail per scenario;
       must not modify spec.md or the .feature
 ```
 
