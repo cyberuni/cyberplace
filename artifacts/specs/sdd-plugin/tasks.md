@@ -1,75 +1,63 @@
 # Tasks: Spec-Driven Development Plugin
 
+Each task is an executable unit with an ID, dependency edges, and scenario traceability. Order is derived from deps, not authored priority.
+
 ## Done
 
-- [x] Research existing SDD tools and pipeline patterns
-- [x] Research SDD workflow and artifact co-evolution
-- [x] Research EARS vs. Gherkin notation choice
-- [x] Research SDD file templates and section content
-- [x] Write legacy `sdd-principles.md` governance
-- [x] Write legacy `spec-template.md` governance
-- [x] Create initial `create-spec` skill
-- [x] Create initial `validate-spec` skill
-- [x] Create initial SDD authoring and validation agents
-- [x] Create `sdd` context skill
-- [x] Create Quill plugin prototype with SDD registry entries
-- [x] Add `.agents/universal-plugin.json` `sdd-plugins` registry support in plugin init paths
+- [x] `SDDP-001` Establish SDD plugin baseline artifacts and initial workflow skills — deps: none — serves: historical bootstrap
+- [x] `SDDP-002` Add `.agents/universal-plugin.json` `sdd-plugins[]` registry support in plugin init paths — deps: SDDP-001 — serves: Domain plugin init writes the resolved role map
+- [x] `SDDP-003` Replace `init-sdd` with `sdd` context skill entrypoint — deps: SDDP-001 — serves: Load SDD context for feature work; sdd does not modify project files
 
-## Wave 1: Orchestrator Model Migration
+## Stream A — Orchestrator ownership and workflow boundaries
 
-- [ ] Rename remaining `sdd-author` references and implementation surfaces to `sdd-orchestrator`
-- [ ] Reduce `sdd-orchestrator` to one autonomous segment with `complete`, `needs-input`, and `blocked` returns
-- [ ] Move all user questions and gate confirmations into `create-spec` and `validate-spec`
-- [ ] Add uniform delegate output aggregation: `QUESTIONS`, `CONTENT_GAPS`, and `OBSERVATIONS`
-- [ ] Enforce the write boundary for `spec.md`, `.feature`, `plan.md`, `tasks.md`, and implementation artifacts
+- [ ] `SDDP-101` Rename remaining runtime `sdd-author` surfaces to `sdd-orchestrator` — deps: SDDP-001 — serves: create-spec resumes the orchestrator after batched answers
+- [ ] `SDDP-102` Constrain orchestrator runs to one autonomous segment with `STATUS: complete | needs-input | blocked` — deps: SDDP-101 — serves: create-spec resumes the orchestrator after batched answers
+- [ ] `SDDP-103` Move user questions and gate confirmations into `create-spec` and `validate-spec` only — deps: SDDP-102 — serves: Ambiguous domain coverage is resolved by the skill; validate-spec freezes scenarios after human approval
+- [ ] `SDDP-104` Add delegate synthesis with `QUESTIONS`, `CONTENT_GAPS`, and `OBSERVATIONS` output blocks — deps: SDDP-102 — serves: Explore-mode implementation discoveries become content gaps; Observations are surfaced without blocking the current spec
+- [ ] `SDDP-105` Enforce artifact write boundaries (`spec.md`, `.feature`, `plan.md`, `tasks.md`, implementation artifacts) — deps: SDDP-103, SDDP-104 — serves: Scaffold the co-delivered artifact chain for a new feature
 
-## Wave 2: Delegate Roles
+## Stream B — Delegate role map and defaults
 
-- [ ] Add role resolution for `spec-producer`, `plan-producer`, `spec-judge`, `impl-producer`, and `impl-judge`
-- [ ] Add default `sdd-scenario-writer` agent for the spec-producer role
-- [ ] Add default `sdd-planner` agent for the plan-producer role
-- [ ] Reframe `sdd-spec-validator` as `sdd-spec-judge`
-- [ ] Keep `sdd-implementer` as the default impl-judge
-- [ ] Use the generic Builder as the default impl-producer
+- [ ] `SDDP-201` Resolve all five roles (`spec-producer`, `plan-producer`, `spec-judge`, `impl-producer`, `impl-judge`) from the registry and defaults — deps: SDDP-002, SDDP-102 — serves: Domain plugin init writes the resolved role map; Runtime resolution does not read plan.md plugin assignments
+- [ ] `SDDP-202` Set `sdd-scenario-writer` as default spec-producer — deps: SDDP-201 — serves: A plugin-written feature must pass the universal format bar
+- [ ] `SDDP-203` Set `sdd-planner` as default plan-producer — deps: SDDP-201 — serves: Scaffold the co-delivered artifact chain for a new feature; tasks.md is a DAG with scenario traceability
+- [ ] `SDDP-204` Complete rename from `sdd-spec-validator` to `sdd-spec-judge` across runtime surfaces — deps: SDDP-201 — serves: validate-spec runs the spec gate against the contract layer
+- [ ] `SDDP-205` Keep `sdd-implementer` as default impl-judge and generic Builder as default impl-producer — deps: SDDP-201 — serves: Implementation runs against the frozen feature; Impl gate passes only when every frozen scenario passes
 
-## Wave 3: Governance Skills
+## Stream C — Governance skills and legacy migration
 
-- [x] Replace `init-sdd` with `sdd` context skill
-- [ ] Create `sdd:spec-governance` as a non-user-invocable governance skill
-- [ ] Move universal `.feature` format rules into `sdd:spec-governance`
-- [ ] Move scenario-ordering rules into `sdd:spec-governance`
-- [ ] Move `spec.md` human-readability and enrichment rules into `sdd:spec-governance`
-- [ ] Stop runtime SDD paths from calling `governance show`
-- [ ] Retire or migrate legacy files under `artifacts/specs/sdd-plugin/governances/`
+- [ ] `SDDP-301` Create non-user-invocable `sdd:spec-governance` skill — deps: SDDP-003 — serves: sdd loads governance from skill context
+- [ ] `SDDP-302` Move universal boolean Gherkin format and ordering rules into `sdd:spec-governance` — deps: SDDP-301 — serves: A plugin-written feature must pass the universal format bar
+- [ ] `SDDP-303` Move spec readability/enrichment rules into `sdd:spec-governance` — deps: SDDP-301 — serves: validate-spec runs the spec gate against the contract layer
+- [ ] `SDDP-304` Remove runtime dependency on `governance show` in SDD flows — deps: SDDP-301 — serves: sdd loads governance from skill context
+- [ ] `SDDP-305` Retire or migrate legacy files in `artifacts/specs/sdd-plugin/governances/` — deps: SDDP-302, SDDP-303, SDDP-304 — serves: sdd loads governance from skill context
 
-## Wave 4: Registry and Resolution
+## Stream D — Registry resolution and ambiguity handling
 
-- [ ] Update each `init-<plugin>` path to write the five-role map and actor governances
-- [ ] Rewrite old-shape registry entries on plugin init
-- [ ] Resolve duplicate domain claims through `needs-input` and `domain-plugin` frontmatter
-- [ ] Remove `plan.md ## Plugin assignments` as a resolution source
-- [ ] Ensure runtime resolution reads only `.agents/universal-plugin.json`
+- [ ] `SDDP-401` Update each `init-<plugin>` path to persist five-role map plus actor governances — deps: SDDP-201 — serves: Domain plugin init writes the resolved role map
+- [ ] `SDDP-402` Rewrite old-shape entries on plugin init rerun — deps: SDDP-401 — serves: Domain plugin init rewrites old registry shape
+- [ ] `SDDP-403` Resolve duplicate domain claims with `needs-input` and `domain-plugin` frontmatter choice — deps: SDDP-401, SDDP-103 — serves: Ambiguous domain coverage is resolved by the skill
+- [ ] `SDDP-404` Remove `plan.md` plugin assignment tables as a resolver input — deps: SDDP-401 — serves: Runtime resolution does not read plan.md plugin assignments
+- [ ] `SDDP-405` Enforce runtime delegate resolution from `.agents/universal-plugin.json` only — deps: SDDP-401, SDDP-404 — serves: Runtime resolution does not read plan.md plugin assignments
 
-## Wave 5: Gates and Validation
+## Stream E — Gate behavior, lifecycle, and provenance
 
-- [ ] Validate legal `(status, aligned, markers, .feature)` tuples
-- [ ] Make `validate-spec` target the spec gate for `draft` specs
-- [ ] Make `validate-spec` target the impl gate for `approved` specs
-- [ ] Record spec approval provenance when moving to `approved`
-- [ ] Record impl approval provenance when moving to `implemented`
-- [ ] Keep NodeJS deterministic checks optional with an agent-level fallback
+- [ ] `SDDP-501` Validate legal `(status, aligned, markers, .feature)` tuples in gate flow — deps: SDDP-102 — serves: validate-spec accepts draft aligned true as ready for the spec gate
+- [ ] `SDDP-502` Route `validate-spec` to spec gate by default for `draft` status — deps: SDDP-501, SDDP-204 — serves: validate-spec runs the spec gate against the contract layer
+- [ ] `SDDP-503` Route `validate-spec` to impl gate by default for `approved` status — deps: SDDP-501, SDDP-205 — serves: Implementation runs against the frozen feature
+- [ ] `SDDP-504` Record spec approval provenance on Draft -> Approved transitions — deps: SDDP-502 — serves: validate-spec freezes scenarios after human approval
+- [ ] `SDDP-505` Record impl approval provenance on Approved -> Implemented transitions — deps: SDDP-503 — serves: Impl gate passes only when every frozen scenario passes
+- [ ] `SDDP-506` Keep deterministic checks optional with agent-level fallback when Node tooling is unavailable — deps: SDDP-502 — serves: validate-spec can run without NodeJS
 
-## Wave 6: Consumer Plugins
+## Stream F — Consumer plugin migration
 
-- [ ] Update Quill from `quill-scenario-advisor` to `quill-writer`
-- [ ] Add `quill-doc-writer` as impl-producer
-- [ ] Keep `quill-implementer` as impl-judge
-- [ ] Update ACES from `aces-spec-designer` to `aces-scenario-writer`
-- [ ] Retain `aces-spec-validator` as spec-judge
-- [ ] Move ACES eval authoring into the impl-producer and eval execution into `aces-implementer`
+- [ ] `SDDP-601` Migrate Quill mapping from `quill-scenario-advisor` to `quill-writer` and `quill-doc-writer` role targets — deps: SDDP-401 — serves: Domain plugin init writes the resolved role map
+- [ ] `SDDP-602` Preserve Quill impl-judge mapping to `quill-implementer` — deps: SDDP-601 — serves: Impl gate passes only when every frozen scenario passes
+- [ ] `SDDP-603` Migrate ACES mapping from `aces-spec-designer` to `aces-scenario-writer` and keep `aces-spec-validator` as spec-judge — deps: SDDP-401 — serves: A plugin-written feature must pass the universal format bar
+- [ ] `SDDP-604` Shift ACES eval authoring to impl-producer and eval execution to `aces-implementer` — deps: SDDP-603 — serves: Implementation runs against the frozen feature
 
 ## Deferred
 
-- [ ] Decide whether `plan-producer` should split into plan and task producers
-- [ ] Design project-specific quality thresholds for the default impl path
-- [ ] Design external routing for accepted architect and curator observations
+- [ ] `SDDP-901` Decide whether `plan-producer` should split into separate plan and task producers — deps: SDDP-203 — serves: tasks.md is a DAG with scenario traceability
+- [ ] `SDDP-902` Define project-specific quality thresholds for the default impl path — deps: SDDP-205 — serves: Impl gate passes only when every frozen scenario passes
+- [ ] `SDDP-903` Design external routing for accepted architect/curator observations — deps: SDDP-104 — serves: Observations are surfaced without blocking the current spec
