@@ -28,3 +28,10 @@ Each task is an executable unit; dependencies are noted. Order is emergent from 
 - [x] Replace upfront file reads with conditional frontmatter-first reads in SKILL.md — deps: spec.md
 - [x] Update SKILL.md to spawn a subagent for all downstream SDD work instead of loading sub-skills inline — deps: spec.md, delegation scenarios
 - [x] Run mechanical skill audit and `pnpm verify` — deps: all skill updates
+
+## Phase 5 - Four-option intake menu revision
+
+- [x] Add design decisions for the two-level four-option menu, the hard ≤4-option rule, the fast path, and option-3 delegation scope to `spec.md` — serves: intake menu, AskUserQuestion cap
+- [x] Add scenarios for the four-option menu, ≤4 cap, list-overflow fallback, fast path, and each option branch to `sdd-skill.feature` — deps: spec.md
+- [x] Replace the flat seven-route intake in `plugins/sdd/skills/sdd/SKILL.md` with the four-option two-level menu, hard cap, fast path, and Manage Specs & Graph routing — deps: spec.md, scenarios — serves: all intake scenarios
+- [x] Run mechanical skill audit and `pnpm verify` — deps: skill update
