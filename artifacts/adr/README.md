@@ -18,6 +18,8 @@ This directory contains Architecture Decision Records (ADRs) for cyber-skills �
 | [0010](0010-spec-structure-why-first-and-command-surface.md) | Spec Structure — Why-First Ordering and Command Surface in Spec | Accepted | — |
 | [0011](0011-spec-plan-file-naming.md) | Use `spec/plan` as the Core File Name Pair | Accepted | 2026-06-04 |
 | [0012](0012-spec-frontmatter-schema.md) | Spec Frontmatter Schema for Status, Priority, and Dependencies | Accepted | 2026-06-15 |
+| [0013](0013-governance-skills.md) | Governance Skills (reference content as non-user-invocable skills) | Accepted | — |
+| [0014](0014-sdd-governance-split.md) | Split SDD lifecycle/frontmatter knowledge into named governance skills | Accepted | 2026-06-21 |
 
 ## Creating a new ADR
 
