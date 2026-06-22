@@ -1,7 +1,7 @@
 ---
 status: draft
 blocked-by: []
-aligned: true
+aligned: false
 ---
 
 # Spec-Driven Development Plugin

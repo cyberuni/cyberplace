@@ -6,7 +6,7 @@ Feature: SDD gateway skill
     Given the user wants to work on a creation artifact under SDD
     When the agent invokes the sdd skill
     Then SDD is active for the current workflow
-    And the SDD lifecycle rules are loaded into context
+    And sdd:lifecycle-governance is loaded as the lifecycle-rules source
     And sdd:spec-governance is identified as required context for spec authoring and judging
     And the skill surfaces create-spec, validate-spec, render-spec-graph, and sdd-orchestrator as the active workflow surface
 
@@ -21,8 +21,7 @@ Feature: SDD gateway skill
   Scenario: Route explicit SDD request with enough detail
     Given the user says "use SDD to create a spec for auth"
     When the agent invokes the sdd skill
-    Then the SDD lifecycle rules are loaded into context
-    And sdd:spec-governance is identified as required context for spec authoring and judging
+    Then sdd:lifecycle-governance is loaded as the lifecycle-rules source
     And the next action is create-spec for auth
 
   Scenario: sdd does not mutate project setup

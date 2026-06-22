@@ -9,16 +9,26 @@ Feature: Spec-Driven Development Plugin
     Given the user wants to work on a feature under SDD
     When the user invokes the sdd skill
     Then the SDD workflow contract is loaded into context
-    And the frozen .feature rule is loaded
+    And sdd:lifecycle-governance is loaded as the lifecycle-rules source
+    And sdd:spec-governance is loaded as the format bar source
     And the spec-owns-behavior rule is loaded
-    And the artifact alignment rule is loaded
 
   Scenario: sdd loads governance from skill context
     Given the SDD plugin is installed in a repo
     When the user invokes the sdd skill
-    Then sdd:spec-governance is loaded as a context dependency
-    And sdd explains that spec-producers and spec-judges load the governance bar
+    Then sdd:lifecycle-governance is loaded for lifecycle rules
+    And sdd:spec-governance is loaded as a context dependency for spec authoring and judging
     And runtime SDD work does not require a governance show command
+
+  Scenario: spec-producers load the ownership governance split
+    Given the SDD workflow is active
+    When sdd-orchestrator dispatches a spec-producer
+    Then the spec-producer loads sdd:ownership-governance
+
+  Scenario: spec-judges load the gate-validation governance split
+    Given the SDD workflow is active
+    When sdd-orchestrator dispatches a spec-judge
+    Then the spec-judge loads sdd:gate-validation-governance
 
   Scenario: sdd does not modify project files
     Given a repo with AGENTS.md present
