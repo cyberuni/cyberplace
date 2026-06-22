@@ -34,6 +34,11 @@ Feature: Locate specs by shape, not location
     When the agent resolves the domain "spec-digest"
     Then it returns the spec folder "sdd/spec-digest"
 
+  Scenario: a full-slug domain name resolves to its spec folder
+    Given a discovered spec at folder slug "sdd/spec-digest"
+    When the agent resolves the domain "sdd/spec-digest"
+    Then it returns the spec folder "sdd/spec-digest"
+
   Scenario: resolution returns the spec folder, not the implementation folder
     Given a domain whose spec folder differs from its implementation folder
     When the agent resolves the domain
