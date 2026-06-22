@@ -46,11 +46,11 @@ Plan and tasks have no separate gate. They are produced with the contract during
 
 ### The plugin exposes SDD governance as skills
 
-Reference rules are delivered as `sdd:spec-governance`, a non-user-invocable governance skill with an `Internal skill:` description. It contains the universal `.feature` format bar, scenario-ordering convention, and human-readable `spec.md` enrichment rules. SDD agents and plugin spec-producers load this skill through the harness. Runtime SDD work does not call `governance show`.
+Reference rules are delivered as non-user-invocable governance skills with `Internal skill:` descriptions: `sdd:lifecycle-governance` (lifecycle/routing rules), `sdd:spec-governance` (universal boolean `.feature` and `spec.md` format bar), `sdd:ownership-governance` (artifact ownership boundaries), and `sdd:gate-validation-governance` (gate/judge validation rules). SDD skills and agents load these through the harness. Runtime SDD work does not call `governance show`.
 
 ### `sdd` is the context-loading entry point
 
-`sdd` replaces `init-sdd` as the plugin's default entry point. It does not edit project guidance, register hooks, or require the `cyber-skills` CLI. It loads `sdd:spec-governance` plus the SDD workflow contract into context, then routes feature work to `create-spec` for draft contract creation, `validate-spec` for gates, and `render-spec-graph` for graph refreshes.
+`sdd` replaces `init-sdd` as the plugin's default entry point. It does not edit project guidance, register hooks, or require the `cyber-skills` CLI. It loads `sdd:lifecycle-governance`, `sdd:spec-governance`, and the SDD workflow contract into context, then routes feature work to `create-spec` for draft contract creation, `validate-spec` for gates, and `render-spec-graph` for graph refreshes.
 
 ### SDD workflow is active for feature work
 

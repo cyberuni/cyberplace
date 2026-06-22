@@ -9,8 +9,10 @@ graph TD
   aces-plugin
   define-skill
   motive-model
+  sdd/dedupe-specs
   sdd/sdd-skill
   sdd/spec-digest
+  sdd/split-spec
   aces-skill-spec-schema --> aces-spec-designer-composition
   governance-composition --> aces-spec-designer-composition
   sdd-orchestrator --> sdd-gate-autonomy
@@ -38,6 +40,8 @@ graph TD
 | `sdd-provenance` | `sdd-orchestrator`, `sdd-plugin` | draft |
 | `sdd-spec-discovery` | `sdd-plugin` | implemented |
 | `sdd-spec-graph` | `sdd-plugin` | draft |
-| `sdd/sdd-skill` | — | draft |
+| `sdd/dedupe-specs` | — | draft |
+| `sdd/sdd-skill` | — | implemented |
 | `sdd/spec-digest` | — | draft |
+| `sdd/split-spec` | — | draft |
 | `universal-plugin` | `sdd-plugin` | draft |
