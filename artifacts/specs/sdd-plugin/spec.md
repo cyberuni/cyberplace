@@ -1,10 +1,12 @@
 ---
-status: approved
+status: implemented
 type: project
 blocked-by: []
-aligned: false
+aligned: true
 approved-by:
   spec:
+    by: unional
+  impl:
     by: unional
 subtasks:
   - sdd-orchestrator
