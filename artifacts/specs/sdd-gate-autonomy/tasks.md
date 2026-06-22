@@ -8,12 +8,14 @@ The runtime machinery is **blocked-by sdd-orchestrator** (draft). The enforcemen
 - [x] wired into `validate-spec` as the deterministic first step + agent fallback
 - [x] fixed `sdd-spec-graph` illegal `draft+aligned:true` (caught by the check)
 
-## Deferred — orchestrator-resident (blocked-by sdd-orchestrator)
+## Done — orchestrator-resident (implemented inline in the orchestrator agent + SDD skills)
 
-- [ ] leash derivation at runtime (four-dimension assessment per gate, re-derived per run)
-- [ ] gate report emission (verdict + leash derivation + markers-as-questions + decision menu)
-- [ ] `approved-by` writing — orchestrator self-assert (`by: agent` + `why`), skill ratify (`by: <human>`)
-- [ ] freeze/unfreeze + gate actions (approve/change/reject; impl-gate Framer-revert)
+- [x] leash derivation at runtime — `sdd-orchestrator` Step 4b (four-dimension assessment per gate, ceiling, re-derived per run)
+- [x] gate report emission — `sdd-orchestrator` Step 4b + Return contract (verdict per face + leash derivation + markers-as-questions + decision menu)
+- [x] `approved-by` writing — `ownership-governance` matrix + orchestrator self-assert (`by: agent` + `leash` + `why`), `validate-spec` ratify (`by: <human>`)
+- [x] gate actions — `validate-spec` §6 (approve/change/reject per gate; impl-gate Framer-revert unfreeze)
+
+Awaiting the human **impl gate** (derived `gated` — blast radius reaches core SDD governance): the work above is provisional until ratified.
 
 ## Shared with `sdd-provenance` (one checker, two records)
 
