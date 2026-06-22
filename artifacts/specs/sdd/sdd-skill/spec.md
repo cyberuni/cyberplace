@@ -62,8 +62,11 @@ Examples that trigger the skill:
 | "Use SDD to formalize this hiring workflow" | Invoke SDD for non-software creation work |
 | "Approve this draft spec" | Invoke SDD for spec approval |
 | "Implement the approved auth spec" | Invoke SDD for implementation |
-| "Change this approved behavior" | Invoke SDD for behavior-change handling |
+| "Change this approved behavior" | Route through the draft re-open path |
+| "Deprecate the auth spec" | Invoke SDD for spec management (deprecation) |
 | "Refresh the SDD graph" | Invoke SDD for graph refresh |
+
+A nonempty request that resolves to no known SDD action is reported as unroutable; the skill invokes no SDD action in that case.
 
 ---
 
