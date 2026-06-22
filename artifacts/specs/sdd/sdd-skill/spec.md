@@ -37,6 +37,10 @@ When the user invokes `$sdd` with no work item, artifact, or action, the skill s
 
 The gateway skill does not choose producer or judge roles, load artifact authoring governances, interpret lifecycle transitions, or enforce freeze policy. Those concerns belong to the orchestrator and the narrower authoring or validation skills beneath it. The gateway loads `sdd:lifecycle-governance` to recognize status meanings and route the work correctly, but does not own the state machine — it only needs enough knowledge to identify the user's requested SDD action and invoke the correct SDD entrypoint for that action.
 
+### The gateway is lightweight
+
+As a routing skill, `sdd` does only intake, lifecycle-state inspection, and route selection — no document authoring, no orchestrator invocations. This work requires minimal reasoning: it reads at most four small files, applies a routing table, and reports one next action. The skill should run on a small/fast model at low effort. Authoring and judging work happens in the skills invoked downstream.
+
 ### User questions stay at gateway and skill boundaries
 
 `sdd-orchestrator` has no user channel. The `sdd` skill handles gateway intake and user-facing clarification, then hands off into the SDD workflow. Deeper workflow questions belong to the narrower skills beneath the gateway.
