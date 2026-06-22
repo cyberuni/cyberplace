@@ -14,23 +14,23 @@ Each task is an executable unit with an ID, dependency edges, and scenario trace
 - [x] `SDDP-102` Constrain orchestrator runs to one autonomous segment with `STATUS: complete | needs-input | blocked` — deps: SDDP-101 — serves: create-spec resumes the orchestrator after batched answers
 - [x] `SDDP-103` Move user questions and gate confirmations into `create-spec` and `validate-spec` only — deps: SDDP-102 — serves: Ambiguous domain coverage is resolved by the skill; validate-spec freezes scenarios after human approval
 - [x] `SDDP-104` Add delegate synthesis with `QUESTIONS`, `CONTENT_GAPS`, and `OBSERVATIONS` output blocks — deps: SDDP-102 — serves: Explore-mode implementation discoveries become content gaps; Observations are surfaced without blocking the current spec
-- [ ] `SDDP-105` Enforce artifact write boundaries (`spec.md`, `.feature`, `plan.md`, `tasks.md`, implementation artifacts) — deps: SDDP-103, SDDP-104 — serves: Scaffold the co-delivered artifact chain for a new feature
+- [x] `SDDP-105` Enforce artifact write boundaries (`spec.md`, `.feature`, `plan.md`, `tasks.md`, implementation artifacts) — deps: SDDP-103, SDDP-104 — serves: Scaffold the co-delivered artifact chain for a new feature
 
 ## Stream B — Delegate role map and defaults
 
-- [ ] `SDDP-201` Resolve all five roles (`spec-producer`, `plan-producer`, `spec-judge`, `impl-producer`, `impl-judge`) from the registry and defaults — deps: SDDP-002, SDDP-102 — serves: Domain plugin init writes the resolved role map; Runtime resolution does not read plan.md plugin assignments
-- [ ] `SDDP-202` Set `sdd-scenario-writer` as default spec-producer — deps: SDDP-201 — serves: A plugin-written feature must pass the universal format bar
-- [ ] `SDDP-203` Set `sdd-planner` as default plan-producer — deps: SDDP-201 — serves: Scaffold the co-delivered artifact chain for a new feature; tasks.md is a DAG with scenario traceability
-- [ ] `SDDP-204` Complete rename from `sdd-spec-validator` to `sdd-spec-judge` across runtime surfaces — deps: SDDP-201 — serves: validate-spec runs the spec gate against the contract layer
-- [ ] `SDDP-205` Keep `sdd-implementer` as default impl-judge and generic Builder as default impl-producer — deps: SDDP-201 — serves: Implementation runs against the frozen feature; Impl gate passes only when every frozen scenario passes
+- [x] `SDDP-201` Resolve all five roles (`spec-producer`, `plan-producer`, `spec-judge`, `impl-producer`, `impl-judge`) from the registry and defaults — deps: SDDP-002, SDDP-102 — serves: Domain plugin init writes the resolved role map; Runtime resolution does not read plan.md plugin assignments
+- [x] `SDDP-202` Set `sdd-scenario-writer` as default spec-producer — deps: SDDP-201 — serves: A plugin-written feature must pass the universal format bar
+- [x] `SDDP-203` Set `sdd-planner` as default plan-producer — deps: SDDP-201 — serves: Scaffold the co-delivered artifact chain for a new feature; tasks.md is a DAG with scenario traceability
+- [x] `SDDP-204` Complete rename from `sdd-spec-validator` to `sdd-spec-judge` across runtime surfaces — deps: SDDP-201 — serves: validate-spec runs the spec gate against the contract layer
+- [x] `SDDP-205` Keep `sdd-implementer` as default impl-judge and generic Builder as default impl-producer — deps: SDDP-201 — serves: Implementation runs against the frozen feature; Impl gate passes only when every frozen scenario passes
 
 ## Stream C — Governance skills and legacy migration
 
-- [ ] `SDDP-301` Create non-user-invocable `sdd:spec-governance` skill — deps: SDDP-003 — serves: sdd loads governance from skill context
-- [ ] `SDDP-302` Move universal boolean Gherkin format and ordering rules into `sdd:spec-governance` — deps: SDDP-301 — serves: A plugin-written feature must pass the universal format bar
-- [ ] `SDDP-303` Move spec readability/enrichment rules into `sdd:spec-governance` — deps: SDDP-301 — serves: validate-spec runs the spec gate against the contract layer
-- [ ] `SDDP-304` Remove runtime dependency on `governance show` in SDD flows — deps: SDDP-301 — serves: sdd loads governance from skill context
-- [ ] `SDDP-305` Retire or migrate legacy files in `artifacts/specs/sdd-plugin/governances/` — deps: SDDP-302, SDDP-303, SDDP-304 — serves: sdd loads governance from skill context
+- [x] `SDDP-301` Create non-user-invocable `sdd:spec-governance` skill — deps: SDDP-003 — serves: sdd loads governance from skill context
+- [x] `SDDP-302` Move universal boolean Gherkin format and ordering rules into `sdd:spec-governance` — deps: SDDP-301 — serves: A plugin-written feature must pass the universal format bar
+- [x] `SDDP-303` Move spec readability/enrichment rules into `sdd:spec-governance` — deps: SDDP-301 — serves: validate-spec runs the spec gate against the contract layer
+- [x] `SDDP-304` Remove runtime dependency on `governance show` in SDD flows — deps: SDDP-301 — serves: sdd loads governance from skill context
+- [x] `SDDP-305` Retire or migrate legacy files in `artifacts/specs/sdd-plugin/governances/` — deps: SDDP-302, SDDP-303, SDDP-304 — serves: sdd loads governance from skill context
 
 ## Stream D — Registry resolution and ambiguity handling
 
