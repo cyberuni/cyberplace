@@ -9,18 +9,39 @@ Feature: SDD gateway skill
     And the skill reports status meanings consistent with the lifecycle contract when classifying a spec's state
     And the skill surfaces create-spec, validate-spec, render-spec-graph, and sdd-orchestrator as the active workflow surface
 
-  Scenario: Ask for SDD intent on empty invocation
+  Scenario: Present the four-option top-level menu on empty invocation
     Given the user invokes "$sdd"
     And the user provides no work item, artifact, or action
     When the agent invokes the sdd skill
     Then the agent asks what SDD work the user wants to do
-    And the choices include creating a new artifact, backfilling an existing artifact, revising or validating a spec, implementing an approved spec, managing or deprecating specs, and refreshing the graph
+    And the top-level question presents exactly four options
+    And the four options are create-or-backfill a spec, work on an existing spec, manage specs and graph, and help me choose
     And implementation does not start before the user selects a route
+
+  Scenario: Never ask a question with more than four options
+    Given the user invokes the sdd skill for any intake question
+    When the agent presents an AskUserQuestion
+    Then the question carries at most four options
+
+  Scenario: Apply the list-overflow fallback when specs exceed four
+    Given the user picks "work on an existing spec"
+    And more than four specs exist
+    When the agent presents the spec choices
+    Then the agent presents at most four options
+    And the agent either shows only the most-actionable few or asks the user to name the domain directly
+    And the agent does not present a question listing every spec
+
+  Scenario: Fast path skips the menu when artifact and action are named
+    Given the user says "implement the auth spec"
+    When the agent invokes the sdd skill
+    Then the agent does not present the intake menu
+    And the next action is the implement route for auth
 
   Scenario: Route explicit SDD request with enough detail
     Given the user says "use SDD to create a spec for auth"
     When the agent invokes the sdd skill
-    Then the next action is create-spec for auth
+    Then the agent does not present the intake menu
+    And the next action is create-spec for auth
 
   Scenario: sdd does not mutate project setup
     Given a repo with AGENTS.md present
@@ -28,6 +49,64 @@ Feature: SDD gateway skill
     Then AGENTS.md is unchanged
     And no SessionStart hook is registered
     And no cyber-skills CLI command is required
+
+  # ── intake menu branches ───────────────────────────────────────────────
+
+  Scenario: Option 1 detects new-vs-backfill by implementation presence
+    Given the user picks "create or backfill a spec"
+    And the user names the target work
+    When the agent resolves the second level
+    Then the agent routes to create-spec in new mode when no implementation exists for that work
+    And the agent routes to create-spec in backfill mode when an implementation already exists for that work
+
+  Scenario: Option 2 routes a picked spec by its status
+    Given the user picks "work on an existing spec"
+    And the agent lists existing specs with their folder slug and status
+    When the user picks one spec
+    Then the agent routes that spec through the Routing Table by its status
+    And a draft spec resolves through the draft tiebreaker, an approved spec to the impl gate, an implemented spec to revise, and a deprecated spec to management
+
+  Scenario: Option 2 covers single-spec deprecation
+    Given the user picks "work on an existing spec"
+    And the user picks one spec and asks to deprecate it
+    When the agent resolves the route
+    Then the next action is the spec management route for deprecation
+
+  Scenario: Option 3 routes a graph refresh to render-spec-graph
+    Given the user picks "manage specs & graph"
+    And the user picks refresh graph
+    When the agent resolves the route
+    Then the next action is render-spec-graph
+
+  Scenario: Option 3 routes split authoring to create-spec with manual analysis surfaced
+    Given the user picks "manage specs & graph"
+    And the user picks split a spec
+    And no split-spec skill exists
+    When the agent resolves the route
+    Then the agent routes the authoring half to create-spec
+    And the agent surfaces that the split analysis is manual
+
+  Scenario: Option 3 routes dedupe authoring to create-spec with manual analysis surfaced
+    Given the user picks "manage specs & graph"
+    And the user picks dedupe overlapping specs
+    And no dedupe-specs skill exists
+    When the agent resolves the route
+    Then the agent routes the authoring half to create-spec
+    And the agent surfaces that the dedupe analysis is manual
+
+  Scenario: Option 3 routes analysis to split-spec and dedupe-specs once they exist
+    Given the user picks "manage specs & graph"
+    And the split-spec and dedupe-specs skills exist
+    When the user picks split a spec or dedupe overlapping specs
+    Then the agent routes the analysis to split-spec or dedupe-specs
+    And the agent does not surface the analysis as manual
+
+  Scenario: Option 4 suggests the most-actionable specs then lets the user pick
+    Given the user picks "help me choose"
+    When the agent scans specs and their statuses
+    Then the agent presents at most four suggested specs ranked by actionability
+    And the agent lets the user pick one to route
+    And no route is taken before the user picks
 
   # ── routing ────────────────────────────────────────────────────────────
 
