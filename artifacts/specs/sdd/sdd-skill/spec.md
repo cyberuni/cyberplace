@@ -1,6 +1,6 @@
 ---
 status: draft
-aligned: false
+aligned: true
 ---
 
 # SDD Gateway Skill
@@ -29,9 +29,39 @@ SDD work is optional and user-invoked, but once activated it needs a clear entry
 
 The skill triggers when the user explicitly invokes `$sdd`, says to use SDD, or asks to work on a creation artifact with Spec-Driven Development. Triggered work includes new artifact creation, backfill, draft revision, contract approval, implementation, implementation approval, behavior change after approval, deprecation, or SDD graph refresh. It does not trigger for general SDD explanation unless the user asks to apply the workflow to a concrete piece of creation work.
 
-### Empty invocation conducts intake
+### Empty invocation conducts a two-level menu
 
-When the user invokes `$sdd` with no work item, artifact, or action, the skill should not guess. It should ask what SDD work the user wants to do, offering the main routes: create a new artifact, backfill an existing artifact, revise or validate an existing spec, implement an approved spec, manage or deprecate specs, or refresh the spec graph.
+When the user invokes `$sdd` with no work item, artifact, or action, the skill must not guess. It conducts intake as a **two-level menu**, never a flat list. The top-level question presents **exactly four** options:
+
+| # | Top-level option | What it covers |
+|---|---|---|
+| 1 | **Create or backfill a spec** | Start a new spec. The model detects new-vs-backfill by whether an implementation already exists for the named work, then routes accordingly. |
+| 2 | **Work on an existing spec** | List existing specs (folder slug + status); the user picks one; the gateway then routes by that spec's status through the Routing Table (draft tiebreaker, approved→impl gate, implemented→revise, deprecated→management). Single-spec deprecation lives here. |
+| 3 | **Manage specs & graph** | Cross-spec operations: dedupe overlapping specs, split a large spec into smaller specs, cross-spec deprecation, and refresh the spec graph. |
+| 4 | **Help me choose** | Scan specs and statuses, suggest the most-actionable few, then let the user pick. |
+
+The second level depends on the chosen branch: option 1 collects the target work and detects mode; option 2 enumerates specs and then routes by status; option 3 presents the cross-spec operation set; option 4 presents the suggested specs. Only a bare `$sdd` / "use SDD" invocation with no named artifact and action reaches this menu.
+
+### Never ask more than four options in one question (hard rule)
+
+The gateway must **always** obey one hard rule: a single `AskUserQuestion` carries **at most four** options. The intake tool rejects more than four (`too_big, maximum 4`), so any question that would exceed four is illegal. The top-level menu is fixed at exactly four. When a derived list exceeds four items — the spec list under option 2, or the suggestions under option 4 — the gateway applies the **list-overflow fallback**: present only the most-actionable few (≤ 4) OR ask the user to name the domain directly instead of enumerating every spec. The gateway never truncates silently into an over-four question.
+
+### Fast path bypasses the menu
+
+When the user's invocation already names an artifact **and** an action — "implement the auth spec", "review X again", "deprecate the auth spec", "refresh the SDD graph" — the gateway skips the menu entirely and routes directly through the Routing Table. The two-level menu is reserved for a bare invocation that names neither artifact nor action. A partially-specified request (artifact named, action ambiguous, or vice versa) resolves what it can and asks only for the missing piece, still within the four-option rule.
+
+### Option-3 delegation scope
+
+Option 3 (manage specs & graph) splits by whether a downstream skill exists for the work:
+
+| Operation | Downstream routing |
+|---|---|
+| Refresh graph | Routes to `render-spec-graph` (delegate exists today). |
+| Split a spec | The **authoring half** routes to `create-spec` (split = create the new specs + deprecate/revise the old). |
+| Dedupe specs | The **authoring half** routes to `create-spec` (collapse overlap into the surviving spec + deprecate the rest). |
+| Cross-spec deprecate | Routes through the spec-management/deprecation path. |
+
+The cross-spec **analysis** — finding which specs overlap, choosing split boundaries — has no downstream skill yet. Until the `split-spec` and `dedupe-specs` skills exist (specced separately), that analysis stays **manual**: the gateway performs the authoring half via `create-spec` and surfaces to the user that the analysis step is manual. When `split-spec` and `dedupe-specs` exist, the gateway routes the analysis to them instead.
 
 ### The gateway owns intent, not internal workflow control
 
@@ -79,8 +109,9 @@ Examples that trigger the skill:
 
 | User intent | Expected route |
 |---|---|
-| "$sdd" | Intake prompt for the desired SDD work |
+| "$sdd" | Two-level intake menu (four top-level options) |
 | "Use SDD for auth" | Intake or invoke SDD with the user's coarse intent |
+| "Implement the auth spec" | Fast path — skips the menu, routes directly |
 | "Create an SDD spec for this onboarding flow" | Draft spec |
 | "Backfill SDD for this existing parser" | Backfill spec |
 | "Use SDD to formalize this hiring workflow" | Draft spec for non-software creation work |
