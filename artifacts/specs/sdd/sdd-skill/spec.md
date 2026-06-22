@@ -1,6 +1,6 @@
 ---
 status: draft
-aligned: true
+aligned: false
 ---
 
 # SDD Gateway Skill
@@ -41,6 +41,14 @@ The gateway skill does not choose producer or judge roles, load artifact authori
 
 As a routing skill, `sdd` does only intake, lifecycle-state inspection, and route selection — no document authoring, no orchestrator invocations. This work requires minimal reasoning: it reads at most four small files, applies a routing table, and reports one next action. The skill should run on a small/fast model at low effort. Authoring and judging work happens in the skills invoked downstream.
 
+### Routes are named as workflow actions, not skill or CLI names
+
+User-facing output names the SDD action by what it does in the workflow, not by the skill or CLI that performs it. The routing table and the report use **Draft spec**, **Revise spec**, **Backfill spec**, **Review at the spec gate**, **Review at the impl gate**, and **Refresh spec graph**. The gateway still invokes the underlying skills internally, but the user never sees `create-spec` or `validate-spec --target spec`. "Review at the spec gate" names the draft→approved step as a review the human performs, avoiding both the unclear word "contract" and a bare "spec" that hides that the `.feature` is reviewed too.
+
+### A complete draft defaults to the spec gate without asking
+
+When `spec.md` is `draft`, the gateway inspects completion signals before offering routes. If `tasks.md` has all items checked and no `<!-- open: ... -->` markers remain in `spec.md` or the `.feature`, the gateway routes straight to **Review at the spec gate** and does not present the revise option as an alternative. This is safe to automate because the spec gate still takes the human verdict — routing only submits the draft to the gate. If any task is unchecked or any open marker remains, the gateway routes to **Revise spec** and names the open items. If signals are inconclusive (no `tasks.md`, no markers), it presents both routes. The gateway does not generate the review digest itself — `validate-spec` surfaces that at the gate.
+
 ### User questions stay at gateway and skill boundaries
 
 `sdd-orchestrator` has no user channel. The `sdd` skill handles gateway intake and user-facing clarification, then hands off into the SDD workflow. Deeper workflow questions belong to the narrower skills beneath the gateway.
@@ -61,14 +69,14 @@ Examples that trigger the skill:
 |---|---|
 | "$sdd" | Intake prompt for the desired SDD work |
 | "Use SDD for auth" | Intake or invoke SDD with the user's coarse intent |
-| "Create an SDD spec for this onboarding flow" | Invoke SDD for spec creation |
-| "Backfill SDD for this existing parser" | Invoke SDD for backfill |
-| "Use SDD to formalize this hiring workflow" | Invoke SDD for non-software creation work |
-| "Approve this draft spec" | Invoke SDD for spec approval |
-| "Implement the approved auth spec" | Invoke SDD for implementation |
+| "Create an SDD spec for this onboarding flow" | Draft spec |
+| "Backfill SDD for this existing parser" | Backfill spec |
+| "Use SDD to formalize this hiring workflow" | Draft spec for non-software creation work |
+| "Approve this draft spec" | Review at the spec gate |
+| "Implement the approved auth spec" | Implement, then Review at the impl gate |
 | "Change this approved behavior" | Route through the draft re-open path |
-| "Deprecate the auth spec" | Invoke SDD for spec management (deprecation) |
-| "Refresh the SDD graph" | Invoke SDD for graph refresh |
+| "Deprecate the auth spec" | Spec management (deprecation) |
+| "Refresh the SDD graph" | Refresh spec graph |
 
 A nonempty request that resolves to no known SDD action is reported as unroutable; the skill invokes no SDD action in that case.
 
@@ -96,6 +104,7 @@ sdd
 
 - `artifacts/specs/sdd-plugin/spec.md` — defines the SDD plugin skill surface and lifecycle.
 - `artifacts/specs/sdd-spec-graph/spec.md` — defines the derived graph view for SDD specs.
+- `artifacts/specs/sdd/spec-digest/spec.md` — the digest the spec gate shows after this skill routes there.
 - `apps/website/src/content/docs/concepts/gateway-skill.md` — defines the gateway skill concept.
 - `plugins/sdd/skills/sdd/SKILL.md` — the gateway skill specified here.
 

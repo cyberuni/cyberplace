@@ -32,6 +32,13 @@ The skill body should be organized around six decisions:
 - Mechanical skill audit for `plugins/sdd/skills/sdd`.
 - `pnpm verify` after implementation.
 
+## Vocabulary + signal-routing revision
+
+A later revision tightens two gateway behaviors:
+
+- **Workflow vocabulary** — user-facing routes are named by workflow action (Draft spec, Revise spec, Backfill spec, Review at the spec gate, Review at the impl gate, Refresh spec graph), never by the underlying skill or CLI name.
+- **Complete-draft auto-routing** — a `draft` with all tasks checked and no open markers routes straight to "Review at the spec gate" without offering revise; open tasks or markers route to "Revise spec" naming the open items; inconclusive signals present both. The digest of what is being reviewed is surfaced by `validate-spec` at the gate, not by the gateway.
+
 ## Out of scope
 
 - Reintroducing `init-sdd` or hook registration.

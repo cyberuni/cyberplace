@@ -18,3 +18,10 @@ Each task is an executable unit; dependencies are noted. Order is emergent from 
 ## Phase 3 - Validation
 
 - [x] Run `pnpm verify` — deps: all implementation tasks
+
+## Phase 4 - Vocabulary + signal routing revision
+
+- [x] Add design decisions for workflow vocabulary and complete-draft auto-routing to `spec.md` — serves: vocabulary, signal-based routing
+- [x] Add scenarios for complete-draft → spec gate and open-marker → revise to `sdd-skill.feature` — deps: spec.md
+- [ ] Update `plugins/sdd/skills/sdd/SKILL.md` routing table + report to workflow vocabulary and signal-based tiebreaker — deps: spec.md, scenarios
+- [ ] Run mechanical skill audit and `pnpm verify` — deps: skill update

@@ -31,6 +31,21 @@ Feature: SDD gateway skill
 
   # ── routing ────────────────────────────────────────────────────────────
 
+  Scenario: Route a complete draft spec to the spec gate without asking
+    Given specs/auth/spec.md has status draft
+    And tasks.md has all items checked
+    And no open markers exist in spec.md or the .feature
+    When the agent invokes the sdd skill
+    Then the next action is to review at the spec gate
+    And the agent does not present the revise option as an alternative
+
+  Scenario: Route a draft with open markers to revise
+    Given specs/auth/spec.md has status draft
+    And an open marker exists in spec.md
+    When the agent invokes the sdd skill
+    Then the next action is to revise the spec
+    And the agent names the open items that must be resolved first
+
   Scenario: Route a new artifact to create-spec
     Given no spec exists for the requested artifact
     When the agent invokes the sdd skill
