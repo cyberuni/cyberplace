@@ -10,6 +10,10 @@
 			"cache": false,
 			"outputs": []
 		},
+		"//#verify:specs": {
+			"cache": false,
+			"outputs": []
+		},
 		"build": {
 			"outputs": ["dist/**"],
 			"dependsOn": ["^build"]
@@ -26,7 +30,7 @@
 			"persistent": true
 		},
 		"verify": {
-			"dependsOn": ["//#check", "//#knip", "build", "typecheck", "lint", "test"]
+			"dependsOn": ["//#check", "//#knip", "//#verify:specs", "build", "typecheck", "lint", "test"]
 		}
 	}
 }
