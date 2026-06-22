@@ -33,7 +33,6 @@ Containment from `subtasks`: each edge `A --> B` means **project A owns feature 
 
 ```mermaid
 graph TD
-  governance-composition
   motive-model
   aces-plugin --> aces-skill-spec-schema
   aces-plugin --> aces-spec-designer-composition
@@ -50,6 +49,7 @@ graph TD
   sdd-plugin --> sdd/spec-digest
   sdd-plugin --> sdd/split-spec
   universal-plugin --> dag-tooling
+  universal-plugin --> governance-composition
 ```
 
 ## Nodes
@@ -61,7 +61,7 @@ graph TD
 | `aces-spec-designer-composition` | feature | `governance-composition`, `aces-skill-spec-schema` | draft |
 | `dag-tooling` | feature | — | draft |
 | `define-skill` | feature | — | draft |
-| `governance-composition` | project | — | draft |
+| `governance-composition` | feature | — | draft |
 | `motive-model` | project | — | draft |
 | `sdd-contract-registry` | feature | `sdd-orchestrator` | draft |
 | `sdd-escape-hatch` | feature | — | draft |
