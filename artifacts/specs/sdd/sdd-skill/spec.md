@@ -1,8 +1,10 @@
 ---
-status: approved
+status: implemented
 aligned: true
 approved-by:
   spec:
+    by: unional
+  impl:
     by: unional
 ---
 
