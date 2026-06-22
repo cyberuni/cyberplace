@@ -35,7 +35,7 @@ When the user invokes `$sdd` with no work item, artifact, or action, the skill s
 
 ### The gateway owns intent, not internal workflow control
 
-The gateway skill does not choose producer or judge roles, interpret lifecycle transitions, or enforce freeze policy. It loads the SDD gateway context, including `sdd:spec-governance`, then hands detailed authoring and validation control to the narrower skills beneath it. The gateway only needs enough knowledge to identify the user's requested SDD action and invoke the correct SDD entrypoint for that action.
+The gateway skill does not choose producer or judge roles, load artifact authoring governances, interpret lifecycle transitions, or enforce freeze policy. Those concerns belong to the orchestrator and the narrower authoring or validation skills beneath it. The gateway only needs enough knowledge to identify the user's requested SDD action and invoke the correct SDD entrypoint for that action.
 
 ### User questions stay at gateway and skill boundaries
 
