@@ -1,7 +1,8 @@
 ---
 status: draft
-type: project
+type: feature
 blocked-by: []
+aligned: false
 ---
 
 # Agent Governance Composition
@@ -10,124 +11,100 @@ blocked-by: []
 
 ## What
 
-Any textual agent configuration file with frontmatter — agent definitions, skills, commands, discipline hooks, or any markdown-based artifact — can declare a list of governance dependencies via a `requires_governances` frontmatter field. `universal-plugin build` reads this field, resolves each governance, and embeds the content inline in the built output — so governance is present in the agent's context from the first message, with no extra tool calls at invocation time.
+A build-time mechanism that embeds **contract/interface governance** inline into the agent configuration files that must always honor it. A worker agent definition, skill, command, or hook declares a `requires_governances` list in its frontmatter; `universal-plugin build` resolves each reference, reads the governance source, and inlines the content into the built output — so the contract is present in the agent's context from the first message with no tool call and no reliance on the harness auto-loading anything.
 
-A governance reference uses the syntax `<plugin>:<governance-name>` for cross-plugin references, or `<governance-name>` for intra-plugin references.
+This is the automation for ADR-0013's *"contract/interface governances fold into agent definitions"*. It is the complement of governance **skills** (ADR-0013's other half): reference/criteria governance stays a `user-invocable: false` skill the harness loads situationally; contract/interface governance is embedded here. The two mechanisms partition the governance corpus; they do not compete.
+
+A reference is `<plugin>/<name>` for a cross-plugin governance or `<name>` for an intra-plugin one, matching how `universal-plugin governance show` already resolves names.
 
 ---
 
 ## Why
 
-Currently, agents that need governance knowledge must issue `governance show <name>` as their first action. This has a real cost:
-
-- Each `governance show` call is a round trip — 3 governances = 3 extra tool calls before any work starts. Noticeable latency.
-- The instruction to "run governance show first" lives in prose — it can be omitted by authors or skipped by inattentive agents.
-- Cross-plugin references have no standard syntax.
-
-Build-time embedding eliminates the tool-call overhead entirely. Governance content is in context from the first message. No harness cooperation required — `universal-plugin build` handles it at plugin build time.
+`governance show` is being removed from runtime loops, and ADR-0013 routes reference/criteria governance to harness-loaded skills. That leaves one gap: a **contract** an agent must honor on *every* invocation cannot depend on the harness situationally deciding to load a skill — some harnesses do not auto-load `user-invocable: false` skills at all, and even where they do, a must-always-be-present contract should not be best-effort. Build-time embedding makes the contract unconditionally present, with zero tool calls, in a plain agent definition that needs no harness cooperation. It also keeps the contract DRY: one governance source is embedded into many agent definitions at build, instead of being hand-copied into each (which drifts).
 
 ---
 
 ## Design decisions
 
-### Reference syntax: `<plugin>:<name>` vs URL vs path
+### Embed vs governance skill — the boundary
 
-Chose `<plugin>:<name>` (e.g., `sdd:sdd-principles`, `aces:skill-spec-schema`) over file paths or URLs because:
-- Stable across plugin version upgrades (resolved at build time from installed plugin)
-- Readable in agent definition YAML/JSON without tooling
-- Consistent with how skills are namespaced (`aces:create-spec`)
+| Governance kind | Delivery | Why |
+|---|---|---|
+| **Contract / interface** — a rule the agent must honor on every invocation (delegate I/O contract, a schema it must conform to) | **Embedded** via `requires_governances` | must be unconditionally present; small; per-agent |
+| **Reference / criteria** — standards, format bars, principles consulted situationally; often large; shared widely | **Governance skill** (ADR-0013) | loaded only when relevant; embedding everywhere would bloat context |
 
-Paths were rejected: fragile across installs. URLs were rejected: offline-unfriendly, caching complexity.
+When unsure, prefer a governance skill; embedding is the exception reserved for must-always-be-present contracts.
 
-### Manifest field in agent definition vs separate file
+### Gateways carry no governance
 
-Manifest is declared inline in the agent definition file (a `requires_governances` field) rather than a sidecar file. Keeps the source agent definition self-contained. A sidecar is only warranted when the list exceeds what fits readably inline (rare).
+Embedding targets **worker** agents and skills — the ones that perform governed work (`create-spec`, `validate-spec`, the `sdd-orchestrator` delegates, the ACES/Quill producers). **Gateway** skills (e.g. `sdd`) only classify and route; they hold no governance and must not declare `requires_governances`. Embedding a contract into a deliberately lean gateway is pure token cost with no benefit. The build does not infer governance for routed targets — a gateway never needs to know which governance a downstream skill requires.
 
-### Embed order: declaration order
+### Reference syntax: `<plugin>/<name>`
 
-Governances are embedded in declaration order. Later entries can reference concepts introduced by earlier entries. Authors are responsible for ordering.
+Cross-plugin references use `<plugin>/<name>` (e.g. `sdd/gate-validation-governance`); intra-plugin references use the bare `<name>`. This matches the existing `universal-plugin governance show` resolver (slash-separated, store-aware), so authoring and building share one resolution path. Paths and URLs were rejected earlier (fragile across installs; offline-unfriendly).
 
-### Failure on missing governance
+### Embed order is declaration order
 
-If a declared governance cannot be resolved during build (plugin not installed, name typo), `universal-plugin build` fails with a clear error rather than silently producing an agent definition that lacks the knowledge. Silent degradation is worse than a loud failure.
+Governances are inlined in the order declared, so a later entry may build on a concept introduced by an earlier one. Authors own the ordering.
 
-### Build-time vs runtime
+### Missing governance fails the build
 
-Embedding at build time (not runtime injection) was chosen because:
-- cyber-skills and universal-plugin do not control the agent harness (Claude Code, Cursor, Codex) — runtime injection would require harness support that cannot be assumed
-- Build-time embedding requires no harness cooperation; the output is a standard agent definition file with content already inlined
-- Token cost of the governance content is the same either way; build-time avoids the additional tool-call overhead of runtime loading
+If a declared governance cannot be resolved (plugin not installed, name typo), `universal-plugin build` fails with a clear error rather than emitting an agent definition missing its contract. Loud failure beats silent degradation.
+
+### Build-time, not runtime injection
+
+Embedding happens at `universal-plugin build`, not via runtime injection, because the tool does not control the harness (Claude Code, Cursor, Codex). Build-time output is a standard agent definition with content already inlined and the `requires_governances` field stripped — no harness support required. The token cost of the content is identical either way; build-time removes the tool-call overhead.
 
 ---
 
-## Command surface / API
+## Surface
 
-Any textual agent configuration file with frontmatter (illustrative examples):
-
-Agent definition (YAML):
+Source frontmatter on a worker agent/skill/command/hook:
 
 ```yaml
-name: aces-spec-designer
-description: "..."
 requires_governances:
-  - sdd:sdd-principles
-  - sdd:spec-template
-  - aces:skill-spec-schema
+  - sdd/gate-validation-governance   # cross-plugin
+  - skill-spec-schema                # intra-plugin
 ```
 
-Skill (markdown frontmatter):
+`universal-plugin build`:
 
-```markdown
----
-name: create-spec
-description: "..."
-requires_governances:
-  - sdd:sdd-principles
-  - aces:skill-spec-schema
----
-```
-
-Command or discipline hook (markdown frontmatter):
-
-```markdown
----
-requires_governances:
-  - sdd:sdd-principles
----
-```
-
-At `universal-plugin build` time:
-
-```
+```text
 universal-plugin build
-  → reads agent definition source
-  → resolves sdd:sdd-principles
-      → looks up "sdd" plugin install location
-      → reads <sdd-plugin>/governances/sdd-principles.md
-  → resolves sdd:spec-template, aces:skill-spec-schema (same pattern)
-  → embeds all three inline in the built agent definition
-  → writes output to dist/ (or configured output path)
+  → reads each source's requires_governances
+  → resolves sdd/gate-validation-governance → showGovernance("sdd/gate-validation-governance")
+  → resolves skill-spec-schema → showGovernance("skill-spec-schema")
+  → inlines each governance body, in declaration order, into the built output
+  → strips the requires_governances field from the built output
 ```
 
-The built output contains the governance content directly — no `requires_governances` field, no tool calls needed at invocation time.
+Errors (at build time):
 
-CLI for manual inspection (existing `governance show`, extended):
+- plugin not found → `Error: governance plugin "sdd" is not installed`
+- name not found → `Error: governance "gate-validation-governance" not found in plugin "sdd"`
 
-```
-universal-plugin governance show sdd:sdd-principles   # cross-plugin
-universal-plugin governance show sdd-principles        # intra-plugin (current behavior)
-```
+The existing inspection CLI is unchanged: `universal-plugin governance show <plugin>/<name>` or `universal-plugin governance show <name>`.
 
-**Error cases (at build time):**
-- Plugin not found → `Error: governance plugin "sdd" is not installed`
-- Governance name not found → `Error: governance "sdd-principles" not found in plugin "sdd"`
+---
 
-**Gherkin scenarios:** _(pending spec approval)_
+**Gherkin scenarios:** [governance-composition.feature](./governance-composition.feature)
 
 ---
 
 ## Related
 
-- `artifacts/specs/aces-skill-spec-schema/spec.md` — the ACES governance loaded via this mechanism
-- `artifacts/specs/aces-spec-designer-composition/spec.md` — first concrete use of this mechanism
-- `artifacts/specs/sdd-plugin/governances/sdd-principles.md` — governance loaded cross-plugin by ACES
+- `artifacts/adr/0013-governance-skills.md` — the two-way split this feature's embedding half implements
+- `artifacts/specs/universal-plugin/spec.md` — owning project
+- `artifacts/specs/aces-spec-designer-composition/spec.md` — a consumer; uses the colon syntax and stale names, to be re-synced to `<plugin>/<name>`
+- `artifacts/specs/aces-skill-spec-schema/spec.md` — a governance consumed via this mechanism
+
+---
+
+## Artifacts
+
+| Label | Path |
+|---|---|
+| Spec | `artifacts/specs/governance-composition/spec.md` |
+| Scenarios | `artifacts/specs/governance-composition/governance-composition.feature` |
+| Build domain | `packages/universal-plugin/src/build/`, `packages/universal-plugin/src/governance/` |

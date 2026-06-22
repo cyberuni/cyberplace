@@ -5,6 +5,7 @@ blocked-by: []
 aligned: false
 subtasks:
   - dag-tooling
+  - governance-composition
 ---
 
 # Universal Plugin
@@ -48,8 +49,9 @@ This project composes the feature specs below; each owns its detailed rules and 
 | Feature spec | Owns |
 |---|---|
 | `dag-tooling` | reusable graph/DAG primitives (cycle detection, topological order, single-parent tree validation, parent-from-children resolution, Mermaid rendering) as a skill-run script with an agent fallback |
+| `governance-composition` | build-time embedding of contract/interface governance into worker agent configuration via `requires_governances` |
 
-Capabilities still tracked only in `packages/universal-plugin/src/` (no dedicated feature spec yet): `build`, `governance`, `prepare`, `sync`, `source-registry`, `vendor-registry`, `marketplace`, `publish`, `self-update`.
+Capabilities still tracked only in `packages/universal-plugin/src/` (no dedicated feature spec yet): `build`, `governance` (resolution/`show`), `prepare`, `sync`, `source-registry`, `vendor-registry`, `marketplace`, `publish`, `self-update`.
 
 ---
 
@@ -66,7 +68,7 @@ No new public interface is defined by this project spec; surfaces belong to the 
 ## Related
 
 - `artifacts/specs/dag-tooling/spec.md` — reusable graph/DAG tooling feature
-- `artifacts/specs/governance-composition/spec.md` — build-time governance embedding (candidate universal-plugin feature)
+- `artifacts/specs/governance-composition/spec.md` — build-time governance embedding feature
 - `packages/universal-plugin/AGENTS.md` — package architecture (screaming + clean architecture)
 
 ---
