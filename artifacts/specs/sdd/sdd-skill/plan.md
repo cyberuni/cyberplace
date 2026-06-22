@@ -17,15 +17,6 @@ The skill body should be organized around six decisions:
 5. **Route by state** — send draft work to `create-spec`, gate work to `validate-spec`, approved implementation to the frozen-contract path, and graph refreshes to `render-spec-graph`.
 6. **Report next action** — tell the user which SDD path is active and which constraints apply.
 
-## Graph support
-
-Because this workflow is nested under `artifacts/specs/sdd/sdd-skill/`, `render-spec-graph` needs recursive discovery:
-
-- Find every `spec.md` under the specs root, excluding the root `graph.md`.
-- Use the spec folder path relative to the root as the node slug, such as `sdd/sdd-skill`.
-- Keep existing flat slugs unchanged.
-- Preserve deterministic output ordering.
-
 ## Failure handling
 
 | Condition | Behavior |
@@ -39,11 +30,10 @@ Because this workflow is nested under `artifacts/specs/sdd/sdd-skill/`, `render-
 ## Test strategy
 
 - Mechanical skill audit for `plugins/sdd/skills/sdd`.
-- `node:test` coverage for nested spec discovery in `render-spec-graph`.
 - `pnpm verify` after implementation.
 
 ## Out of scope
 
 - Reintroducing `init-sdd` or hook registration.
 - Creating an eval suite for this skill.
-- Changing `create-spec`, `validate-spec`, or `sdd-orchestrator` behavior beyond the routing guidance documented here.
+- Changing `create-spec`, `validate-spec`, `sdd-orchestrator`, or `render-spec-graph` behavior beyond the routing guidance documented here.
