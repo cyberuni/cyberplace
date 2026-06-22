@@ -17,6 +17,7 @@ graph TD
   sdd-orchestrator --> sdd-provenance
   sdd-plugin --> sdd-gate-autonomy
   sdd-plugin --> sdd-provenance
+  sdd-plugin --> sdd-spec-discovery
   sdd-plugin --> sdd-spec-graph
   sdd-plugin --> universal-plugin
 ```
@@ -35,6 +36,7 @@ graph TD
 | `sdd-orchestrator` | — | approved |
 | `sdd-plugin` | — | draft |
 | `sdd-provenance` | `sdd-orchestrator`, `sdd-plugin` | draft |
+| `sdd-spec-discovery` | `sdd-plugin` | draft |
 | `sdd-spec-graph` | `sdd-plugin` | draft |
 | `sdd/sdd-skill` | — | draft |
 | `sdd/spec-digest` | — | draft |
