@@ -1,5 +1,6 @@
 ---
 status: approved
+type: feature
 blocked-by: []
 aligned: true
 approved-by:
