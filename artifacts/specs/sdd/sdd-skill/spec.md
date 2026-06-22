@@ -1,6 +1,9 @@
 ---
-status: draft
+status: approved
 aligned: true
+approved-by:
+  spec:
+    by: unional
 ---
 
 # SDD Gateway Skill
