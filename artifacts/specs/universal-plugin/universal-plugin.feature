@@ -1,5 +1,7 @@
 Feature: SDD contract registry in .agents/universal-plugin.json
 
+  # ── contract resolution ───────────────────────────────────────────────
+
   Scenario: sdd-author resolves implementer from project registry
     Given .agents/universal-plugin.json lists "aces" as implementer for "agent-config"
     And plan.md has no Plugin assignments for this spec
@@ -24,6 +26,8 @@ Feature: SDD contract registry in .agents/universal-plugin.json
     When sdd-author resolves the implementer for domain type "documentation"
     Then it falls back to checking that passing tests exist for every scenario
 
+  # ── registry init ─────────────────────────────────────────────────────
+
   Scenario: domain plugin init registers itself in the project registry
     Given .agents/universal-plugin.json exists with no "aces" entry in sdd-plugins
     When the aces init-sdd skill runs
@@ -41,6 +45,8 @@ Feature: SDD contract registry in .agents/universal-plugin.json
     When the aces init-sdd skill runs
     Then .agents/universal-plugin.json is created
     And it contains the aces entry under sdd-plugins
+
+  # ── partial contracts ─────────────────────────────────────────────────
 
   Scenario: a plugin omits a contract it does not implement
     Given quill implements only the "implementer" contract, not "scenario-advisor"
