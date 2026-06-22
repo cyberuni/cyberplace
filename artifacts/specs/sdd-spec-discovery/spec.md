@@ -1,10 +1,12 @@
 ---
-status: approved
+status: implemented
 aligned: true
 blocked-by:
   - sdd-plugin
 approved-by:
   spec:
+    by: unional
+  impl:
     by: unional
 ---
 
