@@ -10,6 +10,7 @@ graph TD
   dag-tooling
   define-skill
   motive-model
+  sdd-escape-hatch
   sdd/dedupe-specs
   sdd/sdd-skill
   sdd/spec-digest
@@ -38,6 +39,7 @@ graph TD
   aces-plugin --> aces-spec-designer-composition
   aces-plugin --> define-skill
   sdd-plugin --> sdd-contract-registry
+  sdd-plugin --> sdd-escape-hatch
   sdd-plugin --> sdd-gate-autonomy
   sdd-plugin --> sdd-orchestrator
   sdd-plugin --> sdd-provenance
@@ -62,6 +64,7 @@ graph TD
 | `governance-composition` | project | — | draft |
 | `motive-model` | project | — | draft |
 | `sdd-contract-registry` | feature | `sdd-orchestrator` | draft |
+| `sdd-escape-hatch` | feature | — | draft |
 | `sdd-gate-autonomy` | feature | `sdd-orchestrator`, `sdd-plugin` | approved |
 | `sdd-orchestrator` | feature | — | approved |
 | `sdd-plugin` | project | — | draft |
