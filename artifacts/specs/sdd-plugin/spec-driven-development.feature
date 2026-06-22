@@ -5,19 +5,17 @@ Feature: Spec-Driven Development Plugin
 
   # -- context -------------------------------------------------------------
 
-  Scenario: Load SDD context for feature work
+  Scenario: sdd is the gateway entrypoint for SDD work
     Given the user wants to work on a feature under SDD
     When the user invokes the sdd skill
-    Then the SDD workflow contract is loaded into context
-    And sdd:lifecycle-governance is loaded as the lifecycle-rules source
-    And sdd:spec-governance is loaded as the format bar source
-    And the spec-owns-behavior rule is loaded
+    Then sdd classifies the requested SDD action
+    And sdd routes the work to create-spec, validate-spec, or render-spec-graph
+    And sdd does not load authoring governances into context
 
-  Scenario: sdd loads governance from skill context
+  Scenario: SDD governance is loaded from skills, not a CLI
     Given the SDD plugin is installed in a repo
-    When the user invokes the sdd skill
-    Then sdd:lifecycle-governance is loaded for lifecycle rules
-    And sdd:spec-governance is loaded as a context dependency for spec authoring and judging
+    When an SDD producer or judge needs reference rules
+    Then it loads the relevant sdd governance skill through the harness
     And runtime SDD work does not require a governance show command
 
   Scenario: spec-producers load the ownership governance split
@@ -242,6 +240,17 @@ Feature: Spec-Driven Development Plugin
     When render-spec-graph runs
     Then artifacts/specs/graph.md contains the edge "auth --> report"
     And no blocks field is required in either spec
+
+  Scenario: A project spec composes feature specs via subtasks
+    Given a project spec lists a feature in its subtasks
+    When render-spec-graph runs
+    Then the Composition view contains the edge "project --> feature"
+    And the feature spec declares no subtasks of its own
+
+  Scenario: A feature belongs to exactly one project
+    Given two project specs both list the same feature in subtasks
+    When render-spec-graph runs
+    Then the render fails reporting the feature has more than one parent
 
   Scenario: tasks.md is a DAG with scenario traceability
     Given specs/auth/auth.feature contains a scenario named "Refresh an expired token"

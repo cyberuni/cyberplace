@@ -8,9 +8,9 @@ The SDD plugin is the installable workflow surface around `sdd-orchestrator`.
 User
   |
   |-- sdd
-  |     loads the SDD context skill
-  |     loads the SDD workflow rules
+  |     gateway: activates SDD, conducts intake, classifies the action
   |     routes to create-spec, validate-spec, or render-spec-graph
+  |     delegates the routed work to a subagent
   |
   |-- create-spec
   |     owns grilling, batched user questions, and resume
@@ -41,9 +41,9 @@ The spec gate judges the contract end. The impl gate judges the implementation e
 
 ### `sdd`
 
-Loads SDD as active context for feature work. It does not write `AGENTS.md`, register hooks, or require the `cyber-skills` CLI. It brings the core SDD rules into the conversation: `.feature` freeze, spec owns behavior, artifact alignment, open markers, and gate discipline.
+The user-invoked **gateway**. It activates SDD for the current request, conducts a two-level intake menu when invoked bare, classifies the requested SDD action against an inlined routing table, and delegates the routed work to a subagent. For routing it reads only `spec.md` frontmatter (and, conditionally, `tasks.md` and open markers) — never `plan.md`. It does not author documents, invoke `sdd-orchestrator` itself, or load authoring governances; and it does not write `AGENTS.md`, register hooks, or require the `cyber-skills` CLI.
 
-`sdd` points writers and judges at `sdd:spec-governance`. This skill carries the reference bar: universal `.feature` format, scenario ordering, and `spec.md` enrichment. Runtime work loads it through the harness, not with `governance show`.
+The gateway's own contract is specified separately in `artifacts/specs/sdd/sdd-skill/spec.md`; this plan does not restate its behavior, to avoid drift. The reference bar that producers and judges load is `sdd:spec-governance` — loaded by those delegates through the harness, not by the `sdd` gateway and not via `governance show`.
 
 ### `create-spec`
 

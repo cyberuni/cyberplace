@@ -1,7 +1,19 @@
 ---
 status: draft
+type: project
 blocked-by: []
 aligned: false
+approved-by: {}
+subtasks:
+  - sdd-orchestrator
+  - sdd-gate-autonomy
+  - sdd-provenance
+  - sdd-spec-discovery
+  - sdd-spec-graph
+  - sdd/sdd-skill
+  - sdd/spec-digest
+  - sdd/split-spec
+  - sdd/dedupe-specs
 ---
 
 # Spec-Driven Development Plugin
@@ -10,13 +22,13 @@ aligned: false
 
 ## What
 
-The SDD plugin loads the spec-driven workflow into agent context and exposes the user-facing skills that drive it. `sdd` is the context skill that brings the SDD governance, workflow rules, and related skill map into the current conversation; `create-spec` and `validate-spec` own the human-facing loop; `sdd-orchestrator` owns one autonomous segment at a time; domain plugins supply delegates for the production chain through the project registry. A spec is not just `spec.md` plus `.feature`: SDD co-delivers `spec.md`, `.feature`, `plan.md`, `tasks.md`, and implementation artifacts, with the spec gate firming the contract end and the impl gate firming the implementation end.
+The SDD plugin packages the spec-driven workflow and exposes the user-facing skills that drive it. As the **project** spec for SDD, it stays high-level: it names the skills and agents the plugin ships, the lifecycle they enforce, and the **feature specs** that own each detailed rule. `sdd` is the user-invoked gateway that activates SDD, classifies the requested action, and routes the work to the right SDD skill; `create-spec` and `validate-spec` own the human-facing loop; `sdd-orchestrator` owns one autonomous segment at a time; domain plugins supply delegates for the production chain through the project registry. A spec is not just `spec.md` plus `.feature`: SDD co-delivers `spec.md`, `.feature`, `plan.md`, `tasks.md`, and implementation artifacts, with the spec gate firming the contract end and the impl gate firming the implementation end.
 
 ---
 
 ## Why
 
-The earlier plugin model encoded SDD as a two-artifact, single-gate practice and routed domain expertise through scenario advisors and implementer contracts. The orchestrator design now defines a richer production chain, role-based plugin delegates, actor governances, layer-scoped alignment, and suspend/resume through skills. The plugin spec must define the installable practice that makes those rules available to agents and users without contradicting the orchestrator model.
+The earlier plugin model encoded SDD as a two-artifact, single-gate practice and routed domain expertise through scenario advisors and implementer contracts. The orchestrator design now defines a richer production chain, role-based plugin delegates, actor governances, layer-scoped alignment, and suspend/resume through skills. The plugin spec must define the installable practice that makes those rules available to agents and users without contradicting the orchestrator model — and it must do so by composing its feature specs rather than restating them, so the project spec cannot drift from the features it owns.
 
 ---
 
@@ -26,159 +38,51 @@ The earlier plugin model encoded SDD as a two-artifact, single-gate practice and
 
 User-facing skills (`sdd`, `create-spec`, and `validate-spec`) are the only SDD components that ask the user questions or write user-verdict frontmatter. The orchestrator is invoked by those skills, runs one autonomous segment, and returns `complete`, `needs-input`, or `blocked` with batched questions, content gaps, and observations.
 
-### The orchestrator owns autonomous workflow synthesis
+### `sdd` is the workflow gateway
 
-`sdd-orchestrator` reads the current artifacts, resolves delegates, dispatches producers and judges, aggregates uniform delegate output, writes coordination markers when needed, and sets `aligned` according to the layer being judged. It does not ask the user, scan plugin directories, or write gate verdict fields.
-
-### The production chain has five artifacts
-
-Every SDD work unit is modeled as a co-delivered chain:
-
-| Artifact | Producer | Judged by |
-|---|---|---|
-| `spec.md` | human + spec-producer | spec gate context |
-| `.feature` | spec-producer | spec-judge |
-| `plan.md` | plan-producer | implementation result transitively |
-| `tasks.md` | plan-producer | implementation result transitively |
-| implementation + verification | impl-producer | impl-judge |
-
-Plan and tasks have no separate gate. They are produced with the contract during exploration, updated as understanding changes, and validated transitively when the implementation passes.
-
-### The plugin exposes SDD governance as skills
-
-Reference rules are delivered as non-user-invocable governance skills with `Internal skill:` descriptions: `sdd:lifecycle-governance` (lifecycle/routing rules), `sdd:spec-governance` (universal boolean `.feature` and `spec.md` format bar), `sdd:ownership-governance` (artifact ownership boundaries), and `sdd:gate-validation-governance` (gate/judge validation rules). SDD skills and agents load these through the harness. Runtime SDD work does not call `governance show`.
-
-### `sdd` is the context-loading entry point
-
-`sdd` replaces `init-sdd` as the plugin's default entry point. It does not edit project guidance, register hooks, or require the `cyber-skills` CLI. It loads `sdd:lifecycle-governance`, `sdd:spec-governance`, and the SDD workflow contract into context, then routes feature work to `create-spec` for draft contract creation, `validate-spec` for gates, and `render-spec-graph` for graph refreshes.
+`sdd` replaces `init-sdd` as the plugin's default entry point. It is a lightweight gateway: it activates SDD for the current request, conducts a two-level intake menu when invoked bare, classifies the requested SDD action against an inlined routing table, and delegates the routed work to a subagent. It reads only `spec.md` frontmatter (and, conditionally, `tasks.md` and open markers) to route — never `plan.md` — and it does not load authoring governances or invoke `sdd-orchestrator` itself. It does not edit project guidance, register hooks, or require the `cyber-skills` CLI. It routes feature work to `create-spec` for draft contract creation, `validate-spec` for gates, and `render-spec-graph` for graph refreshes. The gateway's full contract is the feature spec `artifacts/specs/sdd/sdd-skill/spec.md`; this plugin spec does not restate its behavior.
 
 ### SDD workflow is active for feature work
 
-When the user wants to add, change, backfill, validate, implement, or deprecate a feature under SDD, the agent first invokes the `sdd` context skill. After the context is loaded, the agent follows the SDD lifecycle: draft the contract, pass the spec gate, implement against the frozen `.feature`, pass the impl gate, and keep `aligned` truthful for the current layer.
+When the user wants to add, change, backfill, validate, implement, or deprecate a feature under SDD, the agent first invokes the `sdd` gateway skill, which classifies the request and routes it to the right SDD action. The agent then follows the SDD lifecycle: draft the contract, pass the spec gate, implement against the frozen `.feature`, pass the impl gate, and keep `aligned` truthful for the current layer.
 
-### Domain plugins register resolved delegates at setup
+### The plugin exposes SDD governance as skills
 
-Each domain plugin's `init-<plugin>` skill writes a canonical entry to `.agents/universal-plugin.json` under `sdd-plugins[]`. The entry includes domain coverage, the five role bindings, actor-governance bindings, and the plugin version. Re-running init rewrites old-shape entries to the current role-map shape and reconciles version drift.
+Reference rules are delivered as non-user-invocable governance skills with `Internal skill:` descriptions: `sdd:lifecycle-governance` (lifecycle/routing rules and the frontmatter schema), `sdd:spec-governance` (universal boolean `.feature` and `spec.md` format bar), `sdd:ownership-governance` (artifact ownership boundaries), and `sdd:gate-validation-governance` (gate/judge validation rules). SDD skills and agents load these through the harness. Runtime SDD work does not call `governance show`.
 
-```json
-{
-  "sdd-plugins": [
-    {
-      "name": "<plugin>",
-      "version": "x.y.z",
-      "domains": ["..."],
-      "roles": {
-        "spec-producer": "<agent>",
-        "plan-producer": null,
-        "spec-judge": null,
-        "impl-producer": "<agent>",
-        "impl-judge": "<agent>"
-      },
-      "governances": {
-        "framer": null,
-        "builder": "<skill>",
-        "architect": null
-      }
-    }
-  ]
-}
-```
+### Specs are typed `project` and `feature`, composed by `subtasks`
 
-`null` means the role or governance degenerates to the SDD default. Missing role keys fall back to the `<plugin>-<role>` naming convention. Runtime resolution reads only this registry.
+Every spec declares a `type`. A `project` spec — like this one — is high-level: it composes a coherent body of work and owns no behavior beyond that composition. A `feature` spec owns one unit of behavior and its detailed scenarios. A project lists the features it owns in `subtasks`; each feature belongs to **exactly one** project, so composition stays a tree. `subtasks` is containment and is orthogonal to `blocked-by` execution dependency. This is why the project spec cross-references its feature specs (below) instead of restating their rules. The full schema and invariant live in `sdd:lifecycle-governance`; `render-spec-graph` renders the composition and enforces the single-parent tree.
 
-### `plan.md` is not a plugin assignment source
+---
 
-Plugin resolution is upstream of `plan.md`. The orchestrator resolves a domain from `.agents/universal-plugin.json` and any `domain-plugin` frontmatter disambiguation before dispatching the plan-producer. `plan.md` describes the solution and may record the chosen architecture, but it never controls delegate resolution.
+## Feature specs
 
-### Ambiguous domain coverage suspends to the skill
+This project composes the feature specs below; each owns its detailed rules and scenarios. The project spec does not restate them.
 
-When multiple registered plugins claim a domain and `spec.md` has no `domain-plugin` frontmatter choice, the orchestrator returns `needs-input`. The skill asks the user, writes the selected plugin into the `domain-plugin` frontmatter map, and resumes the orchestrator. The resolver reads that map before counting candidates, so resume is decisive.
-
-### `aligned` is layer-scoped
-
-At the spec gate, `aligned: true` means the contract layer is in sync: `spec.md` and `.feature` agree and the spec-judge bar passes. At the impl gate, `aligned: true` means the implementation layer conforms to the frozen `.feature`. Spec-gate validation must not require implementation artifacts to exist.
-
-### Status transitions are gate decisions
-
-`status: draft` means the contract is still forming. `status: approved` means the contract passed the spec gate and `.feature` is frozen. `status: implemented` means the implementation passed the impl gate against the frozen `.feature`. `status: deprecated` means the feature was removed or superseded and the spec is retained for history.
-
-### The frozen `.feature` can reopen only through a gate
-
-After approval, scenarios do not change to match implementation. A fatal behavior gap or invalid contract reverts the spec to `draft` through the Framer revert path; then the spec-producer may rewrite the contract and the spec must pass the spec gate again.
-
-### Open questions are durable content gaps
-
-Content gaps are persisted as inline `<!-- open: ... -->` markers in the artifact that owns the gap. Draft specs may contain open markers, but Draft -> Approved is blocked while any remain. Workflow-procedural questions are transient skill questions and are never written into artifacts.
-
-### Observations spawn specs, not side queues
-
-Delegates may return non-blocking `OBSERVATIONS` owned by `architect` or `curator`. The orchestrator bubbles them up; the skill surfaces them at the appropriate boundary; accepted observations become new specs or recurrence updates on existing candidate specs. The orchestrator never writes outside the current spec.
-
-### `tasks.md` is a DAG
-
-`tasks.md` contains executable units with IDs, dependency edges, scenario traceability, and target paths. Execution order emerges from the graph. The file is live during implementation and may be regenerated as the plan changes.
-
-### The spec DAG is authoritative for cross-spec ordering
-
-`blocked-by` in spec frontmatter is the only authored cross-spec dependency edge. `artifacts/specs/graph.md` is a derived Mermaid view generated from those edges and must not become a second source of truth.
+| Feature spec | Owns |
+|---|---|
+| `sdd-orchestrator` | autonomous segment, delegate resolution, the five-artifact production chain, the `.agents/universal-plugin.json` registry, uniform delegate I/O, observations, content gaps |
+| `sdd-gate-autonomy` | legal state tuples, status transitions as gate decisions, layer-scoped `aligned`, the frozen-`.feature` reopen path |
+| `sdd-provenance` | approval and provenance frontmatter (`approved-by`) |
+| `sdd-spec-graph` | the derived spec DAG and composition rendering |
+| `sdd-spec-discovery` | discovering specs and their state |
+| `sdd/sdd-skill` | the `sdd` gateway contract |
+| `sdd/spec-digest` | condensed spec digests |
+| `sdd/split-spec` | splitting an oversized spec into features |
+| `sdd/dedupe-specs` | detecting and reconciling duplicate specs |
 
 ---
 
 ## Spec format
 
-Every `spec.md` has YAML frontmatter:
-
-```yaml
-status: draft | approved | implemented | deprecated
-blocked-by: []
-aligned: true | false
-approved-by:
-  spec:
-    by: <name>
-  impl:
-    by: <name>
-domain-plugin:
-  <domain>: <plugin>
-```
-
-`approved-by` is written by the skill at gate time when approval is recorded. `domain-plugin` is written only after user disambiguation. Optional fields are omitted when not applicable.
-
-Required body sections:
-
-| Section | Required | Content |
-|---|---|---|
-| `What` | Yes | Observable behavior and scope |
-| `Why` | Yes | Gap being closed and reason to do the work |
-| `Design decisions` | Yes when choices exist | Normative rules and constraints |
-| Surface section | Yes when public surface exists | CLI, API, props/events, file format, or equivalent |
-| `Gherkin scenarios` | Yes | Link to the `.feature` file |
-| `Artifacts` | Yes once artifacts exist | Project-root-relative paths belonging to this spec |
-
-Specs must be formatted for human gate review. Use tables, diagrams, short paragraphs, and clear heading hierarchy when they make intent easier to inspect.
+The frontmatter schema (`status`, `type`, `aligned`, `blocked-by`, `subtasks`, `approved-by`, `domain-plugin`) and the required body sections are defined by `sdd:lifecycle-governance`; the universal `.feature` and `spec.md` format bar is defined by `sdd:spec-governance`. This plugin spec does not restate them. Specs must be formatted for human gate review: tables, diagrams, short paragraphs, and clear heading hierarchy when they make intent easier to inspect.
 
 ---
 
 ## Lifecycle
 
-### Exploration
-
-Exploration runs while the spec is `draft`. The spec-producer writes or revises `spec.md` and `.feature`; the plan-producer writes `plan.md` and `tasks.md`; forward producers may run in `explore` mode to spike the draft contract. Explore output is scaffolding that may be discarded or promoted. Discoveries return as content gaps and observations that feed back into the contract.
-
-### Spec Gate
-
-The spec gate moves `draft` to `approved`. `validate-spec` invokes `sdd-spec-judge`, which runs optional deterministic checks plus agent-level reasoning. The gate checks the contract layer only: required sections, no unresolved content gaps, valid ordered boolean Gherkin, domain criteria, reviewer acknowledgment, and legal state tuple. On pass, the skill records approval, sets status to `approved`, and the `.feature` becomes frozen.
-
-### Implementation
-
-Implementation runs while the spec is `approved`. Forward producers run in `implement` mode against the frozen `.feature`. The impl-producer writes the implementation and its verification, one check or evaluation per frozen scenario. The impl-judge runs that verification and adds structural or scope judgment as needed.
-
-### Impl Gate
-
-The impl gate moves `approved` to `implemented`. `validate-spec` invokes the impl-side path through the orchestrator, and the implementation passes only when every frozen scenario has a passing result. On pass, the skill records implementation approval and the orchestrator sets impl-layer alignment.
-
-### Deprecation
-
-Deprecation is a Framer decision. The spec remains in the graph for history, but downstream work must not treat it as an implementable ready node.
+Exploration → spec gate → implementation → impl gate → deprecation. The autonomous production chain that runs each phase is owned by `sdd-orchestrator`; gate mechanics, legal state tuples, and layer-scoped `aligned` by `sdd-gate-autonomy`; approval provenance by `sdd-provenance`. At a glance: exploration runs while `draft`; the spec gate moves `draft → approved` and freezes the `.feature`; implementation runs against the frozen `.feature`; the impl gate moves `approved → implemented`; deprecation is a Framer decision that retains the spec for history.
 
 ---
 
@@ -189,7 +93,7 @@ No CLI surface is required. The plugin exposes skills and agents.
 ```text
 sdd
   in: user intent to work on a feature under SDD
-  out: SDD governance and workflow loaded into context; routing to create-spec, validate-spec, or render-spec-graph
+  out: the requested SDD action classified and routed to create-spec, validate-spec, or render-spec-graph
 
 create-spec <domain-or-path>
   in: user brief, existing artifacts if any, optional iteration cap
@@ -223,16 +127,7 @@ sdd-implementer
   role: default impl-judge
 ```
 
-The generic Builder is the default impl-producer when no plugin agent fills the role.
-
-Uniform delegate output:
-
-```text
-STATUS: complete | needs-input | blocked
-QUESTIONS: [batched user questions]
-CONTENT_GAPS: [{ artifact, location, gap }]
-OBSERVATIONS: [{ owner: architect | curator, note, evidence }]
-```
+The generic Builder is the default impl-producer when no plugin agent fills the role. The uniform delegate I/O contract (`STATUS`, `QUESTIONS`, `CONTENT_GAPS`, `OBSERVATIONS`) is owned by `sdd-orchestrator`.
 
 ---
 
@@ -246,6 +141,7 @@ OBSERVATIONS: [{ owner: architect | curator, note, evidence }]
 - `artifacts/specs/sdd-gate-autonomy/spec.md` — legal state tuples and gate autonomy checks
 - `artifacts/specs/sdd-provenance/spec.md` — approval and provenance frontmatter
 - `artifacts/specs/sdd-spec-graph/spec.md` — derived spec DAG rendering
+- `artifacts/specs/sdd/sdd-skill/spec.md` — the `sdd` gateway contract
 - `artifacts/adr/0013-governance-skills.md` — governance skills replacing `governance show`
 
 ---
