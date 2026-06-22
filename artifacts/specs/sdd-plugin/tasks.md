@@ -11,9 +11,9 @@ Each task is an executable unit with an ID, dependency edges, and scenario trace
 ## Stream A — Orchestrator ownership and workflow boundaries
 
 - [x] `SDDP-101` Rename remaining runtime `sdd-author` surfaces to `sdd-orchestrator` — deps: SDDP-001 — serves: create-spec resumes the orchestrator after batched answers
-- [ ] `SDDP-102` Constrain orchestrator runs to one autonomous segment with `STATUS: complete | needs-input | blocked` — deps: SDDP-101 — serves: create-spec resumes the orchestrator after batched answers
-- [ ] `SDDP-103` Move user questions and gate confirmations into `create-spec` and `validate-spec` only — deps: SDDP-102 — serves: Ambiguous domain coverage is resolved by the skill; validate-spec freezes scenarios after human approval
-- [ ] `SDDP-104` Add delegate synthesis with `QUESTIONS`, `CONTENT_GAPS`, and `OBSERVATIONS` output blocks — deps: SDDP-102 — serves: Explore-mode implementation discoveries become content gaps; Observations are surfaced without blocking the current spec
+- [x] `SDDP-102` Constrain orchestrator runs to one autonomous segment with `STATUS: complete | needs-input | blocked` — deps: SDDP-101 — serves: create-spec resumes the orchestrator after batched answers
+- [x] `SDDP-103` Move user questions and gate confirmations into `create-spec` and `validate-spec` only — deps: SDDP-102 — serves: Ambiguous domain coverage is resolved by the skill; validate-spec freezes scenarios after human approval
+- [x] `SDDP-104` Add delegate synthesis with `QUESTIONS`, `CONTENT_GAPS`, and `OBSERVATIONS` output blocks — deps: SDDP-102 — serves: Explore-mode implementation discoveries become content gaps; Observations are surfaced without blocking the current spec
 - [ ] `SDDP-105` Enforce artifact write boundaries (`spec.md`, `.feature`, `plan.md`, `tasks.md`, implementation artifacts) — deps: SDDP-103, SDDP-104 — serves: Scaffold the co-delivered artifact chain for a new feature
 
 ## Stream B — Delegate role map and defaults
