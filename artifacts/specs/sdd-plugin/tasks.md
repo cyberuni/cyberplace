@@ -34,27 +34,27 @@ Each task is an executable unit with an ID, dependency edges, and scenario trace
 
 ## Stream D — Registry resolution and ambiguity handling
 
-- [ ] `SDDP-401` Update each `init-<plugin>` path to persist five-role map plus actor governances — deps: SDDP-201 — serves: Domain plugin init writes the resolved role map
-- [ ] `SDDP-402` Rewrite old-shape entries on plugin init rerun — deps: SDDP-401 — serves: Domain plugin init rewrites old registry shape
-- [ ] `SDDP-403` Resolve duplicate domain claims with `needs-input` and `domain-plugin` frontmatter choice — deps: SDDP-401, SDDP-103 — serves: Ambiguous domain coverage is resolved by the skill
-- [ ] `SDDP-404` Remove `plan.md` plugin assignment tables as a resolver input — deps: SDDP-401 — serves: Runtime resolution does not read plan.md plugin assignments
-- [ ] `SDDP-405` Enforce runtime delegate resolution from `.agents/universal-plugin.json` only — deps: SDDP-401, SDDP-404 — serves: Runtime resolution does not read plan.md plugin assignments
+- [x] `SDDP-401` Update each `init-<plugin>` path to persist five-role map plus actor governances — deps: SDDP-201 — serves: Domain plugin init writes the resolved role map
+- [x] `SDDP-402` Rewrite old-shape entries on plugin init rerun — deps: SDDP-401 — serves: Domain plugin init rewrites old registry shape
+- [x] `SDDP-403` Resolve duplicate domain claims with `needs-input` and `domain-plugin` frontmatter choice — deps: SDDP-401, SDDP-103 — serves: Ambiguous domain coverage is resolved by the skill
+- [x] `SDDP-404` Remove `plan.md` plugin assignment tables as a resolver input — deps: SDDP-401 — serves: Runtime resolution does not read plan.md plugin assignments
+- [x] `SDDP-405` Enforce runtime delegate resolution from `.agents/universal-plugin.json` only — deps: SDDP-401, SDDP-404 — serves: Runtime resolution does not read plan.md plugin assignments
 
 ## Stream E — Gate behavior, lifecycle, and provenance
 
-- [ ] `SDDP-501` Validate legal `(status, aligned, markers, .feature)` tuples in gate flow — deps: SDDP-102 — serves: validate-spec accepts draft aligned true as ready for the spec gate
-- [ ] `SDDP-502` Route `validate-spec` to spec gate by default for `draft` status — deps: SDDP-501, SDDP-204 — serves: validate-spec runs the spec gate against the contract layer
-- [ ] `SDDP-503` Route `validate-spec` to impl gate by default for `approved` status — deps: SDDP-501, SDDP-205 — serves: Implementation runs against the frozen feature
-- [ ] `SDDP-504` Record spec approval provenance on Draft -> Approved transitions — deps: SDDP-502 — serves: validate-spec freezes scenarios after human approval
-- [ ] `SDDP-505` Record impl approval provenance on Approved -> Implemented transitions — deps: SDDP-503 — serves: Impl gate passes only when every frozen scenario passes
-- [ ] `SDDP-506` Keep deterministic checks optional with agent-level fallback when Node tooling is unavailable — deps: SDDP-502 — serves: validate-spec can run without NodeJS
+- [x] `SDDP-501` Validate legal `(status, aligned, markers, .feature)` tuples in gate flow — deps: SDDP-102 — serves: validate-spec accepts draft aligned true as ready for the spec gate
+- [x] `SDDP-502` Route `validate-spec` to spec gate by default for `draft` status — deps: SDDP-501, SDDP-204 — serves: validate-spec runs the spec gate against the contract layer
+- [x] `SDDP-503` Route `validate-spec` to impl gate by default for `approved` status — deps: SDDP-501, SDDP-205 — serves: Implementation runs against the frozen feature
+- [x] `SDDP-504` Record spec approval provenance on Draft -> Approved transitions — deps: SDDP-502 — serves: validate-spec freezes scenarios after human approval
+- [x] `SDDP-505` Record impl approval provenance on Approved -> Implemented transitions — deps: SDDP-503 — serves: Impl gate passes only when every frozen scenario passes
+- [x] `SDDP-506` Keep deterministic checks optional with agent-level fallback when Node tooling is unavailable — deps: SDDP-502 — serves: validate-spec can run without NodeJS
 
 ## Stream F — Consumer plugin migration
 
-- [ ] `SDDP-601` Migrate Quill mapping from `quill-scenario-advisor` to `quill-writer` and `quill-doc-writer` role targets — deps: SDDP-401 — serves: Domain plugin init writes the resolved role map
-- [ ] `SDDP-602` Preserve Quill impl-judge mapping to `quill-implementer` — deps: SDDP-601 — serves: Impl gate passes only when every frozen scenario passes
-- [ ] `SDDP-603` Migrate ACES mapping from `aces-spec-designer` to `aces-scenario-writer` and keep `aces-spec-validator` as spec-judge — deps: SDDP-401 — serves: A plugin-written feature must pass the universal format bar
-- [ ] `SDDP-604` Shift ACES eval authoring to impl-producer and eval execution to `aces-implementer` — deps: SDDP-603 — serves: Implementation runs against the frozen feature
+- [x] `SDDP-601` Migrate Quill mapping from `quill-scenario-advisor` to `quill-writer` and `quill-doc-writer` role targets — deps: SDDP-401 — serves: Domain plugin init writes the resolved role map
+- [x] `SDDP-602` Preserve Quill impl-judge mapping to `quill-implementer` — deps: SDDP-601 — serves: Impl gate passes only when every frozen scenario passes
+- [x] `SDDP-603` Migrate ACES mapping from `aces-spec-designer` to `aces-scenario-writer` and keep `aces-spec-validator` as spec-judge — deps: SDDP-401 — serves: A plugin-written feature must pass the universal format bar
+- [x] `SDDP-604` Shift ACES eval authoring to impl-producer and eval execution to `aces-implementer` — deps: SDDP-603 — serves: Implementation runs against the frozen feature
 
 ## Deferred
 
