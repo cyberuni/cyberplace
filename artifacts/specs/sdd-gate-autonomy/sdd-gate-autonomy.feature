@@ -1,5 +1,7 @@
 Feature: Gate autonomy and accountability
 
+  # ── leash derivation ──────────────────────────────────────────────────
+
   Scenario: a novel contract decision derives gated
     Given the spec encodes a contestable decision the human has not seen
     When the agent assesses the spec gate
@@ -35,6 +37,8 @@ Feature: Gate autonomy and accountability
     Then it is the minimum of the ceiling and the derivation
     And the agent stops at the spec gate
 
+  # ── gate report ───────────────────────────────────────────────────────
+
   Scenario: the gate report records the leash derivation
     Given the agent reaches a gate
     When it emits the gate report
@@ -54,6 +58,8 @@ Feature: Gate autonomy and accountability
     Then the gate report is regenerated from current artifact state
     And no stored gate-report file exists
 
+  # ── approved-by attribution ───────────────────────────────────────────
+
   Scenario: a self-assertion records its derivation in frontmatter
     Given the agent self-asserts a gate
     When the orchestrator records it
@@ -71,6 +77,8 @@ Feature: Gate autonomy and accountability
     When each record is written
     Then the orchestrator wrote the agent self-assertion and its why
     And the skill wrote the human ratification
+
+  # ── gate actions ──────────────────────────────────────────────────────
 
   Scenario: change at the spec gate edits the contract
     Given the spec gate report is returned with "change"
@@ -101,6 +109,8 @@ Feature: Gate autonomy and accountability
     When the human ratifies the spec gate
     Then approved-by.spec is the human's name
     And the spec leaves the review queue
+
+  # ── state integrity ───────────────────────────────────────────────────
 
   Scenario: an illegal state tuple is rejected
     Given a spec with status "draft" and an implementation committed against an unfrozen .feature

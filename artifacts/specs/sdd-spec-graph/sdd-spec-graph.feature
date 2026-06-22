@@ -1,5 +1,7 @@
 Feature: Render the spec DAG to graph.md
 
+  # ── edges and nodes ───────────────────────────────────────────────────
+
   Scenario: a blocked-by edge becomes a graph edge
     Given a spec "universal-plugin" with blocked-by "sdd-plugin"
     When the renderer runs
@@ -22,6 +24,8 @@ Feature: Render the spec DAG to graph.md
     When the renderer runs
     Then graph.md has a node table row for "universal-plugin" showing blocked-by "sdd-plugin" and status "draft"
 
+  # ── determinism and cycles ────────────────────────────────────────────
+
   Scenario: output is deterministic across runs
     Given a fixed set of specs
     When the renderer runs twice
@@ -34,6 +38,8 @@ Feature: Render the spec DAG to graph.md
     Then it reports the cycle "a -> b -> a"
     And it exits with code 1
     And it does not write graph.md
+
+  # ── check mode ─────────────────────────────────────────────────────────
 
   Scenario: check mode passes when graph.md is current
     Given graph.md matches the current blocked-by edges
@@ -51,6 +57,8 @@ Feature: Render the spec DAG to graph.md
     Given graph.md does not exist
     When the renderer runs with --check
     Then it exits with code 1
+
+  # ── parsing and discovery ─────────────────────────────────────────────
 
   Scenario: frontmatter blocked-by is parsed in every form
     Given a spec with inline "blocked-by: [x, y]"

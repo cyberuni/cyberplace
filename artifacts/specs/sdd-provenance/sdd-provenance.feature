@@ -1,5 +1,7 @@
 Feature: Production provenance
 
+  # ── recording provenance ──────────────────────────────────────────────
+
   Scenario: the producer is recorded on every artifact
     Given the orchestrator dispatches the spec-producer for a domain
     When the producer writes the .feature
@@ -11,6 +13,8 @@ Feature: Production provenance
     And approved-by records the judge of its gate
     When the artifact is traced
     Then both the producer and the judge are known
+
+  # ── resume and availability ───────────────────────────────────────────
 
   Scenario: resume reuses the recorded producer when its plugin is installed
     Given produced-by.spec-producer is "aces:aces-scenario-writer"
@@ -24,6 +28,8 @@ Feature: Production provenance
     Then it re-resolves the producer from the registry
     And the historical produced-by value is preserved, annotated unavailable
     And work is not blocked
+
+  # ── defaults and conflicts ────────────────────────────────────────────
 
   Scenario: a degenerate role records the SDD default
     Given no plugin covers the spec's domain
@@ -44,6 +50,8 @@ Feature: Production provenance
     Then it returns needs-input for the choice
     And the chosen producer is recorded in produced-by
     And a later resume does not re-ask
+
+  # ── validation, migration, ownership ──────────────────────────────────
 
   Scenario: validate-spec flags but does not block an unavailable producer
     Given produced-by names a producer whose plugin is not installed
