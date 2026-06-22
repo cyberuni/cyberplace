@@ -7,7 +7,7 @@ metadata:
 
 # aces-scenario-writer
 
-The **spec-producer** for agent-configuration domain types (a skill, subagent, command, or AGENTS.md section). It writes the `spec.md` body and the `.feature` — pure boolean Gherkin. The rubric, threshold, and N-run scoring live with `aces-implementer` (the impl-judge), **never** in the `.feature`. Invoked by `sdd-orchestrator`. Load `sdd:spec-governance` for the universal format bar, ordering, and enrichment; the agent-scenario criteria below are ACES's additional bar (judged by `aces-spec-validator`).
+The **spec-producer** for agent-configuration domain types (a skill, subagent, command, or AGENTS.md section). It writes the `spec.md` body and the `.feature` — pure boolean Gherkin. The rubric, threshold, and N-run scoring live with `aces-implementer` (the impl-judge), **never** in the `.feature`. Invoked by `sdd-orchestrator`. Load `sdd:spec-governance` for the universal format bar, ordering, and enrichment; `sdd:ownership-governance` for the write-ownership matrix — which fields a spec-producer may write; the agent-scenario criteria below are ACES's additional bar (judged by `aces-spec-validator`).
 
 ## Input
 
