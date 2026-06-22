@@ -12,7 +12,7 @@ blocked-by: []
 
 ## What
 
-`define-skill` handles two cases: **create** (scaffold a new skill from requirements) and **improve** (read an existing skill and address gaps). Both paths converge at the same checkpoint: quality checks pass, symlinks are wired, and `aces:create-spec` is the suggested next step.
+`define-skill` handles two cases: **create** (scaffold a new skill from requirements) and **improve** (read an existing skill and address gaps). Both paths converge at the same checkpoint: quality checks pass, symlinks are wired, and running `sdd:create-spec` (the orchestrator resolves the ACES delegates) is the suggested next step.
 
 ### Content type guard
 
@@ -82,21 +82,28 @@ Frontmatter rules:
 - `metadata.persona: "true"` for Persona pattern
 - `metadata.activation` only for hook-backed skills; omit otherwise
 
-Body rules (from skill-design governance):
+Body rules (from the harness-loaded `skill-design` governance skill; spec/eval structure from `sdd:spec-governance`):
 - Agent-first: dense, self-contained; no links to other repo files
 - No `## Why` or rationale sections
 - Encode decisions and constraints, not background explanation
-- Load depth via `governance show`, not inline prose
+- Load reference depth from the relevant governance skill resolved by the harness — never via a runtime `governance show` call
 
 ### Quality checks
 
-After drafting, run:
+After drafting, evaluate the skill against these checks (mirroring how `define-agent` self-checks its output):
 
-```bash
-npx cyber-skills@<version> audit validate --path <canonical-path>
-```
+| # | Check | Severity |
+|---|-------|----------|
+| F1 | `name` and `description` fields present | CRITICAL |
+| F2 | `name` is kebab-case and matches the folder name | HIGH |
+| F3 | `description` starts with "Use this skill when…" (or "Internal skill:" for a sub-skill) | HIGH |
+| F4 | `description` is a plain single-line string — no YAML block scalar (`\|` or `>`) | HIGH |
+| F5 | `metadata.internal: true` present for project-private skills | HIGH |
+| B1 | Body is agent-first: dense, self-contained, no links to other repo files | HIGH |
+| B2 | No `## Why` or rationale prose | MEDIUM |
+| B3 | One workflow per skill; no scope creep | MEDIUM |
 
-Report all findings. Fix CRITICAL and HIGH before presenting the final file.
+Report results. Fix any CRITICAL or HIGH failures before presenting the final file to the user.
 
 ### Symlinks
 
@@ -122,7 +129,7 @@ Write `README.md` beside every `SKILL.md`:
 - Canonical file path written
 - Runtime symlinks created (list each)
 - Quality check outcome: pass / findings-fixed / open-findings
-- Suggested next step: run `aces:create-spec` to build an eval suite for this skill
+- Suggested next step: run `sdd:create-spec` (the orchestrator resolves the ACES roles) to spec and eval for this skill
 
 ---
 
