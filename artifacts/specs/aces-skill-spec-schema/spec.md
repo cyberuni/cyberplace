@@ -10,9 +10,9 @@ blocked-by: []
 
 ## What
 
-A governance document (`aces:skill-spec-schema`) that defines the additional structure required in a `spec.md` when the artifact being specified is an agentic skill. It extends the generic SDD spec template with sections specific to agent behavior: trigger conditions, behavioral contracts, failure modes, and eval-ready scenarios.
+A governance document (`aces:skill-spec-schema`) that defines the additional structure required in a `spec.md` when the artifact being specified is an agentic skill. It extends the universal SDD format bar (`sdd:spec-governance`) with sections specific to agent behavior: trigger conditions, behavioral contracts, failure modes, and eval-ready scenarios.
 
-The schema is loaded by `aces-spec-designer` via the governance composition mechanism. It does not replace the SDD spec template — it layers on top of it.
+The schema is loaded by `aces-scenario-writer` (the ACES spec-producer) via the governance composition mechanism. It does not replace `sdd:spec-governance` — it layers on top of it.
 
 ---
 
@@ -25,7 +25,7 @@ A generic SDD `spec.md` (`What`, `Why`, `Design decisions`, `Command surface`) i
 - **Failure modes are agent-specific.** A skill can fail by triggering when it should not, by not triggering when it should, or by executing the wrong sequence of actions — none of which appear in a standard error-codes table.
 - **Eval cases must be embedded.** The spec is the source of truth for ACES test cases. If the spec does not encode representative trigger queries and golden-set behaviors, the eval suite cannot be generated reliably.
 
-Without a schema, `aces-spec-designer` produces structurally inconsistent specs — some have trigger sections, some don't; eval case generation is unpredictable.
+Without a schema, `aces-scenario-writer` produces structurally inconsistent specs — some have trigger sections, some don't; eval case generation is unpredictable.
 
 ---
 
@@ -39,9 +39,9 @@ The skill spec schema is published as an ACES governance (`aces:skill-spec-schem
 
 A template file would require agents to know the path; a governance is resolved by name.
 
-### Extends SDD template, does not replace it
+### Extends the SDD format bar, does not replace it
 
-The skill spec schema adds sections; it does not define a competing spec format. `aces-spec-designer` loads both `sdd:spec-template` and `aces:skill-spec-schema`. The SDD sections are required; the ACES sections are additional.
+The skill spec schema adds sections; it does not define a competing spec format. `aces-scenario-writer` loads both `sdd:spec-governance` (the universal `.feature`/`spec.md` format bar) and `aces:skill-spec-schema`. The SDD sections are required; the ACES sections are additional.
 
 This keeps skill specs readable by anyone familiar with SDD, while giving ACES the structure it needs for eval generation.
 
@@ -85,16 +85,15 @@ The `aces:skill-spec-schema` governance defines these additional required sectio
 
 ## Command surface / API
 
-This feature has no CLI surface. The governance is consumed by agent definitions:
+This feature has no CLI surface. The governance is composed declaratively by the spec-producer via `requires_governances` (the loading mechanism defined in the `governance-composition` feature spec):
 
 ```yaml
 requires_governances:
-  - sdd:sdd-principles
-  - sdd:spec-template
+  - sdd:spec-governance
   - aces:skill-spec-schema
 ```
 
-Validation of compliance is handled by `aces-spec-validator` (existing) using the section checklist above.
+`sdd:spec-governance` supplies the universal format bar; `aces:skill-spec-schema` layers the agent-skill sections on top. Validation of compliance is handled by `aces-spec-validator` (the ACES spec-judge) using the section checklist above.
 
 **Gherkin scenarios:** _(pending spec approval)_
 
@@ -102,6 +101,5 @@ Validation of compliance is handled by `aces-spec-validator` (existing) using th
 
 ## Related
 
-- `artifacts/specs/governance-composition/spec.md` — the loading mechanism
-- `artifacts/specs/aces-spec-designer-composition/spec.md` — how `aces-spec-designer` uses this schema
-- `artifacts/specs/sdd-plugin/governances/spec-template.md` — the base template this extends
+- `artifacts/specs/governance-composition/spec.md` — the `requires_governances` loading mechanism
+- `sdd:spec-governance` — the universal SDD format bar this schema extends (harness-loaded governance skill)
