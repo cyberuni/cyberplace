@@ -36,7 +36,7 @@ graph TD
 | `sdd-orchestrator` | — | approved |
 | `sdd-plugin` | — | draft |
 | `sdd-provenance` | `sdd-orchestrator`, `sdd-plugin` | draft |
-| `sdd-spec-discovery` | `sdd-plugin` | draft |
+| `sdd-spec-discovery` | `sdd-plugin` | approved |
 | `sdd-spec-graph` | `sdd-plugin` | draft |
 | `sdd/sdd-skill` | — | draft |
 | `sdd/spec-digest` | — | draft |

@@ -1,8 +1,11 @@
 ---
-status: draft
-aligned: false
+status: approved
+aligned: true
 blocked-by:
   - sdd-plugin
+approved-by:
+  spec:
+    by: unional
 ---
 
 # Spec Discovery
