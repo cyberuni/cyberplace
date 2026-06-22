@@ -6,6 +6,7 @@ aligned: false
 approved-by: {}
 subtasks:
   - sdd-orchestrator
+  - sdd-contract-registry
   - sdd-gate-autonomy
   - sdd-provenance
   - sdd-spec-discovery
@@ -62,7 +63,8 @@ This project composes the feature specs below; each owns its detailed rules and 
 
 | Feature spec | Owns |
 |---|---|
-| `sdd-orchestrator` | autonomous segment, delegate resolution, the five-artifact production chain, the `.agents/universal-plugin.json` registry, uniform delegate I/O, observations, content gaps |
+| `sdd-orchestrator` | autonomous segment, delegate resolution from the registry, the five-artifact production chain, uniform delegate I/O, observations, content gaps |
+| `sdd-contract-registry` | the `.agents/universal-plugin.json` `sdd-plugins` file shape, the five-role entry map, and idempotent init-write |
 | `sdd-gate-autonomy` | legal state tuples, status transitions as gate decisions, layer-scoped `aligned`, the frozen-`.feature` reopen path |
 | `sdd-provenance` | approval and provenance frontmatter (`approved-by`) |
 | `sdd-spec-graph` | the derived spec DAG and composition rendering |
@@ -137,7 +139,8 @@ The generic Builder is the default impl-producer when no plugin agent fills the 
 
 ## Related
 
-- `artifacts/specs/sdd-orchestrator/spec.md` — delegate model, production chain, gates, registry, and uniform I/O
+- `artifacts/specs/sdd-orchestrator/spec.md` — delegate model, production chain, gates, and uniform I/O
+- `artifacts/specs/sdd-contract-registry/spec.md` — the `sdd-plugins` registry file shape and init-write
 - `artifacts/specs/sdd-gate-autonomy/spec.md` — legal state tuples and gate autonomy checks
 - `artifacts/specs/sdd-provenance/spec.md` — approval and provenance frontmatter
 - `artifacts/specs/sdd-spec-graph/spec.md` — derived spec DAG rendering

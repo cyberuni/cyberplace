@@ -1,88 +1,73 @@
 ---
 status: draft
 type: project
-blocked-by:
-  - sdd-plugin
+blocked-by: []
 aligned: false
+subtasks:
+  - dag-tooling
 ---
 
-# Universal Plugin: SDD Contract Registry
+# Universal Plugin
 
 ---
 
 ## What
 
-The `.agents/universal-plugin.json` file carries an `sdd-plugins` section — a project-level registry mapping domain plugins to the SDD contracts they implement. When `sdd-author` needs to resolve a scenario-advisor or implementer for a given domain type, it reads this file as the project-wide default, falling back to it only when the spec's `plan.md` `## Plugin assignments` table has no explicit entry.
+The universal plugin builds, composes, and distributes **agent configuration** — skills, governances, agent definitions, commands, and discipline hooks — so one authored source set can target many harnesses (Claude Code, Cursor, Codex, Copilot). It ships as the `universal-plugin` package (a CLI plus pure domain logic) and the skills that drive authoring and distribution. As the **project** spec it stays high-level: it names the capabilities the plugin delivers and the **feature specs** that own each one, rather than restating their rules.
 
-Each entry names a plugin and lists the domain types it handles per contract:
-
-```json
-{
-  "sdd-plugins": [
-    {
-      "name": "aces",
-      "scenario-advisor": ["agent-config", "skill"],
-      "implementer": ["agent-config", "skill"]
-    },
-    {
-      "name": "quill",
-      "scenario-advisor": ["documentation", "guide", "article"],
-      "implementer": ["documentation", "guide", "article"]
-    }
-  ]
-}
-```
-
-A domain plugin's `init` skill writes its entry idempotently — replacing its own entry if already present, leaving all other entries unchanged.
+The plugin's capabilities span build (emit per-harness output from one source), governance composition (embed required governance inline at build time), preparation and sync (stage and reconcile distributable assets), source/vendor registries (track where assets come from and go), publishing and marketplace surfaces, and reusable tooling shared across plugins. Detailed package architecture lives in `packages/universal-plugin/AGENTS.md`; detailed behaviors live in the feature specs.
 
 ---
 
 ## Why
 
-Without a project-level registry, every spec's `plan.md` must manually declare which plugin handles which domain type. That is repeated, error-prone, and disconnected from what is actually installed in the project. The registry lets a domain plugin's `init` skill register once at the project level; `plan.md` overrides only when per-spec control is needed.
+Agent configuration is authored once but must run in many harnesses, each with its own file layout and conventions. Without a build-and-distribute tool, every author hand-duplicates artifacts per harness and re-resolves governance at runtime. The universal plugin makes the source set the single origin: it composes and emits per-harness output, embeds governance ahead of time, and distributes the result. Capturing it as a typed project spec lets shared, reusable concerns (like graph/DAG tooling) be split into feature specs and reused by other plugins instead of being re-implemented per consumer.
 
 ---
 
 ## Design decisions
 
-- **Flat contract keys, not nested `"contracts"` object** — `"scenario-advisor"` and `"implementer"` are direct keys on each entry. A wrapper object adds no information.
-- **Domain types are open strings, not an enum** — keeps the format extensible without a schema version bump when new domain types appear (e.g., `"openapi"`, `"database-schema"`).
-- **`.agents/universal-plugin.json` as the file** — the file already exists as the home for universal-plugin project configuration. `sdd-plugins` extends it rather than introducing a new config file.
-- **Init skills write the file directly; TypeScript CLI later** — `sdd-author` (an agent) reads the JSON file directly. The TypeScript `universal-plugin` CLI does not need to expose this yet; that can be added when tooling around the registry warrants it.
-- **Resolution order: `plan.md` first, registry second** — per-spec `## Plugin assignments` overrides the registry. The registry is the default only.
-- **A plugin omits a contract key if it does not implement that contract** — a plugin may implement `implementer` but not `scenario-advisor`; omitting the key is valid and means "no advisor for these domains."
+### The project composes feature specs
+
+This spec is the high-level project for the universal plugin. It owns no behavior of its own beyond composition; each capability is a `type: feature` spec listed in `subtasks`, and this spec cross-references those features instead of restating their rules. New capabilities are added as feature specs, not as sections here.
+
+### Reusable tooling is shipped as skills that run bundled scripts
+
+Cross-plugin reusable logic (for example, graph/DAG operations) is delivered as a universal-plugin-owned **skill** that runs a bundled `.mts` script, with an agent-level fallback when Node is unavailable. This avoids a CLI subcommand for shared primitives, because invoking a pinned-version CLI is an unsolved resolution problem; a skill with a local script runs without version pinning. The `dag-tooling` feature spec owns this.
+
+### Distribution targets are detected, not assumed
+
+The plugin emits output per target harness and embeds governance at build time so the agent has it from the first message. The build, governance-composition, and distribution rules are owned by their feature specs and the package domains under `packages/universal-plugin/src/`.
 
 ---
 
-## Command surface / API
+## Feature specs
 
-`.agents/universal-plugin.json` schema (`sdd-plugins` section):
+This project composes the feature specs below; each owns its detailed rules and scenarios.
 
-```json
-{
-  "sdd-plugins": [
-    {
-      "name": "<plugin-name>",
-      "scenario-advisor": ["<domain-type>", ...],
-      "implementer": ["<domain-type>", ...]
-    }
-  ]
-}
-```
+| Feature spec | Owns |
+|---|---|
+| `dag-tooling` | reusable graph/DAG primitives (cycle detection, topological order, single-parent tree validation, parent-from-children resolution, Mermaid rendering) as a skill-run script with an agent fallback |
 
-| Field | Required | Description |
-|---|---|---|
-| `name` | Yes | Plugin name — matches the plugin's `.plugin/plugin.json` `name` field |
-| `scenario-advisor` | No | Domain types this plugin handles for the scenario-advisor contract |
-| `implementer` | No | Domain types this plugin handles for the implementer contract |
+Capabilities still tracked only in `packages/universal-plugin/src/` (no dedicated feature spec yet): `build`, `governance`, `prepare`, `sync`, `source-registry`, `vendor-registry`, `marketplace`, `publish`, `self-update`.
 
-**Init skill write behavior:**
+---
 
-1. Read `.agents/universal-plugin.json`; create the file with `{}` if missing.
-2. Locate the existing entry whose `name` matches this plugin; replace it if found, append if not.
-3. Write the file back. Do not reorder or reformat other entries.
+## Surface
+
+No new public interface is defined by this project spec; surfaces belong to the feature specs and to the `universal-plugin` package CLI documented in `packages/universal-plugin/`. The plugin exposes skills (authoring and distribution) and a `universal-plugin` CLI.
+
+---
 
 **Gherkin scenarios:** [universal-plugin.feature](./universal-plugin.feature)
+
+---
+
+## Related
+
+- `artifacts/specs/dag-tooling/spec.md` — reusable graph/DAG tooling feature
+- `artifacts/specs/governance-composition/spec.md` — build-time governance embedding (candidate universal-plugin feature)
+- `packages/universal-plugin/AGENTS.md` — package architecture (screaming + clean architecture)
 
 ---
 
@@ -92,6 +77,4 @@ Without a project-level registry, every spec's `plan.md` must manually declare w
 |---|---|
 | Spec | `artifacts/specs/universal-plugin/spec.md` |
 | Scenarios | `artifacts/specs/universal-plugin/universal-plugin.feature` |
-| Registry file | `.agents/universal-plugin.json` |
-| ACES init skill | `plugins/aces/skills/` |
-| Quill init skill | `plugins/quill/skills/` (future) |
+| Package | `packages/universal-plugin/` |
