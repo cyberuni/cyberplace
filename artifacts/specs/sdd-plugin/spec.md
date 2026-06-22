@@ -1,9 +1,11 @@
 ---
-status: draft
+status: approved
 type: project
 blocked-by: []
 aligned: false
-approved-by: {}
+approved-by:
+  spec:
+    by: unional
 subtasks:
   - sdd-orchestrator
   - sdd-contract-registry
