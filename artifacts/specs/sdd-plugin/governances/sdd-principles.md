@@ -1,6 +1,6 @@
 # SDD Principles
 
-Core rules for spec-driven development. Load this governance when writing, reviewing, or implementing a spec.
+Core rules for spec-driven development. Load this governance when writing, reviewing, or implementing a spec. For the full role/governance wiring (which agent role loads which governance skill), see `sdd:plugin-contract-governance`.
 
 ---
 
