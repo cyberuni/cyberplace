@@ -24,4 +24,7 @@ Each task is an executable unit; dependencies are noted. Order is emergent from 
 - [x] Add design decisions for workflow vocabulary and complete-draft auto-routing to `spec.md` — serves: vocabulary, signal-based routing
 - [x] Add scenarios for complete-draft → spec gate and open-marker → revise to `sdd-skill.feature` — deps: spec.md
 - [ ] Update `plugins/sdd/skills/sdd/SKILL.md` routing table + report to workflow vocabulary and signal-based tiebreaker — deps: spec.md, scenarios
-- [ ] Run mechanical skill audit and `pnpm verify` — deps: skill update
+- [ ] Replace lifecycle-governance load with inlined routing table in SKILL.md — deps: spec.md
+- [ ] Replace upfront file reads with conditional frontmatter-first reads in SKILL.md — deps: spec.md
+- [ ] Update SKILL.md to spawn a subagent for all downstream SDD work instead of loading sub-skills inline — deps: spec.md, delegation scenarios
+- [ ] Run mechanical skill audit and `pnpm verify` — deps: all skill updates
