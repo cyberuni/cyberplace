@@ -1,6 +1,11 @@
 ---
 status: draft
+type: project
 blocked-by: []
+subtasks:
+  - aces-skill-spec-schema
+  - aces-spec-designer-composition
+  - define-skill
 ---
 
 # ACES Plugin

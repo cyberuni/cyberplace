@@ -1,5 +1,6 @@
 ---
 status: draft
+type: project
 blocked-by: []
 ---
 

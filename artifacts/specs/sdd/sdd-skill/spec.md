@@ -1,5 +1,6 @@
 ---
 status: implemented
+type: feature
 aligned: true
 approved-by:
   spec:

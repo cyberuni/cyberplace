@@ -1,5 +1,6 @@
 ---
 status: approved
+type: feature
 blocked-by:
   - sdd-orchestrator
   - sdd-plugin
