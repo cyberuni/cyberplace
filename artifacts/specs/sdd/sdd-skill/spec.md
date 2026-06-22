@@ -39,7 +39,19 @@ The gateway skill does not choose producer or judge roles, load artifact authori
 
 ### The gateway is lightweight
 
-As a routing skill, `sdd` does only intake, lifecycle-state inspection, and route selection — no document authoring, no orchestrator invocations. This work requires minimal reasoning: it reads at most four small files, applies a routing table, and reports one next action. The skill should run on a small/fast model at low effort. Authoring and judging work happens in the skills invoked downstream.
+As a routing skill, `sdd` does only intake, lifecycle-state inspection, and route selection — no document authoring, no orchestrator invocations. This work requires minimal reasoning: it reads at most a small number of files conditionally, applies a routing table, and reports one next action. The skill should run on a small/fast model at low effort. Authoring and judging work happens in the skills invoked downstream.
+
+### Gateway delegates downstream work to a subagent
+
+When the gateway resolves a route, it spawns a subagent to carry out the downstream SDD work (create-spec, validate-spec, render-spec-graph) rather than loading those skills into the current session. The gateway's context remains bounded to intake, spec.md frontmatter, the inlined routing table, and the route report. All authoring, validation, and orchestration context lives in the spawned subagent session. The subagent receives the resolved route, domain, and any relevant file paths as its prompt context.
+
+### Gateway inlines the routing table instead of loading lifecycle-governance
+
+The gateway only needs the status enum (five values) and the routing table (status → workflow action). It does not need the full schema, open-marker format rules, or freeze state-machine details that lifecycle-governance documents for producers and judges. Those five values and their routes are inlined directly in the SKILL.md. If lifecycle status values change, the SKILL.md routing table must be updated alongside the governance doc.
+
+### Gateway reads spec.md frontmatter first, then reads conditionally
+
+When a domain is named, the gateway reads spec.md to extract its frontmatter status. It does not read .feature, plan.md, or the spec.md body for routing purposes. If and only if status is `draft`, it reads tasks.md to check for unchecked items. If tasks are all checked, it scans spec.md and the .feature for `<!-- open: ... -->` markers. The gateway never reads plan.md; it is not needed for route selection.
 
 ### Routes are named as workflow actions, not skill or CLI names
 

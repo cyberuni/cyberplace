@@ -108,6 +108,27 @@ Feature: SDD gateway skill
     Then the next action is validate-spec for state validation
     And implementation does not start until the lifecycle state is legal
 
+  # ── delegation ─────────────────────────────────────────────────────────
+
+  Scenario: Delegate create-spec work to a subagent
+    Given the user says "use SDD to create a spec for auth"
+    When the agent invokes the sdd skill
+    Then the agent spawns a subagent to run create-spec for auth
+    And the sdd skill session does not load create-spec content into the current context
+
+  Scenario: Delegate validate-spec work to a subagent
+    Given specs/auth/spec.md has status draft
+    And all tasks are checked and no open markers exist
+    When the user asks to review at the spec gate
+    Then the agent spawns a subagent to run validate-spec for auth
+    And the sdd skill session does not load validate-spec content into the current context
+
+  Scenario: Gateway context remains bounded after routing
+    Given the user invokes the sdd skill for any valid route
+    When the route is resolved and the subagent is spawned
+    Then the sdd skill session contains only intake, the spec.md frontmatter, the inlined routing table, and the route report
+    And no sub-skill body is loaded into the sdd skill session
+
   # ── errors ─────────────────────────────────────────────────────────────
 
   Scenario: Report an error on an ambiguous nonempty request
