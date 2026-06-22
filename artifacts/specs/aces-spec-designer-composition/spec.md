@@ -1,5 +1,5 @@
 ---
-status: draft
+status: deprecated
 type: feature
 blocked-by:
   - governance-composition
@@ -7,6 +7,16 @@ blocked-by:
 ---
 
 # aces-spec-designer Governance-Aware Flow
+
+> **Deprecated (Framer kill decision).** This spec is obsolete. Its core change —
+> renaming `aces-spec-designer` and loading SDD governance at construction — already
+> shipped (the agent is now `aces-scenario-writer`), and the design direction has
+> flipped: under the SDD orchestrator/plugin-delegate model, ACES **provides the
+> spec-producer** (`aces-scenario-writer`) as a delegate the SDD orchestrator invokes,
+> rather than a designer that loads SDD process governances to drive its own flow.
+> The governances referenced here (`sdd:sdd-principles`, `sdd:spec-template`) no longer
+> exist; current SDD governance lives in `sdd:lifecycle-governance`, `sdd:spec-governance`,
+> `sdd:ownership-governance`, and `sdd:gate-validation-governance`. Retained for history.
 
 ---
 
