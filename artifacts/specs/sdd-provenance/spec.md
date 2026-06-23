@@ -81,6 +81,12 @@ A recorded producer whose plugin is **gone** is therefore not an error: step 1 m
 
 Because the producer is now recorded on **every** production, the resume is decisive in every case — which is exactly what the `domain-plugin` map existed to provide after a disambiguation. The map is **retired**: a genuine first-time conflict still returns `needs-input` once (step 4), but the choice is captured in `produced-by`, not a parallel map. One record, all cases.
 
+### Gates never resolve setup ambiguity — they fail closed
+
+Disambiguation is a **setup** act, owned by the producing path (`create-spec`); a **gate** (`validate-spec`) is **verdict-only**. Recording `produced-by` on every production normally makes a gate's resolution a cache hit, so the question never reaches a gate. But a spec authored **before** a second plugin existed can arrive at a gate with no cache for the contested role — at which point the orchestrator's resolve step returns `needs-input` from inside a gate segment.
+
+The gate must **not** absorb this. `validate-spec` owns only verdict frontmatter (`status`, the human ratification of `approved-by`); it must never write setup frontmatter (`produced-by` / the retired `domain-plugin`). On a `needs-input` for a contested producer during a gate, the gate **fails closed** with a blocker — "resolve the domain producer via `create-spec` first" — rather than silently asking and writing. The invariant is symmetric across both gates (spec and impl): setup ambiguity is resolved on the producing path and persisted to frontmatter there, so by the time a gate reads it the answer is already a fact. This keeps the gate verdict-only and `create-spec` the sole writer of producer choice.
+
 ### Inline and default producers are recorded too
 
 When a role degenerates to the SDD default, `produced-by` records `sdd:<default>`. When the orchestrator executes a role **inline** with no producer agent (the gap noted in `sdd-gate-autonomy`, where ACES delegation is documented but executed inline), it records `sdd:orchestrator-inline` — so "no real domain producer ran here" is **visible in the data**, not silent. Provenance should never hide that a producer was missing.
