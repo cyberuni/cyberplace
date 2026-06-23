@@ -117,7 +117,8 @@ produced-by:
 **`validate-spec` checks:**
 - `produced-by` entries are well-formed plugin-qualified names;
 - an entry whose plugin is **not installed** is **flagged, not blocked** (it is valid history);
-- the `domain-plugin` map, if present, is migrated into `produced-by` (rewrite-on-encounter), then dropped.
+- the `domain-plugin` map, if present, is migrated into `produced-by` (rewrite-on-encounter), then dropped;
+- a contested role with **no cache** **fails the gate closed**, deferring to `create-spec` — the gate never asks for or writes the producer choice. Symmetric across the spec and impl gates.
 
 **Gherkin scenarios:** [sdd-provenance.feature](./sdd-provenance.feature)
 

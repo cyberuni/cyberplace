@@ -51,6 +51,32 @@ Feature: Production provenance
     And the chosen producer is recorded in produced-by
     And a later resume does not re-ask
 
+  # ── gate fail-closed ──────────────────────────────────────────────────
+
+  Scenario: the spec gate fails closed on an unresolved contested producer
+    Given two plugins claim the spec's domain
+    And produced-by has no entry for the spec-producer role
+    When validate-spec runs the spec gate
+    Then it returns a blocker to resolve the domain producer via create-spec first
+    And it does not ask the user to choose a producer
+    And it does not write produced-by
+    And it does not write the domain-plugin map
+
+  Scenario: the impl gate fails closed on an unresolved contested producer
+    Given two plugins claim the spec's domain
+    And produced-by has no entry for the impl-producer role
+    When validate-spec runs the impl gate
+    Then it returns a blocker to resolve the domain producer via create-spec first
+    And it does not ask the user to choose a producer
+    And it does not write produced-by
+    And it does not write the domain-plugin map
+
+  Scenario: a gate still writes verdict frontmatter when it fails closed
+    Given a gate fails closed on an unresolved contested producer
+    When the gate records its outcome
+    Then the only frontmatter it may write is status and the approved-by ratification
+    And it writes no setup frontmatter
+
   # ── validation, migration, ownership ──────────────────────────────────
 
   Scenario: validate-spec flags but does not block an unavailable producer
