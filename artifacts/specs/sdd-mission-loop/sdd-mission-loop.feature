@@ -30,15 +30,26 @@ Feature: SDD mission loop — the Operator owns the middle loop
 
   # ── escalation boundary ───────────────────────────────────────────────
 
-  Scenario: the Operator escalates to the Council only at a gate
+  Scenario: the Operator does not escalate away from a gate or scrub
     Given the Operator is running the mission loop
     When no gate and no scrub is reached
     Then it does not escalate to the Council
+
+  Scenario: the Operator escalates at a gate
+    Given the Operator reaches a gate in the mission loop
+    When a human verdict is required to advance
+    Then it escalates to the Council through the relay
 
   Scenario: the Operator escalates at a scrub decision
     Given the Operator is running the mission loop
     When a scrub (kill) decision is reached
     Then it escalates to the Council
+
+  Scenario: the Operator never asks the Council directly
+    Given the Operator must escalate at a gate or scrub
+    When it raises the escalation
+    Then it does not ask the Council directly
+    And the escalation is carried to the Council by the relay
 
   # ── write-ownership preserved ─────────────────────────────────────────
 
