@@ -1,11 +1,13 @@
 ---
-status: draft
+status: approved
 type: feature
 blocked-by:
   - sdd-orchestrator
   - sdd-plugin
-aligned: false
-approved-by: {}
+aligned: true
+approved-by:
+  spec:
+    by: unional
 ---
 
 # Production Provenance
