@@ -15,15 +15,15 @@ approved-by: {}
 
 ## What
 
-The **outer loop** of the SDD model — the one the framework does not yet have. It is owned by the **Strategist** actor and run by its delegate, the **Scanner in the Bunker**: a fleet-level agent that watches every spec reach a terminal state, drafts **doctrine** candidates (revisions to governances, conventions, and skills — the corpus), and surfaces them to the human **Council**, who hold the keep-or-cut. It fires at **lifecycle granularity, not per-gate**.
+The **outer loop** of the SDD model — the one the framework does not yet have. It is owned by the **Strategist** actor and run by its delegate, the **Scanner in the Bunker**: a fleet-level agent that watches every spec reach a terminal state, drafts **strategy** (forward recommendations to revise governances, conventions, and skills), and surfaces it to the human **Council**, who hold the keep-or-cut. Ratified, that strategy re-tunes the **doctrine** and grows the **corpus**. It fires at **lifecycle granularity, not per-gate**.
 
 ```mermaid
 flowchart LR
   impl[spec → implemented] --> scan[Scanner · Bunker]
   dep[spec → deprecated] --> scan
-  scan -->|drafts, cheap, continuous| cand[doctrine candidates<br/>logged to the combat log]
-  cand -->|surfaced episodically| council([Council · keep-or-cut])
-  council -->|ratified| doc[(doctrine · corpus)]
+  scan -->|drafts, cheap, continuous| strat[strategy<br/>logged to the combat log]
+  strat -->|surfaced episodically| council([Council · keep-or-cut])
+  council -->|ratified| doc[(re-tune doctrine<br/>grow corpus)]
 ```
 
 ---
@@ -50,15 +50,21 @@ The Scanner observes the transitions written elsewhere — `→ implemented` (by
 
 ### Detection and drafting by the delegate; keep-or-cut by the human
 
-The Scanner drafts doctrine candidates cheaply and continuously and records them to the **combat log** (the provenance record from `sdd-provenance`: `produced-by` + `approved-by`). It **accumulates** candidates and surfaces them **episodically** — at a retro, on demand, or when a threshold piles up — never synchronously blocking a mission. **Nothing enters doctrine without the Council's ratification.**
+The Scanner drafts **strategy** cheaply and continuously and records it to the **combat log** (the provenance record from `sdd-provenance`: `produced-by` + `approved-by`). It **accumulates** strategy and surfaces it **episodically** — at a retro, on demand, or when a threshold piles up — never synchronously blocking a mission. **No strategy enters the corpus without the Council's ratification.**
 
-### Doctrine is the corpus; the registry stays live
+### Strategy → doctrine → corpus
 
-A ratified candidate revises **doctrine** — the corpus of skills, governances, and conventions. Provenance/registry resolution stays live and authoritative for *who acts next*; doctrine is the *accumulated knowledge*, not the resolver.
+Three distinct things, by time-direction:
 
-### The gateway surfaces pending candidates
+- **Strategy** — the Scanner's *forward* output: a recommendation ("codify this pattern, prune that convention"). Situational, drafted every cycle, transient until ratified.
+- **Doctrine** — the *principles* layer: codified operating rules ("how we operate"). Ratified strategy re-tunes it.
+- **Corpus** — the *full durable body* every other delegate reads from: skills, governances, conventions, templates, plugins. Doctrine is its principles slice; ratified strategy grows it.
 
-The `sdd` gateway — where humans re-enter SDD — **surfaces** "N doctrine candidates pending" as an entry point. The Scanner detects and drafts; the gateway is how the Council is brought to the keep-or-cut.
+Provenance/registry resolution stays live and authoritative for *who acts next*; the corpus is the *accumulated knowledge*, not the resolver.
+
+### The gateway surfaces pending strategy
+
+The `sdd` gateway — where humans re-enter SDD — **surfaces** "N pending strategy" as an entry point. The Scanner detects and drafts; the gateway is how the Council is brought to the keep-or-cut.
 
 ### It prunes drift
 
@@ -71,16 +77,16 @@ Beyond codifying what works, the Scanner detects **drift / staleness** — a now
 | Concern | Behavior |
 |---|---|
 | Trigger | `→ implemented`, `→ deprecated`, milestone retro, recurring pattern — **never per-gate** |
-| Output | doctrine candidates recorded to the combat log; surfaced via the gateway |
-| Decision | the Council holds keep-or-cut; no candidate enters doctrine unratified |
-| Object | doctrine = the corpus (skills, governances, conventions) |
+| Output | **strategy** (forward recommendations) recorded to the combat log; surfaced via the gateway |
+| Decision | the Council holds keep-or-cut; no strategy enters the corpus unratified |
+| Effect | ratified strategy re-tunes the **doctrine** and grows the **corpus** (skills, governances, conventions, templates) |
 
 ---
 
 ## Related
 
 - `artifacts/specs/motive-model/spec.md` — "Strategist and the loop"; the three loops; this spec is the **outer** one
-- `artifacts/specs/sdd-provenance/spec.md` — the combat log (`produced-by` + `approved-by`) candidates are recorded to
+- `artifacts/specs/sdd-provenance/spec.md` — the combat log (`produced-by` + `approved-by`) strategy is recorded to
 - `artifacts/specs/sdd-orchestrator/spec.md` — the middle-loop Operator the Scanner sits above, not inside
 - `artifacts/specs/sdd-mission-loop/spec.md` — the middle loop, for contrast
 
