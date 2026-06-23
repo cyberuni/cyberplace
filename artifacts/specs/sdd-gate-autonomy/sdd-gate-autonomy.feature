@@ -92,9 +92,9 @@ Feature: Gate autonomy and accountability
     Then it fixes the implementation against the frozen .feature
     And the .feature is not modified
 
-  Scenario: reject at the impl gate can trigger a Framer-revert
+  Scenario: reject at the impl gate can trigger a Director-revert
     Given building reveals a frozen scenario is fatal
-    When the impl gate is rejected as a Framer-revert
+    When the impl gate is rejected as a Director-revert
     Then the .feature is unfrozen
     And the status returns to draft
 
@@ -127,7 +127,7 @@ Feature: Gate autonomy and accountability
   Scenario: the gate report lists faces and contestable defaults
     Given the orchestrator reaches a gate
     When it emits the gate report
-    Then the report carries a verdict for Framer, Builder, and Architect
+    Then the report carries a verdict for Director, Builder, and Architect
     And it lists the contestable defaults the agent chose
     And a self-asserted report is flagged for ratification
 

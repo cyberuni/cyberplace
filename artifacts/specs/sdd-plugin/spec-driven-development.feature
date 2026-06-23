@@ -189,7 +189,7 @@ Feature: Spec-Driven Development Plugin
   Scenario: Fatal contract gap reopens the spec through a gate
     Given specs/auth/spec.md has status approved
     And implementation reveals the specified behavior cannot work as written
-    When the user accepts the Framer revert
+    When the user accepts the Director revert
     Then validate-spec writes status draft in spec.md
     And auth.feature becomes editable again
     And the spec must pass the spec gate before returning to approved

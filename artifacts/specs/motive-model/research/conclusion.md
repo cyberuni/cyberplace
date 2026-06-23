@@ -19,8 +19,8 @@ High on the borrowed spine (most rows high-confidence, primary or encyclopedic-q
 ## Strongest supporting evidence
 
 - Agency theory delegation structure (Eisenhardt 1989; Jensen & Meckling 1976).
-- Argyris & Schön single-/double-loop learning (1978) — clean mapping to inner loop vs Curator's outer loop.
-- Team Topologies platform team — grounds Curator-as-infrastructure-actor.
+- Argyris & Schön single-/double-loop learning (1978) — clean mapping to inner loop vs Strategist's outer loop.
+- Team Topologies platform team — grounds Strategist-as-infrastructure-actor.
 - Conway's Law + MIT/Harvard mirroring study — grounds Architect's object as relations-between-parts.
 - Anthropic orchestrator-worker pattern — grounds the Conductor's fan-out.
 

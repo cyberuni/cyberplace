@@ -60,4 +60,4 @@ Each task is an executable unit with an ID, dependency edges, and scenario trace
 
 - [ ] `SDDP-901` Decide whether `plan-producer` should split into separate plan and task producers — deps: SDDP-203 — serves: tasks.md is a DAG with scenario traceability
 - [ ] `SDDP-902` Define project-specific quality thresholds for the default impl path — deps: SDDP-205 — serves: Impl gate passes only when every frozen scenario passes
-- [ ] `SDDP-903` Design external routing for accepted architect/curator observations — deps: SDDP-104 — serves: Observations are surfaced without blocking the current spec
+- [ ] `SDDP-903` Design external routing for accepted architect/strategist observations — deps: SDDP-104 — serves: Observations are surfaced without blocking the current spec

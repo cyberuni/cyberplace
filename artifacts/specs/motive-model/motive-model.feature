@@ -21,10 +21,10 @@ Feature: The Motive Model — two outputs
   Scenario: Documentation covers the four actors with motives and objects
     Given the human documentation artifact is complete
     When a reader reads the four actors section
-    Then it names Framer (intend), Builder (generate), Architect (structure), Curator (accumulate)
+    Then it names Director (intend), Builder (generate), Architect (structure), Strategist (accumulate)
     And it gives each actor a motive, object, signature output, and boundary to its neighbor
     And it includes the generalization ladder (design / architecture / curation) with scope and mechanism
-    And it explains the two-tier split: delivery actors vs Curator as foundation actor
+    And it explains the two-tier split: delivery actors vs Strategist as foundation actor
 
   Scenario: Documentation covers the two faces and the gate
     Given the human documentation artifact is complete
@@ -38,7 +38,7 @@ Feature: The Motive Model — two outputs
   Scenario: Documentation covers delegation surfaces and the bar
     Given the human documentation artifact is complete
     When a reader reads the delegation surfaces section
-    Then it names the four surfaces: brief (Framer), contract+exemplars (Builder), shape (Architect), corpus (Curator)
+    Then it names the four surfaces: brief (Director), contract+exemplars (Builder), shape (Architect), corpus (Strategist)
     And it explains the bar as the criteria face of each surface — not a separate surface
     And it explains that surfaces are categories, not products — the team chooses the medium
 
@@ -47,8 +47,8 @@ Feature: The Motive Model — two outputs
     When a reader reads the variants section
     Then it states the three membership gates: distinct motive, capacity differentiation, persistence
     And it lists Explorer (Builder, forward, confirmed) and QA (Builder, backward, confirmed)
-    And it lists Scout (Framer, forming) and Conductor (Architect, forming) with their forming rationale
-    And it explains that Curator has no variants — its acts share one cognitive profile
+    And it lists Scout (Director, forming) and Conductor (Architect, forming) with their forming rationale
+    And it explains that Strategist has no variants — its acts share one cognitive profile
     And it explains that variants are lateral specializations, not advancements
 
   Scenario: Documentation covers positions vs roles
@@ -84,7 +84,7 @@ Feature: The Motive Model — two outputs
   Scenario: Machine artifact enumerates the four actors as typed definitions
     Given the spec is approved
     When the machine artifact is generated
-    Then it defines Framer, Builder, Architect, Curator each with motive, object, and signature output
+    Then it defines Director, Builder, Architect, Strategist each with motive, object, and signature output
     And each definition includes the delegation surface and bar criteria for that actor
     And each definition states the boundary distinguishing it from its neighbor actors
 
@@ -99,13 +99,13 @@ Feature: The Motive Model — two outputs
     Given the machine artifact is generated
     When an agent applies the gate rules to a change
     Then it can produce a two-axis verdict: verdict (accept/block) × change-request (none/yes with timing)
-    And it can classify a block+none outcome as a kill, distinguishing Framer kill from Architect/Builder kill
+    And it can classify a block+none outcome as a kill, distinguishing Director kill from Architect/Builder kill
     And it knows block forces within-PR timing — deferred is only available under accept
 
   Scenario: Machine artifact encodes the deferred-branch scheduling rules
     Given the machine artifact is generated
     When an agent handles a deferred change request
-    Then it assigns the deferred work to its owning actor (feature → Framer, refactor → Architect)
+    Then it assigns the deferred work to its owning actor (feature → Director, refactor → Architect)
     And it encodes the two scheduling options: defer new work (placeholder now) vs defer current work (prerequisite first)
     And it knows the determining factor is rework cost vs switch/blocking cost
 
@@ -114,14 +114,14 @@ Feature: The Motive Model — two outputs
     When an agent reads the loop definitions
     Then it knows the inner loop fires within a task (Builder produces, bar fires, Builder corrects)
     And it knows the product feedback edge fires across tasks on the same product (deferred work re-enters)
-    And it knows the outer loop fires across products (Curator distills durable lessons)
-    And it knows the Curator does not fire on the inner loop — to avoid premature codification
+    And it knows the outer loop fires across products (Strategist distills durable lessons)
+    And it knows the Strategist does not fire on the inner loop — to avoid premature codification
 
-  Scenario: Machine artifact encodes the Curator interface pattern
+  Scenario: Machine artifact encodes the Strategist interface pattern
     Given the machine artifact is generated
-    When an agent reads the Curator interface definition
-    Then it knows the Curator-delegate watches continuously (flags candidates, drafts conventions)
-    And it knows the human Curator holds the accept/prune decision
+    When an agent reads the Strategist interface definition
+    Then it knows the Strategist-delegate watches continuously (flags candidates, drafts conventions)
+    And it knows the human Strategist holds the accept/prune decision
     And it knows this detection-by-delegate / decision-by-human pattern is the template for every actor interface
 
   Scenario: Machine artifact encodes producer ≠ judge per artifact

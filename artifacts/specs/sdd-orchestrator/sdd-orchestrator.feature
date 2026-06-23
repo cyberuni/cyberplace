@@ -223,14 +223,14 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     Then it forwards the observation to the skill
     And the orchestrator does not spawn specs or write outside the spec it owns
 
-  Scenario: Curator observations surface only at boundaries and dedupe by recurrence
-    Given a delegate emits a curator observation matching an existing candidate spec
-    When a Curator boundary is reached
+  Scenario: Strategist observations surface only at boundaries and dedupe by recurrence
+    Given a delegate emits a strategist observation matching an existing candidate spec
+    When a Strategist boundary is reached
     Then the skill bumps the candidate spec's recurrence instead of spawning a duplicate
     And it is not surfaced to the user until that boundary
 
-  Scenario: A curator lesson spawns a spec that may target another monorepo project
-    Given an accepted curator lesson applies to a sibling project in the monorepo
+  Scenario: A strategist lesson spawns a spec that may target another monorepo project
+    Given an accepted strategist lesson applies to a sibling project in the monorepo
     When the skill spawns the spec
     Then the spec is created under that sibling project
     And it may carry an external-routing flag to sync to an external tracker

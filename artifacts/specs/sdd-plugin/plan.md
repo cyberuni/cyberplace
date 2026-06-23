@@ -101,7 +101,7 @@ Each plugin's `init-<plugin>` skill writes a resolved entry into `.agents/univer
         "impl-judge": "quill-implementer"
       },
       "governances": {
-        "framer": null,
+        "director": null,
         "builder": "quill-doc-bar",
         "architect": null
       }
@@ -144,4 +144,4 @@ The `artifacts/specs/sdd-plugin/governances/` directory remains listed as a lega
 
 1. Whether `plan-producer` should later split into separate plan and task producers.
 2. How project-specific quality thresholds are represented for the default impl path.
-3. How accepted architect and curator observations should be routed when they target an external tracker.
+3. How accepted architect and strategist observations should be routed when they target an external tracker.

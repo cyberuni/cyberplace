@@ -9,7 +9,7 @@ threshold: 4
 The orchestrator dispatched three delegates for the "billing" domain: `spec-producer`, `plan-producer`, and `impl-producer` (in explore mode). Each returned an `OBSERVATIONS` list:
 
 - spec-producer: `[{ owner: architect, note: "billing scenarios duplicate auth domain shape", evidence: "..." }]`
-- plan-producer: `[{ owner: curator, note: "recurring cost-calculation logic could be a shared spec", evidence: "..." }]`
+- plan-producer: `[{ owner: strategist, note: "recurring cost-calculation logic could be a shared spec", evidence: "..." }]`
 - impl-producer: `[{ owner: architect, note: "billing model has circular dependency risk", evidence: "..." }]`
 
 ## Expected behaviors
@@ -22,10 +22,10 @@ The orchestrator dispatched three delegates for the "billing" domain: `spec-prod
 
 ## Must NOT do
 
-- Spawn a new spec for the curator observation (only the skill can spawn specs)
+- Spawn a new spec for the strategist observation (only the skill can spawn specs)
 - Surface observations directly to the user (only the skill talks to the user)
 - Drop or filter out any of the three observations
-- Write the curator observation to a spec artifact itself
+- Write the strategist observation to a spec artifact itself
 
 ## Rubric
 
