@@ -20,7 +20,7 @@ Feature: Production provenance
     Given produced-by.spec-producer is "aces:aces-scenario-writer"
     And the aces plugin is installed
     When the orchestrator resumes work on the spec
-    Then it reuses aces-scenario-writer without re-asking
+    Then it reuses aces:aces-scenario-writer without re-asking
 
   Scenario: an unavailable recorded producer does not block
     Given produced-by.spec-producer names a plugin that is no longer installed
@@ -101,5 +101,6 @@ Feature: Production provenance
   Scenario: the orchestrator writes produced-by, not the producer
     Given a producer agent finishes its work
     When provenance is recorded
-    Then the orchestrator wrote produced-by
-    And the producer did not write it
+    Then produced-by appears in the spec frontmatter
+    And the producer's .feature carries no produced-by entry
+    And the spec body carries no produced-by entry
