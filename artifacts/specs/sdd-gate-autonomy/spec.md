@@ -1,13 +1,21 @@
 ---
-status: approved
+status: implemented
 type: feature
 blocked-by:
   - sdd-orchestrator
   - sdd-plugin
-aligned: false
+aligned: true
 approved-by:
   spec:
     by: unional
+  impl:
+    by: agent
+    leash: auto-all
+    why:
+      reversibility: "safe — tracked markdown + one test-fixture string; cheap git revert; no runtime, schema, or external effect"
+      blast-radius: "safe — mechanical rename of a spec-gate-ratified token plus one additive doc subsection across this spec's documented impl surfaces; the sdd-mission-loop frontmatter touch is a required free-text value migration, not a contract change; no code logic/registry/API altered; pnpm verify green"
+      novelty: "safe — zero new decisions at impl; rename scheme and emphatic-rule wording were ratified at the spec gate; encoding is purely mechanical"
+      confidence: "safe — all frozen scenarios read PASS; pnpm verify green (123 tests); check-spec-state 20/20; state machine legal; no open markers"
 ---
 
 # Gate Autonomy & Accountability
@@ -20,7 +28,7 @@ A model for **how far an agent may advance a spec without the human**, how that 
 
 It adds four cooperating pieces:
 
-1. **The leash** — how far the agent may self-assert before a human gate (`gated` | `auto-to-spec` | `auto`), **derived** from a per-gate risk assessment and capped by an optional human ceiling.
+1. **The leash** — how far the agent may self-assert before a human gate (`auto-none` | `auto-spec` | `auto-all`), **derived** from a per-gate risk assessment and capped by an optional human ceiling.
 2. **Gate attribution** — `approved-by` records *who* passed each gate; agent-attributed gates are provisional, awaiting human ratification.
 3. **An enforced state machine** — `validate-spec` rejects any illegal `(status, aligned, markers, .feature)` tuple, so states like `draft + aligned:true`-meaning-implemented can't be committed.
 4. **The gate report** — a **decidable**, regenerated-on-demand checklist (verdict per face + leash derivation + open markers as questions + a decision menu) so the human can approve / change / reject fast.
@@ -28,12 +36,12 @@ It adds four cooperating pieces:
 ```mermaid
 flowchart LR
   explore[explore] --> sg{spec gate}
-  sg -->|gated| human1[human verdict]
-  sg -->|auto*, low blast| selfA[approved-by: agent]
+  sg -->|auto-none| human1[human verdict]
+  sg -->|auto-spec/auto-all, low blast| selfA[approved-by: agent]
   selfA --> impl[implement]
   impl --> ig{impl gate}
-  ig -->|gated| human2[human verdict]
-  ig -->|auto, low blast| selfB[approved-by: agent]
+  ig -->|auto-spec| human2[human verdict]
+  ig -->|auto-all, low blast| selfB[approved-by: agent]
   selfA -. ratify .-> human1
   selfB -. ratify .-> human2
 ```
@@ -44,7 +52,7 @@ flowchart LR
 
 A spec was just driven from blank to "implemented" in one autonomous run with no recorded human verdict, and left in `status: draft + aligned: true` — a state the workflow-cursor table does not define. Three gaps surfaced:
 
-- **No declared autonomy boundary.** The agent assumed `auto`; the human never set a leash. Approval, where it existed, was diffuse in conversation, not a discrete act.
+- **No declared autonomy boundary.** The agent assumed `auto-all`; the human never set a leash. Approval, where it existed, was diffuse in conversation, not a discrete act.
 - **`aligned` was misread, not undefined.** It is already resolved — sdd-orchestrator scopes it by layer (contract layer at the spec gate, impl layer at the impl gate). The agent read `draft + aligned:true` as *implemented* when, layer-scoped, it only means *contract synced, ready for the spec gate*. The gap is that **nothing enforces** the legal states, so a misread lands uncaught.
 - **No representation of "advanced by agent alone."** There was no way to mark the spec as provisionally advanced and owed a human review — so it silently looked done.
 
@@ -62,9 +70,11 @@ The three leash values are not a free choice — they **fall out of a risk asses
 
 | Level | Self-asserts | Stops at |
 |---|---|---|
-| `gated` | nothing | the **spec gate** |
-| `auto-to-spec` | the spec gate | the **impl gate** |
-| `auto` | both gates | nothing (both provisional) |
+| `auto-none` | nothing | the **spec gate** |
+| `auto-spec` | the spec gate | the **impl gate** |
+| `auto-all` | both gates | nothing (both provisional) |
+
+The names follow an `auto-<reach>` scheme — they name **how far autonomy reaches**, not where it stops: `auto-none` self-asserts nothing, `auto-spec` self-asserts through the spec gate, `auto-all` self-asserts every gate.
 
 **A gate is self-assertable only when all four risk dimensions read *safe*:**
 
@@ -79,9 +89,9 @@ The three leash values are not a free choice — they **fall out of a risk asses
 
 **Deriving the value** is then mechanical — the leash is the furthest gate reachable where every gate up to it reads safe:
 
-- spec gate risky → `gated`
-- spec gate safe, impl gate risky → `auto-to-spec`
-- both safe → `auto`
+- spec gate risky → `auto-none`
+- spec gate safe, impl gate risky → `auto-spec`
+- both safe → `auto-all`
 
 This is exactly the reasoning from the incident post-mortem: *autonomous-to-the-end is OK when the work is reversible, low-blast, the decisions are already ratified, and the verdict is confident.* Each dimension is one of those conditions; the gate they gate is the leash.
 
@@ -89,12 +99,12 @@ This is exactly the reasoning from the incident post-mortem: *autonomous-to-the-
 
 **The human sets a ceiling; the agent may only go lower.** In the kickoff prompt the Conductor may cap the derived leash ("stop at the spec gate regardless"). Effective leash = `min(ceiling, derived)`. The agent may always stop earlier than both the ceiling and its own derivation; it may never go further. Absent any cap, the derivation stands. The leash is **per run / sitting** (session-local, like the iteration cap), not persisted — no project-wide config.
 
-**The leash is re-derived at each gate, each run — the gates are independent.** The three values describe *one run's* reach across the gates it meets; they do not bind a future run. A gated spec gate does **not** make the impl gate gated. The common pattern:
+**The leash is re-derived at each gate, each run — the gates are independent.** The three values describe *one run's* reach across the gates it meets; they do not bind a future run. An `auto-none` spec gate does **not** make the impl gate `auto-none`. The common pattern:
 
-- **Run 1** (exploration → spec gate): the contract is novel, so the spec gate derives `gated`; the human ratifies the *what*.
-- **Run 2** (implementation, after approval → impl gate): the contract is now **ratified** (novelty settled), so if the *how* is reversible, low-blast, and the tests pass, the impl gate independently derives `auto` and the agent **self-asserts the impl gate** — "approve the *what*, auto-deliver a low-risk *how*."
+- **Run 1** (exploration → spec gate): the contract is novel, so the spec gate derives `auto-none`; the human ratifies the *what*.
+- **Run 2** (implementation, after approval → impl gate): the contract is now **ratified** (novelty settled), so if the *how* is reversible, low-blast, and the tests pass, the impl gate independently derives `auto-all` and the agent **self-asserts the impl gate** — "approve the *what*, auto-deliver a low-risk *how*."
 
-That self-assertion is still **provisional** (`approved-by.impl: { by: agent }` → review queue), so blowing through the impl gate is safe: the human ratified the contract synchronously and reviews the implementation asynchronously. (If Run 2's implementation instead made big contestable choices, novelty would read risky and the impl gate would derive `gated` — the assessment handles it either way.)
+That self-assertion is still **provisional** (`approved-by.impl: { by: agent }` → review queue), so blowing through the impl gate is safe: the human ratified the contract synchronously and reviews the implementation asynchronously. (If Run 2's implementation instead made big contestable choices, novelty would read risky and the impl gate would derive `auto-none` — the assessment handles it either way.)
 
 **The reasoning has a home: the gate report.** Every gate report carries a **Leash derivation** block — the four-dimension assessment for each gate, the derived value, the effective value after any ceiling, and the one-line reasoning per dimension. This is the auditable place the agent explains *why it stopped (or didn't)*; it is persisted to `approved-by.<gate>.why` on a self-assertion (see *Accountability stays human* below).
 
@@ -106,7 +116,7 @@ Each gate records, in a frontmatter map **keyed by gate**, both the approver and
 approved-by:
   spec:
     by: agent          # provisional — awaiting human ratification
-    leash: gated       # effective leash at this gate
+    leash: auto-none   # effective leash at this gate
     why:               # the derivation (present only for an agent self-assertion)
       reversibility: "safe — docs only, revert is cheap"
       blast-radius:  "risky — edits sibling specs"
@@ -163,7 +173,7 @@ Leash derivation
   gate        reversibility  blast       novelty  confidence   read
   spec gate   safe           cross-spec  novel    none         RISKY
   impl gate   — not reached —
-  derived: gated   ceiling: none   effective: gated
+  derived: auto-none   ceiling: none   effective: auto-none
   reasons
     reversibility  docs only, revert is cheap                       → safe
     blast radius   edits sdd-orchestrator + sdd-plugin (other specs) → risky
@@ -189,7 +199,7 @@ Decision menu
   reject  → drop the spec / back to Draft (scope kill)
 ```
 
-One risky dimension is enough to make a gate non-self-assertable, so the spec gate reads RISKY and the derived leash is `gated` — the agent stops here and asks, which is exactly the correct behavior for this change.
+One risky dimension is enough to make a gate non-self-assertable, so the spec gate reads RISKY and the derived leash is `auto-none` — the agent stops here and asks, which is exactly the correct behavior for this change.
 
 **Example — the impl gate, self-asserted** (a later run, after the contract was human-ratified). This is the "stop at spec, auto-deliver the how" case, shown for a small reversible skill:
 
@@ -206,7 +216,7 @@ Leash derivation
   gate        reversibility  blast        novelty       confidence    read
   spec gate   (ratified by unional — Run 1)
   impl gate   safe           local-only   settled       tests green   SAFE
-  derived: auto   ceiling: none   effective: auto
+  derived: auto-all   ceiling: none   effective: auto-all
   reasons
     reversibility  new files only, revert is cheap                  → safe
     blast radius   one skill folder; no shared or frozen surface    → safe
@@ -222,7 +232,7 @@ Decision menu
   reject  → redo impl — or Director-revert if building proved the contract wrong
 ```
 
-Here both gates' reads diverge: the spec gate was `gated` and human-ratified in Run 1, while the impl gate independently derives `auto` and is self-asserted in Run 2 — provisional until the human ratifies `approved-by.impl`.
+Here both gates' reads diverge: the spec gate was `auto-none` and human-ratified in Run 1, while the impl gate independently derives `auto-all` and is self-asserted in Run 2 — provisional until the human ratifies `approved-by.impl`.
 
 ### Both gates take the same three actions — with different meaning
 
@@ -255,7 +265,7 @@ Where implementing this spec modifies SDD **skills** (e.g., `validate-spec`) or 
 
 `approved-by.<gate>.by` is the pointer; `approved-by.<gate>.why` is the four-dimension derivation, present only when `by: agent`. The **orchestrator** writes self-assertions; the **skill** writes human ratifications.
 
-**Leash** — declared in the prompt to the create-spec / validate-spec skills (default `gated`); held in the main thread, not persisted.
+**Leash** — declared in the prompt to the create-spec / validate-spec skills (default `auto-none`); held in the main thread, not persisted.
 
 **`validate-spec` new checks:**
 - the `(status, aligned, markers, .feature)` tuple is a legal cursor-table row;

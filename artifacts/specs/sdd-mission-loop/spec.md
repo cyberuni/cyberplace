@@ -8,7 +8,7 @@ aligned: true
 approved-by:
   spec:
     by: agent
-    leash: auto-to-spec
+    leash: auto-spec
     why:
       reversibility: "safe — tracked spec.md + .feature, cheap revert, no external effect"
       blast-radius: "safe — contained to the two artifacts this spec owns; cross-spec impact (sdd-skill) lands at impl gate, not here"
@@ -16,7 +16,7 @@ approved-by:
       confidence: "safe — all 9 scenarios pass, no open markers, legal Draft tuple"
   impl:
     by: agent
-    leash: auto
+    leash: auto-all
     why:
       reversibility: "safe — three tracked skill/agent markdown files; cheap git revert; no runtime or external effect"
       blast-radius: "safe — sdd gateway + Operator text only; no code/schema/registry change; cross-spec touch (sdd-skill) is doc-contract alignment, not runtime coupling; pnpm verify green"

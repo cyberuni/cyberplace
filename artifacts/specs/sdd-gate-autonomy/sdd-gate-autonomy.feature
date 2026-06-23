@@ -2,36 +2,36 @@ Feature: Gate autonomy and accountability
 
   # ── leash derivation ──────────────────────────────────────────────────
 
-  Scenario: a novel contract decision derives gated
+  Scenario: a novel contract decision derives auto-none
     Given the spec encodes a contestable decision the human has not seen
     When the agent assesses the spec gate
-    Then the derived leash is "gated"
+    Then the derived leash is "auto-none"
     And it stops at the spec gate for the human verdict
 
-  Scenario: settled contract but risky implementation derives auto-to-spec
+  Scenario: settled contract but risky implementation derives auto-spec
     Given the contract decisions are already ratified by the human
     And the implementation is irreversible or high blast radius
     When the agent assesses both gates
-    Then the derived leash is "auto-to-spec"
+    Then the derived leash is "auto-spec"
     And it self-asserts the spec gate but stops before implementing
 
-  Scenario: reversible low-blast work derives auto
+  Scenario: reversible low-blast work derives auto-all
     Given the contract decisions are ratified or trivial
     And the implementation is reversible and local to this spec
     And the verdict is a clear pass
     When the agent assesses both gates
-    Then the derived leash is "auto"
+    Then the derived leash is "auto-all"
     And both gates are self-asserted
 
-  Scenario: a gated spec gate does not bind the impl gate
-    Given the spec gate was derived gated and ratified by the human in an earlier run
+  Scenario: an auto-none spec gate does not bind the impl gate
+    Given the spec gate was derived auto-none and ratified by the human in an earlier run
     And the implementation is reversible, local, and its tests pass
     When the agent reaches the impl gate in a later run
-    Then the impl gate independently derives "auto"
+    Then the impl gate independently derives "auto-all"
     And the agent self-asserts the impl gate as provisional
 
   Scenario: the human ceiling caps the derived leash
-    Given the derived leash is "auto"
+    Given the derived leash is "auto-all"
     And the Conductor capped the run at the spec gate
     When the effective leash is computed
     Then it is the minimum of the ceiling and the derivation
@@ -103,6 +103,13 @@ Feature: Gate autonomy and accountability
     When the spec is written
     Then approved-by.spec is "agent"
     And the spec appears in the human review queue
+
+  Scenario: a self-assertion advances the run without a synchronous human stop
+    Given the agent self-asserts a gate within the effective leash
+    When the gate is recorded
+    Then the run advances to the next phase immediately
+    And it does not stop to wait for a synchronous human ratification
+    And the spec is enqueued for asynchronous ratify-or-kick-back review
 
   Scenario: human ratification reassigns the approver
     Given approved-by.spec is "agent"
