@@ -13,7 +13,7 @@ The runtime machinery is **blocked-by sdd-orchestrator** (draft). The enforcemen
 - [x] leash derivation at runtime — `sdd-orchestrator` Step 4b (four-dimension assessment per gate, ceiling, re-derived per run)
 - [x] gate report emission — `sdd-orchestrator` Step 4b + Return contract (verdict per face + leash derivation + markers-as-questions + decision menu)
 - [x] `approved-by` writing — `ownership-governance` matrix + orchestrator self-assert (`by: agent` + `leash` + `why`), `validate-spec` ratify (`by: <human>`)
-- [x] gate actions — `validate-spec` §6 (approve/change/reject per gate; impl-gate Framer-revert unfreeze)
+- [x] gate actions — `validate-spec` §6 (approve/change/reject per gate; impl-gate Director-revert unfreeze)
 
 Awaiting the human **impl gate** (derived `gated` — blast radius reaches core SDD governance): the work above is provisional until ratified.
 

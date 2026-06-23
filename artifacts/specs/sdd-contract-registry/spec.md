@@ -31,7 +31,7 @@ Each entry names a plugin, its version, the domains it covers, a five-role map, 
         "impl-judge": "<agent>"
       },
       "governances": {
-        "framer": null,
+        "director": null,
         "builder": "<skill>",
         "architect": null
       }
@@ -84,7 +84,7 @@ Runtime resolution reads only `.agents/universal-plugin.json`. `plan.md` never c
 | `version` | Yes | Installed plugin version |
 | `domains` | Yes | Open-string domain types this plugin covers |
 | `roles` | Yes | Map of the five production-chain roles to agents; `null` or omitted = SDD default |
-| `governances` | No | Actor-governance bindings (`framer`, `builder`, `architect`); `null` = SDD default |
+| `governances` | No | Actor-governance bindings (`director`, `builder`, `architect`); `null` = SDD default |
 
 Init-write behavior:
 

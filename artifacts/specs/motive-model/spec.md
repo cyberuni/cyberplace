@@ -61,12 +61,12 @@ Around abundant generation sit four actors, forming a control loop: someone deci
 
 | Actor         | Motive                                                            | What they own                                                                                                            |
 | ------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| **Framer**    | **Intend** — what's worth doing                                   | The problem worth solving and what success means; the authority to decide *not* to build                                 |
+| **Director**    | **Intend** — what's worth doing                                   | The problem worth solving and what success means; the authority to decide *not* to build                                 |
 | **Builder**   | **Generate** — make the thing                                     | A working contribution from one angle of expertise                                                                       |
 | **Architect** | **Structure** — shape the whole so it stays legible and evolvable | The organizing principles, boundaries, and conventions that keep the product comprehensible and maintainable as it grows |
-| **Curator**   | **Accumulate** — make knowledge compound                          | The durable, reusable knowledge every other role draws on                                                                |
+| **Strategist**   | **Accumulate** — make knowledge compound                          | The durable, reusable knowledge every other role draws on                                                                |
 
-The motive is what makes each a real actor: each motive generates use cases the others don't. The Framer's signature output is a *kill decision*; the Builder's is a *working artifact*; the Architect's is a *boundary or convention*; the Curator's is *reuse*. Distinct motives, distinct use cases, distinct interfaces.
+The motive is what makes each a real actor: each motive generates use cases the others don't. The Director's signature output is a *kill decision*; the Builder's is a *working artifact*; the Architect's is a *boundary or convention*; the Strategist's is *reuse*. Distinct motives, distinct use cases, distinct interfaces.
 
 One scale runs through three of them and is worth stating up front, because it is where the roles are most often confused. **Generalization is just abstraction; what differs is the scope of reuse and where the result lives** — a ladder that also captures the classic *design vs architecture* distinction:
 
@@ -74,7 +74,7 @@ One scale runs through three of them and is worth stating up front, because it i
 | ------------------------------- | ------------------------------------ | ------------- | ------------------------------------------------ |
 | parts **within one feature**    | the feature                          | **Builder**   | *design* — how it works                          |
 | **features within one product** | the product (a shared abstraction)   | **Architect** | *architecture* — how it's organized              |
-| **products, over time**         | the corpus (template, skill, plugin) | **Curator**   | *curation* — knowledge that outlives the product |
+| **products, over time**         | the corpus (template, skill, plugin) | **Strategist**   | *curation* — knowledge that outlives the product |
 
 The *mechanism* each uses to add value keeps the rungs apart: **design changes behavior directly** (write better logic); **architecture changes behavior through structure** (extract the shared path, and every feature inherits the consistency); **curation changes future capability through knowledge** (the next project starts warmer). An app crammed into a single file *works* — design is satisfied — yet is unmaintainable, because the behavior was bought directly, without the structural leverage that lets the rest of the system inherit the quality. That gap is the Architect's reason to exist.
 
@@ -82,17 +82,17 @@ The *mechanism* each uses to add value keeps the rungs apart: **design changes b
 flowchart TB
     B["Builder — design<br/>generalize within a feature<br/>lives in: the feature"]
     AR["Architect — architecture<br/>generalize across features<br/>lives in: the product"]
-    C["Curator — curation<br/>generalize across products<br/>lives in: the corpus · outlives the product"]
+    C["Strategist — curation<br/>generalize across products<br/>lives in: the corpus · outlives the product"]
     B -->|"scope of reuse widens"| AR -->|"scope of reuse widens"| C
 ```
 
-#### Framer — intend
+#### Director — intend
 
 - **Motive:** decide what is worth doing, and what success means.
 - **Object:** the problem and its definition of done — including the authority to decide *not* to build.
 - **Signature output:** a **kill decision** — the cheapest, highest-leverage thing a team can produce.
 - **Forward / backward:** forward, frames the problem and sets the bar for success; backward, makes the kill-or-ship call at the gate.
-- **Boundary (vs Builder):** the Framer owns *whether and why*; the Builder owns *how*. A Builder who redefines the goal has stepped into the Framer role.
+- **Boundary (vs Builder):** the Director owns *whether and why*; the Builder owns *how*. A Builder who redefines the goal has stepped into the Director role.
 
 #### Builder — generate
 
@@ -109,39 +109,39 @@ flowchart TB
 - **Active, and it *is* governance.** The Architect does not tidy what landed; it **draws the lines ahead of time** — chooses that structure should *scream the domain* [screaming], leans on SOLID or clean-architecture boundaries, decides which principle outranks which for *this* system, and authors the rules the Builders then build under. Constraints are the defensive half; choosing and imposing the organizing principles is the constructive half.
 - **Generalizes across features, inside the product.** Noticing three features each roll their own auth and extracting one shared path is Architect work — and it pays a *behavioral* dividend (every feature now authenticates consistently and correctly). That dividend is the **fruit of organizing**, not a separate design act; it is *why* architecture earns its keep.
 - **Signature output:** a boundary or convention. **Variant:** *Conductor* (forming) — structures at runtime, orchestrating delegates and people in parallel; much of it is codifiable into a delegate (see *Two resolutions*).
-- **Boundary (vs Curator):** the Architect's abstraction lives in *this* product and dies with it. The moment the output is lifted out as knowledge meant to outlive the product, it is Curator work.
+- **Boundary (vs Strategist):** the Architect's abstraction lives in *this* product and dies with it. The moment the output is lifted out as knowledge meant to outlive the product, it is Strategist work.
 
-#### Curator — accumulate (the foundation tier)
+#### Strategist — accumulate (the foundation tier)
 
-The three roles above operate on the *product*. Curator does not — its object is **knowledge designed to outlive any single product**. That raises the objection that recurs every time: isn't keeping the corpus organized just *architecture at another tier*?
+The three roles above operate on the *product*. Strategist does not — its object is **knowledge designed to outlive any single product**. That raises the objection that recurs every time: isn't keeping the corpus organized just *architecture at another tier*?
 
-**Partly — and worth saying plainly.** Organizing the corpus (keeping it coherent, DRY, legible) *is* architecture-of-the-corpus, and a Curator performs it constantly — the way every actor borrows skills across roles. But the role is named for the part architecture does **not** contain. Three acts are Curator-only, and none is "organize":
+**Partly — and worth saying plainly.** Organizing the corpus (keeping it coherent, DRY, legible) *is* architecture-of-the-corpus, and a Strategist performs it constantly — the way every actor borrows skills across roles. But the role is named for the part architecture does **not** contain. Three acts are Strategist-only, and none is "organize":
 
 - **Selection for durability** — deciding which lessons are *durable enough to encode* versus transient noise. Architecture organizes the parts that exist; it never judges which *experiences* earn a permanent place.
 - **Generalization across products and time** — lifting a specific solution into a transferable form for problems that *don't exist yet* (a template, a convention, an agent skill or plugin). In-product DRY stops at the product boundary; this crosses it.
 - **Pruning for truth** — removing what is *no longer true*, not merely what is structurally incoherent. Truth-decay over time, not present fit.
 
-These are *accumulate* — grow a compounding, reusable asset — not *structure*. That is the motive architecture lacks, and it is why a corpus-maintainer flipping into Architect-of-the-corpus no more makes Curator a sub-case of Architect than a Builder reviewing code makes review a sub-case of Building.
+These are *accumulate* — grow a compounding, reusable asset — not *structure*. That is the motive architecture lacks, and it is why a corpus-maintainer flipping into Architect-of-the-corpus no more makes Strategist a sub-case of Architect than a Builder reviewing code makes review a sub-case of Building.
 
-Its output *feels* like a layer because every other actor's delegate reads from it — precisely the position of a **platform or infrastructure team**: a role whose *product* is a layer, "made available via self-service capabilities… easy for the [other] teams to consume" [team-topologies]. (Its capability-raising has an *enabling-team* flavor; but unlike an enabling team — time-boxed, product-less — Curator is permanent and owns a product, the corpus, which is the **platform** pattern [team-topologies].) So the model has two tiers:
+Its output *feels* like a layer because every other actor's delegate reads from it — precisely the position of a **platform or infrastructure team**: a role whose *product* is a layer, "made available via self-service capabilities… easy for the [other] teams to consume" [team-topologies]. (Its capability-raising has an *enabling-team* flavor; but unlike an enabling team — time-boxed, product-less — Strategist is permanent and owns a product, the corpus, which is the **platform** pattern [team-topologies].) So the model has two tiers:
 
-- **Delivery actors** — Framer, Builder, Architect — operate on the *product*.
-- **Foundation actor** — Curator — operates on the team's *capacity to deliver*: the corpus the other three's delegates draw from.
+- **Delivery actors** — Director, Builder, Architect — operate on the *product*.
+- **Foundation actor** — Strategist — operates on the team's *capacity to deliver*: the corpus the other three's delegates draw from.
 
-The Curator's own practices live in the corpus too, so it is self-describing — a fixed point, not an infinite regress. And a prediction falls out of the tiering: infrastructure is the first thing a team neglects, and its neglect degrades *everyone* — a decaying corpus forces every delegate, in every role, to start cold.
+The Strategist's own practices live in the corpus too, so it is self-describing — a fixed point, not an infinite regress. And a prediction falls out of the tiering: infrastructure is the first thing a team neglects, and its neglect degrades *everyone* — a decaying corpus forces every delegate, in every role, to start cold.
 
 ### Every actor has two faces: produce and evaluate
 
-The same expertise points two ways. Applied **forward**, it produces — a Builder writes code, an Architect draws structure, a Framer frames a problem. Applied **backward**, the same expertise *judges* — the Builder reviews code, the Architect runs a fit-to-structure review, the Framer makes a kill-or-ship call. Nothing about the person or their knowledge changes between the two; only the *orientation* does. This is "verbs, not titles" at its sharpest.
+The same expertise points two ways. Applied **forward**, it produces — a Builder writes code, an Architect draws structure, a Director frames a problem. Applied **backward**, the same expertise *judges* — the Builder reviews code, the Architect runs a fit-to-structure review, the Director makes a kill-or-ship call. Nothing about the person or their knowledge changes between the two; only the *orientation* does. This is "verbs, not titles" at its sharpest.
 
 *The same expertise, pointed two ways — one **motive** (the want) pursued forward and backward:*
 
 | Actor         | Motive — the want                       | Forward face — produce            | Backward face — evaluate         |
 | ------------- | --------------------------------------- | --------------------------------- | -------------------------------- |
-| **Framer**    | the right thing exists                  | frame the problem · set the bar   | kill-or-ship call                |
+| **Director**    | the right thing exists                  | frame the problem · set the bar   | kill-or-ship call                |
 | **Builder**   | the thing works                         | generate the part                 | **validate** against the bar     |
 | **Architect** | the whole stays coherent and evolvable  | draw the structure                | **fit-to-structure review**      |
-| **Curator**   | knowledge compounds                     | distill into the corpus           | prune for truth                  |
+| **Strategist**   | knowledge compounds                     | distill into the corpus           | prune for truth                  |
 
 The motive is **face-invariant**: the forward face produces *toward* the want, the backward face judges *against* it. "Generate," "structure," and the rest name the *forward* face — not the motive, which both faces serve.
 
@@ -157,7 +157,7 @@ One constraint governs the faces: **`producer ≠ judge`** — an *echo* of the 
 
 ```mermaid
 flowchart LR
-    F["Framer<br/>intend"] -->|brief| B["Builder<br/>generate"]
+    F["Director<br/>intend"] -->|brief| B["Builder<br/>generate"]
     B -->|artifact| AR["Architect<br/>structure"]
     AR -->|shape| B
     F -.->|backward face| G{{"the gate"}}
@@ -166,14 +166,14 @@ flowchart LR
     G -->|ship| OUT(["product"])
     G -.->|"deferred work"| BL["backlog<br/>re-prioritized · decision rule"]
     BL -.->|"re-enters as owning actor's work"| F
-    C["Curator<br/>foundation · corpus"] -.-> F
+    C["Strategist<br/>foundation · corpus"] -.-> F
     C -.-> B
     C -.-> AR
 ```
 
 ### The gate: a two-axis decision
 
-**The gate** is the boundary — a pull request, a release — where backward faces converge on one change: correctness (Builder, backward), fit-to-structure (Architect, backward), and worth-shipping (Framer, backward) are judged together. What comes out is **not a single bit.** It is two decisions on two axes:
+**The gate** is the boundary — a pull request, a release — where backward faces converge on one change: correctness (Builder, backward), fit-to-structure (Architect, backward), and worth-shipping (Director, backward) are judged together. What comes out is **not a single bit.** It is two decisions on two axes:
 
 - **Verdict** — does this change pass *now*? `accept` / `block`.
 - **Change request** — does the gate emit new work? `none` / `yes`, and if yes, with a **timing**: `within-PR` or `deferred`.
@@ -183,7 +183,7 @@ flowchart LR
 | **accept** | clean merge                 | merge **+ work** (within-PR nit, or deferred follow-up) |
 | **block**  | **kill** — nothing fixes it | **request changes** (work is within-PR by necessity)    |
 
-Two corners earn names. `block + none` is a **kill** — no incremental fix saves this attempt — but *what* dies depends on the rejecting face: a **Framer** kill abandons the goal (*this should not exist*), while an **Architect** or **Builder** kill rejects the approach or the artifact (*not like this*) with the goal still standing. How often it fires at all depends on how *editable* the upstream is: when the artifact is regenerated from a spec (spec-driven development), an Architect or Builder rejection usually becomes *revise the spec and retry* — an iteration, not a kill — leaving the **Framer** kill (a goal no spec edit saves) as the main residual. `accept + deferred` is the **feedback edge**: merge now, spin off work that re-enters the loop later (see *How it composes*).
+Two corners earn names. `block + none` is a **kill** — no incremental fix saves this attempt — but *what* dies depends on the rejecting face: a **Director** kill abandons the goal (*this should not exist*), while an **Architect** or **Builder** kill rejects the approach or the artifact (*not like this*) with the goal still standing. How often it fires at all depends on how *editable* the upstream is: when the artifact is regenerated from a spec (spec-driven development), an Architect or Builder rejection usually becomes *revise the spec and retry* — an iteration, not a kill — leaving the **Director** kill (a goal no spec edit saves) as the main residual. `accept + deferred` is the **feedback edge**: merge now, spin off work that re-enters the loop later (see *How it composes*).
 
 ```mermaid
 flowchart TB
@@ -196,7 +196,7 @@ flowchart TB
     MD -.->|"re-enters as owning actor's work"| G
 ```
 
-The first axis is governed by a **decision rule** — how the backward faces combine into one verdict, anywhere from an all-pass unanimous veto to a single senior decider (in practice, often a senior engineer weighting the Architect face, or a domain expert weighting the Framer face). The rule is *governance*, a policy choice, not an actor. The second axis is *generated output*, not a combination rule — so the two stay distinct.
+The first axis is governed by a **decision rule** — how the backward faces combine into one verdict, anywhere from an all-pass unanimous veto to a single senior decider (in practice, often a senior engineer weighting the Architect face, or a domain expert weighting the Director face). The rule is *governance*, a policy choice, not an actor. The second axis is *generated output*, not a combination rule — so the two stay distinct.
 
 One coupling, stated honestly: **`block` forces `within-PR`.** You cannot defer the thing that blocks — deferring it *means* it stopped blocking. So timing has freedom only under `accept`; a `block + deferred` cell would be dead. Timing is therefore a flavor of the change-request axis, not a third independent axis.
 
@@ -210,7 +210,7 @@ A second honesty about timing: **the defer verdict crystallizes at the gate, not
 
 #### The deferred branch is a scheduling decision over a dependency tree
 
-`accept + deferred` is richer than "file a ticket." It emits **new work that re-enters as its owning actor's object** — a deferred *feature* is a Framer concern (product intent), a deferred *refactor* an Architect concern (structure). **Sequencing it against everything else is a decision rule** — governance weighing the Framer's product priority against the Architect's structural urgency, not one actor's call. The **Architect** detects a structural concern and estimates it (scope, complexity → rework cost); the rule weighs that estimate against product priority to set the order.
+`accept + deferred` is richer than "file a ticket." It emits **new work that re-enters as its owning actor's object** — a deferred *feature* is a Director concern (product intent), a deferred *refactor* an Architect concern (structure). **Sequencing it against everything else is a decision rule** — governance weighing the Director's product priority against the Architect's structural urgency, not one actor's call. The **Architect** detects a structural concern and estimates it (scope, complexity → rework cost); the rule weighs that estimate against product priority to set the order.
 
 The decision runs over two trees that can diverge:
 
@@ -234,12 +234,12 @@ The thesis, made concrete. A position used to be one **bundle** — one actor wo
 
 | Position     | Object · angle (default bundle) | Default actor · face   | Actors AI now opens                                                                                        |
 | ------------ | ------------------------------- | ---------------------- | ---------------------------------------------------------------------------------------------------------- |
-| **PM**       | product · intent                | Framer · forward       | Builder (prototype with a delegate), Curator (encode product knowledge)                                    |
-| **Designer** | product · UX                    | Builder · forward      | Framer (own the *why*), Architect (the design system), Curator (the design corpus)                         |
-| **Engineer** | product · code                  | Builder · forward      | Architect (structure), Curator (conventions); reaches process & toolchain                                  |
-| **QA**       | product · quality               | Builder · **backward** | Architect (acceptance criteria), Curator (golden sets & regression corpus), Explorer (adversarial probing) |
+| **PM**       | product · intent                | Director · forward       | Builder (prototype with a delegate), Strategist (encode product knowledge)                                    |
+| **Designer** | product · UX                    | Builder · forward      | Director (own the *why*), Architect (the design system), Strategist (the design corpus)                         |
+| **Engineer** | product · code                  | Builder · forward      | Architect (structure), Strategist (conventions); reaches process & toolchain                                  |
+| **QA**       | product · quality               | Builder · **backward** | Architect (acceptance criteria), Strategist (golden sets & regression corpus), Explorer (adversarial probing) |
 
-QA is the sharpest case: its default is the **backward-face Builder** — the trained quality specialist. When delegates write the checks, QA stops being the one who *writes* them and becomes the one who *owns the acceptance contract and curates the corpus it draws on* — backward Builder plus Architect and Curator.
+QA is the sharpest case: its default is the **backward-face Builder** — the trained quality specialist. When delegates write the checks, QA stops being the one who *writes* them and becomes the one who *owns the acceptance contract and curates the corpus it draws on* — backward Builder plus Architect and Strategist.
 
 Two things the table no longer says. There is **no Gatekeeper column**: the backward face is *universal* — every position turns its expertise backward on whatever it touches, so review is everyone's part-time act, not a role one position owns. And the default actor now carries a **face**, which is how QA enters as a Builder turned backward rather than as a phantom "Gatekeeper actor."
 
@@ -253,14 +253,14 @@ Not every specialization earns a name. A candidate — actor, variant, or sub-ro
 
 - **Distinct motive** — for an *actor*; a *variant* instead shares its actor's motive.
 - **Capacity differentiation** — inhabiting it must require a *substantial, distinct* body of knowledge. If the preparation delta is small, it is not a role; it is a function to **codify**.
-- **Persistence** — the need must *recur and aggregate* into a standing demand a human specializes toward. (Not continuous occupancy — a Framer's kill is a split-second act; the *need* is what must aggregate.) A momentary, absorbable need is a sub-role: a *janitor*, not a *cleaner-of-the-flush-handle*.
+- **Persistence** — the need must *recur and aggregate* into a standing demand a human specializes toward. (Not continuous occupancy — a Director's kill is a split-second act; the *need* is what must aggregate.) A momentary, absorbable need is a sub-role: a *janitor*, not a *cleaner-of-the-flush-handle*.
 
 | Actor         | Variant                               | Status    | How it differs — and why preparation differs                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | ------------- | ------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Builder**   | *Explorer* — generates to *discard*   | confirmed | Breadth, pattern recognition, low attachment, speed over polish — versus the default Builder who generates to *keep* (depth, craft, correctness). Clears both gates: a near-opposite cognitive profile, and a recurring, aggregated need. (Forward face.)                                                                                                                                                                                                                                                                                  |
 | **Builder**   | *QA* — *evaluates* the product        | confirmed | The Builder's *backward* variant: deep training in verifying the product — test design, coverage, edge-case and regression reasoning, judging against the **bar** — versus producing it. Same *motive* (the thing working), turned backward. The proof that variants are not forward-only. (Backward face.)                                                                                                                                                                                                                                |
-| **Framer**    | *Scout* — discovers problems          | forming   | Problem *discovery* — divergent, exploratory, low-attachment user/market sensing — versus the default Framer's convergent value *judgment* (the kill-or-ship call). The Framer's Explorer: same *motive* (intend), near-opposite *training*. Clears the gates in principle; *forming* until AI-assisted discovery aggregates into a settled standing practice.                                                                                                                                                                             |
-| **Architect** | *Conductor* — structures at *runtime* | forming   | Orchestrates many delegates and people into one whole at runtime — versus the default Architect who structures the *artifact* at design time. **Borderline today:** much of it is codifiable (the orchestrator-worker pattern is already a *delegate*, not a human role), and the non-codifiable residual decomposes into Framer (reprioritize) and Architect (re-seam) acts. It strengthens as fleets grow — at large scale, coordinating many agents in real time may cross an *air-traffic-control* threshold into a distinct capacity. |
+| **Director**    | *Scout* — discovers problems          | forming   | Problem *discovery* — divergent, exploratory, low-attachment user/market sensing — versus the default Director's convergent value *judgment* (the kill-or-ship call). The Director's Explorer: same *motive* (intend), near-opposite *training*. Clears the gates in principle; *forming* until AI-assisted discovery aggregates into a settled standing practice.                                                                                                                                                                             |
+| **Architect** | *Conductor* — structures at *runtime* | forming   | Orchestrates many delegates and people into one whole at runtime — versus the default Architect who structures the *artifact* at design time. **Borderline today:** much of it is codifiable (the orchestrator-worker pattern is already a *delegate*, not a human role), and the non-codifiable residual decomposes into Director (reprioritize) and Architect (re-seam) acts. It strengthens as fleets grow — at large scale, coordinating many agents in real time may cross an *air-traffic-control* threshold into a distinct capacity. |
 
 Explorer and the default Builder are nearly opposite cognitive profiles — the same *motive* (generate), incompatible *training*. That is why a single framework needs both resolutions: collapse to actors to design the system, expand to variants to develop the people. A variant can specialize on *either* face: most named ones live on the forward face (Explorer, Scout, Conductor — *produce* differently), but a variant can equally specialize the **backward** face — **QA** is a Builder variant whose distinct training is *evaluating* the product (test design, coverage, edge-case and regression reasoning), not producing it. The face stays universal — every actor has both — and a variant is simply the trained specialization anchored to one of them.
 
@@ -268,9 +268,9 @@ A variant is a *lateral* specialization, not an advancement of its actor: it can
 
 #### Codification moves the actor/delegate line
 
-The capacity gate has a consequence worth stating on its own: **a role is worth naming only where the human capacity is substantial *and* not-yet-codifiable.** The moment a function becomes codifiable, its codifiable slice crosses the **actor/delegate line** and becomes **agent configuration** — the delegation surface, materialized for an AI delegate. (Codify a Curator and you get skills and conventions; a Builder, specs; a Conductor, orchestration config.) So codifiability is *where* the actor/delegate boundary sits, and it moves over time — the same engine as the abundance premise, now applied to coordination rather than production.
+The capacity gate has a consequence worth stating on its own: **a role is worth naming only where the human capacity is substantial *and* not-yet-codifiable.** The moment a function becomes codifiable, its codifiable slice crosses the **actor/delegate line** and becomes **agent configuration** — the delegation surface, materialized for an AI delegate. (Codify a Strategist and you get skills and conventions; a Builder, specs; a Conductor, orchestration config.) So codifiability is *where* the actor/delegate boundary sits, and it moves over time — the same engine as the abundance premise, now applied to coordination rather than production.
 
-This is why "isn't a Conductor just someone who *builds* the orchestration?" is half-right. Building that agent configuration is a real job — but it is a **Builder at the toolchain tier**, whose object is a *part* (the orchestration feature), because **agent configuration is itself a product**, built by its own Framer, Builder, Architect, and Curator. *(Concretely in this repository: the "agent orchestration" feature of the ACES plugin is the codified Conductor, built by a Builder of ACES — a product the framework describes building, not a part of the framework.)*
+This is why "isn't a Conductor just someone who *builds* the orchestration?" is half-right. Building that agent configuration is a real job — but it is a **Builder at the toolchain tier**, whose object is a *part* (the orchestration feature), because **agent configuration is itself a product**, built by its own Director, Builder, Architect, and Strategist. *(Concretely in this repository: the "agent orchestration" feature of the ACES plugin is the codified Conductor, built by a Builder of ACES — a product the framework describes building, not a part of the framework.)*
 
 ### Delegation surfaces
 
@@ -278,24 +278,24 @@ Every actor extends itself through a **delegation surface** — the artifact by 
 
 | Actor         | Delegation surface           | What it carries                                                                       |
 | ------------- | ---------------------------- | ------------------------------------------------------------------------------------- |
-| **Framer**    | **The brief**                | The problem, the *why*, the definition of success                                     |
+| **Director**    | **The brief**                | The problem, the *why*, the definition of success                                     |
 | **Builder**   | **The contract + exemplars** | A behavioral spec for one angle, plus reference patterns to imitate                   |
 | **Architect** | **The shape**                | Organizing principles, boundaries, conventions, and the constraints that protect them |
-| **Curator**   | **The corpus**               | Distilled, reusable knowledge every other delegate reads from                         |
+| **Strategist**   | **The corpus**               | Distilled, reusable knowledge every other delegate reads from                         |
 
 Each surface has a backward face too — its **bar**, the acceptance criteria the same expertise applies when judging. The bar is not a separate surface; it is the *criteria face* of every surface: the brief's definition of success, the shape's fitness rules, the contract's behavioral checks. Stated as instruction it guides production; stated as criteria it gates acceptance — two faces of one artifact.
 
 *Brief, contract, shape, corpus* (each with its criteria face). These are categories, not products. A given team instantiates them in whatever form fits — a one-page brief or a chartered intent doc; convention files or decision records; checklists or executable acceptance tests. The framework names the surface; the team chooses the medium.
 
-The Curator's surface is special: its output *is* the substrate every other delegate reads from. A team that invests in its corpus makes every other delegate faster and more faithful at once. A team that neglects it forces every delegate to start cold.
+The Strategist's surface is special: its output *is* the substrate every other delegate reads from. A team that invests in its corpus makes every other delegate faster and more faithful at once. A team that neglects it forces every delegate to start cold.
 
-### Curator and the loop
+### Strategist and the loop
 
 The model has **three distinct loops.** Keeping them separate is the point — they fire at different cadences, on different objects, owned by different actors:
 
-- **Inner loop** — *within a task.* Builder produces, the **bar** (a backward face made executable) fires, Builder corrects, Architect reshapes under green. Fast; every iteration — the developer inner loop [dev-loop]. This is **single-loop** learning [argyris]: correcting *actions* under fixed assumptions. The Curator does not fire here.
-- **Product feedback edge** — *across tasks, same product.* Work deferred at the gate re-enters as its owning actor's object (a refactor → Architect, a feature → Framer), sequenced by a decision rule. New work, same product.
-- **Outer loop** — *across products.* The Curator distills durable lessons into the corpus so the next inner loop starts warmer. This is **double-loop** learning [argyris]: revising the *assumptions* themselves.
+- **Inner loop** — *within a task.* Builder produces, the **bar** (a backward face made executable) fires, Builder corrects, Architect reshapes under green. Fast; every iteration — the developer inner loop [dev-loop]. This is **single-loop** learning [argyris]: correcting *actions* under fixed assumptions. The Strategist does not fire here.
+- **Product feedback edge** — *across tasks, same product.* Work deferred at the gate re-enters as its owning actor's object (a refactor → Architect, a feature → Director), sequenced by a decision rule. New work, same product.
+- **Outer loop** — *across products.* The Strategist distills durable lessons into the corpus so the next inner loop starts warmer. This is **double-loop** learning [argyris]: revising the *assumptions* themselves.
 
 ```mermaid
 flowchart LR
@@ -303,15 +303,15 @@ flowchart LR
     BAR -->|"correct · inner loop"| B
     BAR -->|"accept + deferred"| BL["backlog · this product<br/>re-prioritized"]
     BL -.-> B
-    BAR -->|"durable lesson"| CUR["Curator distills → corpus<br/>outer loop · any product"]
+    BAR -->|"durable lesson"| CUR["Strategist distills → corpus<br/>outer loop · any product"]
     CUR -.->|"warmer start"| B
 ```
 
-The middle and outer loops are easy to confuse but distinct: deferred work changes *this* product; the Curator changes the *capacity to build any product*. And the Curator spans both learning modes — routine **codification** (encode what works — a lint rule for a thrice-solved pattern) is single-loop; **revision** (prune a now-false convention, resolve a contradiction) is double-loop, its distinctive mode.
+The middle and outer loops are easy to confuse but distinct: deferred work changes *this* product; the Strategist changes the *capacity to build any product*. And the Strategist spans both learning modes — routine **codification** (encode what works — a lint rule for a thrice-solved pattern) is single-loop; **revision** (prune a now-false convention, resolve a contradiction) is double-loop, its distinctive mode.
 
-Firing Curator every iteration is **premature codification** — you encode transient noise and thrash the corpus before you know which lessons are durable. So the human Curator is episodic, triggered at boundaries: a pattern solved three times, the same correction repeated across loops, a contradiction or staleness that needs pruning, a milestone retro, or a **lifecycle terminating** — a product or effort that *ships* (distill what worked) or is *killed* (distill *why it failed* — often the richest lesson, pairing with the Framer's highest-leverage kill). The trigger is **lifecycle granularity**, not per-gate: a single PR shipping is not an outer-loop trigger — that is the premature codification just named.
+Firing Strategist every iteration is **premature codification** — you encode transient noise and thrash the corpus before you know which lessons are durable. So the human Strategist is episodic, triggered at boundaries: a pattern solved three times, the same correction repeated across loops, a contradiction or staleness that needs pruning, a milestone retro, or a **lifecycle terminating** — a product or effort that *ships* (distill what worked) or is *killed* (distill *why it failed* — often the richest lesson, pairing with the Director's highest-leverage kill). The trigger is **lifecycle granularity**, not per-gate: a single PR shipping is not an outer-loop trigger — that is the premature codification just named.
 
-The interface this produces is the model's first concrete one: the **Curator's delegate watches continuously** — flagging candidates, drafting conventions, detecting corpus contradictions, all cheap — while the **human Curator holds the accept/prune decision**, because that call is accountable and high-blast-radius. *Detection and drafting by the delegate; keep-or-cut by the human.* It is a template for every other actor's interface.
+The interface this produces is the model's first concrete one: the **Strategist's delegate watches continuously** — flagging candidates, drafting conventions, detecting corpus contradictions, all cheap — while the **human Strategist holds the accept/prune decision**, because that call is accountable and high-blast-radius. *Detection and drafting by the delegate; keep-or-cut by the human.* It is a template for every other actor's interface.
 
 ### Delegate fidelity: the orthogonal axis
 
@@ -321,7 +321,7 @@ Fidelity is distinct from evaluation. A backward face judges *the product*; fide
 
 Its formal shape resolves cleanly into the model's own vocabulary: it is **neither a fifth actor** (no motive — it fails the first membership gate; it is a *relation*, not a party) **nor a third face** (a face points at the work; fidelity points at the worker). It is a **delegate-directed check riding every delegation surface — the mirror of the bar.** The bar turns a surface's criteria on the *artifact*; fidelity turns the same surface's criteria on the *delegate that produced it*: given this brief, contract, shape, or corpus, does the delegate do what the actor would have done and intended? That is also why the human–agent interface lives here — the interface *is* the fidelity instrument.
 
-> Building a robust fidelity system for one class of delegate — agent configurations — is itself a product, with its own Framer, Builder, Architect, and Curator. The framework describes how such a product gets built; it does not contain it.
+> Building a robust fidelity system for one class of delegate — agent configurations — is itself a product, with its own Director, Builder, Architect, and Strategist. The framework describes how such a product gets built; it does not contain it.
 
 ### Scenarios: how the actors actually show up
 
@@ -329,24 +329,24 @@ Actor involvement has a topology. Who plays which actor, and when, runs along an
 
 #### Decoupled: a bug fix in an open-source project
 
-- **Framer** — the contributor decides this bug is worth their time, usually self-framed from their own pain; the issue thread is the brief. A maintainer framed it earlier by accepting and labeling it.
+- **Director** — the contributor decides this bug is worth their time, usually self-framed from their own pain; the issue thread is the brief. A maintainer framed it earlier by accepting and labeling it.
 - **Explorer** (Builder, divergent) — the contributor reproduces it, reads unfamiliar code, tries a couple of approaches, discards the dead ends.
 - **Builder** (producer) — writes the fix and a regression test; the test is the contract, co-delivered.
 - *— boundary: the pull request —*
-- **The gate** — the maintainer enters *only now*, turning expertise backward against the change: correctness (Builder face) against the bar, fit-to-structure (Architect face), and worth-merging (Framer face). The two-axis verdict applies: accept-or-block, with or without change requests — and a recurring-class concern may be `accept + deferred`, filed as a follow-up. Note the asymmetry — the contributor produced for days with no evaluation present; the gate is async and late.
-- **Curator** — if the bug is one of a recurring class, the maintainer encodes a lint rule, a test pattern, or a CONTRIBUTING note so the next contributor avoids it. Frequently deferred or skipped — infrastructure neglect in the wild.
+- **The gate** — the maintainer enters *only now*, turning expertise backward against the change: correctness (Builder face) against the bar, fit-to-structure (Architect face), and worth-merging (Director face). The two-axis verdict applies: accept-or-block, with or without change requests — and a recurring-class concern may be `accept + deferred`, filed as a follow-up. Note the asymmetry — the contributor produced for days with no evaluation present; the gate is async and late.
+- **Strategist** — if the bug is one of a recurring class, the maintainer encodes a lint rule, a test pattern, or a CONTRIBUTING note so the next contributor avoids it. Frequently deferred or skipped — infrastructure neglect in the wild.
 
-Reading: one human (contributor) plays Framer + Explorer + Builder forward; another (maintainer) judges at the gate — the Builder, Architect, and Framer faces turned backward — and curates. Roles cluster by *position in the contribution flow*, not by job. And the same maintainer who judges here is a Builder on their own commits — the verb, not the person.
+Reading: one human (contributor) plays Director + Explorer + Builder forward; another (maintainer) judges at the gate — the Builder, Architect, and Director faces turned backward — and curates. Roles cluster by *position in the contribution flow*, not by job. And the same maintainer who judges here is a Builder on their own commits — the verb, not the person.
 
 #### Compressed: a solo developer and their delegates ship a feature
 
-- **Framer** — the developer fixes the feature's *why* and what success looks like, sometimes as a written brief, sometimes only in their head.
+- **Director** — the developer fixes the feature's *why* and what success looks like, sometimes as a written brief, sometimes only in their head.
 - **Explorer** (Builder variant) — a delegate spikes three approaches in parallel; the developer, applying expertise *backward*, keeps one and kills two. (That pick is the Builder's own backward face — evaluation inside the Builder phase.)
 - **Builder** (producer) — a delegate implements the chosen approach; the inner loop runs against tests.
 - *— boundary: the developer reads the diff —*
 - **The gate** — the same human, now turning their expertise backward on the delegate's output. `producer ≠ judge` still holds, because the *delegate* produced and the *human* judges.
 - **Architect (conducting)** — the developer notices it should follow an existing convention and directs a refactor under green; if the convention requires a not-yet-built helper, they direct an orchestrator-delegate to build it in parallel rather than stalling the feature (the scheduling decision in miniature).
-- **Curator** — at the end, the developer encodes the new convention so the next feature starts warmer — or, more often, a Curator-delegate flags "you've done this three times" and the human approves the entry.
+- **Strategist** — at the end, the developer encodes the new convention so the next feature starts warmer — or, more often, a Strategist-delegate flags "you've done this three times" and the human approves the entry.
 
 Reading: one human spans all four actors, forward and backward, in an afternoon — impossible before AI, when production consumed all their focus. Delegates supply the production capacity, freeing the human to move through the roles while holding motive and accountability throughout. This is the thesis in miniature: abundance does not replace the human; it lets one human *be* the team.
 
@@ -370,7 +370,7 @@ Get the actors and motives right and the rest is downstream. Get them wrong — 
 
 Everything above describes building *a product*. But the four actors, the two faces, the delegation surfaces, and the gate are **invariant** — point the same machine at a different *object* and it still runs. And the framework is **self-applying**: it builds not only the product but the **process** and the **toolchain** that build the product. Three objects matter:
 
-| Object        | What it is                        | Framer decides  | Builder makes               | Architect structures  | Curator distills           |
+| Object        | What it is                        | Director decides  | Builder makes               | Architect structures  | Strategist distills           |
 | ------------- | --------------------------------- | --------------- | --------------------------- | --------------------- | -------------------------- |
 | **Product**   | the concrete, substantive outcome | which product   | a feature                   | the codebase          | product & domain knowledge |
 | **Process**   | the way of working                | which practices | a workflow or runbook       | how the practices fit | process lessons            |
@@ -386,21 +386,21 @@ flowchart TB
     TOOL["TOOLCHAIN<br/>tools and agent configuration"]
     PROD["PRODUCT<br/>the concrete, substantive outcome"]
     PROC <-->|"overlap & co-evolve"| TOOL
-    PROD -->|"experience distilled · Curator"| PROC
-    PROD -->|"experience distilled · Curator"| TOOL
+    PROD -->|"experience distilled · Strategist"| PROC
+    PROD -->|"experience distilled · Strategist"| TOOL
     PROC -->|"capability supplied"| PROD
     TOOL -->|"capability supplied"| PROD
 ```
 
-The one asymmetry: **product is the concrete, substantive outcome — the thing that ships.** Process and toolchain are *means* that serve it and are refined by it. Influence runs every way at once: building the product teaches process and tooling (the Curator distills), while better process and tooling make the next product cheaper.
+The one asymmetry: **product is the concrete, substantive outcome — the thing that ships.** Process and toolchain are *means* that serve it and are refined by it. Influence runs every way at once: building the product teaches process and tooling (the Strategist distills), while better process and tooling make the next product cheaper.
 
 Three things this clears up:
 
 **Your past Architect definition resolves.** "Own codebase health, *and* the process governing AI contributions, *and* the AI workflow/harness" was never one outsized role — it is the **Architect motive worked across all three sets.** One motive, three objects.
 
-**Codification is how knowledge crosses between the sets** — not an elevator up a ladder. The Curator distills a product lesson into a process convention or a toolchain artifact — *agent configuration* — which lands in process, toolchain, or their overlap, and is *wielded* back in product-building. The codification law (above) is one instance of this crossing.
+**Codification is how knowledge crosses between the sets** — not an elevator up a ladder. The Strategist distills a product lesson into a process convention or a toolchain artifact — *agent configuration* — which lands in process, toolchain, or their overlap, and is *wielded* back in product-building. The codification law (above) is one instance of this crossing.
 
-**Curator carries knowledge across boundaries — and that unifies the model.** "Accumulate" *is* lifting product experience into a reusable process or toolchain asset. So the **Curator foundation tier**, the **codification law**, **agent configuration**, and this **self-application** are one pattern: knowledge made reusable and carried across a seam — the seam between *actors* (Curator → the other three, within one build) and the seams between *sets* (product ↔ process ↔ toolchain). Same motive, two kinds of seam.
+**Strategist carries knowledge across boundaries — and that unifies the model.** "Accumulate" *is* lifting product experience into a reusable process or toolchain asset. So the **Strategist foundation tier**, the **codification law**, **agent configuration**, and this **self-application** are one pattern: knowledge made reusable and carried across a seam — the seam between *actors* (Strategist → the other three, within one build) and the seams between *sets* (product ↔ process ↔ toolchain). Same motive, two kinds of seam.
 
 > **Term guard.** *Tier* is the delivery-vs-foundation split among the four actors, *within* one build. Product / process / toolchain are a different thing — three **overlapping sets** the framework is applied to, not a stack and not a tier.
 
@@ -414,13 +414,13 @@ Three things this clears up:
 
 - **Architect is distinct by OBJECT, not scope.** *Scope* was a red herring: a Builder zoomed out still produces a **part**, just a bigger one. The Architect's **object** is different — *relations between parts* (boundaries, conventions, the composition law), not a slice of the product [conway]. That holds at every scope, so "Builder at system scope" is a category error. Operationally the Architect also differs on **deliverability** (realized only *through* others' work), **feedback latency** (slow and global), and **cadence** (per structural decision, not per contribution). Feature-scale fuzziness — "a Builder co-delivering a spec is already doing architecture" — is one *person* flipping roles, not the actors merging: switching motive is switching actor.
 
-- **The Architect's breadth (codebase + process + harness) is one motive, not one big role.** It is the Architect motive worked across three **overlapping sets** (product, process, toolchain); see *Recursion*. That set split and *tier* (delivery vs foundation actor, within one build) are different things; they meet at the **Curator** — the foundation tier within a build and the actor that carries knowledge between the sets.
+- **The Architect's breadth (codebase + process + harness) is one motive, not one big role.** It is the Architect motive worked across three **overlapping sets** (product, process, toolchain); see *Recursion*. That set split and *tier* (delivery vs foundation actor, within one build) are different things; they meet at the **Strategist** — the foundation tier within a build and the actor that carries knowledge between the sets.
 
-- **Curator is peer actor and layer — not a false choice.** *Actor* asks whether a distinct motive generates distinct use cases (it does); *layer* asks where the output sits in the dependency graph (foundational). Curator is the team's **infrastructure actor**: a full actor whose product is a layer, like a platform team [team-topologies]. The model is two-tiered — three delivery actors over one foundation actor — not actors plus a non-actor substrate.
+- **Strategist is peer actor and layer — not a false choice.** *Actor* asks whether a distinct motive generates distinct use cases (it does); *layer* asks where the output sits in the dependency graph (foundational). Strategist is the team's **infrastructure actor**: a full actor whose product is a layer, like a platform team [team-topologies]. The model is two-tiered — three delivery actors over one foundation actor — not actors plus a non-actor substrate.
 
 - **No standalone Gatekeeper actor.** Judging is expertise turned backward, so *every* actor has an evaluative face — there is no role with judging as its own domain. **The gate** is the boundary where those backward faces converge; the verdict is a two-axis decision (accept/block × change-request) governed by a **decision rule** (unanimous veto → single senior decider), i.e. governance, not a party. "Gatekeeper" survives as the name of the *activity*. `producer ≠ judge` holds per artifact across time [sod].
 
-- **Variant count is discovered, not fixed.** The **membership gates** are the answer: the count is not fixed, it is *discovered* per candidate. A candidate is a named variant only when it shares its actor's motive yet demands a *substantial, distinct* body of preparation (capacity gate) for a *recurring, aggregated* need (persistence gate); fail either and it is a sub-role or a function to **codify**, not a variant. Verdicts: **Builder → Explorer** confirmed (forward) and **QA** confirmed (backward); **Architect → Conductor** forming; **Framer → Scout** forming; **Curator → none** (its three acts share one cognitive profile → sub-roles, not variants).
+- **Variant count is discovered, not fixed.** The **membership gates** are the answer: the count is not fixed, it is *discovered* per candidate. A candidate is a named variant only when it shares its actor's motive yet demands a *substantial, distinct* body of preparation (capacity gate) for a *recurring, aggregated* need (persistence gate); fail either and it is a sub-role or a function to **codify**, not a variant. Verdicts: **Builder → Explorer** confirmed (forward) and **QA** confirmed (backward); **Architect → Conductor** forming; **Director → Scout** forming; **Strategist → none** (its three acts share one cognitive profile → sub-roles, not variants).
 
 - **Delegation surface is medium-agnostic.** The surface transmits intent across an *availability gap* — to a delegate now, a teammate next week, or one's own future self. What AI changes is not the surface but two things around it: **economics** (abundance makes delegation the default, so authoring surfaces becomes the main act) and the **fidelity problem** (a new delegate class whose faithfulness cannot be assumed). The surface's generality is load-bearing: one artifact serves human and agent delegates interchangeably.
 
@@ -434,7 +434,7 @@ Three things this clears up:
 
 1. **How far does abundance actually reach, and how fast?** Whether AI's "abundance" reaches *novel or hard* generation — and how quickly — is empirical and unsettled. Sets how often the compressed scenario is reachable in practice.
 
-2. **Do the *forming* variants harden?** **Conductor** (of Architect) and **Scout** (of Framer) clear the membership gates in principle but are not yet settled standing roles. Watch whether each crosses from *forming* to *confirmed*, or whether its capacity stays codifiable and folds into a delegate rather than a human variant.
+2. **Do the *forming* variants harden?** **Conductor** (of Architect) and **Scout** (of Director) clear the membership gates in principle but are not yet settled standing roles. Watch whether each crosses from *forming* to *confirmed*, or whether its capacity stays codifiable and folds into a delegate rather than a human variant.
 
 ---
 
@@ -443,14 +443,14 @@ Three things this clears up:
 | Term                                    | Definition                                                                                                                                                                                                                                                                                                                                                                                                            |
 | --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Role**                                | The genus — *a kind of contribution a person makes*, defined by **motive**. Spans **actors** (the four motive-distinct base roles), their **variants**, and **sub-roles**. Every actor is a role; not every role is an actor. The unit of a team that replaced the *title*.                                                                                                                                           |
-| **Actor**                               | The narrow case of a **role**: one of the four motive-distinct base roles — Framer, Builder, Architect, Curator — and the human party in the **actor/delegate** pair. Holds accountability, which never delegates. *Collision to note: unlike a UML use-case "actor" (which may be a non-human system) or the actor-model actor, our actor is **always human** — agents are delegates.*                               |
+| **Actor**                               | The narrow case of a **role**: one of the four motive-distinct base roles — Director, Builder, Architect, Strategist — and the human party in the **actor/delegate** pair. Holds accountability, which never delegates. *Collision to note: unlike a UML use-case "actor" (which may be a non-human system) or the actor-model actor, our actor is **always human** — agents are delegates.*                               |
 | **Agent**                               | The *substrate* of a delegate: an AI system apart from any task. An agent **becomes a delegate** when an actor gives it intent through a **delegation surface** — the mirror of how a human becomes an **actor** by taking on a motive. (**Agent configuration** is that materialized surface, not the agent itself.)                                                                                                 |
 | **Delegate**                            | *(noun)* An **agent** acting on an actor's behalf — the agent caught in-relation; no motive of its own, *capacity*, not a *party*, never accountable. Adapts agency theory's agent, minus the self-interest [agency]. *(verb)* To **delegate** is the act an actor performs: authoring the governance and criteria — the **delegation surface** and its **bar** — that transmit its responsibility to an agent.       |
-| **Motive**                              | The intrinsic **want** that defines an actor — *face-invariant*: both faces serve it. Named by its forward verb for brevity: **intend** (Framer — the right thing exists), **generate** (Builder — the thing works), **structure** (Architect — the whole stays coherent and evolvable), **accumulate** (Curator — knowledge compounds). The **backward face** pursues the same want by *judging against* it, not producing toward it.                                                                                                                                                                                                                                           |
+| **Motive**                              | The intrinsic **want** that defines an actor — *face-invariant*: both faces serve it. Named by its forward verb for brevity: **intend** (Director — the right thing exists), **generate** (Builder — the thing works), **structure** (Architect — the whole stays coherent and evolvable), **accumulate** (Strategist — knowledge compounds). The **backward face** pursues the same want by *judging against* it, not producing toward it.                                                                                                                                                                                                                                           |
 | **Direction**                           | What a human supplies to a delegate — and to a teammate or their own future self: a **motive** grounded in an **angle**. Motive alone is half; the angle (expertise) is what tells the human *which* want is worth holding and *how* to judge against it. The unit a human actually holds and transmits, carried across an availability gap by a **delegation surface**. Distinct from **face**, which is the *orientation* of expertise, not what is transmitted.                                                                                                                                                                                                                          |
-| **Object**                              | *What an actor's output is.* A Builder's object is a **part**; the Architect's, the **relations between parts**; the Curator's, **knowledge that outlives the product**. Object — not scope — separates them.                                                                                                                                                                                                         |
+| **Object**                              | *What an actor's output is.* A Builder's object is a **part**; the Architect's, the **relations between parts**; the Strategist's, **knowledge that outlives the product**. Object — not scope — separates them.                                                                                                                                                                                                         |
 | **Face**                                | The *orientation* of an actor's expertise — **forward** (produce) or **backward** (evaluate). Every actor has both, serving one **motive**. *Reserved: never used for anything else — switching motive is switching actor, not face.*                                                                                                                                                                                                       |
-| **Variant**                             | A specialization of an actor — same **motive**, differentiated by required *training* — that clears the **membership gates**. Anchors to *either face*: forward (**Explorer** of Builder, confirmed; **Scout** of Framer, forming; **Conductor** of Architect, forming) or backward (**QA**, the Builder variant that evaluates the product, confirmed). **Curator** has none (its acts share one cognitive profile). |
+| **Variant**                             | A specialization of an actor — same **motive**, differentiated by required *training* — that clears the **membership gates**. Anchors to *either face*: forward (**Explorer** of Builder, confirmed; **Scout** of Director, forming; **Conductor** of Architect, forming) or backward (**QA**, the Builder variant that evaluates the product, confirmed). **Strategist** has none (its acts share one cognitive profile). |
 | **Membership gates**                    | What a candidate role must clear to be named: **distinct motive** (for actors), **capacity differentiation** (a substantial distinct body of knowledge, else codify), **persistence** (a recurring, aggregated need, else a sub-role). Bounds the taxonomy.                                                                                                                                                           |
 | **Codifiability / actor–delegate line** | A role is worth naming only where human capacity is substantial *and* not-yet-codifiable. The codifiable slice crosses into a delegate as **agent configuration**; the boundary moves as codification advances.                                                                                                                                                                                                       |
 | **Agent configuration**                 | A delegation surface materialized for an AI delegate — skills, **agent/subagent definitions**, specs, conventions, orchestration config. The codified form of an actor's capacity; itself a toolchain-tier product built by a Builder. The static *definition*; the running **delegate** is the agent or subagent it configures.                                                                                      |
@@ -462,9 +462,9 @@ Three things this clears up:
 | **`producer ≠ judge`**                  | The constraint that the instance which produced an artifact is not its independent judge. An *echo* of separation of duties / four-eyes [sod] — not strict (one actor may serve both faces); the model's contribution is splitting judgment across time (thorough-but-general criteria ahead of time via the **bar**; focused human judgment in the loop).                                                            |
 | **Dependency order vs work order**      | *Dependency order*: A needs B (the Architect's object). *Work order*: the sequence we actually build in. A **placeholder** (stub, workaround, or rougher MVP) lets work-order diverge from dependency-order, at the cost of **rework**.                                                                                                                                                                               |
 | **Scheduling decision**                 | On the deferred branch: *defer new work* (placeholder now, rework later) vs *defer current work* (build prerequisite first). A **decision rule** — product priority vs rework-cost, informed by the Architect's estimate — not a single actor's call.                                                                                                                                                                 |
-| **Delegation surface**                  | The artifact an actor transmits intent through: **brief** (Framer), **contract + exemplars** (Builder), **shape** (Architect), **corpus** (Curator). Categories, not products — a team picks the medium.                                                                                                                                                                                                              |
+| **Delegation surface**                  | The artifact an actor transmits intent through: **brief** (Director), **contract + exemplars** (Builder), **shape** (Architect), **corpus** (Strategist). Categories, not products — a team picks the medium.                                                                                                                                                                                                              |
 | **Bar**                                 | The *criteria face* of a delegation surface — the same artifact stated as acceptance criteria rather than instruction. Not a separate surface.                                                                                                                                                                                                                                                                        |
-| **Tier**                                | The *dependency* split among the four actors *within one build*: **delivery** actors (Framer/Builder/Architect, act on the object) versus the **foundation** actor (Curator, acts on the capacity to deliver). Distinct from the product/process/toolchain sets.                                                                                                                                                      |
+| **Tier**                                | The *dependency* split among the four actors *within one build*: **delivery** actors (Director/Builder/Architect, act on the object) versus the **foundation** actor (Strategist, acts on the capacity to deliver). Distinct from the product/process/toolchain sets.                                                                                                                                                      |
 | **Recursion**                           | The framework is self-applying: the same four actors build not just the **product** but the **process** and **toolchain** that build it. These three are *overlapping sets* — they intersect and mutually influence — not stacked levels, with product the concrete outcome the others serve.                                                                                                                         |
 | **Delegate fidelity**                   | Verifying a delegate did what its actor intended — judging the worker, not the work. Not an actor (no motive) and not a **face** (it points at the delegate, not the work): a delegate-directed check riding *every* **delegation surface**, the mirror of the **bar**, and the home of human–agent interface design.                                                                                                 |
 
@@ -475,7 +475,7 @@ Three things this clears up:
 | Key                  | Source                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `[agency]`           | Agency / principal–agent theory — Eisenhardt (1989); Jensen & Meckling (1976). [EBSCO Research Starters](https://www.ebsco.com/research-starters/economics/agency-theory-organizational-economics). *Adapted: the framework's delegate has no self-interest, removing the agency problem.*                                                                                                                                                                                                   |
-| `[argyris]`          | Argyris & Schön, *Organizational Learning* (1978) — single-/double-loop learning. [infed.org](https://infed.org/dir/welcome/chris-argyris-theories-of-action-double-loop-learning-and-organizational-learning/). *Curator spans both; double-loop is its distinctive mode, not all curation.*                                                                                                                                                                                                |
+| `[argyris]`          | Argyris & Schön, *Organizational Learning* (1978) — single-/double-loop learning. [infed.org](https://infed.org/dir/welcome/chris-argyris-theories-of-action-double-loop-learning-and-organizational-learning/). *Strategist spans both; double-loop is its distinctive mode, not all curation.*                                                                                                                                                                                                |
 | `[team-topologies]`  | Skelton & Pais, *Team Topologies* — the platform team as self-service product. [IT Revolution](https://itrevolution.com/articles/four-team-types/).                                                                                                                                                                                                                                                                                                                                          |
 | `[conway]`           | Conway, "How Do Committees Invent?" (1968); MIT/Harvard mirroring study. [Wikipedia: Conway's law](https://en.wikipedia.org/wiki/Conway%27s_law).                                                                                                                                                                                                                                                                                                                                            |
 | `[screaming]`        | Robert C. Martin, "Screaming Architecture" (2011); *Clean Architecture* (2017) ch. 21. [cleancoder.com](https://blog.cleancoder.com/uncle-bob/2011/09/30/Screaming-Architecture.html).                                                                                                                                                                                                                                                                                                       |
@@ -483,7 +483,7 @@ Three things this clears up:
 | `[sod]`              | Separation of duties / four-eyes principle; ISO 27001 Annex A 5.3. [Flagsmith](https://www.flagsmith.com/blog/what-is-the-four-eyes-principle).                                                                                                                                                                                                                                                                                                                                              |
 | `[walking-skeleton]` | Freeman & Pryce, *Growing Object-Oriented Software, Guided by Tests* (ch. 10). [O'Reilly](https://www.oreilly.com/library/view/growing-object-oriented-software/9780321574442/ch10.html).                                                                                                                                                                                                                                                                                                    |
 | `[test-double]`      | Martin Fowler, *TestDouble* (stubs supply canned answers for absent dependencies). [martinfowler.com](https://martinfowler.com/bliki/TestDouble.html). *"Stub" is a test construct; we generalize it to a production placeholder (stub/workaround/MVP). The rework/ordering trade-off is the framework's own inference.*                                                                                                                                                                     |
-| `[dev-loop]`         | Developer inner/outer loop. [Red Hat Developer](https://developers.redhat.com/articles/2024/09/05/platform-engineers-role-devsecops-inner-and-outer-loops); [Speedscale](https://docs.speedscale.com/concepts/inner-outer/). *Used only for the **inner-loop** analogy; the DevEx outer loop is CI/CD integration, not the Curator's distillation loop.*                                                                                                                                     |
+| `[dev-loop]`         | Developer inner/outer loop. [Red Hat Developer](https://developers.redhat.com/articles/2024/09/05/platform-engineers-role-devsecops-inner-and-outer-loops); [Speedscale](https://docs.speedscale.com/concepts/inner-outer/). *Used only for the **inner-loop** analogy; the DevEx outer loop is CI/CD integration, not the Strategist's distillation loop.*                                                                                                                                     |
 | `[ai-roles]`         | Generative AI augmentation vs automation; new roles, ~80% upskilling through 2027. [Gartner (2024-10-03)](https://www.gartner.com/en/newsroom/press-releases/2024-10-03-gartner-says-generative-ai-will-require-80-percent-of-engineering-workforce-to-upskill-through-2027). *Gartner measures **outcome** (modest productivity); our premise is about **capability** (production capacity becomes abundant) — distinct claims.*                                                            |
 | `[multi-agent]`      | Orchestrator-worker pattern; parallel subagents. [Anthropic, *Building Effective Agents*](https://www.anthropic.com/research/building-effective-agents); [*Multi-agent research system*](https://www.anthropic.com/engineering/multi-agent-research-system). *Anthropic notes orchestration is weakest on tightly interdependent work — a real boundary on the Conductor's fan-out (needs a clean seam). The **orchestrator** is a delegate pattern, distinct from the **Conductor** actor.* |
 

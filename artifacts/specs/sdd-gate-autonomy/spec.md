@@ -138,7 +138,7 @@ The incident's real error was therefore not the field's meaning but **committing
 
 When the agent reaches a gate under any autonomy level, it emits a **gate report** — the same two-axis verdict a judge produces, made reviewable and **decidable**. Its sections:
 
-- **Verdict per backward face**: Framer (scope — still worth shipping?), Builder (contract/impl complete & testable against the bar?), Architect (fit — conventions, no dup/conflict).
+- **Verdict per backward face**: Director (scope — still worth shipping?), Builder (contract/impl complete & testable against the bar?), Architect (fit — conventions, no dup/conflict).
 - **Leash derivation** (the reasoning home): the four-dimension assessment (reversibility, blast radius, decision novelty, confidence) for each gate, the **derived** leash, the **effective** leash after any human ceiling, and a one-line reason per dimension. This is *why the agent stopped where it did*, made auditable.
 - **Open markers as questions** — each blocking marker phrased as a question **with the agent's proposed answer**, so "approve" can mean "accept my proposals" and the human only engages where they disagree.
 - **Contestable defaults**: the decisions a human might have made differently, listed explicitly with a jump link (`file:line` / marker) to each decision point.
@@ -155,7 +155,7 @@ GATE REPORT — sdd-gate-autonomy @ spec gate
 STATUS: ready for spec gate · agent-asserted — ratify or kick back
 
 Verdict
-  Framer  (scope)    PASS — real incident, contained, worth shipping
+  Director  (scope)    PASS — real incident, contained, worth shipping
   Builder (contract) PASS — 20 scenarios cover leash / attribution / FSM / report / gate-actions
   Architect (fit)    PASS — extends orchestrator + sdd-plugin; reuses aligned as-is
 
@@ -200,7 +200,7 @@ STATUS: implemented · agent-asserted — ratify or kick back
 Verdict
   Builder (impl)     PASS — 14 node:test cases green; every .feature scenario maps to a test
   Architect (fit)    PASS — self-contained skill, no new deps, biome clean
-  Framer (scope)     PASS — contract unchanged, no goal drift
+  Director (scope)     PASS — contract unchanged, no goal drift
 
 Leash derivation
   gate        reversibility  blast        novelty       confidence    read
@@ -219,7 +219,7 @@ Contestable defaults
 Decision menu
   approve → set approved-by.impl (by: <you>); status stays implemented   [recommended]
   change  → point me at a weak/failing scenario; I fix code vs the frozen .feature
-  reject  → redo impl — or Framer-revert if building proved the contract wrong
+  reject  → redo impl — or Director-revert if building proved the contract wrong
 ```
 
 Here both gates' reads diverge: the spec gate was `gated` and human-ratified in Run 1, while the impl gate independently derives `auto` and is self-asserted in Run 2 — provisional until the human ratifies `approved-by.impl`.
@@ -232,12 +232,12 @@ Here both gates' reads diverge: the spec gate was `gated` and human-ratified in 
 |---|---|---|
 | **approve** | → Approved; **freeze** the `.feature`; set `approved-by.spec` | → Implemented; set `approved-by.impl` |
 | **change** | revise the **contract** (`spec.md` / `.feature`); stays Draft | fix the **code** against the frozen `.feature`; contract **stays frozen** |
-| **reject** | scope-kill — drop or return to Draft | redo the implementation — **or** the **Framer-revert**: building proved the contract wrong, so **unfreeze** and return to Draft |
+| **reject** | scope-kill — drop or return to Draft | redo the implementation — **or** the **Director-revert**: building proved the contract wrong, so **unfreeze** and return to Draft |
 
 Two asymmetries matter:
 
 - At the spec gate **change edits the contract**; at the impl gate **change edits the code** (the frozen contract is off-limits — that is the whole point of freezing).
-- The impl gate is the **only** place a frozen `.feature` can reopen, via the Framer-revert. It is rare and deliberate: a scenario that passed every check but turns out fatal sends the whole spec back to Draft (per *Freeze is a strength* in sdd-orchestrator).
+- The impl gate is the **only** place a frozen `.feature` can reopen, via the Director-revert. It is rare and deliberate: a scenario that passed every check but turns out fatal sends the whole spec back to Draft (per *Freeze is a strength* in sdd-orchestrator).
 
 ### Skill-domain implementation is ACES-delegated
 

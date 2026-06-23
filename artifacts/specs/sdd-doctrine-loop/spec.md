@@ -15,7 +15,7 @@ approved-by: {}
 
 ## What
 
-The **outer loop** of the SDD model — the one the framework does not yet have. It is owned by the **Strategist** actor (renamed from Curator) and run by its delegate, the **Scanner in the Bunker**: a fleet-level agent that watches every spec reach a terminal state, drafts **doctrine** candidates (revisions to governances, conventions, and skills — the corpus), and surfaces them to the human **Council**, who hold the keep-or-cut. It fires at **lifecycle granularity, not per-gate**.
+The **outer loop** of the SDD model — the one the framework does not yet have. It is owned by the **Strategist** actor and run by its delegate, the **Scanner in the Bunker**: a fleet-level agent that watches every spec reach a terminal state, drafts **doctrine** candidates (revisions to governances, conventions, and skills — the corpus), and surfaces them to the human **Council**, who hold the keep-or-cut. It fires at **lifecycle granularity, not per-gate**.
 
 ```mermaid
 flowchart LR
@@ -30,7 +30,7 @@ flowchart LR
 
 ## Why
 
-Today SDD learns nothing across products. The orchestrator records a producer only on conflict; the corpus (skills, governances, conventions) is revised only by hand, ad hoc. The motive-model names this as the **Curator/Strategist** gap (the outer loop, "Curator and the loop"):
+Today SDD learns nothing across products. The orchestrator records a producer only on conflict; the corpus (skills, governances, conventions) is revised only by hand, ad hoc. The motive-model names this as the **Strategist** gap (the outer loop, "Strategist and the loop"):
 
 - **Lessons don't compound.** A pattern solved three times, a correction repeated across missions, a now-false convention — nothing distills these into doctrine so the next mission starts warmer.
 - **The trigger must be lifecycle-grained.** Firing the outer loop every gate is *premature codification* (motive-model:312) — it encodes transient noise. The real triggers are a spec that **ships** (`→ implemented`) or is **killed** (`→ deprecated`), a milestone retro, or a recurring pattern.
@@ -79,7 +79,7 @@ Beyond codifying what works, the Scanner detects **drift / staleness** — a now
 
 ## Related
 
-- `artifacts/specs/motive-model/spec.md` — "Curator and the loop"; the three loops; this spec is the **outer** one
+- `artifacts/specs/motive-model/spec.md` — "Strategist and the loop"; the three loops; this spec is the **outer** one
 - `artifacts/specs/sdd-provenance/spec.md` — the combat log (`produced-by` + `approved-by`) candidates are recorded to
 - `artifacts/specs/sdd-orchestrator/spec.md` — the middle-loop Operator the Scanner sits above, not inside
 - `artifacts/specs/sdd-mission-loop/spec.md` — the middle loop, for contrast

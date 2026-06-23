@@ -40,5 +40,5 @@ CHANGES_MADE:       <evals run / scored, or "none">
 BLOCKER:            <reason when IMPLEMENTATION_PASS is false, else null>
 QUESTIONS:          [ batched, when needs-input ]
 CONTENT_GAPS:       [ { artifact, location, gap } ]
-OBSERVATIONS:       [ { owner: architect | curator, note, evidence } ]
+OBSERVATIONS:       [ { owner: architect | strategist, note, evidence } ]
 ```

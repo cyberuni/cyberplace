@@ -27,7 +27,7 @@ Is the Actor–Delegate Model — a general framework for orchestrating human–
 
 ### The decomposition borrows broadly and adapts at one joint
 
-Most of the framework's spine is grounded: the Actor/Delegate split mirrors **agency theory**; the Curator's outer loop is **double-loop learning**; Curator-as-infrastructure-actor is the **platform team** of Team Topologies; the Architect's object is **Conway's** relations-between-parts with a **screaming-architecture** constructive motive; `producer ≠ judge` is **separation of duties**; the actor set is held to **MECE**. See `evidence.md` for rows and quotes.
+Most of the framework's spine is grounded: the Actor/Delegate split mirrors **agency theory**; the Strategist's outer loop is **double-loop learning**; Strategist-as-infrastructure-actor is the **platform team** of Team Topologies; the Architect's object is **Conway's** relations-between-parts with a **screaming-architecture** constructive motive; `producer ≠ judge` is **separation of duties**; the actor set is held to **MECE**. See `evidence.md` for rows and quotes.
 
 ### Two claims are original, and are flagged as such
 
@@ -37,8 +37,8 @@ Most of the framework's spine is grounded: the Actor/Delegate split mirrors **ag
 ### Session verdicts folded into the spec
 
 - **Architect is distinct by OBJECT, not scope.** "Builder at system scope" is a category error: a Builder zoomed out still makes a *part*; the Architect makes *relations between parts*. Resolves former open question #1.
-- **The gate is a two-axis decision:** verdict (accept/block) × change-request (none/yes, timing within-PR/deferred). `block+none` = Framer's kill at the gate; `accept+deferred` = the feedback edge. Timing is free only under `accept` (block forces within-PR).
-- **The deferred branch is a scheduling decision over a dependency tree**, owned by the Framer (Architect detects/estimates). Two flavors: defer new work (stub now, rework later) vs defer current work (build prerequisite first). Determined by rework-cost vs switch-cost.
+- **The gate is a two-axis decision:** verdict (accept/block) × change-request (none/yes, timing within-PR/deferred). `block+none` = Director's kill at the gate; `accept+deferred` = the feedback edge. Timing is free only under `accept` (block forces within-PR).
+- **The deferred branch is a scheduling decision over a dependency tree**, owned by the Director (Architect detects/estimates). Two flavors: defer new work (stub now, rework later) vs defer current work (build prerequisite first). Determined by rework-cost vs switch-cost.
 - **The Conductor's signature move** is fanning the dependency out to a parallel delegate, so "build prerequisite first" stops meaning "stop everything" — a direct instance of the abundance premise, grounded in the orchestrator-worker pattern.
 
 ## Contradictions
@@ -47,11 +47,11 @@ Most of the framework's spine is grounded: the Actor/Delegate split mirrors **ag
 
 ## Open questions
 
-Three of the original four are now resolved in the dossier's "Resolved" section (variant taxonomy bounds → the gates discover the count, Scout added/Curator none; human-to-human surfaces → medium-agnostic, AI weight in abundance+fidelity; delegate fidelity → delegate-directed check on every surface, mirror of the bar). Remaining in "Open questions": the *empirical* breadth/speed of abundance, and whether the forming variants (Conductor, Scout) harden.
+Three of the original four are now resolved in the dossier's "Resolved" section (variant taxonomy bounds → the gates discover the count, Scout added/Strategist none; human-to-human surfaces → medium-agnostic, AI weight in abundance+fidelity; delegate fidelity → delegate-directed check on every surface, mirror of the bar). Remaining in "Open questions": the *empirical* breadth/speed of abundance, and whether the forming variants (Conductor, Scout) harden.
 
 ## Adjacent topics (spun out)
 
-- **Cross-project knowledge sharing** — how the Curator's transferable knowledge crosses project boundaries (templates, agent plugins/skills, conventions, starter kits). Own topic: `.research/cross-project-knowledge-sharing/`.
+- **Cross-project knowledge sharing** — how the Strategist's transferable knowledge crosses project boundaries (templates, agent plugins/skills, conventions, starter kits). Own topic: `.research/cross-project-knowledge-sharing/`.
 
 ## Sources consulted
 

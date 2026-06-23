@@ -3,12 +3,12 @@
 One section per claim the framework asserts. Status/confidence reflect how well established theory grounds the claim. Caveats and divergences are kept, not smoothed.
 
 > **Alignment review (2026-06-19).** A term-vs-source comparison found several places where the dossier had stretched a term past its source or cited something that cut against it. Resolved in the dossier and reflected below:
-> - **dev-inner-outer-loop** — the DevEx *outer* loop is CI/CD integration, **not** the Curator's distillation loop. Citation now used for the *inner*-loop analogy only.
-> - **single-double-loop** — the Curator *spans both*: routine codification is single-loop, revision is double-loop. "Curator owns double-loop" softened to "double-loop is its distinctive mode."
+> - **dev-inner-outer-loop** — the DevEx *outer* loop is CI/CD integration, **not** the Strategist's distillation loop. Citation now used for the *inner*-loop analogy only.
+> - **single-double-loop** — the Strategist *spans both*: routine codification is single-loop, revision is double-loop. "Strategist owns double-loop" softened to "double-loop is its distinctive mode."
 > - **separation-of-duties** — `producer ≠ judge` is an *echo* of four-eyes, not the strict (two-party) thing. The model's real contribution is a **time-split of judgment**: thorough-but-general criteria authored ahead of time (the bar, delegate-enforced) + focused human judgment in the loop.
 > - **walking-skeleton** — it is real-but-thin, **not** a fake; recast as the *contrast* to stub/rework, not a sibling.
 > - **test-stub** — "stub" generalized to a production **placeholder** (stub / workaround / rougher MVP); term borrowed loosely, flagged.
-> - **team-topologies** — Curator is **platform** (permanent, owns the corpus-product), with an *enabling*-team echo (capability-raising); enabling team is time-boxed and product-less, so platform is the correct primary match.
+> - **team-topologies** — Strategist is **platform** (permanent, owns the corpus-product), with an *enabling*-team echo (capability-raising); enabling team is time-boxed and product-less, so platform is the correct primary match.
 > - **ai-roles** — Gartner measures *outcome* (modest productivity); the premise is about *capability* (abundant production) — distinct claims, not a contradiction.
 > - **multi-agent** — Anthropic's "weak on tightly interdependent work" caveat bounds the Conductor's fan-out (needs a clean seam). The **orchestrator** (delegate pattern) is kept distinct from the **Conductor** (actor) — they do not merge.
 
@@ -37,7 +37,7 @@ One section per claim the framework asserts. Status/confidence reflect how well 
 
 ## single-double-loop
 
-- **claim:** The Curator's outer loop revises governing assumptions (double-loop); the inner execution loop corrects actions under fixed assumptions (single-loop).
+- **claim:** The Strategist's outer loop revises governing assumptions (double-loop); the inner execution loop corrects actions under fixed assumptions (single-loop).
 - **status:** supported
 - **confidence:** high
 - **quote:** "When the error detected and corrected permits the organization to carry on its present policies or achieve its present objectives, then that error-and-correction process is single-loop learning." / "Double-loop learning occurs when error is detected and corrected in ways that involve the modification of an organization's underlying norms, policies and objectives." (Argyris & Schön 1978: 2–3)
@@ -59,7 +59,7 @@ One section per claim the framework asserts. Status/confidence reflect how well 
 
 ## team-topologies-platform
 
-- **claim:** The Curator is the team's infrastructure actor whose product is a layer consumed as self-service by every other actor — like a platform team.
+- **claim:** The Strategist is the team's infrastructure actor whose product is a layer consumed as self-service by every other actor — like a platform team.
 - **status:** supported
 - **confidence:** high
 - **quote:** "a foundation of self-service APIs, tools, services, knowledge and support which are arranged as a compelling internal product… made available via self-service capabilities… easy for the stream-aligned teams to consume."
