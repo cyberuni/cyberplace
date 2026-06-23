@@ -1,11 +1,27 @@
 ---
-status: draft
+status: implemented
 type: feature
 blocked-by:
   - sdd-orchestrator
   - sdd-plugin
-aligned: false
-approved-by: {}
+aligned: true
+approved-by:
+  spec:
+    by: agent
+    leash: auto-to-spec
+    why:
+      reversibility: "safe — tracked spec.md + .feature, cheap revert, no external effect"
+      blast-radius: "safe — contained to the two artifacts this spec owns; cross-spec impact (sdd-skill) lands at impl gate, not here"
+      novelty: "safe — relay→Operator→station model already Council-ratified"
+      confidence: "safe — all 9 scenarios pass, no open markers, legal Draft tuple"
+  impl:
+    by: agent
+    leash: auto
+    why:
+      reversibility: "safe — three tracked skill/agent markdown files; cheap git revert; no runtime or external effect"
+      blast-radius: "safe — sdd gateway + Operator text only; no code/schema/registry change; cross-spec touch (sdd-skill) is doc-contract alignment, not runtime coupling; pnpm verify green"
+      novelty: "safe — mechanical encoding of the already-ratified relay→Operator→station model; no new decision at impl"
+      confidence: "safe — all 9 frozen scenarios read PASS on static inspection; no open markers; state check legal (exit 0); audit clean; 123 tests green"
 ---
 
 # SDD Mission Loop — the Operator owns the middle loop
