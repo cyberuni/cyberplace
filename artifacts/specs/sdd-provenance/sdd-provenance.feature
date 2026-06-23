@@ -85,6 +85,13 @@ Feature: Production provenance
     Then it flags the unavailable producer
     And it does not fail the spec
 
+  Scenario: validate-spec blocks a malformed produced-by entry
+    Given produced-by has an entry that is not a well-formed plugin-qualified name
+    When validate-spec runs
+    Then it flags the malformed entry
+    And it fails the spec
+    And an unavailable-but-valid entry in the same spec does not fail the spec
+
   Scenario: a legacy domain-plugin map is migrated into produced-by
     Given a spec carries the old domain-plugin map
     When the orchestrator next dispatches for that spec
