@@ -77,6 +77,8 @@ On dispatch for a role, the orchestrator resolves the producer in this order:
 
 A recorded producer whose plugin is **gone** is therefore not an error: step 1 misses, step 2 re-resolves, and the historical value is preserved (annotated `[unavailable]`) rather than overwritten — the new producer is appended for the new production.
 
+The "never blocks" invariant is scoped to **availability**: a recorded producer that is uninstalled is still **valid history**, so it degrades gracefully. A **malformed** entry — one that is not a well-formed plugin-qualified name — is a different class: it is a **structural** error, not valid provenance at all, so it cannot be valid history. The consistent rule: **availability degrades gracefully (flag-not-block); structural validity fails closed (block)** — the same fail-closed posture the gate already takes for a contested role with no cache.
+
 ### Subsumes the conflict-only `domain-plugin` map
 
 Because the producer is now recorded on **every** production, the resume is decisive in every case — which is exactly what the `domain-plugin` map existed to provide after a disambiguation. The map is **retired**: a genuine first-time conflict still returns `needs-input` once (step 4), but the choice is captured in `produced-by`, not a parallel map. One record, all cases.
@@ -115,7 +117,7 @@ produced-by:
 **Resolution order** (orchestrator, per role): cache hit (recorded + installed) → live resolve + record → SDD default + record → `needs-input` once.
 
 **`validate-spec` checks:**
-- `produced-by` entries are well-formed plugin-qualified names;
+- `produced-by` entries are well-formed plugin-qualified names; a malformed entry **fails the gate** (a structural error — not valid provenance at all, unlike an unavailable-but-valid entry, which is only flagged);
 - an entry whose plugin is **not installed** is **flagged, not blocked** (it is valid history);
 - the `domain-plugin` map, if present, is migrated into `produced-by` (rewrite-on-encounter), then dropped;
 - a contested role with **no cache** **fails the gate closed**, deferring to `create-spec` — the gate never asks for or writes the producer choice. Symmetric across the spec and impl gates.
