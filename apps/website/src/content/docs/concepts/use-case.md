@@ -15,6 +15,20 @@ It is the map of doorways into a behavior. Each distinct way the system gets inv
 | **Inputs** | What does the behavior receive when triggered? |
 | **Outcome** | What does it produce? |
 
+## How to write one
+
+No single notation is required — capture the trigger, inputs, and outcome in whatever form communicates best: a table, short prose, or a diagram.
+
+**EARS** (Easy Approach to Requirements Syntax) is a useful tool where it fits. Its event-driven template maps almost one-to-one onto a use case:
+
+> **When** `<trigger>`, the `<system>` **shall** `<response>`.
+
+and its unwanted-behavior form suits error and drift entry-points:
+
+> **If** `<condition>`, **then** the `<system>` **shall** `<response>`.
+
+EARS has no dedicated slot for *inputs* — carry those in the precondition or a separate column. Reach for EARS when it sharpens a use case; don't force every use case into "shall" sentences when a table or diagram is clearer.
+
 ## Where use cases live
 
 Use cases live in **`spec.md`**, as prose or a trigger/inputs/outcome table. Every spec carries a dedicated **Use Cases** section — it is part of the design a human reviews at the gate, the high-altitude account of *when and with what* the system is invoked.
