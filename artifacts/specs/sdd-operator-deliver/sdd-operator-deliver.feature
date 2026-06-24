@@ -45,10 +45,10 @@ Feature: SDD Operator — Deliver Phase (build & judge against the frozen contra
   Scenario: aligned is true only when every impl-judge passes
     Given two sub-domains each with a declared impl-judge
     When every impl-judge returns IMPLEMENTATION_PASS true
-    Then sdd-orchestrator sets aligned true in spec.md frontmatter
+    Then sdd-operator sets aligned true in spec.md frontmatter
 
   Scenario: aligned stays false when any impl-judge fails
     Given two sub-domains each with a declared impl-judge
     When one impl-judge returns IMPLEMENTATION_PASS false with a BLOCKER
-    Then sdd-orchestrator leaves aligned false
+    Then sdd-operator leaves aligned false
     And it surfaces the BLOCKER to the user

@@ -2,7 +2,7 @@
 
 ## Architecture
 
-The SDD plugin is the installable workflow surface around `sdd-orchestrator`.
+The SDD plugin is the installable workflow surface around `sdd-operator`.
 
 ```text
 User
@@ -14,14 +14,14 @@ User
   |
   |-- create-spec
   |     owns grilling, batched user questions, and resume
-  |     invokes sdd-orchestrator for autonomous segments
+  |     invokes sdd-operator for autonomous segments
   |
   |-- validate-spec
         owns gate confirmation and status/provenance writes
-        invokes sdd-orchestrator and sdd-spec-judge for gate reports
+        invokes sdd-operator and sdd-spec-judge for gate reports
 ```
 
-`sdd-orchestrator` is not the user-facing command surface. It is the autonomous segment runner: read files, resolve delegates, dispatch roles, aggregate output, set `aligned`, and return status to the calling skill.
+`sdd-operator` is not the user-facing command surface. It is the autonomous segment runner: read files, resolve delegates, dispatch roles, aggregate output, set `aligned`, and return status to the calling skill.
 
 ## Production Chain
 
@@ -41,7 +41,7 @@ The spec gate judges the contract end. The impl gate judges the implementation e
 
 ### `sdd`
 
-The user-invoked **gateway**. It activates SDD for the current request, conducts a two-level intake menu when invoked bare, classifies the requested SDD action against an inlined routing table, and delegates the routed work to a subagent. For routing it reads only `spec.md` frontmatter (and, conditionally, `tasks.md` and open markers) — never `plan.md`. It does not author documents, invoke `sdd-orchestrator` itself, or load authoring governances; and it does not write `AGENTS.md`, register hooks, or require the `cyber-skills` CLI.
+The user-invoked **gateway**. It activates SDD for the current request, conducts a two-level intake menu when invoked bare, classifies the requested SDD action against an inlined routing table, and delegates the routed work to a subagent. For routing it reads only `spec.md` frontmatter (and, conditionally, `tasks.md` and open markers) — never `plan.md`. It does not author documents, invoke `sdd-operator` itself, or load authoring governances; and it does not write `AGENTS.md`, register hooks, or require the `cyber-skills` CLI.
 
 The gateway's own contract is specified separately in `artifacts/specs/sdd/sdd-skill/spec.md`; this plan does not restate its behavior, to avoid drift. The reference bar that producers and judges load is `sdd:spec-governance` — loaded by those delegates through the harness, not by the `sdd` gateway and not via `governance show`.
 
@@ -50,9 +50,9 @@ The gateway's own contract is specified separately in `artifacts/specs/sdd/sdd-s
 Owns the user loop while a spec is in exploration:
 
 1. Collect enough user intent to start.
-2. Invoke `sdd-orchestrator`.
-3. Ask batched questions when the orchestrator returns `needs-input`.
-4. Resume the orchestrator with answers.
+2. Invoke `sdd-operator`.
+3. Ask batched questions when the operator returns `needs-input`.
+4. Resume the operator with answers.
 5. Surface content gaps and observations separately.
 
 The skill writes user-owned frontmatter only when needed, such as `domain-plugin` after disambiguation. It does not call domain agents directly.
@@ -66,13 +66,13 @@ Owns both gate transitions:
 | spec gate | `draft` -> `approved` | contract layer, open markers, spec-judge, reviewer acknowledgment |
 | impl gate | `approved` -> `implemented` | frozen scenarios, implementation verification, impl-judge |
 
-On human approval, `validate-spec` writes `status` and approval provenance. The orchestrator sets `aligned` for the judged layer.
+On human approval, `validate-spec` writes `status` and approval provenance. The operator sets `aligned` for the judged layer.
 
 ## Agents
 
 | Agent | Role |
 |---|---|
-| `sdd-orchestrator` | autonomous segment runner and synthesizer |
+| `sdd-operator` | autonomous segment runner and synthesizer |
 | `sdd-scenario-writer` | default spec-producer |
 | `sdd-planner` | default plan-producer |
 | `sdd-spec-judge` | default spec-judge, invoked by `validate-spec` |
@@ -110,7 +110,7 @@ Each plugin's `init-<plugin>` skill writes a resolved entry into `.agents/univer
 }
 ```
 
-The orchestrator reads only this registry. It does not scan plugin directories and does not use `plan.md` for plugin assignments. If two plugins claim the same domain, the orchestrator returns `needs-input`; the skill asks the user and writes `domain-plugin` in `spec.md` frontmatter.
+The operator reads only this registry. It does not scan plugin directories and does not use `plan.md` for plugin assignments. If two plugins claim the same domain, the operator returns `needs-input`; the skill asks the user and writes `domain-plugin` in `spec.md` frontmatter.
 
 ## Alignment
 
@@ -135,7 +135,7 @@ The old scenario-advisor and implementer-contract governances are superseded by 
 
 - `scenario-advisor` -> `spec-producer` plus `spec-judge`
 - `implementer contract` -> `impl-producer` plus `impl-judge`
-- `sdd-author` -> `sdd-orchestrator`
+- `sdd-author` -> `sdd-operator`
 - `plan.md ## Plugin assignments` -> `.agents/universal-plugin.json` `sdd-plugins[]`
 
 The `artifacts/specs/sdd-plugin/governances/` directory remains listed as a legacy artifact until implementation removes or migrates those files into `sdd:spec-governance`.

@@ -1,13 +1,13 @@
 ---
 name: aces-spec-validator
-description: "Internal skill: the ACES spec-judge. Judges an agent-config .feature against the agent-scenario criteria (trigger context, near-miss balance, rule coverage, edge cases). Builder-backward at the spec gate. Invoked by sdd-orchestrator as the spec-judge role — not triggered by users directly."
+description: "Internal skill: the ACES spec-judge. Judges an agent-config .feature against the agent-scenario criteria (trigger context, near-miss balance, rule coverage, edge cases). Builder-backward at the spec gate. Invoked by sdd-operator as the spec-judge role — not triggered by users directly."
 metadata:
   internal: true
 ---
 
 # aces-spec-validator
 
-The **spec-judge** for agent-configuration domains — Builder-backward at the spec gate. It judges the **`.feature`** (the contract) against ACES's agent-scenario criteria; it is **not** SDD's generic `validate-spec`, which cannot judge agent-domain contract quality. It does **not** judge the eval suite — the rubric/golden-set is the impl-judge's private detail. Invoked by `sdd-orchestrator`. Load `sdd:lifecycle-governance` for the status enum and transition rules; `sdd:gate-validation-governance` for legal-state tuple checks, `aligned` layer-scoping, and `approved-by` attribution.
+The **spec-judge** for agent-configuration domains — Builder-backward at the spec gate. It judges the **`.feature`** (the contract) against ACES's agent-scenario criteria; it is **not** SDD's generic `validate-spec`, which cannot judge agent-domain contract quality. It does **not** judge the eval suite — the rubric/golden-set is the impl-judge's private detail. Invoked by `sdd-operator`. Load `sdd:lifecycle-governance` for the status enum and transition rules; `sdd:gate-validation-governance` for legal-state tuple checks, `aligned` layer-scoping, and `approved-by` attribution.
 
 ## Input
 

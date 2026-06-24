@@ -62,7 +62,7 @@ Feature: Gate autonomy and accountability
 
   Scenario: a self-assertion records its derivation in frontmatter
     Given the agent self-asserts a gate
-    When the orchestrator records it
+    When the operator records it
     Then approved-by for that gate has by "agent"
     And approved-by for that gate has a why block with the four-dimension derivation
 
@@ -72,10 +72,10 @@ Feature: Gate autonomy and accountability
     Then approved-by for that gate has by the human's name
     And no why block is required
 
-  Scenario: the orchestrator writes self-assertions and the skill writes ratifications
+  Scenario: the operator writes self-assertions and the skill writes ratifications
     Given a gate is self-asserted then later ratified
     When each record is written
-    Then the orchestrator wrote the agent self-assertion and its why
+    Then the operator wrote the agent self-assertion and its why
     And the skill wrote the human ratification
 
   # ── gate actions ──────────────────────────────────────────────────────
@@ -99,7 +99,7 @@ Feature: Gate autonomy and accountability
     And the status returns to draft
 
   Scenario: an agent-asserted gate is provisional
-    Given the orchestrator self-asserts the spec gate
+    Given the operator self-asserts the spec gate
     When the spec is written
     Then approved-by.spec is "agent"
     And the spec appears in the human review queue
@@ -132,7 +132,7 @@ Feature: Gate autonomy and accountability
     And it is not treated as implemented
 
   Scenario: the gate report lists faces and contestable defaults
-    Given the orchestrator reaches a gate
+    Given the operator reaches a gate
     When it emits the gate report
     Then the report carries a verdict for Director, Builder, and Architect
     And it lists the contestable defaults the agent chose

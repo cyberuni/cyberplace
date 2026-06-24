@@ -14,7 +14,7 @@ Scan `artifacts/specs/` for immediate subdirectories that contain `eval.md` at t
 - The most recent file in `results/` (sort by filename descending)
 - The second-most-recent file in `results/` for trend (if it exists)
 
-If no matching directories are found, report that no eval suites are initialized and suggest `sdd:create-spec` (the orchestrator resolves the ACES roles).
+If no matching directories are found, report that no eval suites are initialized and suggest `sdd:create-spec` (the operator resolves the ACES roles).
 
 ## Compute per-suite metrics
 

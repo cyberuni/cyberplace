@@ -25,7 +25,7 @@ The spec gate's decision is always the human's, but a bare "approve this spec?" 
 
 ### The digest is read-only and decision-free
 
-`spec-digest` reads `spec.md` and the `.feature`; it writes nothing, advances no status, and renders no verdict. It returns the digest to its caller and stops. All gate legality, alignment, and approval logic stays in `validate-spec` and the orchestrator.
+`spec-digest` reads `spec.md` and the `.feature`; it writes nothing, advances no status, and renders no verdict. It returns the digest to its caller and stops. All gate legality, alignment, and approval logic stays in `validate-spec` and the operator.
 
 ### The digest is structural and domain-agnostic
 

@@ -69,13 +69,13 @@ Feature: Stop provenance — three-layer autonomy and durable gate verdicts
 
   Scenario: each gate records a durable verdict in the approval map
     Given the agent reaches a gate
-    When the orchestrator records the outcome
+    When the operator records the outcome
     Then approval for that gate carries a verdict of approve, pause, or reject
     And approval for that gate carries a why block with the four-dimension derivation
 
   Scenario: a pause verdict captures why the agent halted
     Given the agent reaches a gate outside the effective leash
-    When the orchestrator records the outcome
+    When the operator records the outcome
     Then approval for that gate has verdict pause
     And the why block records the four-dimension halt reasoning
 
@@ -87,7 +87,7 @@ Feature: Stop provenance — three-layer autonomy and durable gate verdicts
 
   Scenario: an approve verdict captures why the agent advanced
     Given the agent self-asserts a gate within the effective leash
-    When the orchestrator records the outcome
+    When the operator records the outcome
     Then approval for that gate has verdict approve
     And the why block records the four-dimension advance reasoning
 
@@ -177,28 +177,28 @@ Feature: Stop provenance — three-layer autonomy and durable gate verdicts
 
   # ── write ownership ───────────────────────────────────────────────────
 
-  Scenario: the orchestrator writes a self-asserted or paused verdict during synthesis
-    Given the orchestrator reaches a gate
+  Scenario: the operator writes a self-asserted or paused verdict during synthesis
+    Given the operator reaches a gate
     When it returns its outcome
-    Then the orchestrator wrote the approve-by-agent or pause verdict and its why
+    Then the operator wrote the approve-by-agent or pause verdict and its why
     And no producer wrote it
 
   Scenario: the gate skill writes a human ratification
     Given the human ratifies a gate at the gate skill
     When the ratification is recorded
     Then the gate skill wrote the by-human verdict
-    And the orchestrator did not write it
+    And the operator did not write it
 
   # ── positional ratification authority ─────────────────────────────────
 
   Scenario: a spawned delegate cannot write a human-attributed approval
-    Given an orchestrator running in the spawned position with no user channel
+    Given an operator running in the spawned position with no user channel
     When it reaches a human gate
     Then it does not write a verdict carrying a human name
     And it does not set status to approved or implemented
 
   Scenario: a spawned delegate may write a by-agent self-assertion
-    Given an orchestrator running in the spawned position
+    Given an operator running in the spawned position
     When a gate reads safe within the leash
     Then it may write a verdict approve with by agent
     And it may write a verdict pause

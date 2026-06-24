@@ -18,7 +18,7 @@ SKILL.md "Delegate Downstream Work" section, which maps workflow actions to a
   spawns the **Operator** once per segment, carries the Council's answers down and
   the Operator's `needs-input` / escalations up. The user channel lives at the
   **relay ↔ Operator** boundary.
-- **Operator** = `sdd-orchestrator`. The single agent the relay spawns. Drives every
+- **Operator** = `sdd-operator`. The single agent the relay spawns. Drives every
   segment of the mission loop. Runs `create-spec` / `validate-spec` /
   `render-spec-graph` as **stations** in-session — never spawned as `subagent_type`.
   Escalates to the Council (through the relay) **only at gates and scrub**.
@@ -32,7 +32,7 @@ SKILL.md "Delegate Downstream Work" section, which maps workflow actions to a
   "Subagent skill" column to a **station** mapping; make the gateway a thin relay
   that carries `needs-input` from the Operator to the Council and resumes the
   Operator with answers; state escalation happens only at gates/scrub.
-- `plugins/sdd/agents/sdd-orchestrator.md` — confirm/affirm the Operator runs the
+- `plugins/sdd/agents/sdd-operator.md` — confirm/affirm the Operator runs the
   stations in-session and escalates only at gates/scrub; it already returns
   `STATUS: needs-input` and has no user channel. Minor reinforcement only — the
   agent is already aligned with the model; add station/escalation-boundary

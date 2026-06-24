@@ -18,7 +18,7 @@ approval:
 
 # SDD Operator — Registry Resolution
 
-> **Feature child of [`sdd-operator`](../sdd-operator/spec.md).** This spec owns one behavior of the Operator (the SDD lead delegate, `sdd-orchestrator`). The parent holds the human-readable overview and the model invariants; this child holds the normative scenarios for its slice.
+> **Feature child of [`sdd-operator`](../sdd-operator/spec.md).** This spec owns one behavior of the Operator (the SDD lead delegate, `sdd-operator`). The parent holds the human-readable overview and the model invariants; this child holds the normative scenarios for its slice.
 
 ## What
 
@@ -32,13 +32,13 @@ This behavior has two coarse entry-points: the **runtime resolution** the Operat
 
 | | |
 |---|---|
-| **Trigger** | `sdd-orchestrator` opens a segment for a spec and must decide who to commit to each production-chain role and actor governance. |
+| **Trigger** | `sdd-operator` opens a segment for a spec and must decide who to commit to each production-chain role and actor governance. |
 | **Inputs** | The spec's domain; the project registry `.agents/universal-plugin.json` (the resolved lockfile) — read only, never a plugin-directory scan. |
 | **Outcome** | Each required role lands on a real producer (plugin agent or SDD default) and each actor governance on a plugin or SDD default; an unresolvable required role **hard-fails closed** recording nothing; a domain claimed by two plugins returns `needs-input` (decisive on resume). |
 
 Verified by (`.feature`):
 
-- The orchestrator resolves roles from the registry without scanning *(happy path — reads the map, no directory scan)*
+- The operator resolves roles from the registry without scanning *(happy path — reads the map, no directory scan)*
 - An omitted role key falls back to the naming convention
 - A null role value degenerates with no agent
 - A required role with no resolvable producer hard-fails *(negative — fail-closed, records nothing)*
@@ -56,7 +56,7 @@ Verified by (`.feature`):
 Verified by (`.feature`):
 
 - init-plugin writes the resolved role map at setup *(happy path — fresh entry)*
-- init rewrites a pre-orchestrator registry entry to the role map *(migration — old shape → role map)*
+- init rewrites a pre-operator registry entry to the role map *(migration — old shape → role map)*
 - init reconciles a stale registry entry against its own version *(version drift — rewrite on mismatch)*
 
 ## References

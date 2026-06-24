@@ -54,7 +54,7 @@ flowchart LR
 A spec was just driven from blank to "implemented" in one autonomous run with no recorded human verdict, and left in `status: draft + aligned: true` — a state the workflow-cursor table does not define. Three gaps surfaced:
 
 - **No declared autonomy boundary.** The agent assumed `auto-all`; the human never set a leash. Approval, where it existed, was diffuse in conversation, not a discrete act.
-- **`aligned` was misread, not undefined.** It is already resolved — sdd-orchestrator scopes it by layer (contract layer at the spec gate, impl layer at the impl gate). The agent read `draft + aligned:true` as *implemented* when, layer-scoped, it only means *contract synced, ready for the spec gate*. The gap is that **nothing enforces** the legal states, so a misread lands uncaught.
+- **`aligned` was misread, not undefined.** It is already resolved — sdd-operator scopes it by layer (contract layer at the spec gate, impl layer at the impl gate). The agent read `draft + aligned:true` as *implemented* when, layer-scoped, it only means *contract synced, ready for the spec gate*. The gap is that **nothing enforces** the legal states, so a misread lands uncaught.
 - **No representation of "advanced by agent alone."** There was no way to mark the spec as provisionally advanced and owed a human review — so it silently looked done.
 
 The motive model already gives the principle: the human (Conductor) holds **motive and accountability**; a delegate may be handed the **act**, never the accountability. Autonomous completion is delegating the act ahead of reconciling accountability. These four pieces make that gap **explicit, legal, and visible**.
@@ -133,15 +133,15 @@ approved-by:
 
 This is the motive model made concrete: the act is delegable, the accountability is not — `approved-by` tracks exactly the reconciliation gap. The map is **keyed by gate** so each gate carries its own approver and reasoning; the frontmatter is the gate-status hub for both layers (alongside `status` and `aligned`), so the impl-gate reasoning lives here too — it is metadata *about* the layer, not contract content, so no layer conflation.
 
-**Who writes it.** The **orchestrator** writes a self-assertion (`by: agent` + `why`) as part of its autonomous synthesis — the same boundary by which it writes `aligned`. The **skill** writes a human ratification (`by: <name>`, clearing or keeping `why`) at the gate — the same boundary by which it writes `status`.
+**Who writes it.** The **operator** writes a self-assertion (`by: agent` + `why`) as part of its autonomous synthesis — the same boundary by which it writes `aligned`. The **skill** writes a human ratification (`by: <name>`, clearing or keeping `why`) at the gate — the same boundary by which it writes `status`.
 
 ### State integrity: the cursor table becomes an enforced FSM
 
-The sdd-orchestrator **workflow-cursor table** already enumerates the legal `(status, aligned, markers, .feature)` rows. This spec **lifts it to normative**: `validate-spec` rejects any tuple that is not a legal row. An illegal state is a validation failure → red → commit discipline already forbids committing it. The contradiction becomes uncommittable rather than relying on discipline.
+The sdd-operator **workflow-cursor table** already enumerates the legal `(status, aligned, markers, .feature)` rows. This spec **lifts it to normative**: `validate-spec` rejects any tuple that is not a legal row. An illegal state is a validation failure → red → commit discipline already forbids committing it. The contradiction becomes uncommittable rather than relying on discipline.
 
 ### `aligned` is already layer-scoped — this spec only enforces it
 
-`aligned` is **not** redefined here. sdd-orchestrator already scopes it by layer: at the spec gate `aligned: true` means the contract layer (`spec.md ↔ .feature`) is in sync; at the impl gate it means the impl layer conforms to the frozen `.feature`. Under that definition `draft + aligned:true` legally means "contract synced, ready for the spec gate" — **not** implemented.
+`aligned` is **not** redefined here. sdd-operator already scopes it by layer: at the spec gate `aligned: true` means the contract layer (`spec.md ↔ .feature`) is in sync; at the impl gate it means the impl layer conforms to the frozen `.feature`. Under that definition `draft + aligned:true` legally means "contract synced, ready for the spec gate" — **not** implemented.
 
 The incident's real error was therefore not the field's meaning but **committing an implementation against an unapproved, unfrozen `.feature` while reading `aligned` as "done."** The FSM enforcement above is the fix: it makes the legal `(status, aligned, markers, .feature)` rows the only committable states, so a misread cannot land.
 
@@ -157,7 +157,7 @@ When the agent reaches a gate under any autonomy level, it emits a **gate report
 - **Decision menu** — the gate's three actions, each with its concrete consequence and the agent's **recommendation**.
 - `STATUS`, and when a gate was self-asserted, the flag **"agent-asserted — ratify or kick back."**
 
-**The live report is a derived view; an agent self-assertion is durable in frontmatter.** As a *current-state view* the report is regenerated on demand (like the cursor and `graph.md`) — no parallel journal. But when the agent **self-asserts** a gate, the leash derivation that justified it is a **historical fact, not recomputable later**, and it is the accountability record this spec exists for — so it is persisted in the `approved-by.<gate>.why` block (see *Accountability stays human* above), written by the orchestrator. It sits in `spec.md` frontmatter next to the `by` pointer because the frontmatter is the gate-status hub for both layers — accessible state, not buried in git history. The review queue is the specs with any `by: agent`; opening one reads the recorded `why` and/or a freshly regenerated current-state report.
+**The live report is a derived view; an agent self-assertion is durable in frontmatter.** As a *current-state view* the report is regenerated on demand (like the cursor and `graph.md`) — no parallel journal. But when the agent **self-asserts** a gate, the leash derivation that justified it is a **historical fact, not recomputable later**, and it is the accountability record this spec exists for — so it is persisted in the `approved-by.<gate>.why` block (see *Accountability stays human* above), written by the operator. It sits in `spec.md` frontmatter next to the `by` pointer because the frontmatter is the gate-status hub for both layers — accessible state, not buried in git history. The review queue is the specs with any `by: agent`; opening one reads the recorded `why` and/or a freshly regenerated current-state report.
 
 **Example** — this spec, reported at its own spec gate:
 
@@ -168,7 +168,7 @@ STATUS: ready for spec gate · agent-asserted — ratify or kick back
 Verdict
   Director  (scope)    PASS — real incident, contained, worth shipping
   Builder (contract) PASS — 20 scenarios cover leash / attribution / FSM / report / gate-actions
-  Architect (fit)    PASS — extends orchestrator + sdd-plugin; reuses aligned as-is
+  Architect (fit)    PASS — extends operator + sdd-plugin; reuses aligned as-is
 
 Leash derivation
   gate        reversibility  blast       novelty  confidence   read
@@ -177,7 +177,7 @@ Leash derivation
   derived: auto-none   ceiling: none   effective: auto-none
   reasons
     reversibility  docs only, revert is cheap                       → safe
-    blast radius   edits sdd-orchestrator + sdd-plugin (other specs) → risky
+    blast radius   edits sdd-operator + sdd-plugin (other specs) → risky
     novelty        new gate model, human has not ratified            → risky
     confidence     no open markers                                   → safe
 
@@ -185,13 +185,13 @@ Open markers as questions (block Draft → Approved)
   none — approved-by shape resolved to the gate-keyed map { spec, impl }
 
 Contestable defaults
-  - new spec instead of editing sdd-orchestrator inline   (spec.md:7)
+  - new spec instead of editing sdd-operator inline   (spec.md:7)
   - approved-by carries who + why in frontmatter, not git history
   - no human ceiling set — derivation stands
 
 Diff since last report
   + derivation persisted in approved-by.<gate>.why (was: commit body)
-  + orchestrator writes self-assertions, skill writes ratifications
+  + operator writes self-assertions, skill writes ratifications
   - resolved the approved-by-shape open marker
 
 Decision menu
@@ -248,11 +248,11 @@ Here both gates' reads diverge: the spec gate was `auto-none` and human-ratified
 Two asymmetries matter:
 
 - At the spec gate **change edits the contract**; at the impl gate **change edits the code** (the frozen contract is off-limits — that is the whole point of freezing).
-- The impl gate is the **only** place a frozen `.feature` can reopen, via the Director-revert. It is rare and deliberate: a scenario that passed every check but turns out fatal sends the whole spec back to Draft (per *Freeze is a strength* in sdd-orchestrator).
+- The impl gate is the **only** place a frozen `.feature` can reopen, via the Director-revert. It is rare and deliberate: a scenario that passed every check but turns out fatal sends the whole spec back to Draft (per *Freeze is a strength* in sdd-operator).
 
 ### Skill-domain implementation is ACES-delegated
 
-Where implementing this spec modifies SDD **skills** (e.g., `validate-spec`) or writes any skill/agent, that work is **agent-configuration domain** and belongs to the ACES production chain (spec-producer → plan-producer → impl-producer → impl-judge), per the orchestrator model. This is **documented delegation**: until the orchestrator-model ACES agents exist, the work is executed inline, but the owning roles are ACES's.
+Where implementing this spec modifies SDD **skills** (e.g., `validate-spec`) or writes any skill/agent, that work is **agent-configuration domain** and belongs to the ACES production chain (spec-producer → plan-producer → impl-producer → impl-judge), per the operator model. This is **documented delegation**: until the operator-model ACES agents exist, the work is executed inline, but the owning roles are ACES's.
 
 ---
 
@@ -264,16 +264,16 @@ Where implementing this spec modifies SDD **skills** (e.g., `validate-spec`) or 
 |---|---|---|
 | `approved-by` | map keyed by gate (`spec`, `impl`); each entry `{ by: agent \| <human>, leash, why? }` | who passed each gate, and (for an agent self-assertion) the recorded leash derivation; `by: agent` = provisional |
 
-`approved-by.<gate>.by` is the pointer; `approved-by.<gate>.why` is the four-dimension derivation, present only when `by: agent`. The **orchestrator** writes self-assertions; the **skill** writes human ratifications.
+`approved-by.<gate>.by` is the pointer; `approved-by.<gate>.why` is the four-dimension derivation, present only when `by: agent`. The **operator** writes self-assertions; the **skill** writes human ratifications.
 
 **Leash** — declared in the prompt to the create-spec / validate-spec skills (default `auto-none`); held in the main thread, not persisted.
 
 **`validate-spec` new checks:**
 - the `(status, aligned, markers, .feature)` tuple is a legal cursor-table row;
 - `approved-by` entries are well-formed (a `by: agent` entry carries a `why`); a `by: agent` value surfaces the spec in the review queue;
-- `aligned` is enforced as layer-scoped (per sdd-orchestrator), not re-decided here.
+- `aligned` is enforced as layer-scoped (per sdd-operator), not re-decided here.
 
-**Gate report** — structured output of the orchestrator at a gate (see uniform delegate output in sdd-orchestrator); not a CLI.
+**Gate report** — structured output of the operator at a gate (see uniform delegate output in sdd-operator); not a CLI.
 
 **Gherkin scenarios:** [sdd-gate-autonomy.feature](./sdd-gate-autonomy.feature)
 

@@ -7,7 +7,7 @@ Feature: SDD gateway skill
     When the agent invokes the sdd skill
     Then the skill reports that SDD is active for the current workflow
     And the skill reports status meanings consistent with the lifecycle contract when classifying a spec's state
-    And the skill surfaces create-spec, validate-spec, render-spec-graph, and sdd-orchestrator as the active workflow surface
+    And the skill surfaces create-spec, validate-spec, render-spec-graph, and sdd-operator as the active workflow surface
 
   Scenario: Present the four-option top-level menu on empty invocation
     Given the user invokes "$sdd"

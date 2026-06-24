@@ -41,13 +41,13 @@ subtasks:
 
 ## What
 
-The SDD plugin packages the spec-driven workflow and exposes the user-facing skills that drive it. As the **project** spec for SDD, it stays high-level: it names the skills and agents the plugin ships, the lifecycle they enforce, and the **feature specs** that own each detailed rule. `sdd` is the user-invoked gateway that activates SDD, classifies the requested action, and routes the work to the right SDD skill; `create-spec` and `validate-spec` own the human-facing loop; `sdd-orchestrator` owns one autonomous segment at a time; domain plugins supply delegates for the production chain through the project registry. A spec is not just `spec.md` plus `.feature`: SDD co-delivers `spec.md`, `.feature`, `plan.md`, `tasks.md`, and implementation artifacts, with the spec gate firming the contract end and the impl gate firming the implementation end.
+The SDD plugin packages the spec-driven workflow and exposes the user-facing skills that drive it. As the **project** spec for SDD, it stays high-level: it names the skills and agents the plugin ships, the lifecycle they enforce, and the **feature specs** that own each detailed rule. `sdd` is the user-invoked gateway that activates SDD, classifies the requested action, and routes the work to the right SDD skill; `create-spec` and `validate-spec` own the human-facing loop; `sdd-operator` owns one autonomous segment at a time; domain plugins supply delegates for the production chain through the project registry. A spec is not just `spec.md` plus `.feature`: SDD co-delivers `spec.md`, `.feature`, `plan.md`, `tasks.md`, and implementation artifacts, with the spec gate firming the contract end and the impl gate firming the implementation end.
 
 ---
 
 ## Why
 
-The earlier plugin model encoded SDD as a two-artifact, single-gate practice and routed domain expertise through scenario advisors and implementer contracts. The orchestrator design now defines a richer production chain, role-based plugin delegates, actor governances, layer-scoped alignment, and suspend/resume through skills. The plugin spec must define the installable practice that makes those rules available to agents and users without contradicting the orchestrator model — and it must do so by composing its feature specs rather than restating them, so the project spec cannot drift from the features it owns.
+The earlier plugin model encoded SDD as a two-artifact, single-gate practice and routed domain expertise through scenario advisors and implementer contracts. The operator design now defines a richer production chain, role-based plugin delegates, actor governances, layer-scoped alignment, and suspend/resume through skills. The plugin spec must define the installable practice that makes those rules available to agents and users without contradicting the operator model — and it must do so by composing its feature specs rather than restating them, so the project spec cannot drift from the features it owns.
 
 ---
 
@@ -55,11 +55,11 @@ The earlier plugin model encoded SDD as a two-artifact, single-gate practice and
 
 ### Skills own the user channel
 
-User-facing skills (`sdd`, `create-spec`, and `validate-spec`) are the only SDD components that ask the user questions or write user-verdict frontmatter. The orchestrator is invoked by those skills, runs one autonomous segment, and returns `complete`, `needs-input`, or `blocked` with batched questions, content gaps, and observations.
+User-facing skills (`sdd`, `create-spec`, and `validate-spec`) are the only SDD components that ask the user questions or write user-verdict frontmatter. The operator is invoked by those skills, runs one autonomous segment, and returns `complete`, `needs-input`, or `blocked` with batched questions, content gaps, and observations.
 
 ### `sdd` is the workflow gateway
 
-`sdd` replaces `init-sdd` as the plugin's default entry point. It is a lightweight gateway: it activates SDD for the current request, conducts a two-level intake menu when invoked bare, classifies the requested SDD action against an inlined routing table, and delegates the routed work to a subagent. It reads only `spec.md` frontmatter (and, conditionally, `tasks.md` and open markers) to route — never `plan.md` — and it does not load authoring governances or invoke `sdd-orchestrator` itself. It does not edit project guidance, register hooks, or require the `cyber-skills` CLI. It routes feature work to `create-spec` for draft contract creation, `validate-spec` for gates, and `render-spec-graph` for graph refreshes. The gateway's full contract is the feature spec `artifacts/specs/sdd/sdd-skill/spec.md`; this plugin spec does not restate its behavior.
+`sdd` replaces `init-sdd` as the plugin's default entry point. It is a lightweight gateway: it activates SDD for the current request, conducts a two-level intake menu when invoked bare, classifies the requested SDD action against an inlined routing table, and delegates the routed work to a subagent. It reads only `spec.md` frontmatter (and, conditionally, `tasks.md` and open markers) to route — never `plan.md` — and it does not load authoring governances or invoke `sdd-operator` itself. It does not edit project guidance, register hooks, or require the `cyber-skills` CLI. It routes feature work to `create-spec` for draft contract creation, `validate-spec` for gates, and `render-spec-graph` for graph refreshes. The gateway's full contract is the feature spec `artifacts/specs/sdd/sdd-skill/spec.md`; this plugin spec does not restate its behavior.
 
 ### SDD workflow is active for feature work
 
@@ -133,14 +133,14 @@ validate-spec <spec-path> [--target spec|impl]
   out: gate report, status/aligned updates on human approval
 ```
 
-`create-spec` and `validate-spec` invoke `sdd-orchestrator`; they do not call specialist domain agents directly.
+`create-spec` and `validate-spec` invoke `sdd-operator`; they do not call specialist domain agents directly.
 
 ---
 
 ## Agent surface
 
 ```text
-sdd-orchestrator
+sdd-operator
   owns: one autonomous segment, delegate resolution, dispatch, synthesis
 
 sdd-scenario-writer
@@ -156,7 +156,7 @@ sdd-implementer
   role: default impl-judge
 ```
 
-The generic Builder is the default impl-producer when no plugin agent fills the role. The uniform delegate I/O contract (`STATUS`, `QUESTIONS`, `CONTENT_GAPS`, `OBSERVATIONS`) is defined by the `sdd-operator` feature spec and carried at runtime by the `sdd-orchestrator` agent.
+The generic Builder is the default impl-producer when no plugin agent fills the role. The uniform delegate I/O contract (`STATUS`, `QUESTIONS`, `CONTENT_GAPS`, `OBSERVATIONS`) is defined by the `sdd-operator` feature spec and carried at runtime by the `sdd-operator` agent.
 
 ---
 

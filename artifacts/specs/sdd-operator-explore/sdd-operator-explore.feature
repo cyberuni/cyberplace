@@ -8,7 +8,7 @@ Feature: SDD Operator — Explore Phase (produce & judge the contract)
   # ── explore: shape the draft, probe by building ───────────────────────────
 
   Scenario: MODE is derived from whether the .feature is frozen
-    Given the orchestrator is about to dispatch a forward producer
+    Given the operator is about to dispatch a forward producer
     When the .feature is still a draft
     Then it dispatches in explore mode
     And when the .feature is frozen it dispatches in deliver mode
@@ -16,12 +16,12 @@ Feature: SDD Operator — Explore Phase (produce & judge the contract)
   Scenario: The exploratory loop shapes the spec and probes it by building
     Given the "auth" domain is in the exploratory loop
     When the spec-producer and spec-judge iterate
-    And the orchestrator also runs forward producers in explore mode
+    And the operator also runs forward producers in explore mode
     Then they shape the .feature until the spec gate freezes it
 
   Scenario: An explore-mode producer builds against the draft, not a frozen contract
     Given the "auth" .feature is still a draft
-    When the orchestrator dispatches the impl-producer in explore mode
+    When the operator dispatches the impl-producer in explore mode
     Then the producer spikes against the draft .feature
     And its output is scaffolding that may carry forward or be reshaped at the freeze
     And the ship-quality impl-judge does not run during explore
@@ -37,11 +37,11 @@ Feature: SDD Operator — Explore Phase (produce & judge the contract)
     Given an explore-mode impl-producer finds the .feature omits a token-refresh case
     When it returns
     Then the discovery is returned as a content-gap and an OBSERVATIONS entry
-    And the orchestrator writes an open marker in spec.md and re-invokes the spec-producer
+    And the operator writes an open marker in spec.md and re-invokes the spec-producer
 
   Scenario: The planner runs in explore alongside the spec, not after a gate
     Given the "auth" domain is in the exploratory loop
-    When the orchestrator dispatches the plan-producer in explore mode
+    When the operator dispatches the plan-producer in explore mode
     Then it writes plan.md and tasks.md co-delivered with the spec and .feature
     And no plan-judge or task-judge is invoked
     And there is no plan gate between the spec and the plan
@@ -82,7 +82,7 @@ Feature: SDD Operator — Explore Phase (produce & judge the contract)
 
   Scenario: A spec-producer that writes frontmatter control fields is rejected
     Given a spec-producer runs for the "skill" domain
-    When the delegate attempts to write the status, aligned, or domain-plugin frontmatter
+    When the delegate attempts to write the status, aligned, or produced-by frontmatter
     Then the change is rejected
     And the spec-producer may write only the spec.md body and the .feature
 

@@ -25,9 +25,9 @@ Feature: Locate specs by shape, not location
   # ── resolution ─────────────────────────────────────────────────────────
 
   Scenario: a domain name resolves to a flat spec folder
-    Given a discovered spec at folder slug "sdd-orchestrator"
-    When the agent resolves the domain "sdd-orchestrator"
-    Then it returns the spec folder "sdd-orchestrator"
+    Given a discovered spec at folder slug "sdd-operator"
+    When the agent resolves the domain "sdd-operator"
+    Then it returns the spec folder "sdd-operator"
 
   Scenario: a domain name resolves to a nested spec folder
     Given a discovered spec at folder slug "sdd/spec-digest"

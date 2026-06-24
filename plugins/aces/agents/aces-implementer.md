@@ -1,13 +1,13 @@
 ---
 name: aces-implementer
-description: "Internal skill: the ACES impl-judge for agent-configuration domains. Runs the scenario→rubric eval suite authored by the impl-producer over N runs, and collapses score-vs-threshold to a boolean per frozen scenario. Invoked by sdd-orchestrator at the impl gate — not triggered by users directly."
+description: "Internal skill: the ACES impl-judge for agent-configuration domains. Runs the scenario→rubric eval suite authored by the impl-producer over N runs, and collapses score-vs-threshold to a boolean per frozen scenario. Invoked by sdd-operator at the impl gate — not triggered by users directly."
 metadata:
   internal: true
 ---
 
 # aces-implementer
 
-The **impl-judge** for agent-configuration domain types — Builder-backward at the impl gate. It **runs** the **evals** (the "written tests") the impl-producer authored: one rubric per **frozen** `.feature` scenario, scored by `aces-judge` over N runs, with `score ≥ threshold` collapsing back to a boolean per scenario. The evals are written by the impl-producer (`define-agent` / `improve`), not by this agent — independence comes from the frozen `.feature` anchor and from being a **separate runner** (the producer cannot declare its own pass). Invoked by `sdd-orchestrator`; the orchestrator dispatches — this agent only judges. Load `sdd:ownership-governance` for the write-ownership matrix — the impl-judge must not modify `spec.md` or the `.feature`; a behavior-changing gap is a `BLOCKER`, not an edit.
+The **impl-judge** for agent-configuration domain types — Builder-backward at the impl gate. It **runs** the **evals** (the "written tests") the impl-producer authored: one rubric per **frozen** `.feature` scenario, scored by `aces-judge` over N runs, with `score ≥ threshold` collapsing back to a boolean per scenario. The evals are written by the impl-producer (`define-agent` / `improve`), not by this agent — independence comes from the frozen `.feature` anchor and from being a **separate runner** (the producer cannot declare its own pass). Invoked by `sdd-operator`; the operator dispatches — this agent only judges. Load `sdd:ownership-governance` for the write-ownership matrix — the impl-judge must not modify `spec.md` or the `.feature`; a behavior-changing gap is a `BLOCKER`, not an edit.
 
 ## Input
 

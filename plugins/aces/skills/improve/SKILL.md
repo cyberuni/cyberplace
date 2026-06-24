@@ -9,7 +9,7 @@ Diagnose failing eval cases and propose targeted edits to the target agent confi
 
 ## Role: the ACES impl-producer
 
-When dispatched by `sdd-orchestrator`, this skill (with `define-agent`) is the **impl-producer** for agent-config domains. The impl-producer co-produces **two** things from the frozen `.feature`: the agent configuration **and its verification** — the scenario→rubric eval suite (`eval.md` thresholds + `golden-set/` cases, one per scenario). Authoring or refreshing that eval suite is part of this act. The **impl-judge** (`aces-implementer`) only **runs** the suite — it never authors it — so a missing or stale eval for a frozen scenario is the impl-producer's to write here, not the judge's to invent. Independence holds because the evals are anchored to the frozen `.feature` and executed by a separate runner.
+When dispatched by `sdd-operator`, this skill (with `define-agent`) is the **impl-producer** for agent-config domains. The impl-producer co-produces **two** things from the frozen `.feature`: the agent configuration **and its verification** — the scenario→rubric eval suite (`eval.md` thresholds + `golden-set/` cases, one per scenario). Authoring or refreshing that eval suite is part of this act. The **impl-judge** (`aces-implementer`) only **runs** the suite — it never authors it — so a missing or stale eval for a frozen scenario is the impl-producer's to write here, not the judge's to invent. Independence holds because the evals are anchored to the frozen `.feature` and executed by a separate runner.
 
 ## Load context
 

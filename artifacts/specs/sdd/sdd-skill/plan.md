@@ -43,4 +43,4 @@ A later revision tightens two gateway behaviors:
 
 - Reintroducing `init-sdd` or hook registration.
 - Creating an eval suite for this skill.
-- Changing `create-spec`, `validate-spec`, `sdd-orchestrator`, or `render-spec-graph` behavior beyond the routing guidance documented here.
+- Changing `create-spec`, `validate-spec`, `sdd-operator`, or `render-spec-graph` behavior beyond the routing guidance documented here.

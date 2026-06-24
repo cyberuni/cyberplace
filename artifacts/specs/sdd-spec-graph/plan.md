@@ -45,5 +45,5 @@ The SKILL.md documents the deterministic invocation first and, below it, the fal
 ## Out of scope
 
 - Watching/auto-regeneration (a trigger concern, not the engine).
-- Wiring into `create-spec` / orchestrator / CI — separate tasks once the engine is proven.
+- Wiring into `create-spec` / operator / CI — separate tasks once the engine is proven.
 - A generic DAG package in `universal-plugin` — only when a non-SDD caller exists.

@@ -12,7 +12,7 @@ aligned: false
 
 ## What
 
-The `.agents/universal-plugin.json` file carries an `sdd-plugins` array — a project-level registry mapping each installed domain plugin to the SDD production-chain roles it fills. It is the single source the orchestrator reads to resolve delegates; there is no `plan.md` assignment fallback.
+The `.agents/universal-plugin.json` file carries an `sdd-plugins` array — a project-level registry mapping each installed domain plugin to the SDD production-chain roles it fills. It is the single source the operator reads to resolve delegates; there is no `plan.md` assignment fallback.
 
 Each entry names a plugin, its version, the domains it covers, a five-role map, and actor-governance bindings:
 
@@ -40,13 +40,13 @@ Each entry names a plugin, its version, the domains it covers, a five-role map, 
 }
 ```
 
-A domain plugin's `init-<plugin>` skill writes its own entry idempotently — replacing its entry if present, leaving every other entry unchanged, and creating the file when absent. This spec owns the **file shape and init-write behavior**; resolving a delegate from the registry is owned by `sdd-orchestrator`.
+A domain plugin's `init-<plugin>` skill writes its own entry idempotently — replacing its entry if present, leaving every other entry unchanged, and creating the file when absent. This spec owns the **file shape and init-write behavior**; resolving a delegate from the registry is owned by `sdd-operator`.
 
 ---
 
 ## Why
 
-Without a project-level registry, every spec must declare which plugin fills which role, which is repeated, error-prone, and disconnected from what is installed. A registry lets each plugin register once at install time, and gives the orchestrator a single, authoritative resolution source. The earlier shape (`scenario-advisor` / `implementer` keys, with a `plan.md` override) predates the orchestrator's five-role production chain; this spec is the modernized contract.
+Without a project-level registry, every spec must declare which plugin fills which role, which is repeated, error-prone, and disconnected from what is installed. A registry lets each plugin register once at install time, and gives the operator a single, authoritative resolution source. The earlier shape (`scenario-advisor` / `implementer` keys, with a `plan.md` override) predates the operator's five-role production chain; this spec is the modernized contract.
 
 ---
 
@@ -54,7 +54,7 @@ Without a project-level registry, every spec must declare which plugin fills whi
 
 ### Five-role map, not contract pairs
 
-Each entry's `roles` map uses the production-chain roles: `spec-producer`, `plan-producer`, `spec-judge`, `impl-producer`, `impl-judge`. This replaces the old `scenario-advisor` / `implementer` pair so the registry matches the orchestrator's delegate model exactly.
+Each entry's `roles` map uses the production-chain roles: `spec-producer`, `plan-producer`, `spec-judge`, `impl-producer`, `impl-judge`. This replaces the old `scenario-advisor` / `implementer` pair so the registry matches the operator's delegate model exactly.
 
 ### `null` and missing keys degenerate to the SDD default
 

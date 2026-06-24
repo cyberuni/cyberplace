@@ -1,11 +1,11 @@
 ---
 name: init-aces
-description: Use this skill to register ACES as the SDD plugin for agent-configuration domains — writes an aces role-map entry to .agents/universal-plugin.json so sdd-orchestrator resolves the ACES production-chain roles for skills, subagents, commands, and AGENTS.md sections.
+description: Use this skill to register ACES as the SDD plugin for agent-configuration domains — writes an aces role-map entry to .agents/universal-plugin.json so sdd-operator resolves the ACES production-chain roles for skills, subagents, commands, and AGENTS.md sections.
 ---
 
 # Init ACES
 
-Register ACES in the project's SDD plugin registry so `sdd-orchestrator` resolves the ACES production-chain roles by reading **only** `.agents/universal-plugin.json` — no plugin-directory scanning at runtime (the lockfile pattern).
+Register ACES in the project's SDD plugin registry so `sdd-operator` resolves the ACES production-chain roles by reading **only** `.agents/universal-plugin.json` — no plugin-directory scanning at runtime (the lockfile pattern).
 
 ## Workflow
 
@@ -22,8 +22,8 @@ Read ACES's own version from its plugin manifest (it ships inside the plugin, so
 Find the entry where `"name": "aces"` in the `sdd-plugins` array:
 
 - **Not found** → append the canonical entry (create the array if absent).
-- **Found, old shape** (the pre-orchestrator `scenario-advisor` / `implementer` keys) → **rewrite** it to the role-map shape below.
-- **Found, role-map shape, stale `version`** → rewrite when the recorded version differs (install / upgrade / manual re-run reconciles drift here; the orchestrator never compares versions at runtime).
+- **Found, old shape** (the pre-operator `scenario-advisor` / `implementer` keys) → **rewrite** it to the role-map shape below.
+- **Found, role-map shape, stale `version`** → rewrite when the recorded version differs (install / upgrade / manual re-run reconciles drift here; the operator never compares versions at runtime).
 
 Do not reorder or reformat other entries.
 
@@ -55,4 +55,4 @@ Write `.agents/universal-plugin.json` back with the updated contents.
 
 Confirm the `.agents/universal-plugin.json` aces role-map entry is present under `sdd-plugins`, stamped with the ACES version, with domains `skill`, `subagent`, `command`, `agents-section`.
 
-Next step: use `create-spec` (sdd plugin) to scaffold an agent-configuration spec; the orchestrator resolves the ACES roles automatically.
+Next step: use `create-spec` (sdd plugin) to scaffold an agent-configuration spec; the operator resolves the ACES roles automatically.

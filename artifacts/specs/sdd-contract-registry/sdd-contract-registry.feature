@@ -1,7 +1,7 @@
 Feature: SDD Contract Registry
 
   # Scenarios trace the registry file shape and init-write behavior. Resolving
-  # a delegate from the registry is owned by sdd-orchestrator; here the focus
+  # a delegate from the registry is owned by sdd-operator; here the focus
   # is the five-role entry shape and idempotent registration.
 
   # -- entry shape --------------------------------------------------------
@@ -14,12 +14,12 @@ Feature: SDD Contract Registry
 
   Scenario: A null role degenerates to the SDD default
     Given a plugin entry sets plan-producer to null
-    When the orchestrator resolves the plan-producer for that plugin
+    When the operator resolves the plan-producer for that plugin
     Then it uses the SDD default plan-producer
 
   Scenario: A missing role key degenerates to the SDD default
     Given a plugin entry omits the spec-judge key
-    When the orchestrator resolves the spec-judge for that plugin
+    When the operator resolves the spec-judge for that plugin
     Then it uses the SDD default spec-judge
 
   # -- resolution source --------------------------------------------------
@@ -27,7 +27,7 @@ Feature: SDD Contract Registry
   Scenario: Resolution reads only the registry
     Given .agents/universal-plugin.json maps the "guide" domain to a plugin
     And plan.md contains a Plugin assignments table
-    When the orchestrator resolves delegates for the "guide" domain
+    When the operator resolves delegates for the "guide" domain
     Then it resolves from .agents/universal-plugin.json
     And it ignores plan.md for resolution
 

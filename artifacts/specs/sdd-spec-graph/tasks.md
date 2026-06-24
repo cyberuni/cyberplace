@@ -29,5 +29,5 @@ Each task is an executable unit; dependencies are noted. Order is emergent from 
 
 ## Phase 5 — Triggers (deferred, separate spec/tasks)
 
-- [ ] create-spec / orchestrator regenerate `graph.md` after writing `blocked-by`
+- [ ] create-spec / operator regenerate `graph.md` after writing `blocked-by`
 - [ ] CI `--check` step guarding staleness

@@ -6,33 +6,33 @@ Feature: SDD Operator — The Segment: Suspend/Resume & Observations
 
   # ── one autonomous segment, suspend & resume ──────────────────────────────
 
-  Scenario: Orchestrator suspends at a user-input checkpoint instead of asking
-    Given sdd-orchestrator is running an autonomous segment for the "auth" domain
+  Scenario: Operator suspends at a user-input checkpoint instead of asking
+    Given sdd-operator is running an autonomous segment for the "auth" domain
     When it reaches a point that requires user input to proceed
     Then it returns STATUS needs-input with the questions batched
     And it does not attempt to ask the user directly
 
-  Scenario: The skill resumes the orchestrator after collecting answers
-    Given the orchestrator returned STATUS needs-input with two questions
+  Scenario: The skill resumes the operator after collecting answers
+    Given the operator returned STATUS needs-input with two questions
     When the skill asks the user and collects the answers
-    Then the skill re-invokes the orchestrator with the answers included
-    And the orchestrator reconstructs its state by reading spec.md and the .feature
+    Then the skill re-invokes the operator with the answers included
+    And the operator reconstructs its state by reading spec.md and the .feature
 
   Scenario: Questions are batched within a segment, not asked one at a time
     Given three open questions block progress in the current segment
-    When the orchestrator returns to the skill
+    When the operator returns to the skill
     Then all three questions are returned in one batch
 
   Scenario: The workflow cursor is derived from artifact state across sessions
     Given a spec with status draft, aligned false, and two open markers
-    When the orchestrator is invoked cold in a new session
+    When the operator is invoked cold in a new session
     Then it determines the phase and remaining blockers from the files alone
     And no separate workflow journal is required
 
   # ── questions & markers: two kinds, two homes ─────────────────────────────
 
   Scenario: A content gap persists as an inline marker, not a separate file
-    Given the orchestrator cannot fill the Why section without PM input
+    Given the operator cannot fill the Why section without PM input
     When the segment ends
     Then a "<!-- open: needs PM input -->" marker is written in spec.md
     And no questions.md file is created
@@ -60,9 +60,9 @@ Feature: SDD Operator — The Segment: Suspend/Resume & Observations
 
   Scenario: Observations bubble up and only the skill surfaces them
     Given a plugin delegate returned an OBSERVATIONS entry
-    When the orchestrator aggregates delegate results
+    When the operator aggregates delegate results
     Then it forwards the observation to the skill
-    And the orchestrator does not spawn specs or write outside the spec it owns
+    And the operator does not spawn specs or write outside the spec it owns
 
   Scenario: Strategist observations surface only at boundaries and dedupe by recurrence
     Given a delegate emits a strategist observation matching an existing candidate spec

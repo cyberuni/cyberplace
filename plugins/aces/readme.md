@@ -28,7 +28,7 @@ Evaluation runs in layers:
 | `improve` | Diagnose failing cases and propose targeted edits |
 | `report` | Project-wide health dashboard across all eval suites |
 
-Spec creation is owned by the `sdd` plugin's `create-spec` / `validate-spec`: once ACES is registered, the orchestrator resolves the ACES production-chain roles automatically. The `run`/`compare`/`add`/`report` skills are thin reporting over the impl-judge's eval suite.
+Spec creation is owned by the `sdd` plugin's `create-spec` / `validate-spec`: once ACES is registered, the operator resolves the ACES production-chain roles automatically. The `run`/`compare`/`add`/`report` skills are thin reporting over the impl-judge's eval suite.
 
 ## Agents (production-chain roles)
 
@@ -51,7 +51,7 @@ sdd:create-spec → sdd:validate-spec (spec gate) → implement → run/compare 
                                                              report (project-wide)
 ```
 
-1. **`sdd:create-spec`** — the orchestrator resolves `aces-scenario-writer` to write the `.feature`; `aces-spec-validator` judges it at the spec gate.
+1. **`sdd:create-spec`** — the operator resolves `aces-scenario-writer` to write the `.feature`; `aces-spec-validator` judges it at the spec gate.
 2. **implement** — the impl-producer (`define-agent` / `improve`) authors the scenario→rubric eval suite alongside the agent config; `aces-implementer` (impl-judge) **runs** it, scoring each scenario via `aces-judge` and writing results to `artifacts/specs/<suite>/results/`.
 3. **`compare`** — before committing an edit, diff the before/after scores. Warns on regressions.
 4. **`improve`** — reads failing cases, groups by failure pattern, proposes before/after diffs to the agent configuration. Automatically runs `compare` after edits.
