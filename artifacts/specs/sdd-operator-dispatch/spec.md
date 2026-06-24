@@ -5,6 +5,9 @@ blocked-by:
   - sdd-operator
   - sdd-operator-resolution
 aligned: true
+produced-by:
+  impl-producer: sdd:builder
+  impl-judge: sdd:sdd-implementer
 approval:
   spec:
     verdict: approve
@@ -39,3 +42,5 @@ Three entry-points invoke this dispatch behavior. Each is verified by one-or-mor
 |---|---|
 | Spec | `artifacts/specs/sdd-operator-dispatch/spec.md` |
 | Scenarios | `artifacts/specs/sdd-operator-dispatch/sdd-operator-dispatch.feature` |
+| Implementation | `plugins/sdd/agents/sdd-operator.md` |
+| Verification | `plugins/sdd/agents/sdd-operator.test.mts` |

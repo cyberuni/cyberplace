@@ -4,6 +4,9 @@ type: feature
 blocked-by:
   - sdd-operator
 aligned: true
+produced-by:
+  impl-producer: sdd:builder
+  impl-judge: sdd:sdd-implementer
 approval:
   spec:
     verdict: approve
@@ -63,3 +66,5 @@ Verified by (`.feature`):
 |---|---|
 | Spec | `artifacts/specs/sdd-operator-resolution/spec.md` |
 | Scenarios | `artifacts/specs/sdd-operator-resolution/sdd-operator-resolution.feature` |
+| Implementation | `plugins/sdd/agents/sdd-operator.md` |
+| Verification | `plugins/sdd/agents/sdd-operator.test.mts` |

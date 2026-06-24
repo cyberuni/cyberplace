@@ -4,6 +4,9 @@ type: feature
 blocked-by:
   - sdd-operator
 aligned: true
+produced-by:
+  impl-producer: sdd:builder
+  impl-judge: sdd:sdd-implementer
 approval:
   spec:
     verdict: approve
@@ -46,3 +49,5 @@ The Operator segment is invoked three distinct ways. Each is an entry-point — 
 |---|---|
 | Spec | `artifacts/specs/sdd-operator-segment/spec.md` |
 | Scenarios | `artifacts/specs/sdd-operator-segment/sdd-operator-segment.feature` |
+| Implementation | `plugins/sdd/agents/sdd-operator.md` |
+| Verification | `plugins/sdd/agents/sdd-operator.test.mts` |

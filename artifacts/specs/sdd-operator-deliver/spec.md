@@ -6,6 +6,9 @@ blocked-by:
   - sdd-operator-dispatch
   - sdd-operator-freeze
 aligned: true
+produced-by:
+  impl-producer: sdd:builder
+  impl-judge: sdd:sdd-implementer
 approval:
   spec:
     verdict: approve
@@ -51,3 +54,5 @@ The Deliver phase has two entry-points: the Operator enters `deliver` mode to bu
 |---|---|
 | Spec | `artifacts/specs/sdd-operator-deliver/spec.md` |
 | Scenarios | `artifacts/specs/sdd-operator-deliver/sdd-operator-deliver.feature` |
+| Implementation | `plugins/sdd/agents/sdd-operator.md` |
+| Verification | `plugins/sdd/agents/sdd-operator.test.mts` |
