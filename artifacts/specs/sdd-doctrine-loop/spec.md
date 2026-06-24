@@ -54,6 +54,14 @@ The Scanner observes the transitions written elsewhere — `→ implemented` (by
 
 The Scanner drafts **strategy** cheaply and continuously and records it to the **combat log** (the provenance record from `sdd-provenance`: `produced-by` + `approval`). It **accumulates** strategy and surfaces it **episodically** — at a retro, on demand, or when a threshold piles up — never synchronously blocking a mission. **No strategy enters the corpus without the Council's ratification.**
 
+### The Scanner is the sole writer of strategy entries
+
+The Scanner is the **sole writer** of `strategy` log entries. The orchestrator and the producers never write them — the orchestrator owns `report` and `correction` entries (and the current-state face), the producers write nothing to the log at all. The **shape** of a strategy entry — its fields and schema — is owned by `combat-log-governance`; this spec does not restate it.
+
+- **When it writes.** After it drafts strategy from any of the five use cases — a terminal transition (ship or kill), a milestone retro, a recurring pattern, or drift detection. The log is an **append-only ledger**: the Scanner appends a new entry with the next sequence; it never edits or removes a prior one.
+- **What it writes.** A strategy entry carrying the recommendation plus the corrections-with-cause / evidence that drove it, with the entry **unratified** until the Council rules. Unratified strategy never enters the corpus (consistent with the "Strategy → doctrine → corpus" and "keep-or-cut by the human" decisions, and with the existing scenarios).
+- **Where it lands.** In the combat log of the spec the strategy is *about*. For the ship, kill, and pattern-from-a-single-spec cases that is unambiguous — the entry lands in that spec's log. For cross-spec cases (milestone retro, recurring pattern read across N specs, drift) the entry lands in the combat log of the spec the strategy most directly applies to (the milestone's anchoring spec, the spec where the pattern most strongly recurs, or the spec carrying the now-false convention) so that every strategy entry has one unambiguous home in the ledger.
+
 ### Two history channels: combat log (contract) vs raw transcripts (enrichment)
 
 The Scanner reads **persisted artifacts post-hoc** — it never accesses live subagent context. (Subagents only return their final message upward, and the Scanner always fires *after* a mission ends, so post-hoc file reading is the right model.) There are two channels, and only one is the contract:
