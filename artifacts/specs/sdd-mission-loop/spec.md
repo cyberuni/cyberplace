@@ -2,7 +2,7 @@
 status: implemented
 type: feature
 blocked-by:
-  - sdd-orchestrator
+  - sdd-operator
   - sdd-plugin
 aligned: true
 approval:

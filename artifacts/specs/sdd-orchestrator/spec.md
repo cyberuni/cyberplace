@@ -1,5 +1,5 @@
 ---
-status: implemented
+status: deprecated
 type: feature
 blocked-by: []
 aligned: true
@@ -16,7 +16,18 @@ reopened:
     to: draft
     by: unional
     why: propagate the no-resolvable-producer hard-fail rule from sdd-provenance/combat-log-governance so the resolver contract does not drift
+  - gate: spec
+    from: implemented
+    to: draft
+    by: unional
+    why: decompose the orchestrator monolith + metaphor-align + rename to sdd-operator
+superseded-by: sdd-operator
 ---
+
+> **DEPRECATED — decomposed into [`sdd-operator`](../sdd-operator/spec.md) + six feature children.**
+> This monolith's 65 scenarios moved into `sdd-operator-{resolution,dispatch,explore,deliver,freeze,segment}`.
+> The content below is retained for history only; the normative spec is now the `sdd-operator` project spec and its children.
+> The relay must set `status: deprecated` (status is skill-owned; the Operator cannot write it).
 
 # SDD Orchestrator & the Plugin-Delegate Model
 
