@@ -1,11 +1,6 @@
 ---
 name: define-governance
-description: >
-  Use this skill when the user wants to create or improve a governance file —
-  a reference-only skill that encodes criteria, standards, or workflow rules
-  for other skills or agents to load on demand. Trigger on "create a governance",
-  "write governance rules", "define standards", "add criteria for", "make a
-  reference skill", or "create a rule set for agents to follow".
+description: 'Use this skill when the user wants to create or improve a governance file — a reference-only skill that encodes criteria, standards, or workflow rules for other skills or agents to load on demand. Trigger on "create a governance", "write governance rules", "define standards", "add criteria for", "make a reference skill", or "create a rule set for agents to follow".'
 metadata:
   internal: true
 ---
