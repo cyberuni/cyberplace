@@ -5,6 +5,9 @@ blocked-by:
   - sdd-operator
   - sdd-operator-dispatch
 aligned: true
+produced-by:
+  impl-producer: sdd:builder
+  impl-judge: sdd:sdd-implementer
 approval:
   spec:
     verdict: approve
@@ -40,3 +43,5 @@ Each entry point names what sets freeze off, what it receives, and what it produ
 |---|---|
 | Spec | `artifacts/specs/sdd-operator-freeze/spec.md` |
 | Scenarios | `artifacts/specs/sdd-operator-freeze/sdd-operator-freeze.feature` |
+| Implementation | `plugins/sdd/agents/sdd-operator.md` |
+| Verification | `plugins/sdd/agents/sdd-operator.test.mts` |

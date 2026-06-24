@@ -13,7 +13,7 @@
 		"test": "turbo test",
 		"typecheck": "turbo typecheck",
 		"verify": "turbo verify",
-		"verify:specs": "node --experimental-strip-types --test plugins/sdd/skills/validate-spec/scripts/check-spec-state.test.mts plugins/sdd/skills/validate-spec/scripts/check-feature.test.mts && node plugins/sdd/skills/validate-spec/scripts/check-spec-state.mts && node plugins/sdd/skills/validate-spec/scripts/check-feature.mts",
+		"verify:specs": "node --experimental-strip-types --test plugins/sdd/skills/validate-spec/scripts/check-spec-state.test.mts plugins/sdd/skills/validate-spec/scripts/check-feature.test.mts plugins/sdd/agents/sdd-operator.test.mts && node plugins/sdd/skills/validate-spec/scripts/check-spec-state.mts && node plugins/sdd/skills/validate-spec/scripts/check-feature.mts",
 		"version": "changeset version",
 		"web": "pnpm run --filter=website"
 	},

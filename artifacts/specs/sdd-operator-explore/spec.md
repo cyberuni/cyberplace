@@ -5,6 +5,9 @@ blocked-by:
   - sdd-operator
   - sdd-operator-dispatch
 aligned: true
+produced-by:
+  impl-producer: sdd:builder
+  impl-judge: sdd:sdd-implementer
 approval:
   spec:
     verdict: approve
@@ -44,3 +47,5 @@ Entry points into the Explore phase, at the altitude of *how the Operator is set
 |---|---|
 | Spec | `artifacts/specs/sdd-operator-explore/spec.md` |
 | Scenarios | `artifacts/specs/sdd-operator-explore/sdd-operator-explore.feature` |
+| Implementation | `plugins/sdd/agents/sdd-operator.md` |
+| Verification | `plugins/sdd/agents/sdd-operator.test.mts` |
