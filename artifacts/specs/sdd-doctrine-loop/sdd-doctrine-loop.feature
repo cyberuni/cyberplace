@@ -40,6 +40,32 @@ Feature: SDD doctrine loop — the Strategist outer loop
     When the Scanner scans for a recurring pattern
     Then it reads the corrections across those combat logs
 
+  # ── efficiency / token-waste dimension ───────────────────────────────
+
+  Scenario: a mission over the token-cost threshold triggers efficiency analysis
+    Given a mission whose token cost exceeds the configured bound
+    When the Scanner runs against that mission
+    Then it analyzes the mission's transcripts
+    And it drafts efficiency strategy
+
+  Scenario: the Scanner does not run efficiency analysis under the threshold
+    Given a mission whose token cost is under the configured bound
+    And no on-demand efficiency request
+    When the Scanner runs against that mission
+    Then it does not run the heavy efficiency analysis
+
+  Scenario: efficiency analysis reads the transcripts not the combat log
+    Given a mission whose token cost exceeds the configured bound
+    When the Scanner drafts efficiency strategy
+    Then it reads the raw session transcripts
+    And it does not read the combat log for the token-usage breakdown
+
+  Scenario: efficiency strategy is recorded as an unratified strategy entry
+    Given the Scanner drafts efficiency strategy
+    When it records that strategy
+    Then the strategy is recorded as a strategy entry
+    And the strategy entry is unratified
+
   # ── the Scanner's input is the combat log, read post-hoc ──────────────
 
   Scenario: the Scanner reads the combat log as its primary input
