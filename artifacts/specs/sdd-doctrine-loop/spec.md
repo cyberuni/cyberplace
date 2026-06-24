@@ -1,12 +1,15 @@
 ---
-status: draft
+status: approved
 type: feature
 blocked-by:
   - sdd-orchestrator
   - sdd-provenance
   - sdd-plugin
-aligned: false
-approval: {}
+aligned: true
+approval:
+  spec:
+    verdict: approve
+    by: unional
 ---
 
 # SDD Doctrine Loop — the Strategist outer loop
