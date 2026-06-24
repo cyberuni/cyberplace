@@ -24,7 +24,7 @@ Specs accumulate scope: a single spec grows multiple concerns until it violates 
 
 ### Owns the split analysis, not authoring or status
 
-`split-spec` reads the target spec and produces a **split plan**: the proposed child specs, what each covers, and the `blocked-by` edges between them and toward the original. It does not scaffold `spec.md`/`.feature` files (that is `create-spec`), does not write `status`/`approved-by` (that is the gate skill), and does not delete or deprecate specs itself (that is the management/deprecation path). It analyzes and proposes; downstream skills act.
+`split-spec` reads the target spec and produces a **split plan**: the proposed child specs, what each covers, and the `blocked-by` edges between them and toward the original. It does not scaffold `spec.md`/`.feature` files (that is `create-spec`), does not write `status`/`approval` (that is the gate skill), and does not delete or deprecate specs itself (that is the management/deprecation path). It analyzes and proposes; downstream skills act.
 
 ### Invocable by the user and by the gateway
 
