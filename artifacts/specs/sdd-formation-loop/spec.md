@@ -1,12 +1,15 @@
 ---
-status: draft
+status: approved
 type: feature
 priority: 3
 aligned: true
 blocked-by:
   - sdd-spec-graph
   - sdd-spec-discovery
-approval: {}
+approval:
+  spec:
+    verdict: approve
+    by: unional
 ---
 
 # SDD Formation Loop — keeping the corpus coherent
