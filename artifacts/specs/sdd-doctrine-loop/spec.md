@@ -73,6 +73,14 @@ The Scanner reads **persisted artifacts post-hoc** — it never accesses live su
 
 Strategy is draftable from the combat log **alone** — raw transcripts are additive, never required. The Scanner depending on a harness-specific transcript format would couple doctrine to a harness; it must not.
 
+### Efficiency analysis is transcript-backed and threshold-gated
+
+Beyond correctness/pattern strategy, the Scanner analyzes how much context a mission consumed and drafts **efficiency strategy** — recommendations to cut token waste (context bloat, repeated re-reads, redundant tool calls, oversized payloads). This dimension is the **deliberate, concrete use of the optional transcript channel** above:
+
+- **Transcript-backed — the acknowledged exception.** Efficiency analysis reads the raw `.jsonl` session/subagent transcripts, **not** the combat log. The token-usage breakdown (per-message context growth, per-tool cost) is recorded by the harness in those transcripts; subagents do not readily self-report their own token cost into the combat log. So this is the one dimension that does **not** satisfy "strategy is draftable from the combat log alone" — that invariant still holds for every **other** dimension (correctness, pattern, drift); efficiency is **opt-in and transcript-backed**. The combat log stays PRIMARY for all non-efficiency strategy, and **no token-cost fields are added** to the combat log / provenance — that channel decision is settled and out of scope here.
+- **Threshold-gated — it does not run every cycle.** The analysis is heavy, so it runs only when warranted: gated by a **configurable bound** (a mission/session whose total token cost exceeds the configured limit) **or** on explicit demand (a retro). No numeric threshold is baked in — the bound is configured at runtime. The cheap, continuous drafting of the other dimensions is **unchanged**; only this dimension is gated.
+- **Ordinary strategy entries.** Efficiency strategy is recorded as a `strategy` log entry like any other — **unratified** until the Council rules, append-only, sole-written by the Scanner. The existing strategy-write rules apply unchanged, and the entry shape is owned by `combat-log-governance` (not restated here).
+
 ### Recurring-pattern detection is contract-via-provenance
 
 Recurring-pattern detection (use case 4) **requires the combat log to record corrections-with-cause in a matchable form** — so the Scanner can read corrections across N specs' combat logs, group them, and count. This is a Scanner **input requirement on the combat log**, i.e. a dependency on `sdd-provenance` (already in `blocked-by`).
@@ -110,6 +118,7 @@ A **use case** is an entry-point: a trigger plus its inputs and intent — coars
 | **Milestone retro** | a human-held retro event | the set of specs completed in the milestone (their combat logs) | draft strategy across the milestone |
 | **Recurring pattern** | the same correction recurs across missions | corrections-with-cause read across N specs' combat logs, grouped and counted | draft strategy to codify the pattern |
 | **Drift / staleness** | a now-false convention or a governance contradiction detected | the corpus (conventions, governances) | draft strategy to prune |
+| **Token-waste analysis** | the mission/session token cost exceeds a configurable bound, **or** an on-demand retro request | the mission's raw `.jsonl` session/subagent transcripts (the harness token-usage breakdown) — **not** the combat log | draft efficiency strategy to reduce token waste |
 
 ---
 
