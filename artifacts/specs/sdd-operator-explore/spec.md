@@ -1,10 +1,14 @@
 ---
-status: draft
+status: approved
 type: feature
 blocked-by:
   - sdd-operator
   - sdd-operator-dispatch
-aligned: false
+aligned: true
+approval:
+  spec:
+    verdict: approve
+    by: unional
 ---
 
 # SDD Operator — Explore Phase
@@ -19,25 +23,16 @@ The **Explore phase**: produce **and** judge the contract. The Operator shapes t
 
 ## Use Cases
 
-Every scenario in this child traces to its behavior, step-down ordered in the `.feature`:
+Entry points into the Explore phase, at the altitude of *how the Operator is set in motion* — coarse-grained, one per distinct way the behavior is invoked. Each is verified by one or more scenarios in the `.feature` (one-to-many).
 
-| Scenario | Covered in |
-|---|---|
-| MODE is derived from whether the .feature is frozen | sdd-operator-explore.feature |
-| The exploratory loop shapes the spec and probes it by building | sdd-operator-explore.feature |
-| An explore-mode producer builds against the draft, not a frozen contract | sdd-operator-explore.feature |
-| An explore discovery is judged before it reshapes the contract | sdd-operator-explore.feature |
-| Explore-mode discoveries feed back as markers | sdd-operator-explore.feature |
-| The planner runs in explore alongside the spec, not after a gate | sdd-operator-explore.feature |
-| Scenarios are ordered to trace the workflow | sdd-operator-explore.feature |
-| The spec-producer enriches spec.md for human consumption | sdd-operator-explore.feature |
-| A plugin-written .feature must pass validate-spec | sdd-operator-explore.feature |
-| validate-spec runs without NodeJS when npx is unavailable | sdd-operator-explore.feature |
-| validate-spec enforces domain criteria against a plugin-written .feature | sdd-operator-explore.feature |
-| A spec-producer that writes frontmatter control fields is rejected | sdd-operator-explore.feature |
-| The spec-gate judge is a domain delegate, not SDD | sdd-operator-explore.feature |
-| A static-bar domain needs no spec-gate judge agent | sdd-operator-explore.feature |
-| aligned at the spec gate checks only the contract layer | sdd-operator-explore.feature |
+| Trigger | Inputs | Outcome |
+|---|---|---|
+| **The Operator is about to dispatch a forward producer** and must choose its mode | the `.feature`'s frozen-state | `explore` mode while the `.feature` is still a draft; `deliver` mode once it is frozen |
+| **The Operator enters the exploratory loop** for a domain whose `.feature` is still a draft | the domain, the draft spec.md and `.feature` | the spec-producer ⇄ spec-judge iterate while forward producers run in `explore` mode, shaping the `.feature` until the spec gate freezes it |
+| **An explore-mode producer probes the draft** by building against it (impl-producer or plan-producer dispatched in `explore`) | the draft `.feature`, the producer role | scaffolding that may carry forward or be reshaped at the freeze; the ship-quality impl-judge does not run, and the planner co-delivers plan.md / tasks.md with no plan gate |
+| **A discovery routes back** when an explore-mode producer finds the `.feature` omits a behavior | the discovery (a content-gap + OBSERVATIONS entry) | the Operator writes an open marker in spec.md, re-invokes the spec-producer, and the proposed change is judged by the spec-judge — never absorbed into the contract unjudged; the human at the gate decides whether the behavior is wanted |
+| **The contract bar enforces format** when a `.feature` is written or validated, regardless of which delegate wrote it | the spec.md and `.feature`, the domain criteria | validate-spec checks valid boolean Gherkin, step-down ordering, enrichment, and domain criteria; producers writing control frontmatter (`status` / `aligned` / `domain-plugin`) are rejected; it falls back to an agent-level check when npx is unavailable |
+| **The spec gate judges the contract** to advance Draft → Approved | the frozen-candidate `.feature`, the declared domain spec-judge | the domain delegate judges contract quality (or validate-spec runs static criteria directly when the domain declares no judge agent); `aligned` at this gate considers only spec.md ↔ `.feature`, so spike code does not block Approved |
 
 ## References
 

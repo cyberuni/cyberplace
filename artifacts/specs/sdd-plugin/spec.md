@@ -1,13 +1,10 @@
 ---
-status: draft
+status: approved
 type: project
 blocked-by: []
 aligned: true
 approval:
   spec:
-    verdict: approve
-    by: unional
-  impl:
     verdict: approve
     by: unional
 reopened:
@@ -84,7 +81,15 @@ This project composes the feature specs below; each owns its detailed rules and 
 
 | Feature spec | Owns |
 |---|---|
-| `sdd-orchestrator` | autonomous segment, delegate resolution from the registry, the five-artifact production chain, uniform delegate I/O, observations, content gaps |
+| `sdd-operator` | the Operator and the plugin-delegate model: autonomous segment, delegate resolution from the registry, the five-artifact production chain, uniform delegate I/O, observations, content gaps |
+| `sdd-mission-loop` | the Mission loop: the Operator owns the middle loop (one spec draft→approved→implemented) |
+| `sdd-doctrine-loop` | the Doctrine loop: the Strategist outer loop |
+| `sdd-campaign-loop` | the Campaign loop: growing and pruning the product |
+| `sdd-formation-loop` | the Formation loop: keeping the corpus coherent |
+| `sdd-forge-loop` | the Forge loop: improving SDD itself |
+| `sdd-inject-channel` | the Inject channel: zoom into a single inner-loop agent |
+| `sdd-state-legality` | State legality: the `draft + aligned: true` reconciliation |
+| `sdd-stop-provenance` | Stop provenance: capturing why an agent halted |
 | `sdd-contract-registry` | the `.agents/universal-plugin.json` `sdd-plugins` file shape, the five-role entry map, and idempotent init-write |
 | `sdd-escape-hatch` | the SDD scope boundary — recognizing non-spec-able representation/meta-work and letting it escape the lifecycle (mechanism undecided) |
 | `sdd-gate-autonomy` | legal state tuples, status transitions as gate decisions, layer-scoped `aligned`, the frozen-`.feature` reopen path |
@@ -100,13 +105,13 @@ This project composes the feature specs below; each owns its detailed rules and 
 
 ## Spec format
 
-The frontmatter schema (`status`, `type`, `aligned`, `blocked-by`, `subtasks`, `approved-by`, `domain-plugin`) and the required body sections are defined by `sdd:lifecycle-governance`; the universal `.feature` and `spec.md` format bar is defined by `sdd:spec-governance`. This plugin spec does not restate them. Specs must be formatted for human gate review: tables, diagrams, short paragraphs, and clear heading hierarchy when they make intent easier to inspect.
+The frontmatter schema (`status`, `type`, `aligned`, `blocked-by`, `subtasks`, `strategy`, the structured `approval` map with per-gate `verdict`/`by`, `domain-plugin`) and the required body sections are defined by `sdd:lifecycle-governance`; the universal `.feature` and `spec.md` format bar is defined by `sdd:spec-governance`. This plugin spec does not restate them. Specs must be formatted for human gate review: tables, diagrams, short paragraphs, and clear heading hierarchy when they make intent easier to inspect.
 
 ---
 
 ## Lifecycle
 
-Exploration → spec gate → implementation → impl gate → deprecation. The autonomous production chain that runs each phase is owned by `sdd-orchestrator`; gate mechanics, legal state tuples, and layer-scoped `aligned` by `sdd-gate-autonomy`; approval provenance by `sdd-provenance`. At a glance: exploration runs while `draft`; the spec gate moves `draft → approved` and freezes the `.feature`; implementation runs against the frozen `.feature`; the impl gate moves `approved → implemented`; deprecation is a Director decision that retains the spec for history.
+Exploration → spec gate → implementation → impl gate → deprecation. The autonomous production chain that runs each phase is owned by `sdd-operator`; gate mechanics, legal state tuples, and layer-scoped `aligned` by `sdd-gate-autonomy`; approval provenance by `sdd-provenance`. At a glance: exploration runs while `draft`; the spec gate moves `draft → approved` and freezes the `.feature`; implementation runs against the frozen `.feature`; the impl gate moves `approved → implemented`; deprecation is a Director decision that retains the spec for history.
 
 ---
 
@@ -151,7 +156,7 @@ sdd-implementer
   role: default impl-judge
 ```
 
-The generic Builder is the default impl-producer when no plugin agent fills the role. The uniform delegate I/O contract (`STATUS`, `QUESTIONS`, `CONTENT_GAPS`, `OBSERVATIONS`) is owned by `sdd-orchestrator`.
+The generic Builder is the default impl-producer when no plugin agent fills the role. The uniform delegate I/O contract (`STATUS`, `QUESTIONS`, `CONTENT_GAPS`, `OBSERVATIONS`) is defined by the `sdd-operator` feature spec and carried at runtime by the `sdd-orchestrator` agent.
 
 ---
 
@@ -161,7 +166,15 @@ The generic Builder is the default impl-producer when no plugin agent fills the 
 
 ## Related
 
-- `artifacts/specs/sdd-orchestrator/spec.md` — delegate model, production chain, gates, and uniform I/O
+- `artifacts/specs/sdd-operator/spec.md` — the Operator and plugin-delegate model, production chain, and uniform I/O
+- `artifacts/specs/sdd-mission-loop/spec.md` — the Mission loop (one spec draft→approved→implemented)
+- `artifacts/specs/sdd-doctrine-loop/spec.md` — the Doctrine loop (Strategist outer loop)
+- `artifacts/specs/sdd-campaign-loop/spec.md` — the Campaign loop (growing and pruning the product)
+- `artifacts/specs/sdd-formation-loop/spec.md` — the Formation loop (keeping the corpus coherent)
+- `artifacts/specs/sdd-forge-loop/spec.md` — the Forge loop (improving SDD itself)
+- `artifacts/specs/sdd-inject-channel/spec.md` — the Inject channel (zoom into a single inner-loop agent)
+- `artifacts/specs/sdd-state-legality/spec.md` — state legality (`draft + aligned: true` reconciliation)
+- `artifacts/specs/sdd-stop-provenance/spec.md` — stop provenance (why an agent halted)
 - `artifacts/specs/sdd-contract-registry/spec.md` — the `sdd-plugins` registry file shape and init-write
 - `artifacts/specs/sdd-escape-hatch/spec.md` — the SDD scope boundary and escape path for non-spec-able work
 - `artifacts/specs/sdd-gate-autonomy/spec.md` — legal state tuples and gate autonomy checks

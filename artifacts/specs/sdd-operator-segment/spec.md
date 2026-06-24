@@ -1,9 +1,13 @@
 ---
-status: draft
+status: approved
 type: feature
 blocked-by:
   - sdd-operator
-aligned: false
+aligned: true
+approval:
+  spec:
+    verdict: approve
+    by: unional
 ---
 
 # SDD Operator — The Segment
@@ -16,22 +20,21 @@ How **one autonomous run** behaves and reports. The Operator has no user channel
 
 ## Use Cases
 
-Every scenario in this child traces to its behavior, step-down ordered in the `.feature`:
+The Operator segment is invoked three distinct ways. Each is an entry-point — a trigger, the inputs it receives, and the outcome it returns — and each is verified by one or more scenarios in the `.feature` (one-to-many).
 
-| Scenario | Covered in |
+| # | Use case | Trigger | Inputs | Outcome |
+|---|---|---|---|---|
+| UC1 | **Operator invoked cold for a segment** | A relay skill (e.g. `create-spec`, `validate-spec`) dispatches one autonomous run; no prior segment state is in memory. | Domain + spec path; the on-disk `spec.md` and `.feature` (status, `aligned`, open markers). | Reconstructs the workflow cursor from the artifacts, runs to the next checkpoint, and returns `complete` / `blocked` / `needs-input` with questions **batched** — never asking the user directly. Content gaps persist as inline `<!-- open: -->` markers; procedural questions stay transient; the iteration cap blocks-and-asks. |
+| UC2 | **Skill re-invokes to resume after answers** | The relay collected user answers to a prior `needs-input` return and calls the Operator again. | The same domain + artifacts, plus `USER_ANSWERS` for the batched questions. | Re-reads `spec.md` and the `.feature` to rebuild state (cursor is derived, never stored), folds the answers in, and continues the run from where it suspended. |
+| UC3 | **A delegate emits an observation** | A production-chain delegate (producer, judge, or Strategist) returns a non-blocking `OBSERVATIONS` entry while doing its primary work. | The delegate's typed observation (owner `architect` \| `strategist`); for Strategist, the existing candidate-spec set. | The Operator forwards the observation to the skill without acting on it; only the skill surfaces it and, on acceptance, spawns the resulting spec (possibly under a sibling monorepo project) or dedupes it by recurrence at a boundary. `STATUS` is never blocked by an observation. |
+
+**Scenario coverage** — every scenario in the `.feature` traces to exactly one use case:
+
+| Use case | Scenarios (step-down order in `sdd-operator-segment.feature`) |
 |---|---|
-| Orchestrator suspends at a user-input checkpoint instead of asking | sdd-operator-segment.feature |
-| The skill resumes the orchestrator after collecting answers | sdd-operator-segment.feature |
-| Questions are batched within a segment, not asked one at a time | sdd-operator-segment.feature |
-| The workflow cursor is derived from artifact state across sessions | sdd-operator-segment.feature |
-| A content gap persists as an inline marker, not a separate file | sdd-operator-segment.feature |
-| A workflow-procedural question is not persisted | sdd-operator-segment.feature |
-| The iteration cap blocks and asks rather than auto-accepting | sdd-operator-segment.feature |
-| A structural concern is emitted as a non-blocking observation | sdd-operator-segment.feature |
-| Observations bubble up and only the skill surfaces them | sdd-operator-segment.feature |
-| Strategist observations surface only at boundaries and dedupe by recurrence | sdd-operator-segment.feature |
-| A strategist lesson spawns a spec that may target another monorepo project | sdd-operator-segment.feature |
-| An accepted structural observation spawns a new spec | sdd-operator-segment.feature |
+| **UC1** — invoked cold | Orchestrator suspends at a user-input checkpoint instead of asking · Questions are batched within a segment · The workflow cursor is derived from artifact state across sessions · A content gap persists as an inline marker, not a separate file · A workflow-procedural question is not persisted · The iteration cap blocks and asks rather than auto-accepting |
+| **UC2** — resume after answers | The skill resumes the orchestrator after collecting answers |
+| **UC3** — delegate observation | A structural concern is emitted as a non-blocking observation · Observations bubble up and only the skill surfaces them · Strategist observations surface only at boundaries and dedupe by recurrence · A strategist lesson spawns a spec that may target another monorepo project · An accepted structural observation spawns a new spec |
 
 ## References
 

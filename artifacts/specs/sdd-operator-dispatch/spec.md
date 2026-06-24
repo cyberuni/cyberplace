@@ -1,10 +1,14 @@
 ---
-status: draft
+status: approved
 type: feature
 blocked-by:
   - sdd-operator
   - sdd-operator-resolution
-aligned: false
+aligned: true
+approval:
+  spec:
+    verdict: approve
+    by: unional
 ---
 
 # SDD Operator — Production-Chain Dispatch
@@ -17,26 +21,13 @@ Once roles are resolved, **who does what**. The Operator dispatches each product
 
 ## Use Cases
 
-Every scenario in this child traces to its behavior, step-down ordered in the `.feature`:
+Three entry-points invoke this dispatch behavior. Each is verified by one-or-more boolean scenarios in `sdd-operator-dispatch.feature` (one-to-many) — the **Scenarios** column lists every scenario that traces to that use case, and the union covers all 16.
 
-| Scenario | Covered in |
-|---|---|
-| Spec-producers load the SDD governance skill for format rules | sdd-operator-dispatch.feature |
-| The loop runs without a governance-show call | sdd-operator-dispatch.feature |
-| Orchestrator dispatches to the plugin that covers the domain | sdd-operator-dispatch.feature |
-| Orchestrator falls back to the default spec-producer when no plugin covers the domain | sdd-operator-dispatch.feature |
-| A participating plugin always provides its own spec-producer | sdd-operator-dispatch.feature |
-| The spec-producer writes the spec.md body and the impl side cannot | sdd-operator-dispatch.feature |
-| Forward producers load the actor governances they embody | sdd-operator-dispatch.feature |
-| The impl-producer co-produces the verification with the implementation | sdd-operator-dispatch.feature |
-| The impl-judge runs the producer's verification rather than authoring it | sdd-operator-dispatch.feature |
-| Orchestrator dispatches to the plugin impl-judge that covers the domain | sdd-operator-dispatch.feature |
-| Orchestrator falls back to the default impl-judge when no plugin covers the domain | sdd-operator-dispatch.feature |
-| Product and test separation stays inside the impl-producer | sdd-operator-dispatch.feature |
-| The orchestrator resolves every production-chain role | sdd-operator-dispatch.feature |
-| ACES evals are authored by the impl-producer and run by the impl-judge | sdd-operator-dispatch.feature |
-| Degenerate roles fall back without a plugin agent | sdd-operator-dispatch.feature |
-| A plugin author reads the interface from the orchestrator and default delegates | sdd-operator-dispatch.feature |
+| Trigger | Inputs | Outcome | Scenarios |
+|---|---|---|---|
+| `sdd-orchestrator` runs the **design phase** for a domain | the domain name, the plugin registry, the resolved spec-producer role | the covering plugin's spec-producer (else the `sdd-scenario-writer` default) is dispatched; it loads `sdd:spec-governance` as a harness skill with no `governance show` call, writes only the `spec.md` body + `.feature`, and the impl side is barred from those artifacts | Spec-producers load the SDD governance skill for format rules; The loop runs without a governance-show call; Orchestrator dispatches to the plugin that covers the domain; Orchestrator falls back to the default spec-producer when no plugin covers the domain; A participating plugin always provides its own spec-producer; The spec-producer writes the spec.md body and the impl side cannot |
+| `sdd-orchestrator` runs the **implementation phase** for a domain | the domain name, the plugin registry, the frozen `.feature`, the resolved impl-producer + impl-judge roles | the impl-producer co-produces the implementation **and** its verification anchored to the frozen scenarios, loading the actor governances it embodies; the covering plugin's impl-judge (else the `sdd-implementer` default) runs that verification rather than authoring it (`producer ≠ judge`); product/test splits stay inside the impl-producer; every production-chain role resolves | Forward producers load the actor governances they embody; The impl-producer co-produces the verification with the implementation; The impl-judge runs the producer's verification rather than authoring it; Orchestrator dispatches to the plugin impl-judge that covers the domain; Orchestrator falls back to the default impl-judge when no plugin covers the domain; Product and test separation stays inside the impl-producer; The orchestrator resolves every production-chain role; ACES evals are authored by the impl-producer and run by the impl-judge; Degenerate roles fall back without a plugin agent |
+| A **plugin author** reads the dispatch interface | the `sdd-orchestrator` definition and the SDD default delegates | the input/output contract for each production-chain role is fully specified from the orchestrator and defaults alone, with no separate governance file to author against | A plugin author reads the interface from the orchestrator and default delegates |
 
 ## References
 
