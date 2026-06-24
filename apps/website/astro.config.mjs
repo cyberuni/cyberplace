@@ -34,6 +34,13 @@ export default defineConfig({
 					],
 				},
 				{
+					label: 'SDD Workflow',
+					items: [
+						{ label: 'Overview', slug: 'sdd/overview' },
+						{ label: 'Control Flow', slug: 'sdd/control-flow' },
+					],
+				},
+				{
 					label: 'Skills',
 					items: [
 						{ label: 'Overview', slug: 'skills/overview' },
