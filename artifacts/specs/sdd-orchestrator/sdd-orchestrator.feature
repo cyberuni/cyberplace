@@ -42,6 +42,13 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     When the orchestrator resolves impl-producer
     Then the role degenerates to the generic Builder with no agent
 
+  Scenario: A required role with no resolvable producer hard-fails
+    Given no plugin covers the domain and no SDD default exists for a required role
+    When sdd-orchestrator resolves that role
+    Then it returns a hard-fail blocker
+    And it records nothing
+    And no inline sentinel value is written
+
   Scenario: Spec-producers load the SDD governance skill for format rules
     Given sdd:spec-governance is a user-invocable:false skill in the sdd plugin
     When a plugin spec-producer needs the .feature format conventions

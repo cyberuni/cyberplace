@@ -1,5 +1,5 @@
 ---
-status: implemented
+status: draft
 type: feature
 blocked-by: []
 aligned: true
@@ -10,6 +10,12 @@ approval:
   impl:
     verdict: approve
     by: unional
+reopened:
+  - gate: spec
+    from: implemented
+    to: draft
+    by: unional
+    why: propagate the no-resolvable-producer hard-fail rule from sdd-provenance/combat-log-governance so the resolver contract does not drift
 ---
 
 # SDD Orchestrator & the Plugin-Delegate Model
@@ -283,6 +289,8 @@ Readable agent names stay safe: the registry binds role→name explicitly, so th
 ] }
 ```
 The top-level key is `sdd-plugins`. Each `roles` value is an agent name or `null` (degenerate — no agent); a missing role key falls back to the `<plugin>-<role>` convention. Each `governances` value is an actor-governance skill name or `null` (use the SDD default for that actor).
+
+**Resolution always lands on a real producer — or it fails closed.** Every production role resolves to a real producer: a plugin agent, or the SDD default for that role (a degenerate role *is* the SDD default acting). The terminal safety-net sits at the bottom of the resolution order: if a required role resolves to **neither** a plugin agent **nor** an SDD default — genuinely unresolvable — the orchestrator **hard-fails with a blocker and records nothing** (fail closed); there is no inline sentinel value. This mirrors the producer-resolution rule of the sdd-provenance combat-log contract, and joins the same fail-closed structural-error class defined there (alongside a malformed produced-by entry and an off-enum cause) — see `sdd-provenance` / `combat-log-governance`; this spec does not restate that schema.
 
 ---
 
