@@ -1,10 +1,10 @@
 ---
-status: draft
+status: approved
 type: feature
 blocked-by:
   - sdd-orchestrator
   - sdd-plugin
-aligned: false
+aligned: true
 approval:
   spec:
     verdict: approve
