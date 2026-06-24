@@ -5,9 +5,6 @@ blocked-by:
   - sdd-operator
   - sdd-operator-dispatch
 aligned: true
-produced-by:
-  impl-producer: sdd:builder
-  impl-judge: sdd:sdd-implementer
 approval:
   spec:
     verdict: approve
@@ -15,6 +12,23 @@ approval:
   impl:
     verdict: approve
     by: unional
+produced-by:
+  spec-producer: sdd:sdd-scenario-writer
+  spec-judge: sdd:sdd-spec-judge
+  impl-producer: sdd:builder
+  impl-judge: sdd:sdd-implementer
+log:
+  - seq: 1
+    kind: correction
+    correction-kind: council-kickback
+    cause: design-overreach
+    detail: "Council freeze-break — project sdd:sdd-spec-judge as the default spec-judge delegate instead of injecting validate-spec static criteria inline; re-opened implemented→draft to rewrite the 'static-bar domain needs no spec-gate judge agent' scenario"
+  - seq: 2
+    kind: report
+    role: spec-judge
+    agent: sdd:sdd-spec-judge
+    outcome: pass
+    summary: "re-judged the rewritten .feature at the spec gate after the spec.md sync fix — valid boolean Gherkin, ordering intact, spec.md ↔ .feature in sync, no markers"
 ---
 
 # SDD Operator — Explore Phase
@@ -38,7 +52,7 @@ Entry points into the Explore phase, at the altitude of *how the Operator is set
 | **An explore-mode producer probes the draft** by building against it (impl-producer or plan-producer dispatched in `explore`) | the draft `.feature`, the producer role | scaffolding that may carry forward or be reshaped at the freeze; the ship-quality impl-judge does not run, and the planner co-delivers plan.md / tasks.md with no plan gate |
 | **A discovery routes back** when an explore-mode producer finds the `.feature` omits a behavior | the discovery (a content-gap + OBSERVATIONS entry) | the Operator writes an open marker in spec.md, re-invokes the spec-producer, and the proposed change is judged by the spec-judge — never absorbed into the contract unjudged; the human at the gate decides whether the behavior is wanted |
 | **The contract bar enforces format** when a `.feature` is written or validated, regardless of which delegate wrote it | the spec.md and `.feature`, the domain criteria | validate-spec checks valid boolean Gherkin, step-down ordering, enrichment, and domain criteria; producers writing control frontmatter (`status` / `aligned` / `domain-plugin`) are rejected; it falls back to an agent-level check when npx is unavailable |
-| **The spec gate judges the contract** to advance Draft → Approved | the frozen-candidate `.feature`, the declared domain spec-judge | the domain delegate judges contract quality (or validate-spec runs static criteria directly when the domain declares no judge agent); `aligned` at this gate considers only spec.md ↔ `.feature`, so spike code does not block Approved |
+| **The spec gate judges the contract** to advance Draft → Approved | the frozen-candidate `.feature`, the resolved spec-judge delegate | a spec-judge delegate is always projected (the plugin's own judge when declared, else the `sdd:sdd-spec-judge` default spawned with clean context, applying the `validate-spec` static criteria as its bar — never run inline); `aligned` at this gate considers only spec.md ↔ `.feature`, so spike code does not block Approved |
 
 ## References
 

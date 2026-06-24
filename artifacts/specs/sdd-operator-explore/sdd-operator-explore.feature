@@ -94,11 +94,12 @@ Feature: SDD Operator — Explore Phase (produce & judge the contract)
     Then SDD delegates the domain judgment to aces-spec-validator
     And SDD's generic validate-spec does not judge domain contract quality
 
-  Scenario: A static-bar domain needs no spec-gate judge agent
-    Given the "guide" domain declares only static doc criteria
+  Scenario: A static-bar domain projects the default spec-judge delegate
+    Given the "guide" domain declares no plugin spec-judge
     When the spec gate evaluates guide.feature
-    Then validate-spec runs the static criteria directly
-    And no spec-gate judge agent is invoked
+    Then the operator projects sdd:sdd-spec-judge as the default spec-judge delegate
+    And the default judge is spawned with clean context, not run inline
+    And it applies the validate-spec static criteria as its bar
 
   Scenario: aligned at the spec gate checks only the contract layer
     Given exploratory spike code exists alongside a Draft spec
