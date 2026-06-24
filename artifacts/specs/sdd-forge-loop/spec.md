@@ -8,15 +8,17 @@ blocked-by:
 approval: {}
 ---
 
-# SDD Usage Feedback — the Strategist field loop
+# SDD Forge Loop — improving SDD itself
+
+**Forge loop** (metaphor) / **Harness loop** (descriptive) — the meta loop that improves SDD the framework from opt-in cross-installation usage.
 
 ---
 
 ## What
 
-The **field loop** of the SDD model — the one that reaches *outside* this repo. It sits between the **plugin's users** (the field: real installations out in the world) and the **SDD system** (the maintainers and the shared corpus). It collects **real corrections** from **actual usage** across installations and feeds them upstream, so the shared taxonomy, doctrine, and corpus **grow from real corrections** rather than invented ones. It is the mechanism behind the descriptive promise — *"the cause enum grows from real corrections"* — that the combat-log contract already references.
+The **Forge loop** (descriptively, the **Harness loop**) — the one that reaches *outside* this repo to improve **SDD itself**. It sits between the **plugin's users** (the field: real installations out in the world) and the **SDD system** (the maintainers and the shared corpus). It collects **real corrections** from **actual usage** across installations and feeds them upstream, so the shared taxonomy, doctrine, and corpus **grow from real corrections** rather than invented ones. It is the mechanism behind the descriptive promise — *"the cause enum grows from real corrections"* — that the combat-log contract already references.
 
-It is the loop **above** the doctrine loop. The doctrine loop is in-repo (it reads *this* project's combat logs to improve the corpus for the plugin's own user); the field loop is **cross-installation** (it gathers what users actually hit, out in the world, and routes it back to the maintainers).
+It sits at the **meta** altitude — above a single team's loops entirely. The doctrine loop generalizes **across missions** within one adoption (it reads that team's combat logs to improve their corpus); the Forge loop generalizes **across installations** (it gathers what users hit in the world and routes it to the maintainers, who run their *own* loops on SDD). It is owned by the **maintainers** — the shipyard that refits the ships — not the Strategist, who owns doctrine one altitude below.
 
 ```mermaid
 flowchart LR
@@ -117,8 +119,8 @@ A **use case** is an entry-point — a trigger, its inputs, and its outcome. Eac
 ## Related
 
 - `artifacts/specs/sdd-provenance/spec.md` — owns the `correction`-with-`cause` record shape and the `cause` enum this loop feeds; this spec's only `blocked-by`
-- `artifacts/specs/sdd-doctrine-loop/spec.md` — the in-repo outer loop; the field loop sits above it, cross-installation
-- `artifacts/specs/motive-model/spec.md` — "Strategist and the loop"; the loop hierarchy this spec's field loop tops
+- `artifacts/specs/sdd-doctrine-loop/spec.md` — the across-missions outer loop; the Forge loop sits above it at the meta altitude, across installations
+- `artifacts/specs/motive-model/spec.md` — "Strategist and the loop"; the loop hierarchy this Forge loop tops
 
 ---
 
@@ -126,5 +128,5 @@ A **use case** is an entry-point — a trigger, its inputs, and its outcome. Eac
 
 | Label | Path |
 |---|---|
-| Spec | `artifacts/specs/sdd-usage-feedback/spec.md` |
-| Scenarios | `artifacts/specs/sdd-usage-feedback/sdd-usage-feedback.feature` |
+| Spec | `artifacts/specs/sdd-forge-loop/spec.md` |
+| Scenarios | `artifacts/specs/sdd-forge-loop/sdd-forge-loop.feature` |

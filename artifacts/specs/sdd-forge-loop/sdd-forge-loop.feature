@@ -1,4 +1,4 @@
-Feature: SDD usage feedback — the Strategist field loop
+Feature: SDD Forge loop — improving SDD itself
 
   # Collects REAL corrections from REAL usage across installations and feeds
   # them upstream so the shared taxonomy and doctrine grow from real
