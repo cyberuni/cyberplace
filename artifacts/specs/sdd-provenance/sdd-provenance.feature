@@ -37,11 +37,12 @@ Feature: Production provenance
     Then it uses the SDD default
     And produced-by records the sdd-prefixed default agent
 
-  Scenario: an inline production is recorded, not hidden
-    Given the orchestrator executes a role inline with no producer agent
-    When it records the production
-    Then produced-by names sdd:orchestrator-inline
-    And the absence of a domain producer is visible in the data
+  Scenario: an unresolvable producer hard-fails with no sentinel
+    Given no producer can be resolved for the role, not even an SDD default
+    When the orchestrator dispatches the role
+    Then it hard-fails with a blocker
+    And it records no producer
+    And it records no sentinel value
 
   Scenario: a first-time conflict asks once, then is decisive
     Given two plugins claim the spec's domain

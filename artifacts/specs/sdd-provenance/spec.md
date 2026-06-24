@@ -81,12 +81,13 @@ On dispatch for a role, the orchestrator resolves the producer in this order:
 
 1. **Cache hit** — `produced-by[role]` is set **and** its plugin is installed → reuse it (decisive; no re-ask).
 2. **Live resolve** — otherwise match the spec's domain in the registry → plugin → role agent, and record the result into `produced-by[role]`.
-3. **Degenerate** — no plugin covers the domain → the SDD default (`sdd:<default>`); record it.
+3. **Default** — no plugin covers the domain → the SDD default for the role (`sdd:<default>`), which **is** the producer; record it like any other.
 4. **Ambiguous** — two plugins still contend and there is no cache → `needs-input` (ask once); the answer is recorded into `produced-by[role]`, so the question never recurs.
+5. **Unresolvable** — no producer can be resolved at all, not even an SDD default for the role → **hard-fail** with a blocker; record no `produced-by` entry and no sentinel.
 
 A recorded producer whose plugin is **gone** is therefore not an error: step 1 misses, step 2 re-resolves, and the historical value is preserved (annotated `[unavailable]`) rather than overwritten — the new producer is appended for the new production.
 
-The "never blocks" invariant is scoped to **availability**: a recorded producer that is uninstalled is still **valid history**, so it degrades gracefully. A **malformed** entry — one that is not a well-formed plugin-qualified name — is a different class: it is a **structural** error, not valid provenance at all, so it cannot be valid history. The consistent rule: **availability degrades gracefully (flag-not-block); structural validity fails closed (block)** — the same fail-closed posture the gate already takes for a contested role with no cache.
+The "never blocks" invariant is scoped to **availability**: a recorded producer that is uninstalled is still **valid history**, so it degrades gracefully. **Structural** failures are a different class and fail closed: a **malformed** entry (not a well-formed plugin-qualified name) is not valid provenance at all, and a role with **no resolvable producer** (not even an SDD default) cannot produce provenance at all — both block rather than proceed. The consistent rule: **availability degrades gracefully (flag-not-block); structural validity fails closed (block)** — the same fail-closed posture the gate already takes for a contested role with no cache.
 
 ### Subsumes the conflict-only `domain-plugin` map
 
@@ -98,9 +99,11 @@ Disambiguation is a **setup** act, owned by the producing path (`create-spec`); 
 
 The gate must **not** absorb this. `validate-spec` owns only verdict frontmatter (`status`, the human ratification of `approval`); it must never write setup frontmatter (`produced-by` / the retired `domain-plugin`). On a `needs-input` for a contested producer during a gate, the gate **fails closed** with a blocker — "resolve the domain producer via `create-spec` first" — rather than silently asking and writing. The invariant is symmetric across both gates (spec and impl): setup ambiguity is resolved on the producing path and persisted to frontmatter there, so by the time a gate reads it the answer is already a fact. This keeps the gate verdict-only and `create-spec` the sole writer of producer choice.
 
-### Inline and default producers are recorded too
+### Defaults are real producers; no producer means hard-fail
 
-When a role degenerates to the SDD default, `produced-by` records `sdd:<default>`. When the orchestrator executes a role **inline** with no producer agent (the gap noted in `sdd-gate-autonomy`, where ACES delegation is documented but executed inline), it records `sdd:orchestrator-inline` — so "no real domain producer ran here" is **visible in the data**, not silent. Provenance should never hide that a producer was missing.
+A role **always resolves to a real producer**. When no plugin covers the domain, the role resolves to the **SDD default for that role** — and the default *is* the producer: it is recorded in `produced-by` as `sdd:<default>`, exactly like any plugin producer. There is no inline path and no sentinel value; every recorded `produced-by` entry names a real agent that ran.
+
+If **no producer can be resolved at all** — not a plugin producer, and not even an SDD default for the role — the orchestrator **hard-fails**: it surfaces a blocker, records **no** `produced-by` entry and **no** sentinel, and does not proceed. "No resolvable producer" is a **structural** error and joins the existing fail-closed class alongside an off-enum `cause` and a malformed `produced-by` entry. This **strengthens** the fail-closed posture rather than contradicting it: provenance only ever names a producer that actually acted, and the absence of any producer halts the mission instead of being papered over with a placeholder.
 
 ### Who writes it
 
@@ -175,7 +178,7 @@ The combat log is consumed long after a mission ends. Each use case below is an 
 produced-by:
   spec-producer: aces:aces-scenario-writer
   plan-producer: sdd:sdd-planner
-  impl-producer: sdd:orchestrator-inline   # no domain producer ran
+  impl-producer: sdd:sdd-implementer
 log:
   # entry shapes (report / correction / strategy), the correction-kind set,
   # and the matchable cause enum are owned by combat-log-governance —
@@ -186,13 +189,14 @@ log:
 
 **The `log` ledger** is append-only for every writer: entries are added with the next `seq`, never edited or removed. The orchestrator appends `report` entries (one per production-chain dispatch) and `correction` entries (one per correction, carrying a matchable `cause`); the doctrine-loop Scanner appends `strategy` entries. The full schema — entry fields, the `correction-kind` set, the `cause` enum, and the write-ownership matrix — is the schema owner's: **`combat-log-governance`**.
 
-**Resolution order** (orchestrator, per role): cache hit (recorded + installed) → live resolve + record → SDD default + record → `needs-input` once.
+**Resolution order** (orchestrator, per role): cache hit (recorded + installed) → live resolve + record → SDD default + record → `needs-input` once → hard-fail with a blocker if no producer (not even an SDD default) can be resolved.
 
 **`validate-spec` checks:**
 - `produced-by` entries are well-formed plugin-qualified names; a malformed entry **fails the gate** (a structural error — not valid provenance at all, unlike an unavailable-but-valid entry, which is only flagged);
 - an entry whose plugin is **not installed** is **flagged, not blocked** (it is valid history);
 - the `domain-plugin` map, if present, is migrated into `produced-by` (rewrite-on-encounter), then dropped;
 - a contested role with **no cache** **fails the gate closed**, deferring to `create-spec` — the gate never asks for or writes the producer choice. Symmetric across the spec and impl gates;
+- a role with **no resolvable producer** — not a plugin producer and not even an SDD default — **fails closed with a blocker**; no `produced-by` entry and no sentinel is written (a structural error, the same class as a malformed entry);
 - a `correction` entry in `log` whose `cause` is absent or **off-enum** **fails the gate** (a structural error — it breaks cross-mission matchability), per `combat-log-governance`; a well-formed `log` does not fail.
 
 **Gherkin scenarios:** [sdd-provenance.feature](./sdd-provenance.feature)
@@ -203,7 +207,7 @@ log:
 
 - `combat-log-governance` (SDD plugin skill) — **the schema owner** for the two-face combat log: entry shapes, the `correction-kind` set, the matchable `cause` enum, the strategy slot, and log write-ownership. This spec references it; it does not duplicate it.
 - `artifacts/specs/sdd-orchestrator/spec.md` — the discovery/registry model and the `domain-plugin` map this generalizes and retires
-- `artifacts/specs/sdd-gate-autonomy/spec.md` — `approval`, the judging twin; the historical-vs-live split; the inline-producer gap this makes visible
+- `artifacts/specs/sdd-gate-autonomy/spec.md` — `approval`, the judging twin; the historical-vs-live split; the inline-producer gap this resolves by always resolving a real producer (plugin or SDD default) and hard-failing when none can be resolved
 - `artifacts/specs/aces-plugin/spec.md` — the consumer that measures quality by producer, the motivating use case
 - `artifacts/specs/motive-model/spec.md` — `producer ≠ judge`, here captured as data; the doctrine-loop Scanner that reads the log as its sole input
 
