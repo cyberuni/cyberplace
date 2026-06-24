@@ -98,6 +98,7 @@ Formation never decides what to build (Campaign/Director) and never grows the pr
 | **Dedupe overlap** | two specs cover overlapping behavior | the overlapping specs | (future `dedupe-specs` station) merge/dedupe so each behavior has one home |
 | **Keep the graph sound** | the rendered graph is stale vs the `blocked-by` edges, or a cycle appears | the corpus's `blocked-by` edges | run `render-spec-graph` → `graph.md` back in sync, cycles surfaced |
 | **Reconcile a contradiction** | two governances or two specs contradict | the contradicting artifacts | a reconciliation (future `dedupe-specs` / manual) so the corpus holds no internal contradiction |
+| **Stay altitude-disciplined** | a request that belongs to another loop (a build/deprecate proposal, a process lesson), or a per-spec gate structural check | the misrouted request, or the spec at its gate | acts corpus-wide; produces no out-of-loop decision and routes the request to the owning loop (Campaign / Doctrine); does not run as the per-spec gate check |
 
 ---
 
