@@ -26,7 +26,7 @@ SDD owns the spec-driven workflow and runs the loop. The **Operator** is its lea
 
 The architecture has four moving parts:
 
-1. **The Operator** (`sdd-operator`) — the line officer of an engagement. It resolves plugin delegates from the registry's domain coverage, dispatches each act, and synthesizes results. It does discovery and dispatch itself; there is no separate dispatcher agent. It has **no user channel** — it escalates through the relay only at a gate or a scrub.
+1. **The Operator** (`sdd-operator`) — the line officer of a mission. It resolves plugin delegates from the registry's domain coverage, dispatches each act, and synthesizes results. It does discovery and dispatch itself; there is no separate dispatcher agent. It has **no user channel** — it escalates through the relay only at a gate or a scrub.
 2. **The production chain — five co-delivered artifacts, three forward producers, two judges.** The Operator dispatches whichever producers are declared and gathers the judges at the two gates.
 3. **Default delegates** — `sdd-scenario-writer` (spec-producer), `sdd-planner` (plan-producer), `sdd-spec-judge` (spec-judge), `sdd-implementer` (impl-judge), and the generic Builder (impl-producer, no agent) — the built-in fallbacks, invoked only when no plugin fills the role.
 4. **Plugin delegates** — each its own agent definition (own model/effort/context). A full domain plugin fills every producer and judge; thin domains let roles degenerate.
@@ -82,12 +82,12 @@ flowchart LR
 
 ## The fleet metaphor
 
-SDD carries a running metaphor that surfaces in the prompts. The human is **fleet command** (the **Conductor** / **Council**): they hold motive and accountability, and theirs are the only hands on ratification and the kill switch. The **Operator** is the line officer of one **engagement** (a spec): it runs one autonomous **segment**, projects the production-chain roles, injects its stations, and reports up the **relay** — the only line to command.
+SDD carries a running metaphor that surfaces in the prompts. The human is **fleet command** (the **Conductor** / **Council**): they hold motive and accountability, and theirs are the only hands on ratification and the kill switch. The **Operator** is the line officer of one **mission** (one spec's full lifecycle): it runs one autonomous **segment**, projects the production-chain roles, injects its stations, and reports up the **relay** — the only line to command.
 
 | Fleet term | Real concept |
 |---|---|
 | **Engagement** | a spec — one committed objective |
-| **Sealed orders** | the **frozen** `.feature` — the contract cannot change mid-engagement; changing it needs a ratified re-open (a freeze-break) |
+| **Sealed orders** | the **frozen** `.feature` — the contract cannot change mid-mission; changing it needs a ratified re-open (a freeze-break) |
 | **The gate** | a backward-face verdict to advance status; command ratifies, a delegate may self-assert only within its **leash** |
 | **Scrub** | a kill decision (`deprecated`) |
 | **The leash** | how far the Operator may act alone before signaling command — derived per gate from reversibility, blast radius, novelty, confidence |

@@ -17,7 +17,7 @@ approval: {}
 
 ## What
 
-The **Formation loop** (descriptively, the **Structure loop**) — one of the **three outer loops** of the SDD model, owned by the **Architect** actor and worn as the fleet role **Warden**. Where the inner **Mission loop** wins one engagement, the Formation loop keeps the fleet's **order of battle** coherent: it is the Warden's continuous act across the **whole corpus** of specs, asking one question and only one — **is what we have organized right?**
+The **Formation loop** (descriptively, the **Structure loop**) — one of the **three outer loops** of the SDD model, owned by the **Architect** actor and worn as the fleet role **Warden**. Where the inner **Mission loop** wins one mission, the Formation loop keeps the fleet's **order of battle** coherent: it is the Warden's continuous act across the **whole corpus** of specs, asking one question and only one — **is what we have organized right?**
 
 It acts on the corpus's *structure*, not its content:
 
@@ -49,7 +49,7 @@ What it is **not**: it does **not** decide *what* to build or deprecate (that is
 
 ## Why
 
-A growing corpus of specs decays structurally if no one tends it. Two specs drift into covering the same behavior; one spec absorbs three behaviors and becomes expensive to re-judge; the rendered graph falls out of sync with the `blocked-by` edges; two governances quietly contradict each other. None of these are *Mission* problems (no single engagement is wrong) and none are *Campaign* problems (the right features may all be present) — they are **structure** problems, and the model names a distinct loop and actor for them so they are actually tended rather than ignored.
+A growing corpus of specs decays structurally if no one tends it. Two specs drift into covering the same behavior; one spec absorbs three behaviors and becomes expensive to re-judge; the rendered graph falls out of sync with the `blocked-by` edges; two governances quietly contradict each other. None of these are *Mission* problems (no single mission is wrong) and none are *Campaign* problems (the right features may all be present) — they are **structure** problems, and the model names a distinct loop and actor for them so they are actually tended rather than ignored.
 
 ---
 
@@ -66,7 +66,7 @@ This is the load-bearing distinction of this spec. The Architect appears in **tw
 | Question | is the corpus **organized** right? | does **this spec** fit structurally? |
 | Acts | dedupe, split, graph soundness, reconcile | a single approve/pause/reject structural verdict |
 
-The Formation loop **does not fire** as the per-spec structural check at a gate, and the per-spec gate structural judgment **is not** the Formation loop. They share the Architect's *concern* (structural fit) but operate at different altitudes. Formation reads the corpus and reshapes it between missions; the gate judges one engagement's contract in the moment.
+The Formation loop **does not fire** as the per-spec structural check at a gate, and the per-spec gate structural judgment **is not** the Formation loop. They share the Architect's *concern* (structural fit) but operate at different altitudes. Formation reads the corpus and reshapes it between missions; the gate judges one mission's contract in the moment.
 
 ### Formation runs through stations; one station is not yet built
 
@@ -118,7 +118,7 @@ Formation never decides what to build (Campaign/Director) and never grows the pr
 
 - `artifacts/specs/motive-model/spec.md` — the Architect actor and the three outer loops; this spec is the **Structure** one
 - `artifacts/specs/sdd-doctrine-loop/spec.md` — the sibling outer loop (Strategist / Process)
-- `artifacts/specs/sdd-mission-loop/spec.md` — the inner loop, for contrast (one engagement vs the whole corpus)
+- `artifacts/specs/sdd-mission-loop/spec.md` — the inner loop, for contrast (one mission vs the whole corpus)
 - `artifacts/specs/sdd-spec-graph/spec.md` — the spec-DAG the `render-spec-graph` station re-syncs
 - `plugins/sdd/skills/split-spec` — the station that decomposes a monolith
 - `plugins/sdd/skills/render-spec-graph` — the station that re-renders the graph from `blocked-by` edges
