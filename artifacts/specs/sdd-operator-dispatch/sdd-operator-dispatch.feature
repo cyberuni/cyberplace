@@ -100,11 +100,11 @@ Feature: SDD Operator — Production-Chain Dispatch
     And aces-implementer as the impl-judge runs the evals rather than authoring them
     And independence holds because the evals are anchored to the frozen .feature and run by a separate runner
 
-  Scenario: Degenerate roles fall back without a plugin agent
-    Given the "guide" domain declares no impl-producer and a static spec-judge
+  Scenario: Degenerate impl roles fall back without a plugin agent
+    Given the "guide" domain declares no impl-producer and no plugin spec-judge
     When sdd-operator runs the full loop
     Then impl-producing is done by the generic Builder with no agent
-    And spec-judging runs as static criteria with no judge agent
+    And spec-judging is performed by the projected sdd:sdd-spec-judge default delegate
 
   Scenario: A plugin author reads the interface from the operator and default delegates
     Given a plugin author wants to implement a new impl-judge delegate
