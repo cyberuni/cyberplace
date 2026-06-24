@@ -1,5 +1,5 @@
 ---
-status: implemented
+status: draft
 type: project
 blocked-by: []
 aligned: true
@@ -10,8 +10,22 @@ approval:
   impl:
     verdict: approve
     by: unional
+reopened:
+  - gate: spec
+    from: implemented
+    to: draft
+    by: unional
+    why: re-home the loop features as subtasks and reconcile sdd-operator project→feature (graph composition fix)
 subtasks:
   - sdd-operator
+  - sdd-mission-loop
+  - sdd-doctrine-loop
+  - sdd-campaign-loop
+  - sdd-formation-loop
+  - sdd-forge-loop
+  - sdd-inject-channel
+  - sdd-state-legality
+  - sdd-stop-provenance
   - sdd-contract-registry
   - sdd-escape-hatch
   - sdd-gate-autonomy

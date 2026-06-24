@@ -1,6 +1,6 @@
 ---
 status: draft
-type: project
+type: feature
 blocked-by: []
 aligned: false
 approval:
