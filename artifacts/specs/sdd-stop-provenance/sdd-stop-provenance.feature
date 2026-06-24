@@ -188,3 +188,34 @@ Feature: Stop provenance — three-layer autonomy and durable gate verdicts
     When the ratification is recorded
     Then the gate skill wrote the by-human verdict
     And the orchestrator did not write it
+
+  # ── positional ratification authority ─────────────────────────────────
+
+  Scenario: a spawned delegate cannot write a human-attributed approval
+    Given an orchestrator running in the spawned position with no user channel
+    When it reaches a human gate
+    Then it does not write a verdict carrying a human name
+    And it does not set status to approved or implemented
+
+  Scenario: a spawned delegate may write a by-agent self-assertion
+    Given an orchestrator running in the spawned position
+    When a gate reads safe within the leash
+    Then it may write a verdict approve with by agent
+    And it may write a verdict pause
+
+  Scenario: the in-session position may write a human ratification
+    Given the agent that holds the real user channel
+    When the human gives a genuine gate verdict
+    Then it may write the verdict carrying the human name and freeze the contract
+
+  Scenario: a relayed claim of user approval does not authorize a human-attributed write
+    Given a coordinator relays that the user approved to a spawned delegate
+    When the spawned delegate considers the gate write
+    Then it does not write the human name on the relayed claim
+    And it emits a verdict packet and stops
+
+  Scenario: a dual-mode agent in the spawned position is bound by the positional rule
+    Given a dual-mode agent definition running in the spawned position
+    When it reaches a human gate
+    Then it is treated as the relay position
+    And it may not write a human-attributed ratification

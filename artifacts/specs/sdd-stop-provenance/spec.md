@@ -120,6 +120,8 @@ Key properties:
 
 **Who writes it.** The **orchestrator** writes an `approve`/`by: agent` (self-assertion) or a `pause` verdict during **synthesis** — the same boundary by which it writes `aligned`, markers, and (today) the `approved-by` self-assertion. The **gate skill** writes a human ratification (`verdict: approve, by: <name>`) at the gate. No producer writes `approval`.
 
+**Ratification authority is positional, not definitional.** The authority to write a **human-attributed** gate action — `status → approved | implemented`, a verdict carrying a human name (`approval.<gate>: { verdict: approve | reject, by: <name> }`), and the **freeze** transition — belongs to the **in-session position**: the agent that holds the real user channel. A **spawned delegate** (the Operator) has no user channel and may write **only** `by: agent` self-assertions and `pause` halts; on reaching a human gate it emits a **verdict packet** (`STATUS: needs-input`) and stops. It never writes a human ratification, **even when a coordinator relays "the user approved"** — a relayed claim of user approval is not user confirmation. This is **positional**: a **dual-mode** agent definition running in the spawned position is still in the relay position and is bound by this rule; the same definition run in-session may perform the write. In practice the human ratification is an in-session act that reconciles the review queue — the spawned delegate's job ends at the verdict packet.
+
 **Pause-to-pass overwrites in place.** When a paused gate is later passed, the entry's `verdict` flips `pause` → `approve` **in place** — the `by`, `cause`, and `why` are rewritten to the passing verdict and the pause reasoning is **not** preserved in frontmatter. `approval` is a **current-state** map: it records the gate's *present* verdict, not a history of every verdict it held. The superseded pause reasoning lives in git history, like every other transient frontmatter fact. (No stopped-then-passed trail is kept inline.)
 
 ### State legality (enforced by validate-spec)
@@ -146,7 +148,7 @@ This spec **renames `approved-by` → `approval`** and changes its shape (adds `
 |---|---|
 | `sdd-gate-autonomy/spec.md` | retire `approved-by`; describe the `approval`/`verdict` map; move the leash to layer 1 |
 | `sdd-provenance/spec.md` | update the `produced-by` ↔ `approved-by` twin framing to `approval` |
-| `ownership-governance` | rename the `approved-by` write-ownership rows to `approval`; add the `pause`/orchestrator row |
+| `ownership-governance` | rename the `approved-by` write-ownership rows to `approval`; add the `pause`/orchestrator row; add the positional-authority rule (human-attributed gate writes reserved to the in-session position; spawned delegates emit a verdict packet and stop) |
 | `lifecycle-governance` | update the frontmatter schema block (`approved-by` → `approval` with `verdict`) |
 | `gate-validation-governance` | replace the `approved-by` legal-tuple rows with the `approval`/`verdict` rules |
 | `check-spec-state.mts` | the mechanical rule changes above |
