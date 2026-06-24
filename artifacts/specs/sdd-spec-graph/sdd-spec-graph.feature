@@ -78,3 +78,18 @@ Feature: Render the spec DAG to graph.md
     When the renderer runs
     Then graph.md has a node table row for "sdd/sdd-skill"
     And graph.md contains the edge "sdd-plugin --> sdd/sdd-skill"
+
+  Scenario: a non-default specs root is rendered with --root
+    Given specs live under a non-default directory "build/specs"
+    When the renderer runs with --root "build/specs"
+    Then graph.md is rendered from the specs under "build/specs"
+    And graph.md is written to "build/specs/graph.md"
+
+  # ── agent fallback ─────────────────────────────────────────────────────
+
+  Scenario: the agent fallback produces the same graph.md format
+    Given node is unavailable
+    And a fixed set of specs
+    When the renderer is invoked
+    Then the agent fallback produces graph.md with the same Mermaid and node-table structure
+    And the agent fallback produces byte-identical graph.md for the same edges

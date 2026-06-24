@@ -1,9 +1,37 @@
 ---
-status: draft
+status: approved
 type: feature
 blocked-by:
   - sdd-plugin
-aligned: false
+aligned: true
+approval:
+  spec:
+    verdict: approve
+    by: unional
+produced-by:
+  spec-producer: sdd:sdd-scenario-writer
+  spec-judge: sdd:sdd-spec-judge
+log:
+  - seq: 1
+    kind: report
+    role: spec-producer
+    agent: sdd:sdd-scenario-writer
+    outcome: pass
+  - seq: 2
+    kind: report
+    role: spec-judge
+    agent: sdd:sdd-spec-judge
+    outcome: pass
+  - seq: 3
+    kind: report
+    role: spec-producer
+    agent: sdd:sdd-scenario-writer
+    outcome: pass
+  - seq: 4
+    kind: report
+    role: spec-judge
+    agent: sdd:sdd-spec-judge
+    outcome: pass
 ---
 
 # Spec Graph Renderer
@@ -16,7 +44,7 @@ An SDD capability that renders the **spec DAG** to a derived `graph.md`. It read
 
 The source of truth is the `blocked-by` field in each spec (see the *spec DAG* in `sdd-plugin/spec.md`); `graph.md` is a **derived view** that must never be hand-edited.
 
-It ships as a **non-user-invocable SDD skill** — `render-spec-graph` — with a self-contained `.mts` script in its `scripts/` folder. The script is deterministic and runs on plain `node` (≥ 23.6, native TypeScript type-stripping; no `tsx`, no `npx`, no dependencies). When `node` is unavailable, an agent fallback renders the same format by reading the specs directly — the same dual-mode pattern as `sdd-spec-judge`.
+It ships as a **non-user-invocable SDD skill** — `render-spec-graph` — with a self-contained `.mts` script in its `scripts/` folder. The script is deterministic and runs on plain `node` (≥ 23.6, native TypeScript type-stripping; v24+ has it on by default with no flag; no `tsx`, no `npx`, no dependencies). When `node` is unavailable, an agent fallback renders the same format by reading the specs directly — the same dual-mode pattern as `sdd-spec-judge`.
 
 ```mermaid
 flowchart LR
@@ -37,6 +65,30 @@ The renderer also makes the DAG's invariants enforceable: a cycle in `blocked-by
 
 ---
 
+## Use Cases
+
+Four coarse-grained entry points invoke the renderer. Every `.feature` scenario verifies at least one of them.
+
+| # | Use case | Trigger | Inputs | Outcome |
+|---|---|---|---|---|
+| **UC1** | CI staleness check | CI / pre-commit runs the renderer with `--check` | specs root + committed `graph.md` | exit 0 when fresh, exit 1 when stale or missing; writes nothing |
+| **UC2** | Manual render | an author or operator runs the renderer in default write mode | specs root | `graph.md` written deterministically with a Mermaid diagram and a node table |
+| **UC3** | Agent-fallback render | the renderer is needed but `node` is unavailable | the specs read directly by an agent | the same `graph.md` format produced without the script — the dual-mode floor |
+| **UC4** | Exported-function reuse | `node:test` or a future caller imports the script's exported functions | per-function inputs — frontmatter text, root dir, node list | the documented return contracts of `parseFrontmatter` / `collectSpecs` / `detectCycle` / `renderGraph` |
+
+### Scenario mapping
+
+Each `.feature` scenario is mapped to the use case(s) it verifies; every scenario appears at least once.
+
+| Use case | Verifying scenarios |
+|---|---|
+| **UC1 — CI staleness check** | *check mode passes when graph.md is current*; *check mode fails when graph.md is stale*; *check mode fails when graph.md is missing*; *a non-default specs root is rendered with --root* |
+| **UC2 — Manual render** | *a blocked-by edge becomes a graph edge*; *a spec with no edges appears as a bare node*; *multiple blockers produce one edge each*; *the node table lists slug, blocked-by, and status*; *output is deterministic across runs*; *a cycle is rejected*; *a folder without spec.md is ignored*; *a nested spec uses its relative path as the node slug*; *a non-default specs root is rendered with --root* |
+| **UC3 — Agent-fallback render** | *a blocked-by edge becomes a graph edge*; *the node table lists slug, blocked-by, and status*; *output is deterministic across runs*; *the agent fallback produces the same graph.md format* |
+| **UC4 — Exported-function reuse** | *frontmatter blocked-by is parsed in every form*; *a cycle is rejected*; *a folder without spec.md is ignored*; *a nested spec uses its relative path as the node slug* |
+
+---
+
 ## Design decisions
 
 ### Lives in SDD, not universal-plugin (for now)
@@ -49,7 +101,7 @@ The capability is delivered as a non-user-invocable skill carrying its own `scri
 
 ### Native node, no tsx
 
-Scripts are authored in `.mts` and run with plain `node` (v24 strips TypeScript types natively). No `tsx`, no build step, no third-party runtime. Unit tests use the built-in `node:test` runner (`node --test`), so the skill carries zero test-framework dependency.
+Scripts are authored in `.mts` and run with plain `node` (≥ 23.6 strips TypeScript types natively; v24+ has it on by default, no flag). No `tsx`, no build step, no third-party runtime. Unit tests use the built-in `node:test` runner (`node --test`), so the skill carries zero test-framework dependency.
 
 ### Deterministic output
 
