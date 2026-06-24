@@ -3,10 +3,12 @@ status: implemented
 type: project
 blocked-by: []
 aligned: true
-approved-by:
+approval:
   spec:
+    verdict: approve
     by: unional
   impl:
+    verdict: approve
     by: unional
 subtasks:
   - sdd-orchestrator

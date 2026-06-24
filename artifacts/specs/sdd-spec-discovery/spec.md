@@ -4,10 +4,12 @@ type: feature
 aligned: true
 blocked-by:
   - sdd-plugin
-approved-by:
+approval:
   spec:
+    verdict: approve
     by: unional
   impl:
+    verdict: approve
     by: unional
 ---
 

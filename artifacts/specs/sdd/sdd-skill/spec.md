@@ -2,10 +2,12 @@
 status: implemented
 type: feature
 aligned: true
-approved-by:
+approval:
   spec:
+    verdict: approve
     by: unional
   impl:
+    verdict: approve
     by: unional
 ---
 

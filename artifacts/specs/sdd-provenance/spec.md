@@ -5,8 +5,9 @@ blocked-by:
   - sdd-orchestrator
   - sdd-plugin
 aligned: true
-approved-by:
+approval:
   spec:
+    verdict: approve
     by: unional
 ---
 
