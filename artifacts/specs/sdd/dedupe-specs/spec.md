@@ -24,7 +24,7 @@ As a spec set grows, concerns drift into more than one spec: two specs end up de
 
 ### Owns the overlap analysis, not authoring or status
 
-`dedupe-specs` reads the candidate specs and produces a **dedupe plan**: the overlapping scope, the surviving spec, the specs to collapse into it, and the `blocked-by` edges to rewrite. It does not scaffold or rewrite `spec.md`/`.feature` files (that is `create-spec`), does not write `status`/`approved-by` (that is the gate skill), and does not delete or deprecate specs itself (that is the management/deprecation path). It analyzes and proposes; downstream skills act.
+`dedupe-specs` reads the candidate specs and produces a **dedupe plan**: the overlapping scope, the surviving spec, the specs to collapse into it, and the `blocked-by` edges to rewrite. It does not scaffold or rewrite `spec.md`/`.feature` files (that is `create-spec`), does not write `status`/`approval` (that is the gate skill), and does not delete or deprecate specs itself (that is the management/deprecation path). It analyzes and proposes; downstream skills act.
 
 ### Invocable by the user and by the gateway
 
