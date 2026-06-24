@@ -2,25 +2,7 @@
 status: draft
 type: feature
 blocked-by: []
-aligned: false
-approval:
-  spec:
-    verdict: approve
-    by: unional
-  impl:
-    verdict: approve
-    by: unional
-reopened:
-  - gate: spec
-    from: implemented
-    to: draft
-    by: unional
-    why: propagate the no-resolvable-producer hard-fail rule from sdd-provenance/combat-log-governance so the resolver contract does not drift
-  - gate: spec
-    from: implemented
-    to: draft
-    by: unional
-    why: decompose the orchestrator monolith + metaphor-align + rename to sdd-operator
+aligned: true
 subtasks:
   - sdd-operator-resolution
   - sdd-operator-dispatch
