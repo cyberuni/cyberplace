@@ -93,6 +93,12 @@ Feature: Production provenance
     And it fails the spec
     And an unavailable-but-valid entry in the same spec does not fail the spec
 
+  Scenario: validate-spec blocks a role with no resolvable producer
+    Given a role has no resolvable producer, not even an SDD default
+    When validate-spec runs
+    Then it flags the unresolvable producer
+    And it fails the spec
+
   Scenario: a legacy domain-plugin map is migrated into produced-by
     Given a spec carries the old domain-plugin map
     When the orchestrator next dispatches for that spec
