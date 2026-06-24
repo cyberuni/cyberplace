@@ -6,7 +6,7 @@ blocked-by:
   - sdd-provenance
   - sdd-plugin
 aligned: false
-approved-by: {}
+approval: {}
 ---
 
 # SDD Doctrine Loop — the Strategist outer loop

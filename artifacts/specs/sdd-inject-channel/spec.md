@@ -5,7 +5,7 @@ blocked-by:
   - sdd-orchestrator
   - sdd-plugin
 aligned: false
-approved-by: {}
+approval: {}
 ---
 
 # SDD Inject Channel — zoom into a single inner-loop agent

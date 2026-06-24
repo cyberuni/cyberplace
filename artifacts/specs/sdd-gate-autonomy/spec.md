@@ -5,12 +5,13 @@ blocked-by:
   - sdd-orchestrator
   - sdd-plugin
 aligned: true
-approved-by:
+approval:
   spec:
+    verdict: approve
     by: unional
   impl:
+    verdict: approve
     by: agent
-    leash: auto-all
     why:
       reversibility: "safe — tracked markdown + one test-fixture string; cheap git revert; no runtime, schema, or external effect"
       blast-radius: "safe — mechanical rename of a spec-gate-ratified token plus one additive doc subsection across this spec's documented impl surfaces; the sdd-mission-loop frontmatter touch is a required free-text value migration, not a contract change; no code logic/registry/API altered; pnpm verify green"

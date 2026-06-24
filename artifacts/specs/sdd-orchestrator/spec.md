@@ -3,10 +3,12 @@ status: implemented
 type: feature
 blocked-by: []
 aligned: true
-approved-by:
+approval:
   spec:
+    verdict: approve
     by: unional
   impl:
+    verdict: approve
     by: unional
 ---
 
