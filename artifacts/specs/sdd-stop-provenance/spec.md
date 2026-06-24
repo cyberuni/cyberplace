@@ -3,7 +3,7 @@ status: implemented
 type: feature
 blocked-by:
   - sdd-gate-autonomy
-  - sdd-orchestrator
+  - sdd-operator
   - sdd-plugin
 aligned: true
 approval:

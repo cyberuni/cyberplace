@@ -2,7 +2,7 @@
 status: draft
 type: feature
 blocked-by:
-  - sdd-orchestrator
+  - sdd-operator
 aligned: false
 ---
 

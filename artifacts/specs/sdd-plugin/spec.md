@@ -11,7 +11,7 @@ approval:
     verdict: approve
     by: unional
 subtasks:
-  - sdd-orchestrator
+  - sdd-operator
   - sdd-contract-registry
   - sdd-escape-hatch
   - sdd-gate-autonomy
