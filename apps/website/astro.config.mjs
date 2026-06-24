@@ -38,6 +38,7 @@ export default defineConfig({
 					items: [
 						{ label: 'Overview', slug: 'sdd/overview' },
 						{ label: 'Control Flow', slug: 'sdd/control-flow' },
+						{ label: 'The Fleet Metaphor', slug: 'sdd/metaphor' },
 					],
 				},
 				{
