@@ -73,6 +73,8 @@ export default defineConfig({
 						{ label: 'Gateway Skill', slug: 'concepts/gateway-skill' },
 						{ label: 'Spec-Driven Development', slug: 'concepts/spec-driven-development' },
 						{ label: 'Test-Driven Development', slug: 'concepts/test-driven-development' },
+						{ label: 'Use Case', slug: 'concepts/use-case' },
+						{ label: 'Scenario', slug: 'concepts/scenario' },
 					],
 				},
 				{
