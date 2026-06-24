@@ -44,13 +44,32 @@ Today SDD learns nothing across products. The orchestrator records a producer on
 
 The Scanner sits **above any single spec** — in the Bunker — because doctrine serves every spec (and every tool), not one mission. It is **not** a step inside the Operator/orchestrator: that flow is per-segment, and a per-segment outer loop is exactly the premature codification the model forbids.
 
+The Scanner is its **own subagent** running the doctrine loop — exactly parallel to the Operator running the mission loop. Both are delegates: the Operator delegate runs the middle loop per segment; the Scanner delegate runs the outer loop at lifecycle granularity.
+
 ### It watches terminal transitions, it does not write them
 
 The Scanner observes the transitions written elsewhere — `→ implemented` (by `validate-spec` at the impl gate) and `→ deprecated` (by the deprecation path). It never writes lifecycle status; it reacts to it.
 
 ### Detection and drafting by the delegate; keep-or-cut by the human
 
-The Scanner drafts **strategy** cheaply and continuously and records it to the **combat log** (the provenance record from `sdd-provenance`: `produced-by` + `approved-by`). It **accumulates** strategy and surfaces it **episodically** — at a retro, on demand, or when a threshold piles up — never synchronously blocking a mission. **No strategy enters the corpus without the Council's ratification.**
+The Scanner drafts **strategy** cheaply and continuously and records it to the **combat log** (the provenance record from `sdd-provenance`: `produced-by` + `approval`). It **accumulates** strategy and surfaces it **episodically** — at a retro, on demand, or when a threshold piles up — never synchronously blocking a mission. **No strategy enters the corpus without the Council's ratification.**
+
+### Two history channels: combat log (contract) vs raw transcripts (enrichment)
+
+The Scanner reads **persisted artifacts post-hoc** — it never accesses live subagent context. (Subagents only return their final message upward, and the Scanner always fires *after* a mission ends, so post-hoc file reading is the right model.) There are two channels, and only one is the contract:
+
+| Channel | Role | Properties |
+|---|---|---|
+| **Combat log** | **PRIMARY input — the contract** | Structured, durable, harness-agnostic (per `sdd-provenance`). Strategy is drafted from it. |
+| **Raw `.jsonl` transcripts** | **OPTIONAL enrichment** | Per-session / per-subagent files on disk, harness-specific. Adds detail but is **never** the contract. |
+
+Strategy is draftable from the combat log **alone** — raw transcripts are additive, never required. The Scanner depending on a harness-specific transcript format would couple doctrine to a harness; it must not.
+
+### Recurring-pattern detection is contract-via-provenance
+
+Recurring-pattern detection (use case 4) **requires the combat log to record corrections-with-cause in a matchable form** — so the Scanner can read corrections across N specs' combat logs, group them, and count. This is a Scanner **input requirement on the combat log**, i.e. a dependency on `sdd-provenance` (already in `blocked-by`).
+
+This spec declares only **what the Scanner needs to read**. It does **not** design the combat-log schema; that expansion belongs to `sdd-provenance` as a separate revision.
 
 ### Strategy → doctrine → corpus
 
@@ -72,6 +91,20 @@ Beyond codifying what works, the Scanner detects **drift / staleness** — a now
 
 ---
 
+## Use cases
+
+A **use case** is an entry-point: a trigger plus its inputs and intent — coarse, and it lives here in `spec.md`. A **scenario** is a boolean Given/When/Then assertion — fine, and it lives in the `.feature`. One use case maps to one-or-more scenarios: the use cases make the trigger→input mapping explicit, while the `.feature` stays the boolean acceptance layer.
+
+| Use case | Trigger | Inputs | Intent |
+|---|---|---|---|
+| **Spec ships** | `→ implemented` (the impl gate writes it) | the finished spec + its combat log (**PRIMARY**) + *[optional]* raw session/subagent transcripts (enrichment) | draft strategy from a successful mission |
+| **Spec killed** | `→ deprecated` (the deprecation path writes it) | the dead spec + why it failed, from its combat log (**PRIMARY**) + *[optional]* raw transcripts | draft strategy from the failure |
+| **Milestone retro** | a human-held retro event | the set of specs completed in the milestone (their combat logs) | draft strategy across the milestone |
+| **Recurring pattern** | the same correction recurs across missions | corrections-with-cause read across N specs' combat logs, grouped and counted | draft strategy to codify the pattern |
+| **Drift / staleness** | a now-false convention or a governance contradiction detected | the corpus (conventions, governances) | draft strategy to prune |
+
+---
+
 ## Command surface / API
 
 | Concern | Behavior |
@@ -86,7 +119,7 @@ Beyond codifying what works, the Scanner detects **drift / staleness** — a now
 ## Related
 
 - `artifacts/specs/motive-model/spec.md` — "Strategist and the loop"; the three loops; this spec is the **outer** one
-- `artifacts/specs/sdd-provenance/spec.md` — the combat log (`produced-by` + `approved-by`) strategy is recorded to
+- `artifacts/specs/sdd-provenance/spec.md` — the combat log (`produced-by` + `approval`) strategy is recorded to
 - `artifacts/specs/sdd-orchestrator/spec.md` — the middle-loop Operator the Scanner sits above, not inside
 - `artifacts/specs/sdd-mission-loop/spec.md` — the middle loop, for contrast
 
