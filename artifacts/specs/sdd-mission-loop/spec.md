@@ -30,12 +30,12 @@ approval:
 
 ## What
 
-The **middle loop** — one spec's journey from `draft` to `approved` to `implemented`, across many tasks — is owned by a single coordinator: the **Operator** (the role filled today by `sdd-orchestrator`). The `sdd` gateway is a **thin relay**; `create-spec` and `validate-spec` are **stations the Operator runs**, never spawned as agent types. The Operator escalates to the human **Council** only at **gates** and **scrub** (kill).
+The **middle loop** — one spec's journey from `draft` to `approved` to `implemented`, across many tasks — is owned by a single coordinator: the **Operator** (the role filled today by `sdd-operator`). The `sdd` gateway is a **thin relay**; `create-spec` and `validate-spec` are **stations the Operator runs**, never spawned as agent types. The Operator escalates to the human **Council** only at **gates** and **scrub** (kill).
 
 ```mermaid
 flowchart LR
   council([Council · human]) <-->|answers / escalations| relay[sdd gateway · relay]
-  relay -->|spawns once| op[Operator · orchestrator]
+  relay -->|spawns once| op[Operator · operator]
   op -->|runs as stations| cs[create-spec]
   op -->|runs as stations| vs[validate-spec]
   op -->|dispatches| chain[producers · judges]
@@ -60,7 +60,7 @@ The result is that a router either fails outright, or bypasses the gate skill en
 
 ### The Operator owns the mission loop
 
-The coordinator (`sdd-orchestrator`, the **Operator**) owns the per-spec middle loop. It drives the production chain across segments and is the single agent the gateway spawns. The downstream skills (`create-spec`, `validate-spec`, `render-spec-graph`) are **stations the Operator runs**, not separately-spawned user-facing skills.
+The coordinator (`sdd-operator`, the **Operator**) owns the per-spec middle loop. It drives the production chain across segments and is the single agent the gateway spawns. The downstream skills (`create-spec`, `validate-spec`, `render-spec-graph`) are **stations the Operator runs**, not separately-spawned user-facing skills.
 
 ### The gateway is a thin relay
 
@@ -82,7 +82,7 @@ This spec changes *who is invoked how*, not *who writes what*. The gate station 
 
 | Thing | Mechanism |
 |---|---|
-| Operator (`sdd-orchestrator`) | **spawned** as a subagent, once per segment |
+| Operator (`sdd-operator`) | **spawned** as a subagent, once per segment |
 | `create-spec` / `validate-spec` / `render-spec-graph` | **run as stations** by the Operator / relay — never `subagent_type` |
 | User questions | returned by the Operator as `STATUS: needs-input`; asked by the **relay** |
 | Escalation to Council | only at **gates** (go/no-go) and **scrub** (kill) |
@@ -91,7 +91,7 @@ This spec changes *who is invoked how*, not *who writes what*. The gate station 
 
 ## Related
 
-- `artifacts/specs/sdd-orchestrator/spec.md` — the Operator (orchestrator) and the production-chain model this clarifies
+- `artifacts/specs/sdd-orchestrator/spec.md` — the Operator (operator) and the production-chain model this clarifies
 - `artifacts/specs/sdd/sdd-skill/spec.md` — the gateway skill whose delegation section this corrects (Revised at impl)
 - `artifacts/specs/sdd-inject-channel/spec.md` — the live channel into a single inner-loop agent, a sibling capability
 - `artifacts/specs/motive-model/spec.md` — the three-loop model; this spec owns the **middle** loop

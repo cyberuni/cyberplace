@@ -14,13 +14,13 @@ subtasks:
 
 ## What
 
-ACES (Agent Config Examination & Specification) is the **SDD domain plugin for agent configuration** — the skills, `AGENTS.md` sections, subagent definitions, governance files, and commands that shape how AI agents behave. It registers as an SDD plugin (`.agents/universal-plugin.json`) for the domains `skill`, `subagent`, `command`, and `agents-section`, and supplies the delegates the `sdd-orchestrator` invokes to drive the spec-driven loop over those domains.
+ACES (Agent Config Examination & Specification) is the **SDD domain plugin for agent configuration** — the skills, `AGENTS.md` sections, subagent definitions, governance files, and commands that shape how AI agents behave. It registers as an SDD plugin (`.agents/universal-plugin.json`) for the domains `skill`, `subagent`, `command`, and `agents-section`, and supplies the delegates the `sdd-operator` invokes to drive the spec-driven loop over those domains.
 
 Agent configuration arrives from many sources: files written for one harness (Claude Code, Cursor, Codex, Copilot), scattered across harness-specific folders, or authored in harness-specific syntax. ACES brings any agent configuration under discipline through two roles — the SDD production-chain delegates it provides, and the authoring/evaluation skills users invoke directly.
 
 ### SDD delegates (the production chain)
 
-ACES fills the SDD five-role production chain for its domains. The `sdd-orchestrator` resolves these from the registry and invokes them — ACES does not own the SDD loop or its `create-spec`/`validate-spec` skills:
+ACES fills the SDD five-role production chain for its domains. The `sdd-operator` resolves these from the registry and invokes them — ACES does not own the SDD loop or its `create-spec`/`validate-spec` skills:
 
 | SDD role | ACES delegate | What it produces / judges |
 |---|---|---|
@@ -72,7 +72,7 @@ Agent configuration has no type-checker, linter, or test runner. Silent regressi
 
 Code has CI. Agent configuration does not — until ACES.
 
-SDD is the natural fit: by registering as the SDD plugin for agent-configuration domains, ACES lets the `sdd-orchestrator` drive the same spec-driven loop used for code — produce a `spec.md` and boolean `.feature` (spec-producer), judge the contract (spec-judge), co-produce the artifact and its eval suite, and verify behavior against a golden set (impl-judge). ACES applies that discipline end-to-end to the agent configuration layer.
+SDD is the natural fit: by registering as the SDD plugin for agent-configuration domains, ACES lets the `sdd-operator` drive the same spec-driven loop used for code — produce a `spec.md` and boolean `.feature` (spec-producer), judge the contract (spec-judge), co-produce the artifact and its eval suite, and verify behavior against a golden set (impl-judge). ACES applies that discipline end-to-end to the agent configuration layer.
 
 ---
 
@@ -80,7 +80,7 @@ SDD is the natural fit: by registering as the SDD plugin for agent-configuration
 
 ### SDD plugin via registry delegates, not an owned loop
 
-ACES is a domain plugin, not an SDD reimplementation. The SDD `create-spec`/`validate-spec` skills and the `sdd-orchestrator` own the human-facing loop and the gate transitions; ACES only registers its delegates in `.agents/universal-plugin.json` and answers when the orchestrator dispatches a role. The direction is always SDD-orchestrator → ACES delegate. ACES does **not** own a `create-spec` skill, and it does not load SDD process governance to drive its own flow.
+ACES is a domain plugin, not an SDD reimplementation. The SDD `create-spec`/`validate-spec` skills and the `sdd-operator` own the human-facing loop and the gate transitions; ACES only registers its delegates in `.agents/universal-plugin.json` and answers when the operator dispatches a role. The direction is always SDD-operator → ACES delegate. ACES does **not** own a `create-spec` skill, and it does not load SDD process governance to drive its own flow.
 
 ### Canonical `.agents/` layout as source of truth
 
@@ -95,11 +95,11 @@ When `normalize`/`build` ship, two strategies will bridge canonical definitions 
 
 ### All surfaces operate on the same domain
 
-Authoring and evaluation operate on the same agent configuration artifacts, and the planned migration/build surfaces will too. One plugin covers the full lifecycle: define → (orchestrator-driven) spec → run → improve.
+Authoring and evaluation operate on the same agent configuration artifacts, and the planned migration/build surfaces will too. One plugin covers the full lifecycle: define → (operator-driven) spec → run → improve.
 
 ### SDD-first authoring
 
-`define-*` skills end with a suggested next step that routes into the SDD flow (run `sdd:create-spec`, which the orchestrator resolves to the ACES delegates). This nudges authors toward specing and evaling an artifact immediately after defining it, before any behavior has drifted.
+`define-*` skills end with a suggested next step that routes into the SDD flow (run `sdd:create-spec`, which the operator resolves to the ACES delegates). This nudges authors toward specing and evaling an artifact immediately after defining it, before any behavior has drifted.
 
 ### Governance loaded as harness skills, never `governance show`
 
@@ -137,7 +137,7 @@ Each `eval.md` sets a pass threshold (1–5). Different agent configurations war
 | `define-governance` | User wants to create or improve a governance file | Gathers requirements; scaffolds governance file; creates runtime symlinks; runs quality checks |
 | `init-aces` | User wants to register ACES as the SDD plugin for this project | Writes the ACES role-map entry into `.agents/universal-plugin.json` |
 
-The SDD `create-spec`/`validate-spec` skills (owned by the SDD plugin) drive contract creation and the gates; ACES supplies the delegates the orchestrator dispatches, so ACES ships no `create-spec` of its own.
+The SDD `create-spec`/`validate-spec` skills (owned by the SDD plugin) drive contract creation and the gates; ACES supplies the delegates the operator dispatches, so ACES ships no `create-spec` of its own.
 
 ### Evaluation skills
 

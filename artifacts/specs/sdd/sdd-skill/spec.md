@@ -73,11 +73,11 @@ The cross-spec **analysis** — finding which specs overlap, choosing split boun
 
 ### The gateway owns intent, not internal workflow control
 
-The gateway skill does not choose producer or judge roles, load artifact authoring governances, interpret lifecycle transitions, or enforce freeze policy. Those concerns belong to the orchestrator and the narrower authoring or validation skills beneath it. The gateway loads `sdd:lifecycle-governance` to recognize status meanings and route the work correctly, but does not own the state machine — it only needs enough knowledge to identify the user's requested SDD action and invoke the correct SDD entrypoint for that action.
+The gateway skill does not choose producer or judge roles, load artifact authoring governances, interpret lifecycle transitions, or enforce freeze policy. Those concerns belong to the operator and the narrower authoring or validation skills beneath it. The gateway loads `sdd:lifecycle-governance` to recognize status meanings and route the work correctly, but does not own the state machine — it only needs enough knowledge to identify the user's requested SDD action and invoke the correct SDD entrypoint for that action.
 
 ### The gateway is lightweight
 
-As a routing skill, `sdd` does only intake, lifecycle-state inspection, and route selection — no document authoring, no orchestrator invocations. This work requires minimal reasoning: it reads at most a small number of files conditionally, applies a routing table, and reports one next action. The skill should run on a small/fast model at low effort. Authoring and judging work happens in the skills invoked downstream.
+As a routing skill, `sdd` does only intake, lifecycle-state inspection, and route selection — no document authoring, no operator invocations. This work requires minimal reasoning: it reads at most a small number of files conditionally, applies a routing table, and reports one next action. The skill should run on a small/fast model at low effort. Authoring and judging work happens in the skills invoked downstream.
 
 ### Gateway delegates downstream work to a subagent
 
@@ -101,7 +101,7 @@ When `spec.md` is `draft`, the gateway inspects completion signals before offeri
 
 ### User questions stay at gateway and skill boundaries
 
-`sdd-orchestrator` has no user channel. The `sdd` skill handles gateway intake and user-facing clarification, then hands off into the SDD workflow. Deeper workflow questions belong to the narrower skills beneath the gateway.
+`sdd-operator` has no user channel. The `sdd` skill handles gateway intake and user-facing clarification, then hands off into the SDD workflow. Deeper workflow questions belong to the narrower skills beneath the gateway.
 
 ---
 

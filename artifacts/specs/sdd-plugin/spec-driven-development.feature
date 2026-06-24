@@ -20,12 +20,12 @@ Feature: Spec-Driven Development Plugin
 
   Scenario: spec-producers load the ownership governance split
     Given the SDD workflow is active
-    When sdd-orchestrator dispatches a spec-producer
+    When sdd-operator dispatches a spec-producer
     Then the spec-producer loads sdd:ownership-governance
 
   Scenario: spec-judges load the gate-validation governance split
     Given the SDD workflow is active
-    When sdd-orchestrator dispatches a spec-judge
+    When sdd-operator dispatches a spec-judge
     Then the spec-judge loads sdd:gate-validation-governance
 
   Scenario: sdd does not modify project files
@@ -60,20 +60,20 @@ Feature: Spec-Driven Development Plugin
     Given .agents/universal-plugin.json contains a quill entry with scenario-advisor and implementer keys
     When init-quill runs
     Then the quill entry is rewritten to the five-role map
-    And the orchestrator does not need to read the old shape
+    And the operator does not need to read the old shape
 
   Scenario: Runtime resolution does not read plan.md plugin assignments
     Given .agents/universal-plugin.json maps the "guide" domain to quill
     And plan.md contains an obsolete Plugin assignments table
-    When create-spec resumes the orchestrator for the "guide" domain
-    Then the orchestrator resolves delegates from .agents/universal-plugin.json
+    When create-spec resumes the operator for the "guide" domain
+    Then the operator resolves delegates from .agents/universal-plugin.json
     And it ignores plan.md for plugin resolution
 
   Scenario: Ambiguous domain coverage is resolved by the skill
     Given both aces and quill claim the "guide" domain
     And spec.md has no domain-plugin frontmatter choice
-    When create-spec invokes the orchestrator
-    Then the orchestrator returns STATUS needs-input with a batched domain choice question
+    When create-spec invokes the operator
+    Then the operator returns STATUS needs-input with a batched domain choice question
     And create-spec asks the user which plugin owns the domain
     And create-spec writes the answer to the domain-plugin frontmatter map
 
@@ -94,31 +94,31 @@ Feature: Spec-Driven Development Plugin
     Then create-spec asks for the missing Why and public surface in one batch
     And no spec files are written before the missing intent is supplied
 
-  Scenario: create-spec resumes the orchestrator after batched answers
+  Scenario: create-spec resumes the operator after batched answers
     Given create-spec received STATUS needs-input with two questions
     When the user answers both questions
-    Then create-spec invokes sdd-orchestrator again with those answers
-    And the orchestrator reconstructs workflow state from the artifact files
+    Then create-spec invokes sdd-operator again with those answers
+    And the operator reconstructs workflow state from the artifact files
 
   Scenario: Backfill explores existing implementation before writing a contract
     Given implementation code exists at src/auth with tests
     And no spec exists for the "auth" domain
     When the user runs create-spec in backfill mode for "auth"
-    Then create-spec asks the orchestrator to inspect source files, tests, and history
+    Then create-spec asks the operator to inspect source files, tests, and history
     And inferred What, Why, decisions, and surface are presented for user review
     And the spec-producer writes the contract only after the user confirms the inferred intent
 
   Scenario: Explore-mode implementation discoveries become content gaps
     Given specs/auth/spec.md has status draft
     And the impl-producer discovers the draft scenarios omit token refresh behavior
-    When the orchestrator returns from the explore segment
+    When the operator returns from the explore segment
     Then the discovery is represented as a CONTENT_GAPS item
     And an open marker is written in the owning artifact
     And create-spec surfaces the gap before the spec gate
 
   Scenario: Observations are surfaced without blocking the current spec
     Given a plan-producer returns an OBSERVATIONS item owned by architect
-    When create-spec receives the orchestrator result
+    When create-spec receives the operator result
     Then create-spec reports the observation separately from content gaps
     And the current spec is not blocked by that observation
 
@@ -128,7 +128,7 @@ Feature: Spec-Driven Development Plugin
     Given specs/auth/spec.md has status draft and aligned false
     And specs/auth/auth.feature exists
     When the user runs validate-spec targeting the spec gate
-    Then validate-spec invokes sdd-spec-judge through the orchestrator
+    Then validate-spec invokes sdd-spec-judge through the operator
     And it checks spec.md and auth.feature without requiring implementation artifacts
     And it reports whether the contract is ready for approval
 
@@ -200,7 +200,7 @@ Feature: Spec-Driven Development Plugin
     Given specs/auth/spec.md has status approved
     And specs/auth/auth.feature is frozen with three scenarios
     When validate-spec targets the impl gate
-    Then the orchestrator dispatches forward producers in implement mode
+    Then the operator dispatches forward producers in implement mode
     And the impl-producer writes implementation and verification derived from the frozen scenarios
 
   Scenario: Impl gate passes only when every frozen scenario passes

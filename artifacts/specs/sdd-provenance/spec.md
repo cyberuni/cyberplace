@@ -33,13 +33,13 @@ A model that records **which producer made each spec artifact**, in frontmatter,
 `produced-by` plays two roles that are deliberately kept separate:
 
 - a **historical record** — immutable provenance ("`aces-scenario-writer` wrote this `.feature`"), the data ACES needs to measure result quality and trace a bad artifact to its producer;
-- a **resume cache** — on a later run the orchestrator reuses the recorded producer if its plugin is still installed, so resume is decisive without re-asking.
+- a **resume cache** — on a later run the operator reuses the recorded producer if its plugin is still installed, so resume is decisive without re-asking.
 
 It never **blocks**: resolution is always live from the registry, so a recorded producer whose plugin was deleted degrades gracefully instead of stalling.
 
 ```mermaid
 flowchart LR
-  reg[universal-plugin.json<br/>live resolver] --> disp[orchestrator dispatch]
+  reg[universal-plugin.json<br/>live resolver] --> disp[operator dispatch]
   disp -->|invokes| prod[producer agent]
   prod --> art[artifact]
   disp -->|records| pby[produced-by.<role><br/>frontmatter, historical]
@@ -50,13 +50,13 @@ flowchart LR
 
 ## Why
 
-Today the orchestrator records a plugin choice **only on conflict** — the `domain-plugin` disambiguation map, written when two plugins claim the same domain. Every other production leaves no trace of who produced what. So:
+Today the operator records a plugin choice **only on conflict** — the `domain-plugin` disambiguation map, written when two plugins claim the same domain. Every other production leaves no trace of who produced what. So:
 
 - **Quality can't be attributed.** When a `.feature` is weak or an implementation drifts, there is no record of which producer made it — ACES cannot correlate outcomes to producers, which is the whole point of measuring agent-configuration quality.
 - **`producer ≠ judge` is in the model but not in the data.** `approval` will capture the judge; nothing captures the producer. Recording both closes the loop.
 - **Resume re-asks more than it should.** Because the plugin choice is only persisted on conflict, a resume can re-disambiguate; an always-on producer record makes resume decisive in every case.
 
-The cost is small and bounded: a few frontmatter lines per spec, written by the orchestrator as a side effect of the dispatch it already does.
+The cost is small and bounded: a few frontmatter lines per spec, written by the operator as a side effect of the dispatch it already does.
 
 ---
 
@@ -66,8 +66,8 @@ The cost is small and bounded: a few frontmatter lines per spec, written by the 
 
 | Field | Records | Keyed by | Written by |
 |---|---|---|---|
-| `produced-by` | who **made** each artifact | production role (`spec-producer`, `plan-producer`, `impl-producer`) | orchestrator, at dispatch |
-| `approval` | who **judged** each gate (`verdict` + `by` + `why`) | gate (`spec`, `impl`) | orchestrator (self-assert) / skill (ratify) |
+| `produced-by` | who **made** each artifact | production role (`spec-producer`, `plan-producer`, `impl-producer`) | operator, at dispatch |
+| `approval` | who **judged** each gate (`verdict` + `by` + `why`) | gate (`spec`, `impl`) | operator (self-assert) / skill (ratify) |
 
 Each `produced-by` value is the **plugin-qualified agent name** (`aces:aces-scenario-writer`, `quill:quill-doc-writer`, `sdd:sdd-scenario-writer` for a default). It is recorded **always**, on every production, regardless of whether any disambiguation happened.
 
@@ -82,7 +82,7 @@ This is the same split `sdd-gate-autonomy` draws for `approval.<gate>.why`: the 
 
 ### The record never blocks — resolution degrades gracefully
 
-On dispatch for a role, the orchestrator resolves the producer in this order:
+On dispatch for a role, the operator resolves the producer in this order:
 
 1. **Cache hit** — `produced-by[role]` is set **and** its plugin is installed → reuse it (decisive; no re-ask).
 2. **Live resolve** — otherwise match the spec's domain in the registry → plugin → role agent, and record the result into `produced-by[role]`.
@@ -100,7 +100,7 @@ Because the producer is now recorded on **every** production, the resume is deci
 
 ### Gates never resolve setup ambiguity — they fail closed
 
-Disambiguation is a **setup** act, owned by the producing path (`create-spec`); a **gate** (`validate-spec`) is **verdict-only**. Recording `produced-by` on every production normally makes a gate's resolution a cache hit, so the question never reaches a gate. But a spec authored **before** a second plugin existed can arrive at a gate with no cache for the contested role — at which point the orchestrator's resolve step returns `needs-input` from inside a gate segment.
+Disambiguation is a **setup** act, owned by the producing path (`create-spec`); a **gate** (`validate-spec`) is **verdict-only**. Recording `produced-by` on every production normally makes a gate's resolution a cache hit, so the question never reaches a gate. But a spec authored **before** a second plugin existed can arrive at a gate with no cache for the contested role — at which point the operator's resolve step returns `needs-input` from inside a gate segment.
 
 The gate must **not** absorb this. `validate-spec` owns only verdict frontmatter (`status`, the human ratification of `approval`); it must never write setup frontmatter (`produced-by` / the retired `domain-plugin`). On a `needs-input` for a contested producer during a gate, the gate **fails closed** with a blocker — "resolve the domain producer via `create-spec` first" — rather than silently asking and writing. The invariant is symmetric across both gates (spec and impl): setup ambiguity is resolved on the producing path and persisted to frontmatter there, so by the time a gate reads it the answer is already a fact. This keeps the gate verdict-only and `create-spec` the sole writer of producer choice.
 
@@ -108,11 +108,11 @@ The gate must **not** absorb this. `validate-spec` owns only verdict frontmatter
 
 A role **always resolves to a real producer**. When no plugin covers the domain, the role resolves to the **SDD default for that role** — and the default *is* the producer: it is recorded in `produced-by` as `sdd:<default>`, exactly like any plugin producer. There is no inline path and no sentinel value; every recorded `produced-by` entry names a real agent that ran.
 
-If **no producer can be resolved at all** — not a plugin producer, and not even an SDD default for the role — the orchestrator **hard-fails**: it surfaces a blocker, records **no** `produced-by` entry and **no** sentinel, and does not proceed. "No resolvable producer" is a **structural** error and joins the existing fail-closed class alongside an off-enum `cause` and a malformed `produced-by` entry. This **strengthens** the fail-closed posture rather than contradicting it: provenance only ever names a producer that actually acted, and the absence of any producer halts the mission instead of being papered over with a placeholder.
+If **no producer can be resolved at all** — not a plugin producer, and not even an SDD default for the role — the operator **hard-fails**: it surfaces a blocker, records **no** `produced-by` entry and **no** sentinel, and does not proceed. "No resolvable producer" is a **structural** error and joins the existing fail-closed class alongside an off-enum `cause` and a malformed `produced-by` entry. This **strengthens** the fail-closed posture rather than contradicting it: provenance only ever names a producer that actually acted, and the absence of any producer halts the mission instead of being papered over with a placeholder.
 
 ### Who writes it
 
-The **orchestrator** writes `produced-by` as part of its dispatch/synthesis — the same boundary by which it writes `aligned` and an agent self-assertion of `approval`. Producers and judges never write it (they do not know their own registry identity authoritatively; the orchestrator resolved them).
+The **operator** writes `produced-by` as part of its dispatch/synthesis — the same boundary by which it writes `aligned` and an agent self-assertion of `approval`. Producers and judges never write it (they do not know their own registry identity authoritatively; the operator resolved them).
 
 ### The combat log has two faces
 
@@ -127,7 +127,7 @@ So the contract gains a second face: an **append-only `log` ledger** that preser
 
 ```mermaid
 flowchart LR
-  disp[orchestrator dispatch] -->|overwrites| state[current-state<br/>produced-by + approval]
+  disp[operator dispatch] -->|overwrites| state[current-state<br/>produced-by + approval]
   disp -->|appends| log[log ledger<br/>append-only]
   log -->|read post-hoc| scanner[doctrine-loop Scanner]
   scanner -->|appends strategy| log
@@ -137,7 +137,7 @@ The ledger exists for one consumer above all: the **doctrine-loop Scanner**, whi
 
 ### The schema lives in `combat-log-governance`, not here
 
-This spec **owns the contract** — the decision that the log exists, why, and who may write it — but it does **not** restate the field-by-field schema. The entry shapes (`report`, `correction`, `strategy`), the `correction-kind` set, the matchable `cause` enum, the `seq` discipline, and the write-ownership matrix all live in **`combat-log-governance`**, the single schema owner. Loading that governance is how `sdd-orchestrator`, `validate-spec`, and the doctrine-loop Scanner agree on the shape. Duplicating the schema here would create two sources of truth that drift; instead, this spec references the governance and the governance defines the bytes.
+This spec **owns the contract** — the decision that the log exists, why, and who may write it — but it does **not** restate the field-by-field schema. The entry shapes (`report`, `correction`, `strategy`), the `correction-kind` set, the matchable `cause` enum, the `seq` discipline, and the write-ownership matrix all live in **`combat-log-governance`**, the single schema owner. Loading that governance is how `sdd-operator`, `validate-spec`, and the doctrine-loop Scanner agree on the shape. Duplicating the schema here would create two sources of truth that drift; instead, this spec references the governance and the governance defines the bytes.
 
 ### Corrections-with-cause are recorded in both faces, non-duplicating
 
@@ -150,7 +150,7 @@ The `cause` is what makes the ledger more than a diary. Because it is a value fr
 
 ### Strategy occupies a log slot this contract shapes but does not write
 
-The Scanner records drafted strategy back to the log. The combat-log contract defines the **shape** of that `strategy` entry, so it is a first-class slot in the ledger rather than an outside annotation — but the **write is owned by the doctrine-loop Scanner**, not by any provenance writer. The orchestrator appends `report` and `correction` entries; it never appends `strategy`. This keeps the read-side consumer (the Scanner) the sole author of its own output while the log remains one coherent record. The doctrine-loop spec governs *when* the Scanner writes; this spec only reserves the slot.
+The Scanner records drafted strategy back to the log. The combat-log contract defines the **shape** of that `strategy` entry, so it is a first-class slot in the ledger rather than an outside annotation — but the **write is owned by the doctrine-loop Scanner**, not by any provenance writer. The operator appends `report` and `correction` entries; it never appends `strategy`. This keeps the read-side consumer (the Scanner) the sole author of its own output while the log remains one coherent record. The doctrine-loop spec governs *when* the Scanner writes; this spec only reserves the slot.
 
 ---
 
@@ -160,7 +160,7 @@ The combat log is consumed long after a mission ends. Each use case below is an 
 
 | # | Trigger | Inputs | Outcome |
 |---|---|---|---|
-| **UC-1 Record on dispatch** | The orchestrator dispatches a production-chain role | The role, the resolved agent, the dispatch outcome | A `report` entry is appended and `produced-by[role]` is set — provenance captured live as a side effect of the dispatch |
+| **UC-1 Record on dispatch** | The operator dispatches a production-chain role | The role, the resolved agent, the dispatch outcome | A `report` entry is appended and `produced-by[role]` is set — provenance captured live as a side effect of the dispatch |
 | **UC-2 Record a correction** | A gate rejects, a producer⇄judge iteration fires, or the Council kicks a spec back | The correction occasion and its matchable `cause` | A `correction` entry is appended to the log with that `cause`; the standing verdict in `approval` is unaffected |
 | **UC-3 Mission reconstruction** | A reviewer or the Scanner needs to know what happened on a spec, after the fact, with no transcript | The spec's `log` ledger | The full ordered sequence of dispatches and corrections is replayable from the log alone |
 | **UC-4 Recurring-pattern detection** | The doctrine-loop Scanner runs across the corpus | Many specs' `log` ledgers | Corrections grouped by `cause` across N specs; a `cause` recurring above threshold is surfaced as a candidate systemic weakness |
@@ -192,9 +192,9 @@ log:
   - { seq: 2, kind: correction, correction-kind: gate-reject, cause: coverage-gap }
 ```
 
-**The `log` ledger** is append-only for every writer: entries are added with the next `seq`, never edited or removed. The orchestrator appends `report` entries (one per production-chain dispatch) and `correction` entries (one per correction, carrying a matchable `cause`); the doctrine-loop Scanner appends `strategy` entries. The full schema — entry fields, the `correction-kind` set, the `cause` enum, and the write-ownership matrix — is the schema owner's: **`combat-log-governance`**.
+**The `log` ledger** is append-only for every writer: entries are added with the next `seq`, never edited or removed. The operator appends `report` entries (one per production-chain dispatch) and `correction` entries (one per correction, carrying a matchable `cause`); the doctrine-loop Scanner appends `strategy` entries. The full schema — entry fields, the `correction-kind` set, the `cause` enum, and the write-ownership matrix — is the schema owner's: **`combat-log-governance`**.
 
-**Resolution order** (orchestrator, per role): cache hit (recorded + installed) → live resolve + record → SDD default + record → `needs-input` once → hard-fail with a blocker if no producer (not even an SDD default) can be resolved.
+**Resolution order** (operator, per role): cache hit (recorded + installed) → live resolve + record → SDD default + record → `needs-input` once → hard-fail with a blocker if no producer (not even an SDD default) can be resolved.
 
 **`validate-spec` checks:**
 - `produced-by` entries are well-formed plugin-qualified names; a malformed entry **fails the gate** (a structural error — not valid provenance at all, unlike an unavailable-but-valid entry, which is only flagged);

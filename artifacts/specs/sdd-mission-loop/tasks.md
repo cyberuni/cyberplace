@@ -3,7 +3,7 @@
 Dependency DAG. Each task maps to frozen `.feature` scenarios.
 
 - [x] T1 — Rewrite the gateway "Delegate Downstream Work" section so the only agent
-      spawned is the Operator (`sdd-orchestrator`); remove every naming of
+      spawned is the Operator (`sdd-operator`); remove every naming of
       create-spec / validate-spec / render-spec-graph as a `subagent_type` /
       "Subagent skill". (scenarios: never-spawn-gate-as-agent-type,
       Operator-is-only-agent-spawned)
@@ -32,7 +32,7 @@ Dependency DAG. Each task maps to frozen `.feature` scenarios.
       agent self-assertion. (scenario: gate-station-owns-status-write)
       deps: T1
 
-- [x] T6 — Reinforce the Operator agent (`sdd-orchestrator.md`) for station-running
+- [x] T6 — Reinforce the Operator agent (`sdd-operator.md`) for station-running
       and the gate/scrub-only escalation boundary if not already explicit.
       deps: T1–T5
 

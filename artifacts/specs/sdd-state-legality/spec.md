@@ -34,7 +34,7 @@ A third surface, `gate-validation-governance/SKILL.md:16`, sides with the script
 **Is `draft + aligned: true` legal or illegal?**
 
 - **LEGAL** — `aligned` is layer-scoped. At the spec gate `aligned: true` means *the contract layer is in sync*, which is exactly what a converged-but-not-yet-ratified draft looks like. The tuple is the legitimate pre-spec-gate resting state. → **Loosen the script** (drop the `draft + aligned === true` rejection) and **correct gov line 16** to match line 38.
-- **ILLEGAL** — `aligned: true` is reserved for *post-approval* "implemented" meaning. A draft must always carry `aligned: false`. → **Keep the script**, **correct the layer-scoping prose** (lines 38 and 143) and the orchestrator cursor table to stop claiming the tuple is legal, and make producers/orchestrator never set `aligned: true` while `draft`.
+- **ILLEGAL** — `aligned: true` is reserved for *post-approval* "implemented" meaning. A draft must always carry `aligned: false`. → **Keep the script**, **correct the layer-scoping prose** (lines 38 and 143) and the operator cursor table to stop claiming the tuple is legal, and make producers/operator never set `aligned: true` while `draft`.
 
 ### Recommendation: **LEGAL** — loosen the script, fix gov line 16
 
@@ -42,7 +42,7 @@ Reasons, weighted:
 
 1. **The layer-scoping model is the more deeply reasoned surface.** `gate-validation-governance` defines `aligned` as *the current layer's artifacts are synced* and binds the meaning to the gate, not to `status`. Under that definition `draft + aligned: true` is **not** "implemented" — it is "contract synced, awaiting the spec gate." The script's parenthetical (*"draft never means implemented"*) attacks a meaning the layer model never assigns.
 
-2. **The orchestrator's own cursor table already produces this state.** `sdd-orchestrator` sets `aligned: false` at segment start and only synthesis sets it back to `true` once the contract layer is in sync — *before* the human spec-gate verdict flips `status` to `approved`. There is a real, legitimate window where `draft + aligned: true` holds. Banning it forces either a lie (`aligned: false` on a synced contract) or a skipped step.
+2. **The operator's own cursor table already produces this state.** `sdd-operator` sets `aligned: false` at segment start and only synthesis sets it back to `true` once the contract layer is in sync — *before* the human spec-gate verdict flips `status` to `approved`. There is a real, legitimate window where `draft + aligned: true` holds. Banning it forces either a lie (`aligned: false` on a synced contract) or a skipped step.
 
 3. **The actual incident was a different error.** `sdd-gate-autonomy/spec.md:145` records that the incident's real fault was *committing an implementation against an unapproved, unfrozen `.feature` while reading `aligned` as "done."* That is caught by the **other** legal-state rules (e.g. `approved` requires a frozen `.feature`; `implemented` requires `approved-by.impl`), not by banning `draft + aligned: true`. The blanket ban over-corrects and kills the legitimate state.
 
@@ -87,12 +87,12 @@ Row **2** is the reconciliation: the script currently marks it `I`; this contrac
 1. `check-spec-state.mts:108-109` — remove the `status === 'draft' && aligned === true` rejection.
 2. `gate-validation-governance/SKILL.md:16` — delete the "`status: draft` with `aligned: true` — draft never means implemented" bullet (it contradicts line 38).
 3. Keep `gate-validation-governance:38` and `sdd-gate-autonomy/spec.md:143` as the canonical layer-scoped meaning.
-4. No change to the orchestrator cursor table (it already permits the state).
+4. No change to the operator cursor table (it already permits the state).
 
 *Implementation is deliberately deferred — a sibling spec shares these files and the edits must be serialized.*
 
 ## Out of scope
 
-- Editing the script, the governance prose, or the orchestrator (a later, serialized implementation pass).
+- Editing the script, the governance prose, or the operator (a later, serialized implementation pass).
 - Redefining `aligned`'s layer-scoping (unchanged — only enforced consistently).
 - The leash / autonomy model (owned by `sdd-gate-autonomy`).

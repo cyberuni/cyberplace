@@ -36,7 +36,7 @@ flowchart LR
 
 ## Why
 
-Today SDD learns nothing across products. The orchestrator records a producer only on conflict; the corpus (skills, governances, conventions) is revised only by hand, ad hoc. The motive-model names this as the **Strategist** gap (the outer loop, "Strategist and the loop"):
+Today SDD learns nothing across products. The operator records a producer only on conflict; the corpus (skills, governances, conventions) is revised only by hand, ad hoc. The motive-model names this as the **Strategist** gap (the outer loop, "Strategist and the loop"):
 
 - **Lessons don't compound.** A pattern solved three times, a correction repeated across missions, a now-false convention — nothing distills these into doctrine so the next mission starts warmer.
 - **The trigger must be lifecycle-grained.** Firing the outer loop every gate is *premature codification* (motive-model:312) — it encodes transient noise. The real triggers are a spec that **ships** (`→ implemented`) or is **killed** (`→ deprecated`), a milestone retro, or a recurring pattern.
@@ -46,9 +46,9 @@ Today SDD learns nothing across products. The orchestrator records a producer on
 
 ## Design decisions
 
-### The Scanner is fleet-level, not inside the orchestrator
+### The Scanner is fleet-level, not inside the operator
 
-The Scanner sits **above any single spec** — in the Bunker — because doctrine serves every spec (and every tool), not one mission. It is **not** a step inside the Operator/orchestrator: that flow is per-segment, and a per-segment outer loop is exactly the premature codification the model forbids.
+The Scanner sits **above any single spec** — in the Bunker — because doctrine serves every spec (and every tool), not one mission. It is **not** a step inside the Operator/operator: that flow is per-segment, and a per-segment outer loop is exactly the premature codification the model forbids.
 
 The Scanner is its **own subagent** running the doctrine loop — exactly parallel to the Operator running the mission loop. Both are delegates: the Operator delegate runs the middle loop per segment; the Scanner delegate runs the outer loop at lifecycle granularity.
 
@@ -62,7 +62,7 @@ The Scanner drafts **strategy** cheaply and continuously and records it to the *
 
 ### The Scanner is the sole writer of strategy entries
 
-The Scanner is the **sole writer** of `strategy` log entries. The orchestrator and the producers never write them — the orchestrator owns `report` and `correction` entries (and the current-state face), the producers write nothing to the log at all. The **shape** of a strategy entry — its fields and schema — is owned by `combat-log-governance`; this spec does not restate it.
+The Scanner is the **sole writer** of `strategy` log entries. The operator and the producers never write them — the operator owns `report` and `correction` entries (and the current-state face), the producers write nothing to the log at all. The **shape** of a strategy entry — its fields and schema — is owned by `combat-log-governance`; this spec does not restate it.
 
 - **When it writes.** After it drafts strategy from any of the five use cases — a terminal transition (ship or kill), a milestone retro, a recurring pattern, or drift detection. The log is an **append-only ledger**: the Scanner appends a new entry with the next sequence; it never edits or removes a prior one.
 - **What it writes.** A strategy entry carrying the recommendation plus the corrections-with-cause / evidence that drove it, with the entry **unratified** until the Council rules. Unratified strategy never enters the corpus (consistent with the "Strategy → doctrine → corpus" and "keep-or-cut by the human" decisions, and with the existing scenarios).

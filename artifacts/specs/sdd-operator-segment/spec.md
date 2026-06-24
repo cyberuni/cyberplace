@@ -18,7 +18,7 @@ approval:
 
 # SDD Operator — The Segment
 
-> **Feature child of [`sdd-operator`](../sdd-operator/spec.md).** This spec owns one behavior of the Operator (the SDD lead delegate, `sdd-orchestrator`). The parent holds the human-readable overview and the model invariants; this child holds the normative scenarios for its slice.
+> **Feature child of [`sdd-operator`](../sdd-operator/spec.md).** This spec owns one behavior of the Operator (the SDD lead delegate, `sdd-operator`). The parent holds the human-readable overview and the model invariants; this child holds the normative scenarios for its slice.
 
 ## What
 
@@ -38,8 +38,8 @@ The Operator segment is invoked three distinct ways. Each is an entry-point — 
 
 | Use case | Scenarios (step-down order in `sdd-operator-segment.feature`) |
 |---|---|
-| **UC1** — invoked cold | Orchestrator suspends at a user-input checkpoint instead of asking · Questions are batched within a segment · The workflow cursor is derived from artifact state across sessions · A content gap persists as an inline marker, not a separate file · A workflow-procedural question is not persisted · The iteration cap blocks and asks rather than auto-accepting |
-| **UC2** — resume after answers | The skill resumes the orchestrator after collecting answers |
+| **UC1** — invoked cold | Operator suspends at a user-input checkpoint instead of asking · Questions are batched within a segment · The workflow cursor is derived from artifact state across sessions · A content gap persists as an inline marker, not a separate file · A workflow-procedural question is not persisted · The iteration cap blocks and asks rather than auto-accepting |
+| **UC2** — resume after answers | The skill resumes the operator after collecting answers |
 | **UC3** — delegate observation | A structural concern is emitted as a non-blocking observation · Observations bubble up and only the skill surfaces them · Strategist observations surface only at boundaries and dedupe by recurrence · A strategist lesson spawns a spec that may target another monorepo project · An accepted structural observation spawns a new spec |
 
 ## References

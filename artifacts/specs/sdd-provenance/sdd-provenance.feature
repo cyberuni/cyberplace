@@ -3,7 +3,7 @@ Feature: Production provenance
   # ── recording provenance ──────────────────────────────────────────────
 
   Scenario: the producer is recorded on every artifact
-    Given the orchestrator dispatches the spec-producer for a domain
+    Given the operator dispatches the spec-producer for a domain
     When the producer writes the .feature
     Then produced-by.spec-producer is set to the plugin-qualified agent name
     And it is recorded even though no disambiguation occurred
@@ -19,12 +19,12 @@ Feature: Production provenance
   Scenario: resume reuses the recorded producer when its plugin is installed
     Given produced-by.spec-producer is "aces:aces-scenario-writer"
     And the aces plugin is installed
-    When the orchestrator resumes work on the spec
+    When the operator resumes work on the spec
     Then it reuses aces:aces-scenario-writer without re-asking
 
   Scenario: an unavailable recorded producer does not block
     Given produced-by.spec-producer names a plugin that is no longer installed
-    When the orchestrator resumes work on the spec
+    When the operator resumes work on the spec
     Then it re-resolves the producer from the registry
     And the historical produced-by value is preserved, annotated unavailable
     And work is not blocked
@@ -33,13 +33,13 @@ Feature: Production provenance
 
   Scenario: a degenerate role records the SDD default
     Given no plugin covers the spec's domain
-    When the orchestrator dispatches the role
+    When the operator dispatches the role
     Then it uses the SDD default
     And produced-by records the sdd-prefixed default agent
 
   Scenario: an unresolvable producer hard-fails with no sentinel
     Given no producer can be resolved for the role, not even an SDD default
-    When the orchestrator dispatches the role
+    When the operator dispatches the role
     Then it hard-fails with a blocker
     And it records no producer
     And it records no sentinel value
@@ -47,7 +47,7 @@ Feature: Production provenance
   Scenario: a first-time conflict asks once, then is decisive
     Given two plugins claim the spec's domain
     And produced-by has no entry for the role
-    When the orchestrator dispatches the role
+    When the operator dispatches the role
     Then it returns needs-input for the choice
     And the chosen producer is recorded in produced-by
     And a later resume does not re-ask
@@ -101,11 +101,11 @@ Feature: Production provenance
 
   Scenario: a legacy domain-plugin map is migrated into produced-by
     Given a spec carries the old domain-plugin map
-    When the orchestrator next dispatches for that spec
+    When the operator next dispatches for that spec
     Then the choice is rewritten into produced-by
     And the domain-plugin map is dropped
 
-  Scenario: the orchestrator writes produced-by, not the producer
+  Scenario: the operator writes produced-by, not the producer
     Given a producer agent finishes its work
     When provenance is recorded
     Then produced-by appears in the spec frontmatter
@@ -115,7 +115,7 @@ Feature: Production provenance
   # ── log ledger: dispatch reports ──────────────────────────────────────
 
   Scenario: a per-subagent report entry is appended per dispatch
-    Given the orchestrator dispatches a production-chain role
+    Given the operator dispatches a production-chain role
     When the dispatched agent finishes
     Then a report entry is appended to the log
     And the entry names the role and the plugin-qualified agent
@@ -123,7 +123,7 @@ Feature: Production provenance
 
   Scenario: each dispatch appends a new entry rather than overwriting
     Given the log already carries a report entry from an earlier dispatch
-    When the orchestrator dispatches another role
+    When the operator dispatches another role
     Then a new report entry is appended with the next seq
     And the earlier report entry is unchanged
 
@@ -131,7 +131,7 @@ Feature: Production provenance
 
   Scenario: a gate rejection is recorded in both faces
     Given a gate rejects the spec
-    When the orchestrator records the outcome
+    When the operator records the outcome
     Then a correction entry with a matchable cause is appended to the log
     And the standing verdict is recorded in approval
     And the correction entry is not duplicated into approval
@@ -150,7 +150,7 @@ Feature: Production provenance
 
   Scenario: a Council kick-back is logged with a cause
     Given the Council kicks a spec back
-    When the orchestrator records the outcome
+    When the operator records the outcome
     Then a correction entry with correction-kind council-kickback is appended
     And the entry carries a matchable cause
 
@@ -185,15 +185,15 @@ Feature: Production provenance
     Then a strategy entry is appended to the log
     And the entry carries the corrections that drove it as evidence
 
-  Scenario: the orchestrator does not write strategy entries
-    Given the orchestrator records dispatch and correction provenance
+  Scenario: the operator does not write strategy entries
+    Given the operator records dispatch and correction provenance
     When it writes to the log
     Then it appends only report and correction entries
     And it appends no strategy entry
 
   # ── log ledger: ownership and validation ──────────────────────────────
 
-  Scenario: the orchestrator writes the log, producers and judges do not
+  Scenario: the operator writes the log, producers and judges do not
     Given a producer and a judge finish their work
     When the log is written
     Then the log appears in the spec frontmatter

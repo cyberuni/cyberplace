@@ -100,10 +100,10 @@ Feature: SDD doctrine loop — the Strategist outer loop
     When the strategy entry is appended to the combat log
     Then the Scanner writes the strategy entry
 
-  Scenario: the orchestrator and producers do not write strategy entries
+  Scenario: the operator and producers do not write strategy entries
     Given a strategy entry in the combat log
     When the writer of that entry is identified
-    Then the orchestrator did not write the strategy entry
+    Then the operator did not write the strategy entry
     And a producer did not write the strategy entry
 
   Scenario: the strategy entry carries its driving evidence

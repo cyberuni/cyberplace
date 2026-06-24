@@ -14,9 +14,9 @@ subtasks:
 
 # SDD Operator & the Plugin-Delegate Model
 
-> **Project spec.** This is the human-readable overview of the **Operator** (`sdd-orchestrator`) — the lead delegate of the SDD Build loop. The normative scenarios live in six **feature children** (see *The decomposition*); this spec holds the narrative, the production-chain model, the fleet-metaphor framing, and the model invariants a person reads first.
+> **Project spec.** This is the human-readable overview of the **Operator** (`sdd-operator`) — the lead delegate of the SDD Build loop. The normative scenarios live in six **feature children** (see *The decomposition*); this spec holds the narrative, the production-chain model, the fleet-metaphor framing, and the model invariants a person reads first.
 >
-> Decomposed from the former `sdd-orchestrator` monolith (one ~290-line spec, 65 scenarios) under the spec-granularity heuristic: re-judge cost scales with spec size, so the behaviors were cut along their seams. The agent file is still named `sdd-orchestrator`; renaming `sdd-orchestrator.md` → `sdd-operator.md` and the `subagent_type` references is a tracked follow-on.
+> Decomposed from the former SDD build-loop monolith (one ~290-line spec, 65 scenarios) under the spec-granularity heuristic: re-judge cost scales with spec size, so the behaviors were cut along their seams. The agent file is now named `sdd-operator`; the rename of `sdd-orchestrator.md` → `sdd-operator.md` and the `subagent_type` references is complete.
 
 ---
 
@@ -26,7 +26,7 @@ SDD owns the spec-driven workflow and runs the loop. The **Operator** is its lea
 
 The architecture has four moving parts:
 
-1. **The Operator** (`sdd-orchestrator`) — the line officer of an engagement. It resolves plugin delegates from the registry's domain coverage, dispatches each act, and synthesizes results. It does discovery and dispatch itself; there is no separate dispatcher agent. It has **no user channel** — it escalates through the relay only at a gate or a scrub.
+1. **The Operator** (`sdd-operator`) — the line officer of an engagement. It resolves plugin delegates from the registry's domain coverage, dispatches each act, and synthesizes results. It does discovery and dispatch itself; there is no separate dispatcher agent. It has **no user channel** — it escalates through the relay only at a gate or a scrub.
 2. **The production chain — five co-delivered artifacts, three forward producers, two judges.** The Operator dispatches whichever producers are declared and gathers the judges at the two gates.
 3. **Default delegates** — `sdd-scenario-writer` (spec-producer), `sdd-planner` (plan-producer), `sdd-spec-judge` (spec-judge), `sdd-implementer` (impl-judge), and the generic Builder (impl-producer, no agent) — the built-in fallbacks, invoked only when no plugin fills the role.
 4. **Plugin delegates** — each its own agent definition (own model/effort/context). A full domain plugin fills every producer and judge; thin domains let roles degenerate.
@@ -129,7 +129,7 @@ These hold across every child and are the reading a plugin author needs first:
 ## Related
 
 - `artifacts/specs/sdd-plugin/spec.md` — the SDD practice this orchestrates
-- `artifacts/specs/motive-model/spec.md` — Conductor (actor) vs Operator/orchestrator (delegate pattern)
+- `artifacts/specs/motive-model/spec.md` — Conductor (actor) vs Operator/operator (delegate pattern)
 - `artifacts/adr/0013-governance-skills.md` — governance skills replace `governance show`
 - `apps/website/src/content/docs/sdd/overview.md`, `control-flow.md`, `metaphor.md` — the authoritative vocabulary
 

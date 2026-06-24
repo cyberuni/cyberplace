@@ -12,7 +12,7 @@ Implementation is **keyed by the actor name** (neutral, from the motive-model): 
 | **Builder** | **Battler** | the spec/impl **producer**; `builder-governance` |
 | **Architect** | **Warden** | the `architect` role — structure/conventions; `architect-governance` |
 | **Strategist** | **Scanner** *(in the Bunker)* | the outer-loop agent (`sdd-doctrine-loop`) — not yet built |
-| *(coordinator)* Conductor | **Operator** | `sdd-orchestrator` — the conn |
+| *(coordinator)* Conductor | **Operator** | `sdd-operator` — the conn |
 | *(the bar)* | **Executioner** | the **judge** — `spec-judge` / `impl-judge` |
 
 ## The Council

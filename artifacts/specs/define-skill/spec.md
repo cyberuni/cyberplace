@@ -12,7 +12,7 @@ blocked-by: []
 
 ## What
 
-`define-skill` handles two cases: **create** (scaffold a new skill from requirements) and **improve** (read an existing skill and address gaps). Both paths converge at the same checkpoint: quality checks pass, symlinks are wired, and running `sdd:create-spec` (the orchestrator resolves the ACES delegates) is the suggested next step.
+`define-skill` handles two cases: **create** (scaffold a new skill from requirements) and **improve** (read an existing skill and address gaps). Both paths converge at the same checkpoint: quality checks pass, symlinks are wired, and running `sdd:create-spec` (the operator resolves the ACES delegates) is the suggested next step.
 
 ### Content type guard
 
@@ -129,7 +129,7 @@ Write `README.md` beside every `SKILL.md`:
 - Canonical file path written
 - Runtime symlinks created (list each)
 - Quality check outcome: pass / findings-fixed / open-findings
-- Suggested next step: run `sdd:create-spec` (the orchestrator resolves the ACES roles) to spec and eval for this skill
+- Suggested next step: run `sdd:create-spec` (the operator resolves the ACES roles) to spec and eval for this skill
 
 ---
 
