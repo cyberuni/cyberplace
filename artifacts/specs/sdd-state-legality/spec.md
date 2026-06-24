@@ -1,10 +1,17 @@
 ---
-status: draft
+status: implemented
 type: feature
-aligned: false
+aligned: true
 priority: 1
 blocked-by:
   - sdd-gate-autonomy
+approval:
+  spec:
+    verdict: approve
+    by: unional
+  impl:
+    verdict: approve
+    by: unional
 ---
 
 # SDD State Legality — the `draft + aligned: true` reconciliation
