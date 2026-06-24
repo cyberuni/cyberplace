@@ -1,12 +1,17 @@
 ---
-status: approved
+status: implemented
 type: feature
 blocked-by:
   - sdd-operator
   - sdd-plugin
 aligned: true
+produced-by:
+  impl-producer: sdd:sdd-implementer
 approval:
   spec:
+    verdict: approve
+    by: unional
+  impl:
     verdict: approve
     by: unional
 reopened:
