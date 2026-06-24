@@ -2,7 +2,7 @@
 status: draft
 type: feature
 priority: 3
-aligned: false
+aligned: true
 blocked-by:
   - sdd-spec-graph
   - sdd-spec-discovery
