@@ -12,15 +12,25 @@ Feature: SDD Contract Registry
     Then the entry has name, version, and domains
     And the roles map uses spec-producer, plan-producer, spec-judge, impl-producer, and impl-judge
 
-  Scenario: A null role degenerates to the SDD default
-    Given a plugin entry sets plan-producer to null
-    When the operator resolves the plan-producer for that plugin
-    Then it uses the SDD default plan-producer
+  Scenario: A role may be set to null in the entry
+    Given a plugin specializes only some roles
+    When its entry is written
+    Then a role it does not specialize is recorded as null
 
-  Scenario: A missing role key degenerates to the SDD default
-    Given a plugin entry omits the spec-judge key
-    When the operator resolves the spec-judge for that plugin
-    Then it uses the SDD default spec-judge
+  Scenario: A role key may be omitted from the entry
+    Given a plugin specializes only some roles
+    When its entry is written
+    Then a role it does not specialize may be omitted from the roles map
+
+  Scenario: An entry carries a governances map with the required keys
+    Given a plugin registers in sdd-plugins
+    When its entry is written
+    Then the entry contains a governances map with director, builder, and architect keys
+
+  Scenario: A governance binding may be set to null in the entry
+    Given a plugin does not override a governance
+    When its entry is written
+    Then that governance binding is recorded as null in the governances map
 
   # -- resolution source --------------------------------------------------
 
@@ -54,3 +64,9 @@ Feature: SDD Contract Registry
     Given .agents/universal-plugin.json has an entry with scenario-advisor and implementer keys
     When the plugin init skill runs
     Then the entry is rewritten to the five-role map
+
+  Scenario: Init fails loudly on a malformed registry file
+    Given .agents/universal-plugin.json exists but contains malformed JSON
+    When the plugin init skill runs
+    Then it fails with an error
+    And the file is not overwritten
