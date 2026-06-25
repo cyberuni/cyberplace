@@ -1,6 +1,7 @@
 ---
 status: draft
 type: project
+domain-type: documentation
 blocked-by: []
 aligned: true
 produced-by:

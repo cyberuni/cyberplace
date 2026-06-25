@@ -1,6 +1,7 @@
 ---
 status: draft
 type: project
+domain-type: skill
 blocked-by: []
 subtasks:
   - aces-skill-spec-schema
