@@ -3,6 +3,20 @@ status: draft
 type: feature
 blocked-by: []
 aligned: false
+produced-by:
+  spec-producer: sdd:sdd-scenario-writer
+  spec-judge: sdd:sdd-spec-judge
+log:
+  - seq: 1
+    kind: report
+    role: spec-producer
+    agent: sdd:sdd-scenario-writer
+    outcome: pass
+  - seq: 2
+    kind: report
+    role: spec-judge
+    agent: sdd:sdd-spec-judge
+    outcome: pass
 ---
 
 # SDD Escape Hatch
@@ -24,6 +38,20 @@ This feature owns the **policy** — what is in and out of SDD scope, and that o
 ## Why
 
 Forcing non-spec-able work through the SDD lifecycle produces ceremony with no payoff: a draft with no freezable scenarios, a spec gate with nothing to judge, an impl gate with no behavior to verify. Worse, it trains agents and users to write hollow specs to satisfy the process, which erodes the meaning of the artifacts. Recognizing the boundary keeps SDD focused on subject behavior and lets representational and meta-work proceed by ordinary means, while still recording that the escape was a deliberate decision rather than an oversight.
+
+---
+
+## Use Cases
+
+| # | Trigger | Inputs | Outcome |
+|---|---|---|---|
+| UC-1 | The `sdd` gateway receives a request and classifies the unit of work as representation / meta-work on the spec corpus | The requested work (description or intent); the gateway's classification signal | The work escapes the SDD lifecycle — it proceeds outside the lifecycle, no draft spec is created, neither gate is invoked, and the gateway states the escape decision explicitly |
+| UC-2 | The `sdd` gateway receives a request and either classifies the unit of work as a subject feature, or cannot positively recognize it as representation work | The requested work (description or intent); the gateway's classification outcome (positive subject-feature match, or ambiguous / unrecognized) | The work is routed into the SDD lifecycle (draft → spec gate → implement → impl gate) |
+
+**Scenario coverage:**
+
+- UC-1 is covered by: *Representation work escapes the lifecycle*, *Escaped work skips both gates*, *Escape is recorded, not silent*.
+- UC-2 is covered by: *A subject feature stays in SDD*, *Ambiguous work defaults to SDD*.
 
 ---
 
@@ -54,7 +82,22 @@ The `sdd` gateway is the classification and routing point, so the recognition si
 
 <!-- open: What exactly does "escape" route to? Plain execution outside SDD, a lightweight acknowledgement record, or a distinct non-feature work log? Decide whether escaped work leaves any artifact at all. -->
 
-<!-- open: Is there meta-work that SHOULD be specced anyway (e.g., changing the lifecycle rules in lifecycle-governance is behavior of the SDD plugin and belongs in an SDD feature spec)? Define the line between "meta about a subject's behavior" (spec it) and "meta about SDD's representation" (escape it). -->
+### Meta-work that changes SDD-plugin behavior is still a subject feature
+
+Not all meta-work escapes. The deciding test is the same one: **is there subject behavior to freeze as scenarios?**
+
+Meta-work that has observable SDD-plugin behavior — behavior that can be asserted as `Given` / `When` / `Then` scenarios — is a subject feature of the SDD plugin and goes through the lifecycle. Changing lifecycle-governance transition rules is an example: the effect is "given status X, transition Y is now rejected," which is a freezable scenario. That is subject behavior of the SDD plugin, not a change to the shape of the spec corpus.
+
+Meta-work whose only effect is the shape of the spec corpus itself escapes: retyping specs `project`/`feature`, splitting or merging specs, relocating a contract across specs, regenerating derived views. None of these produce a freezable behavior scenario — their "output" is a reorganized corpus, not an observable action by a subject.
+
+| Meta-work kind | Has freezable scenarios? | Goes through SDD? |
+|---|---|---|
+| Change lifecycle-governance transition rules | Yes — "given status X, transition Y is rejected" | Yes (subject feature of the SDD plugin) |
+| Add a new gate or lifecycle stage | Yes — observable routing behavior changes | Yes |
+| Retype specs `project`/`feature` | No — corpus shape only | No (escapes) |
+| Split or merge specs | No — corpus shape only | No (escapes) |
+| Relocate a contract across specs | No — corpus shape only | No (escapes) |
+| Regenerate a derived graph view | No — corpus shape only | No (escapes) |
 
 ---
 
