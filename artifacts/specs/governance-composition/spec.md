@@ -2,7 +2,23 @@
 status: draft
 type: feature
 blocked-by: []
-aligned: false
+aligned: true
+produced-by:
+  spec-judge: sdd:sdd-spec-judge
+log:
+  - seq: 1
+    kind: report
+    role: spec-judge
+    agent: sdd:sdd-spec-judge
+    outcome: pass
+approval:
+  spec:
+    verdict: pause
+    why:
+      reversibility: "safe — spec.md/.feature edits are cheap reverts, no external effect"
+      blast-radius:  "risky — governance-composition is framework build machinery; the contract reaches many worker agent definitions corpus-wide and a shared build step, beyond this spec alone"
+      novelty:       "risky — new build-time embedding contract the Council has not ratified"
+      confidence:    "safe — spec-judge passes 8/8; ## Use Cases section present and maps one-to-many to scenarios; contract layer (spec.md ↔ .feature) in sync"
 ---
 
 # Agent Governance Composition
@@ -55,6 +71,21 @@ If a declared governance cannot be resolved (plugin not installed, name typo), `
 ### Build-time, not runtime injection
 
 Embedding happens at `universal-plugin build`, not via runtime injection, because the tool does not control the harness (Claude Code, Cursor, Codex). Build-time output is a standard agent definition with content already inlined and the `requires_governances` field stripped — no harness support required. The token cost of the content is identical either way; build-time removes the tool-call overhead.
+
+---
+
+## Use Cases
+
+A **use case** is an entry-point — a trigger, its inputs, and its outcome. Each maps to one-or-more boolean scenarios in the `.feature` (happy path plus the negative mirror where a constraint is load-bearing).
+
+| Use case | Trigger | Inputs | Outcome |
+|---|---|---|---|
+| **Embed a declared governance** | a worker agent declares `requires_governances` | source frontmatter with one entry | the built output inlines that governance content and carries no `requires_governances` field |
+| **Embed multiple in declaration order** | a worker declares more than one governance | two governances in a given order | the built output inlines them in that same order |
+| **Resolve a cross-plugin reference** | a worker declares `<plugin>/<name>` | e.g. `sdd/gate-validation-governance` | the governance is resolved from the named plugin and inlined |
+| **Resolve an intra-plugin reference** | a worker declares a bare `<name>` | e.g. `skill-spec-schema` (no prefix) | the governance is resolved from the current plugin and inlined |
+| **Gateway carries no governance** | a gateway skill only classifies and routes | a gateway source; a routed downstream worker | the gateway declares no `requires_governances`, and the build embeds no governance for routed targets |
+| **Unresolvable reference fails the build (negative)** | a declared governance cannot be resolved | an uninstalled plugin, or a name that does not exist | the build fails loudly — `plugin-not-installed` or `governance-not-found` — never emitting an agent missing its contract |
 
 ---
 
