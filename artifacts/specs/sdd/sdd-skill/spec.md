@@ -65,11 +65,11 @@ Option 3 (manage specs & graph) splits by whether a downstream skill exists for 
 | Operation | Downstream routing |
 |---|---|
 | Refresh graph | Routes to `render-spec-graph` (delegate exists today). |
-| Split a spec | The **authoring half** routes to `create-spec` (split = create the new specs + deprecate/revise the old). |
-| Dedupe specs | The **authoring half** routes to `create-spec` (collapse overlap into the surviving spec + deprecate the rest). |
+| Split a spec | Routes to `split-spec` (analysis + authoring: decompose into a project spec + feature children under its own human confirmations). |
+| Dedupe specs | Routes to `dedupe-specs` (analysis + authoring: a dedupe/reconciliation proposal naming the artifacts, under its own human confirmations). |
 | Cross-spec deprecate | Routes through the spec-management/deprecation path. |
 
-The cross-spec **analysis** — finding which specs overlap, choosing split boundaries — has no downstream skill yet. Until the `split-spec` and `dedupe-specs` skills exist (specced separately), that analysis stays **manual**: the gateway performs the authoring half via `create-spec` and surfaces to the user that the analysis step is manual. When `split-spec` and `dedupe-specs` exist, the gateway routes the analysis to them instead.
+The cross-spec **analysis** — finding which specs overlap, choosing split boundaries — now has dedicated stations: `split-spec` and `dedupe-specs` both exist and own the analysis-plus-authoring with their own human confirmation checkpoints. The gateway routes the analysis to them and does **not** surface the step as manual.
 
 ### The gateway owns intent, not internal workflow control
 
