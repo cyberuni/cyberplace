@@ -1,5 +1,5 @@
 ---
-status: approved
+status: implemented
 type: feature
 blocked-by:
   - sdd-operator
@@ -9,6 +9,9 @@ produced-by:
   spec-judge: sdd:sdd-spec-judge
 approval:
   spec:
+    verdict: approve
+    by: unional
+  impl:
     verdict: approve
     by: unional
 ---
