@@ -25,6 +25,12 @@ Feature: Universal Plugin
     Then the Composition view shows universal-plugin owning its feature subtasks
     And each owned spec has type feature
 
+  Scenario: A parent's status may not outrun its children
+    Given the universal-plugin project spec declares feature subtasks
+    And at least one non-deprecated child is not yet implemented
+    When the project spec is checked for status implemented
+    Then the implemented status is rejected as an illegal state
+
   Scenario: Reusable tooling is owned as a feature, not restated here
     Given the dag-tooling feature spec exists
     When a reader inspects the universal-plugin project spec

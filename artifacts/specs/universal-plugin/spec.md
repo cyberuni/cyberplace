@@ -2,10 +2,27 @@
 status: draft
 type: project
 blocked-by: []
-aligned: false
+aligned: true
 subtasks:
   - dag-tooling
   - governance-composition
+produced-by:
+  spec-judge: sdd:sdd-spec-judge
+log:
+  - seq: 1
+    kind: report
+    role: spec-judge
+    agent: sdd:sdd-spec-judge
+    outcome: pass
+approval:
+  spec:
+    verdict: approve
+    by: agent
+    why:
+      reversibility: "safe — edited two files in one draft spec folder, cheap git revert, nothing published or external"
+      blast-radius: "safe — contained to the artifacts this spec owns (spec.md + its .feature); no shared/frozen contract, sibling spec, or installed surface touched"
+      novelty: "safe — faithful backfill of the required Use Cases section from existing scenarios plus a negative mirror of an already-governed lifecycle rule; no new contestable choice"
+      confidence: "safe — clean spec-judge pass, all scenarios passing, zero open markers, legal state tuple"
 ---
 
 # Universal Plugin
@@ -52,6 +69,21 @@ This project composes the feature specs below; each owns its detailed rules and 
 | `governance-composition` | build-time embedding of contract/interface governance into worker agent configuration via `requires_governances` |
 
 Capabilities still tracked only in `packages/universal-plugin/src/` (no dedicated feature spec yet): `build`, `governance` (resolution/`show`), `prepare`, `sync`, `source-registry`, `vendor-registry`, `marketplace`, `publish`, `self-update`.
+
+---
+
+## Use Cases
+
+This is the **project** spec; its use cases are the project-level entry-points the plugin guarantees. Leaf-level build, sync, and registry entry-points belong to the feature specs and the package CLI, not here.
+
+| Trigger | Inputs | Outcome |
+|---|---|---|
+| An author builds the plugin for a target harness | a source set of agent-configuration artifacts; the target harness | harness-specific output emitted from that single source set |
+| The build composes governance into an artifact that declares it | an artifact declaring required governance | the governance content embedded inline in the built output, so the agent never runs a `governance show` at invocation time |
+| A reader or tool renders the spec graph for this project | the `universal-plugin` project spec (`type: project`) and its `subtasks` | a Composition view showing `universal-plugin` owning its feature subtasks, each `type: feature` |
+| A reader inspects the project spec for a capability owned by a feature | the project `spec.md`; the relevant feature spec (e.g. `dag-tooling`) | the capability is cross-referenced to its feature spec and not restated in the project spec |
+
+Each use case is verified by one-or-more scenarios in [universal-plugin.feature](./universal-plugin.feature); the composition guarantee additionally carries a negative mirror (a parent's status may not outrun its children).
 
 ---
 
