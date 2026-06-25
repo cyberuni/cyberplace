@@ -1,6 +1,7 @@
 ---
 status: implemented
 type: feature
+domain-type: skill
 aligned: true
 approval:
   spec:
