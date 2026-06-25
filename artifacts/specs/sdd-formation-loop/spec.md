@@ -1,13 +1,31 @@
 ---
-status: approved
+status: implemented
 type: feature
 priority: 3
 aligned: true
 blocked-by:
   - sdd-spec-graph
   - sdd-spec-discovery
+produced-by:
+  plan-producer: sdd:sdd-planner
+  impl-producer: sdd:builder
+  impl-judge: sdd:sdd-implementer
+log:
+  - seq: 1
+    kind: report
+    role: impl-producer
+    agent: sdd:builder
+    outcome: pass
+  - seq: 2
+    kind: report
+    role: impl-judge
+    agent: sdd:sdd-implementer
+    outcome: pass
 approval:
   spec:
+    verdict: approve
+    by: unional
+  impl:
     verdict: approve
     by: unional
 ---

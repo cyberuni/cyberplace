@@ -1,6 +1,6 @@
 {
 	"$schema": "https://unpkg.com/knip@6/schema.json",
-	"ignore": [".vscode/cucumber-glue.js"],
+	"ignore": [".vscode/cucumber-glue.js", "artifacts/specs/**/verify-*.mts"],
 	"ignoreDependencies": ["husky"],
 	"workspaces": {
 		"plugins/sdd": {
