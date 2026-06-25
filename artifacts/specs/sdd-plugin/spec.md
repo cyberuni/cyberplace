@@ -176,7 +176,7 @@ sdd-implementer
   role: default impl-judge
 ```
 
-The generic Builder is the default impl-producer when no plugin agent fills the role. The uniform delegate I/O contract (`STATUS`, `QUESTIONS`, `CONTENT_GAPS`, `OBSERVATIONS`) is defined by the `sdd-operator` feature spec and carried at runtime by the `sdd-operator` agent.
+When no plugin agent fills the impl-producer role, the Operator loads the impl-producer governance and builds inline (recorded `produced-by.impl-producer: sdd:sdd-operator`); a producer role may instead name a spawned agent to run at its own model. There is no "generic Builder". The uniform delegate I/O contract (`STATUS`, `QUESTIONS`, `CONTENT_GAPS`, `OBSERVATIONS`) is defined by the `sdd-operator` feature spec and carried at runtime by the `sdd-operator` agent.
 
 ---
 

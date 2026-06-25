@@ -173,14 +173,14 @@ This project's behavior is cut along its seams, each child a coherent ~one-behav
 
 | Child | Owns | Scenarios |
 |---|---|---|
-| [`sdd-operator-resolution`](../sdd-operator-resolution/spec.md) | How the Operator decides **who** to commit — the resolved lockfile, role/governance resolution, fallback/degeneracy/hard-fail, two-plugin disambiguation | 9 |
+| [`sdd-operator-resolution`](../sdd-operator-resolution/spec.md) | How the Operator decides **who** to commit — the resolved lockfile, role/governance resolution, producer-inline vs named-spawn, hard-fail, two-plugin disambiguation | 8 |
 | [`sdd-operator-dispatch`](../sdd-operator-dispatch/spec.md) | The production chain — **who does what**, the five-role uniform I/O, the write boundary, governance loads, the model invariants | 16 |
-| [`sdd-operator-explore`](../sdd-operator-explore/spec.md) | **Explore phase** — produce *and* judge the contract; shape & probe the draft; the spec-judge/format/ordering/enrichment bar; spec-layer `aligned`; the spec gate | 15 |
-| [`sdd-operator-deliver`](../sdd-operator-deliver/spec.md) | **Deliver phase** — build *and* judge against the frozen contract; rubric-as-detail; impl-layer `aligned`; the impl gate | 7 |
+| [`sdd-operator-explore`](../sdd-operator-explore/spec.md) | **Explore phase** — produce *and* judge the contract; shape & probe the draft; the spec-judge/format/ordering/enrichment bar; spec-layer `aligned`; the spec gate | 20 |
+| [`sdd-operator-deliver`](../sdd-operator-deliver/spec.md) | **Deliver phase** — build *and* judge against the frozen contract; rubric-as-detail; impl-layer `aligned`; the impl gate | 11 |
 | [`sdd-operator-freeze`](../sdd-operator-freeze/spec.md) | Freeze — the strength gradient, co-delivery, Approved ≠ Implemented, plan-ripple essence/expression, the `tasks.md` DAG, the `.feature` pivot | 6 |
 | [`sdd-operator-segment`](../sdd-operator-segment/spec.md) | The segment — suspend/resume, batching, the iteration cap, cursor derivation, markers vs questions, OBSERVATIONS routing | 12 |
 
-Total: **65 scenarios** — every scenario from the former monolith lands in exactly one child (no orphans, no duplicates).
+Total: **73 scenarios** across the six children — grown from the monolith's 65 by the producer-fold revisions (escape-valve, error-case, and split scenarios added during the governance-skill model rollout).
 
 ---
 
