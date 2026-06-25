@@ -1,12 +1,15 @@
 ---
-status: draft
+status: approved
 type: feature
 domain-type: subagent
 blocked-by:
   - sdd-operator
   - sdd-operator-dispatch
 aligned: true
-approval: {}
+approval:
+  spec:
+    verdict: approve
+    by: unional
 produced-by:
   spec-producer: sdd:sdd-operator
   spec-judge: sdd:sdd-spec-judge

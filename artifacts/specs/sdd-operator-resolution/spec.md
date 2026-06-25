@@ -1,5 +1,5 @@
 ---
-status: draft
+status: approved
 type: feature
 domain-type: subagent
 blocked-by:
@@ -55,7 +55,10 @@ log:
     agent: sdd:sdd-spec-judge
     outcome: pass
     summary: re-judged with a fresh cold judge — clean spec-gate pass at 8 scenarios; both Council changes faithfully encoded (named→spawn across plugin+model-tuned triggers, UC-2 removed/relocated), 1:1 use-case-to-scenario mapping, no residual retired framing, fail-closed/no-scan/two-plugin intact, consistent with the approved parent model
-approval: {}
+approval:
+  spec:
+    verdict: approve
+    by: unional
 ---
 
 # SDD Operator — Registry Resolution
