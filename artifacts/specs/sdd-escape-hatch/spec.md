@@ -1,6 +1,7 @@
 ---
 status: draft
 type: feature
+domain-type: skill
 blocked-by: []
 aligned: false
 produced-by:
