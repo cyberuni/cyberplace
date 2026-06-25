@@ -7,7 +7,7 @@ blocked-by:
   - sdd-operator-dispatch
 aligned: true
 produced-by:
-  impl-producer: sdd:builder
+  impl-producer: sdd:sdd-operator
   impl-judge: sdd:sdd-implementer
 approval:
   spec:
