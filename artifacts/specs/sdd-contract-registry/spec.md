@@ -3,15 +3,15 @@ status: draft
 type: feature
 blocked-by:
   - sdd-operator
-aligned: false
+aligned: true
 approval:
   spec:
     verdict: pause
     why:
-      reversibility: "safe — contract-layer writes only this run, cheap revert"
-      blast-radius: "framework governance; registry shape is shared, but this run only tightens the spec's own artifacts"
-      novelty: "four contestable defaults now Council-authorized for agent judgement this run"
-      confidence: "revising to clear the spec-judge findings"
+      reversibility: "safe — contract-layer edits to one spec folder this run; cheap revert, no published/external effect"
+      blast-radius: "risky — framework governance; the registry shape is a shared contract every plugin init skill and sdd-operator depend on, so the subject reaches beyond this spec's own artifacts"
+      novelty: "risky — four contestable defaults resolved by agent judgement (governances as a required block with nullable bindings, init fails closed on corrupt JSON, domain-plugin retired in favor of produced-by, ## Use Cases added) that the Council has not yet seen"
+      confidence: "safe — spec-judge passes 11/11, no open markers, spec.md ↔ .feature coherent"
 ---
 
 # SDD Contract Registry
