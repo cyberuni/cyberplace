@@ -39,7 +39,7 @@ Spec creation is owned by the `sdd` plugin's `create-spec` / `validate-spec`: on
 | `aces-implementer` | impl-judge — **runs** the scenario→rubric eval suite (authored by the impl-producer) over N runs, collapses to a boolean per scenario |
 | `aces-judge` | internal scorer for `aces-implementer` — scores one scenario on a 1–5 rubric |
 
-The impl-producer (writing the agent config **and its scenario→rubric eval suite**) is the `define-agent` / `improve` skills or the generic Builder; ACES does not bind a plan-producer (SDD default).
+The impl-producer (writing the agent config **and its scenario→rubric eval suite**) is the `define-agent` / `improve` skills or the SDD-default impl-producer (the Operator running `impl-producer-governance` inline); ACES does not bind a plan-producer (SDD default).
 
 ## Workflow
 
