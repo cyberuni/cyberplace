@@ -82,6 +82,19 @@ Reasons, weighted:
 
 Row **2** is the reconciliation: the script currently marks it `I`; this contract marks it `L`. Every other row matches the script's existing behavior.
 
+## Use Cases
+
+A **use case** is an entry-point — a trigger, its inputs, and its outcome. Each maps to one-or-more boolean scenarios in the `.feature`.
+
+| Use case | Trigger | Inputs | Outcome |
+|---|---|---|---|
+| **Accept the reconciled draft state** | a draft with a synced contract is checked | `status: draft`, `aligned: true`, zero markers, `.feature` present | the state is legal — "contract synced, ready for the spec gate" |
+| **Accept a draft with open markers** | a synced draft still carrying markers is checked | `status: draft`, `aligned: true`, markers > 0 | the state is legal (markers block the gate, not the draft state) |
+| **Accept an unsynced draft** | a WIP draft is checked | `status: draft`, `aligned: false` | the state is legal |
+| **Resolve aligned by layer** | the meaning of `aligned` is resolved | `aligned: true` at a given status | at draft it means the contract layer is in sync; at implemented it means the impl layer conforms; never alone "implemented" |
+| **Reject the genuine illegal states** | a contradictory tuple is checked | `approved`/`implemented` with no frozen `.feature`, open markers, missing approver, unknown gate, or a `by: agent` gate with no `why`; `implemented` with `aligned` not true | the state is illegal |
+| **Make the script and prose agree** | the reconciled tuple is looked up in each surface | the enforcement script + the governance legal-state list | both classify `draft + aligned: true` (zero markers) as legal |
+
 ## Surface changes this contract implies (out of scope to apply — drafting only)
 
 1. `check-spec-state.mts:108-109` — remove the `status === 'draft' && aligned === true` rejection.

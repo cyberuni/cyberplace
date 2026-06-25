@@ -76,6 +76,22 @@ This spec changes *who is invoked how*, not *who writes what*. The gate station 
 
 ---
 
+## Use Cases
+
+A **use case** is an entry-point — a trigger, its inputs, and its outcome. Each maps to one-or-more boolean scenarios in the `.feature`.
+
+| Use case | Trigger | Inputs | Outcome |
+|---|---|---|---|
+| **Delegate a routed action** | the gateway resolves a route to a downstream SDD action | the resolved workflow action | the gateway spawns the Operator (only) and runs `create-spec`/`validate-spec` as stations — never as a `subagent_type` |
+| **Relay a user question** | the Operator returns `needs-input` mid-segment | the Operator's batched question | the gateway asks the Council and resumes the Operator with the answer |
+| **Drive the mission loop** | a spec advancing `draft → implemented` across segments | the spec under work | the Operator drives every segment; the gateway holds no production logic |
+| **Hold the escalation boundary** | the Operator is running with no gate or scrub reached | the in-flight segment | the Operator does not escalate to the Council |
+| **Escalate at a gate** | the Operator reaches a gate needing a human verdict | the gate review | the Operator escalates to the Council through the relay, never directly |
+| **Escalate at a scrub** | a scrub (kill) decision is reached | the kill decision | the Operator escalates to the Council through the relay |
+| **Preserve write-ownership** | a gate advances on a human verdict | the transition to record | the gate station writes `status` + the `approval` ratification; the Operator writes `aligned` and agent self-assertions |
+
+---
+
 ## Command surface / API
 
 **Spawn vs invoke:**

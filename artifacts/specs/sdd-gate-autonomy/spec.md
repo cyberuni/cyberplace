@@ -269,6 +269,28 @@ Where implementing this spec modifies SDD **skills** (e.g., `validate-spec`) or 
 
 ---
 
+## Use Cases
+
+A **use case** is an entry-point — a trigger, its inputs, and its outcome. Each maps to one-or-more boolean scenarios in the `.feature`.
+
+| Use case | Trigger | Inputs | Outcome |
+|---|---|---|---|
+| **Derive `auto-none`** | a novel contestable contract decision the human has not seen | the spec-gate risk assessment | the derived leash is `auto-none`; the agent stops at the spec gate for the human verdict |
+| **Derive `auto-spec`** | settled contract but irreversible / high-blast implementation | both gates' assessment | the leash is `auto-spec`; the agent self-asserts the spec gate but stops before implementing |
+| **Derive `auto-all`** | ratified-or-trivial contract, reversible local impl, clear pass | both gates' assessment | the leash is `auto-all`; both gates are self-asserted |
+| **Independent impl-gate leash** | an `auto-none` spec gate was ratified in an earlier run | a later run reaching the impl gate with reversible, local, passing impl | the impl gate independently derives `auto-all`; the agent self-asserts it provisionally |
+| **Cap with a human ceiling** | the Conductor caps the run below the derivation | the derived leash + the ceiling | effective leash = `min(ceiling, derived)`; the agent stops at the capped gate |
+| **Escalate on breaking contract impact** | building forces a Director-revert on a depended-on frozen contract | the impl-gate assessment + `blocked-by` dependents | contract impact reads risky (breaking, weighted by dependents); derived `auto-none`; the agent escalates the impl gate |
+| **Emit the gate report** | the agent reaches a gate | current artifact state, faces, markers | a decidable report: per-face verdict, five-dimension leash derivation, markers-as-questions with proposals, contestable defaults, and a decision menu; regenerated, not stored |
+| **Record a self-assertion** | the agent self-asserts a gate | the leash derivation | `approved-by.<gate>` gets `by: agent` + a five-dimension `why`; written by the operator |
+| **Record a human ratification** | the human ratifies a gate | the human verdict | `approved-by.<gate>` gets `by: <name>` (no `why` required); written by the skill; the spec leaves the review queue |
+| **Act at a gate** | a gate report is returned with `approve`/`change`/`reject` | the chosen action + the gate | spec gate: approve freezes the `.feature`; change edits the contract; impl gate: change edits the code (contract frozen); reject can Director-revert (unfreeze, return to draft) |
+| **Advance provisionally** | the agent self-asserts within the leash | the recorded gate | the run advances immediately, no synchronous human stop; the spec is enqueued for asynchronous ratify-or-kick-back review |
+| **Enforce state integrity** | `validate-spec` runs | the `(status, aligned, markers, .feature)` tuple | an illegal tuple is rejected and cannot be committed; layer-scoped `aligned: true` at draft is accepted as contract sync, not implemented |
+| **Derive the review queue** | the human asks what awaits review | the `approved-by` values across specs | the queue is the set of specs with a `by: agent` approver; no separate backlog file |
+
+---
+
 ## Command surface / API
 
 **Frontmatter additions** (defined in `sdd-plugin`):
