@@ -1,20 +1,61 @@
 ---
-status: implemented
+status: draft
 type: feature
 domain-type: subagent
 blocked-by:
   - sdd-operator
 aligned: true
 produced-by:
-  impl-producer: sdd:builder
+  spec-producer: sdd:sdd-operator
+  impl-producer: sdd:sdd-operator
   impl-judge: sdd:sdd-implementer
-approval:
-  spec:
-    verdict: approve
-    by: unional
-  impl:
-    verdict: approve
-    by: unional
+log:
+  - seq: 1
+    kind: report
+    role: spec-producer
+    agent: sdd:sdd-operator
+    outcome: pass
+    summary: re-open revision — rewrote the retired "generic Builder / null degeneracy / sdd:builder" framing to the approved parent model (SDD-default producer = load governance, author inline warm, record sdd:sdd-operator; SDD-default judge = spawn cold agent; plugin = spawn delegate); split the old null-degeneracy scenario into producer-warm + judge-cold; migrated produced-by.impl-producer to sdd:sdd-operator
+  - seq: 2
+    kind: report
+    role: spec-judge
+    agent: sdd:sdd-spec-judge
+    outcome: fail
+    summary: cold judge passed the warm/cold model rewrite and confirmed no residual retired framing, but caught two defects — disambiguation step said "the skill writes" (ambiguous actor, contradicts parent/child prose "the relay writes"), and UC-2 (init-plugin) lacked an error-case scenario required by the format bar
+  - seq: 3
+    kind: correction
+    correction-kind: judge-iteration
+    cause: coverage-gap
+    detail: tightened the disambiguation step to name the relay as the writer (matching the parent model and child prose); added a UC-2 error-case scenario (init-plugin fails closed on a malformed existing entry) to satisfy the per-operation error-case coverage bar
+  - seq: 4
+    kind: report
+    role: spec-judge
+    agent: sdd:sdd-spec-judge
+    outcome: pass
+    summary: re-judged after the fixes with a fresh cold judge — both prior defects resolved, all 11 scenarios pass the format bar, no residual retired framing in normative content, producer-warm/judge-cold/plugin-spawn distinction correct, fully consistent with the approved parent model
+  - seq: 5
+    kind: correction
+    correction-kind: council-kickback
+    cause: design-overreach
+    detail: Council CHANGE at the spec gate (two changes). (1) The producer fallback was over-narrowed to "always inline" — generalized to a model-tuning escape valve — any NAMED producer agent (plugin or model-tuned, in registry/produced-by slot) is spawned at its own model; only an unnamed slot loads the governance inline at the operator model; judges always spawn cold. Split the producer scenario into unnamed-inline + named-spawned. (2) UC-2 (init-plugin registry write/migrate/version-drift/malformed) removed from this spec — resolution owns only the Operator read side; the write behavior relocates to the sdd-plugin / init spec (in-transit, next segment).
+  - seq: 6
+    kind: report
+    role: spec-judge
+    agent: sdd:sdd-spec-judge
+    outcome: fail
+    summary: cold judge confirmed CHANGE 2 (UC-2 removed/relocated) clean and the unnamed-inline/judge-cold/fail-closed/no-scan/two-plugin behaviors intact, but caught one defect in CHANGE 1 — the named-spawn scenario Given was keyed only on "model-tuned agent", silently excluding the plugin-named case; CHANGE 1 keys the spawn path on any NAMED agent (plugin or model-tuned)
+  - seq: 7
+    kind: correction
+    correction-kind: judge-iteration
+    cause: coverage-gap
+    detail: broadened the named-spawn scenario (title + Given) to any named agent (plugin delegate or model-tuned producer), and added a Then asserting the spawn is keyed on the slot naming an agent rather than on full domain-plugin coverage — faithfully expressing CHANGE 1's "named → spawn" rule across both triggers
+  - seq: 8
+    kind: report
+    role: spec-judge
+    agent: sdd:sdd-spec-judge
+    outcome: pass
+    summary: re-judged with a fresh cold judge — clean spec-gate pass at 8 scenarios; both Council changes faithfully encoded (named→spawn across plugin+model-tuned triggers, UC-2 removed/relocated), 1:1 use-case-to-scenario mapping, no residual retired framing, fail-closed/no-scan/two-plugin intact, consistent with the approved parent model
+approval: {}
 ---
 
 # SDD Operator — Registry Resolution
@@ -23,11 +64,19 @@ approval:
 
 ## What
 
-How the Operator decides **who** to commit. At the start of a segment it reads **only** the project registry `.agents/universal-plugin.json` (the resolved lockfile — never scanning plugin directories), matches the spec's domain, and resolves each of the five production-chain role keys and the three actor governances to a plugin agent or the SDD default. A required role always lands on a real producer — a plugin agent or an SDD default; if it lands on neither, the Operator **hard-fails closed** and records nothing. Two plugins claiming one domain returns `needs-input`; the relay writes the choice to the `domain-plugin` map and resume is decisive.
+How the Operator decides **who** to commit. At the start of a segment it reads **only** the project registry `.agents/universal-plugin.json` (the resolved lockfile — never scanning plugin directories), matches the spec's domain, and resolves each of the five production-chain role keys and the three actor governances to a plugin delegate or the SDD default. This spec owns only the **read side** — the Operator's resolution at segment start. The init-plugin **registry-write** behavior (writing, migrating, and version-reconciling the lockfile entry) is owned by the `sdd-plugin` / init spec (relocation target landing next segment) — tracked as in-transit, not dropped.
+
+Resolution distinguishes role kind and, for producers, whether a model-tuned agent is named:
+
+- **Plugin / named-agent producer** → **spawn**. If a covered domain supplies a delegate agent, or a producer slot **names a model-tuned agent** (in the registry or the `produced-by` slot), the Operator **spawns that agent** so it runs with its **own model and effort**. The spawn path is keyed on whether an agent is *named*, not merely on whether a full domain plugin covers the domain.
+- **Unnamed SDD-default producer** → **inline**. With no named agent for a producer role, the Operator **loads the SDD-default producer governance and authors inline (warm) at the operator's own model**, recorded as `sdd:sdd-operator`.
+- **Judge** → **always spawn cold**. A judge default is a **cold agent the Operator spawns** (`sdd:sdd-spec-judge`, `sdd:sdd-implementer`) in a fresh context — never run inline, regardless of any naming.
+
+A required role always lands on a real delegate — a spawned agent (plugin or named model-tuned producer), a loaded SDD-default producer governance, or a spawned SDD-default judge agent; if it lands on none, the Operator **hard-fails closed** and records nothing. Two plugins claiming one domain returns `needs-input`; the relay writes the choice to the `produced-by` map and resume is decisive.
 
 ## Use Cases
 
-This behavior has two coarse entry-points: the **runtime resolution** the Operator performs at the start of every segment, and the **setup/upgrade write** the init-plugin performs to populate the lockfile that resolution reads. Each entry-point is invoked differently, takes different inputs, and produces a different outcome; the nine frozen `.feature` scenarios are verification cases grouped under one or the other.
+This behavior has **one coarse entry-point**: the **runtime resolution** the Operator performs at the start of every segment. (The setup/upgrade **write** that populates the lockfile is a different subject — owned by the `sdd-plugin` / init spec, relocation target landing next segment.) The eight `.feature` scenarios are all verification cases for this one entry-point.
 
 ### UC-1 — Operator resolves delegates at segment start
 
@@ -35,34 +84,22 @@ This behavior has two coarse entry-points: the **runtime resolution** the Operat
 |---|---|
 | **Trigger** | `sdd-operator` opens a segment for a spec and must decide who to commit to each production-chain role and actor governance. |
 | **Inputs** | The spec's domain; the project registry `.agents/universal-plugin.json` (the resolved lockfile) — read only, never a plugin-directory scan. |
-| **Outcome** | Each required role lands on a real producer (plugin agent or SDD default) and each actor governance on a plugin or SDD default; an unresolvable required role **hard-fails closed** recording nothing; a domain claimed by two plugins returns `needs-input` (decisive on resume). |
+| **Outcome** | Each required role resolves per its kind — a **spawn** for any *named* agent (a plugin delegate **or** a model-tuned producer agent named in the slot), running at its own model/effort; an **unnamed SDD-default producer** role resolves to the Operator loading the producer governance and authoring inline at the operator's model (recorded `sdd:sdd-operator`); a **judge** role always spawns the cold judge agent — and each actor governance resolves to a plugin governance or SDD default; an unresolvable required role **hard-fails closed** recording nothing; a domain claimed by two plugins returns `needs-input` (decisive on resume). |
 
 Verified by (`.feature`):
 
 - The operator resolves roles from the registry without scanning *(happy path — reads the map, no directory scan)*
 - An omitted role key falls back to the naming convention
-- A null role value degenerates with no agent
-- A required role with no resolvable producer hard-fails *(negative — fail-closed, records nothing)*
+- An unnamed SDD-default producer role is run inline by the Operator *(producer fallback — load governance, author warm at operator model, record `sdd:sdd-operator`)*
+- A producer role assigned a named agent is spawned, not run inline *(model-tuning escape valve — any named agent, plugin or model-tuned, spawns at its own model)*
+- An SDD-default judge role is spawned as a cold agent *(judge — `sdd:sdd-spec-judge` spawned cold, always)*
+- A required role with no resolvable delegate hard-fails *(negative — fail-closed, records nothing)*
 - An actor governance is resolved from the registry with an SDD default
-- A domain claimed by two plugins is disambiguated without looping *(`needs-input` branch — relay writes `domain-plugin`, resume is decisive)*
-
-### UC-2 — init-plugin writes / reconciles the registry entry
-
-| | |
-|---|---|
-| **Trigger** | A user runs the plugin's init skill (e.g. `init-quill`) on install, upgrade, or manual re-run. |
-| **Inputs** | The plugin's own version and role coverage; any existing registry entry for the plugin (current-shape, old-shape, or stale-version). |
-| **Outcome** | The registry entry is written in the role-to-agent map shape under the `sdd-plugins` array — domain coverage, five-role map, and plugin version — and reconciled to the plugin's own version, so UC-1 always reads a current, well-shaped lockfile and never compares versions or reads the old shape at runtime. |
-
-Verified by (`.feature`):
-
-- init-plugin writes the resolved role map at setup *(happy path — fresh entry)*
-- init rewrites a pre-operator registry entry to the role map *(migration — old shape → role map)*
-- init reconciles a stale registry entry against its own version *(version drift — rewrite on mismatch)*
+- A domain claimed by two plugins is disambiguated without looping *(`needs-input` branch — relay writes `produced-by`, resume is decisive)*
 
 ## References
 
-`sdd:plugin-contract-governance` (registry shape, role/governance keys); `combat-log-governance` / `sdd-provenance` (the fail-closed structural-error class).
+`sdd:plugin-contract-governance` (registry shape, role/governance keys); `combat-log-governance` / `sdd-provenance` (the fail-closed structural-error class). The init-plugin registry-**write** behavior relocated to the `sdd-plugin` / init spec (in-transit, next segment).
 
 ## Artifacts
 
