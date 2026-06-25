@@ -1,6 +1,7 @@
 ---
 status: implemented
 type: feature
+domain-type: subagent
 priority: 3
 aligned: true
 blocked-by:

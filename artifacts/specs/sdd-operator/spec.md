@@ -1,6 +1,7 @@
 ---
 status: implemented
 type: feature
+domain-type: subagent
 blocked-by: []
 aligned: true
 approval:

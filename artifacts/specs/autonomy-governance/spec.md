@@ -1,6 +1,7 @@
 ---
 status: implemented
 type: feature
+domain-type: skill
 blocked-by:
   - sdd-gate-autonomy
 aligned: true

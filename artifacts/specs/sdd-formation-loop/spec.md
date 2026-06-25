@@ -1,6 +1,7 @@
 ---
 status: implemented
 type: feature
+domain-type: skill
 priority: 3
 aligned: true
 blocked-by:

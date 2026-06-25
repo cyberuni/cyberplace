@@ -1,6 +1,7 @@
 ---
 status: approved
 type: project
+domain-type: skill
 blocked-by: []
 aligned: true
 approval:
