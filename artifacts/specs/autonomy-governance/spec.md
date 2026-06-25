@@ -199,12 +199,13 @@ The survey of escalation points produced four buckets. The rubric must classify 
 
 ## Consumption model
 
-The rubric has **exactly two consumers**. The design explicitly **rejects** the "one governance loaded everywhere on every decision" pattern — it is not loaded by every runtime actor.
+The rubric is a **design/evaluation artifact** — like `skill-design` is for skills — with a **single consumer**: it is **not loaded at runtime by any agent**. The design explicitly **rejects** the "one governance loaded everywhere on every decision" pattern.
 
 | Consumer | When | What it does with the rubric |
 |---|---|---|
-| **The most capable conductor agent** (in SDD, the opus `sdd-operator`) | **runtime** | makes the per-decision self-clear-vs-escalate **verdict** |
-| **The eval tool / ACES** | **design time** | sets each agent config's escalation **posture** against the rubric as the bar |
+| **The eval tool / ACES** | **design time** | sets and verifies each agent config's escalation **posture** against the rubric as the bar |
+
+At **runtime** the self-clear-vs-escalate verdict is **made by** the most capable conductor agent — but from that agent's **own baked-in determination logic**, authored to conform to this rubric. The conductor does not *consume the rubric document* at runtime; no runtime actor does. An agent's baked-in logic carries only the rubric dimensions its own decisions actually touch (e.g. the operator's gates touch contract impact but never the hard floor).
 
 ### Who makes the runtime verdict — the capable conductor
 
@@ -232,7 +233,7 @@ The two outer-loop delegates are **not symmetric**. They differ in *what kind of
 
 A self-clear is **provisional** and **agent-attributed**. It does not make a decision final: a self-cleared verdict lands in an **async human review queue** for ratification. Self-clear advances the work without blocking on a human in-line, but the human still ratifies the trail — self-clear **never** makes a decision final on its own.
 
-This keeps the rubric a **design/evaluation artifact** consumed at design time and a **conductor's runtime verdict input**, not a runtime monolith loaded everywhere.
+This keeps the rubric a **design/evaluation artifact** consumed only at design time — the conductor's runtime verdict comes from its own baked-in logic authored against it, not from loading the rubric at runtime.
 
 ## Relationship to the gate contracts
 
