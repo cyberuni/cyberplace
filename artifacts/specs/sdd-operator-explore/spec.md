@@ -17,18 +17,6 @@ produced-by:
   spec-judge: sdd:sdd-spec-judge
   impl-producer: sdd:builder
   impl-judge: sdd:sdd-implementer
-log:
-  - seq: 1
-    kind: correction
-    correction-kind: council-kickback
-    cause: design-overreach
-    detail: "Council freeze-break — project sdd:sdd-spec-judge as the default spec-judge delegate instead of injecting validate-spec static criteria inline; re-opened implemented→draft to rewrite the 'static-bar domain needs no spec-gate judge agent' scenario"
-  - seq: 2
-    kind: report
-    role: spec-judge
-    agent: sdd:sdd-spec-judge
-    outcome: pass
-    summary: "re-judged the rewritten .feature at the spec gate after the spec.md sync fix — valid boolean Gherkin, ordering intact, spec.md ↔ .feature in sync, no markers"
 ---
 
 # SDD Operator — Explore Phase

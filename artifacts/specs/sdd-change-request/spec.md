@@ -12,36 +12,6 @@ approval:
 produced-by:
   spec-producer: sdd:sdd-scenario-writer
   spec-judge: sdd:sdd-spec-judge
-log:
-  - seq: 1
-    kind: report
-    role: spec-producer
-    agent: sdd:sdd-scenario-writer
-    outcome: pass
-    summary: drafted spec.md + .feature, 17 scenarios covering the CR object, pluggable store, and accept-dispatch
-  - seq: 2
-    kind: report
-    role: spec-judge
-    agent: sdd:sdd-spec-judge
-    outcome: fail
-    summary: format bar passed but flagged two coverage gaps — Council/gateway requesters and the NOT-provenance invariant unmapped to use cases
-  - seq: 3
-    kind: correction
-    correction-kind: judge-iteration
-    cause: coverage-gap
-    detail: spec-judge flagged Council/gateway requesters with no creation scenario and the NOT-provenance invariant scenario with no Use Cases row
-  - seq: 4
-    kind: report
-    role: spec-producer
-    agent: sdd:sdd-scenario-writer
-    outcome: pass
-    summary: closed both gaps — documented Council/gateway as covered by the generic adaptor-write scenario, added the Not-provenance Use Cases row, 18 scenarios
-  - seq: 5
-    kind: report
-    role: spec-judge
-    agent: sdd:sdd-spec-judge
-    outcome: pass
-    summary: re-judge clean — 18 scenarios passing, every Use Cases row maps, both gaps closed, zero open markers
 ---
 
 # SDD Change Request — the async "change needed" flag for any target

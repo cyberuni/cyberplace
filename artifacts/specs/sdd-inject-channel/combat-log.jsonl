@@ -1,0 +1,3 @@
+{"seq":1,"kind":"report","role":"spec-judge","agent":"sdd:sdd-spec-judge","outcome":"fail","summary":"spec gate — 3 passing scenarios, 4 failing the observable-behavior bar, missing Use Cases section and error-case coverage"}
+{"seq":2,"kind":"correction","correction-kind":"gate-reject","cause":"coverage-gap","detail":"spec gate blocked — no ## Use Cases section, no error-case scenario for project, no error-case scenario for inject (unknown/non-injectable agent)"}
+{"seq":3,"kind":"report","role":"spec-judge","agent":"sdd:sdd-spec-judge","outcome":"pass","summary":"spec gate re-judge after revision — 11 of 11 scenarios pass; Use Cases section present, design-property scenarios rewritten as observable behavior, project + inject error cases added"}

@@ -11,12 +11,6 @@ approval:
   spec:
     verdict: approve
     by: unional
-log:
-  - seq: 1
-    kind: report
-    role: spec-judge
-    agent: sdd:sdd-spec-judge
-    outcome: pass
 ---
 
 # Gate Autonomy & Accountability

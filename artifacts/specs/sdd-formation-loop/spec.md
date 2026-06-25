@@ -10,17 +10,6 @@ produced-by:
   plan-producer: sdd:sdd-planner
   impl-producer: sdd:builder
   impl-judge: sdd:sdd-implementer
-log:
-  - seq: 1
-    kind: report
-    role: impl-producer
-    agent: sdd:builder
-    outcome: pass
-  - seq: 2
-    kind: report
-    role: impl-judge
-    agent: sdd:sdd-implementer
-    outcome: pass
 approval:
   spec:
     verdict: approve

@@ -8,27 +8,6 @@ produced-by:
   spec-judge: sdd:sdd-spec-judge
   impl-producer: sdd:builder
   impl-judge: sdd:sdd-implementer
-log:
-  - seq: 1
-    kind: report
-    role: spec-producer
-    agent: sdd:sdd-scenario-writer
-    outcome: pass
-  - seq: 2
-    kind: report
-    role: spec-judge
-    agent: sdd:sdd-spec-judge
-    outcome: pass
-  - seq: 3
-    kind: report
-    role: impl-producer
-    agent: sdd:builder
-    outcome: pass
-  - seq: 4
-    kind: report
-    role: impl-judge
-    agent: sdd:sdd-implementer
-    outcome: pass
 approval:
   spec:
     verdict: approve

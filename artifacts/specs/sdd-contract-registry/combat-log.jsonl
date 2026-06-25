@@ -1,0 +1,7 @@
+{"seq":1,"kind":"report","role":"spec-judge","agent":"sdd:sdd-spec-judge","outcome":"fail"}
+{"seq":2,"kind":"correction","correction-kind":"judge-iteration","cause":"coverage-gap","detail":"non-boolean Then in the omitted-role scenario; no error-case scenario for an entirely-absent governances block"}
+{"seq":3,"kind":"report","role":"spec-producer","agent":"sdd:sdd-scenario-writer","outcome":"pass","summary":"rewrote omitted-role Then to a boolean shape assertion; added the absent-governances-block error case (12 scenarios)"}
+{"seq":4,"kind":"report","role":"spec-judge","agent":"sdd:sdd-spec-judge","outcome":"fail"}
+{"seq":5,"kind":"correction","correction-kind":"judge-iteration","cause":"coverage-gap","detail":"UC-2 (resolution) listed in ## Use Cases but resolution is sdd-operator territory with no error-case scenario; demote UC-2 to a design-context note"}
+{"seq":6,"kind":"report","role":"spec-producer","agent":"sdd:sdd-scenario-writer","outcome":"pass","summary":"demoted UC-2 from the Use Cases table to a design-context note; table now lists only UC-1 (init-write), which this spec owns"}
+{"seq":7,"kind":"report","role":"spec-judge","agent":"sdd:sdd-spec-judge","outcome":"pass","summary":"12/12 scenarios pass; coverage, ordering, UC-1 mapping, and spec.md ↔ .feature coherence all clean"}

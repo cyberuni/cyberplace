@@ -13,23 +13,6 @@ approval:
       confidence:    "safe — spec-judge PASSES clean: all 14 scenarios green, ## Use Cases complete, 0 open markers, prior 5 blockers all resolved"
 produced-by:
   spec-judge: sdd:sdd-spec-judge
-log:
-  - seq: 1
-    kind: report
-    role: spec-judge
-    agent: sdd:sdd-spec-judge
-    outcome: fail
-  - seq: 2
-    kind: correction
-    correction-kind: judge-iteration
-    cause: coverage-gap
-    detail: "render-mermaid lacked an error/boundary scenario; detect-cycle ordering inverted (happy-path-first)"
-  - seq: 3
-    kind: report
-    role: spec-judge
-    agent: sdd:sdd-spec-judge
-    outcome: pass
-    summary: "all 14 scenarios pass; prior 5 blockers + 2 format findings resolved"
 ---
 
 # DAG Tooling
