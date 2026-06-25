@@ -45,7 +45,7 @@ Do not reorder or reformat other entries.
 }
 ```
 
-`impl-producer: null` — writing the agent config is done by the `define-agent` / `improve` skills or the generic Builder, not a bound impl-producer agent. `plan-producer: null` uses the SDD default. Each `null` governance uses the SDD default actor governance.
+`impl-producer: null` — writing the agent config is done by the `define-agent` / `improve` skills or the SDD-default impl-producer (the Operator running `impl-producer-governance` inline), not a bound impl-producer agent. `plan-producer: null` uses the SDD default. Each `null` governance uses the SDD default actor governance.
 
 ### 4. Write the updated file
 
