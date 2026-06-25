@@ -1,5 +1,5 @@
 ---
-status: draft
+status: approved
 type: feature
 blocked-by:
   - sdd-operator
@@ -9,12 +9,8 @@ produced-by:
   spec-judge: sdd:sdd-spec-judge
 approval:
   spec:
-    verdict: pause
-    why:
-      reversibility: "safe — contract-layer edits to one spec folder this run; cheap revert, no published/external effect"
-      blast-radius: "risky — framework governance; the registry shape is a shared contract every plugin init skill and sdd-operator depend on, so the subject reaches beyond this spec's own artifacts"
-      novelty: "risky — producer-fold model change not yet Council-ratified: a producer role degenerates to the operator authoring inline (produced-by sdd:sdd-operator) while a judge role degenerates to a spawned cold SDD-default agent; the retired generic-Builder framing is replaced; version-drift reconcile added as init-write behavior (UC-2)"
-      confidence: "safe — spec-judge passes 13/13 cold, no open markers, spec.md ↔ .feature coherent after one correction iteration this sitting"
+    verdict: approve
+    by: unional
 ---
 
 # SDD Contract Registry

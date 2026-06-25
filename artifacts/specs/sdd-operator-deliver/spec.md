@@ -1,5 +1,5 @@
 ---
-status: draft
+status: approved
 type: feature
 domain-type: subagent
 blocked-by:
@@ -12,7 +12,10 @@ produced-by:
   spec-judge: sdd:sdd-spec-judge
   impl-producer: sdd:sdd-operator
   impl-judge: sdd:sdd-implementer
-approval: {}
+approval:
+  spec:
+    verdict: approve
+    by: unional
 log:
   - seq: 1
     kind: correction
