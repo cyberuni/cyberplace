@@ -28,11 +28,6 @@ reopened:
     to: draft
     by: unional
     why: move the combat-log ledger out of spec.md frontmatter into a sibling combat-log.jsonl file — operational provenance, not contract; never frozen, never gated (Council-ratified)
-log:
-  - { seq: 1, kind: report, role: spec-producer, agent: sdd:sdd-scenario-writer, outcome: pass, summary: "revised contract — combat-log ledger moves to a sibling file, never frozen/gated; +7 scenarios" }
-  - { seq: 2, kind: report, role: spec-judge, agent: sdd:sdd-spec-judge, outcome: pass, summary: "judged revised .feature — 37/37 pass, no leftover frontmatter-ledger contradiction" }
-  - { seq: 3, kind: report, role: spec-producer, agent: sdd:sdd-scenario-writer, outcome: pass, summary: "pinned ledger extension to combat-log.jsonl per Council D1; YAML example reformatted to JSONL" }
-  - { seq: 4, kind: report, role: spec-judge, agent: sdd:sdd-spec-judge, outcome: pass, summary: "re-confirmed after jsonl pin — 37/37 pass, name consistent and asserted" }
 ---
 
 # Production Provenance

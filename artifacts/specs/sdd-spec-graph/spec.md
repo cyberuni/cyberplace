@@ -14,27 +14,6 @@ approval:
 produced-by:
   spec-producer: sdd:sdd-scenario-writer
   spec-judge: sdd:sdd-spec-judge
-log:
-  - seq: 1
-    kind: report
-    role: spec-producer
-    agent: sdd:sdd-scenario-writer
-    outcome: pass
-  - seq: 2
-    kind: report
-    role: spec-judge
-    agent: sdd:sdd-spec-judge
-    outcome: pass
-  - seq: 3
-    kind: report
-    role: spec-producer
-    agent: sdd:sdd-scenario-writer
-    outcome: pass
-  - seq: 4
-    kind: report
-    role: spec-judge
-    agent: sdd:sdd-spec-judge
-    outcome: pass
 ---
 
 # Spec Graph Renderer

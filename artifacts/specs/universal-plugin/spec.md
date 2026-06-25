@@ -8,12 +8,6 @@ subtasks:
   - governance-composition
 produced-by:
   spec-judge: sdd:sdd-spec-judge
-log:
-  - seq: 1
-    kind: report
-    role: spec-judge
-    agent: sdd:sdd-spec-judge
-    outcome: pass
 approval:
   spec:
     verdict: approve

@@ -1,0 +1,2 @@
+{"seq":1,"kind":"report","role":"impl-producer","agent":"sdd:builder","outcome":"pass"}
+{"seq":2,"kind":"report","role":"impl-judge","agent":"sdd:sdd-implementer","outcome":"pass"}

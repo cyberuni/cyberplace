@@ -18,38 +18,6 @@ approval:
   impl:
     verdict: approve
     by: unional
-log:
-  - seq: 1
-    kind: report
-    role: spec-producer
-    agent: sdd:sdd-scenario-writer
-    outcome: pass
-  - seq: 2
-    kind: report
-    role: spec-judge
-    agent: sdd:sdd-spec-judge
-    outcome: pass
-  - seq: 3
-    kind: correction
-    correction-kind: judge-iteration
-    role: spec-producer
-    agent: sdd:sdd-scenario-writer
-    cause: spec-feature-contradiction
-  - seq: 4
-    kind: report
-    role: spec-producer
-    agent: sdd:sdd-scenario-writer
-    outcome: pass
-  - seq: 5
-    kind: report
-    role: spec-judge
-    agent: sdd:sdd-spec-judge
-    outcome: pass
-  - seq: 6
-    kind: report
-    role: impl-judge
-    agent: sdd:sdd-implementer
-    outcome: pass
 ---
 
 # SDD Warden — the Formation-loop delegate agent

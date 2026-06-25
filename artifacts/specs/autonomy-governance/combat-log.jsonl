@@ -1,0 +1,24 @@
+{"seq":1,"kind":"report","role":"spec-producer","agent":"sdd:sdd-scenario-writer","outcome":"pass"}
+{"seq":2,"kind":"report","role":"spec-judge","agent":"sdd:sdd-spec-judge","outcome":"fail"}
+{"seq":3,"kind":"correction","correction-kind":"judge-iteration","cause":"coverage-gap","role":"spec-producer","agent":"sdd:sdd-scenario-writer"}
+{"seq":4,"kind":"report","role":"spec-judge","agent":"sdd:sdd-spec-judge","outcome":"pass"}
+{"seq":5,"kind":"correction","correction-kind":"gate-reject","cause":"coverage-gap","role":"spec-producer","agent":"sdd:sdd-scenario-writer"}
+{"seq":6,"kind":"report","role":"spec-producer","agent":"sdd:sdd-scenario-writer","outcome":"pass"}
+{"seq":7,"kind":"report","role":"spec-judge","agent":"sdd:sdd-spec-judge","outcome":"fail"}
+{"seq":8,"kind":"correction","correction-kind":"judge-iteration","cause":"coverage-gap","role":"spec-producer","agent":"sdd:sdd-scenario-writer"}
+{"seq":9,"kind":"report","role":"spec-producer","agent":"sdd:sdd-scenario-writer","outcome":"pass"}
+{"seq":10,"kind":"report","role":"spec-judge","agent":"sdd:sdd-spec-judge","outcome":"pass"}
+{"seq":11,"kind":"correction","correction-kind":"gate-reject","cause":"coverage-gap","role":"spec-producer","agent":"sdd:sdd-scenario-writer"}
+{"seq":12,"kind":"report","role":"spec-producer","agent":"sdd:sdd-scenario-writer","outcome":"pass"}
+{"seq":13,"kind":"report","role":"spec-judge","agent":"sdd:sdd-spec-judge","outcome":"pass"}
+{"seq":14,"kind":"report","role":"impl-producer","agent":"sdd:builder","outcome":"pass"}
+{"seq":15,"kind":"report","role":"impl-judge","agent":"sdd:sdd-implementer","outcome":"pass"}
+{"seq":16,"kind":"correction","correction-kind":"council-kickback","cause":"design-overreach","detail":"Council re-opened implemented→draft — blast-radius dimension over-escalates, treating mere published-surface location as high risk so every shipped-artifact impl can never self-clear; re-tune to distinguish surface location from a publish act. Prior approval.spec/impl (by unional) superseded; re-earned at the new gates."}
+{"seq":17,"kind":"report","role":"spec-producer","agent":"sdd:sdd-scenario-writer","outcome":"pass"}
+{"seq":18,"kind":"report","role":"spec-judge","agent":"sdd:sdd-spec-judge","outcome":"fail"}
+{"seq":19,"kind":"correction","correction-kind":"judge-iteration","cause":"coverage-gap","role":"spec-producer","agent":"sdd:sdd-scenario-writer"}
+{"seq":20,"kind":"report","role":"spec-judge","agent":"sdd:sdd-spec-judge","outcome":"fail"}
+{"seq":21,"kind":"correction","correction-kind":"judge-iteration","cause":"coverage-gap","role":"spec-producer","agent":"sdd:sdd-scenario-writer"}
+{"seq":22,"kind":"report","role":"spec-producer","agent":"sdd:sdd-scenario-writer","outcome":"pass"}
+{"seq":23,"kind":"report","role":"spec-judge","agent":"sdd:sdd-spec-judge","outcome":"pass"}
+{"seq":24,"kind":"report","role":"impl-judge","agent":"sdd:sdd-implementer","outcome":"pass","summary":"re-tuned blast-radius/reversibility (publish-act not surface-location) conforms — 41/41 frozen scenarios pass"}

@@ -15,24 +15,6 @@ approval:
       blast-radius:  "RISKY — framework spec; the inject channel contract reaches the gateway, the Operator, and every inner-loop agent contract, not just files this spec owns (blocked-by sdd-operator and sdd-plugin, both draft)"
       novelty:       "RISKY — new project/inject interface the Council has not ratified; refusal semantics, non-gateway-entry rule, and the dual-mode injectable set are fresh contestable choices"
       confidence:    "safe — spec-judge PASS on all 11 scenarios, zero open markers, legal state tuple, contract layer (spec.md ↔ .feature) in sync"
-log:
-  - seq: 1
-    kind: report
-    role: spec-judge
-    agent: sdd:sdd-spec-judge
-    outcome: fail
-    summary: spec gate — 3 passing scenarios, 4 failing the observable-behavior bar, missing Use Cases section and error-case coverage
-  - seq: 2
-    kind: correction
-    correction-kind: gate-reject
-    cause: coverage-gap
-    detail: spec gate blocked — no ## Use Cases section, no error-case scenario for project, no error-case scenario for inject (unknown/non-injectable agent)
-  - seq: 3
-    kind: report
-    role: spec-judge
-    agent: sdd:sdd-spec-judge
-    outcome: pass
-    summary: spec gate re-judge after revision — 11 of 11 scenarios pass; Use Cases section present, design-property scenarios rewritten as observable behavior, project + inject error cases added
 ---
 
 # SDD Inject Channel — zoom into a single inner-loop agent
