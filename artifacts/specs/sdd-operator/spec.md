@@ -1,8 +1,15 @@
 ---
-status: draft
+status: implemented
 type: feature
 blocked-by: []
 aligned: true
+approval:
+  spec:
+    verdict: approve
+    by: unional
+  impl:
+    verdict: approve
+    by: unional
 subtasks:
   - sdd-operator-resolution
   - sdd-operator-dispatch
@@ -14,7 +21,7 @@ subtasks:
 
 # SDD Operator & the Plugin-Delegate Model
 
-> **Project spec.** This is the human-readable overview of the **Operator** (`sdd-operator`) — the lead delegate of the SDD Build loop. The normative scenarios live in six **feature children** (see *The decomposition*); this spec holds the narrative, the production-chain model, the fleet-metaphor framing, and the model invariants a person reads first.
+> **Composition spec.** This is the human-readable overview of the **Operator** (`sdd-operator`) — the lead delegate of the SDD Build loop. The normative scenarios live in six **feature children** (see *The decomposition*); this spec holds the narrative, the production-chain model, the fleet-metaphor framing, and the model invariants a person reads first.
 >
 > Decomposed from the former SDD build-loop monolith (one ~290-line spec, 65 scenarios) under the spec-granularity heuristic: re-judge cost scales with spec size, so the behaviors were cut along their seams. The agent file is now named `sdd-operator`; the rename of `sdd-orchestrator.md` → `sdd-operator.md` and the `subagent_type` references is complete.
 
