@@ -1,5 +1,5 @@
 ---
-status: approved
+status: implemented
 type: feature
 domain-type: subagent
 blocked-by: []
@@ -54,6 +54,9 @@ log:
     summary: re-judged after the Use Cases section — clean composition-node spec-gate pass; section satisfies spec-governance (trigger/inputs/outcome), introduces no contradiction, warm/cold model consistent across all locations, composition wiring intact
 approval:
   spec:
+    verdict: approve
+    by: unional
+  impl:
     verdict: approve
     by: unional
 subtasks:

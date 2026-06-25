@@ -1,5 +1,5 @@
 ---
-status: approved
+status: implemented
 type: feature
 domain-type: subagent
 blocked-by:
@@ -14,6 +14,9 @@ produced-by:
   impl-judge: sdd:sdd-implementer
 approval:
   spec:
+    verdict: approve
+    by: unional
+  impl:
     verdict: approve
     by: unional
 log:
