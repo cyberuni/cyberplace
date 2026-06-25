@@ -1,25 +1,38 @@
 ---
-status: implemented
+status: approved
 type: feature
 blocked-by:
   - sdd-operator
   - sdd-plugin
 aligned: true
 produced-by:
+  spec-producer: sdd:sdd-scenario-writer
   impl-producer: sdd:sdd-implementer
 approval:
   spec:
     verdict: approve
     by: unional
-  impl:
-    verdict: approve
-    by: unional
+    why:
+      reversibility: "safe — contract-only edits in one spec folder, cheap revert, nothing published"
+      blast-radius:  "risky — sibling-ledger move changes combat-log-governance, lifecycle-governance, ownership-governance, sdd gateway reading rules; accepted as sequenced follow-on (D2)"
+      novelty:       "resolved — sibling-file model ratified by Council; ledger extension pinned to combat-log.jsonl (D1)"
+      confidence:    "safe — spec-judge re-confirmed 37/37, zero open markers"
 reopened:
   - gate: spec
     from: approved
     to: draft
     by: unional
     why: expand the combat-log contract to carry per-subagent reports and corrections-with-cause (schema lives in combat-log-governance)
+  - gate: spec
+    from: implemented
+    to: draft
+    by: unional
+    why: move the combat-log ledger out of spec.md frontmatter into a sibling combat-log.jsonl file — operational provenance, not contract; never frozen, never gated (Council-ratified)
+log:
+  - { seq: 1, kind: report, role: spec-producer, agent: sdd:sdd-scenario-writer, outcome: pass, summary: "revised contract — combat-log ledger moves to a sibling file, never frozen/gated; +7 scenarios" }
+  - { seq: 2, kind: report, role: spec-judge, agent: sdd:sdd-spec-judge, outcome: pass, summary: "judged revised .feature — 37/37 pass, no leftover frontmatter-ledger contradiction" }
+  - { seq: 3, kind: report, role: spec-producer, agent: sdd:sdd-scenario-writer, outcome: pass, summary: "pinned ledger extension to combat-log.jsonl per Council D1; YAML example reformatted to JSONL" }
+  - { seq: 4, kind: report, role: spec-judge, agent: sdd:sdd-spec-judge, outcome: pass, summary: "re-confirmed after jsonl pin — 37/37 pass, name consistent and asserted" }
 ---
 
 # Production Provenance
@@ -118,22 +131,49 @@ The **operator** writes `produced-by` as part of its dispatch/synthesis — the 
 
 `produced-by` + `approval` answer *"who produced this, and what is the verdict now?"* — they are the **current-state** face: overwritten, last-write-wins, authoritative present. But current-state alone **loses every correction**. When a gate rejects a spec and the producer later fixes it, `approval.spec` ends at `approve` — the rejection that drove the fix has vanished from the record. The mission's history is gone.
 
-So the contract gains a second face: an **append-only `log` ledger** that preserves *what happened to get here* — every dispatch, every correction, in order, never edited or removed. The two faces are complementary, not redundant:
+So the contract gains a second face: an **append-only ledger** that preserves *what happened to get here* — every dispatch, every correction, in order, never edited or removed. The two faces are complementary, not redundant:
 
-| Face | Fields | Mutability | Answers |
+| Face | Location | Mutability | Answers |
 |---|---|---|---|
-| **Current-state** | `produced-by`, `approval` | overwritten | who produced this; the standing verdict now |
-| **Ledger** | `log` | append-only | what happened across the mission, in sequence |
+| **Current-state** | `spec.md` frontmatter (`produced-by`, `approval`, `status`, `aligned`, `blocked-by`) | overwritten | who produced this; the standing verdict now |
+| **Ledger** | sibling `combat-log.jsonl` file in the spec folder | append-only | what happened across the mission, in sequence |
 
 ```mermaid
 flowchart LR
-  disp[operator dispatch] -->|overwrites| state[current-state<br/>produced-by + approval]
-  disp -->|appends| log[log ledger<br/>append-only]
+  disp[operator dispatch] -->|overwrites| state[current-state face<br/>spec.md frontmatter]
+  disp -->|appends| log[combat-log.jsonl<br/>sibling file, append-only]
   log -->|read post-hoc| scanner[doctrine-loop Scanner]
   scanner -->|appends strategy| log
 ```
 
-The ledger exists for one consumer above all: the **doctrine-loop Scanner**, which drafts strategy from the combat log **alone** — no raw session transcripts. If the correction history is not in the log, it is unrecoverable, and recurring-failure detection across missions becomes impossible.
+The ledger exists for one consumer above all: the **doctrine-loop Scanner**, which drafts strategy from the combat log **alone** — no raw session transcripts. If the correction history is not in the ledger, it is unrecoverable, and recurring-failure detection across missions becomes impossible.
+
+### The ledger is a sibling file — never frozen, never gated
+
+The append-only ledger lives in a **sibling file** (`combat-log.jsonl`) inside the spec folder, beside `spec.md` and the `.feature`. This is a contract decision: the ledger is **operational provenance, not contract**.
+
+Two consequences follow:
+
+1. **Freeze scope is `spec.md` + `.feature` only.** When a spec is approved, only those two files are frozen. The sibling ledger is **never** part of the freeze: it keeps accepting new entries while the contract is approved and during any delivery-phase dispatch — the gate cannot freeze something that must keep appending.
+
+2. **Write-to vs. being-judged are separate files.** The spec gate judges `spec.md` and the `.feature` (the contract). It never judges the ledger. But the gate **does append** its own report or correction entry to the sibling ledger as a side effect of running — the judged object and the written-to object are different files. There is no circularity.
+
+The sibling ledger is **never gated** — no gate approval is required or possible for it. It is never frozen, never locked, and is always writable by its owners (the operator and the doctrine-loop Scanner).
+
+### Current-state fields remain in `spec.md` frontmatter
+
+The fields `status`, `approval`, `aligned`, `blocked-by`, and `produced-by` are **current-state** — they belong in `spec.md` frontmatter where the gate can read and write them. Only the append-only ledger moves out to the sibling file. Nothing else about the current-state face changes.
+
+### Readers split by path
+
+Different readers access different files; they do not cross-read:
+
+| Reader | Reads | Never reads |
+|---|---|---|
+| `sdd` gateway (status scan) | `spec.md` frontmatter — `status` field only | the sibling ledger |
+| doctrine-loop Scanner | the sibling `combat-log.jsonl` file | `spec.md` frontmatter |
+
+The gateway performs a **status-only scan**: it reads `status` from `spec.md` frontmatter and does not open the ledger file. The Scanner reads the ledger file to draft strategy and append its output there. Neither reader needs the other's file.
 
 ### The schema lives in `combat-log-governance`, not here
 
@@ -156,43 +196,67 @@ The Scanner records drafted strategy back to the log. The combat-log contract de
 
 ## Use Cases
 
-The combat log is consumed long after a mission ends. Each use case below is an entry-point into the recorded provenance — most are driven by the doctrine-loop Scanner reading the log without any session transcript.
+The combat log is consumed long after a mission ends. Each use case below is an entry-point into the recorded provenance — most are driven by the doctrine-loop Scanner reading the sibling ledger without any session transcript.
 
 | # | Trigger | Inputs | Outcome |
 |---|---|---|---|
-| **UC-1 Record on dispatch** | The operator dispatches a production-chain role | The role, the resolved agent, the dispatch outcome | A `report` entry is appended and `produced-by[role]` is set — provenance captured live as a side effect of the dispatch |
-| **UC-2 Record a correction** | A gate rejects, a producer⇄judge iteration fires, or the Council kicks a spec back | The correction occasion and its matchable `cause` | A `correction` entry is appended to the log with that `cause`; the standing verdict in `approval` is unaffected |
-| **UC-3 Mission reconstruction** | A reviewer or the Scanner needs to know what happened on a spec, after the fact, with no transcript | The spec's `log` ledger | The full ordered sequence of dispatches and corrections is replayable from the log alone |
-| **UC-4 Recurring-pattern detection** | The doctrine-loop Scanner runs across the corpus | Many specs' `log` ledgers | Corrections grouped by `cause` across N specs; a `cause` recurring above threshold is surfaced as a candidate systemic weakness |
-| **UC-5 Kill / post-mortem** | A spec is killed or reverted and someone asks why | The spec's `log` ledger and final `approval` | The deal-breaker and the correction trail that led to the kill are recoverable from the log |
-| **UC-6 Strategy recording** | The Scanner drafts strategy from detected patterns | The corrections that drove it (the `evidence`) | A `strategy` entry is appended by the Scanner, occupying the log slot this contract shapes; it sits unratified until the Council rules |
+| **UC-1 Record on dispatch** | The operator dispatches a production-chain role | The role, the resolved agent, the dispatch outcome | A `report` entry is appended to the sibling `combat-log.jsonl` and `produced-by[role]` is set in `spec.md` frontmatter — provenance captured live as a side effect of the dispatch |
+| **UC-2 Record a correction** | A gate rejects, a producer⇄judge iteration fires, or the Council kicks a spec back | The correction occasion and its matchable `cause` | A `correction` entry is appended to the sibling ledger with that `cause`; the standing verdict in `approval` (frontmatter) is unaffected |
+| **UC-3 Mission reconstruction** | A reviewer or the Scanner needs to know what happened on a spec, after the fact, with no transcript | The spec's sibling `combat-log.jsonl` file | The full ordered sequence of dispatches and corrections is replayable from the ledger alone |
+| **UC-4 Recurring-pattern detection** | The doctrine-loop Scanner runs across the corpus | Many specs' sibling `combat-log.jsonl` files | Corrections grouped by `cause` across N specs; a `cause` recurring above threshold is surfaced as a candidate systemic weakness |
+| **UC-5 Kill / post-mortem** | A spec is killed or reverted and someone asks why | The spec's sibling ledger and final `approval` frontmatter | The deal-breaker and the correction trail that led to the kill are recoverable from the ledger |
+| **UC-6 Strategy recording** | The Scanner drafts strategy from detected patterns | The corrections that drove it (the `evidence`) | A `strategy` entry is appended by the Scanner to the sibling ledger, occupying the slot this contract shapes; it sits unratified until the Council rules |
 
 ---
 
 ## Command surface / API
 
-**Frontmatter additions** (defined in `sdd-plugin`):
+### Spec-folder shape
+
+Every spec domain has exactly these three files in its folder:
+
+| File | Role | Frozen? | Gated? |
+|---|---|---|---|
+| `spec.md` | contract + current-state frontmatter | yes, on `approved` | yes |
+| `<name>.feature` | contract scenarios | yes, on `approved` | yes |
+| `combat-log.jsonl` | operational ledger (append-only) | **never** | **never** |
+
+### Frontmatter fields (`spec.md` only)
 
 | Field | Face | Values | Meaning |
 |---|---|---|---|
 | `produced-by` | current-state | map keyed by role (`spec-producer`, `plan-producer`, `impl-producer`) → plugin-qualified agent name | who produced each artifact; historical record + resume cache |
 | `approval` | current-state | map keyed by gate → `verdict` + `why` | the standing verdict per gate |
-| `log` | ledger | append-only list of entries (`report`, `correction`, `strategy`), each with a monotonic `seq` and a `kind` | the immutable mission history — **shape defined in `combat-log-governance`** |
+| `status`, `aligned`, `blocked-by` | current-state | per lifecycle-governance | contract lifecycle state |
+
+The `log` ledger is **not** a frontmatter field. It lives in the sibling `combat-log.jsonl` file.
+
+### Example spec.md frontmatter (current-state face)
 
 ```yaml
+status: approved
 produced-by:
   spec-producer: aces:aces-scenario-writer
   plan-producer: sdd:sdd-planner
   impl-producer: sdd:sdd-implementer
-log:
-  # entry shapes (report / correction / strategy), the correction-kind set,
-  # and the matchable cause enum are owned by combat-log-governance —
-  # see that governance for the field-by-field schema.
-  - { seq: 1, kind: report, role: spec-producer, agent: aces:aces-scenario-writer, outcome: pass }
-  - { seq: 2, kind: correction, correction-kind: gate-reject, cause: coverage-gap }
+approval:
+  spec:
+    verdict: approve
+    by: unional
 ```
 
-**The `log` ledger** is append-only for every writer: entries are added with the next `seq`, never edited or removed. The operator appends `report` entries (one per production-chain dispatch) and `correction` entries (one per correction, carrying a matchable `cause`); the doctrine-loop Scanner appends `strategy` entries. The full schema — entry fields, the `correction-kind` set, the `cause` enum, and the write-ownership matrix — is the schema owner's: **`combat-log-governance`**.
+### Example combat-log file (sibling ledger face)
+
+```jsonl
+# combat-log.jsonl — append-only; never frozen, never gated
+# Entry shapes (report / correction / strategy), the correction-kind set,
+# and the matchable cause enum are owned by combat-log-governance —
+# see that governance for the field-by-field schema.
+{"seq":1,"kind":"report","role":"spec-producer","agent":"aces:aces-scenario-writer","outcome":"pass"}
+{"seq":2,"kind":"correction","correction-kind":"gate-reject","cause":"coverage-gap"}
+```
+
+**The sibling ledger** is append-only for every writer: entries are added with the next `seq`, never edited or removed. The operator appends `report` entries (one per production-chain dispatch) and `correction` entries (one per correction, carrying a matchable `cause`); the doctrine-loop Scanner appends `strategy` entries. The full schema — entry fields, the `correction-kind` set, the `cause` enum, and the write-ownership matrix — is the schema owner's: **`combat-log-governance`**.
 
 **Resolution order** (operator, per role): cache hit (recorded + installed) → live resolve + record → SDD default + record → `needs-input` once → hard-fail with a blocker if no producer (not even an SDD default) can be resolved.
 
@@ -202,7 +266,7 @@ log:
 - the `domain-plugin` map, if present, is migrated into `produced-by` (rewrite-on-encounter), then dropped;
 - a contested role with **no cache** **fails the gate closed**, deferring to `create-spec` — the gate never asks for or writes the producer choice. Symmetric across the spec and impl gates;
 - a role with **no resolvable producer** — not a plugin producer and not even an SDD default — **fails closed with a blocker**; no `produced-by` entry and no sentinel is written (a structural error, the same class as a malformed entry);
-- a `correction` entry in `log` whose `cause` is absent or **off-enum** **fails the gate** (a structural error — it breaks cross-mission matchability), per `combat-log-governance`; a well-formed `log` does not fail.
+- a `correction` entry in the sibling ledger whose `cause` is absent or **off-enum** **fails the gate** (a structural error — it breaks cross-mission matchability), per `combat-log-governance`; a well-formed ledger does not fail.
 
 **Gherkin scenarios:** [sdd-provenance.feature](./sdd-provenance.feature)
 
@@ -220,7 +284,8 @@ log:
 
 ## Artifacts
 
-| Label | Path |
-|---|---|
-| Spec | `artifacts/specs/sdd-provenance/spec.md` |
-| Scenarios | `artifacts/specs/sdd-provenance/sdd-provenance.feature` |
+| Label | Path | Frozen? | Gated? |
+|---|---|---|---|
+| Spec | `artifacts/specs/sdd-provenance/spec.md` | yes, on `approved` | yes |
+| Scenarios | `artifacts/specs/sdd-provenance/sdd-provenance.feature` | yes, on `approved` | yes |
+| Combat log | `artifacts/specs/sdd-provenance/combat-log.jsonl` | never | never |
