@@ -1,5 +1,5 @@
 ---
-status: approved
+status: implemented
 type: feature
 blocked-by:
   - sdd-gate-autonomy
@@ -11,6 +11,9 @@ produced-by:
   impl-judge: sdd:sdd-implementer
 approval:
   spec:
+    verdict: approve
+    by: unional
+  impl:
     verdict: approve
     by: unional
 log:
@@ -135,6 +138,12 @@ log:
     role: spec-judge
     agent: sdd:sdd-spec-judge
     outcome: pass
+  - seq: 24
+    kind: report
+    role: impl-judge
+    agent: sdd:sdd-implementer
+    outcome: pass
+    summary: re-tuned blast-radius/reversibility (publish-act not surface-location) conforms — 41/41 frozen scenarios pass
 ---
 
 # Autonomy Governance — the risk-assessment rubric
