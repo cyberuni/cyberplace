@@ -5,7 +5,7 @@ blocked-by:
   - sdd-operator
 aligned: true
 produced-by:
-  spec-producer: sdd:sdd-scenario-writer
+  spec-producer: sdd:sdd-operator
   spec-judge: sdd:sdd-spec-judge
 approval:
   spec:
@@ -13,8 +13,8 @@ approval:
     why:
       reversibility: "safe — contract-layer edits to one spec folder this run; cheap revert, no published/external effect"
       blast-radius: "risky — framework governance; the registry shape is a shared contract every plugin init skill and sdd-operator depend on, so the subject reaches beyond this spec's own artifacts"
-      novelty: "risky — contestable defaults resolved by agent judgement that the Council has not yet ratified (governances as a required block with nullable bindings, init fails closed on corrupt JSON, domain-plugin retired in favor of produced-by, ## Use Cases added, and UC-2/resolution demoted to a design-context note)"
-      confidence: "safe — spec-judge passes 12/12, no open markers, spec.md ↔ .feature coherent after two correction iterations"
+      novelty: "risky — producer-fold model change not yet Council-ratified: a producer role degenerates to the operator authoring inline (produced-by sdd:sdd-operator) while a judge role degenerates to a spawned cold SDD-default agent; the retired generic-Builder framing is replaced; version-drift reconcile added as init-write behavior (UC-2)"
+      confidence: "safe — spec-judge passes 13/13 cold, no open markers, spec.md ↔ .feature coherent after one correction iteration this sitting"
 ---
 
 # SDD Contract Registry
@@ -66,6 +66,7 @@ Without a project-level registry, every spec must declare which plugin fills whi
 | # | Trigger | Inputs | Outcome |
 |---|---|---|---|
 | UC-1 | A plugin's `init-<plugin>` skill runs | Plugin name, version, `domains[]`, `roles{}` (five-role map), `governances{}` | The plugin's entry is written idempotently into `.agents/universal-plugin.json` `sdd-plugins[]`; the file is created if absent; other entries are untouched |
+| UC-2 | A plugin's `init-<plugin>` skill re-runs at a newer version over a stale entry | New plugin version, current `roles{}` / `governances{}` shape | The stale entry is reconciled: `version` is updated and `roles`/`governances` are brought to the current shape; an old-shape entry is rewritten; a malformed file fails closed |
 
 > **Design context — resolution.** Resolving a delegate from the registry (reading an entry to find which agent fills a given role) is owned by `sdd-operator`, not by this spec. It is relevant here only because the entry shape defined above is the direct input to that lookup: the `roles{}` and `governances{}` maps are what the operator traverses at resolution time. This spec owns the shape and the init-write behavior; the traversal semantics are `sdd-operator`'s responsibility.
 
@@ -79,7 +80,14 @@ Each entry's `roles` map uses the production-chain roles: `spec-producer`, `plan
 
 ### `null` and missing keys degenerate to the SDD default
 
-For **roles**: a `null` value, or a missing role key, is a legal entry shape — a plugin lists only the roles it specializes and leaves the rest null or absent. For **governances**: the `governances` block itself is required on every entry; each individual binding (`director`, `builder`, `architect`) may be `null`. The degeneration (null/absent → SDD default, using the `<plugin>-<role>` naming convention then the generic default) is performed by `sdd-operator` at resolution time; this spec only guarantees what is a valid stored entry shape.
+For **roles**: a `null` value, or a missing role key, is a legal entry shape — a plugin lists only the roles it specializes and leaves the rest null or absent. For **governances**: the `governances` block itself is required on every entry; each individual binding (`director`, `builder`, `architect`) may be `null`.
+
+A non-null role value **names a spawned agent** (a plugin delegate or a model-tuned producer) that runs at its own model. Degeneration of a `null` or absent role is performed by `sdd-operator` at resolution time and **differs by role kind** — this spec only guarantees what is a valid stored entry shape, not the traversal:
+
+- **A producer role** (`spec-producer`, `plan-producer`, `impl-producer`) that is `null` or absent → the operator **loads the producer governance and authors inline** in its own warm context; the recorded `produced-by.<role>` is `sdd:sdd-operator`. (A named producer agent is instead spawned at its own model.)
+- **A judge role** (`spec-judge`, `impl-judge`) that is `null` or absent → the operator **spawns the SDD-default cold judge agent** (`sdd-spec-judge`, `sdd-implementer`). A judge default is never loaded inline — grader independence requires a cold context.
+
+The `<plugin>-<role>` naming convention applies only when a role **key is omitted** and the plugin ships an agent at that conventional name. There is no "generic Builder" fallback: an unfilled producer is the operator authoring inline, an unfilled judge is the cold SDD-default agent. "Conductor writes, cold judges grade."
 
 ### The registry is the only resolution source
 
@@ -87,7 +95,7 @@ Runtime resolution reads only `.agents/universal-plugin.json`. `plan.md` never c
 
 ### Init writes the file directly and idempotently
 
-`init-<plugin>` reads the file (creating `{}` if missing), locates its own entry by `name`, replaces it if found or appends it if not, and writes back without reordering or reformatting other entries. Re-running rewrites an old-shape entry to the current role-map shape.
+`init-<plugin>` reads the file (creating `{}` if missing), locates its own entry by `name`, replaces it if found or appends it if not, and writes back without reordering or reformatting other entries. Re-running rewrites an old-shape entry to the current role-map shape, and reconciles a stale entry against the plugin's own version: on a version mismatch it updates the recorded `version` and brings the `roles`/`governances` maps to the current plugin shape. The operator never compares versions at runtime — version reconciliation is the init skill's job at install/upgrade/re-run, so the operator only ever reads a current-shape entry.
 
 ### Init fails closed on a corrupt file
 
@@ -108,7 +116,7 @@ If `.agents/universal-plugin.json` exists but contains malformed JSON, `init-<pl
 | `name` | Yes | Plugin name; matches the plugin's `.plugin/plugin.json` `name` |
 | `version` | Yes | Installed plugin version |
 | `domains` | Yes | Open-string domain types this plugin covers |
-| `roles` | Yes | Map of the five production-chain roles to agents; `null` or omitted = SDD default |
+| `roles` | Yes | Map of the five production-chain roles to spawned agents; `null` or omitted = SDD default (a producer role → operator authors inline as `sdd:sdd-operator`; a judge role → operator spawns the cold SDD-default judge agent) |
 | `governances` | Yes | Actor-governance bindings (`director`, `builder`, `architect`); the block is required, each binding may be `null` = SDD default |
 
 Init-write behavior:
@@ -116,7 +124,8 @@ Init-write behavior:
 1. Read `.agents/universal-plugin.json`; create with `{}` if missing.
 2. **If the file exists but contains malformed JSON, fail with an error and stop — do not overwrite.**
 3. Find the entry whose `name` matches this plugin; replace it, or append if absent.
-4. Write back; do not reorder or reformat other entries; rewrite an old-shape entry to the role-map shape.
+4. Reconcile a stale entry against the plugin's own version: on a `version` mismatch, update `version` and bring `roles`/`governances` to the current plugin shape.
+5. Write back; do not reorder or reformat other entries; rewrite an old-shape entry to the role-map shape.
 
 ---
 
@@ -126,7 +135,7 @@ Init-write behavior:
 
 ## Related
 
-- `artifacts/specs/sdd-orchestrator/spec.md` — resolves delegates by reading this registry
+- `artifacts/specs/sdd-operator/spec.md` — resolves delegates by reading this registry
 - `artifacts/specs/sdd-plugin/spec.md` — owning project
 
 ---
