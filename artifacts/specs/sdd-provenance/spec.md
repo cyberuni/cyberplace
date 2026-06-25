@@ -1,5 +1,5 @@
 ---
-status: approved
+status: implemented
 type: feature
 blocked-by:
   - sdd-operator
@@ -7,7 +7,7 @@ blocked-by:
 aligned: true
 produced-by:
   spec-producer: sdd:sdd-scenario-writer
-  impl-producer: sdd:sdd-implementer
+  impl-producer: sdd:sdd-operator
 approval:
   spec:
     verdict: approve
@@ -17,6 +17,9 @@ approval:
       blast-radius:  "risky — sibling-ledger move changes combat-log-governance, lifecycle-governance, ownership-governance, sdd gateway reading rules; accepted as sequenced follow-on (D2)"
       novelty:       "resolved — sibling-file model ratified by Council; ledger extension pinned to combat-log.jsonl (D1)"
       confidence:    "safe — spec-judge re-confirmed 37/37, zero open markers"
+  impl:
+    verdict: approve
+    by: unional
 reopened:
   - gate: spec
     from: approved
@@ -233,7 +236,7 @@ status: approved
 produced-by:
   spec-producer: aces:aces-scenario-writer
   plan-producer: sdd:sdd-planner
-  impl-producer: sdd:sdd-implementer
+  impl-producer: sdd:sdd-operator
 approval:
   spec:
     verdict: approve
