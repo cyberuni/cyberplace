@@ -4,14 +4,56 @@ type: feature
 blocked-by:
   - sdd-operator
 aligned: true
+produced-by:
+  spec-producer: sdd:sdd-scenario-writer
+  spec-judge: sdd:sdd-spec-judge
+log:
+  - seq: 1
+    kind: report
+    role: spec-judge
+    agent: sdd:sdd-spec-judge
+    outcome: fail
+  - seq: 2
+    kind: correction
+    correction-kind: judge-iteration
+    cause: coverage-gap
+    detail: "non-boolean Then in the omitted-role scenario; no error-case scenario for an entirely-absent governances block"
+  - seq: 3
+    kind: report
+    role: spec-producer
+    agent: sdd:sdd-scenario-writer
+    outcome: pass
+    summary: "rewrote omitted-role Then to a boolean shape assertion; added the absent-governances-block error case (12 scenarios)"
+  - seq: 4
+    kind: report
+    role: spec-judge
+    agent: sdd:sdd-spec-judge
+    outcome: fail
+  - seq: 5
+    kind: correction
+    correction-kind: judge-iteration
+    cause: coverage-gap
+    detail: "UC-2 (resolution) listed in ## Use Cases but resolution is sdd-operator territory with no error-case scenario; demote UC-2 to a design-context note"
+  - seq: 6
+    kind: report
+    role: spec-producer
+    agent: sdd:sdd-scenario-writer
+    outcome: pass
+    summary: "demoted UC-2 from the Use Cases table to a design-context note; table now lists only UC-1 (init-write), which this spec owns"
+  - seq: 7
+    kind: report
+    role: spec-judge
+    agent: sdd:sdd-spec-judge
+    outcome: pass
+    summary: "12/12 scenarios pass; coverage, ordering, UC-1 mapping, and spec.md ↔ .feature coherence all clean"
 approval:
   spec:
     verdict: pause
     why:
       reversibility: "safe — contract-layer edits to one spec folder this run; cheap revert, no published/external effect"
       blast-radius: "risky — framework governance; the registry shape is a shared contract every plugin init skill and sdd-operator depend on, so the subject reaches beyond this spec's own artifacts"
-      novelty: "risky — four contestable defaults resolved by agent judgement (governances as a required block with nullable bindings, init fails closed on corrupt JSON, domain-plugin retired in favor of produced-by, ## Use Cases added) that the Council has not yet seen"
-      confidence: "safe — spec-judge passes 11/11, no open markers, spec.md ↔ .feature coherent"
+      novelty: "risky — contestable defaults resolved by agent judgement that the Council has not yet ratified (governances as a required block with nullable bindings, init fails closed on corrupt JSON, domain-plugin retired in favor of produced-by, ## Use Cases added, and UC-2/resolution demoted to a design-context note)"
+      confidence: "safe — spec-judge passes 12/12, no open markers, spec.md ↔ .feature coherent after two correction iterations"
 ---
 
 # SDD Contract Registry
@@ -63,9 +105,8 @@ Without a project-level registry, every spec must declare which plugin fills whi
 | # | Trigger | Inputs | Outcome |
 |---|---|---|---|
 | UC-1 | A plugin's `init-<plugin>` skill runs | Plugin name, version, `domains[]`, `roles{}` (five-role map), `governances{}` | The plugin's entry is written idempotently into `.agents/universal-plugin.json` `sdd-plugins[]`; the file is created if absent; other entries are untouched |
-| UC-2 | `sdd-operator` needs to resolve a production-chain role for a domain | Domain name, role key (e.g., `spec-producer`) | The resolved agent name is read from the matching entry's `roles{}`/`governances{}`; a `null` or absent binding degenerates to the SDD default |
 
-> **UC-1** is init-write territory (owned here). **UC-2** is operator-resolution territory (owned by `sdd-operator`); it is listed here because the entry shape this spec defines is the direct input to that lookup.
+> **Design context — resolution.** Resolving a delegate from the registry (reading an entry to find which agent fills a given role) is owned by `sdd-operator`, not by this spec. It is relevant here only because the entry shape defined above is the direct input to that lookup: the `roles{}` and `governances{}` maps are what the operator traverses at resolution time. This spec owns the shape and the init-write behavior; the traversal semantics are `sdd-operator`'s responsibility.
 
 ---
 
