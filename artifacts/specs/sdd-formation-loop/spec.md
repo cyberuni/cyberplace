@@ -56,7 +56,7 @@ flowchart TB
   end
   corpus --> warden[Warden · Formation loop<br/>continuous, corpus-wide]
   warden -->|too big| split[split-spec station]
-  warden -->|overlap / contradiction| dedupe[dedupe-specs station<br/>NOT YET BUILT]
+  warden -->|overlap / contradiction| dedupe[dedupe-specs station]
   warden -->|edges changed| render[render-spec-graph station]
   split --> corpus
   dedupe --> corpus
@@ -89,17 +89,17 @@ This is the load-bearing distinction of this spec. The Architect appears in **tw
 
 The Formation loop **does not fire** as the per-spec structural check at a gate, and the per-spec gate structural judgment **is not** the Formation loop. They share the Architect's *concern* (structural fit) but operate at different altitudes. Formation reads the corpus and reshapes it between missions; the gate judges one mission's contract in the moment.
 
-### Formation runs through stations; one station is not yet built
+### Formation runs through stations
 
-The Formation loop's acts are performed by **stations** — skills the Operator runs in-session over the corpus, exactly as `split-spec` was once a noted gap and now exists:
+The Formation loop's acts are performed by **stations** — skills the Operator runs in-session over the corpus:
 
 | Act | Station | Status |
 |---|---|---|
 | split a monolith | `split-spec` | **exists** |
 | keep the graph sound | `render-spec-graph` | **exists** |
-| dedupe / reconcile | `dedupe-specs` | **not yet built — a noted gap** |
+| dedupe / reconcile | `dedupe-specs` | **exists** |
 
-Dedupe and contradiction-reconciliation have **no dedicated station yet**. Until `dedupe-specs` exists, that work is manual; this spec names the station as the future home for it, mirroring how `split-spec` was a gap before it was built. A station is *not* a spec dependency — the Formation loop depends on the spec **graph** and **discovery**, not on the existence of any given station skill.
+Every act now has a dedicated station; `dedupe-specs` and `split-spec` were each once a noted gap before being built. A station is *not* a spec dependency — the Formation loop depends on the spec **graph** and **discovery**, not on the existence of any given station skill.
 
 ### The split trigger is the spec-granularity heuristic
 
@@ -116,9 +116,9 @@ Formation never decides what to build (Campaign/Director) and never grows the pr
 | Use case | Trigger | Inputs | Outcome |
 |---|---|---|---|
 | **Split a monolith** | a spec trips the spec-granularity heuristic (too many scenarios / >1 behavior / independent cadences) | the oversized spec + the granularity heuristic | run `split-spec` → a project spec + feature children |
-| **Dedupe overlap** | two specs cover overlapping behavior | the overlapping specs | (future `dedupe-specs` station) merge/dedupe so each behavior has one home |
+| **Dedupe overlap** | two specs cover overlapping behavior | the overlapping specs | run `dedupe-specs` → a dedupe proposal naming the overlapping specs so each behavior has one home |
 | **Keep the graph sound** | the rendered graph is stale vs the `blocked-by` edges, or a cycle appears | the corpus's `blocked-by` edges | run `render-spec-graph` → `graph.md` back in sync, cycles surfaced |
-| **Reconcile a contradiction** | two governances or two specs contradict | the contradicting artifacts | a reconciliation (future `dedupe-specs` / manual) so the corpus holds no internal contradiction |
+| **Reconcile a contradiction** | two governances or two specs contradict | the contradicting artifacts | run `dedupe-specs` → a reconciliation proposal naming the contradicting artifacts so the corpus holds no internal contradiction |
 | **Stay altitude-disciplined** | a request that belongs to another loop (a build/deprecate proposal, a process lesson), or a per-spec gate structural check | the misrouted request, or the spec at its gate | acts corpus-wide; produces no out-of-loop decision and routes the request to the owning loop (Campaign / Doctrine); does not run as the per-spec gate check |
 
 ---
@@ -130,7 +130,7 @@ Formation never decides what to build (Campaign/Director) and never grows the pr
 | Trigger | corpus-wide, continuous — never a per-spec gate check |
 | Split | the granularity heuristic (`spec-governance`); fires only when tripped |
 | Graph | `render-spec-graph` re-syncs `graph.md` from `blocked-by` edges and surfaces cycles |
-| Dedupe / reconcile | future `dedupe-specs` station (manual until built) so each behavior has one home and no contradiction stands |
+| Dedupe / reconcile | `dedupe-specs` proposes the resolution (naming the artifacts) so each behavior has one home and no contradiction stands |
 | Out of scope | what-to-build (Campaign), how-we-work (Doctrine) |
 
 ---
