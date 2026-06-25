@@ -2,10 +2,25 @@
 status: draft
 type: feature
 priority: 3
-aligned: false
+aligned: true
 blocked-by:
   - sdd-provenance
-approval: {}
+produced-by:
+  spec-judge: sdd:sdd-spec-judge
+log:
+  - seq: 1
+    kind: report
+    role: spec-judge
+    agent: sdd:sdd-spec-judge
+    outcome: pass
+approval:
+  spec:
+    verdict: pause
+    why:
+      reversibility: "safe — contract layer only (spec.md + .feature), cheap revert, no external effect"
+      blast-radius:  "risky — corpus-wide SDD framework governance; the meta loop reaches outside the repo into the shared taxonomy/doctrine contract, beyond this spec's own artifacts"
+      novelty:       "risky — the across-installations field-loop design is a new contestable choice the Council has not ratified"
+      confidence:    "safe — spec-judge passed 19/19, spec.md ↔ .feature reconciliation clean"
 ---
 
 # SDD Forge Loop — improving SDD itself
