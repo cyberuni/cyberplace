@@ -144,6 +144,30 @@ These are changes to `check-spec-state.mts` (the mechanical authority); the pros
 
 ---
 
+## Use Cases
+
+A **use case** is an entry-point — a trigger, its inputs, and its outcome. Each maps to one-or-more boolean scenarios in the `.feature`.
+
+| Use case | Trigger | Inputs | Outcome |
+|---|---|---|---|
+| **Run the initial strategy evaluation** | a new run starts against a request | the request | an upfront evaluation runs before any exploration, assessing blast radius + the other dimensions, and emits both a leash and an approach strategy |
+| **Record the strategy block** | the initial evaluation completes | the leash, the chosen approach methods, derived-vs-user | a durable run-level `strategy` block carries `leash`, `approach[]`, and `by`; the ceiling is omitted |
+| **Adopt a user-specified approach** | the user states the approach in the request | the user-specified strategy | the run adopts it and does not override with a derived one |
+| **Contain blast radius from the outset** | the request touches shared/risky surfaces | the request + chosen approach | the approach may scope behind mocks, isolate in a worktree, or avoid exploratory implementation, constraining exploration |
+| **Hold the run-level leash, re-checked per gate** | the run records autonomy reach | the leash from the initial evaluation | the leash lives in `strategy` (no per-gate `leash` field) and is re-checked at each gate against the current picture |
+| **Keep the ceiling session-local** | the Conductor caps the run | the ceiling + the derivation | effective leash = `min(ceiling, derivation)`; the ceiling is not written to frontmatter |
+| **Record an approve verdict** | the agent self-asserts a gate within the leash | the gate outcome | `approval.<gate>` gets `verdict: approve` + a four-dimension `why` + `by` |
+| **Record a pause verdict** | the agent reaches a gate outside the leash | the gate outcome | `approval.<gate>` gets `verdict: pause` + the four-dimension halt `why`; `by` is omitted |
+| **Distinguish the halt cause** | a gate verdict is `pause` | the read on the dimensions vs the ceiling | `cause: dimension` when a dimension read risky, `cause: ceiling` when capped despite all-safe |
+| **Derive the review / awaiting-input queues** | the human asks what is owed | the `approval` map across specs | `approve`/`by: agent` forms the review queue; `pause` forms the awaiting-input queue; no stored backlog or stop-log |
+| **Ratify a self-assertion** | the human ratifies an agent-asserted gate | `approval.<gate>: approve, by: agent` | the entry's `by` becomes the human name and the spec leaves the review queue |
+| **Overwrite a paused gate in place** | a paused gate is later passed | the `pause` entry + the passing verdict | the verdict flips to `approve` in place; one verdict per gate; prior pause reasoning is not preserved inline |
+| **Reject illegal state** | `validate-spec` checks an entry | a malformed `approval` entry | rejected for: missing four-dimension `why`, unknown gate, invalid `verdict`, a `pause` carrying `by`, or an `approve`/`reject` missing `by` |
+| **Honor positional authority** | a spawned delegate reaches a human gate | the delegate's position (no user channel) | it may write only `by: agent` or `pause`; it emits a verdict packet and stops; it never writes a human-attributed ratification, even on a relayed "user approved" |
+| **Write a human ratification in-session** | the in-session position receives a genuine gate verdict | the real user channel + the human verdict | it may write the human-named verdict, advance `status`, and freeze the contract |
+
+---
+
 ## Cross-spec impact (big blast radius — flagged, implementation serialized)
 
 This spec **renames `approved-by` → `approval`** and changes its shape (adds `verdict`, drops the per-entry `leash`) **across the whole SDD model**. Implementing it is a wide migration and is **deferred and serialized** (a sibling spec, `sdd-state-legality`, is paused on the same shared files). The migration must touch, at minimum:

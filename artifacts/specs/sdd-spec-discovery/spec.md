@@ -53,6 +53,22 @@ The convention lives in `lifecycle-governance` (the canonical home for what a sp
 
 ---
 
+## Use Cases
+
+A **use case** is an entry-point — a trigger, its inputs, and its outcome. Each maps to one-or-more boolean scenarios in the `.feature`.
+
+| Use case | Trigger | Inputs | Outcome |
+|---|---|---|---|
+| **Discover a spec** | an SDD consumer enumerates specs | git-tracked `**/spec.md` files | folders whose frontmatter `status` is in the lifecycle enum are in the discovered set |
+| **Exclude a non-spec** | a `spec.md` lacks a lifecycle `status`, or is untracked by git | the candidate `spec.md` | it is not in the discovered set |
+| **Discover across roots** | specs live under different parent directories | two specs with lifecycle status under different roots | both are discovered; no fixed specs root is assumed |
+| **Resolve a domain (flat / nested / full-slug)** | a consumer requests a domain by name | the discovered set + a domain name (leaf or full slug) | it returns the matching spec folder slug |
+| **Return the spec folder, not the implementation** | a domain's spec folder differs from its implementation folder | the requested domain | it returns the folder containing `spec.md` |
+| **Disambiguate an ambiguous domain** | a domain name matches more than one spec folder | the ambiguous name + the candidate folders | it asks the user which is meant; it does not guess |
+| **Derive without enumeration** | discovery runs over a repo | discovered specs | the set is derived from `spec.md` frontmatter only; no registry or index of paths is consulted |
+
+---
+
 ## Skill surface
 
 No CLI surface. The convention is a rule encoded in `lifecycle-governance` and consumed by SDD skills.

@@ -103,6 +103,25 @@ This project composes the feature specs below; each owns its detailed rules and 
 
 ---
 
+## Use Cases
+
+A **use case** is an entry-point — a trigger, its inputs, and its outcome. Each maps to one-or-more boolean scenarios in the `.feature`.
+
+| Use case | Trigger | Inputs | Outcome |
+|---|---|---|---|
+| **Enter SDD through the gateway** | the user wants to work on a feature under SDD | the user invokes `sdd` | `sdd` classifies the action and routes to `create-spec`, `validate-spec`, or `render-spec-graph`, without loading authoring governances or editing project files |
+| **Load governance from skills** | a producer or judge needs reference rules | the installed SDD plugin | it loads the relevant `sdd:*` governance skill through the harness; no `governance show` CLI is required |
+| **Register a domain plugin** | a domain plugin's init skill runs in an SDD project | the plugin's role map | `.agents/universal-plugin.json` gains a `sdd-plugins` entry with domains/version/roles/governances using the five canonical roles; an old shape is rewritten |
+| **Resolve delegates and disambiguate domains** | the operator resolves a domain's chain | `.agents/universal-plugin.json` (not `plan.md`) | delegates resolve from the registry; an ambiguous domain returns `needs-input` and the skill records the user's `domain-plugin` choice |
+| **Scaffold or backfill a contract** | the user runs `create-spec` for a domain | a brief (or existing implementation, in backfill) | the co-delivered artifact chain is scaffolded; missing core intent suspends before any write; backfill confirms inferred intent before writing |
+| **Surface gaps and observations** | a producer returns a discovery or cross-cutting note | the operator result | content gaps become open markers surfaced before the gate; observations are reported without blocking the current spec |
+| **Run the spec gate** | the user runs `validate-spec` at the spec gate | `spec.md` + `.feature` | the contract layer is judged (universal format bar + domain criteria); markers fail it; on approval `status → approved` and the `.feature` is frozen with recorded provenance |
+| **Honor the frozen contract** | an agent attempts to edit a frozen `.feature` | an `approved` spec | the agent refuses and directs reverting to draft; a fatal contract gap reopens via a Director revert through the gate |
+| **Run the impl gate** | `validate-spec` targets the impl gate | the frozen `.feature` + implementation | implementation runs against frozen scenarios; the gate passes only when every frozen scenario passes, then `status → implemented` with `aligned` true; uncovered scenarios fail it |
+| **Render the spec graph** | `render-spec-graph` runs | `blocked-by` and `subtasks` edges | the DAG and composition views render; a feature with more than one project parent fails; tasks trace to scenarios |
+
+---
+
 ## Spec format
 
 The frontmatter schema (`status`, `type`, `aligned`, `blocked-by`, `subtasks`, `strategy`, the structured `approval` map with per-gate `verdict`/`by`, `domain-plugin`) and the required body sections are defined by `sdd:lifecycle-governance`; the universal `.feature` and `spec.md` format bar is defined by `sdd:spec-governance`. This plugin spec does not restate them. Specs must be formatted for human gate review: tables, diagrams, short paragraphs, and clear heading hierarchy when they make intent easier to inspect.
