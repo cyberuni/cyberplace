@@ -1,5 +1,5 @@
 ---
-status: implemented
+status: approved
 type: feature
 blocked-by:
   - sdd-gate-autonomy
@@ -11,9 +11,6 @@ produced-by:
   impl-judge: sdd:sdd-implementer
 approval:
   spec:
-    verdict: approve
-    by: unional
-  impl:
     verdict: approve
     by: unional
 log:
@@ -96,6 +93,48 @@ log:
     role: impl-judge
     agent: sdd:sdd-implementer
     outcome: pass
+  - seq: 16
+    kind: correction
+    correction-kind: council-kickback
+    cause: design-overreach
+    detail: "Council re-opened implemented→draft — blast-radius dimension over-escalates, treating mere published-surface location as high risk so every shipped-artifact impl can never self-clear; re-tune to distinguish surface location from a publish act. Prior approval.spec/impl (by unional) superseded; re-earned at the new gates."
+  - seq: 17
+    kind: report
+    role: spec-producer
+    agent: sdd:sdd-scenario-writer
+    outcome: pass
+  - seq: 18
+    kind: report
+    role: spec-judge
+    agent: sdd:sdd-spec-judge
+    outcome: fail
+  - seq: 19
+    kind: correction
+    correction-kind: judge-iteration
+    cause: coverage-gap
+    role: spec-producer
+    agent: sdd:sdd-scenario-writer
+  - seq: 20
+    kind: report
+    role: spec-judge
+    agent: sdd:sdd-spec-judge
+    outcome: fail
+  - seq: 21
+    kind: correction
+    correction-kind: judge-iteration
+    cause: coverage-gap
+    role: spec-producer
+    agent: sdd:sdd-scenario-writer
+  - seq: 22
+    kind: report
+    role: spec-producer
+    agent: sdd:sdd-scenario-writer
+    outcome: pass
+  - seq: 23
+    kind: report
+    role: spec-judge
+    agent: sdd:sdd-spec-judge
+    outcome: pass
 ---
 
 # Autonomy Governance — the risk-assessment rubric
@@ -146,8 +185,8 @@ Five gradient dimensions. Each is assessed **low → high**; low pushes toward s
 
 | Dimension | Low risk (toward self-clear) | High risk (toward escalate) |
 |---|---|---|
-| **Reversibility** | cheap to undo — draft prose, a derived artifact, a tracked file with a cheap revert | destructive, published, or carrying an external side effect |
-| **Blast radius** | narrow **user-facing** impact — no `blocked-by` dependents, no published/installed surface touched | many `blocked-by` dependents, or touches a published/installed surface. Measured by **user-facing impact, not artifact count** |
+| **Reversibility** | cheap to undo — draft prose, a derived artifact, a tracked file with a cheap revert | destructive, or carrying an actual external side effect (an irreversible publish/release act or data egress). A git-tracked file in a shipped package with a cheap revert is LOW. |
+| **Blast radius** | narrow **user-facing** impact — no `blocked-by` dependents, no breaking change, no publish/release act | many `blocked-by` dependents, a breaking user-facing change, or an actual publish/release act. Editing a tracked source file that merely lives in a shipped package, with no dependents and no breaking change, is LOW. Measured by **user-facing impact, not artifact count** — surface location is not a publish act. |
 | **Contract impact** | **additive / non-breaking** — a new scenario, a new optional path, a clarification that does not alter an existing scenario's truth | **breaking** — alters or removes an established behavior. Weighted by user-impact: who downstream depends on it and how badly |
 | **Decision novelty** | trivial / defaulted, or already human-ratified | a new contestable choice the human has not seen |
 | **Confidence** | evidence converges; a clean judge pass; no unresolved markers | a marginal verdict; unresolved `<!-- open: -->` markers |
@@ -180,7 +219,7 @@ The per-decision verdict aggregates the floor and the gradients:
 2. **Any single high-risk dimension → `escalate`**, naming that dimension as the dominant reason. (This mirrors the leash's "one risky dimension is enough.")
 3. **All dimensions low → `self-clear`.**
 
-> **Weighting — user-facing blast radius is highest.** Among the five gradient dimensions, **user-facing blast radius carries the most weight**. A **high** user-facing-impact reading **dominates the aggregate** and forces `escalate` **even when every other dimension reads low risk**. Blast radius stays measured as **user-facing impact** — `blocked-by` dependents plus published/installed surface — **not artifact count**: editing many files with no dependents and no published surface is still low blast radius and does not dominate.
+> **Weighting — user-facing blast radius is highest.** Among the five gradient dimensions, **user-facing blast radius carries the most weight**. A **high** user-facing-impact reading **dominates the aggregate** and forces `escalate` **even when every other dimension reads low risk**. Blast radius stays measured as **user-facing impact** — `blocked-by` dependents, breaking user-facing changes, or an actual publish/release act — **not artifact count** and **not surface location**: a tracked source file that merely lives in a shipped package, with no dependents and no breaking change, is still low blast radius and does not dominate.
 
 The verdict **always names the dominant dimension / reason** so the consumer can see *why* — `escalate · contract impact (breaking, 4 dependents)`, `self-clear · all low`, `escalate · hard floor (data egress)`.
 
