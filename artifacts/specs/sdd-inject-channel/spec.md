@@ -4,8 +4,35 @@ type: feature
 blocked-by:
   - sdd-operator
   - sdd-plugin
-aligned: false
-approval: {}
+aligned: true
+produced-by:
+  spec-judge: sdd:sdd-spec-judge
+approval:
+  spec:
+    verdict: pause
+    why:
+      reversibility: "safe — draft contract, cheap revert, files only"
+      blast-radius:  "RISKY — framework spec; the inject channel contract reaches the gateway, the Operator, and every inner-loop agent contract, not just files this spec owns (blocked-by sdd-operator and sdd-plugin, both draft)"
+      novelty:       "RISKY — new project/inject interface the Council has not ratified; refusal semantics, non-gateway-entry rule, and the dual-mode injectable set are fresh contestable choices"
+      confidence:    "safe — spec-judge PASS on all 11 scenarios, zero open markers, legal state tuple, contract layer (spec.md ↔ .feature) in sync"
+log:
+  - seq: 1
+    kind: report
+    role: spec-judge
+    agent: sdd:sdd-spec-judge
+    outcome: fail
+    summary: spec gate — 3 passing scenarios, 4 failing the observable-behavior bar, missing Use Cases section and error-case coverage
+  - seq: 2
+    kind: correction
+    correction-kind: gate-reject
+    cause: coverage-gap
+    detail: spec gate blocked — no ## Use Cases section, no error-case scenario for project, no error-case scenario for inject (unknown/non-injectable agent)
+  - seq: 3
+    kind: report
+    role: spec-judge
+    agent: sdd:sdd-spec-judge
+    outcome: pass
+    summary: spec gate re-judge after revision — 11 of 11 scenarios pass; Use Cases section present, design-property scenarios rewritten as observable behavior, project + inject error cases added
 ---
 
 # SDD Inject Channel — zoom into a single inner-loop agent
@@ -32,6 +59,20 @@ SDD delegation is one-way and coarse: the gateway routes to the Operator, which 
 
 - **Tuning how an agent behaves**, durably — today done only by editing a governance out of band.
 - **Reaching one agent live**, to converse or pilot through it — not possible at all.
+
+---
+
+## Use Cases
+
+Three entry-points, all through the `sdd` gateway. Each names the trigger, what it receives, and what it produces. Project and inject are the two moves; the third is the shared refusal path that guards both.
+
+| Trigger | Inputs | Outcome |
+|---|---|---|
+| **Council projects into an agent** — wants to durably tune how an inner-loop agent behaves | a named inner-loop agent + a program (a governance) | the agent's program is imprinted; every future autonomous run applies it; the Council withdraws |
+| **Council injects into an agent** — wants to reach one agent live, to converse or pilot through it | a named inner-loop agent | a live channel opens to that one agent; the channel closes on withdraw |
+| **Project or inject is refused** — the input is invalid or the target is not injectable | an invalid program, or a name matching no inner-loop agent / a non-injectable agent, or an entry that bypasses the gateway | the move is refused; nothing is changed and no channel opens |
+
+Each use case is verified by one-or-more scenarios in the `.feature`: the happy path, the refusal mirrors (invalid program, non-injectable target, unknown name, non-gateway entry), and the contract-preservation cases under a live channel.
 
 ---
 
