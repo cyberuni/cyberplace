@@ -18,9 +18,8 @@ Feature: SDD Contract Registry
     Then a role it does not specialize is recorded as null
 
   Scenario: A role key may be omitted from the entry
-    Given a plugin specializes only some roles
-    When its entry is written
-    Then a role it does not specialize may be omitted from the roles map
+    Given a written entry that omits a role the plugin does not specialize
+    Then the entry with the omitted role key is a valid entry shape
 
   Scenario: An entry carries a governances map with the required keys
     Given a plugin registers in sdd-plugins
@@ -31,6 +30,10 @@ Feature: SDD Contract Registry
     Given a plugin does not override a governance
     When its entry is written
     Then that governance binding is recorded as null in the governances map
+
+  Scenario: An entry missing the governances block is not a valid entry shape
+    Given a written entry that has no governances block
+    Then the entry is not a valid entry shape
 
   # -- resolution source --------------------------------------------------
 
