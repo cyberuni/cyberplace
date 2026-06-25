@@ -37,13 +37,21 @@ Feature: Gate autonomy and accountability
     Then it is the minimum of the ceiling and the derivation
     And the agent stops at the spec gate
 
+  Scenario: a breaking change to a depended-on frozen contract forces escalate
+    Given building proved a frozen scenario wrong and forces a Director-revert
+    And the frozen contract has dependents recorded in blocked-by
+    When the agent assesses the impl gate
+    Then contract impact reads risky as a breaking change weighted by dependents
+    And the derived leash is "auto-none"
+    And the agent escalates the impl gate for the human verdict
+
   # ── gate report ───────────────────────────────────────────────────────
 
   Scenario: the gate report records the leash derivation
     Given the agent reaches a gate
     When it emits the gate report
     Then the report contains a leash-derivation block
-    And the block shows the four-dimension assessment per gate
+    And the block shows the five-dimension assessment per gate
     And it shows the derived and effective leash with a reason per dimension
 
   Scenario: the gate report is decidable
@@ -64,7 +72,7 @@ Feature: Gate autonomy and accountability
     Given the agent self-asserts a gate
     When the operator records it
     Then approved-by for that gate has by "agent"
-    And approved-by for that gate has a why block with the four-dimension derivation
+    And approved-by for that gate has a why block with the five-dimension derivation
 
   Scenario: a human ratification carries no derivation
     Given the human ratifies a gate

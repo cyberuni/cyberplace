@@ -1,22 +1,22 @@
 ---
-status: implemented
+status: approved
 type: feature
 blocked-by:
   - sdd-operator
   - sdd-plugin
 aligned: true
+produced-by:
+  spec-judge: sdd:sdd-spec-judge
 approval:
   spec:
     verdict: approve
     by: unional
-  impl:
-    verdict: approve
-    by: agent
-    why:
-      reversibility: "safe — tracked markdown + one test-fixture string; cheap git revert; no runtime, schema, or external effect"
-      blast-radius: "safe — mechanical rename of a spec-gate-ratified token plus one additive doc subsection across this spec's documented impl surfaces; the sdd-mission-loop frontmatter touch is a required free-text value migration, not a contract change; no code logic/registry/API altered; pnpm verify green"
-      novelty: "safe — zero new decisions at impl; rename scheme and emphatic-rule wording were ratified at the spec gate; encoding is purely mechanical"
-      confidence: "safe — all frozen scenarios read PASS; pnpm verify green (123 tests); check-spec-state 20/20; state machine legal; no open markers"
+log:
+  - seq: 1
+    kind: report
+    role: spec-judge
+    agent: sdd:sdd-spec-judge
+    outcome: pass
 ---
 
 # Gate Autonomy & Accountability
@@ -77,7 +77,7 @@ The three leash values are not a free choice — they **fall out of a risk asses
 
 The names follow an `auto-<reach>` scheme — they name **how far autonomy reaches**, not where it stops: `auto-none` self-asserts nothing, `auto-spec` self-asserts through the spec gate, `auto-all` self-asserts every gate.
 
-**A gate is self-assertable only when all four risk dimensions read *safe*:**
+**A gate is self-assertable only when all five risk dimensions read *safe*:**
 
 | Dimension | Safe → self-assert | Risky → stop and ask |
 |---|---|---|
@@ -85,6 +85,14 @@ The names follow an `auto-<reach>` scheme — they name **how far autonomy reach
 | **Blast radius** | contained to the artifacts **this spec owns** (its Artifacts table) | reaches beyond — another spec, a shared/frozen contract, an installed/public surface, prod, security |
 | **Decision novelty** | trivial / defaulted, or already ratified by the human | new contestable choices the human has not seen |
 | **Confidence** | clear pass on the judge bar | marginal verdict, unresolved markers |
+| **Contract impact (semver)** | additive / non-breaking change to the contract | a **breaking** change to the contract — at the impl gate the **Director-revert** (unfreezing a frozen `.feature` because building proved it wrong), weighted by `blocked-by` dependents |
+
+**Contract impact is scoped to where the operator's gates actually touch it.** It is the fifth dimension, classified by the **semver model**, not by frozen-ness:
+
+- **Impl gate** — the **Director-revert** (unfreezing a frozen `.feature` because building proved the contract wrong) is a **breaking** change to the contract → reads `escalate · contract impact`, weighted by the count of `blocked-by` dependents on the frozen contract. This is the dimension's primary bite; the earlier four-dimension leash caught the Director-revert only incidentally (through blast radius / novelty), never by name.
+- **Spec gate** — a change to an already-approved contract classifies **additive / non-breaking** (low) versus **breaking** (high) per the semver model. Frozen-ness is **not** the signal — the semver class is.
+
+The operator has **no hard-floor decision** (irreversible external publication / data egress is the Forge loop's Bucket D, not the operator's). Contract impact never escalates to a hard floor here — it weights the leash like the other four dimensions.
 
 "This spec" is the unit-of-work boundary, not the `spec.md` file: its **subject** — the artifacts it owns — may be code, a skill, docs, or a config. Blast radius asks whether the change stays inside that boundary or ripples outside it. (For `sdd-gate-autonomy` the subject is the gate model, and it edits sibling specs — so blast radius reads risky.)
 
@@ -94,7 +102,9 @@ The names follow an `auto-<reach>` scheme — they name **how far autonomy reach
 - spec gate safe, impl gate risky → `auto-spec`
 - both safe → `auto-all`
 
-This is exactly the reasoning from the incident post-mortem: *autonomous-to-the-end is OK when the work is reversible, low-blast, the decisions are already ratified, and the verdict is confident.* Each dimension is one of those conditions; the gate they gate is the leash.
+This is exactly the reasoning from the incident post-mortem: *autonomous-to-the-end is OK when the work is reversible, low-blast, the decisions are already ratified, the verdict is confident, and the change does not break a depended-on contract.* Each dimension is one of those conditions; the gate they gate is the leash.
+
+**The leash conforms to `autonomy-governance`; it does not load it.** The five dimensions are the operator's **runtime implementation** of the `autonomy-governance` rubric. The operator does **not** load `autonomy-governance` at runtime — the dimensions are **baked into the leash** (this table and the operator's Step 4b). `autonomy-governance` is the **canonical design-time definition** the leash conforms to — an eval bar, like `skill-design` is for skills — referenced when authoring or auditing the leash, never imported during a run.
 
 **Why an aggressive derived leash is still safe.** A self-asserted gate is **provisional** (`approved-by: agent`) and lands in the review queue. So the leash only chooses **stop-and-ask-now** (synchronous) versus **self-assert-and-continue, leaving a review marker** (asynchronous). It never makes a decision *final* — the human still ratifies the trail. That is what lets the agent lean autonomous without stealing accountability.
 
@@ -107,7 +117,7 @@ This is exactly the reasoning from the incident post-mortem: *autonomous-to-the-
 
 That self-assertion is still **provisional** (`approved-by.impl: { by: agent }` → review queue), so blowing through the impl gate is safe: the human ratified the contract synchronously and reviews the implementation asynchronously. (If Run 2's implementation instead made big contestable choices, novelty would read risky and the impl gate would derive `auto-none` — the assessment handles it either way.)
 
-**The reasoning has a home: the gate report.** Every gate report carries a **Leash derivation** block — the four-dimension assessment for each gate, the derived value, the effective value after any ceiling, and the one-line reasoning per dimension. This is the auditable place the agent explains *why it stopped (or didn't)*; it is persisted to `approved-by.<gate>.why` on a self-assertion (see *Accountability stays human* below).
+**The reasoning has a home: the gate report.** Every gate report carries a **Leash derivation** block — the five-dimension assessment for each gate, the derived value, the effective value after any ceiling, and the one-line reasoning per dimension. This is the auditable place the agent explains *why it stopped (or didn't)*; it is persisted to `approved-by.<gate>.why` on a self-assertion (see *Accountability stays human* below).
 
 ### Accountability stays human: `approved-by` (who **and** why)
 
@@ -119,10 +129,11 @@ approved-by:
     by: agent          # provisional — awaiting human ratification
     leash: auto-none   # effective leash at this gate
     why:               # the derivation (present only for an agent self-assertion)
-      reversibility: "safe — docs only, revert is cheap"
-      blast-radius:  "risky — edits sibling specs"
-      novelty:       "risky — new model, unratified"
-      confidence:    "safe — no open markers"
+      reversibility:   "safe — docs only, revert is cheap"
+      blast-radius:    "risky — edits sibling specs"
+      novelty:         "risky — new model, unratified"
+      confidence:      "safe — no open markers"
+      contract-impact: "safe — additive, no breaking change to a depended-on contract"
   impl:
     by: unional           # ratified by the human; no `why` needed
 ```
@@ -150,7 +161,7 @@ The incident's real error was therefore not the field's meaning but **committing
 When the agent reaches a gate under any autonomy level, it emits a **gate report** — the same two-axis verdict a judge produces, made reviewable and **decidable**. Its sections:
 
 - **Verdict per backward face**: Director (scope — still worth shipping?), Builder (contract/impl complete & testable against the bar?), Architect (fit — conventions, no dup/conflict).
-- **Leash derivation** (the reasoning home): the four-dimension assessment (reversibility, blast radius, decision novelty, confidence) for each gate, the **derived** leash, the **effective** leash after any human ceiling, and a one-line reason per dimension. This is *why the agent stopped where it did*, made auditable.
+- **Leash derivation** (the reasoning home): the five-dimension assessment (reversibility, blast radius, decision novelty, confidence, contract impact) for each gate, the **derived** leash, the **effective** leash after any human ceiling, and a one-line reason per dimension. This is *why the agent stopped where it did*, made auditable.
 - **Open markers as questions** — each blocking marker phrased as a question **with the agent's proposed answer**, so "approve" can mean "accept my proposals" and the human only engages where they disagree.
 - **Contestable defaults**: the decisions a human might have made differently, listed explicitly with a jump link (`file:line` / marker) to each decision point.
 - **Diff since last report** — on a re-review (after a "change"), only what moved, so re-review is incremental, not a full re-read.
@@ -167,19 +178,20 @@ STATUS: ready for spec gate · agent-asserted — ratify or kick back
 
 Verdict
   Director  (scope)    PASS — real incident, contained, worth shipping
-  Builder (contract) PASS — 20 scenarios cover leash / attribution / FSM / report / gate-actions
+  Builder (contract) PASS — 22 scenarios cover leash / attribution / FSM / report / gate-actions
   Architect (fit)    PASS — extends operator + sdd-plugin; reuses aligned as-is
 
 Leash derivation
-  gate        reversibility  blast       novelty  confidence   read
-  spec gate   safe           cross-spec  novel    none         RISKY
+  gate        reversibility  blast       novelty  confidence   contract  read
+  spec gate   safe           cross-spec  novel    none         additive  RISKY
   impl gate   — not reached —
   derived: auto-none   ceiling: none   effective: auto-none
   reasons
-    reversibility  docs only, revert is cheap                       → safe
-    blast radius   edits sdd-operator + sdd-plugin (other specs) → risky
-    novelty        new gate model, human has not ratified            → risky
-    confidence     no open markers                                   → safe
+    reversibility    docs only, revert is cheap                       → safe
+    blast radius     edits sdd-operator + sdd-plugin (other specs) → risky
+    novelty          new gate model, human has not ratified            → risky
+    confidence       no open markers                                   → safe
+    contract impact  additive — no breaking change to a frozen contract → safe
 
 Open markers as questions (block Draft → Approved)
   none — approved-by shape resolved to the gate-keyed map { spec, impl }
@@ -214,15 +226,16 @@ Verdict
   Director (scope)     PASS — contract unchanged, no goal drift
 
 Leash derivation
-  gate        reversibility  blast        novelty       confidence    read
+  gate        reversibility  blast        novelty       confidence    contract     read
   spec gate   (ratified by unional — Run 1)
-  impl gate   safe           local-only   settled       tests green   SAFE
+  impl gate   safe           local-only   settled       tests green   unchanged    SAFE
   derived: auto-all   ceiling: none   effective: auto-all
   reasons
-    reversibility  new files only, revert is cheap                  → safe
-    blast radius   one skill folder; no shared or frozen surface    → safe
-    novelty        contract ratified; impl is mechanical            → safe
-    confidence     every scenario passes as a test                  → safe
+    reversibility    new files only, revert is cheap                  → safe
+    blast radius     one skill folder; no shared or frozen surface    → safe
+    novelty          contract ratified; impl is mechanical            → safe
+    confidence       every scenario passes as a test                  → safe
+    contract impact  no Director-revert; frozen .feature unchanged    → safe
 
 Contestable defaults
   - node:test over the pure functions (no vitest dependency)
@@ -264,7 +277,7 @@ Where implementing this spec modifies SDD **skills** (e.g., `validate-spec`) or 
 |---|---|---|
 | `approved-by` | map keyed by gate (`spec`, `impl`); each entry `{ by: agent \| <human>, leash, why? }` | who passed each gate, and (for an agent self-assertion) the recorded leash derivation; `by: agent` = provisional |
 
-`approved-by.<gate>.by` is the pointer; `approved-by.<gate>.why` is the four-dimension derivation, present only when `by: agent`. The **operator** writes self-assertions; the **skill** writes human ratifications.
+`approved-by.<gate>.by` is the pointer; `approved-by.<gate>.why` is the five-dimension derivation, present only when `by: agent`. The **operator** writes self-assertions; the **skill** writes human ratifications.
 
 **Leash** — declared in the prompt to the create-spec / validate-spec skills (default `auto-none`); held in the main thread, not persisted.
 
