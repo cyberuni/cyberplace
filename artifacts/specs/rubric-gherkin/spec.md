@@ -1,11 +1,13 @@
 ---
-status: approved
+status: implemented
 type: feature
 blocked-by: []
 aligned: true
 produced-by:
   spec-producer: sdd:sdd-scenario-writer
   spec-judge: sdd:sdd-spec-judge
+  impl-producer: sdd:builder
+  impl-judge: sdd:sdd-implementer
 log:
   - seq: 1
     kind: report
@@ -17,8 +19,21 @@ log:
     role: spec-judge
     agent: sdd:sdd-spec-judge
     outcome: pass
+  - seq: 3
+    kind: report
+    role: impl-producer
+    agent: sdd:builder
+    outcome: pass
+  - seq: 4
+    kind: report
+    role: impl-judge
+    agent: sdd:sdd-implementer
+    outcome: pass
 approval:
   spec:
+    verdict: approve
+    by: unional
+  impl:
     verdict: approve
     by: unional
 ---
