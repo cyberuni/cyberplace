@@ -18,8 +18,10 @@ Feature: SDD Contract Registry
     Then a role it does not specialize is recorded as null
 
   Scenario: A role key may be omitted from the entry
-    Given a written entry that omits a role the plugin does not specialize
-    Then the entry with the omitted role key is a valid entry shape
+    Given a plugin that does not specialize a given role
+    When the init skill writes the entry omitting that role key
+    Then the entry is written without error
+    And the written entry omits that role key
 
   Scenario: An entry carries a governances map with the required keys
     Given a plugin registers in sdd-plugins
@@ -30,10 +32,6 @@ Feature: SDD Contract Registry
     Given a plugin does not override a governance
     When its entry is written
     Then that governance binding is recorded as null in the governances map
-
-  Scenario: An entry missing the governances block is not a valid entry shape
-    Given a written entry that has no governances block
-    Then the entry is not a valid entry shape
 
   # -- resolution source --------------------------------------------------
 
@@ -68,8 +66,20 @@ Feature: SDD Contract Registry
     When the plugin init skill runs
     Then the entry is rewritten to the five-role map
 
+  Scenario: Init reconciles a stale version on a mismatch
+    Given .agents/universal-plugin.json has an entry for this plugin recording an older version
+    When the plugin init skill runs at a newer plugin version
+    Then the entry version is updated to the newer plugin version
+    And the entry roles and governances are reconciled to the newer plugin shape
+
   Scenario: Init fails loudly on a malformed registry file
     Given .agents/universal-plugin.json exists but contains malformed JSON
     When the plugin init skill runs
+    Then it fails with an error
+    And the file is not overwritten
+
+  Scenario: Init rejects an entry with no governances block
+    Given an entry payload that has no governances block
+    When the init skill attempts to write that entry
     Then it fails with an error
     And the file is not overwritten
