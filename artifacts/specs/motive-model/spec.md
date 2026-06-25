@@ -2,6 +2,23 @@
 status: draft
 type: project
 blocked-by: []
+aligned: true
+produced-by:
+  spec-judge: sdd:sdd-spec-judge
+log:
+  - seq: 1
+    kind: report
+    role: spec-judge
+    agent: sdd:sdd-spec-judge
+    outcome: pass
+approval:
+  spec:
+    verdict: pause
+    why:
+      reversibility: "safe — additive Use Cases backfill on a draft spec.md, no .feature change, cheap revert"
+      blast-radius:  "risky — corpus-foundational project spec; freezing it binds the actor/delegate vocabulary the whole framework inherits, beyond this spec's own artifacts"
+      novelty:       "risky — approval ratifies the full model (four actors, two-tier split, two-axis gate) plus an open split-candidate decision the human has not seen at the gate"
+      confidence:    "safe — spec-judge passes all 18 scenarios, 0 open markers, contract layer in sync"
 ---
 
 # The Motive Model
@@ -407,6 +424,44 @@ Three things this clears up:
 ---
 
 **Gherkin scenarios:** [motive-model.feature](./motive-model.feature)
+
+---
+
+## Use Cases
+
+This spec delivers **two artifacts**, and the entry-points fall into two clusters — a human *reading* the documentation, and an AI agent *consuming* the governance. Each use case is verified by one-or-more scenarios in `motive-model.feature` (one-to-many); the **Scenarios** column names each tracing scenario, and the union covers all 18.
+
+### Output 1 — Human artifact: the Motive Model documentation
+
+Lives at `apps/website/src/content/docs/motive-model/`. The trigger is a reader opening a given section; inputs are the completed documentation plus the section they are reading; the outcome is the understanding that section must convey.
+
+| Trigger | Inputs | Outcome | Scenarios |
+|---|---|---|---|
+| A reader reads the **premise / opening** | the completed documentation | they understand why production scarcity made the title the unit of a team, why AI abundance dissolves that limit, and that the new unit is the role (a motive a person holds), not the title | Documentation covers the premise |
+| A reader reads the **Actors and Delegates** section | the completed documentation | they can distinguish an Actor (human, defined by motive, holds accountability) from a Delegate (agent given intent through a delegation surface, no motive), understand the substrate-to-party transition on both sides, and see that "delegate" is first a verb | Documentation defines Actors and Delegates as distinct kinds |
+| A reader reads the **four actors** section | the completed documentation | they learn Director (intend), Builder (generate), Architect (structure), Strategist (accumulate) — each with motive, object, signature output, and boundary to its neighbor — plus the generalization ladder (design / architecture / curation) and the delivery-vs-foundation two-tier split | Documentation covers the four actors with motives and objects |
+| A reader reads the **faces and gate** section | the completed documentation | they understand the forward/backward face split, that Gatekeeper is a face not a standalone actor, producer ≠ judge as separation-of-duties plus a time-split, the gate as a two-axis decision (verdict × change-request), and the two terminal corners (kill, feedback edge) | Documentation covers the two faces and the gate |
+| A reader reads the **delegation surfaces** section | the completed documentation | they learn the four surfaces (brief / contract+exemplars / shape / corpus), the bar as the criteria face of each surface, and that surfaces are categories rather than products | Documentation covers delegation surfaces and the bar |
+| A reader reads the **variants** section | the completed documentation | they learn the three membership gates, the confirmed variants (Explorer, QA) and forming variants (Scout, Conductor) with rationale, that the Strategist has no variants, and that variants are lateral specializations not advancements | Documentation covers variants with their status |
+| A reader reads the **positions** section | the completed documentation | they see a table mapping PM / Designer / Engineer / QA to their default actor and face, which additional actors each can now access with delegates, and QA framed as the backward-face Builder variant | Documentation covers positions vs roles |
+| A reader reads the **worked scenarios** section | the completed documentation | they follow a decoupled open-source bug fix (contributor + maintainer) and a compressed solo developer shipping with delegates, with the active actor role identified at each step | Documentation covers the compressed and decoupled scenarios |
+| A reader reads the **recursion** section | the completed documentation | they understand the framework applies to product, process, and toolchain as overlapping (not stacked) sets, and that codification carries knowledge across the seams | Documentation covers recursion as overlapping sets |
+| A reader reads the **glossary** | the completed documentation | they find every load-bearing term defined in dependency order, with earlier terms grounding later ones | Documentation includes a glossary in dependency order |
+
+### Output 2 — Machine artifact: the agent-configuration governance
+
+Published under `artifacts/ai-era/motive-model/`, consumable via `cyber-skills governance show`. The trigger is an agent reading or applying the governance; inputs are the generated governance (and the change or situation it is reasoning over); the outcome is the rule the agent can now apply.
+
+| Trigger | Inputs | Outcome | Scenarios |
+|---|---|---|---|
+| An agent reads the **actor definitions** | the generated governance | it has Director, Builder, Architect, Strategist as typed definitions — each with motive, object, signature output, delegation surface, bar criteria, and the boundary to its neighbors | Machine artifact enumerates the four actors as typed definitions |
+| An agent reasons about a **delegate's standing** | the generated governance | it knows delegates have no intrinsic motive (capacity, not a party), that accountability stays with the actor and never delegates, and that an agent becomes a delegate only when given intent through a delegation surface | Machine artifact encodes the delegate-has-no-motive rule |
+| An agent **applies the gate rules** to a change | the generated governance + the change under review | it produces a two-axis verdict (verdict × change-request with timing), classifies a block+none outcome as a kill (Director kill vs Architect/Builder kill), and knows block forces within-PR timing | Machine artifact encodes gate decision rules |
+| An agent **handles a deferred change request** | the generated governance + the deferred work item | it assigns the work to its owning actor (feature → Director, refactor → Architect), applies the two scheduling options (defer new work vs defer current work), and weighs rework cost vs switch/blocking cost | Machine artifact encodes the deferred-branch scheduling rules |
+| An agent reads the **loop definitions** | the generated governance | it knows the inner loop (within a task), the product feedback edge (across tasks on one product), and the outer loop (across products), and that the Strategist does not fire on the inner loop | Machine artifact encodes the three loops and when each fires |
+| An agent reads the **Strategist interface** definition | the generated governance | it knows the Strategist-delegate watches continuously (flags candidates, drafts conventions), the human Strategist holds accept/prune, and that detection-by-delegate / decision-by-human is the template for every actor interface | Machine artifact encodes the Strategist interface pattern |
+| An agent **applies the producer ≠ judge rule** | the generated governance | it knows the producing instance is not its own independent judge, that this is a time-split (general criteria via the bar ahead of time, focused judgment in the loop), and that switching forward→backward on the same artifact spends arm's-length standing | Machine artifact encodes producer ≠ judge per artifact |
+| An agent runs **`governance show`** for motive-model | the governances published under `artifacts/ai-era/motive-model/` | it receives the actor definitions and decision rules in a format suitable for agent reasoning | Machine artifact is consumable via governance show |
 
 ---
 
