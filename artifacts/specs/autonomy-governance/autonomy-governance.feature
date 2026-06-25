@@ -27,11 +27,19 @@ Feature: Autonomy Governance — the risk-assessment rubric
     Given an irreversible-publication decision whose gradient dimensions all read low risk
     When the rubric assesses the decision
     Then the verdict is escalate
+    And the verdict names the hard floor as the reason
 
   # ── Reversibility dimension ──
 
   Scenario: A cheap-to-undo decision reads low on reversibility
     Given a decision that edits draft prose with a cheap revert and no external effect
+    And every other dimension reads low risk
+    When the rubric assesses the decision
+    Then the verdict is self-clear
+
+  Scenario: A git-tracked file in a shipped package with a cheap revert and no publish act reads low on reversibility
+    Given a decision that edits a git-tracked source file that lives in a publishable or installable directory
+    And the change has a cheap revert and performs no actual publish or release act and has no external side effect
     And every other dimension reads low risk
     When the rubric assesses the decision
     Then the verdict is self-clear
@@ -45,19 +53,32 @@ Feature: Autonomy Governance — the risk-assessment rubric
   # ── Blast radius dimension ──
 
   Scenario: A decision with no user-facing dependents reads low on blast radius
-    Given a decision with no blocked-by dependents and no published surface touched
+    Given a decision with no blocked-by dependents and no breaking change and no publish or release act
     And every other dimension reads low risk
     When the rubric assesses the decision
     Then the verdict is self-clear
 
-  Scenario: A decision touching a published surface reads high on blast radius and escalates
-    Given a decision that touches a published or installed surface
+  Scenario: A git-tracked file in a shipped package with a cheap revert and no dependents reads low on blast radius
+    Given a decision that edits a git-tracked source file that lives in a publishable or installable directory
+    And the file has a cheap revert and no breaking change and no blocked-by dependents and no publish or release act is performed
+    And every other dimension reads low risk
+    When the rubric assesses the decision
+    Then the verdict is self-clear
+
+  Scenario: An actual publish or release act reads high on blast radius and escalates
+    Given a decision that performs an actual publish or release act such as npm publish
     When the rubric assesses the decision
     Then the verdict is escalate
     And the verdict names blast radius as the dominant dimension
 
-  Scenario: Blast radius is measured by user-facing impact, not artifact count
-    Given a decision that edits many artifacts but has no blocked-by dependents and touches no published surface
+  Scenario: A decision with many blocked-by dependents reads high on blast radius and escalates
+    Given a decision that has many blocked-by dependents and performs no publish or release act and introduces no breaking change
+    When the rubric assesses the decision
+    Then the verdict is escalate
+    And the verdict names blast radius as the dominant dimension
+
+  Scenario: Blast radius is measured by user-facing impact, not artifact count and not surface location
+    Given a decision that edits many artifacts but has no blocked-by dependents and no breaking change and performs no publish or release act
     And every other dimension reads low risk
     When the rubric assesses the decision
     Then the verdict is self-clear
@@ -171,6 +192,7 @@ Feature: Autonomy Governance — the risk-assessment rubric
     Given a domain-disambiguation decision whose gradient dimensions all read low risk
     When the rubric assesses the decision
     Then the verdict is escalate
+    And the verdict names the decision as an intent decision
 
   Scenario: Bucket D — forge-loop redaction always escalates by invariant
     Given a forge-loop redaction / data-egress decision whose gradient dimensions all read low risk
@@ -209,6 +231,12 @@ Feature: Autonomy Governance — the risk-assessment rubric
     Then the verdict is agent-attributed
     And the decision lands in the async human review queue
     And the decision is not final
+
+  Scenario: An eval of a fully-compliant config raises no flags
+    Given an agent config is evaluated against the rubric at config-design time
+    And every escalation point's posture matches the rubric verdict
+    When the evaluation runs
+    Then the evaluation raises no flags
 
   Scenario: An eval flags an escalation point whose posture mismatches the rubric verdict
     Given an agent config is evaluated against the rubric at config-design time
