@@ -1,5 +1,5 @@
 ---
-status: approved
+status: implemented
 type: feature
 blocked-by:
   - sdd-gate-autonomy
@@ -7,8 +7,13 @@ aligned: true
 produced-by:
   spec-producer: sdd:sdd-scenario-writer
   spec-judge: sdd:sdd-spec-judge
+  impl-producer: sdd:builder
+  impl-judge: sdd:sdd-implementer
 approval:
   spec:
+    verdict: approve
+    by: unional
+  impl:
     verdict: approve
     by: unional
 log:
@@ -80,6 +85,16 @@ log:
     kind: report
     role: spec-judge
     agent: sdd:sdd-spec-judge
+    outcome: pass
+  - seq: 14
+    kind: report
+    role: impl-producer
+    agent: sdd:builder
+    outcome: pass
+  - seq: 15
+    kind: report
+    role: impl-judge
+    agent: sdd:sdd-implementer
     outcome: pass
 ---
 
