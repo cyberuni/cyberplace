@@ -46,7 +46,7 @@ outside SDD, no loop).
 
 ## Where we are
 
-**Resolved (A–I, L):** see `OPEN-QUESTIONS.md`. Commit `e60e69d` landed the harness→plugin
+**Resolved (A–J, L):** see `OPEN-QUESTIONS.md`. Commit `e60e69d` landed the harness→plugin
 + external-forge restructure and the B-sweep (`type` = artifact-type, composition role derived
 from edges, `domain-type` removed, `domain-plugin` distinct from `produced-by`). Commits
 `022b93d` (G + per-file freeze) and `dde86a4` (F + CR concurrency) landed the latest two.
@@ -68,10 +68,14 @@ from edges, `domain-type` removed, `domain-plugin` distinct from `produced-by`).
   source-claim locks CRs). Write-back conditional (PR `Closes #N` / direct-to-main → `done`);
   follow-ups re-enter as new CRs. Swept `intake/README.md`, `design/unit-and-organization.md`.
 
+- **J — RESOLVED.** Escape = the **task-vs-CR boundary**. Not every task is a CR; "is this a
+  CR?" ≡ "should SDD engage?" Recognition is grill + impact analysis (may carve a CR out and
+  escape the rest), not a gateway classifier. Escaped work **bypasses and leaves no record**
+  (non-CR isn't SDD's to track; spec-prose-only is in git). Escape ≠ trivial-CR self-clear
+  (folder move breaks imports → impl retest → it's a CR). Swept `intake/`, `gateway/`.
+
 **Still open — need rulings (in `OPEN-QUESTIONS.md`):**
 
-- **J.** Escape-hatch — does escaped work bypass the lifecycle, or is it a CR that self-clears
-  outside the gates?
 - **K.** `spec-digest` re-home — its consumer (the spec-gate station) dissolved into
   `authoring/`, and "one spec.md + one .feature" no longer maps to a multi-folder project spec.
 
@@ -90,8 +94,7 @@ fresh plugin** from the new spec.
 ## How to resume
 
 1. Read `OPEN-QUESTIONS.md` + `DESIGN-NOTES.md`.
-2. Pick an open ruling (suggest **J** next — escape-hatch, now informed by I's
-   intent-vs-work split; or **K**, the `spec-digest` re-home). Discuss conversationally,
+2. Pick the last open ruling (**K**, the `spec-digest` re-home). Discuss conversationally,
    decide, write the ruling into the affected design/capability file(s), mark it RESOLVED in
    `OPEN-QUESTIONS.md`.
 3. Commit per the repo's commit discipline (one concern per commit; `pnpm verify` is run by

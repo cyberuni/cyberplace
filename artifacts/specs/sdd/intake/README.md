@@ -1,10 +1,11 @@
 # intake/ — the CR subsystem
 
 The **change request (CR)** is the unit of work — step 1 of the Mission Loop and the top of
-the abstraction stack. Everything that enters SDD enters as a CR, and nothing re-enters
-except as a CR. `intake/` is the **CR subsystem**: it owns the CR concept, its **sources**
-(prompt / Asana / Jira / Linear / GitHub / a local store), the **escape hatch** (work that
-is not spec-able), and the **inject channel** (zoom into a single inner-loop agent). It
+the abstraction stack. Everything SDD **acts on** enters as a CR, and nothing re-enters
+except as a CR; a **task that is not a CR escapes** (below). `intake/` is the **CR
+subsystem**: it owns the CR concept, its **sources** (prompt / Asana / Jira / Linear /
+GitHub / a local store), the **escape hatch** (the task-vs-CR boundary), and the **inject
+channel** (zoom into a single inner-loop agent). It
 **feeds** missions — it is not "step 1 inside the mission"; a scheduler pulls a CR from here
 and runs the Mission Loop (`../mission/`) to step 4. All sources reach the project through
 the universal `../gateway/`.
@@ -84,40 +85,50 @@ retrospective finding becomes a **new CR**, which is how the outer loops close b
 single intake. A human raises a CR by deciding *what to build*; a loop raises a CR by
 finding what should change next.
 
-## Escape hatch — work that is not spec-able
+## Escape hatch — the task vs CR boundary
 
-Some requested work is **not spec-able as a feature of a subject**, and SDD recognizes it
-and lets it **escape** the lifecycle rather than forcing empty ceremony — a draft with no
-freezable scenarios, a spec gate with nothing to judge, an impl gate with no behavior to
-verify. The escape is **explicit and recorded, never silent**, and no draft spec is created
-for escaped work.
+An agent receives **tasks**; **not every task is a CR.** "Is this a CR?" is the same
+question as **"should SDD engage at all?"** — so the determination is logically *prior* to
+SDD: a task that is not a CR need never load SDD. The escape hatch exists because that
+determination must **also** be handled *inside* a loaded SDD — tasks arrive while SDD is
+already running, and SDD must recognize the ones that are not its work and let them
+**escape** rather than force empty ceremony (a draft with no freezable scenarios, a gate
+with nothing to judge).
 
-The distinguishing test is whether there is **subject behavior to freeze as scenarios**:
+**Recognition is grill + impact analysis, not an up-front classifier.** When a task reaches
+a loaded SDD it gets the normal grilling and impact analysis; if that finds **no
+suite-relevant behavior**, the task escapes. The same analysis can **discover a CR within or
+related to** a task — then that behavioral part is carved out as a CR and the remainder
+escapes. There is no separate recognition machine at the door: the gateway is only the door
+(`../gateway/`); the determination is the grill.
 
-| Kind | Through the lifecycle? | Examples |
+**Escaped work leaves no SDD record.** A non-CR task is not SDD's to track; a change that
+touches `spec.md` prose but not the suite — a typo, a reflowed sentence — is already
+recorded by **git history**, which needs no manual journal. So escape writes **no draft, no
+gate line, no combat-log entry** — it is *stated* in the moment, then done by ordinary means.
+
+**Escape is not the trivial-CR self-clear.** A genuinely behavioral change that merely reads
+low-risk is a **CR that self-clears** the gates (with full provenance) — *not* an escape.
+The litmus is whether the change can affect observable behavior or break the suite:
+
+| Work | Escapes? | Why |
 |---|---|---|
-| **Subject feature** — observable behavior/capability of a project | Yes | add CI, publish GitHub Pages, adopt Vitest, standardize on pnpm, a new CLI command |
-| **Representation / meta-work** — changes how SDD models the corpus | No (escapes) | retype specs, split/merge specs, relocate a contract across specs, regenerate derived views, reorganize folders |
+| Fix a typo in `spec.md` prose | **Yes** — no record | no behavior; git is the record |
+| A task unrelated to the project's behavior | **Yes** — no record | not a CR; SDD never owned it |
+| **Move a folder** | **No** — it is a CR | breaks import paths → re-verified at the impl gate |
+| A small but real behavior change | **No** — it is a CR | self-clears the gates (low risk), keeps full provenance |
 
-Two refinements:
+The corpus-reorganization cases the original escape hatch listed — split/merge, relocate a
+contract, regenerate views, reorganize folders — are **no longer escapes**: per ruling E and
+`../design/unit-and-organization.md`, intra-project reorg is **plain editing** and
+cross-project corpus acts are **gated lifecycle acts** owned by `../formation/` and
+`../corpus/`. Meta-work that changes SDD-plugin *behavior* (a lifecycle transition rule →
+"given status X, transition Y is rejected") is a freezable scenario → a **CR**, never an
+escape.
 
-- **Ambiguity defaults to in-lifecycle.** When it is unclear whether work is a subject
-  feature or representation work, treat it as a subject feature and route it in. Escaping
-  must be *positively recognized*; the safe failure mode is one unnecessary draft, not one
-  untracked behavior change.
-- **Meta-work that changes SDD-plugin behavior is still a subject feature.** The deciding
-  test is the same: changing a lifecycle transition rule produces a freezable scenario
-  ("given status X, transition Y is rejected") and stays in the lifecycle; only meta-work
-  whose *sole* output is the reorganized corpus escapes.
-
-Recognition lives at the gateway; the reliable recognition mechanism is **not yet
-designed** — registered here as tracked work.
-
-<!-- open: How is non-spec-able / representation work recognized? Candidate signals: (a)
-the work targets artifacts/specs/** or SDD tooling itself; (b) the user explicitly declares
-it meta/representation work; (c) the gateway probes for a nameable subject feature and finds
-none; (d) it is a pure refactor of spec shape with no behavior delta. Decide which signals
-are authoritative, how they combine, and the gateway's behavior on each. -->
+**Ambiguity defaults to a CR.** If grilling cannot positively clear a task of behavior,
+treat it as a CR and explore; the cost of a false positive is one cheap explore pass that
+finds nothing, never an untracked behavior change.
 
 ## Inject channel — zoom into a single inner-loop agent
 
@@ -192,31 +203,33 @@ Scenario: a reported follow-up re-enters as a new CR
 ### Escape hatch
 
 ```gherkin
-Scenario: Representation work escapes the lifecycle
-  Given work recognized as representation work on the spec corpus
-  When the sdd gateway handles the request
-  Then the work proceeds outside the SDD lifecycle
-  And no draft spec is created for it
+Scenario: a task with no suite-relevant behavior escapes SDD
+  Given a task that grilling finds has no behavior to freeze as scenarios
+  When SDD handles it
+  Then the task proceeds outside the SDD lifecycle
+  And no draft spec or change request is created for it
 
-Scenario: Escaped work skips both gates
-  Given work recognized as representation work on the spec corpus
-  When the work is carried out
-  Then it passes through neither the spec gate nor the impl gate
+Scenario: an escaped task leaves no SDD record
+  Given a task that escapes the SDD lifecycle
+  When the task is carried out
+  Then SDD writes no combat-log entry for it
 
-Scenario: Escape is recorded, not silent
-  Given work recognized as representation work on the spec corpus
-  When the sdd gateway escapes it
-  Then the gateway states that the work is leaving the SDD lifecycle
+Scenario: grilling carves a CR out of a task
+  Given a task whose impact analysis reveals suite-relevant behavior
+  When SDD grills it
+  Then that behavioral work becomes a change request
+  And the remainder escapes
 
-Scenario: A subject feature stays in the lifecycle
-  Given work recognized as a feature of the subject
-  When the sdd gateway handles the request
-  Then the work is routed into the SDD lifecycle
+Scenario: a trivial behavioral change is a CR that self-clears, not an escape
+  Given a change that alters observable behavior but reads low-risk
+  When SDD handles it
+  Then it is a change request that self-clears the gates
+  And it is not escaped
 
-Scenario: Ambiguous work defaults to the lifecycle
-  Given work that cannot be positively recognized as representation work
-  When the sdd gateway handles the request
-  Then the work is routed into the SDD lifecycle
+Scenario: ambiguous work defaults to a change request
+  Given a task that grilling cannot positively clear of behavior
+  When SDD handles it
+  Then it is treated as a change request and explored
 ```
 
 ### Inject channel
