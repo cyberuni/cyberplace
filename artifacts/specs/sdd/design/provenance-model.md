@@ -1,8 +1,10 @@
 # Provenance model
 
-The **shape** of production provenance: a two-face record — a current-state face in
-`spec.md` frontmatter and an append-only ledger in a sibling `combat-log.jsonl`. This file
-owns the record shape, the entry shapes, the matchable `cause` enum, and write-ownership.
+The **shape** of production provenance. Provenance spans **three tiers** by lifetime (below):
+an ephemeral per-worktree **plan**, a durable **ledger**, and a durable **public** trail. The
+durable record has **two faces** — a current-state face in `spec.md` frontmatter and the
+append-only `combat-log.jsonl` ledger sibling. This file owns the record shape, the entry
+shapes, the matchable `cause` enum, and write-ownership.
 Recording *behavior* (when the operator appends, how it resolves a producer) lives in
 `../mission/`; this is the shape only.
 
@@ -30,13 +32,14 @@ faces below describe the **durable** record; the chatty mid-flight lines live in
 | Face | Home | Shape | Mutability | Holds |
 |---|---|---|---|---|
 | **Current-state** | `spec.md` frontmatter | `produced-by` (map by role) + `approval` (map by gate: `verdict` + `why`) | **overwritten** — last write wins | the authoritative *present*: who produced each artifact, and the **standing** verdict per gate (the latest CR's outcome) |
-| **Ledger** | sibling `combat-log.jsonl` | one JSON object per line, appended in order | **immutable** — lines appended, never edited or removed | the *history*: what happened across every mission/CR, in order |
+| **Ledger** | sibling `combat-log.jsonl` | one JSON object per line, appended in order | **immutable** — lines appended, never edited or removed | the durable *history*: every CR's `gate` verdict + `strategy`, in order (mid-flight detail lives in the plan) |
 
 The current-state face answers *"who produced this, and what is the verdict now?"* The
-ledger answers *"what happened to get here?"* They do not duplicate: a gate rejection
-overwrites nothing in `approval` (the eventual `approve` stands there), but the rejection
-is preserved forever as a `correction` line in the ledger. This is the load-bearing reason
-the ledger exists — current-state alone loses every correction.
+ledger answers *"what was decided to get here?"* They do not duplicate: a gate rejection
+overwrites nothing in `approval` (the eventual `approve` stands there), but the rejection is
+preserved forever as a `gate` line (`verdict: reject`) in the ledger. This is the
+load-bearing reason the ledger exists — current-state alone loses every superseded verdict.
+(The mid-flight `correction` that drove a rejection lives in the ephemeral plan, not here.)
 
 **`approval` is standing, not historical.** The project has **one durable spec** that many
 CRs flow through; `spec.md` `approval` holds only the **latest** CR's gate verdict
@@ -81,8 +84,8 @@ twin) it gives full per-artifact provenance: who **produced** it and who **judge
 | `approval` | who **judged** each gate (`verdict` + `by` + `why`) | gate (`spec`, `impl`) | operator (self-assert) / skill (ratify) |
 
 Each `produced-by` value is the **plugin-qualified agent name** (`aces:aces-scenario-writer`,
-`quill:quill-doc-writer`, `sdd:sdd-scenario-writer` for a default). Recorded **always**, on
-every production. It plays two deliberately separated roles:
+`quill:quill-doc-writer`, or `sdd:sdd-operator` when SDD's own inline default produced it —
+see `specialists-and-bundles.md`). Recorded **always**, on every production. It plays two deliberately separated roles:
 
 - a **historical record** — immutable provenance ("`X` produced this `.feature`"), the
   data ACES needs to measure result quality and trace a bad artifact to its producer;
@@ -93,7 +96,7 @@ every production. It plays two deliberately separated roles:
 status: approved
 produced-by:
   spec-producer: aces:aces-scenario-writer
-  plan-producer: sdd:sdd-planner
+  plan-producer: sdd:sdd-operator
   impl-producer: sdd:sdd-operator
 approval:
   spec:
