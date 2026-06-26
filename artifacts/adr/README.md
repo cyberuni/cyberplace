@@ -20,6 +20,7 @@ This directory contains Architecture Decision Records (ADRs) for cyber-skills â€
 | [0012](0012-spec-frontmatter-schema.md) | Spec Frontmatter Schema for Status, Priority, and Dependencies | Accepted | 2026-06-15 |
 | [0013](0013-governance-skills.md) | Governance Skills (reference content as non-user-invocable skills) | Accepted | â€” |
 | [0014](0014-sdd-governance-split.md) | Split SDD lifecycle/frontmatter knowledge into named governance skills | Accepted | 2026-06-21 |
+| [0015](0015-three-tier-provenance-and-plan-handoff.md) | Three-tier provenance; the plan as a portable `*.plan.md` handoff artifact | Accepted | 2026-06-26 |
 
 ## Creating a new ADR
 
