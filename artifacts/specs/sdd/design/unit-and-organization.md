@@ -40,6 +40,11 @@ CR-concurrency manager — git is it.
   later `universal-plugin` feature, not an SDD concept.) SDD is branch-aware only at
   **handoff**, where it lands the result in the project-declared delivery shape (commits to
   `main` / branch → PR).
+- **Which tree gets which CR is settled at the source, not in git.** Git locks *files*; it
+  says nothing about two trees grabbing the same *CR*. That CR-level lock is the **source
+  claim**: a mission claims its CR at intake (assigns the issue → `accepted`) before work
+  begins, so no second mission picks it up (`../intake/README.md`). Git file-locking and the
+  source-claim are the two granularities of the same concurrency story.
 - **Cross-CR file collisions are git's job.** "No two producers on the same file" holds
   *within* one CR (operator dispatch discipline; see `specialists-and-bundles.md`). Two CRs
   on separate trees touching the same file collide as an ordinary **git merge conflict** at

@@ -44,19 +44,39 @@ work. CR intake is *the only* work-intake in the loop.
 | **GitHub** | an issue, via the `create-issue` / `link-pr-to-task` skills |
 | **local store** | a CR persisted in-repo (candidate: a `bd` / beads integration) |
 
-The store behind a source is **pluggable through an adapter**: requesters write *through the
-adapter*, never to a backend directly, so a CR is raised the same way whether it lands in the
-local store, GitHub, Asana, Jira, or Linear. The adapter contract fixes the operations every
-backend must expose — `create`, `read`, `list`, `transition` — and the adapter governance
-itself is a later, Architect-lens artifact; this file fixes only the contract.
+The agent operates each source **natively** — it already knows how to pick up a GitHub
+issue, branch, open a PR, and close the issue; move an Asana task; transition a Jira issue;
+claim a beads bead. SDD therefore does **not** wrap a source in a CRUD / data-access layer.
+The **adapter is thin** — a **directive**, not a backend abstraction. It states *which*
+source(s) this project draws CRs from, any project-specific convention for using one (labels,
+projects, required fields), and — when a project draws from several — how they are
+orchestrated. Where there is no external tracker, a **local store** (candidate: a `bd` /
+beads integration) persists the CR body and status in-repo; that store is the one place SDD
+itself owns CR persistence.
 
-<!-- open: The local CR store does not exist yet — it needs its own spec.md + .feature
-(candidate implementation: a `bd` / beads integration). Spec: the on-disk CR record shape,
-its open→accepted→done status, and how the adapter maps `create`/`read`/`list`/`transition`
-onto the store. New work. -->
+**Status is the source's own `open → accepted → done`** — read and moved *natively*, not an
+SDD-invented state machine and not copied into the combat log or `spec.md` frontmatter. The
+`cr` id is the only join between the source (intent + status) and the combat log (work
+history); neither duplicates the other.
 
-The **adapter set and the local store are new work** — each adapter (and the local store
-above) needs its own colocated spec + suite that does not exist yet.
+**Claiming a CR is the coordination lock.** Before a mission starts, it **claims** the
+source record (assigns the issue / moves the task to in-progress → `accepted`) so no second
+mission picks the same CR. This is the CR-granularity complement to git's file-granularity
+locking (`../design/unit-and-organization.md`): git keeps two trees from colliding on the
+same *file*; the source-claim keeps two trees from grabbing the same *CR*.
+
+**Write-back at handoff is conditional, never bookkeeping.** When delivery is a **PR** (the
+common case), the PR closes the source on merge (`Closes #N`) — SDD adds no separate close.
+When work lands **directly on `main`**, the mission transitions the source to `done` on
+push. Either way the mission may **report back** to the source — findings, and **follow-up
+tasks**, which re-enter SDD as **new CRs** (the same outer-loop → intake closure).
+Report-back is outward, human-facing provenance, distinct from the internal combat-log
+`report` lines.
+
+<!-- open: The thin adapter directive (source selection + per-source convention +
+multi-source orchestration) and the local CR store (on-disk CR body + open→accepted→done
+status; candidate: a `bd` / beads integration) are **new work** — each needs its own
+colocated spec + suite that does not exist yet. -->
 
 Every actor is a requester through the same adaptor — no requester is privileged. The four
 **outer loops** (campaign / formation / doctrine / forge) are CR-generators: a
@@ -136,10 +156,11 @@ Scenario: a human prompt becomes a CR
   When the request is recorded
   Then an open change request exists carrying its what and why
 
-Scenario: a requester writes through the adaptor and never to a backend directly
-  Given a requester files a change request
-  When the request is stored
-  Then the write goes through the adaptor and not to a backend directly
+Scenario: a mission claims its CR so no other mission takes it
+  Given an open change request at its source
+  When a mission begins work on it
+  Then the mission claims the source record as accepted
+  And another mission cannot claim the same change request while it is held
 
 Scenario: an outer-loop finding re-enters only as a new CR
   Given a retrospective loop finds something that should change
@@ -150,6 +171,22 @@ Scenario: a why may cite a combat-log correction
   Given a requester references a combat-log correction in the why
   When the change request is stored
   Then the why cites the correction without copying the mission record
+
+Scenario: a PR handoff lets the pull request close the source
+  Given a mission delivers its change request as a pull request
+  When the pull request merges
+  Then the source change request is closed by the merge
+  And the mission does not separately close it
+
+Scenario: a direct-to-main handoff transitions the source to done
+  Given a mission delivers its change request directly to main
+  When the work is pushed
+  Then the mission transitions the source change request to done
+
+Scenario: a reported follow-up re-enters as a new CR
+  Given a mission reports a follow-up task back to the source
+  When the follow-up is filed
+  Then it becomes a new change request rather than reopening the completed one
 ```
 
 ### Escape hatch

@@ -105,8 +105,20 @@ spec already follows our ruling; the *source* specs are stale and need a sweep) 
   `design/provenance-model.md` (`why` is four-dimension), and `formation/README.md` (Warden's
   per-act assessment). `lifecycle-model.md`'s 4-dim `why` block was already correct.
 
-- **I. CR store + status.** Keep `sdd-change-request`'s separate pluggable store + its
-  `open→accepted→done` status, or fold the CR record into the combat log / loop?
+- **I. CR store + status. RESOLVED — thin adapter, source-native status, coordination
+  write-back.** The pluggable store **survives but the adapter is thin**: agents operate
+  GitHub/Jira/Asana/beads **natively** (pick up issue → branch → PR → close), so the adapter
+  is a **directive** (which source(s), per-source convention, multi-source orchestration), not
+  a CRUD/data-access layer — the old `create/read/list/transition` backend-contract framing is
+  dropped. Status `open→accepted→done` is the **source's own**, read/moved natively, **not**
+  duplicated in the combat log or frontmatter; the `cr` id is the only join. **Claiming a CR
+  is the CR-level coordination lock** that completes F: git locks *files* within a tree, the
+  source-claim locks *CRs* across trees. **Write-back is conditional, not bookkeeping** — PR
+  handoff closes the source via `Closes #N` (SDD adds nothing); direct-to-main transitions to
+  `done` on push; either way the mission reports back findings + follow-ups, which re-enter as
+  **new CRs**. No CR block in frontmatter. Written into `intake/README.md` (sources prose +
+  scenarios) and `design/unit-and-organization.md` (claim-lock bullet). Local store + thin
+  adapter directive remain new work (own spec+suite).
 
 - **J. escape-hatch.** Does escaped work **bypass** the lifecycle entirely (source) or is it a
   **CR that self-clears outside** the gates (model)?
@@ -114,3 +126,5 @@ spec already follows our ruling; the *source* specs are stale and need a sweep) 
 - **K. spec-digest re-home.** Its consumer (the spec-gate review station) dissolved into
   `authoring/`; and "digest one spec.md + one .feature" no longer maps to a multi-folder project
   spec + multi-suite. Re-home + redefine.
+
+- **M. Combat log is per-corpus — does that hold under one-CR-per-tree (F)?** The provenance model places combat-log.jsonl as a sibling to spec.md, i.e. one log per spec corpus, with every line tagging an optional cr. But F made one mission = one working tree = one CR, and parallelism = separate trees. Open: when two trees (two CRs) run against the same corpus concurrently, each tree has its own copy of combat-log.jsonl — do their cr-tagged lines merge cleanly back (append-only, so git-merge-friendly), or does concurrent appending across trees create the same overlapping-frozen-scenario class of merge conflict F pushed to the hard floor? Decide whether "per-corpus" means one logical log reassembled at merge, or genuinely one-physical-log-per-tree until handoff.
