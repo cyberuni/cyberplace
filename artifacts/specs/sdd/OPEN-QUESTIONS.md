@@ -94,8 +94,16 @@ spec already follows our ruling; the *source* specs are stale and need a sweep) 
   (in-session only). Written into `design/provenance-model.md`, `design/lifecycle-model.md`,
   `authoring/`. (Depends on the per-file freeze refinement under **C**.)
 
-- **H. 5th risk dimension.** Keep the 4-dim `why` (reversibility, blast-radius, novelty,
-  confidence) or the 5-dim gradient (+ contract-impact)? Sources disagree with themselves.
+- **H. 5th risk dimension. RESOLVED — 4-dim.** The gradient is **reversibility, blast-radius,
+  novelty, confidence**. Contract-impact is **not** a gradient row: breaking-ness splits
+  between the **Clearance floor** (un-authorized narrowing escalates above the gradient) and
+  **blast radius** (a cleared/pre-authorized breaking change's residual risk = how far it
+  reaches); additive/non-breaking edits clear the floor and read low. The semver-class
+  scenario-diff is still computed mechanically — it feeds the floor + the breaking weight on
+  blast radius, not its own dimension. Swept `design/autonomy-rubric.md` (gradient table,
+  load-bearing-nuance para, aggregate-verdict example, mechanical helper),
+  `design/provenance-model.md` (`why` is four-dimension), and `formation/README.md` (Warden's
+  per-act assessment). `lifecycle-model.md`'s 4-dim `why` block was already correct.
 
 - **I. CR store + status.** Keep `sdd-change-request`'s separate pluggable store + its
   `open→accepted→done` status, or fold the CR record into the combat log / loop?

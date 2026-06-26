@@ -48,9 +48,10 @@ in the corpus**; a run scoped to one spec is **not** a Formation run.
 ## The Warden's per-act self-clear-vs-escalate verdict
 
 The Warden is **rubric-subject**, exactly as the Operator is at a gate. For **each structural
-act** it assesses risk (reversibility, blast radius, contract-impact semver class, novelty,
-confidence) and renders its own **self-clear vs escalate** verdict — it has **no direct user
-channel**:
+act** it assesses risk over the four gradient dimensions (reversibility, blast radius,
+novelty, confidence — with the contract-impact semver class feeding the Clearance floor and
+the breaking weight on blast radius) and renders its own **self-clear vs escalate** verdict —
+it has **no direct user channel**:
 
 - **Self-clear** the reversible, derivable, low-blast acts — re-rendering the graph, a
   coverage-preserving split, a refactor or consistency fix. The Warden acts **in-session** and
@@ -58,7 +59,7 @@ channel**:
   ratifies the trail; a Council reject unwinds it.
 - **Escalate** the destructive, contested, or breaking acts — deprecating a spec in a dedupe,
   picking the winning claim in a reconciliation, or any change **breaking** under the
-  contract-impact gradient. The escalated finding re-enters as a **new CR**
+  contract-impact semver class. The escalated finding re-enters as a **new CR**
   (`intake/README.md`) naming the artifacts; it does not land until the Council
   ratifies.
 
