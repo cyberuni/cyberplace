@@ -72,10 +72,12 @@ CR** — so the outer loops are CR-generators that close the single-intake loop.
 | **campaign** (product) | `../campaign/` | what the project delivers | the capability folders |
 | **formation** (structure) | `../formation/` | how the corpus is organized | `../corpus/` |
 | **doctrine** (process) | `../doctrine/` | how we work | `../design/` |
-| **forge** (harness) | `../forge/` | what we build / work with | `../harness/` |
+| **forge** (field) | `../forge/` | improve **SDD itself** from field corrections | end-user corrections across installations (**external** — no folder subject) |
 
-Only **explore** and **deliver** iterate **internally** (inside a single cycle); the outer
-loops fire **post-mission**, across cycles.
+The first three are **internal** (sourced from the project's own combat logs); **forge is
+external** — sourced from opt-in end-user corrections across installations, which is why it
+carries the **Consent** floor. Only **explore** and **deliver** iterate **internally** (inside
+a single cycle); the outer loops fire **post-mission**, across cycles.
 
 ## Gates dissolved into the autonomy bar
 
@@ -90,7 +92,6 @@ spec-judge and impl-judge applying the Director/Builder/Architect **lenses** —
 
 ## Cross-cutting (not loop steps)
 
-`design/` (the rules), `../corpus/` (spec-corpus tooling), `../harness/` (the engineering and
-distribution subject the forge loop evolves), and `../acceptance/` (the e2e suite deliver
-verifies against) are cross-cutting. They are consumed by the loops but are not themselves
+`design/` (the rules), `../corpus/` (spec-corpus tooling), `../plugin/` (SDD's plugin nature),
+and `../acceptance/` (the e2e suite deliver verifies against) are cross-cutting. They are consumed by the loops but are not themselves
 steps.

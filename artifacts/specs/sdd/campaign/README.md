@@ -64,10 +64,10 @@ Three sibling outer loops, three concerns:
 | **Campaign** (Product) | Commander | *what to build* — grow and prune the product |
 | **Formation** (Structure) | Warden | the corpus is organized right — see `formation/` |
 | **Doctrine** (Process) | Scanner | how we operate — see `doctrine/` |
-| **Forge** (Harness) | maintainers | the engineering & distribution harness — see `forge/` |
+| **Forge** (Field) | maintainers | improve SDD from opt-in end-user field corrections — see `forge/` |
 
 A structure observation (overlap, split) routes to `formation/`; a process lesson routes to
-`doctrine/`; a harness pain point routes to `forge/`. Campaign decides **what the product
+`doctrine/`; field corrections route to `forge/`. Campaign decides **what the product
 should be** — and nothing else.
 
 ## Scenarios

@@ -79,7 +79,7 @@ reads from (skills, governances, conventions, templates), which ratified strateg
 ## Boundaries — Doctrine owns the process only
 
 It routes out-of-loop requests: a build-or-deprecate request → `campaign/`; a structure
-observation → `formation/`; a harness pain point → `forge/`. Doctrine grows *how we work* and
+observation → `formation/`; field corrections → `forge/`. Doctrine grows *how we work* and
 nothing else.
 
 ## Scenarios

@@ -13,8 +13,7 @@ fixed station — they dissolved into the autonomy bar (`autonomy-rubric.md`); t
 ```yaml
 ---
 status: draft           # draft | approved | implemented | deprecated
-type: feature           # project | feature; omit for an untyped legacy spec
-domain-type: skill      # artifact-type axis for plugin resolution: e.g. skill | subagent | command | agents-section; omit for a plain-code domain
+type: skill             # the artifact-type / bundle key: e.g. skill | subagent | command | agents-section | npm-package | docs; omit for a plain-code domain. The composition role (root vs composite) is DERIVED from edges, not declared.
 aligned: false          # true once the current layer's artifacts are synced
 priority: 1             # optional integer; 1 = highest (relative within a set); omit = unprioritized
 blocked-by:             # list of spec slugs; omit or empty if none
@@ -46,7 +45,7 @@ Open input is recorded in the body as `<!-- open: ... -->` markers, not in front
 
 `status` and `blocked-by` are the base schema; `priority` is an optional ranking hint
 (integer, `1` = highest, relative within a set; omit to leave a spec unprioritized).
-`type`, `domain-type`, `subtasks`, `aligned`, `strategy`, `approval`, `produced-by`, and
+`type`, `subtasks`, `aligned`, `strategy`, `approval`, `produced-by`, and
 `domain-plugin` are the SDD-workflow additions. `aligned: false` means the current
 layer's artifacts are being updated or contain unresolved markers; `aligned: true` means
 the layer is synced. Do not commit SDD artifacts while their spec is `aligned: false`.
@@ -157,25 +156,28 @@ default), the gate **fails closed** with a blocker; it advances nothing. This is
 off-enum `cause` (defined in `provenance-model.md`). Distinct from availability: a
 recorded producer whose plugin is merely uninstalled is flagged, not blocked.
 
-## Composition typing and rollup
+## Composition role (derived from edges) and rollup
 
-| `type` | Meaning |
-|---|---|
-| `project` | A top-level spec: a plugin/project, or a standalone model. Has no parent. Owns features via `subtasks`. |
-| `feature` | A unit of work belonging to exactly one parent (a project or another feature). Owns its detailed behavior; may itself own child features via `subtasks` (features nest). |
+The composition role is **derived from `subtasks` edges, never declared** — there is no
+`project|feature` field (that axis collapsed into `type`, which now names the
+artifact-type/bundle). A spec is:
+
+- a **root** if no other spec lists it in `subtasks`;
+- a **composite** if it declares `subtasks` (it owns children); a composite may itself be a
+  child (composites nest), so root and composite are orthogonal;
+- a **leaf** if it owns its own `.feature` and declares no `subtasks`.
 
 - **`subtasks` lists children, parent is derived.** A child does not name its parent; the
   parent is whichever spec lists it (mirroring how `blocks` is derived from `blocked-by`).
   One source of truth.
 - **Single parent (tree invariant).** A slug appears in **at most one** spec's
-  `subtasks`; an unparented non-`deprecated` `feature` is an orphan.
+  `subtasks`; an unparented non-`deprecated`, non-root leaf is an orphan.
 - **Composition is orthogonal to dependency.** `subtasks` is containment;
   `blocked-by` is execution-order dependency. The two graphs are maintained separately.
-- **A composition node advances by rollup.** A node that declares `subtasks` and owns no
-  `.feature` carries no behavior contract — it is exempt from the `.feature` requirement.
-  Its spec gate judges the composition (children present and correctly wired); it reaches
-  `implemented` only once **every non-`deprecated` child is `implemented`** (`approved` is
-  not rolled up).
+- **A composite advances by rollup.** A composite that owns no `.feature` carries no behavior
+  contract — it is exempt from the `.feature` requirement. Its spec gate judges the
+  composition (children present and correctly wired); it reaches `implemented` only once
+  **every non-`deprecated` child is `implemented`** (`approved` is not rolled up).
 
 ## Freeze (state transition)
 
@@ -238,7 +240,7 @@ definitional: the same definition run in-session may perform the write.
 | `approval` human ratification (`verdict` + `by: <name>`) | the gate skill, **in-session position only** |
 | `approval` self-assertion (`verdict: approve`/`pause` + `by: agent`/none + `why`) | `sdd-operator` (synthesis) |
 | `aligned`, `strategy`, `<!-- open: -->` markers | `sdd-operator` |
-| `domain-type` | `create-spec` (at scaffold) |
+| `type` (artifact-type) | `create-spec` (at scaffold) |
 | `spec.md` body + the `.feature` | the spec-producer |
 
 The leash (`strategy.leash`, run-level) and the self-clear-vs-escalate bar that derives it

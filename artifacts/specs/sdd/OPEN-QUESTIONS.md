@@ -35,11 +35,10 @@ spec already follows our ruling; the *source* specs are stale and need a sweep) 
 
 - **B. `type` ≡ artifact-type field collapse. RESOLVED — collapse.** One field `type` names
   the artifact-type / bundle key; `project|feature` is **derived from graph edges** (root =
-  nothing parents it; composite = has `subtasks`), not declared. ⚠️ **Application is a
-  cross-file sweep still pending** — `design/lifecycle-model.md` (frontmatter schema +
-  composition-typing section), `design/specialists-and-bundles.md`, and `design/provenance-model.md`
-  still show the old `type: project|feature` + separate `domain-type`. Sweep them to the
-  collapsed schema.
+  nothing parents it; composite = has `subtasks`), not declared. **Sweep applied** —
+  `design/lifecycle-model.md` (schema + composition→derived-from-edges),
+  `design/specialists-and-bundles.md` (registry matches `type`; `domain-plugin` distinct from
+  `produced-by`), and `provenance-model.md` carry the collapsed schema. `domain-type` removed.
 
 - **C. Freeze scope. RESOLVED — `.feature` only.** The behavior suite is the frozen contract;
   `spec.md` is the readable abstraction kept aligned, never frozen. Written into
@@ -53,24 +52,23 @@ spec already follows our ruling; the *source* specs are stale and need a sweep) 
   detection (`--check`) + interactive reconciliation (a Director-lens call sets direction, the Builder lens fixes
   coverage; frozen-scenario narrowing → Clearance CR).
 
-- **D. `forge` subject.** DESIGN-NOTES: forge → `harness/` (toolchain/CI/distribution). The
-  `sdd-forge-loop` spec: a **cross-installation field-telemetry loop** (opt-in/redact/maintainer-
-  review of correction records) — a different concept under the same name. Harness-evolution,
-  field-telemetry, or both (telemetry as a sub-dimension)?
+- **D. `forge` subject. RESOLVED.** Two different harnesses were conflated. **forge** = the
+  **external field loop**: improve **SDD itself** from opt-in, cross-installation end-user
+  field corrections (Consent-gated); it does NOT evolve a folder. The old `harness/` folder
+  (a project's toolchain/CI/distribution) is **dropped** — outside SDD, no dedicated loop.
+  SDD's plugin nature moved to the new **`plugin/`** capability (ships-as-plugin +
+  extended-by-plugins + registry init-WRITE). The three internal loops
+  (campaign/formation/doctrine) read the project's own combat logs; forge is the one external
+  loop. Written into `forge/`, `plugin/`, `loops.md`, the capability maps.
 
 - **E. Corpus tooling tier. RESOLVED — two-tier confirmed.** Cross-project (the project-spec
   DAG): split/dedupe/deprecate/`blocked-by` are real gated lifecycle acts. Intra-project: a
   "split" is folder reorg — a view change with no new gate. Corpus tools operate at the
   cross-project tier; intra-project reorg is plain editing.
 
-- **F. Multi-artifact CR / per-file bundle scoping. BAGGED — folds into a sharper question.**
-  The per-file rule still holds (one bundle **per artifact-type**, "no two producers on the same
-  **file**"), but the open thing is not bundle scoping — it's concurrency: **how do we handle CR
-  and CR-inflight?** A CR is the unit of work (git-PR-shaped). What happens when a second CR
-  targets a file/artifact-type/scenario that an **in-flight** CR is already mutating — serialize,
-  lock at file granularity, branch/merge like PRs, or reject-on-conflict? And does an in-flight
-  CR's not-yet-frozen `.feature` count as the contract for a concurrent CR's Clearance check?
-  Reframe F around CR-vs-CR-inflight before answering bundle scoping.
+- **F. Multi-artifact CR / per-file bundle scoping.** A project-spec CR touches many
+  artifact-types → summons multiple specialists. Make explicit: one bundle **per artifact-type**,
+  "no two producers on the same **file**" (per-file, not per-spec).
 
 - **G. Durable approval/freeze record.** With no per-folder `status`/`approval`, where does
   "this CR's diff was approved + which scenarios are now frozen" live — the combat log, a per-CR

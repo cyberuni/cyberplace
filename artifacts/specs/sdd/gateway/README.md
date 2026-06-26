@@ -46,7 +46,7 @@ index of what a user can invoke. No separate `skills.md` is needed.
 | Zoom into one inner-loop agent (live) | **inject** (`../intake/README.md`) |
 | Durably tune an inner-loop agent | **project** (`../intake/README.md`) |
 | Representation / meta-work with no freezable behavior | **escape** — recorded, proceeds outside the lifecycle |
-| Product / structure / process / harness retrospective | the **campaign / formation / doctrine / forge** loop — emits a new CR |
+| Product / structure / process retrospective, or field corrections | the **campaign / formation / doctrine / forge** loop — emits a new CR |
 
 The structural axis (`project` vs `feature`) is **derived from graph edges**, not declared
 at intake, so routing classifies *what a user wants to do to the project*, not *which spec

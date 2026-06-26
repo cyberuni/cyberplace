@@ -63,7 +63,7 @@ The top-level skeleton:
 
 ```
 design/ gateway/ intake/ authoring/ mission/{deliver,handoff}
-campaign/ formation/ doctrine/ forge/ corpus/ harness/ acceptance/
+campaign/ formation/ doctrine/ forge/ corpus/ plugin/ acceptance/
 ```
 
 The **Mission Loop (steps 1–4)** maps to folders — `intake/` (1, the CR subsystem that
@@ -73,6 +73,7 @@ the mission) → `mission/deliver/` (3, build to keep; owns the impl verificatio
 orchestrator** that sequences the loop. The `gateway/` is the **universal router/door** — not
 a loop step. The four outer-loop folders (`campaign/`, `formation/`, `doctrine/`, `forge/`)
 fire **post-mission**, not as part of the Mission Loop (see `loops.md`). `design/`, `corpus/`,
-`harness/`, and `acceptance/` are cross-cutting, not loop steps. Each outer loop evolves a
-standing subject: campaign → capabilities, formation → `corpus/`, doctrine → `design/`, forge
-→ `harness/`.
+`plugin/`, and `acceptance/` are cross-cutting, not loop steps. Three internal outer loops
+evolve a standing subject — campaign → capabilities, formation → `corpus/`, doctrine →
+`design/`; the external **forge** loop has no folder subject — it improves SDD itself from
+opt-in end-user field corrections.
