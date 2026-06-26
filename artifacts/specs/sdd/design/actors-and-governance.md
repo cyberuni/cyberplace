@@ -46,9 +46,9 @@ Cross-cutting these is the **autonomy bar** — the autonomy governance / risk r
 write passes, the risk-assessment side of every escalation point. It cooperates with the
 lifecycle legality rules but is a distinct axis from any single actor's bar.
 
-Beyond actor bars, an artifact-type's knowledge bundle resolves **discipline** governances
-(process/workflow) the producer and judge load. The bundle is the selection unit (see
-`specialists-and-bundles.md`); the governances named there are the actor + discipline bars for
+Beyond actor bars, an artifact-type's squad resolves **discipline** governances
+(process/workflow) the producer and judge load. The squad is the selection unit (see
+`specialists-and-squads.md`); the governances named there are the actor + discipline bars for
 that artifact-type.
 
 ## How governances compose into agent definitions

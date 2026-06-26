@@ -35,7 +35,7 @@ Sources: `sdd-gate-autonomy`, `sdd-escape-hatch`, `sdd-stop-provenance`, `../des
 - B6. A self-asserted gate advances the run asynchronously and enqueues the spec for ratify-or-kick-back review.
 - B7. A halt records why the agent stopped (stop-provenance) in the combat log.
 
-### C. Resolve-a-bundle (registry → resolution → production chain)
+### C. Resolve-a-squad (registry → resolution → production chain)
 Sources: `sdd-contract-registry`, `sdd-operator-resolution`, `plugin/` init-WRITE.
 
 - C1. A plugin's init-write registers an `sdd-plugins` entry; the operator later resolves that domain's delegates from it without scanning plugin directories.

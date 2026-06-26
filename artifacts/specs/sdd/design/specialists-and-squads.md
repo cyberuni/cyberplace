@@ -1,36 +1,37 @@
-# Specialists & bundles
+# Specialists & squads
 
-The selection model behind production: the **knowledge bundle**, the five delegate roles,
+The selection model behind production: the **squad**, the five delegate roles,
 which governances each loads, and the **registry SHAPE** that stores it. This file owns the
-bundle model and the `.agents/universal-plugin.json` role-map shape. The init-WRITE of an
+squad model and the `.agents/universal-plugin.json` role-map shape. The init-WRITE of an
 entry lives in `../plugin/`; READ/resolution from the registry lives in `../mission/`.
 
-## The knowledge bundle
+## The squad
 
-The producer/judge selection unit is the **knowledge bundle**, keyed by **artifact-type**:
+The producer/judge selection unit is the **squad**, keyed by **artifact-type**:
 
 ```
 artifact-type → { producer, judge, governances (actor + discipline), model, effort }
 ```
 
-- **One bundle per artifact-type; one producer per file.** No domain arrays, no producer
+- **One squad per artifact-type; one producer per file.** No domain arrays, no producer
   composition, no "best match" producer race. The exclusion is **per file**, not per spec: a
   project-spec CR touches many artifact-types and so summons **multiple** specialists at
   once, but **no two producers ever act on the same file**. Each file has exactly one
-  artifact-type → exactly one bundle → exactly one producer; the operator orchestrates the
+  artifact-type → exactly one squad → exactly one producer; the operator orchestrates the
   set and merges their outputs.
-- `type` ≡ **artifact-type** = the bundle key. It names the artifact / bundle
+- `type` ≡ **artifact-type** = the squad key. It names the artifact / squad
   (`npm-package`, `agent-plugin`, `agent-skill`, `agent-definition`, `react-component`,
   `docs`, …). The structural axis (`project | feature`) is **derived from graph edges** —
   root = nothing parents it, composite = has `subtasks` — not declared.
 - **Disciplines (process/workflow) fold into governances.** "Basic knowledge" (React, TS,
   logic) is never *loaded* — it is just picking the right **model + effort**.
-- **Language ≠ bundle.** "TS script for a skill" lives inside the *skill* bundle
-  (skill-script rules: no deps unless packaged), NOT a generic `code` bundle. The
+- **Language ≠ squad.** "TS script for a skill" lives inside the *skill* squad
+  (skill-script rules: no deps unless packaged), NOT a generic `code` squad. The
   artifact-in-context determines the knowledge, not the file extension.
 
-A **specialist** = a producer + judge bundle. A CR summons the specialists for the
-artifact-types it touches; the **operator** orchestrates them and delivers.
+A **squad** = the producer + judge **specialists** (with their gear — governances, model,
+and effort) for one artifact-type. A CR summons the squads for the artifact-types it touches;
+the **operator** orchestrates them and delivers.
 
 **`domain-plugin` stays distinct from `produced-by`.** `domain-plugin` = the chosen plugin
 for an ambiguous artifact-type (forward input to resolution); `produced-by` = who actually
@@ -129,7 +130,7 @@ plugin directories. Each entry:
   judge default is never loaded inline — grader independence requires a cold context.
 
 **Resolution** (owned by `../mission/`, shown here because the shape is its direct input):
-match the spec's **`type`** frontmatter field (the artifact-type / bundle key, **not** the
+match the spec's **`type`** frontmatter field (the artifact-type / squad key, **not** the
 folder name) against each entry's `domains[]`. An absent or unmatched `type`
 → zero matches → all roles degenerate to SDD defaults. One match → resolve each role and
 governance key (name = use it; `null` = SDD default; missing role key = `<plugin>-<role>`).

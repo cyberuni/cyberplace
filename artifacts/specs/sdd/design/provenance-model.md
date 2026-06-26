@@ -95,7 +95,7 @@ twin) it gives full per-artifact provenance: who **produced** it and who **judge
 
 Each `produced-by` value is the **plugin-qualified agent name** (`aces:aces-scenario-writer`,
 `quill:quill-doc-writer`, or `sdd:sdd-operator` when SDD's own inline default produced it —
-see `specialists-and-bundles.md`). Recorded **always**, on every production. It plays two deliberately separated roles:
+see `specialists-and-squads.md`). Recorded **always**, on every production. It plays two deliberately separated roles:
 
 - a **historical record** — immutable provenance ("`X` produced this `.feature`"), the
   data ACES needs to measure result quality and trace a bad artifact to its producer;
