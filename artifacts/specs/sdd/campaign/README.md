@@ -37,8 +37,8 @@ once the CR is ratified.
 
 The Commander reads the durable **public trail** **post-hoc** — the CR-source conclusions, the
 changesets, and git history (`design/provenance-model.md`), plus the product's current
-capabilities — never the ephemeral combat log (discarded at retro) and never live subagent
-context. It reads the trail **forward** via a cursor (`.agents/sdd/loop-cursors.json`) so a
+capabilities — never the combat log (the doctrine loop's input, retired at retro) and never
+live subagent context. It reads the trail **forward** via a cursor (`.agents/sdd/loop-cursors.json`) so a
 re-run resumes from the last-seen conclusion rather than cold-scanning the whole product.
 Parallel to the Scanner (`doctrine/`), it always fires *after* missions end, so post-hoc file
 reading is the right model.

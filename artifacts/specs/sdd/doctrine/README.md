@@ -54,9 +54,10 @@ The Scanner reads **persisted artifacts post-hoc** — never live subagent conte
 
 - **Combat log** — PRIMARY input: the **concluded mission's** combat log (the plan's
   `*.log.jsonl`), read once at retro. Strategy is draftable from it **alone**; raw
-  transcripts are additive, never required. The combat log is **ephemeral** — once the
-  Scanner has distilled it into the ledger, the **doctrine loop discards the plan**
-  (`../design/provenance-model.md`).
+  transcripts are additive, never required. The combat log is **committed but transient in
+  the tree**: the Scanner **distills early** (at `→ implemented`), and the **doctrine loop
+  deletes the plan later** as a tracked deletion — a separate retro step gated on source =
+  `done`/merged **and** distilled (Plan retirement, `../design/provenance-model.md`).
 - **Raw `.jsonl` transcripts** — optional enrichment, harness-specific. The **sole exception**
   is the token-waste dimension, which is transcript-backed (the token-usage breakdown lives only
   in transcripts) and **threshold-gated** — it runs the heavy analysis only over the configurable

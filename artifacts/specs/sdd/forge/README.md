@@ -31,8 +31,8 @@ without a ratified CR.
 
 The unit fed upstream is the **distilled `correction`-with-`cause`** recurrence — carried in the
 ledger's `strategy` evidence (`../design/provenance-model.md`), not the raw combat-log line,
-which is ephemeral and discarded at retro. This folder consumes that shape, it does not redefine
-it. Because corrections can carry code, prompts, paths, and secrets, **opt-in,
+which is committed but transient (deleted from the tree at retro). This folder consumes that
+shape, it does not redefine it. Because corrections can carry code, prompts, paths, and secrets, **opt-in,
 redaction, visibility, and human review are load-bearing, not bolted-on**:
 
 | Stage | Requirement |

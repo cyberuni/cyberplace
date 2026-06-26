@@ -1,5 +1,4 @@
 .agents/*.local.*
-.agents/plans/
 .github/setup-state.json
 .local/
 .turbo/
