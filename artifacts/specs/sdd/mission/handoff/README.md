@@ -50,9 +50,10 @@ never has to halt mid-flight.
 
 ## Provenance
 
-What was delivered, in what shape, broken into which units, is recorded in the combat log (see
-`../../design/provenance-model.md`) — operational provenance, never gated or frozen. Handoff
-does not write spec/suite frontmatter; the contract is already firmed.
+What was delivered, in what shape, broken into which units, lands in the durable **public
+trail** — the CR-source conclusion, the changesets, and git history (see
+`../../design/provenance-model.md`) — never the ephemeral combat log (discarded at retro).
+Handoff does not write spec/suite frontmatter; the contract is already firmed.
 
 ## Scenarios (colocated)
 

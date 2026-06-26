@@ -56,9 +56,9 @@ beads integration) persists the CR body and status in-repo; that store is the on
 itself owns CR persistence.
 
 **Status is the source's own `open → accepted → done`** — read and moved *natively*, not an
-SDD-invented state machine and not copied into the combat log or `spec.md` frontmatter. The
-`cr` id is the only join between the source (intent + status) and the combat log (work
-history); neither duplicates the other.
+SDD-invented state machine and not copied into the internal provenance or `spec.md`
+frontmatter. The `cr` id is the only join between the source (intent + status) and the
+internal provenance (the ledger's work history, keyed by `cr`); neither duplicates the other.
 
 **Claiming a CR is the coordination lock.** Before a mission starts, it **claims** the
 source record (assigns the issue / moves the task to in-progress → `accepted`) so no second

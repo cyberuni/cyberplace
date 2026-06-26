@@ -33,12 +33,15 @@ is deprecated without a ratified CR. The Commander **never writes the `→ depre
 transition** itself — that lifecycle write is owned by `design/lifecycle-model.md` and performed
 once the CR is ratified.
 
-## Input — combat logs read post-hoc
+## Input — the public trail read post-hoc
 
-The Commander reads **persisted artifacts post-hoc** — completed missions' **combat logs** (the
-provenance record, `design/provenance-model.md`) plus the product's current capabilities —
-never live subagent context. Parallel to the Scanner (`doctrine/`), it always fires *after*
-missions end, so post-hoc file reading is the right model.
+The Commander reads the durable **public trail** **post-hoc** — the CR-source conclusions, the
+changesets, and git history (`design/provenance-model.md`), plus the product's current
+capabilities — never the ephemeral combat log (discarded at retro) and never live subagent
+context. It reads the trail **forward** via a cursor (`.agents/sdd/loop-cursors.json`) so a
+re-run resumes from the last-seen conclusion rather than cold-scanning the whole product.
+Parallel to the Scanner (`doctrine/`), it always fires *after* missions end, so post-hoc file
+reading is the right model.
 
 ## Detect-and-draft vs keep-or-cut
 
@@ -50,9 +53,9 @@ keep-or-cut**. Nothing enters work without the Council's ruling.
 
 | Use case | Trigger | Input | Outcome |
 |---|---|---|---|
-| **Shipped capability suggests a successor** | a change ships (`→ implemented`) | the finished work + the product + combat logs | a CR to add the next capability |
+| **Shipped capability suggests a successor** | a change ships (`→ implemented`) | the finished work + the product + the public trail | a CR to add the next capability |
 | **A capability subsumes another → redundant** | a capability ships that subsumes another | the product + the redundant capability | a deprecation (scrub) CR |
-| **Product review → reprioritize** | a human-held product-review event | the whole product + its combat logs | a reprioritization (and possibly grow / prune CRs) |
+| **Product review → reprioritize** | a human-held product-review event | the whole product + the public trail | a reprioritization (and possibly grow / prune CRs) |
 | **A capability no longer earns its keep** | a capability's value no longer justifies its maintenance | the capability + product signal | a deprecation (scrub) CR |
 
 ## Boundaries — Campaign owns the product only

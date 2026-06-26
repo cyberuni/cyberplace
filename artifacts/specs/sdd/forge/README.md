@@ -2,7 +2,7 @@
 
 The **Forge loop** — the step-5 outer loop that improves **SDD itself** from real field
 usage. It is the **external** outer loop: where campaign/formation/doctrine retrospect on a
-project's *own* combat logs (internal), forge reaches *outside the installation* and asks the
+project's *own* provenance (internal), forge reaches *outside the installation* and asks the
 **end-users of an installation** to **opt in and share field corrections**, so the shared SDD
 contract grows from real corrections rather than invented ones. Owned by the **maintainers**.
 
@@ -14,7 +14,7 @@ does not evolve it.
 
 | Loop(s) | Source | Improves |
 |---|---|---|
-| campaign / formation / doctrine | the project's own combat logs (**internal**) | the project |
+| campaign / formation / doctrine | the project's own provenance — combat log, ledger, public trail (**internal**) | the project |
 | **forge** | **end-user corrections across installations (external, opt-in)** | **SDD itself** |
 
 Because forge moves data *out of an installation*, it carries the **Consent** hard floor (one
@@ -29,9 +29,10 @@ without a ratified CR.
 
 ## The cross-installation field unit
 
-The unit fed upstream is the combat-log **`correction`-with-`cause`** record — the same
-provenance unit `../design/provenance-model.md` owns; this folder consumes that shape, it does
-not redefine it. Because corrections can carry code, prompts, paths, and secrets, **opt-in,
+The unit fed upstream is the **distilled `correction`-with-`cause`** recurrence — carried in the
+ledger's `strategy` evidence (`../design/provenance-model.md`), not the raw combat-log line,
+which is ephemeral and discarded at retro. This folder consumes that shape, it does not redefine
+it. Because corrections can carry code, prompts, paths, and secrets, **opt-in,
 redaction, visibility, and human review are load-bearing, not bolted-on**:
 
 | Stage | Requirement |

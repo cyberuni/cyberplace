@@ -24,10 +24,11 @@ Council's ratification.**
 
 ## Output — emits new CRs
 
-The Scanner drafts strategy to the combat log and **accumulates** it, surfacing it
-**episodically** — at a retro, on demand, or when a threshold piles up — never synchronously
-blocking a mission. The `gateway/` surfaces the **count of pending (unratified)
-strategy** when the Council re-enters; that is the entry point to keep-or-cut. On **ratify**,
+The Scanner drafts strategy to the **ledger** (the durable `ledger.jsonl` sibling of the root
+`spec.md`) and **accumulates** it, surfacing it **episodically** — at a retro, on demand, or
+when a threshold piles up — never synchronously blocking a mission. The `gateway/` surfaces the
+**count of pending (unratified) strategy** when the Council re-enters; that is the entry point
+to keep-or-cut. On **ratify**,
 the strategy re-enters as a **new CR** (`intake/README.md`) that re-tunes the
 **doctrine** (`design/`) and grows the corpus; on **cut**, it stays unratified and absent.
 
@@ -40,19 +41,22 @@ below:
 
 | Use case | Trigger | Input | Drafts |
 |---|---|---|---|
-| **Ship** | `→ implemented` (the impl gate writes it) | the finished spec's combat log (**PRIMARY**) + *[opt]* transcripts | strategy from a successful mission |
-| **Kill** | `→ deprecated` (the deprecation path writes it) | the dead spec's combat log — why it failed (**PRIMARY**) + *[opt]* transcripts | strategy from the failure |
-| **Milestone retro** | a human-held retro | the milestone's specs' combat logs | strategy across the milestone |
-| **Recurring pattern** | the same correction recurs across missions | corrections-with-cause across N specs' combat logs, **grouped + counted by `cause`** | strategy to codify the pattern |
+| **Ship** | `→ implemented` (the impl gate writes it) | the concluded mission's combat log (**PRIMARY**) + *[opt]* transcripts | strategy from a successful mission |
+| **Kill** | `→ deprecated` (the deprecation path writes it) | the concluded mission's combat log — why it failed (**PRIMARY**) + *[opt]* transcripts | strategy from the failure |
+| **Milestone retro** | a human-held retro | the milestone's concluded combat logs | strategy across the milestone |
+| **Recurring pattern** | the same correction recurs across missions | the **distilled `cause` recurrence count** in the ledger (maintained mission-over-mission), never a re-scan of many specs' raw logs | strategy to codify the pattern |
 | **Drift / staleness** | a now-false convention or governance contradiction | the corpus (conventions, governances) | a **PRUNE** strategy |
 | **Token-waste** | mission/session token cost over a **configurable bound**, **or** on-demand retro | the mission's raw `.jsonl` transcripts — **not** the combat log | efficiency strategy |
 
-## Inputs — combat log (contract) vs transcripts (enrichment)
+## Inputs — the concluded combat log vs transcripts (enrichment)
 
 The Scanner reads **persisted artifacts post-hoc** — never live subagent context.
 
-- **Combat log** — PRIMARY input, the contract. Strategy is draftable from it **alone**; raw
-  transcripts are additive, never required.
+- **Combat log** — PRIMARY input: the **concluded mission's** combat log (the plan's
+  `*.log.jsonl`), read once at retro. Strategy is draftable from it **alone**; raw
+  transcripts are additive, never required. The combat log is **ephemeral** — once the
+  Scanner has distilled it into the ledger, the **doctrine loop discards the plan**
+  (`../design/provenance-model.md`).
 - **Raw `.jsonl` transcripts** — optional enrichment, harness-specific. The **sole exception**
   is the token-waste dimension, which is transcript-backed (the token-usage breakdown lives only
   in transcripts) and **threshold-gated** — it runs the heavy analysis only over the configurable
@@ -61,13 +65,11 @@ The Scanner reads **persisted artifacts post-hoc** — never live subagent conte
 
 ## Where each strategy entry lands
 
-In the combat log of the spec the strategy is **about**, so every entry has one unambiguous
-home: ship / kill / pattern-from-one-spec → that spec's log; milestone retro → the milestone's
-anchoring spec; recurring pattern across N specs → the spec where the pattern most strongly
-recurs; drift → the spec carrying the now-false convention. Every entry is **unratified** and
-carries its **driving evidence** (the corrections-with-cause that drove it); the ledger is
-append-only — the next `seq`, never an edit. The entry **shape** is owned by
-`design/provenance-model.md` and is not restated here.
+Every `strategy` entry lands in the **one project ledger** (`ledger.jsonl`, sibling of the root
+`spec.md`) — there is no per-spec log to route to under the project-spec model. Every entry is
+**unratified** and carries its **driving evidence** (the distilled `cause` recurrence that drove
+it, from the concluded combat logs); the ledger is append-only — the next CR-scoped `seq`, never
+an edit. The entry **shape** is owned by `design/provenance-model.md` and is not restated here.
 
 ## Strategy → doctrine → corpus
 

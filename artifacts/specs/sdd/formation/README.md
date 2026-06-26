@@ -9,6 +9,16 @@ have organized right?**
 Standing subject: **`corpus/`** (and the whole organization). Formation evolves how the corpus
 is arranged, not what it says.
 
+## Input — the spec graph + discovery, scoped by the public trail
+
+The Warden's **primary** input is structural: the spec **graph** and **discovery** (`corpus/`)
+— it reads what the corpus *is*, never what a mission *did*. To stay efficient rather than
+cold-scanning the whole corpus every run, it may consult the durable **public trail** (CR-source
+conclusions + changesets + git history) **forward** via a cursor (`.agents/sdd/loop-cursors.json`)
+to learn what shipped recently and prioritize the structural pass there first. It reads **never**
+the ephemeral combat log (discarded at retro) and **never** live subagent context — like the
+other outer loops it fires strictly post-mission.
+
 ## The four corpus-wide acts
 
 It acts on the corpus's *structure*, not its content:

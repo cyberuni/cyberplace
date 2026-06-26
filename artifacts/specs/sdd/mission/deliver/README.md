@@ -24,7 +24,7 @@ the one whose output is kept.
 
 A frozen scenario is not edited here. But low-risk, in-flight adjustments the operator serves
 while building — clarifying a detail, an obvious stale-mistake correction — are captured in
-the **detail-adjustment report** (a view of the combat log, `../../design/provenance-model.md`),
+the **detail-adjustment report** (a view of the plan's combat log, `../../design/provenance-model.md`),
 not escalated. A change that would **narrow** a frozen scenario is **Clearance** (hard floor,
 `../../design/autonomy-rubric.md`); a genuine self-contradiction is **Conflict resolution**.
 Both escalate per the orchestrator's hard-floor logic — see `../README.md`.
