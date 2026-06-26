@@ -42,8 +42,7 @@ index of what a user can invoke. No separate `skills.md` is needed.
 |---|---|
 | Raise / record a change | **intake** — open a CR through a source (`../intake/README.md`) |
 | Grill a CR into spec + suite deltas; review the diff at the spec gate | **authoring** (owns the spec gate) |
-| Implement + verify against the acceptance suite | **mission** (owns the impl gate; the autonomous orchestrator) |
-| Land the verified result in the project's delivery shape | **mission/handoff** |
+| Implement + verify against the acceptance suite, then land it in the delivery shape | **mission** (owns the impl gate + handoff step 4; the autonomous orchestrator) |
 | Dedupe, split, reconcile, or inspect the corpus | **corpus** |
 | Zoom into one inner-loop agent (live) | **inject** (`../intake/README.md`) |
 | Durably tune an inner-loop agent | **project** (`../intake/README.md`) |
