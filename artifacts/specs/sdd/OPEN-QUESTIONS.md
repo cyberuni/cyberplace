@@ -120,8 +120,20 @@ spec already follows our ruling; the *source* specs are stale and need a sweep) 
   scenarios) and `design/unit-and-organization.md` (claim-lock bullet). Local store + thin
   adapter directive remain new work (own spec+suite).
 
-- **J. escape-hatch.** Does escaped work **bypass** the lifecycle entirely (source) or is it a
-  **CR that self-clears outside** the gates (model)?
+- **J. escape-hatch. RESOLVED — escape = the task-vs-CR boundary; escaped work bypasses and
+  leaves no record.** The real axis is **task vs CR**: an agent receives tasks, not all are
+  CRs, and "is this a CR?" ≡ "should SDD engage?" — logically *prior* to SDD, but still
+  handled *inside* a loaded SDD because tasks arrive mid-session. **Recognition = grill +
+  impact analysis**, not an up-front gateway classifier (resolves old open #1); the grill may
+  also **carve a CR out of a task** and escape the rest. **Escaped work leaves no SDD record**
+  (resolves old open #2): a non-CR is not SDD's to track; a spec-prose-only change (typo) is
+  already in git — no draft, no gate line, no combat-log entry. **Escape ≠ the trivial-CR
+  self-clear**: a real-but-low-risk behavioral change is a CR that self-clears with full
+  provenance (e.g. **moving a folder breaks imports → impl-gate retest → it is a CR**, not an
+  escape). Most original "representation/meta-work" escapes dissolve into E (intra-project
+  reorg = plain editing; cross-project = gated corpus acts). Ambiguity defaults to a CR.
+  Written into `intake/README.md` (prose + scenarios) and `gateway/README.md` (intake note,
+  routing row, escape bullet).
 
 - **K. spec-digest re-home.** Its consumer (the spec-gate review station) dissolved into
   `authoring/`; and "digest one spec.md + one .feature" no longer maps to a multi-folder project

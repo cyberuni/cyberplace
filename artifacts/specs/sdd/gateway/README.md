@@ -11,9 +11,11 @@ install packages, or require a CLI.
 
 ## Intake
 
-Treat `$sdd`, "use SDD", and "use Spec-Driven Development" as explicit activation. Every
-request that activates the gateway is a CR (see `../intake/README.md`); classification
-decides which source carried it and which capability handles it.
+Treat `$sdd`, "use SDD", and "use Spec-Driven Development" as explicit activation. **Most**
+requests that activate the gateway are CRs (see `../intake/README.md`); classification
+decides which source carried it and which capability handles it. A **task that is not a CR**
+— no suite-relevant behavior — **escapes** (the task-vs-CR boundary, below); recognition is
+the grill, not an up-front classifier, so ambiguity is routed in and decided during explore.
 
 - **Fast path.** When the invocation already names enough to act — an artifact and an
   action, or a self-evidently classifiable request — skip the menu and route directly.
@@ -45,7 +47,7 @@ index of what a user can invoke. No separate `skills.md` is needed.
 | Dedupe, split, reconcile, or inspect the corpus | **corpus** |
 | Zoom into one inner-loop agent (live) | **inject** (`../intake/README.md`) |
 | Durably tune an inner-loop agent | **project** (`../intake/README.md`) |
-| Representation / meta-work with no freezable behavior | **escape** — recorded, proceeds outside the lifecycle |
+| A task with no suite-relevant behavior (not a CR) | **escape** — proceeds outside the lifecycle, leaves no SDD record |
 | Product / structure / process retrospective, or field corrections | the **campaign / formation / doctrine / forge** loop — emits a new CR |
 
 The structural axis (`project` vs `feature`) is **derived from graph edges**, not declared
@@ -83,10 +85,12 @@ and any provisional self-assertion. The relay writes neither.
 
 ## Recognize the escape and the freeze
 
-- **Escape.** When intake classifies the unit of work as representation / meta-work with no
-  freezable subject behavior, route to **escape**: state explicitly that the work is
-  leaving the lifecycle, create no draft, invoke neither gate. Ambiguity defaults *into*
-  the lifecycle (see `../intake/README.md`).
+- **Escape.** A **task that is not a CR** — no suite-relevant behavior — **escapes**: state
+  that the work is leaving the lifecycle, create no draft, invoke neither gate, and **write
+  no record** (a non-CR is not SDD's to track; a spec-prose-only change is already in git).
+  Recognition is the **grill + impact analysis**, not a gateway classifier — the grill may
+  also carve a CR out of a task and escape the rest. Ambiguity defaults *into* the lifecycle
+  and is decided during explore (see `../intake/README.md`).
 - **Freeze.** SDD freezes the `.feature` at approval. A request to change a frozen scenario
   is not edited in place; it re-enters as a CR that grills the spec back open through
   `authoring/` before scenarios may be revised.
