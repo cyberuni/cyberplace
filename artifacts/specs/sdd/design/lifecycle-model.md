@@ -208,9 +208,9 @@ toggling it is not a scenario edit.
   `../corpus/` `align-specs`), **not** by freezing the prose. Prose↔suite drift detection is
   judge-only (no scenario IDs in the prose); the mechanical handle is the scenario-diff
   (narrowing a frozen scenario → Clearance).
-- **The combat log is never frozen and never gated** — it keeps appending across the whole
-  lifecycle, including while files sit `@frozen`. (Ledger + the durable per-CR `gate` and
-  freeze record: `provenance-model.md`.)
+- **The ledger is never frozen and never gated** — it keeps appending across the whole
+  lifecycle, including while files sit `@frozen`. (The durable ledger holds the per-CR `gate`
+  and freeze record; the mid-flight combat log lives in the plan: `provenance-model.md`.)
 - **Spec owns behavior.** If the implementation disagrees with `spec.md`, the
   implementation is wrong — fix it, or unfreeze the relevant file for a new cycle.
 - **The impl gate is the only place a frozen file can reopen** — via the Director-lens

@@ -74,7 +74,8 @@ CR** — so the outer loops are CR-generators that close the single-intake loop.
 | **doctrine** (process) | `../doctrine/` | how we work | `../design/` |
 | **forge** (field) | `../forge/` | improve **SDD itself** from field corrections | end-user corrections across installations (**external** — no folder subject) |
 
-The first three are **internal** (sourced from the project's own combat logs); **forge is
+The first three are **internal** (sourced from the project's own provenance — the combat log,
+the ledger, and the public trail, per `provenance-model.md`); **forge is
 external** — sourced from opt-in end-user corrections across installations, which is why it
 carries the **Consent** floor. Only **explore** and **deliver** iterate **internally** (inside
 a single cycle); the outer loops fire **post-mission**, across cycles.

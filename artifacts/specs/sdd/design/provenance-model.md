@@ -3,7 +3,7 @@
 The **shape** of production provenance. Provenance spans **three tiers** by lifetime (below):
 an ephemeral per-worktree **plan**, a durable **ledger**, and a durable **public** trail. The
 durable record has **two faces** — a current-state face in `spec.md` frontmatter and the
-append-only `combat-log.jsonl` ledger sibling. This file owns the record shape, the entry
+append-only `ledger.jsonl` sibling. This file owns the record shape, the entry
 shapes, the matchable `cause` enum, and write-ownership.
 Recording *behavior* (when the operator appends, how it resolves a producer) lives in
 `../mission/`; this is the shape only.
@@ -16,9 +16,15 @@ record is sparse and outlives the CR.
 
 | Tier | Home | Holds | Lifetime |
 |---|---|---|---|
-| **Private scratch — the plan** | `.agents/plans/<cr-ref>.plan.md` (brief) + `.agents/plans/<cr-ref>.log.jsonl` (telemetry) | grill analysis + task DAG + progress; the append-only `report` / `correction` lines + a **CR-scoped `seq`** | **ephemeral** — doctrine discards at retro |
-| **Durable internal — the ledger** | `combat-log.jsonl` sibling to the **root** `spec.md` | only `gate` (verdict + `frozen[]`) and `strategy` (incl. the distilled recurrence) | durable |
+| **Private scratch — the plan** | `.agents/plans/<cr-ref>.plan.md` (brief) + `.agents/plans/<cr-ref>.log.jsonl` (**the combat log**) | grill analysis + task DAG + progress; the append-only `report` / `correction` lines + a **CR-scoped `seq`** | **ephemeral** — doctrine discards at retro |
+| **Durable internal — the ledger** | `ledger.jsonl` sibling to the **root** `spec.md` | only `gate` (verdict + `frozen[]`) and `strategy` (incl. the distilled recurrence) | durable |
 | **Durable public — the trail** | the CR source conclusion + changesets + git history | what shipped, for the outer loops to read forward | durable, external |
+
+**Naming (fleet metaphor).** The mid-flight `*.log.jsonl` is the **combat log** — the
+blow-by-blow of the mission while it is fought. The durable `ledger.jsonl` is the **ledger** —
+the sparse book the doctrine loop **distills** the combat log into and keeps. "Combat log"
+always means the live per-mission log in the plan; "ledger" always means the durable sibling
+of the root `spec.md`. They are never the same file.
 
 The plan is also a **portable handoff artifact**: a self-contained Markdown brief, co-located
 with the worktree (not a home-dir session), readable by any agent or model that picks up the
@@ -32,7 +38,7 @@ faces below describe the **durable** record; the chatty mid-flight lines live in
 | Face | Home | Shape | Mutability | Holds |
 |---|---|---|---|---|
 | **Current-state** | `spec.md` frontmatter | `produced-by` (map by role) + `approval` (map by gate: `verdict` + `why`) | **overwritten** — last write wins | the authoritative *present*: who produced each artifact, and the **standing** verdict per gate (the latest CR's outcome) |
-| **Ledger** | sibling `combat-log.jsonl` | one JSON object per line, appended in order | **immutable** — lines appended, never edited or removed | the durable *history*: every CR's `gate` verdict + `strategy`, in order (mid-flight detail lives in the plan) |
+| **Ledger** | sibling `ledger.jsonl` | one JSON object per line, appended in order | **immutable** — lines appended, never edited or removed | the durable *history*: every CR's `gate` verdict + `strategy`, in order (mid-flight detail lives in the plan) |
 
 The current-state face answers *"who produced this, and what is the verdict now?"* The
 ledger answers *"what was decided to get here?"* They do not duplicate: a gate rejection
@@ -50,26 +56,30 @@ separates `produced-by` (standing) from `report` (historical) separates `approva
 (standing) from `gate` (historical). There is **no per-CR `approval` block** in
 frontmatter and no separate per-CR sidecar file.
 
-**Every ledger line carries an optional `cr`.** Because one `combat-log.jsonl` now spans
+**Every ledger line carries an optional `cr`.** Because one `ledger.jsonl` now spans
 many change requests against the one durable spec, each entry tags the CR it belongs to
 (`"cr": 34`) so a reader groups a mission's lines without the transcript. Outer-loop
 `strategy` lines (cross-CR by nature) may omit it.
 
-**The ledger is operational provenance, not contract.** `combat-log.jsonl` is **never
+**The ledger is operational provenance, not contract.** `ledger.jsonl` is **never
 frozen and never gated**: it keeps appending across the whole lifecycle, including while
 `spec.md` and the `.feature` are frozen at `approved`. The freeze and the gates govern the
 contract (`spec.md` + the `.feature`) only.
 
-Write flow: the operator dispatch **overwrites** the current-state face in `spec.md` and
-**appends** lines to `combat-log.jsonl`; the doctrine-loop Scanner reads the ledger
-post-hoc and **appends** strategy lines.
+Write flow: the operator dispatch **overwrites** the current-state face in `spec.md`,
+**appends** mid-flight `report` / `correction` lines to the **combat log** (the plan's
+`*.log.jsonl`), and **appends** self-asserted `gate` lines to the durable `ledger.jsonl`. At
+retro the doctrine-loop Scanner reads the concluded combat log, **distills** recurring causes,
+**appends** `strategy` lines to the ledger, and **discards** the plan.
 
 ```mermaid
 flowchart LR
   disp[operator dispatch] -->|overwrites| state[current-state face<br/>spec.md frontmatter]
-  disp -->|appends| log[combat-log.jsonl<br/>sibling file, append-only]
-  log -->|read post-hoc| scanner[doctrine-loop Scanner]
-  scanner -->|appends strategy| log
+  disp -->|appends report/correction| clog[combat log<br/>plan *.log.jsonl, ephemeral]
+  disp -->|appends self-asserted gate| ledger[ledger.jsonl<br/>sibling file, durable]
+  clog -->|read at retro| scanner[doctrine-loop Scanner]
+  scanner -->|distills + appends strategy| ledger
+  scanner -->|discards| clog
 ```
 
 ## Current-state face — `produced-by` (+ `approval`)
@@ -133,14 +143,14 @@ The "never blocks" invariant is scoped to **availability**:
 
 One JSON object per line (JSON Lines). Every line carries a **CR-scoped `seq`** (append order
 *within its CR*, restarting per CR — never a global counter) and a `kind`. Four kinds, split
-by tier: **`report`** and **`correction`** are mid-flight → the plan's `*.log.jsonl`;
-**`gate`** and **`strategy`** are durable → the slim `combat-log.jsonl` ledger.
+by tier: **`report`** and **`correction`** are mid-flight → the **combat log** (the plan's
+`*.log.jsonl`); **`gate`** and **`strategy`** are durable → the slim `ledger.jsonl`.
 
 A CR-scoped `seq` is collision-free under concurrency: one CR lives in exactly one worktree at
 a time (the source-claim lock, `../intake/README.md`), so two concurrent missions always hold
 different CRs and never mint the same `(cr, seq)`. The durable ledger receives only sparse
 `gate`/`strategy` lines, so its rare cross-tree appends reconcile by **union merge** (keep all
-lines — they are independent records, never contradictions); set `combat-log.jsonl merge=union`
+lines — they are independent records, never contradictions); set `ledger.jsonl merge=union`
 in `.gitattributes`. This append reconciliation is purely mechanical and **never** reaches the
 hard floor (which is for semantic frozen-scenario conflicts, not log appends).
 
@@ -247,7 +257,7 @@ the ledger.
 ## Write ownership
 
 The mid-flight `report` / `correction` lines are appended to the **plan** (`*.log.jsonl`);
-the durable `gate` / `strategy` lines are appended to the **ledger** (`combat-log.jsonl`).
+the durable `gate` / `strategy` lines are appended to the **ledger** (`ledger.jsonl`).
 No writer touches the ledger through `spec.md` frontmatter. Both are append-only: lines are
 added with the next CR-scoped `seq`, never edited or deleted.
 
@@ -283,7 +293,7 @@ the distilled `correction`-with-`cause` from the ledger; campaign / formation re
 |---|---|---|---|
 | `spec.md` | contract prose + standing current-state frontmatter | **never** (kept aligned) | yes |
 | `<name>.feature` | contract scenarios | **per file**, via its own `@frozen` tag, set on a spec-gate `approve` that touched it (see `lifecycle-model.md`) | yes |
-| `combat-log.jsonl` (root sibling) | durable ledger — `gate` + `strategy` only (append-only, `merge=union`) | **never** | **never** |
+| `ledger.jsonl` (root sibling) | durable ledger — `gate` + `strategy` only (append-only, `merge=union`) | **never** | **never** |
 
 The mid-flight **plan** (`.agents/plans/<cr-ref>.plan.md` + `.log.jsonl`) is **not** part of
 the spec folder: it is gitignored per-worktree scratch, discarded at retro (ADR-0015).
