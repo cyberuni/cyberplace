@@ -46,21 +46,27 @@ outside SDD, no loop).
 
 ## Where we are
 
-**Resolved (A–E, L):** see `OPEN-QUESTIONS.md`. Last commit `e60e69d` landed the harness→plugin
+**Resolved (A–G, L):** see `OPEN-QUESTIONS.md`. Commit `e60e69d` landed the harness→plugin
 + external-forge restructure and the B-sweep (`type` = artifact-type, composition role derived
-from edges, `domain-type` removed, `domain-plugin` distinct from `produced-by`).
+from edges, `domain-type` removed, `domain-plugin` distinct from `produced-by`). Commits
+`022b93d` (G + per-file freeze) and `dde86a4` (F + CR concurrency) landed the latest two.
+
+- **G — RESOLVED.** Approval splits two faces (standing `approval` in `spec.md` vs durable
+  per-CR `gate` ledger line carrying `frozen[]`); freeze is a per-suite-file `@frozen` tag;
+  every ledger line gains optional `cr`. Refined **C** to per-file freeze, freeze/unfreeze
+  vocab, risk-not-phase unfreeze trigger, full impl-gate run by the impl-producer.
+- **F — RESOLVED.** Producer exclusion is per-file (one artifact-type → one bundle → one
+  producer per file); CR concurrency is git (one mission = one tree = one CR; parallelism is
+  separate trees; SDD tree-agnostic, worktree lifecycle deferred to `universal-plugin`).
 
 **Still open — need rulings (in `OPEN-QUESTIONS.md`):**
 
-- **F.** Multi-artifact CR / per-file bundle scoping — make "no two producers on the same
-  **file**" explicit (per-file, not per-spec).
-- **G.** Durable approval/freeze record — with no per-folder `status`/`approval`, where does
-  "this CR's diff was approved + which scenarios are now frozen" live? (combat log? per-CR
-  record? single growing freeze baseline?) **This is the load-bearing gap — likely take next.**
 - **H.** 4-dim vs 5-dim risk gradient (does contract-impact stay its own dimension?). Sources
-  disagree with themselves.
+  disagree with themselves — note `autonomy-rubric.md` already says five dims while
+  `lifecycle-model.md`'s `why` block lists four; reconcile.
 - **I.** CR store + status — keep `sdd-change-request`'s pluggable store + `open→accepted→done`,
-  or fold the CR record into the combat log / loop?
+  or fold the CR record into the combat log / loop? (Now informed by G's `gate` ledger line
+  and F's one-CR-per-tree.)
 - **J.** Escape-hatch — does escaped work bypass the lifecycle, or is it a CR that self-clears
   outside the gates?
 - **K.** `spec-digest` re-home — its consumer (the spec-gate station) dissolved into
@@ -81,7 +87,9 @@ fresh plugin** from the new spec.
 ## How to resume
 
 1. Read `OPEN-QUESTIONS.md` + `DESIGN-NOTES.md`.
-2. Pick an open ruling (suggest **G** next). Discuss conversationally, decide, write the
-   ruling into the affected design/capability file(s), mark it RESOLVED in `OPEN-QUESTIONS.md`.
+2. Pick an open ruling (suggest **I** next — now well-informed by G's `gate` ledger line and
+   F's one-CR-per-tree; or **H** for a quick reconciliation). Discuss conversationally,
+   decide, write the ruling into the affected design/capability file(s), mark it RESOLVED in
+   `OPEN-QUESTIONS.md`.
 3. Commit per the repo's commit discipline (one concern per commit; `pnpm verify` is run by
    the pre-commit path).
