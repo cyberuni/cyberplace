@@ -30,8 +30,11 @@ The plan is also a **portable handoff artifact**: a self-contained Markdown brie
 with the worktree (not a home-dir session), readable by any agent or model that picks up the
 mission. `<cr-ref>` is the source-qualified CR id (`github-34`, `asana-<gid>`, `local-<slug>`).
 The `.agents/plans/` tree is **gitignored** — scratch that never merges into the delivery,
-which is also why concurrent missions never collide on it (one plan per worktree). The two
-faces below describe the **durable** record; the chatty mid-flight lines live in the plan.
+which is also why concurrent missions never collide on it (one plan per worktree). `.agents/plans`
+is the real, tool-agnostic home; for Cursor interop the SDD `init` skill symlinks
+`.cursor/plans → .agents/plans` so a plan written by either tool is seen by both (setup +
+migration: `../plugin/README.md`). The two faces below describe the **durable** record; the
+chatty mid-flight lines live in the plan.
 
 ## Two faces, two homes
 

@@ -23,6 +23,21 @@ The `plugin.json` shape is the spec-level contract; the actual manifest and mark
 files are the code-level artifacts it abstracts. The universal-plugin format itself is
 external (`governance show universal-plugin`); this folder is the SDD layer on top.
 
+### Workspace init — the plan directory + Cursor interop
+
+SDD's own **`init`** skill (distinct from a domain plugin's `init-<plugin>`) prepares the
+workspace for mission plans (`../design/provenance-model.md`):
+
+- **Ensure the plan directory.** Create `.agents/plans/` (the tool-agnostic, gitignored home
+  for each mission's `<cr-ref>.plan.md` + `<cr-ref>.log.jsonl` combat log).
+- **Symlink for Cursor.** Cursor only reads its own `.cursor/plans`, so init makes
+  `.cursor/plans` a **symlink → `.agents/plans`** — `.agents/plans` stays the real folder, and
+  Cursor's conventional path resolves to it, so a plan written by either tool is seen by both.
+- **Migration, idempotent.** Re-runnable safely. If `.cursor/plans` already exists as a **real
+  directory** (not the symlink), init **does not clobber** it — it moves its contents into
+  `.agents/plans` (or backs it up), then replaces it with the symlink. An already-correct
+  symlink is left as-is.
+
 ## SDD is extended by domain plugins
 
 A domain plugin teaches SDD to produce and judge a new artifact-type. It implements the
@@ -74,7 +89,8 @@ resolver in `../mission/` only ever reads a current-shape entry and never compar
 ## Scenarios
 
 Unit scenarios for plugin behavior (manifest validity, idempotent init-write,
-fail-closed on a corrupt registry, version reconciliation) **colocate** in this folder.
+fail-closed on a corrupt registry, version reconciliation, the `.cursor/plans` symlink +
+its no-clobber migration) **colocate** in this folder.
 Cross-capability outcomes (a plugin registers and the operator later resolves its delegates)
 live in `../acceptance/`.
 
