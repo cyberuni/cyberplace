@@ -135,8 +135,19 @@ spec already follows our ruling; the *source* specs are stale and need a sweep) 
   Written into `intake/README.md` (prose + scenarios) and `gateway/README.md` (intake note,
   routing row, escape bullet).
 
-- **K. spec-digest re-home.** Its consumer (the spec-gate review station) dissolved into
-  `authoring/`; and "digest one spec.md + one .feature" no longer maps to a multi-folder project
-  spec + multi-suite. Re-home + redefine.
+- **K. spec-digest re-home. RESOLVED — into `authoring/`, CR-scoped, folded in-session.**
+  The digest re-homes into `authoring/` (which owns the spec gate; its old consumer
+  `validate-spec`/the gate station folded there) — not `corpus/` (cross-project DAG tooling).
+  Two shifts: **unit = the CR's delta footprint** (the files this CR touched, aggregated), not
+  one fleet-era spec folder and not the whole multi-folder tree (the root `spec.md` capability
+  map is the whole-project index); and it **folds into the in-session gate station** rather
+  than a separately-spawned skill (the gateway never calls it; a read-only summary needs no
+  isolated actor). What survives is the **fixed-section, read-only, decision-free contract**,
+  generalized to multi-file (CR id + what/why, What, Status, Scenarios with added/modified/
+  **narrowed** flagged, Key decisions, Open items; missing `.feature` = zero scenarios, not an
+  error). The risk verdict + `frozen[]` are the gate/rubric outputs shown alongside, never
+  produced by the digest. Written into `authoring/README.md` (`### The gate digest`). The
+  standalone `sdd-spec-digest` spec + `plugins/sdd/skills/spec-digest` are **superseded** —
+  removed in the pending plugin sweep.
 
 - **M. Combat log is per-corpus — does that hold under one-CR-per-tree (F)?** The provenance model places combat-log.jsonl as a sibling to spec.md, i.e. one log per spec corpus, with every line tagging an optional cr. But F made one mission = one working tree = one CR, and parallelism = separate trees. Open: when two trees (two CRs) run against the same corpus concurrently, each tree has its own copy of combat-log.jsonl — do their cr-tagged lines merge cleanly back (append-only, so git-merge-friendly), or does concurrent appending across trees create the same overlapping-frozen-scenario class of merge conflict F pushed to the hard floor? Decide whether "per-corpus" means one logical log reassembled at merge, or genuinely one-physical-log-per-tree until handoff.

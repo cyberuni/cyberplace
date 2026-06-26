@@ -46,7 +46,7 @@ outside SDD, no loop).
 
 ## Where we are
 
-**Resolved (A–J, L):** see `OPEN-QUESTIONS.md`. Commit `e60e69d` landed the harness→plugin
+**Resolved (A–L) — all rulings closed.** See `OPEN-QUESTIONS.md`. Commit `e60e69d` landed the harness→plugin
 + external-forge restructure and the B-sweep (`type` = artifact-type, composition role derived
 from edges, `domain-type` removed, `domain-plugin` distinct from `produced-by`). Commits
 `022b93d` (G + per-file freeze) and `dde86a4` (F + CR concurrency) landed the latest two.
@@ -73,11 +73,12 @@ from edges, `domain-type` removed, `domain-plugin` distinct from `produced-by`).
   escape the rest), not a gateway classifier. Escaped work **bypasses and leaves no record**
   (non-CR isn't SDD's to track; spec-prose-only is in git). Escape ≠ trivial-CR self-clear
   (folder move breaks imports → impl retest → it's a CR). Swept `intake/`, `gateway/`.
+- **K — RESOLVED.** `spec-digest` re-homes into `authoring/` (owns the spec gate), **CR-scoped**
+  (the files this CR touched, not one folder, not the whole tree) and **folded in-session**
+  (no spawned skill). The fixed-section read-only contract survives, generalized to multi-file.
+  Standalone `sdd-spec-digest` spec + `plugins/sdd/skills/spec-digest` superseded (sweep).
 
-**Still open — need rulings (in `OPEN-QUESTIONS.md`):**
-
-- **K.** `spec-digest` re-home — its consumer (the spec-gate station) dissolved into
-  `authoring/`, and "one spec.md + one .feature" no longer maps to a multi-folder project spec.
+**All open rulings (A–L) are now resolved.** What remains is implementation, not design:
 
 ## Decided-but-stale sweeps still pending
 
@@ -93,9 +94,14 @@ fresh plugin** from the new spec.
 
 ## How to resume
 
-1. Read `OPEN-QUESTIONS.md` + `DESIGN-NOTES.md`.
-2. Pick the last open ruling (**K**, the `spec-digest` re-home). Discuss conversationally,
-   decide, write the ruling into the affected design/capability file(s), mark it RESOLVED in
-   `OPEN-QUESTIONS.md`.
-3. Commit per the repo's commit discipline (one concern per commit; `pnpm verify` is run by
-   the pre-commit path).
+All design rulings (A–L) are resolved. The remaining work is **implementation**, in two
+phases:
+
+1. **The decided-but-stale sweep** (7 items in `OPEN-QUESTIONS.md`): the new spec tree is
+   correct, but the old `plugins/sdd/` skills/governances and old sibling specs still
+   contradict the rulings. Sweep them.
+2. **The plugin decision** (above): update `plugins/sdd/` in place vs archive-and-rebuild
+   from the new spec tree. Decide, then execute.
+
+Commit per the repo's commit discipline (one concern per commit; `pnpm verify` runs on the
+pre-commit path).
