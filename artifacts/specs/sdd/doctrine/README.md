@@ -79,6 +79,26 @@ Three distinct things, by time-direction: **strategy** is the Scanner's *forward
 re-tuned by ratified strategy); the **corpus** is the *full durable body* every other delegate
 reads from (skills, governances, conventions, templates), which ratified strategy grows.
 
+## Plan retirement — doctrine's last retro step
+
+Doctrine **owns plan retirement** (`../design/provenance-model.md`, Plan retirement). Because
+plans are now **tracked** (committed with the work, not gitignored), they are removed from the
+tree by a deliberate, gated act — never a gitignore side effect:
+
+- **Distill and delete are decoupled.** The distill fires at `→ implemented` (step 3, before
+  the PR exists); the **delete** is a separate, later act — doctrine's **last retro step**.
+- **The retirement sweep** globs `.agents/plans/*.plan.md` and, for each `<cr-ref>`, queries
+  its **source** status natively (the `cr-ref` is source-qualified — `github-34` → GH issue
+  #34, `asana-<gid>` → Asana, `local-<slug>` → the local store). It deletes
+  `<cr-ref>.plan.md` + `<cr-ref>.log.jsonl` (a **tracked deletion**) **only when** the source
+  is `done`/merged **AND** the plan has been distilled. It is **idempotent** — a missing plan
+  or an open CR is a no-op, so the sweep is safe to re-run (CI post-merge invocation optional).
+- Never delete an un-distilled plan (the retro never ran); deletion runs only after the
+  distill has written strategy/recurrence to the ledger.
+
+Delivered as a non-user-invocable skill carrying a self-contained `.mts` script (the repo's
+node-≥23.6 / no-deps convention; agent fallback when `node` is absent).
+
 ## Boundaries — Doctrine owns the process only
 
 It routes out-of-loop requests: a build-or-deprecate request → `campaign/`; a structure

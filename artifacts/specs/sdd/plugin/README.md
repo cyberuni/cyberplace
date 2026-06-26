@@ -34,6 +34,10 @@ workspace for mission plans (`../design/provenance-model.md`):
 - **Symlink for Cursor.** Cursor only reads its own `.cursor/plans`, so init makes
   `.cursor/plans` a **symlink → `.agents/plans`** — `.agents/plans` stays the real folder, and
   Cursor's conventional path resolves to it, so a plan written by either tool is seen by both.
+  **The link target is relative to `.cursor/`, so it must be `../.agents/plans`, NOT
+  `.agents/plans`** — a verbatim `ln -s .agents/plans .cursor/plans` resolves to a broken
+  `.cursor/.agents/plans`. Use `ln -sfn ../.agents/plans .cursor/plans` (or an absolute path);
+  `-fn` replaces an existing link in place rather than nesting a new one inside it.
 - **Migration, idempotent.** Re-runnable safely. If `.cursor/plans` already exists as a **real
   directory** (not the symlink), init **does not clobber** it — it moves its contents into
   `.agents/plans` (or backs it up), then replaces it with the symlink. An already-correct
