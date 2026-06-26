@@ -33,7 +33,8 @@ Sources: `sdd-gate-autonomy`, `sdd-escape-hatch`, `sdd-stop-provenance`, `../des
 - B4. A logical contradiction inside the suite (Scenario A says yes, Scenario B says no) halts implementation and escalates for human resolution.
 - B5. An obvious stale-mistake contradiction is served as an operator minor fix, not escalated.
 - B6. A self-asserted gate advances the run asynchronously and enqueues the spec for ratify-or-kick-back review.
-- B7. A halt records why the agent stopped (stop-provenance) in the combat log.
+
+(The mid-flight combat-log write of a halt is a **mission unit scenario**, not a cross-capability one — it colocates under `../mission/`. Acceptance keeps only the cross-capability outcome: a CR halts → a human resolves → the mission resumes, in B4.)
 
 ### C. Resolve-a-squad (registry → resolution → production chain)
 Sources: `sdd-contract-registry`, `sdd-operator-resolution`, `plugin/` init-WRITE.
@@ -47,7 +48,7 @@ Sources: `sdd-contract-registry`, `sdd-operator-resolution`, `plugin/` init-WRIT
 ### D. Freeze (authoring spec gate → mission impl gate)
 Sources: `sdd-operator-freeze`, `sdd-gate-autonomy`, `sdd-state-legality`.
 
-- D1. The spec gate co-freezes the chain at descending strength (spec.md+.feature firmest, plan.md lower, tasks.md live) with no separate plan gate.
+- D1. A spec-gate approve freezes the `.feature` files the CR touched (a per-file `@frozen` tag); `spec.md` is kept aligned but never frozen, and `plan.md`/`tasks.md` are never frozen — with no separate plan gate.
 - D2. The frozen `.feature` is the object at the spec gate and the bar at the impl gate.
 - D3. An agent refuses to edit a frozen `.feature` and directs reverting to draft.
 - D4. A fatal deal-breaker reverts an approved spec to draft (a Director-revert) and unfreezes the `.feature`.
@@ -78,7 +79,6 @@ Feature: SDD acceptance — change request to delivered outcome
     When SDD intakes it, grills it to a spec+suite diff, passes the spec gate,
       implements against the frozen .feature, and passes the impl gate
     Then the verified result is landed in the project-declared delivery shape
-    And every step is recorded in the combat log
 
   Scenario: A breaking change escalates unless the CR pre-authorized it
     Given a change request whose diff narrows an e2e acceptance scenario
@@ -91,7 +91,6 @@ Feature: SDD acceptance — change request to delivered outcome
     When the operator reaches the contradiction during implementation
     Then implementation halts
     And the bar escalates for human resolution
-    And the halt and its reason are recorded in the combat log
 
   Scenario: A registered plugin's delegates resolve without directory scanning
     Given a plugin's init-write added its sdd-plugins entry to the registry

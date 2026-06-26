@@ -235,7 +235,9 @@ Unit scenarios that verify orchestrator behavior **colocate here**: operator res
 uniform I/O, the write boundary, warm-vs-cold), the explore-phase orchestration, segment
 behavior (suspend/resume, batching, cursor derivation, markers-vs-questions, OBSERVATIONS
 routing), and stop-provenance (`strategy` block, `approval`/`verdict`, pause, positional
-authority). Deliver-phase and handoff scenarios colocate under `deliver/` and `handoff/`.
+authority, **the mid-flight combat-log write of a halt** — why the agent stopped, recorded
+to the plan's `*.log.jsonl` during the mission). Deliver-phase and handoff scenarios
+colocate under `deliver/` and `handoff/`.
 Cross-capability **e2e (acceptance) scenarios** live in `../acceptance/`, not here.
 
 ## Boundaries — what the orchestrator does NOT own
