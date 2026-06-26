@@ -36,8 +36,8 @@ approval:               # per-gate verdict
   impl: { verdict: approve, by: <human name> }   # ratified — no why needed
 produced-by:            # who produced each artifact; see provenance-model.md
   spec-producer: <plugin>:<agent>
-domain-plugin:          # map: domain -> owning plugin, when a domain is contested (distinct from produced-by)
-  <domain>: <plugin>
+domain-plugin:          # map: artifact-type -> owning plugin, when an artifact-type is contested (distinct from produced-by)
+  <artifact-type>: <plugin>
 ---
 ```
 

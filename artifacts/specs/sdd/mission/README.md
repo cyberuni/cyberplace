@@ -247,20 +247,26 @@ Cross-capability **e2e (acceptance) scenarios** live in `../acceptance/`, not he
 - **The CR subsystem (intake feed)** → `../intake/`.
 - **The universal router/door** → `../gateway/`.
 
-## Unresolved (flagged for the gate)
+## Source-vs-design tensions
 
-- **`domain-plugin` vs `produced-by`.** `../design/` keeps these **distinct**:
-  `domain-plugin` = the chosen plugin for an ambiguous artifact-type (a *forward input* to
-  resolution), `produced-by` = the after-the-fact record of who actually produced each
-  artifact. The folded sources (`sdd-operator-resolution`, `validate-spec`) treat
-  `domain-plugin` as **retired** and migrate the choice into `produced-by`. These positions
-  contradict; reconcile before freeze. **Not resolved here.**
-- **Bundle (one producer + one judge per artifact-type) vs the five-role chain.** The design
-  model is **one knowledge bundle per spec**; the folded sources run a **five-role production
-  chain**. Which granularity the consolidated spec commits to is unsettled. **Not resolved
-  here.**
-- **Spec-fleet assumption in the sources.** The folded specs verify against a
-  **per-feature/per-domain `.feature`**; the consolidated impl gate verifies against **one**
-  suite (`../acceptance/` + colocated unit). The per-scenario verification language inherited
-  from the sources assumes the fleet shape and must be re-read against the one-suite model.
-  **Not resolved here.**
+Two of the three below are **resolved in design** — the design position stands and the folded
+sources are the stale side, to fix in the source sweep. One is **genuinely open** and still
+needs a ruling.
+
+- **`domain-plugin` vs `produced-by` — RESOLVED (ruling B).** `../design/` keeps these
+  **distinct**: `domain-plugin` = the chosen plugin for an ambiguous artifact-type (a
+  *forward input* to resolution), `produced-by` = the after-the-fact record of who actually
+  produced each artifact. The design position **stands**; the folded sources
+  (`sdd-operator-resolution`, `validate-spec`) that treat `domain-plugin` as **retired** and
+  migrate the choice into `produced-by` are the **stale side** — fix them in the source sweep,
+  not the design.
+- **Bundle (one producer + one judge per artifact-type) vs the five-role chain — OPEN.** The
+  design model is **one knowledge bundle per spec**; the folded sources run a **five-role
+  production chain**, and this doc still describes "the five-role uniform I/O" as current.
+  Whether these are the same mechanism at two granularities or a genuine contradiction is
+  **unsettled — needs a ruling** before freeze.
+- **Spec-fleet assumption in the sources — RESOLVED (project-spec model).** The consolidated
+  impl gate verifies against **one** suite (`../acceptance/` + colocated unit); the one-suite
+  model **stands**. The folded specs that verify against a **per-feature/per-domain `.feature`**
+  are the **stale side** — their per-scenario verification language must be re-read against the
+  one-suite model in the source sweep, not re-litigated in design.
