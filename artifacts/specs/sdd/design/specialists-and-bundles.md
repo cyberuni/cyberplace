@@ -13,8 +13,12 @@ The producer/judge selection unit is the **knowledge bundle**, keyed by **artifa
 artifact-type → { producer, judge, governances (actor + discipline), model, effort }
 ```
 
-- **One bundle per spec.** No domain arrays, no producer composition, no "best match"
-  producer race, never two producers on the same file.
+- **One bundle per artifact-type; one producer per file.** No domain arrays, no producer
+  composition, no "best match" producer race. The exclusion is **per file**, not per spec: a
+  project-spec CR touches many artifact-types and so summons **multiple** specialists at
+  once, but **no two producers ever act on the same file**. Each file has exactly one
+  artifact-type → exactly one bundle → exactly one producer; the operator orchestrates the
+  set and merges their outputs.
 - `type` ≡ **artifact-type** = the bundle key. It names the artifact / bundle
   (`npm-package`, `agent-plugin`, `agent-skill`, `agent-definition`, `react-component`,
   `docs`, …). The structural axis (`project | feature`) is **derived from graph edges** —

@@ -72,9 +72,16 @@ spec already follows our ruling; the *source* specs are stale and need a sweep) 
   "split" is folder reorg — a view change with no new gate. Corpus tools operate at the
   cross-project tier; intra-project reorg is plain editing.
 
-- **F. Multi-artifact CR / per-file bundle scoping.** A project-spec CR touches many
-  artifact-types → summons multiple specialists. Make explicit: one bundle **per artifact-type**,
-  "no two producers on the same **file**" (per-file, not per-spec).
+- **F. Multi-artifact CR / per-file bundle scoping. RESOLVED — per-file producer, git-native
+  concurrency.** A project-spec CR touches many artifact-types → summons multiple specialists
+  at once; the exclusion is **per file**: one artifact-type → one bundle → one producer per
+  file, "no two producers on the same **file**." **CR concurrency** is solved by git, not an
+  SDD lock: one mission = one working tree = one CR at a time, serial inside the tree;
+  parallelism is separate trees (worktrees). SDD stays **tree-agnostic** (worktree lifecycle
+  is a later `universal-plugin` feature), branch-aware only at handoff. Cross-CR file
+  collisions are git merge conflicts; overlapping-frozen-scenario conflicts at merge → the
+  hard floor (Conflict resolution / Clearance). Written into
+  `design/specialists-and-bundles.md` and `design/unit-and-organization.md`.
 
 - **G. Durable approval/freeze record. RESOLVED — two faces + per-file freeze tag.**
   *Approval:* `spec.md` `approval` holds only the **standing** (latest CR's) gate verdict —
