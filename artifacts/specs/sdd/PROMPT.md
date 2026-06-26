@@ -46,7 +46,7 @@ outside SDD, no loop).
 
 ## Where we are
 
-**Resolved (A–H, L):** see `OPEN-QUESTIONS.md`. Commit `e60e69d` landed the harness→plugin
+**Resolved (A–I, L):** see `OPEN-QUESTIONS.md`. Commit `e60e69d` landed the harness→plugin
 + external-forge restructure and the B-sweep (`type` = artifact-type, composition role derived
 from edges, `domain-type` removed, `domain-plugin` distinct from `produced-by`). Commits
 `022b93d` (G + per-file freeze) and `dde86a4` (F + CR concurrency) landed the latest two.
@@ -61,12 +61,15 @@ from edges, `domain-type` removed, `domain-plugin` distinct from `produced-by`).
 - **H — RESOLVED.** 4-dim gradient (reversibility, blast-radius, novelty, confidence).
   Contract-impact is not a row: un-authorized breaking → Clearance floor; cleared breaking →
   rides blast radius. Swept `autonomy-rubric.md`, `provenance-model.md`, `formation/README.md`.
+- **I — RESOLVED.** Pluggable store survives but the adapter is **thin** (a directive: which
+  source(s) + convention + orchestration), not a CRUD layer — agents use GitHub/Jira/Asana/
+  beads natively. Status `open→accepted→done` is the source's own, not duplicated; `cr` id is
+  the join. **Claiming a CR is the CR-level coordination lock** (completes F: git locks files,
+  source-claim locks CRs). Write-back conditional (PR `Closes #N` / direct-to-main → `done`);
+  follow-ups re-enter as new CRs. Swept `intake/README.md`, `design/unit-and-organization.md`.
 
 **Still open — need rulings (in `OPEN-QUESTIONS.md`):**
 
-- **I.** CR store + status — keep `sdd-change-request`'s pluggable store + `open→accepted→done`,
-  or fold the CR record into the combat log / loop? (Now informed by G's `gate` ledger line
-  and F's one-CR-per-tree.)
 - **J.** Escape-hatch — does escaped work bypass the lifecycle, or is it a CR that self-clears
   outside the gates?
 - **K.** `spec-digest` re-home — its consumer (the spec-gate station) dissolved into
@@ -87,8 +90,8 @@ fresh plugin** from the new spec.
 ## How to resume
 
 1. Read `OPEN-QUESTIONS.md` + `DESIGN-NOTES.md`.
-2. Pick an open ruling (suggest **I** next — now well-informed by G's `gate` ledger line and
-   F's one-CR-per-tree; **I** also unblocks **J**). Discuss conversationally,
+2. Pick an open ruling (suggest **J** next — escape-hatch, now informed by I's
+   intent-vs-work split; or **K**, the `spec-digest` re-home). Discuss conversationally,
    decide, write the ruling into the affected design/capability file(s), mark it RESOLVED in
    `OPEN-QUESTIONS.md`.
 3. Commit per the repo's commit discipline (one concern per commit; `pnpm verify` is run by
