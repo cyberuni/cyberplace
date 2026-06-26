@@ -28,8 +28,9 @@ external (`governance show universal-plugin`); this folder is the SDD layer on t
 SDD's own **`init`** skill (distinct from a domain plugin's `init-<plugin>`) prepares the
 workspace for mission plans (`../design/provenance-model.md`):
 
-- **Ensure the plan directory.** Create `.agents/plans/` (the tool-agnostic, gitignored home
-  for each mission's `<cr-ref>.plan.md` + `<cr-ref>.log.jsonl` combat log).
+- **Ensure the plan directory.** Create `.agents/plans/` (the tool-agnostic, **tracked** home
+  for each mission's `<cr-ref>.plan.md` + `<cr-ref>.log.jsonl` combat log — committed with the
+  work, not gitignored).
 - **Symlink for Cursor.** Cursor only reads its own `.cursor/plans`, so init makes
   `.cursor/plans` a **symlink → `.agents/plans`** — `.agents/plans` stays the real folder, and
   Cursor's conventional path resolves to it, so a plan written by either tool is seen by both.

@@ -52,8 +52,9 @@ never has to halt mid-flight.
 
 What was delivered, in what shape, broken into which units, lands in the durable **public
 trail** — the CR-source conclusion, the changesets, and git history (see
-`../../design/provenance-model.md`) — never the ephemeral combat log (discarded at retro).
-Handoff does not write spec/suite frontmatter; the contract is already firmed.
+`../../design/provenance-model.md`) — never the combat log (committed but transient, deleted
+from the tree at retro). Handoff does not write spec/suite frontmatter; the contract is
+already firmed.
 
 ### Conclusion write-back to the source
 
@@ -73,9 +74,11 @@ live in `../../intake/README.md`):
 
 The mission **plan** (`.agents/plans/<cr-ref>.plan.md`) is itself a self-contained, portable
 brief (`../../design/provenance-model.md`): a different agent or model can pick up an
-in-flight mission from it. It is **worktree-local scratch**, never part of the delivery, and is
-**discarded at retro by the doctrine loop** once distilled — handoff neither ships it nor
-preserves it.
+in-flight mission from it. It is **tracked worktree-local scratch** — committed with the work
+and kept in the PR (the decision + failure trail reviewers want), but handoff does **not**
+treat it as a delivery artifact to land in the declared shape. The doctrine loop **deletes it
+from the tree later** (a tracked deletion, once distilled and the source is done) — handoff
+neither retires it early nor specially preserves it.
 
 ## Scenarios (colocated)
 

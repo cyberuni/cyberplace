@@ -16,8 +16,8 @@ The Warden's **primary** input is structural: the corpus **structure** and **dis
 cold-scanning the whole corpus every run, it may consult the durable **public trail** (CR-source
 conclusions + changesets + git history) **forward** via a cursor (`.agents/sdd/loop-cursors.json`)
 to learn what shipped recently and prioritize the structural pass there first. It reads **never**
-the ephemeral combat log (discarded at retro) and **never** live subagent context — like the
-other outer loops it fires strictly post-mission.
+the combat log (the doctrine loop's input, retired at retro) and **never** live subagent context
+— like the other outer loops it fires strictly post-mission.
 
 ## The three corpus-wide acts
 

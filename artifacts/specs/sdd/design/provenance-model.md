@@ -1,7 +1,8 @@
 # Provenance model
 
 The **shape** of production provenance. Provenance spans **three tiers** by lifetime (below):
-an ephemeral per-worktree **plan**, a durable **ledger**, and a durable **public** trail. The
+a **tracked per-worktree plan** (transient in the tree, durable in git history), a durable
+**ledger**, and a durable **public** trail. The
 durable record has **two faces** — a current-state face in `spec.md` frontmatter and the
 append-only `ledger.jsonl` sibling. This file owns the record shape, the entry
 shapes, the matchable `cause` enum, and write-ownership.
@@ -11,12 +12,13 @@ Recording *behavior* (when the operator appends, how it resolves a producer) liv
 ## Three provenance tiers
 
 Provenance splits by **lifetime and audience** (rationale + the cross-harness survey:
-ADR-0015). Mid-flight working detail is private, ephemeral, and per-mission; the durable
-record is sparse and outlives the CR.
+ADR-0015). Mid-flight working detail is per-mission and committed with the work, then
+removed from the tree at retro (durable in git history); the durable record is sparse and
+outlives the CR.
 
 | Tier | Home | Holds | Lifetime |
 |---|---|---|---|
-| **Private scratch — the plan** | `.agents/plans/<cr-ref>.plan.md` (brief) + `.agents/plans/<cr-ref>.log.jsonl` (**the combat log**) | grill analysis + task DAG + progress; the append-only `report` / `correction` lines + a **CR-scoped `seq`** | **ephemeral** — doctrine discards at retro |
+| **Private scratch — the plan** | `.agents/plans/<cr-ref>.plan.md` (brief) + `.agents/plans/<cr-ref>.log.jsonl` (**the combat log**) | grill analysis + task DAG + progress; the append-only `report` / `correction` lines + a **CR-scoped `seq`** | **transient in the tree, durable in history** — tracked, distilled then deleted at retro |
 | **Durable internal — the ledger** | `ledger.jsonl` sibling to the **root** `spec.md` | only `gate` (verdict + `frozen[]`) and `strategy` (incl. the distilled recurrence) | durable |
 | **Durable public — the trail** | the CR source conclusion + changesets + git history | what shipped, for the outer loops to read forward | durable, external |
 
@@ -29,9 +31,12 @@ of the root `spec.md`. They are never the same file.
 The plan is also a **portable handoff artifact**: a self-contained Markdown brief, co-located
 with the worktree (not a home-dir session), readable by any agent or model that picks up the
 mission. `<cr-ref>` is the source-qualified CR id (`github-34`, `asana-<gid>`, `local-<slug>`).
-The `.agents/plans/` tree is **gitignored** — scratch that never merges into the delivery,
-which is also why concurrent missions never collide on it (one plan per worktree). `.agents/plans`
-is the real, tool-agnostic home; for Cursor interop the SDD `init` skill symlinks
+The `.agents/plans/` tree is **tracked** (committed with the work, kept in the PR — the
+`report`/`correction` trail is the decision + failure history reviewers want). Concurrent
+missions never collide on it because each plan is keyed by `<cr-ref>` (source-qualified) and
+a CR is claimed by exactly one worktree at a time (the source-claim lock,
+`../intake/README.md`) — **not** because of gitignore. `.agents/plans` is the real,
+tool-agnostic home; for Cursor interop the SDD `init` skill symlinks
 `.cursor/plans → .agents/plans` so a plan written by either tool is seen by both (setup +
 migration: `../plugin/README.md`). The two faces below describe the **durable** record; the
 chatty mid-flight lines live in the plan.
@@ -48,7 +53,8 @@ ledger answers *"what was decided to get here?"* They do not duplicate: a gate r
 overwrites nothing in `approval` (the eventual `approve` stands there), but the rejection is
 preserved forever as a `gate` line (`verdict: reject`) in the ledger. This is the
 load-bearing reason the ledger exists — current-state alone loses every superseded verdict.
-(The mid-flight `correction` that drove a rejection lives in the ephemeral plan, not here.)
+(The mid-flight `correction` that drove a rejection lives in the tracked plan — transient in
+the tree, durable in history — not here.)
 
 **`approval` is standing, not historical.** The project has **one durable spec** that many
 CRs flow through; `spec.md` `approval` holds only the **latest** CR's gate verdict
@@ -73,16 +79,18 @@ Write flow: the operator dispatch **overwrites** the current-state face in `spec
 **appends** mid-flight `report` / `correction` lines to the **combat log** (the plan's
 `*.log.jsonl`), and **appends** self-asserted `gate` lines to the durable `ledger.jsonl`. At
 retro the doctrine-loop Scanner reads the concluded combat log, **distills** recurring causes,
-**appends** `strategy` lines to the ledger, and **discards** the plan.
+and **appends** `strategy` lines to the ledger. **Deletion is decoupled from distill** (Plan
+retirement, below): the distill fires at `→ implemented`; the **tracked deletion** of the
+plan is a separate, later retro step, gated on source = `done`/merged **and** distilled.
 
 ```mermaid
 flowchart LR
   disp[operator dispatch] -->|overwrites| state[current-state face<br/>spec.md frontmatter]
-  disp -->|appends report/correction| clog[combat log<br/>plan *.log.jsonl, ephemeral]
+  disp -->|appends report/correction| clog[combat log<br/>plan *.log.jsonl, tracked]
   disp -->|appends self-asserted gate| ledger[ledger.jsonl<br/>sibling file, durable]
   clog -->|read at retro| scanner[doctrine-loop Scanner]
   scanner -->|distills + appends strategy| ledger
-  scanner -->|discards| clog
+  scanner -->|deletes later, gated| clog
 ```
 
 ## Current-state face — `produced-by` (+ `approval`)
@@ -157,11 +165,18 @@ lines — they are independent records, never contradictions); set `ledger.jsonl
 in `.gitattributes`. This append reconciliation is purely mechanical and **never** reaches the
 hard floor (which is for semantic frozen-scenario conflicts, not log appends).
 
-### `report` — per-subagent dispatch (plan, ephemeral)
+**Free-text hygiene (committed-plan rule).** Because the combat log is **committed** (the plan
+is tracked), the free-text `summary` / `detail` fields describe the **decision or its class**
+only — they **never embed code, prompts, secrets, or literal values** (those stay in the
+uncommitted raw `.jsonl` transcripts, read only for token-waste). The structured fields are
+enums (`role` / `agent` / `outcome` / `correction-kind` / `cause`); the free text stays
+commit-message-grade. Enforced by `combat-log-governance`; no redaction pipeline is needed.
+
+### `report` — per-subagent dispatch (plan, tracked)
 
 One line appended **to the plan** per production-chain dispatch, so a later reader (or a
-handed-off agent) reconstructs what each delegate did without the transcript. Discarded with
-the plan at retro.
+handed-off agent) reconstructs what each delegate did without the transcript. Removed with
+the plan at retro (a tracked deletion).
 
 ```jsonl
 {"seq": 3, "kind": "report", "role": "spec-producer", "agent": "sdd:sdd-operator", "outcome": "pass", "summary": "wrote 14 scenarios covering the ledger expansion"}
@@ -170,11 +185,12 @@ the plan at retro.
 `role` is the production role dispatched; `agent` is the plugin-qualified agent name;
 `outcome` is `pass | fail`.
 
-### `correction` — correction-with-cause (plan, ephemeral)
+### `correction` — correction-with-cause (plan, tracked)
 
 The hard requirement. One line **in the plan** per correction: a gate rejection, a
 producer⇄judge iteration, or a Council kick-back. The matchable `cause` is the
-**load-bearing field**. Raw `correction` lines are ephemeral (they die with the plan); at
+**load-bearing field**. Raw `correction` lines are transient in the tree (committed, then
+removed with the plan at retro); at
 retro the **doctrine loop** reads them and folds recurring `cause`s into the durable
 `strategy` line's running count (`../doctrine/README.md`). Cross-mission recurrence is
 therefore tracked by the *distilled* count, not by scanning many specs' raw logs.
@@ -240,7 +256,7 @@ The Scanner records drafted strategy to the durable ledger. This contract define
 **shape** of that line; the **write is owned by the doctrine-loop Scanner**, not by any
 provenance writer. The `strategy` line also carries the **distilled recurrence count** for a
 `cause` (in `evidence`), maintained across missions because the raw `correction` lines that
-fed it are discarded with each plan.
+fed it are removed with each plan at retro.
 
 ```jsonl
 {"seq": 12, "kind": "strategy", "recommendation": "codify the coverage-gap pattern as a spec-governance check", "evidence": ["coverage-gap x3 across sdd-foo, sdd-bar, sdd-baz"], "ratified": false}
@@ -285,7 +301,8 @@ packet on a human gate.
 | doctrine-loop Scanner | the concluded **plan** (`*.log.jsonl`, at retro) + the durable ledger | `spec.md` frontmatter |
 
 The gateway performs a **status-only scan**. The Scanner reads the concluded plan to distill
-recurrence and drafts `strategy` into the durable ledger, then discards the plan. Forge reads
+recurrence and drafts `strategy` into the durable ledger; the plan itself is deleted later (a
+tracked deletion, gated — see Plan retirement). Forge reads
 the distilled `correction`-with-`cause` from the ledger; campaign / formation read the durable
 **public** trail (CR source + changesets + git), **not** the plan (`../campaign/README.md`,
 `../formation/README.md`).
@@ -299,9 +316,26 @@ the distilled `correction`-with-`cause` from the ledger; campaign / formation re
 | `ledger.jsonl` (root sibling) | durable ledger — `gate` + `strategy` only (append-only, `merge=union`) | **never** | **never** |
 
 The mid-flight **plan** (`.agents/plans/<cr-ref>.plan.md` + `.log.jsonl`) is **not** part of
-the spec folder: it is gitignored per-worktree scratch, discarded at retro (ADR-0015).
+the spec folder: it is **tracked** per-worktree scratch (committed with the work, kept in the
+PR), removed from the tree at retro once distilled and its source is done/merged (ADR-0015).
 
 Freeze is **per suite file**, not a single project-wide baseline: each `.feature` carries
 its own `@frozen` tag. The standing `approval` in `spec.md` says the contract was last
 cleared; the set of `@frozen` files says *which* scenarios are currently the frozen
 contract; the `gate` ledger lines say *which CR* froze each.
+
+## Plan retirement — distill early, delete late
+
+The committed plan is **retired** in two decoupled acts, both owned by the **doctrine loop**:
+
+- **Distill (early).** At `→ implemented` (before the PR exists), the Scanner reads the
+  concluded combat log and distills recurring `cause`s into the ledger's `strategy` lines.
+- **Delete (late).** The plan files (`<cr-ref>.plan.md` + `<cr-ref>.log.jsonl`) are removed
+  from the tree as a **tracked deletion** — git history preserves them — only when **both**
+  hold: the source is `done`/merged **and** the plan has been distilled. Never delete an
+  un-distilled plan (the retro never ran). Deletion runs as doctrine's **last retro step**,
+  after the distill writes to the ledger. The act is idempotent: a missing plan or an open
+  CR is a no-op, so the retirement sweep is safe to re-run.
+
+The provenance gain over the old gitignore model: history shows exactly **when** a plan was
+distilled and dropped, and reviewers keep the decision + failure trail in the PR.
