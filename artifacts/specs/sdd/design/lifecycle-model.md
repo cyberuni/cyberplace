@@ -13,7 +13,8 @@ fixed station — they dissolved into the autonomy bar (`autonomy-rubric.md`); t
 ```yaml
 ---
 status: draft           # draft | approved | implemented | deprecated
-type: skill             # the artifact-type / squad key: e.g. skill | subagent | command | agents-section | npm-package | docs; omit for a plain-code domain.
+artifact-types:         # the artifact-types / squad keys this project touches: e.g. skill, subagent, command, agents-section, npm-package, docs; omit for a plain-code domain. Resolution is per file (each file's artifact-type -> its squad).
+  - skill
 aligned: false          # true once the current layer's artifacts are synced
 strategy:               # run-level initial evaluation (leash + approach)
   leash: auto-all       # first-evaluated reach: auto-none | auto-spec | auto-all
@@ -38,8 +39,8 @@ domain-plugin:          # map: artifact-type -> owning plugin, when an artifact-
 
 Open input is recorded in the body as `<!-- open: ... -->` markers, not in frontmatter.
 
-`status` is the base schema; `type`, `aligned`, `strategy`, `approval`, `produced-by`, and
-`domain-plugin` are the SDD-workflow additions. `aligned: false` means the current
+`status` is the base schema; `artifact-types`, `aligned`, `strategy`, `approval`,
+`produced-by`, and `domain-plugin` are the SDD-workflow additions. `aligned: false` means the current
 layer's artifacts are being updated or contain unresolved markers; `aligned: true` means
 the layer is synced. Do not commit SDD artifacts while their spec is `aligned: false`.
 
@@ -228,7 +229,7 @@ definitional: the same definition run in-session may perform the write.
 | `approval` human ratification (`verdict` + `by: <name>`) | the gate skill, **in-session position only** |
 | `approval` self-assertion (`verdict: approve`/`pause` + `by: agent`/none + `why`) | `sdd-operator` (synthesis) |
 | `aligned`, `strategy`, `<!-- open: -->` markers | `sdd-operator` |
-| `type` (artifact-type) | `create-spec` (at scaffold) |
+| `artifact-types` | `create-spec` (at scaffold) |
 | `spec.md` body + the `.feature` | the spec-producer |
 
 The leash (`strategy.leash`, run-level) and the self-clear-vs-escalate bar that derives it
