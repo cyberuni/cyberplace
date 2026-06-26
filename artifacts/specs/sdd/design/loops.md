@@ -45,8 +45,8 @@ boundary between explore and deliver.
 
 Build **to keep** against the **frozen** suite, with **iteration** between the impl-producer
 and the cold impl-judge. The operator serves in-flight expansion and minor fixes (not the
-human), recorded in a **detail-adjustment report** (a view of the provenance ledger; see
-`provenance-model.md`). `producer ≠ judge` survives the gate fold: the judge stays a distinct
+human), recorded in a **detail-adjustment report** (a view of the mission **plan**'s
+mid-flight lines; see `provenance-model.md`). `producer ≠ judge` survives the gate fold: the judge stays a distinct
 actor. The human enters only on the hard floor. The phase ends at the **impl gate**.
 
 > **Explore vs deliver = the purpose of the build.** Implementation happens in **both**;
