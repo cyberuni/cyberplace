@@ -46,7 +46,7 @@ outside SDD, no loop).
 
 ## Where we are
 
-**Resolved (A–L) — all rulings closed.** See `OPEN-QUESTIONS.md`. Commit `e60e69d` landed the harness→plugin
+**Resolved (A–M) — all rulings closed.** See `OPEN-QUESTIONS.md`. Commit `e60e69d` landed the harness→plugin
 + external-forge restructure and the B-sweep (`type` = artifact-type, composition role derived
 from edges, `domain-type` removed, `domain-plugin` distinct from `produced-by`). Commits
 `022b93d` (G + per-file freeze) and `dde86a4` (F + CR concurrency) landed the latest two.
@@ -77,8 +77,16 @@ from edges, `domain-type` removed, `domain-plugin` distinct from `produced-by`).
   (the files this CR touched, not one folder, not the whole tree) and **folded in-session**
   (no spawned skill). The fixed-section read-only contract survives, generalized to multi-file.
   Standalone `sdd-spec-digest` spec + `plugins/sdd/skills/spec-digest` superseded (sweep).
+- **M — RESOLVED.** Three-tier provenance: ephemeral per-worktree **plan**
+  (`.agents/plans/<cr-ref>.plan.md`, gitignored, portable handoff artifact) holds mid-flight
+  `report`/`correction`/CR-scoped-`seq`; slim durable **ledger** (root `combat-log.jsonl`,
+  `merge=union`) keeps `gate`+`strategy`+distilled recurrence; durable **public** trail
+  (CR source + changesets + git) feeds campaign/formation via a cursor. Doctrine reads the plan,
+  distills, discards. Forge reads distilled corrections, not `frozen[]`. Dissolves M's
+  concurrency. Rationale: **ADR-0015** + survey. `design/provenance-model.md` swept; **capability
+  sweep pending** (stale-sweep #8).
 
-**All open rulings (A–L) are now resolved.** What remains is implementation, not design:
+**All open rulings (A–M) are now resolved.** What remains is implementation, not design:
 
 ## Decided-but-stale sweeps still pending
 

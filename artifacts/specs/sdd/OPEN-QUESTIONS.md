@@ -20,6 +20,15 @@ spec already follows our ruling; the *source* specs are stale and need a sweep) 
    `autonomy-governance` + `freeze-alignment` frontmatter carry the fabricated `impl-producer: sdd:builder`.
 7. **Dead vocab** — `sdd-inject-channel` uses Battler/Warden/Executioner and depends on the dead
    `sdd-orchestrator`; reframed to neutral "inner-loop producers and judges".
+8. **Three-tier provenance capability sweep (from M).** `design/provenance-model.md` is updated,
+   but the capability files still carry the old single per-corpus combat-log model: `doctrine/`
+   (reads "the spec's combat log" / "across N specs"; must read the concluded **plan** + distill
+   + **discard** it), `campaign/` & `formation/` (read combat logs; must read the durable
+   **public** trail via a **cursor**), `forge/` (confirm it reads the distilled correction, not
+   `frozen[]`), `intake/` (add the public conclusion-summary write-back), `mission/handoff/`
+   (write the public summary; note the plan as a handoff artifact). Doctrine/campaign also carry
+   **fleet-era "N specs" framing** that predates the one-project-spec model (B). Plus the
+   `plugins/sdd/` `combat-log-governance` + `ownership-governance` skills.
 
 ## Open — needs a ruling
 
@@ -150,4 +159,21 @@ spec already follows our ruling; the *source* specs are stale and need a sweep) 
   standalone `sdd-spec-digest` spec + `plugins/sdd/skills/spec-digest` are **superseded** —
   removed in the pending plugin sweep.
 
-- **M. Combat log is per-corpus — does that hold under one-CR-per-tree (F)?** The provenance model places combat-log.jsonl as a sibling to spec.md, i.e. one log per spec corpus, with every line tagging an optional cr. But F made one mission = one working tree = one CR, and parallelism = separate trees. Open: when two trees (two CRs) run against the same corpus concurrently, each tree has its own copy of combat-log.jsonl — do their cr-tagged lines merge cleanly back (append-only, so git-merge-friendly), or does concurrent appending across trees create the same overlapping-frozen-scenario class of merge conflict F pushed to the hard floor? Decide whether "per-corpus" means one logical log reassembled at merge, or genuinely one-physical-log-per-tree until handoff.
+- **M. Combat log is per-corpus under one-CR-per-tree (F)? RESOLVED — three-tier provenance.**
+  The chatty mid-flight `report`/`correction`/`seq` lines move **out** of the shared
+  per-corpus log into an **ephemeral per-worktree plan** (`.agents/plans/<cr-ref>.plan.md` +
+  `.log.jsonl`, **gitignored**), which dissolves the concurrency conflict (one plan per tree —
+  nothing shared to merge) *and* makes the plan a **portable handoff artifact** (Markdown,
+  co-located with the work, `*.plan.md` for Cursor interop). The durable `combat-log.jsonl`
+  (sibling to the **root** `spec.md`) keeps only **`gate` + `strategy`** (incl. the distilled
+  recurrence count); it is sparse, so its rare cross-tree appends reconcile by **union merge**
+  (`merge=union`), never the hard floor. `seq` is **CR-scoped** (collision-free, since one CR =
+  one tree via the claim-lock). The append conflict is **mechanical, not the semantic
+  frozen-scenario class**. **Doctrine** reads the concluded plan at retro, distills the
+  `cause` recurrence into `strategy`, then **discards** the plan; **campaign/formation** read
+  the durable **public** trail (CR-source conclusion + changesets + git) forward via a
+  `.agents/sdd/loop-cursors.json` cursor, **not** the plan; **Forge** reads the distilled
+  `correction`-with-`cause`, **not** `frozen[]` (a prior mis-attribution, now fixed). The
+  mission writes a **public-worthy conclusion summary** back to the CR source at handoff.
+  Rationale + cross-harness survey: **ADR-0015** + `docs/research/2026-06-agent-plan-persistence.md`.
+  Written into `design/provenance-model.md`. **Capability sweep pending** (see stale-sweep #8).

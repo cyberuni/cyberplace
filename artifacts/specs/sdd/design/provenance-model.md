@@ -6,6 +6,25 @@ owns the record shape, the entry shapes, the matchable `cause` enum, and write-o
 Recording *behavior* (when the operator appends, how it resolves a producer) lives in
 `../mission/`; this is the shape only.
 
+## Three provenance tiers
+
+Provenance splits by **lifetime and audience** (rationale + the cross-harness survey:
+ADR-0015). Mid-flight working detail is private, ephemeral, and per-mission; the durable
+record is sparse and outlives the CR.
+
+| Tier | Home | Holds | Lifetime |
+|---|---|---|---|
+| **Private scratch — the plan** | `.agents/plans/<cr-ref>.plan.md` (brief) + `.agents/plans/<cr-ref>.log.jsonl` (telemetry) | grill analysis + task DAG + progress; the append-only `report` / `correction` lines + a **CR-scoped `seq`** | **ephemeral** — doctrine discards at retro |
+| **Durable internal — the ledger** | `combat-log.jsonl` sibling to the **root** `spec.md` | only `gate` (verdict + `frozen[]`) and `strategy` (incl. the distilled recurrence) | durable |
+| **Durable public — the trail** | the CR source conclusion + changesets + git history | what shipped, for the outer loops to read forward | durable, external |
+
+The plan is also a **portable handoff artifact**: a self-contained Markdown brief, co-located
+with the worktree (not a home-dir session), readable by any agent or model that picks up the
+mission. `<cr-ref>` is the source-qualified CR id (`github-34`, `asana-<gid>`, `local-<slug>`).
+The `.agents/plans/` tree is **gitignored** — scratch that never merges into the delivery,
+which is also why concurrent missions never collide on it (one plan per worktree). The two
+faces below describe the **durable** record; the chatty mid-flight lines live in the plan.
+
 ## Two faces, two homes
 
 | Face | Home | Shape | Mutability | Holds |
@@ -107,15 +126,26 @@ The "never blocks" invariant is scoped to **availability**:
   `cause` (below) **blocks**. The consistent rule: **availability degrades gracefully
   (flag-not-block); structural validity fails closed (block)**.
 
-## Ledger face — the `combat-log.jsonl` entry shapes
+## Entry shapes — across the plan and the ledger
 
-One JSON object per line (JSON Lines). Every line carries a monotonically increasing `seq`
-(append order within the spec) and a `kind`. Three kinds.
+One JSON object per line (JSON Lines). Every line carries a **CR-scoped `seq`** (append order
+*within its CR*, restarting per CR — never a global counter) and a `kind`. Four kinds, split
+by tier: **`report`** and **`correction`** are mid-flight → the plan's `*.log.jsonl`;
+**`gate`** and **`strategy`** are durable → the slim `combat-log.jsonl` ledger.
 
-### `report` — per-subagent dispatch
+A CR-scoped `seq` is collision-free under concurrency: one CR lives in exactly one worktree at
+a time (the source-claim lock, `../intake/README.md`), so two concurrent missions always hold
+different CRs and never mint the same `(cr, seq)`. The durable ledger receives only sparse
+`gate`/`strategy` lines, so its rare cross-tree appends reconcile by **union merge** (keep all
+lines — they are independent records, never contradictions); set `combat-log.jsonl merge=union`
+in `.gitattributes`. This append reconciliation is purely mechanical and **never** reaches the
+hard floor (which is for semantic frozen-scenario conflicts, not log appends).
 
-One line appended per production-chain dispatch, so a later reader reconstructs what each
-delegate did without the transcript.
+### `report` — per-subagent dispatch (plan, ephemeral)
+
+One line appended **to the plan** per production-chain dispatch, so a later reader (or a
+handed-off agent) reconstructs what each delegate did without the transcript. Discarded with
+the plan at retro.
 
 ```jsonl
 {"seq": 3, "kind": "report", "role": "spec-producer", "agent": "sdd:sdd-operator", "outcome": "pass", "summary": "wrote 14 scenarios covering the ledger expansion"}
@@ -124,12 +154,14 @@ delegate did without the transcript.
 `role` is the production role dispatched; `agent` is the plugin-qualified agent name;
 `outcome` is `pass | fail`.
 
-### `correction` — correction-with-cause
+### `correction` — correction-with-cause (plan, ephemeral)
 
-The hard requirement. One line per correction: a gate rejection, a producer⇄judge
-iteration, or a Council kick-back. The matchable `cause` is the **load-bearing field** —
-cross-mission recurrence detection groups and counts corrections by `cause` across N
-specs' ledgers.
+The hard requirement. One line **in the plan** per correction: a gate rejection, a
+producer⇄judge iteration, or a Council kick-back. The matchable `cause` is the
+**load-bearing field**. Raw `correction` lines are ephemeral (they die with the plan); at
+retro the **doctrine loop** reads them and folds recurring `cause`s into the durable
+`strategy` line's running count (`../doctrine/README.md`). Cross-mission recurrence is
+therefore tracked by the *distilled* count, not by scanning many specs' raw logs.
 
 ```jsonl
 {"seq": 7, "kind": "correction", "correction-kind": "gate-reject", "cause": "coverage-gap", "detail": "spec gate rejected — no negative scenario for the malformed-entry path"}
@@ -178,18 +210,21 @@ preserves every CR's verdict forever, keyed by `cr`.
 - **`frozen`** — the suite files this verdict **froze** (spec-gate `approve` only): the
   per-file freeze record. Freeze is a per-file `@frozen` tag on each `.feature` (see
   `lifecycle-model.md`); this list records *which* files the CR froze, so the ledger answers
-  *"what was frozen as of CR #34"* standalone — no git walk, which matters for the Forge loop
-  reading logs across installations with no shared git.
+  *"what was frozen as of CR #34"* standalone — no git walk. This is a **local** durable
+  record (the gate's, per G); it is **not** what the Forge loop reads — Forge consumes the
+  distilled `correction`-with-`cause`, not `frozen[]` (`../forge/README.md`).
 
 The `gate` line is the **load-bearing answer to G**: with no per-folder `status`/`approval`,
 the durable "CR approved + scenarios frozen" record is this ledger entry, not a sidecar and
 not a growing frontmatter block.
 
-### `strategy` — the slot this contract shapes but does not write
+### `strategy` — the slot this contract shapes but does not write (ledger, durable)
 
-The Scanner records drafted strategy to the ledger. This contract defines the **shape** of
-that line; the **write is owned by the doctrine-loop Scanner**, not by any provenance
-writer.
+The Scanner records drafted strategy to the durable ledger. This contract defines the
+**shape** of that line; the **write is owned by the doctrine-loop Scanner**, not by any
+provenance writer. The `strategy` line also carries the **distilled recurrence count** for a
+`cause` (in `evidence`), maintained across missions because the raw `correction` lines that
+fed it are discarded with each plan.
 
 ```jsonl
 {"seq": 12, "kind": "strategy", "recommendation": "codify the coverage-gap pattern as a spec-governance check", "evidence": ["coverage-gap x3 across sdd-foo, sdd-bar, sdd-baz"], "ratified": false}
@@ -198,26 +233,28 @@ writer.
 `evidence` lists the corrections that drove the recommendation; `ratified: false` means
 the Council holds keep-or-cut — unratified strategy never enters the corpus.
 
-## The detail-adjustment report — a view of the ledger
+## The detail-adjustment report — a view of the plan
 
 During implement-and-verify, the operator serves expansion and minor fixes in-flight (not
-the human), recorded in a **detail-adjustment report** — a *view of the combat log*, not a
-separate journal. It is rendered from the `report` and `correction` lines of the run; the
-human enters only on the hard floor (`autonomy-rubric.md`). Live current-state is
-regenerated on demand; the durable record is the ledger.
+the human), recorded in a **detail-adjustment report** — a *view of the plan's `report` and
+`correction` lines*, not a separate journal. The human enters only on the hard floor
+(`autonomy-rubric.md`). Live current-state is regenerated on demand; the durable record is
+the ledger.
 
 ## Write ownership
 
-All writers append lines to the sibling `combat-log.jsonl` — no writer touches the ledger
-through `spec.md` frontmatter. The ledger is append-only for every writer: lines are added
-with the next `seq`, never edited or deleted.
+The mid-flight `report` / `correction` lines are appended to the **plan** (`*.log.jsonl`);
+the durable `gate` / `strategy` lines are appended to the **ledger** (`combat-log.jsonl`).
+No writer touches the ledger through `spec.md` frontmatter. Both are append-only: lines are
+added with the next CR-scoped `seq`, never edited or deleted.
 
-| Writer | May append | Never writes |
-|---|---|---|
-| **operator** | `report`, `correction`, and **self-asserted `gate`** lines (`by: agent`, same boundary as `produced-by` / `aligned` / a self-asserted `approval`) | strategy lines; human-ratified `gate` lines |
-| **gate skill (`validate-spec`), in-session** | **human-ratified `gate`** lines (`by: <name>`) | report / correction / strategy lines |
-| **doctrine-loop Scanner** | `strategy` lines | report / correction / gate lines |
-| **producers / judges** | nothing | the entire ledger — they do not know their own registry identity authoritatively |
+| Writer | May append | To | Never writes |
+|---|---|---|---|
+| **operator** | `report`, `correction` | the **plan** | strategy lines; human-ratified `gate` lines |
+| **operator** | **self-asserted `gate`** (`by: agent`, same boundary as `produced-by` / `aligned` / a self-asserted `approval`) | the **ledger** | human-ratified `gate` lines |
+| **gate skill (`validate-spec`), in-session** | **human-ratified `gate`** (`by: <name>`) | the **ledger** | report / correction / strategy lines |
+| **doctrine-loop Scanner** | `strategy` (incl. distilled recurrence) | the **ledger** | report / correction / gate lines |
+| **producers / judges** | nothing | — | the entire record — they do not know their own registry identity authoritatively |
 
 A human-ratified `gate` line follows the **positional authority** rule
 (`lifecycle-model.md`): only the in-session position holding the real user channel writes
@@ -228,11 +265,14 @@ packet on a human gate.
 
 | Reader | Reads | Never reads |
 |---|---|---|
-| `sdd` gateway (status scan) | `spec.md` frontmatter — `status` field only | the sibling ledger |
-| doctrine-loop Scanner | the sibling `combat-log.jsonl` file | `spec.md` frontmatter |
+| `sdd` gateway (status scan) | `spec.md` frontmatter — `status` field only | the ledger or the plan |
+| doctrine-loop Scanner | the concluded **plan** (`*.log.jsonl`, at retro) + the durable ledger | `spec.md` frontmatter |
 
-The gateway performs a **status-only scan**; the Scanner reads the ledger to draft
-strategy and append its output there. Neither reader needs the other's file.
+The gateway performs a **status-only scan**. The Scanner reads the concluded plan to distill
+recurrence and drafts `strategy` into the durable ledger, then discards the plan. Forge reads
+the distilled `correction`-with-`cause` from the ledger; campaign / formation read the durable
+**public** trail (CR source + changesets + git), **not** the plan (`../campaign/README.md`,
+`../formation/README.md`).
 
 ## Spec-folder shape
 
@@ -240,7 +280,10 @@ strategy and append its output there. Neither reader needs the other's file.
 |---|---|---|---|
 | `spec.md` | contract prose + standing current-state frontmatter | **never** (kept aligned) | yes |
 | `<name>.feature` | contract scenarios | **per file**, via its own `@frozen` tag, set on a spec-gate `approve` that touched it (see `lifecycle-model.md`) | yes |
-| `combat-log.jsonl` | operational ledger (append-only) | **never** | **never** |
+| `combat-log.jsonl` (root sibling) | durable ledger — `gate` + `strategy` only (append-only, `merge=union`) | **never** | **never** |
+
+The mid-flight **plan** (`.agents/plans/<cr-ref>.plan.md` + `.log.jsonl`) is **not** part of
+the spec folder: it is gitignored per-worktree scratch, discarded at retro (ADR-0015).
 
 Freeze is **per suite file**, not a single project-wide baseline: each `.feature` carries
 its own `@frozen` tag. The standing `approval` in `spec.md` says the contract was last
