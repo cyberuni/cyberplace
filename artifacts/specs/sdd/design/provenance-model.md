@@ -231,7 +231,7 @@ line per gate verdict per CR — the immutable twin of the standing `approval` b
 preserves every CR's verdict forever, keyed by `cr`.
 
 ```jsonl
-{"seq": 9, "kind": "gate", "cr": 34, "gate": "spec", "verdict": "approve", "by": "unional", "frozen": ["intake/intake.feature", "design/lifecycle.feature"]}
+{"seq": 9, "kind": "gate", "cr": 34, "gate": "spec", "verdict": "approve", "by": "unional", "cause": "dimension", "frozen": ["intake/intake.feature", "mission/mission.feature"]}
 ```
 
 - **`gate`** — `spec | impl`, the gate this verdict closes.
@@ -239,6 +239,9 @@ preserves every CR's verdict forever, keyed by `cr`.
 - **`by`** — the ratifier: a human name (ratified) or `agent` (self-asserted, provisional).
   A self-assertion additionally carries the four-dimension `why` derivation, same as
   the frontmatter block; a human ratification needs none.
+- **`cause`** — `dimension | ceiling`: what drove the verdict (a gradient dimension, or the
+  human ceiling cap), mirroring the `approval` entry's `cause` (`lifecycle-model.md`). This
+  is the **stop cause** — distinct from a `correction` line's matchable `cause` enum.
 - **`frozen`** — the suite files this verdict **froze** (spec-gate `approve` only): the
   per-file freeze record. Freeze is a per-file `@frozen` tag on each `.feature` (see
   `lifecycle-model.md`); this list records *which* files the CR froze, so the ledger answers

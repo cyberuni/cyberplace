@@ -24,6 +24,7 @@ approval:               # per-gate verdict
   spec:                 # verdict: approve | pause | reject
     verdict: approve
     by: agent           # by: agent (self-asserted, provisional) | <human name> (ratified); omitted on pause
+    cause: dimension    # dimension | ceiling — what drove the verdict (a gradient dimension, or the human ceiling cap)
     why:                # four-dimension derivation (agent self-assertion or pause)
       reversibility: <safe|risky — reason>
       blast-radius:  <safe|risky — reason>
@@ -121,6 +122,8 @@ enforce; if `node` is unavailable, apply the same rules by reading frontmatter. 
   approver.
 - an `approval.<gate>` is `by: agent` with no `why` block — a self-assertion must record
   its derivation.
+- an `approval.<gate>` has a `cause` other than `dimension` or `ceiling` — the stop cause
+  is a closed enum (`mission/README.md` stop-provenance).
 - an `approval.<gate>` is `verdict: pause` on a gate the spec has already passed (spec
   once `approved`/`implemented`, impl once `implemented`).
 - `status: approved` or `implemented` with no `approval.spec` `verdict: approve` + `by` —
