@@ -26,6 +26,17 @@ Discovery and the graph derive these tiers from frontmatter; digest, dedupe, and
 read individual specs and **propose** a structural change for formation to ratify. None of
 the tooling reads runtime behavior or owns a lifecycle state.
 
+**The two tiers gate differently (ruling E).** Structural acts at the **cross-project** tier
+— splitting one project spec out of another, deduping sibling project specs, deprecating a
+spec, rewriting `blocked-by` edges — are real **gated** lifecycle acts, which is why
+dedupe/split only *propose* and require approval. Reorganizing the **internal structure** of
+*one* project spec (moving a capability folder, regrouping files — folders are views) is
+**plain editing**: no new gate, no formation ratification, since no scenario's truth changes
+and folders carry no lifecycle state. The dedupe/split tools target the cross-project tier;
+intra-project reorg needs no corpus tool at all. (`deprecate`/retire is a lifecycle act owned
+by `../design/lifecycle-model.md`, not a corpus tool — see "authoring and retirement stay
+elsewhere" below.)
+
 ## The tools
 
 ### Discovery — find specs by shape, not location
