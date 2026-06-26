@@ -134,10 +134,15 @@ Scenario: the relay carries an Operator escalation to the Council
   When the gateway receives them
   Then it asks the Council and resumes the Operator with the answers
 
-Scenario: an unroutable request invokes no SDD action
-  Given a nonempty request that names no handling capability
+Scenario: an ambiguous request routes into the lifecycle
+  Given a request that may touch suite-relevant behavior but names no clear capability
   When the gateway classifies it
-  Then it reports the request as unroutable and invokes no SDD action
+  Then it routes the request into the mission so the grill decides during explore
+
+Scenario: a task with no suite-relevant behavior escapes
+  Given a request that is not a CR — no suite-relevant behavior
+  When the gateway classifies it
+  Then the work proceeds outside the lifecycle and the gateway writes no SDD record
 
 Scenario: a frozen feature is not edited in place
   Given an approved spec whose .feature is frozen
