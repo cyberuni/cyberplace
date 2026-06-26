@@ -15,7 +15,6 @@ fixed station — they dissolved into the autonomy bar (`autonomy-rubric.md`); t
 status: draft           # draft | approved | implemented | deprecated
 type: skill             # the artifact-type / squad key: e.g. skill | subagent | command | agents-section | npm-package | docs; omit for a plain-code domain.
 aligned: false          # true once the current layer's artifacts are synced
-priority: 1             # optional integer; 1 = highest (relative within a set); omit = unprioritized
 strategy:               # run-level initial evaluation (leash + approach)
   leash: auto-all       # first-evaluated reach: auto-none | auto-spec | auto-all
   by: derived           # derived | user
@@ -39,9 +38,7 @@ domain-plugin:          # map: artifact-type -> owning plugin, when an artifact-
 
 Open input is recorded in the body as `<!-- open: ... -->` markers, not in frontmatter.
 
-`status` is the base schema; `priority` is an optional ranking hint
-(integer, `1` = highest, relative within a set; omit to leave a spec unprioritized).
-`type`, `aligned`, `strategy`, `approval`, `produced-by`, and
+`status` is the base schema; `type`, `aligned`, `strategy`, `approval`, `produced-by`, and
 `domain-plugin` are the SDD-workflow additions. `aligned: false` means the current
 layer's artifacts are being updated or contain unresolved markers; `aligned: true` means
 the layer is synced. Do not commit SDD artifacts while their spec is `aligned: false`.

@@ -50,7 +50,7 @@ passed redaction is never eligible to leave the environment.
 
 The field loop is **entirely optional**. SDD's core workflow — intake, explore, deliver,
 handoff, and the other outer loops — runs **identically whether the field loop is present,
-absent, or opted out**. It is **never a dependency** of any core step. `priority: 3` — built
+absent, or opted out**. It is **never a dependency** of any core step — built
 after the core loops are solid, costing nothing operationally in its absence.
 
 ## Boundaries — Forge owns the field channel only
