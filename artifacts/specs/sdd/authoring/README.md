@@ -36,7 +36,7 @@ suite delta, it does not receive it.
   as a durable per-CR `gate` ledger line (`../design/provenance-model.md`).
 
 Gate *rules* live in `../design/`: legal-state transitions and the freeze model in
-`lifecycle-model.md`, the self-clear-vs-escalate bar and the two-kind hard floor in
+`lifecycle-model.md`, the self-clear-vs-escalate bar and the three-C hard floor in
 `autonomy-rubric.md`, the provenance shape in `provenance-model.md`. This folder is the
 *behavior* that enacts them — reference the rules, do not restate them.
 
@@ -82,12 +82,14 @@ judge actor, derives the **leash** (the four-dimension assessment in
 - **Gated** (the leash stops, or the hard floor fires): present the digest above the gate
   report so the human sees what they are deciding, then take the human verdict.
 
-**Hard floor escalations** (`../design/autonomy-rubric.md`), the only mandatory human
-stops: **authorization** — a breaking change (narrowing or deleting an e2e scenario, or
-breaking a published contract), escalated for acknowledgment unless the CR pre-authorized
-it; and **resolution** — a logical contradiction inside the suite (Scenario A says yes,
-Scenario B says no), which the human disambiguates. Everything additive / internal / minor
-self-clears.
+**Hard floor escalations** (`../design/autonomy-rubric.md`), the three-C floor. At **this**
+spec gate the mandatory stop is **Clearance** — a breaking change (narrowing or deleting an
+e2e scenario, or breaking a published contract), escalated for acknowledgment unless the CR
+pre-authorized it. Grilling here also surfaces **Conflict resolution** cases — a logical
+contradiction inside the suite (Scenario A says yes, Scenario B says no), which the human
+disambiguates — and is where they are **reduced**, though that floor formally fires at the
+impl gate. The third C, **Consent**, is forge-only and never fires at authoring. Everything
+additive / internal / minor self-clears.
 
 **Never advance** — by self-assertion or human verdict — with judge failures, any remaining
 open markers, or a misaligned suite. Those fail the confidence dimension, so they forbid
