@@ -1,0 +1,87 @@
+# PROMPT — pick up SDD redesign (next session)
+
+This is the handoff for the **SDD spec redesign** under `artifacts/specs/sdd/`. Read this,
+then `OPEN-QUESTIONS.md` (the live ruling tracker) and `DESIGN-NOTES.md` (the full model).
+
+## What we're doing
+
+Redesigning the SDD spec tree from the old **spec-fleet** model (many frozen sibling specs)
+to the **project-spec model**: ONE durable spec per project, organized into files/folders
+(folders are *views*, never lifecycle units). This whole effort is **CR #34** — the first
+change-request dogfooding the new SDD model on SDD itself.
+
+Core model (see `DESIGN-NOTES.md` for the long form):
+
+- **Abstraction stack:** outcome ← code ← spec+suite ← change-request (CR).
+- **One spec, one behavior suite, one gate/freeze baseline** per project. Folders organize
+  it; none gets its own `status`/`approval`.
+- **Mission Loop (steps 1–4):** intake → explore → deliver → handoff. One cycle = one CR to
+  completion. *cycle* = one full Mission-Loop pass; *iteration* = internal repeats inside
+  explore/deliver.
+- **Post-mission (step 5):** four outer loops emit new CRs — three **internal** (campaign /
+  formation / doctrine, fed by the project's own combat logs) + one **external** (forge,
+  opt-in cross-installation end-user corrections that improve SDD itself).
+- **Hard floor = three C's** (mandatory human escalation, above the autonomy gradient):
+  **Clearance** (contract narrowed; pre-authorizable in the CR), **Conflict resolution**
+  (suite self-contradiction; discovered), **Consent** (forge opt-in; default-off).
+- **Autonomy bar** (self-clear-vs-escalate rubric) replaces fixed approval stations.
+- **Specialists = producer+judge bundles** keyed by **artifact-type** (= the `type` field),
+  one bundle per artifact-type; the operator orchestrates them. Producers run inline (warm),
+  judges spawn cold.
+- **Freeze scope = the `.feature` only.** `spec.md` is the readable abstraction, kept
+  aligned, never frozen.
+
+## Current folder tree (`artifacts/specs/sdd/`)
+
+```
+design/ gateway/ intake/ authoring/ mission/{deliver,handoff}
+campaign/ formation/ doctrine/ forge/ corpus/ plugin/ acceptance/
+spec.md  DESIGN-NOTES.md  OPEN-QUESTIONS.md  PROMPT.md
+```
+
+`design/` = the rules (no behavior suites). `plugin/` = SDD's plugin nature (ships-as-plugin
++ extended-by-plugins + registry init-WRITE). `corpus/`/`plugin/`/`acceptance/` are
+cross-cutting, not loop steps. `harness/` was **dropped** (a project's toolchain/CI is
+outside SDD, no loop).
+
+## Where we are
+
+**Resolved (A–E, L):** see `OPEN-QUESTIONS.md`. Last commit `e60e69d` landed the harness→plugin
++ external-forge restructure and the B-sweep (`type` = artifact-type, composition role derived
+from edges, `domain-type` removed, `domain-plugin` distinct from `produced-by`).
+
+**Still open — need rulings (in `OPEN-QUESTIONS.md`):**
+
+- **F.** Multi-artifact CR / per-file bundle scoping — make "no two producers on the same
+  **file**" explicit (per-file, not per-spec).
+- **G.** Durable approval/freeze record — with no per-folder `status`/`approval`, where does
+  "this CR's diff was approved + which scenarios are now frozen" live? (combat log? per-CR
+  record? single growing freeze baseline?) **This is the load-bearing gap — likely take next.**
+- **H.** 4-dim vs 5-dim risk gradient (does contract-impact stay its own dimension?). Sources
+  disagree with themselves.
+- **I.** CR store + status — keep `sdd-change-request`'s pluggable store + `open→accepted→done`,
+  or fold the CR record into the combat log / loop?
+- **J.** Escape-hatch — does escaped work bypass the lifecycle, or is it a CR that self-clears
+  outside the gates?
+- **K.** `spec-digest` re-home — its consumer (the spec-gate station) dissolved into
+  `authoring/`, and "one spec.md + one .feature" no longer maps to a multi-folder project spec.
+
+## Decided-but-stale sweeps still pending
+
+The 7 items under **"Decided — sources are stale, sweep needed"** in `OPEN-QUESTIONS.md`
+describe *source specs* (the old `plugins/sdd/` skills/governances and old sibling specs) that
+still contradict the rulings. The new spec tree is correct; the sweep into the actual
+`plugins/sdd/` implementation has **not** been done.
+
+## Open follow-up after the spec gate
+
+Decide whether to update `plugins/sdd/` **in place** in one go, or **archive it and create a
+fresh plugin** from the new spec.
+
+## How to resume
+
+1. Read `OPEN-QUESTIONS.md` + `DESIGN-NOTES.md`.
+2. Pick an open ruling (suggest **G** next). Discuss conversationally, decide, write the
+   ruling into the affected design/capability file(s), mark it RESOLVED in `OPEN-QUESTIONS.md`.
+3. Commit per the repo's commit discipline (one concern per commit; `pnpm verify` is run by
+   the pre-commit path).
