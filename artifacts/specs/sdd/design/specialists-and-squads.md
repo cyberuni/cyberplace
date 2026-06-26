@@ -19,10 +19,12 @@ artifact-type → { producer, judge, governances (actor + discipline), model, ef
   once, but **no two producers ever act on the same file**. Each file has exactly one
   artifact-type → exactly one squad → exactly one producer; the operator orchestrates the
   set and merges their outputs.
-- `type` ≡ **artifact-type** = the squad key. It names the artifact / squad
+- **artifact-type** = the squad key. It names the artifact / squad
   (`npm-package`, `agent-plugin`, `agent-skill`, `agent-definition`, `react-component`,
-  `docs`, …). There is no structural `project | feature` axis — one project is one spec,
-  and folders are views, not lifecycle units (see `unit-and-organization.md`).
+  `docs`, …). Each **file** has exactly one artifact-type; the spec's `artifact-types`
+  frontmatter (plural) lists the **set** the project spans. There is no structural
+  `project | feature` axis — one project is one spec, and folders are views, not lifecycle
+  units (see `unit-and-organization.md`).
 - **Disciplines (process/workflow) fold into governances.** "Basic knowledge" (React, TS,
   logic) is never *loaded* — it is just picking the right **model + effort**.
 - **Language ≠ squad.** "TS script for a skill" lives inside the *skill* squad
@@ -130,15 +132,18 @@ plugin directories. Each entry:
   judge default is never loaded inline — grader independence requires a cold context.
 
 **Resolution** (owned by `../mission/`, shown here because the shape is its direct input):
-match the spec's **`type`** frontmatter field (the artifact-type / squad key, **not** the
-folder name) against each entry's `domains[]`. An absent or unmatched `type`
-→ zero matches → all roles degenerate to SDD defaults. One match → resolve each role and
-governance key (name = use it; `null` = SDD default; missing role key = `<plugin>-<role>`).
-Two or more matches → read the **`domain-plugin`** map; if it names the chosen plugin for
-this artifact-type, use it, else return `needs-input` for the producing path to ask (the
-answer is written to `domain-plugin`, decisive on resume). `domain-plugin` (the chosen
-plugin for a contested artifact-type) stays **distinct** from `produced-by` (the
-after-the-fact record of who produced each artifact).
+resolution is **per file** — each file's **artifact-type** (the squad key, **not** the
+folder name) is matched against each entry's `domains[]`. The spec's `artifact-types`
+frontmatter lists the set the project spans; a project touching several types summons
+several squads at once, one per file — never one spec-`type` matched against `domains[]`.
+For a given artifact-type: absent or unmatched → zero matches → all roles degenerate to
+SDD defaults. One match → resolve each role and governance key (name = use it; `null` =
+SDD default; missing role key = `<plugin>-<role>`). Two or more matches → read the
+**`domain-plugin`** map; if it names the chosen plugin for this artifact-type, use it, else
+return `needs-input` for the producing path to ask (the answer is written to
+`domain-plugin`, decisive on resume). `domain-plugin` (the chosen plugin for a contested
+artifact-type) stays **distinct** from `produced-by` (the after-the-fact record of who
+produced each artifact).
 
 The **init-WRITE** of an entry (a plugin registering itself idempotently, version-reconciling,
 fail-closed on a corrupt registry) is a *behavior* and lives in `../plugin/`, not here — this

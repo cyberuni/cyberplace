@@ -65,8 +65,10 @@ and deliver (build ⇄ impl-judge) — never the whole loop.
 
 At the start of a segment the operator reads **only** the project registry
 `.agents/universal-plugin.json` (the resolved lockfile — it never scans plugin
-directories), matches the spec's artifact-type, and resolves each production-chain role to a
-plugin delegate or the SDD default. This folder owns the **READ / resolution** side only;
+directories), matches **each file's** artifact-type (resolution is per file, not one
+spec-`type`), and resolves each production-chain role to a plugin delegate or the SDD
+default. A project touching several artifact-types summons several squads at once. This
+folder owns the **READ / resolution** side only;
 the init-WRITE of the lockfile is owned by `../plugin/`, and the registry **shape** by
 `../design/specialists-and-squads.md`.
 
