@@ -9,9 +9,9 @@ have organized right?**
 Standing subject: **`corpus/`** (and the whole organization). Formation evolves how the corpus
 is arranged, not what it says.
 
-## Input — the spec graph + discovery, scoped by the public trail
+## Input — the corpus structure + discovery, scoped by the public trail
 
-The Warden's **primary** input is structural: the spec **graph** and **discovery** (`corpus/`)
+The Warden's **primary** input is structural: the corpus **structure** and **discovery** (`corpus/`)
 — it reads what the corpus *is*, never what a mission *did*. To stay efficient rather than
 cold-scanning the whole corpus every run, it may consult the durable **public trail** (CR-source
 conclusions + changesets + git history) **forward** via a cursor (`.agents/sdd/loop-cursors.json`)
@@ -19,24 +19,21 @@ to learn what shipped recently and prioritize the structural pass there first. I
 the ephemeral combat log (discarded at retro) and **never** live subagent context — like the
 other outer loops it fires strictly post-mission.
 
-## The four corpus-wide acts
+## The three corpus-wide acts
 
 It acts on the corpus's *structure*, not its content:
 
 - **dedupe** overlapping specs so each behavior has exactly one home,
 - **split** monoliths that have outgrown the spec-granularity heuristic,
-- **keep the spec graph sound** — the rendered DAG stays in sync with the `blocked-by` edges,
-  and cycles are surfaced,
 - **reconcile contradictions** between governances or between specs.
 
 | Act | Trigger | Station (`corpus/`) | Output |
 |---|---|---|---|
 | **Split a monolith** | a spec trips the spec-granularity heuristic | `split-spec` | a project spec + feature children |
-| **Keep the graph sound** | the rendered graph is stale vs `blocked-by`, or a cycle appears | `render-spec-graph` | `graph.md` back in sync; cycles surfaced |
 | **Dedupe overlap** | two specs cover overlapping behavior | `dedupe-specs` | a finding naming the overlapping specs |
 | **Reconcile a contradiction** | two governances (or two specs) contradict | `dedupe-specs` | a finding naming the contradicting artifacts |
 
-A station is **not** a dependency — Formation depends on the spec **graph** and **discovery**
+A station is **not** a dependency — Formation depends on the corpus **structure** and **discovery**
 (`corpus/`), not on any given station skill.
 
 ## Corpus-wide — DISTINCT from the per-spec gate judgment
@@ -49,7 +46,7 @@ not be conflated:
 | Scope | the **whole corpus** | **one spec** |
 | Cadence | **continuous**, across missions | **point-in-time**, at one spec's gate |
 | Question | is the corpus **organized** right? | does **this change** fit structurally? |
-| Acts | dedupe, split, graph soundness, reconcile | one approve/pause/reject structural verdict |
+| Acts | dedupe, split, reconcile | one approve/pause/reject structural verdict |
 
 Formation **does not fire** as the per-spec structural check at a gate, and the gate's
 structural verdict **is not** Formation. Every run produces a **finding set covering every spec
@@ -63,8 +60,8 @@ novelty, confidence — with the contract-impact semver class feeding the Cleara
 the breaking weight on blast radius) and renders its own **self-clear vs escalate** verdict —
 it has **no direct user channel**:
 
-- **Self-clear** the reversible, derivable, low-blast acts — re-rendering the graph, a
-  coverage-preserving split, a refactor or consistency fix. The Warden acts **in-session** and
+- **Self-clear** the reversible, derivable, low-blast acts — a coverage-preserving split, a
+  refactor or consistency fix. The Warden acts **in-session** and
   leaves a **provisional, agent-attributed marker** that is never final until the Council
   ratifies the trail; a Council reject unwinds it.
 - **Escalate** the destructive, contested, or breaking acts — deprecating a spec in a dedupe,

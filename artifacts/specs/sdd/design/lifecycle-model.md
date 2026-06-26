@@ -13,13 +13,9 @@ fixed station — they dissolved into the autonomy bar (`autonomy-rubric.md`); t
 ```yaml
 ---
 status: draft           # draft | approved | implemented | deprecated
-type: skill             # the artifact-type / squad key: e.g. skill | subagent | command | agents-section | npm-package | docs; omit for a plain-code domain. The composition role (root vs composite) is DERIVED from edges, not declared.
+type: skill             # the artifact-type / squad key: e.g. skill | subagent | command | agents-section | npm-package | docs; omit for a plain-code domain.
 aligned: false          # true once the current layer's artifacts are synced
 priority: 1             # optional integer; 1 = highest (relative within a set); omit = unprioritized
-blocked-by:             # list of spec slugs; omit or empty if none
-  - <spec-slug>
-subtasks:               # child feature slugs a project or feature owns (single-parent; features nest)
-  - <spec-slug>
 strategy:               # run-level initial evaluation (leash + approach)
   leash: auto-all       # first-evaluated reach: auto-none | auto-spec | auto-all
   by: derived           # derived | user
@@ -43,9 +39,9 @@ domain-plugin:          # map: artifact-type -> owning plugin, when an artifact-
 
 Open input is recorded in the body as `<!-- open: ... -->` markers, not in frontmatter.
 
-`status` and `blocked-by` are the base schema; `priority` is an optional ranking hint
+`status` is the base schema; `priority` is an optional ranking hint
 (integer, `1` = highest, relative within a set; omit to leave a spec unprioritized).
-`type`, `subtasks`, `aligned`, `strategy`, `approval`, `produced-by`, and
+`type`, `aligned`, `strategy`, `approval`, `produced-by`, and
 `domain-plugin` are the SDD-workflow additions. `aligned: false` means the current
 layer's artifacts are being updated or contain unresolved markers; `aligned: true` means
 the layer is synced. Do not commit SDD artifacts while their spec is `aligned: false`.
@@ -79,7 +75,7 @@ stateDiagram-v2
 - A behavior change after approval is **not** a direct edit — revert to `draft` and
   re-pass the spec gate. Re-open is a lightweight "change needed" flag an auditor sets;
   only re-approval is the heavy positional act.
-- Deprecation retains the spec for graph history; never treat it as implementable.
+- Deprecation retains the spec as a historical record; never treat it as implementable.
 
 ## The two gates
 
@@ -114,14 +110,8 @@ The mechanical authority is `validate-spec/scripts/check-spec-state.mts` — run
 enforce; if `node` is unavailable, apply the same rules by reading frontmatter. The
 `(status, aligned, markers, .feature, approval)` tuple is **illegal** when:
 
-- `status: approved` with no `.feature` **and no `subtasks`** — a leaf requires a frozen
-  `.feature`. A **composition node** (declares `subtasks`, owns no `.feature` of its own)
-  is **exempt**: its behavior lives in its children and its gate rolls up their states.
-- a **composition parent** (declares `subtasks`) is `status: implemented` while any
-  non-`deprecated` child is not yet `implemented` — a parent's status may not outrun its
-  children. (`approved` is **not** rolled up: a composition contract is approved first,
-  then its children are built — which is why a project sits at `approved` over draft
-  children.)
+- `status: approved` with no `.feature` — a spec requires a frozen `.feature` to be
+  approved.
 - `status: implemented` with `aligned` not `true` — implemented requires `aligned: true`.
 - `status: approved` or `implemented` with any `<!-- open: -->` markers — markers block
   the gate.
@@ -155,29 +145,6 @@ default), the gate **fails closed** with a blocker; it advances nothing. This is
 **structural** error, the same fail-closed class as a malformed `produced-by` entry or an
 off-enum `cause` (defined in `provenance-model.md`). Distinct from availability: a
 recorded producer whose plugin is merely uninstalled is flagged, not blocked.
-
-## Composition role (derived from edges) and rollup
-
-The composition role is **derived from `subtasks` edges, never declared** — there is no
-`project|feature` field (that axis collapsed into `type`, which now names the
-artifact-type/squad). A spec is:
-
-- a **root** if no other spec lists it in `subtasks`;
-- a **composite** if it declares `subtasks` (it owns children); a composite may itself be a
-  child (composites nest), so root and composite are orthogonal;
-- a **leaf** if it owns its own `.feature` and declares no `subtasks`.
-
-- **`subtasks` lists children, parent is derived.** A child does not name its parent; the
-  parent is whichever spec lists it (mirroring how `blocks` is derived from `blocked-by`).
-  One source of truth.
-- **Single parent (tree invariant).** A slug appears in **at most one** spec's
-  `subtasks`; an unparented non-`deprecated`, non-root leaf is an orphan.
-- **Composition is orthogonal to dependency.** `subtasks` is containment;
-  `blocked-by` is execution-order dependency. The two graphs are maintained separately.
-- **A composite advances by rollup.** A composite that owns no `.feature` carries no behavior
-  contract — it is exempt from the `.feature` requirement. Its spec gate judges the
-  composition (children present and correctly wired); it reaches `implemented` only once
-  **every non-`deprecated` child is `implemented`** (`approved` is not rolled up).
 
 ## Freeze (per suite file)
 

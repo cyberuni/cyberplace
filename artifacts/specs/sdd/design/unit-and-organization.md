@@ -19,11 +19,10 @@ and repeated approvals. A project that grows large grows *more folders*, never *
 - **Folders are views, never lifecycle units.** No folder ever gets its own `status`,
   approval, or freeze. The fleet problem was lifecycle fragmentation, not folder count — so
   the cure is forbidding per-folder lifecycle, not forbidding folders.
-- **The structural axis is derived, not declared.** `project` vs `feature` is read from the
-  spec graph: a root is a node nothing parents; a composite is a node with children. "A
-  project owns no behavior beyond composition" is a DRY consequence of *having children*, not
-  a declared `type`. (`type` itself names the artifact / squad — see
-  `specialists-and-squads.md` — not the structural position.)
+- **No structural `project` vs `feature` axis.** One project is one spec; there is no
+  composition graph and no parent/child spec relationship. `type` names the artifact /
+  squad (see `specialists-and-squads.md`), never a structural position. Cross-project
+  execution ordering, when it matters, lives in the source tracker, not in spec frontmatter.
 
 ## CR concurrency — one CR per working tree
 

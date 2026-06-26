@@ -50,9 +50,9 @@ index of what a user can invoke. No separate `skills.md` is needed.
 | A task with no suite-relevant behavior (not a CR) | **escape** — proceeds outside the lifecycle, leaves no SDD record |
 | Product / structure / process retrospective, or field corrections | the **campaign / formation / doctrine / forge** loop — emits a new CR |
 
-The structural axis (`project` vs `feature`) is **derived from graph edges**, not declared
-at intake, so routing classifies *what a user wants to do to the project*, not *which spec
-in a fleet*.
+There is no `project` vs `feature` structural axis and no spec fleet — one project is one
+spec — so routing classifies *what a user wants to do to the project*, never *which spec in
+a fleet*.
 
 ## Hand the work to the Operator
 
