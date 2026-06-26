@@ -22,7 +22,7 @@ the grill, not an up-front classifier, so ambiguity is routed in and decided dur
 - **Gather missing intent.** When the request is bare, do not guess; conduct intake to
   recover the missing piece (the work, or the action), then classify.
 - **Surface pending strategy.** When the Council re-enters, surface the count of pending
-  (unratified) `strategy` lines across the specs' sibling `combat-log.jsonl` ledgers — the
+  (unratified) `strategy` lines in the project's `ledger.jsonl` — the
   doctrine loop's keep-or-cut — as an entry point. The gateway only *surfaces* the count:
   it never drafts strategy (the Scanner's job) nor ratifies it (the Council's positional
   act). A zero count is not surfaced.
@@ -119,7 +119,7 @@ Scenario: an intake question never exceeds four options
   Then it presents at most four options and never truncates silently
 
 Scenario: pending strategy is surfaced on re-entry
-  Given unratified strategy lines exist across the combat-log ledgers
+  Given unratified strategy lines exist in the project's ledger
   When the Council re-enters through the gateway
   Then the gateway surfaces the count of pending strategy as an entry point
   And it neither drafts nor ratifies any strategy

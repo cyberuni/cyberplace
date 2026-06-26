@@ -188,10 +188,10 @@ relayed claim is not user confirmation.
 
 The mission serves its own minor work rather than bouncing to the human:
 
-- **Detail-adjustment report (a view of the combat log).** Expansion and minor fixes the
+- **Detail-adjustment report (a view of the plan's combat log).** Expansion and minor fixes the
   operator makes in-flight — clarifying a detail, an obvious stale-mistake correction — are
-  recorded as combat-log entries (see `../design/provenance-model.md`), surfaced as a
-  detail-adjustment view, not escalated.
+  recorded as combat-log entries in the plan (see `../design/provenance-model.md`), surfaced as
+  a detail-adjustment view, not escalated.
 - **Hard-floor escalation (the only mandatory human stops).** Two kinds inside the mission,
   per `../design/autonomy-rubric.md`: **Clearance** of a breaking change (narrowing/deleting
   an acceptance scenario or breaking a published contract) — overridable and pre-authorizable
@@ -242,7 +242,7 @@ Cross-capability **e2e (acceptance) scenarios** live in `../acceptance/`, not he
 - **Registry / squad shape** → `../design/specialists-and-squads.md`.
 - **Lifecycle, freeze, the freeze pivot rules** → `../design/lifecycle-model.md`.
 - **The autonomy bar / hard floor** → `../design/autonomy-rubric.md`.
-- **The combat-log / provenance shape** → `../design/provenance-model.md`.
+- **The provenance shape (combat log / ledger / public trail)** → `../design/provenance-model.md`.
 - **The grilling workflow + the spec gate (explore)** → `../authoring/` (invoked, not owned).
 - **The CR subsystem (intake feed)** → `../intake/`.
 - **The universal router/door** → `../gateway/`.
