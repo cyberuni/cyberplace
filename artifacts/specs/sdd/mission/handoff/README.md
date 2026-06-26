@@ -55,6 +55,28 @@ trail** — the CR-source conclusion, the changesets, and git history (see
 `../../design/provenance-model.md`) — never the ephemeral combat log (discarded at retro).
 Handoff does not write spec/suite frontmatter; the contract is already firmed.
 
+### Conclusion write-back to the source
+
+Handoff is where the CR's **public conclusion** is written back to its source (the mechanics
+live in `../../intake/README.md`):
+
+- **Status.** Conditional, never bookkeeping: a **PR** closes the source on merge
+  (`Closes #N`) — SDD adds no separate close; work landed **directly on `main`** transitions
+  the source to `done` on push.
+- **Distilled summary.** A short, **public-worthy** conclusion — what shipped, in what shape,
+  and any **follow-up tasks** (which re-enter SDD as new CRs) — is appended to the source. This
+  is deliberately the *outward* distillate, not the internal combat log: it is part of the
+  **public trail** the campaign / formation outer loops read forward via their cursor, so they
+  resume from conclusions instead of cold-scanning the product.
+
+### The plan is a portable handoff artifact
+
+The mission **plan** (`.agents/plans/<cr-ref>.plan.md`) is itself a self-contained, portable
+brief (`../../design/provenance-model.md`): a different agent or model can pick up an
+in-flight mission from it. It is **worktree-local scratch**, never part of the delivery, and is
+**discarded at retro by the doctrine loop** once distilled — handoff neither ships it nor
+preserves it.
+
 ## Scenarios (colocated)
 
 Unit scenarios for handoff (decompose-by-unit, land in the declared shape, the PR-flow vs
