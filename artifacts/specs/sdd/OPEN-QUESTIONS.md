@@ -40,9 +40,15 @@ spec already follows our ruling; the *source* specs are stale and need a sweep) 
   `design/specialists-and-bundles.md` (registry matches `type`; `domain-plugin` distinct from
   `produced-by`), and `provenance-model.md` carry the collapsed schema. `domain-type` removed.
 
-- **C. Freeze scope. RESOLVED — `.feature` only.** The behavior suite is the frozen contract;
-  `spec.md` is the readable abstraction kept aligned, never frozen. Written into
-  `design/lifecycle-model.md` and `authoring/`.
+- **C. Freeze scope. RESOLVED — `.feature` only, and per file.** The behavior suite is the
+  frozen contract; `spec.md` is the readable abstraction kept aligned, never frozen.
+  **Refined:** freeze is **per suite file** via an `@frozen` feature-level tag, not one
+  project-wide baseline. Vocabulary is **freeze/unfreeze** (not lock/unlock — "lock" is
+  reserved for the concurrency layer). The unfreeze trigger is **risk, not phase**:
+  narrowing/rewriting unfreezes a file (→ Clearance), additive folds in frozen (self-clears).
+  Explore re-judges only unfrozen files; the impl gate runs the **full** suite regardless —
+  impl-producer runs every file, impl-judge judges the result. Written into
+  `design/lifecycle-model.md`, `design/provenance-model.md`, and `authoring/`.
 
 - **L. Drift detection & `align-specs`. RESOLVED.** Prose↔suite drift is caught **inline** at
   every CR's spec gate by the spec-judge applying the Builder (coverage) lens (semantic) + a mechanical scenario-diff
@@ -70,9 +76,16 @@ spec already follows our ruling; the *source* specs are stale and need a sweep) 
   artifact-types → summons multiple specialists. Make explicit: one bundle **per artifact-type**,
   "no two producers on the same **file**" (per-file, not per-spec).
 
-- **G. Durable approval/freeze record.** With no per-folder `status`/`approval`, where does
-  "this CR's diff was approved + which scenarios are now frozen" live — the combat log, a per-CR
-  record, or a single growing freeze baseline? Undefined.
+- **G. Durable approval/freeze record. RESOLVED — two faces + per-file freeze tag.**
+  *Approval:* `spec.md` `approval` holds only the **standing** (latest CR's) gate verdict —
+  "is the contract cleared now, who last ratified." The **durable per-CR** record lives in
+  the combat log as a new **`gate`** ledger line (`cr`, `gate`, `verdict`, `by`, optional
+  `why`, plus a `frozen[]` list), the immutable twin of the standing block. *Freeze:* a
+  per-suite-file `@frozen` tag answers "which scenarios are frozen" — no growing baseline, no
+  scenario-ID registry. Every ledger line gains an optional `cr` (one log now spans many CRs
+  against the one durable spec). Human-ratified `gate` lines follow positional authority
+  (in-session only). Written into `design/provenance-model.md`, `design/lifecycle-model.md`,
+  `authoring/`. (Depends on the per-file freeze refinement under **C**.)
 
 - **H. 5th risk dimension.** Keep the 4-dim `why` (reversibility, blast-radius, novelty,
   confidence) or the 5-dim gradient (+ contract-impact)? Sources disagree with themselves.

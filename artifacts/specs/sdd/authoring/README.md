@@ -32,7 +32,8 @@ suite delta, it does not receive it.
     written, find what is weak, missing, or stale, and tighten it.
 - The **spec gate** — the verdict on the spec + suite diff before it becomes the contract:
   self-clear when the assessment reads safe, escalate on the hard floor, and on approval
-  **freeze** the touched `.feature` scenarios into the contract baseline.
+  **freeze** each touched `.feature` file by setting its `@frozen` tag, and record the verdict
+  as a durable per-CR `gate` ledger line (`../design/provenance-model.md`).
 
 Gate *rules* live in `../design/`: legal-state transitions and the freeze model in
 `lifecycle-model.md`, the self-clear-vs-escalate bar and the two-kind hard floor in
@@ -93,13 +94,18 @@ open markers, or a misaligned suite. Those fail the confidence dimension, so the
 self-assertion too; report the blockers for the user to fix.
 
 The three gate verbs at the spec gate (it judges the *contract*, so each verb edits the
-contract): **approve** → land the diff and freeze the touched scenarios; **change** →
-revise the diff, nothing freezes yet; **reject** → scope-kill, drop the delta.
+contract): **approve** → land the diff and freeze each touched `.feature` file (set its
+`@frozen` tag); **change** → revise the diff, nothing freezes yet; **reject** → scope-kill,
+drop the delta.
 
-**Freeze on approval.** Only the `.feature` is **hard-frozen** — it is the contract; no
-scenario edits without a ratified re-open. `spec.md` is **kept aligned** — editable, but it
-may not contradict a frozen scenario; that invariant is enforced by the alignment check and
-the judge, not by a flat freeze of the prose.
+**Freeze on approval is per file.** Each touched `.feature` is **hard-frozen** via its own
+`@frozen` tag — no scenario edits to a frozen file without a ratified re-open; untouched
+files keep their state. An *additive* scenario folds into a frozen file without unfreezing
+it (self-clears); a *narrowing/rewriting* edit unfreezes its file and fires **Clearance**.
+`spec.md` is **kept aligned, never frozen** — editable, but it may not contradict a frozen
+scenario; that invariant is enforced by the alignment check and the judge, not by a flat
+freeze of the prose. Vocabulary is **freeze/unfreeze**; "lock" is reserved for the
+concurrency layer. Freeze rules: `../design/lifecycle-model.md`.
 
 ## Provenance and alignment
 

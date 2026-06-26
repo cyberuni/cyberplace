@@ -10,14 +10,28 @@ Recording *behavior* (when the operator appends, how it resolves a producer) liv
 
 | Face | Home | Shape | Mutability | Holds |
 |---|---|---|---|---|
-| **Current-state** | `spec.md` frontmatter | `produced-by` (map by role) + `approval` (map by gate: `verdict` + `why`) | **overwritten** — last write wins | the authoritative *present*: who produced each artifact, and the standing verdict per gate |
-| **Ledger** | sibling `combat-log.jsonl` | one JSON object per line, appended in order | **immutable** — lines appended, never edited or removed | the *history*: what happened across the mission, in order |
+| **Current-state** | `spec.md` frontmatter | `produced-by` (map by role) + `approval` (map by gate: `verdict` + `why`) | **overwritten** — last write wins | the authoritative *present*: who produced each artifact, and the **standing** verdict per gate (the latest CR's outcome) |
+| **Ledger** | sibling `combat-log.jsonl` | one JSON object per line, appended in order | **immutable** — lines appended, never edited or removed | the *history*: what happened across every mission/CR, in order |
 
 The current-state face answers *"who produced this, and what is the verdict now?"* The
 ledger answers *"what happened to get here?"* They do not duplicate: a gate rejection
 overwrites nothing in `approval` (the eventual `approve` stands there), but the rejection
 is preserved forever as a `correction` line in the ledger. This is the load-bearing reason
 the ledger exists — current-state alone loses every correction.
+
+**`approval` is standing, not historical.** The project has **one durable spec** that many
+CRs flow through; `spec.md` `approval` holds only the **latest** CR's gate verdict
+(overwritten each time), answering *"is the contract cleared right now, and who last
+ratified?"* The **durable per-CR record** — *"CR #34's diff was approved by X, why Y"* —
+lives in the ledger as a `gate` line (below), keyed by `cr`. The same two-face split that
+separates `produced-by` (standing) from `report` (historical) separates `approval`
+(standing) from `gate` (historical). There is **no per-CR `approval` block** in
+frontmatter and no separate per-CR sidecar file.
+
+**Every ledger line carries an optional `cr`.** Because one `combat-log.jsonl` now spans
+many change requests against the one durable spec, each entry tags the CR it belongs to
+(`"cr": 34`) so a reader groups a mission's lines without the transcript. Outer-loop
+`strategy` lines (cross-CR by nature) may omit it.
 
 **The ledger is operational provenance, not contract.** `combat-log.jsonl` is **never
 frozen and never gated**: it keeps appending across the whole lifecycle, including while
@@ -145,6 +159,32 @@ specs' ledgers.
   A `cause` value that is **absent or off-enum** is a **structural error** (it breaks
   cross-mission matchability), not valid provenance, and **fails closed**.
 
+### `gate` — the durable per-CR gate verdict
+
+The durable record of *"this CR's diff was approved (or paused/rejected) at this gate."* One
+line per gate verdict per CR — the immutable twin of the standing `approval` block in
+`spec.md` frontmatter. Where `approval` is overwritten by the next CR, the `gate` line
+preserves every CR's verdict forever, keyed by `cr`.
+
+```jsonl
+{"seq": 9, "kind": "gate", "cr": 34, "gate": "spec", "verdict": "approve", "by": "unional", "frozen": ["intake/intake.feature", "design/lifecycle.feature"]}
+```
+
+- **`gate`** — `spec | impl`, the gate this verdict closes.
+- **`verdict`** — `approve | pause | reject`, mirroring the `approval` enum.
+- **`by`** — the ratifier: a human name (ratified) or `agent` (self-asserted, provisional).
+  A self-assertion additionally carries the four/five-dimension `why` derivation, same as
+  the frontmatter block; a human ratification needs none.
+- **`frozen`** — the suite files this verdict **froze** (spec-gate `approve` only): the
+  per-file freeze record. Freeze is a per-file `@frozen` tag on each `.feature` (see
+  `lifecycle-model.md`); this list records *which* files the CR froze, so the ledger answers
+  *"what was frozen as of CR #34"* standalone — no git walk, which matters for the Forge loop
+  reading logs across installations with no shared git.
+
+The `gate` line is the **load-bearing answer to G**: with no per-folder `status`/`approval`,
+the durable "CR approved + scenarios frozen" record is this ledger entry, not a sidecar and
+not a growing frontmatter block.
+
 ### `strategy` — the slot this contract shapes but does not write
 
 The Scanner records drafted strategy to the ledger. This contract defines the **shape** of
@@ -174,9 +214,15 @@ with the next `seq`, never edited or deleted.
 
 | Writer | May append | Never writes |
 |---|---|---|
-| **operator** | `report` and `correction` lines (same boundary as `produced-by` / `aligned` / a self-asserted `approval`) | strategy lines |
-| **doctrine-loop Scanner** | `strategy` lines | report / correction lines |
+| **operator** | `report`, `correction`, and **self-asserted `gate`** lines (`by: agent`, same boundary as `produced-by` / `aligned` / a self-asserted `approval`) | strategy lines; human-ratified `gate` lines |
+| **gate skill (`validate-spec`), in-session** | **human-ratified `gate`** lines (`by: <name>`) | report / correction / strategy lines |
+| **doctrine-loop Scanner** | `strategy` lines | report / correction / gate lines |
 | **producers / judges** | nothing | the entire ledger — they do not know their own registry identity authoritatively |
+
+A human-ratified `gate` line follows the **positional authority** rule
+(`lifecycle-model.md`): only the in-session position holding the real user channel writes
+`by: <name>`; a spawned operator writes only `by: agent` self-assertions and emits a verdict
+packet on a human gate.
 
 ## Readers split by path
 
@@ -192,6 +238,11 @@ strategy and append its output there. Neither reader needs the other's file.
 
 | File | Role | Frozen? | Gated? |
 |---|---|---|---|
-| `spec.md` | contract + current-state frontmatter | yes, on `approved` | yes |
-| `<name>.feature` | contract scenarios | yes, on `approved` | yes |
+| `spec.md` | contract prose + standing current-state frontmatter | **never** (kept aligned) | yes |
+| `<name>.feature` | contract scenarios | **per file**, via its own `@frozen` tag, set on a spec-gate `approve` that touched it (see `lifecycle-model.md`) | yes |
 | `combat-log.jsonl` | operational ledger (append-only) | **never** | **never** |
+
+Freeze is **per suite file**, not a single project-wide baseline: each `.feature` carries
+its own `@frozen` tag. The standing `approval` in `spec.md` says the contract was last
+cleared; the set of `@frozen` files says *which* scenarios are currently the frozen
+contract; the `gate` ledger lines say *which CR* froze each.
