@@ -50,7 +50,7 @@ self-clear, high toward escalate.
 | Dimension | Low risk (toward self-clear) | High risk (toward escalate) |
 |---|---|---|
 | **Reversibility** | cheap to undo — draft prose, a derived artifact, a tracked file with a cheap revert | destructive, or carrying an actual external side effect (an irreversible publish/release act or data egress). A git-tracked file in a shipped package with a cheap revert is LOW. |
-| **Blast radius** | narrow **user-facing** impact — no `blocked-by` dependents, no breaking change, no publish/release act | many `blocked-by` dependents, a breaking user-facing change, or an actual publish/release act. Editing a tracked source file that merely lives in a shipped package, with no dependents and no breaking change, is LOW. Measured by **user-facing impact, not artifact count** — surface location is not a publish act. |
+| **Blast radius** | narrow **user-facing** impact — no breaking change, no publish/release act | a breaking user-facing change, or an actual publish/release act. Editing a tracked source file that merely lives in a shipped package, with no breaking change, is LOW. Measured by **user-facing impact, not artifact count** — surface location is not a publish act. |
 | **Decision novelty** | trivial / defaulted, or already human-ratified | a new contestable choice the human has not seen |
 | **Confidence** | evidence converges; a clean judge pass; no unresolved markers | a marginal verdict; unresolved `<!-- open: -->` markers |
 
@@ -62,8 +62,7 @@ scenario-diff), but breaking-ness never carries a gradient row of its own:
   **Clearance** hard-floor case — escalated *above* the gradient, before any dimension is
   scored.
 - Once Clearance is granted (pre-authorized in the CR), the **residual** risk of a breaking
-  change is just **how far it reaches** — that rides **blast radius** (`blocked-by`
-  dependents, user-facing breakage).
+  change is just **how far it reaches** — that rides **blast radius** (user-facing breakage).
 - **Additive / non-breaking** edits — a new scenario, a new optional path, a clarification
   that does not alter an existing scenario's truth — clear the floor trivially and read
   low. This is what lets a low-risk edit to a frozen spec self-clear rather than forcing a
@@ -81,12 +80,11 @@ scenario-diff), but breaking-ness never carries a gradient row of its own:
 
 **Weighting — user-facing blast radius is highest.** A **high** user-facing-impact reading
 **dominates the aggregate** and forces `escalate` even when every other dimension reads
-low. Blast radius stays measured as **user-facing impact** (`blocked-by` dependents,
-breaking user-facing changes, or an actual publish/release act) — **not artifact count**
-and **not surface location**.
+low. Blast radius stays measured as **user-facing impact** (breaking user-facing changes,
+or an actual publish/release act) — **not artifact count** and **not surface location**.
 
 The verdict **always names the dominant dimension / reason** so the consumer sees *why* —
-`escalate · blast radius (breaking, 4 dependents)`, `self-clear · all low`, `escalate ·
+`escalate · blast radius (breaking, published surface)`, `self-clear · all low`, `escalate ·
 hard floor (clearance)`.
 
 ## A self-cleared verdict is provisional, never final
@@ -131,8 +129,8 @@ each reaches, so they differ in whether the rubric applies at all.
 - The **Scanner is intent-class**: a doctrine/process change is the human's to keep or cut;
   it surfaces and stops, drafting always-unratified strategy.
 - The **Warden is a conductor**: it self-clears reversible, derivable, low-user-facing-blast
-  acts (re-rendering the derived spec graph, coverage-preserving refactors, consistency
-  fixes), leaving a provisional agent-attributed marker; it escalates destructive acts
+  acts (coverage-preserving refactors, consistency fixes), leaving a provisional
+  agent-attributed marker; it escalates destructive acts
   (deprecating a spec in a dedupe), contested acts (picking the winning claim in a
   reconciliation), and breaking changes.
 
@@ -149,7 +147,7 @@ The rubric's verdicts are made testable (vs by-hand vibing) in three layers:
    - **semver class** via scenario-diff (preserved verbatim → non-breaking;
      altered/removed → breaking) — feeds **Clearance** floor detection and the breaking
      weight on blast radius; not a gradient row of its own;
-   - **blast radius** — `blocked-by` dependents + published/installed-surface detection +
+   - **blast radius** — published/installed-surface detection +
      **conformance/alignment coupling** (what conforms to the target);
    - **reversibility** — destructive/cascading op?
 

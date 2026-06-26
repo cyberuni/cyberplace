@@ -21,8 +21,8 @@ artifact-type → { producer, judge, governances (actor + discipline), model, ef
   set and merges their outputs.
 - `type` ≡ **artifact-type** = the squad key. It names the artifact / squad
   (`npm-package`, `agent-plugin`, `agent-skill`, `agent-definition`, `react-component`,
-  `docs`, …). The structural axis (`project | feature`) is **derived from graph edges** —
-  root = nothing parents it, composite = has `subtasks` — not declared.
+  `docs`, …). There is no structural `project | feature` axis — one project is one spec,
+  and folders are views, not lifecycle units (see `unit-and-organization.md`).
 - **Disciplines (process/workflow) fold into governances.** "Basic knowledge" (React, TS,
   logic) is never *loaded* — it is just picking the right **model + effort**.
 - **Language ≠ squad.** "TS script for a skill" lives inside the *skill* squad

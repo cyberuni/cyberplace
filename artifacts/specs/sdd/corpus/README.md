@@ -2,12 +2,12 @@
 
 ## Owns
 
-The **tooling** that operates over the spec corpus: discovery, graph rendering, digest,
+The **tooling** that operates over the spec corpus: discovery, digest,
 dedupe, split, and **align**. Most are deterministic and read-only; **`align-specs`** is
 the exception — **user-invocable** (and CI-usable) and able to **reconcile**, not just
 report. This folder is the *machinery*; the
 [`../formation/`](../formation/) outer loop is the **process** that wields it (dedupe
-overlap, split monoliths, keep the graph sound, reconcile contradictions). The tools
+overlap, split monoliths, reconcile contradictions). The tools
 compute and propose; formation — run by the Warden — decides and acts on the proposals,
 making its own self-clear-vs-escalate verdict per act.
 
@@ -22,13 +22,13 @@ lifecycle units). So the corpus the tooling ranges over is two-tiered:
 - the **internal structure** of one project spec — its capability folders, its `design/`
   rules, its `acceptance/` e2e suite, and its colocated unit suites.
 
-Discovery and the graph derive these tiers from frontmatter; digest, dedupe, and split
+Discovery derives these tiers from frontmatter; digest, dedupe, and split
 read individual specs and **propose** a structural change for formation to ratify. None of
 the tooling reads runtime behavior or owns a lifecycle state.
 
 **The two tiers gate differently (ruling E).** Structural acts at the **cross-project** tier
 — splitting one project spec out of another, deduping sibling project specs, deprecating a
-spec, rewriting `blocked-by` edges — are real **gated** lifecycle acts, which is why
+spec — are real **gated** lifecycle acts, which is why
 dedupe/split only *propose* and require approval. Reorganizing the **internal structure** of
 *one* project spec (moving a capability folder, regrouping files — folders are views) is
 **plain editing**: no new gate, no formation ratification, since no scenario's truth changes
@@ -50,39 +50,6 @@ no second place can drift. An ambiguous name match is disambiguated with the use
 guessed. The convention is owned by the lifecycle rule in [`../design/`](../design/);
 discovery's consumers defer to it rather than restate it.
 
-### Spec graph — render the DAG from `blocked-by`
-
-Reads every discovered `spec.md`, parses the `blocked-by` frontmatter edges, detects cycles,
-computes a topological order, and emits a Mermaid diagram plus a node table to a derived
-`graph.md`. `blocked-by` is the single source of truth; `graph.md` is a **derived view that
-must never be hand-edited**. A `--check` mode renders to memory and exits non-zero when the
-committed `graph.md` is stale or missing — the CI staleness gate. Output is byte-deterministic
-(stable sort of nodes and edges). Delivered as a non-user-invocable skill carrying a
-self-contained `.mts` script that runs on plain `node` (≥ 23.6 native type-stripping; v24+
-by default — no `tsx`, no `npx`, no deps); when `node` is unavailable an agent fallback
-renders the identical format. The graph computation itself (cycle detection, topological
-order) delegates to the domain-agnostic DAG primitives below.
-
-### DAG tooling — the domain-agnostic graph kernel
-
-A `universal-plugin`-owned skill of reusable directed-graph primitives over a plain
-node-and-edge model, so plugins stop re-deriving graph logic in agent context:
-
-- **detect-cycle** — report a cycle (with the offending path) or confirm acyclicity.
-- **topological-order** — return an execution order for a graph the caller has already
-  confirmed acyclic; cyclic input is reported as a caller error, never silently ordered.
-- **validate-tree** — confirm containment edges form a single-parent tree; report
-  `multi-parent` / `orphan` violations.
-- **resolve-parents** — derive each node's parent from the children lists other nodes
-  declare (one source of truth); a child claimed by two parents is a first-class
-  `multi-parent` violation, not last-writer-wins.
-- **render-mermaid** — emit a `graph TD` view of a node-and-edge set.
-
-The kernel knows nothing about `spec.md`, `status`, or any SDD field; callers supply nodes
-and edges and interpret results. Same node-optional shape as the graph renderer: bundled
-`.mts` script when Node is present, equivalent agent procedure when not, identical result
-shape across both.
-
 ### Digest — read-only summary of one spec
 
 Given a spec folder, reads `spec.md` and its sibling `.feature` and returns a fixed-section
@@ -98,7 +65,7 @@ artifacts itself.
 
 Reads a candidate set, finds where their What, design decisions, and `.feature` scenarios
 **substantially** overlap (not incidental shared vocabulary), and proposes a **dedupe plan**:
-which spec survives, which fold into it, and which `blocked-by` edges get rewritten. Survivor
+which spec survives and which fold into it. Survivor
 selection (most complete coverage, most advanced status) is *proposed with reasons*, never
 assumed — peers are sent to the user. It owns the overlap analysis only: it never scaffolds
 or rewrites artifacts, never writes `status`/`approval`, and requires **explicit approval**
@@ -108,9 +75,9 @@ draft re-open path before any scenario moves, per the freeze rule.
 ### Split — decompose an oversized spec
 
 Reads one target, groups its design decisions and `.feature` scenarios into cohesive
-independent concerns, and proposes a **split plan** with scope and `blocked-by` edges. A
-scenario or decision belongs to exactly one child; shared vocabulary becomes a governance or
-a dependency edge, not duplicated scope. Like dedupe, it owns the analysis only — authoring
+independent concerns, and proposes a **split plan** with scope. A
+scenario or decision belongs to exactly one child; shared vocabulary becomes a governance,
+not duplicated scope. Like dedupe, it owns the analysis only — authoring
 and retirement stay elsewhere — and requires explicit approval; a frozen target routes through
 the draft re-open path first. "Just delete the parts about X" is out of scope: that is a
 revise/deprecate, not a split.
@@ -140,16 +107,14 @@ the gate.
 ## Boundaries
 
 - **Tooling, not process.** These tools compute and propose. The act — applying a dedupe,
-  performing a split, regenerating the graph, reconciling a contradiction — belongs to
+  performing a split, reconciling a contradiction — belongs to
   [`../formation/`](../formation/), which runs corpus-wide and continuously and owns the
   ratification verdict. The per-spec structural verdict at a gate is a separate thing.
 - **No lifecycle ownership.** Nothing here writes `status`, `approval`, or a freeze. Digest,
-  dedupe, and split are read-only and emit proposals; the graph renderer derives a view.
+  dedupe, and split are read-only and emit proposals.
   **`align-specs`** may write **prose / scenarios** in reconcile mode, but still never
   `status`/`approval`/freeze — a fix that would narrow a frozen scenario escalates as a
   Clearance CR instead.
-- **Domain-agnostic core.** Graph computation lives in the `universal-plugin` DAG kernel;
-  SDD-specific parsing (frontmatter → nodes/edges) lives in the SDD-facing tools.
 
 ## Scenarios
 

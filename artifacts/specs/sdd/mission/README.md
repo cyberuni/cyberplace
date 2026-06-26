@@ -51,7 +51,7 @@ up. Its defining constraints:
   self-assertions and `pause` halts, and forwards non-blocking `OBSERVATIONS` (typed by
   owning lens) up the relay without acting on them.
 
-`create-spec` / `validate-spec` / `render-spec-graph` are **stations the operator runs
+`create-spec` / `validate-spec` are **stations the operator runs
 in-session**, never spawned as a `subagent_type`. The only thing the relay spawns is the
 operator. Attempting `subagent_type: validate-spec` is the classic misfire and fails with
 "Agent type not found."
