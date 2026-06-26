@@ -42,26 +42,33 @@ own location (the mnemonic: three **C**'s):
 
 **Everything additive / internal / minor self-clears.**
 
-## The gradient — five risk dimensions
+## The gradient — four risk dimensions
 
-Below the floor, the bar assesses five dimensions, each **low → high**; low pushes toward
+Below the floor, the bar assesses four dimensions, each **low → high**; low pushes toward
 self-clear, high toward escalate.
 
 | Dimension | Low risk (toward self-clear) | High risk (toward escalate) |
 |---|---|---|
 | **Reversibility** | cheap to undo — draft prose, a derived artifact, a tracked file with a cheap revert | destructive, or carrying an actual external side effect (an irreversible publish/release act or data egress). A git-tracked file in a shipped package with a cheap revert is LOW. |
 | **Blast radius** | narrow **user-facing** impact — no `blocked-by` dependents, no breaking change, no publish/release act | many `blocked-by` dependents, a breaking user-facing change, or an actual publish/release act. Editing a tracked source file that merely lives in a shipped package, with no dependents and no breaking change, is LOW. Measured by **user-facing impact, not artifact count** — surface location is not a publish act. |
-| **Contract impact** | **additive / non-breaking** — a new scenario, a new optional path, a clarification that does not alter an existing scenario's truth | **breaking** — alters or removes an established behavior. Weighted by user-impact: who downstream depends on it and how badly |
 | **Decision novelty** | trivial / defaulted, or already human-ratified | a new contestable choice the human has not seen |
 | **Confidence** | evidence converges; a clean judge pass; no unresolved markers | a marginal verdict; unresolved `<!-- open: -->` markers |
 
-**Contract impact — the load-bearing nuance.** The signal is **not** "is a freeze being
-re-opened" — a freeze re-open is not itself the risk. The signal is the **semver class**:
-additive/non-breaking → low → self-clears; breaking → high → escalates, then weighted by
-`blocked-by` dependents. This is what lets a low-risk edit to a frozen spec self-clear
-rather than forcing a full human re-gate. A split/merge that preserves every scenario
-verbatim is non-breaking → self-clears; one that alters or drops a scenario's truth is
-breaking → escalates.
+**Breaking-ness is not its own dimension — it splits between the floor and blast radius.**
+The signal is the **semver class** (additive/non-breaking vs breaking, measured by
+scenario-diff), but breaking-ness never carries a gradient row of its own:
+
+- **Un-authorized narrowing** of an established scenario / published contract is a
+  **Clearance** hard-floor case — escalated *above* the gradient, before any dimension is
+  scored.
+- Once Clearance is granted (pre-authorized in the CR), the **residual** risk of a breaking
+  change is just **how far it reaches** — that rides **blast radius** (`blocked-by`
+  dependents, user-facing breakage).
+- **Additive / non-breaking** edits — a new scenario, a new optional path, a clarification
+  that does not alter an existing scenario's truth — clear the floor trivially and read
+  low. This is what lets a low-risk edit to a frozen spec self-clear rather than forcing a
+  full human re-gate; a split/merge that preserves every scenario verbatim self-clears,
+  while one that alters or drops a scenario's truth hits Clearance.
 
 ## The aggregate verdict
 
@@ -79,8 +86,8 @@ breaking user-facing changes, or an actual publish/release act) — **not artifa
 and **not surface location**.
 
 The verdict **always names the dominant dimension / reason** so the consumer sees *why* —
-`escalate · contract impact (breaking, 4 dependents)`, `self-clear · all low`, `escalate ·
-hard floor (authorization)`.
+`escalate · blast radius (breaking, 4 dependents)`, `self-clear · all low`, `escalate ·
+hard floor (clearance)`.
 
 ## A self-cleared verdict is provisional, never final
 
@@ -139,10 +146,11 @@ The rubric's verdicts are made testable (vs by-hand vibing) in three layers:
 
 1. **A deterministic helper** (sibling to `check-spec-state.mts`) computes the
    **mechanical** dimensions for a proposed act:
+   - **semver class** via scenario-diff (preserved verbatim → non-breaking;
+     altered/removed → breaking) — feeds **Clearance** floor detection and the breaking
+     weight on blast radius; not a gradient row of its own;
    - **blast radius** — `blocked-by` dependents + published/installed-surface detection +
      **conformance/alignment coupling** (what conforms to the target);
-   - **contract impact** — semver class via scenario-diff (preserved verbatim →
-     non-breaking; altered/removed → breaking);
    - **reversibility** — destructive/cascading op?
 
    Output: a partial verdict + which dimensions read mechanically-high. The agent judges

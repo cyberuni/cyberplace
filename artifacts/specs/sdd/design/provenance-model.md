@@ -173,7 +173,7 @@ preserves every CR's verdict forever, keyed by `cr`.
 - **`gate`** — `spec | impl`, the gate this verdict closes.
 - **`verdict`** — `approve | pause | reject`, mirroring the `approval` enum.
 - **`by`** — the ratifier: a human name (ratified) or `agent` (self-asserted, provisional).
-  A self-assertion additionally carries the four/five-dimension `why` derivation, same as
+  A self-assertion additionally carries the four-dimension `why` derivation, same as
   the frontmatter block; a human ratification needs none.
 - **`frozen`** — the suite files this verdict **froze** (spec-gate `approve` only): the
   per-file freeze record. Freeze is a per-file `@frozen` tag on each `.feature` (see
