@@ -118,10 +118,11 @@ single-intake loop. Nothing re-enters the system except as a CR (human- or loop-
 | product / **campaign** | what the project delivers | `sdd-campaign-loop` | draft |
 | structure / **formation** | how the corpus is organized | `sdd-formation-loop` | implemented |
 | process / **doctrine** | how we work (strategy, workflow) | `sdd-doctrine-loop` | implemented |
-| harness / **forge** | what we build / work *with* | `sdd-forge-loop` | draft |
+| field / **forge** | improve **SDD itself** from opt-in end-user field corrections | `sdd-forge-loop` | draft |
 
-Product = ends; structure / process / harness = means. **Mission is the INNER loop**
-(per-CR execution), not one of the four.
+Campaign/formation/doctrine are **internal** (the project's own combat logs); **forge is
+external** (opt-in end-user corrections across installations, Consent-gated). **Mission is the
+INNER loop** (per-CR execution), not one of the four.
 
 ## Migration (this CR)
 
@@ -182,18 +183,18 @@ artifacts/specs/sdd/
   campaign/          # <- sdd-campaign-loop   (product — outer loop)
   formation/         # <- sdd-formation-loop + sdd-warden   (structure — outer loop)
   doctrine/          # <- sdd-doctrine-loop   (process — outer loop)
-  forge/             # <- sdd-forge-loop   (harness — outer loop)
-  harness/           # the project's engineering & distribution harness — the FORGE loop's subject
-                     #    toolchain (+why), CI/CD, distribution/release (changesets, plugin.json),
-                     #    contribution; + contract-registry init-WRITE + public skill manifest;
-                     #    references monorepo-level agent config, owns only SDD-specific bits
+  forge/             # <- sdd-forge-loop   (FIELD — external outer loop; improve SDD itself)
+  plugin/            # SDD's plugin nature: ships-as-plugin (manifest) + extended-by-plugins
+                     #    (plugin contract = 5 roles) + contract-registry init-WRITE. Has a suite.
   acceptance/        # the e2e behavior suite (consumed by mission's step-3 verify, NOT a step)
 ```
 
-`harness/` pairs with `forge/` exactly as `corpus/` pairs with `formation/`: each outer
-loop evolves a standing subject — campaign→capabilities, formation→`corpus/`,
-doctrine→`design/`, forge→`harness/`. `harness/` is the spec-level description; the actual
-`package.json` / CI YAML / `CONTRIBUTING.md` are the code-level artifacts it abstracts.
+The three **internal** outer loops evolve a standing subject — campaign→capabilities,
+formation→`corpus/`, doctrine→`design/`. **forge is the one external loop**: it improves
+**SDD itself** from opt-in, cross-installation end-user field corrections (Consent-gated); it
+has **no folder subject**. The old `harness/` folder (a project's toolchain/CI/distribution)
+is **dropped** — outside SDD, no dedicated loop; toolchain/CI/contribution live in the repo's
+own config, referenced not specced.
 
 **`gate/` dissolves** (gates are not a fixed station — they dissolved into the autonomy
 bar). The gate *rules* (legal-state transitions `sdd-state-legality`, freeze
@@ -207,7 +208,7 @@ loop) -> **authoring** (2, explore; owns spec gate; invoked by the mission) ->
 **mission/deliver** (3, build to keep; owns impl gate; verifies vs `acceptance/` + unit) ->
 **mission/handoff** (4, landing). **mission/** is the autonomous orchestrator sequencing the
 loop; **gateway/** is the universal router/door (not a step). The 4 outer loops fire
-**post-mission** (step 5), not inside the Mission Loop. `design/`, `corpus/`, `harness/`,
+**post-mission** (step 5), not inside the Mission Loop. `design/`, `corpus/`, `plugin/`,
 `acceptance/` are cross-cutting — not loop steps.
 
 - **`autonomy-rubric-harness`** folds in: the rubric *bar* is `design/autonomy-rubric.md`;
@@ -218,7 +219,7 @@ loop; **gateway/** is the universal router/door (not a step). The 4 outer loops 
   outer loops. It owns `mission/deliver/` and `mission/handoff/`, invokes `authoring/` for
   explore, and is fed by `intake/`.
 - **`contract-registry` splits three ways**: SHAPE -> `design/specialists-and-bundles.md`;
-  init-WRITE -> `harness/`; READ/resolution -> `mission/`.
+  init-WRITE -> `plugin/`; READ/resolution -> `mission/`.
 - **`mission/handoff/` (step 4) ≠ `sdd-operator-deliver`**: the latter is the operator's
   produce *phase inside* step 3 (`mission/deliver/`, build to keep); `mission/handoff/` is
   what happens to the verified result.

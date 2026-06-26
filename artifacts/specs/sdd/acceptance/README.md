@@ -36,7 +36,7 @@ Sources: `sdd-gate-autonomy`, `sdd-escape-hatch`, `sdd-stop-provenance`, `../des
 - B7. A halt records why the agent stopped (stop-provenance) in the combat log.
 
 ### C. Resolve-a-bundle (registry → resolution → production chain)
-Sources: `sdd-contract-registry`, `sdd-operator-resolution`, `harness/` init-WRITE.
+Sources: `sdd-contract-registry`, `sdd-operator-resolution`, `plugin/` init-WRITE.
 
 - C1. A plugin's init-write registers an `sdd-plugins` entry; the operator later resolves that domain's delegates from it without scanning plugin directories.
 - C2. An unfilled producer role degenerates to the operator authoring inline (`produced-by.<role>: sdd:sdd-operator`); an unfilled judge role spawns the cold SDD-default judge.

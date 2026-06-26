@@ -67,7 +67,7 @@ At the start of a segment the operator reads **only** the project registry
 `.agents/universal-plugin.json` (the resolved lockfile — it never scans plugin
 directories), matches the spec's artifact-type, and resolves each production-chain role to a
 plugin delegate or the SDD default. This folder owns the **READ / resolution** side only;
-the init-WRITE of the lockfile is owned by `../harness/`, and the registry **shape** by
+the init-WRITE of the lockfile is owned by `../plugin/`, and the registry **shape** by
 `../design/specialists-and-bundles.md`.
 
 Resolution branches on role kind, and for producers on whether a model-tuned agent is
@@ -238,7 +238,7 @@ Cross-capability **e2e (acceptance) scenarios** live in `../acceptance/`, not he
 
 ## Boundaries — what the orchestrator does NOT own
 
-- **Registry init-WRITE** → `../harness/` (mission owns READ only).
+- **Registry init-WRITE** → `../plugin/` (mission owns READ only).
 - **Registry / bundle shape** → `../design/specialists-and-bundles.md`.
 - **Lifecycle, freeze, the freeze pivot rules** → `../design/lifecycle-model.md`.
 - **The autonomy bar / hard floor** → `../design/autonomy-rubric.md`.

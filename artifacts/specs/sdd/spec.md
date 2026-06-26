@@ -20,7 +20,7 @@
 | `mission/handoff/` | land the result in the delivery shape | handoff (step 4) |
 | `campaign/` `formation/` `doctrine/` `forge/` | the 4 post-mission outer loops | step 5 (not in the Mission Loop) |
 | `corpus/` | spec-corpus tooling | — |
-| `harness/` | engineering & distribution harness (forge's subject) | — |
+| `plugin/` | SDD's plugin nature (ships-as-plugin + extended-by-plugins; registry init-write) | — |
 | `acceptance/` | e2e behavior suite | — |
 
 ## Invariants

@@ -3,7 +3,7 @@
 The selection model behind production: the **knowledge bundle**, the five delegate roles,
 which governances each loads, and the **registry SHAPE** that stores it. This file owns the
 bundle model and the `.agents/universal-plugin.json` role-map shape. The init-WRITE of an
-entry lives in `../harness/`; READ/resolution from the registry lives in `../mission/`.
+entry lives in `../plugin/`; READ/resolution from the registry lives in `../mission/`.
 
 ## The knowledge bundle
 
@@ -125,28 +125,16 @@ plugin directories. Each entry:
   judge default is never loaded inline — grader independence requires a cold context.
 
 **Resolution** (owned by `../mission/`, shown here because the shape is its direct input):
-match the spec's **`domain-type`** frontmatter field (the artifact-type axis, **not** the
-domain/folder name) against each entry's `domains[]`. An absent or unmatched `domain-type`
+match the spec's **`type`** frontmatter field (the artifact-type / bundle key, **not** the
+folder name) against each entry's `domains[]`. An absent or unmatched `type`
 → zero matches → all roles degenerate to SDD defaults. One match → resolve each role and
 governance key (name = use it; `null` = SDD default; missing role key = `<plugin>-<role>`).
-Two or more matches → read the `produced-by` resolution cache; if it names the owner, use
-it, else return `needs-input` for the producing path to ask (the answer is written to
-`produced-by`, decisive on resume — the legacy `domain-plugin` map is retired here).
+Two or more matches → read the **`domain-plugin`** map; if it names the chosen plugin for
+this artifact-type, use it, else return `needs-input` for the producing path to ask (the
+answer is written to `domain-plugin`, decisive on resume). `domain-plugin` (the chosen
+plugin for a contested artifact-type) stays **distinct** from `produced-by` (the
+after-the-fact record of who produced each artifact).
 
-## Init-write behavior (owned by `../harness/`)
-
-A domain plugin's `init-<plugin>` skill writes its own entry idempotently:
-
-1. Read `.agents/universal-plugin.json`; create with `{}` if missing.
-2. **If the file exists but contains malformed JSON, fail with an error and stop — do not
-   overwrite** (a partial write could destroy other plugins' valid entries; let a human
-   repair).
-3. Find the entry whose `name` matches this plugin; replace it, or append if absent.
-4. Reconcile a stale entry against the plugin's own version: on a `version` mismatch,
-   update `version` and bring `roles`/`governances` to the current plugin shape.
-5. Write back; do not reorder or reformat other entries; rewrite an old-shape entry to the
-   role-map shape.
-
-The operator never compares versions at runtime — version reconciliation is the init
-skill's job at install/upgrade/re-run, so the operator only ever reads a current-shape
-entry.
+The **init-WRITE** of an entry (a plugin registering itself idempotently, version-reconciling,
+fail-closed on a corrupt registry) is a *behavior* and lives in `../plugin/`, not here — this
+file owns only the stored shape.
