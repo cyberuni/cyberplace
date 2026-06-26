@@ -25,8 +25,8 @@ Core model (see `DESIGN-NOTES.md` for the long form):
   **Clearance** (contract narrowed; pre-authorizable in the CR), **Conflict resolution**
   (suite self-contradiction; discovered), **Consent** (forge opt-in; default-off).
 - **Autonomy bar** (self-clear-vs-escalate rubric) replaces fixed approval stations.
-- **Specialists = producer+judge bundles** keyed by **artifact-type** (= the `type` field),
-  one bundle per artifact-type; the operator orchestrates them. Producers run inline (warm),
+- **Specialists = producer+judge squads** keyed by **artifact-type** (= the `type` field),
+  one squad per artifact-type; the operator orchestrates them. Producers run inline (warm),
   judges spawn cold.
 - **Freeze scope = the `.feature` only.** `spec.md` is the readable abstraction, kept
   aligned, never frozen.
@@ -55,7 +55,7 @@ from edges, `domain-type` removed, `domain-plugin` distinct from `produced-by`).
   per-CR `gate` ledger line carrying `frozen[]`); freeze is a per-suite-file `@frozen` tag;
   every ledger line gains optional `cr`. Refined **C** to per-file freeze, freeze/unfreeze
   vocab, risk-not-phase unfreeze trigger, full impl-gate run by the impl-producer.
-- **F — RESOLVED.** Producer exclusion is per-file (one artifact-type → one bundle → one
+- **F — RESOLVED.** Producer exclusion is per-file (one artifact-type → one squad → one
   producer per file); CR concurrency is git (one mission = one tree = one CR; parallelism is
   separate trees; SDD tree-agnostic, worktree lifecycle deferred to `universal-plugin`).
 - **H — RESOLVED.** 4-dim gradient (reversibility, blast-radius, novelty, confidence).

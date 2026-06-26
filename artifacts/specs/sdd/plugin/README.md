@@ -3,7 +3,7 @@
 SDD's **plugin nature**, two-faced: SDD **ships as a plugin** to a host agent runtime, and
 SDD **is extended by domain plugins** that fill its production-chain roles. This folder owns
 the packaging/manifest face and the plugin-contract + registry **init-WRITE** face. The
-registry **shape** lives in `../design/specialists-and-bundles.md`; the registry
+registry **shape** lives in `../design/specialists-and-squads.md`; the registry
 **READ/resolution** lives in `../mission/`; only the **init-WRITE** lives here.
 
 ## SDD ships as a plugin
@@ -31,8 +31,8 @@ A domain plugin teaches SDD to produce and judge a new artifact-type. It impleme
 ### The plugin contract — the five delegate roles
 
 A plugin covers a set of artifact-types by providing agents for these role keys (source:
-`plugins/sdd/skills/plugin-contract-governance/SKILL.md`; bundle model:
-`../design/specialists-and-bundles.md`). Any role may be `null` (degenerates to the SDD
+`plugins/sdd/skills/plugin-contract-governance/SKILL.md`; squad model:
+`../design/specialists-and-squads.md`). Any role may be `null` (degenerates to the SDD
 default) or omitted (falls back to the convention name `<plugin>-<role>`). A **producer**
 role may also name a model-tuned agent; naming any agent means the operator **spawns** it.
 
@@ -46,14 +46,14 @@ role may also name a model-tuned agent; naming any agent means the operator **sp
 
 **Producers run inline, judges spawn cold** ("conductor writes, cold judges grade"). The
 judge stays a **distinct actor** (producer/judge separation). Which governances each role
-loads is owned by `../design/specialists-and-bundles.md`.
+loads is owned by `../design/specialists-and-squads.md`.
 
 ### Contract-registry init-WRITE
 
 A domain plugin's `init-<plugin>` skill writes that plugin's `sdd-plugins[]` entry into
 `.agents/universal-plugin.json` at install/upgrade/re-run time. This folder owns the
 **write**; the entry **shape** (the five-role map and governance bindings) is owned by
-`../design/specialists-and-bundles.md`, and **resolving** an entry at runtime is owned by
+`../design/specialists-and-squads.md`, and **resolving** an entry at runtime is owned by
 `../mission/`.
 
 The write is idempotent and self-reconciling:

@@ -22,8 +22,8 @@ and repeated approvals. A project that grows large grows *more folders*, never *
 - **The structural axis is derived, not declared.** `project` vs `feature` is read from the
   spec graph: a root is a node nothing parents; a composite is a node with children. "A
   project owns no behavior beyond composition" is a DRY consequence of *having children*, not
-  a declared `type`. (`type` itself names the artifact / knowledge bundle — see
-  `specialists-and-bundles.md` — not the structural position.)
+  a declared `type`. (`type` itself names the artifact / squad — see
+  `specialists-and-squads.md` — not the structural position.)
 
 ## CR concurrency — one CR per working tree
 
@@ -46,7 +46,7 @@ CR-concurrency manager — git is it.
   begins, so no second mission picks it up (`../intake/README.md`). Git file-locking and the
   source-claim are the two granularities of the same concurrency story.
 - **Cross-CR file collisions are git's job.** "No two producers on the same file" holds
-  *within* one CR (operator dispatch discipline; see `specialists-and-bundles.md`). Two CRs
+  *within* one CR (operator dispatch discipline; see `specialists-and-squads.md`). Two CRs
   on separate trees touching the same file collide as an ordinary **git merge conflict** at
   handoff — resolved the normal way, not by an SDD lock.
 - **Overlapping frozen scenarios → the hard floor.** If a landing CR's frozen `.feature`
@@ -68,7 +68,7 @@ Organize top-level folders by **SDD capability** — the folder names scream wha
 A rule and the behavior that enacts it live in different places:
 
 - **Rules** — the lifecycle schema, the autonomy rubric, the provenance shape, the abstraction
-  stack, the loop, the bundle model, the suite style — live in `design/` as the abstract idea.
+  stack, the loop, the squad model, the suite style — live in `design/` as the abstract idea.
 - **Behaviors** — the scenarios that *enact* those rules — live in the capability folders that
   exercise them.
 

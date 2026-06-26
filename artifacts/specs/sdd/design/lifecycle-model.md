@@ -13,7 +13,7 @@ fixed station — they dissolved into the autonomy bar (`autonomy-rubric.md`); t
 ```yaml
 ---
 status: draft           # draft | approved | implemented | deprecated
-type: skill             # the artifact-type / bundle key: e.g. skill | subagent | command | agents-section | npm-package | docs; omit for a plain-code domain. The composition role (root vs composite) is DERIVED from edges, not declared.
+type: skill             # the artifact-type / squad key: e.g. skill | subagent | command | agents-section | npm-package | docs; omit for a plain-code domain. The composition role (root vs composite) is DERIVED from edges, not declared.
 aligned: false          # true once the current layer's artifacts are synced
 priority: 1             # optional integer; 1 = highest (relative within a set); omit = unprioritized
 blocked-by:             # list of spec slugs; omit or empty if none
@@ -91,7 +91,7 @@ stateDiagram-v2
 **Producer/judge role separation survives the gate fold.** Even though gates are no
 longer a fixed station, the judge stays a distinct actor from the producer: a producer
 writes the artifact, a judge grades it, and a judge never patches what it grades (see
-`specialists-and-bundles.md`).
+`specialists-and-squads.md`).
 
 ## `aligned` is layer-scoped
 
@@ -160,7 +160,7 @@ recorded producer whose plugin is merely uninstalled is flagged, not blocked.
 
 The composition role is **derived from `subtasks` edges, never declared** — there is no
 `project|feature` field (that axis collapsed into `type`, which now names the
-artifact-type/bundle). A spec is:
+artifact-type/squad). A spec is:
 
 - a **root** if no other spec lists it in `subtasks`;
 - a **composite** if it declares `subtasks` (it owns children); a composite may itself be a

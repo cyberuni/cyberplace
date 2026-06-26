@@ -28,7 +28,7 @@ boundary** between them. The contrast is the *purpose of the build*, not throwaw
 
 Behaviors that *enact* the loop live here (and under `deliver/` / `handoff/`) as colocated
 unit scenarios; the *rules* they enact (lifecycle/freeze, the autonomy bar, the provenance
-shape, the bundle/registry shape) live in `../design/`.
+shape, the squad/registry shape) live in `../design/`.
 
 ## The operator — the line officer of the inner loop
 
@@ -68,7 +68,7 @@ At the start of a segment the operator reads **only** the project registry
 directories), matches the spec's artifact-type, and resolves each production-chain role to a
 plugin delegate or the SDD default. This folder owns the **READ / resolution** side only;
 the init-WRITE of the lockfile is owned by `../plugin/`, and the registry **shape** by
-`../design/specialists-and-bundles.md`.
+`../design/specialists-and-squads.md`.
 
 Resolution branches on role kind, and for producers on whether a model-tuned agent is
 **named**:
@@ -239,7 +239,7 @@ Cross-capability **e2e (acceptance) scenarios** live in `../acceptance/`, not he
 ## Boundaries — what the orchestrator does NOT own
 
 - **Registry init-WRITE** → `../plugin/` (mission owns READ only).
-- **Registry / bundle shape** → `../design/specialists-and-bundles.md`.
+- **Registry / squad shape** → `../design/specialists-and-squads.md`.
 - **Lifecycle, freeze, the freeze pivot rules** → `../design/lifecycle-model.md`.
 - **The autonomy bar / hard floor** → `../design/autonomy-rubric.md`.
 - **The combat-log / provenance shape** → `../design/provenance-model.md`.
@@ -249,9 +249,8 @@ Cross-capability **e2e (acceptance) scenarios** live in `../acceptance/`, not he
 
 ## Source-vs-design tensions
 
-Two of the three below are **resolved in design** — the design position stands and the folded
-sources are the stale side, to fix in the source sweep. One is **genuinely open** and still
-needs a ruling.
+All three below are **resolved in design** — the design position stands and the folded
+sources are the stale side, to fix in the source sweep.
 
 - **`domain-plugin` vs `produced-by` — RESOLVED (ruling B).** `../design/` keeps these
   **distinct**: `domain-plugin` = the chosen plugin for an ambiguous artifact-type (a
@@ -260,11 +259,13 @@ needs a ruling.
   (`sdd-operator-resolution`, `validate-spec`) that treat `domain-plugin` as **retired** and
   migrate the choice into `produced-by` are the **stale side** — fix them in the source sweep,
   not the design.
-- **Bundle (one producer + one judge per artifact-type) vs the five-role chain — OPEN.** The
-  design model is **one knowledge bundle per spec**; the folded sources run a **five-role
-  production chain**, and this doc still describes "the five-role uniform I/O" as current.
-  Whether these are the same mechanism at two granularities or a genuine contradiction is
-  **unsettled — needs a ruling** before freeze.
+- **Squad vs the five-role chain — RESOLVED (same mechanism, two granularities).** A **squad**
+  is the selection unit, **one per artifact-type**; it supplies the **five role slots**
+  (`spec-producer`, `plan-producer`, `spec-judge`, `impl-producer`, `impl-judge`). The
+  five-role chain is how the operator *runs* a squad; "one producer per file" holds because the
+  three producer roles write **different** files. A project-spec CR touches several
+  artifact-types → summons several squads, each running its five-role chain. No contradiction —
+  `../design/specialists-and-squads.md` is canonical.
 - **Spec-fleet assumption in the sources — RESOLVED (project-spec model).** The consolidated
   impl gate verifies against **one** suite (`../acceptance/` + colocated unit); the one-suite
   model **stands**. The folded specs that verify against a **per-feature/per-domain `.feature`**

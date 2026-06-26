@@ -33,21 +33,21 @@ Each layer is an abstraction of the one below; every layer matters and stays mai
     within one corpus*, not as separate lifecycles to re-gate.)
 - `.feature` is **part of the behavior suite**, never part of the CR.
 
-## The knowledge-bundle / specialist model
+## The squad / specialist model
 
-- The producer/judge selection unit is the **knowledge bundle**, keyed by **artifact-type**:
+- The producer/judge selection unit is the **squad**, keyed by **artifact-type**:
   `artifact-type → { producer, judge, governances (actor + discipline), model, effort }`.
-- **One bundle per spec.** No domain arrays, no producer composition, no "best match"
+- **One squad per spec.** No domain arrays, no producer composition, no "best match"
   producer race, never two producers on the same file.
 - Disciplines (process/workflow) fold into governances. "Basic knowledge" (react, TS,
   logic) is never *loaded* — it is just picking the right **model + effort**.
-- **Language ≠ bundle.** "TS script for a skill" lives inside the *skill* bundle
-  (skill-script rules: no deps unless packaged), NOT a generic `code` bundle. The
+- **Language ≠ squad.** "TS script for a skill" lives inside the *skill* squad
+  (skill-script rules: no deps unless packaged), NOT a generic `code` squad. The
   artifact-in-context determines the knowledge, not the file extension.
-- A **specialist** = a producer + judge bundle. A CR summons the specialists for the
+- A **specialist** = a producer + judge squad. A CR summons the specialists for the
   artifact-types it touches; the **operator** orchestrates them and delivers.
 - Naming idea: collapse `domain-type` into `type`, and let `type` name the artifact /
-  bundle (`npm-package`, `agent-plugin`, `agent-skill`, `agent-definition`,
+  squad (`npm-package`, `agent-plugin`, `agent-skill`, `agent-definition`,
   `react-component`, `docs`, …). The structural axis (`project|feature`) is then
   **derived from graph edges** — root = nothing parents it; composite = has `subtasks`
   — not declared. "Project owns no behavior beyond composition" becomes a DRY
@@ -161,7 +161,7 @@ artifacts/specs/sdd/
     lifecycle-model.md            # states, transitions, gates, freeze (the schema/rules)
     autonomy-rubric.md            # <- autonomy-governance — the hard floor (the bar)
     provenance-model.md           # <- sdd-provenance shape (two-face combat log)
-    specialists-and-bundles.md    # <- bundle model (artifact-type -> {producer,judge,governances,model,effort})
+    specialists-and-squads.md    # <- squad model (artifact-type -> {producer,judge,governances,model,effort})
                                   #    + sdd-contract-registry SHAPE (role map / file format)
     suite-style.md                # <- rubric-gherkin
   gateway/           # the UNIVERSAL ROUTER/DOOR (not a loop step)
@@ -218,7 +218,7 @@ loop; **gateway/** is the universal router/door (not a step). The 4 outer loops 
   in *nature* from the human-interactive face of `authoring/` and from the 4 post-mission
   outer loops. It owns `mission/deliver/` and `mission/handoff/`, invokes `authoring/` for
   explore, and is fed by `intake/`.
-- **`contract-registry` splits three ways**: SHAPE -> `design/specialists-and-bundles.md`;
+- **`contract-registry` splits three ways**: SHAPE -> `design/specialists-and-squads.md`;
   init-WRITE -> `plugin/`; READ/resolution -> `mission/`.
 - **`mission/handoff/` (step 4) ≠ `sdd-operator-deliver`**: the latter is the operator's
   produce *phase inside* step 3 (`mission/deliver/`, build to keep); `mission/handoff/` is
