@@ -179,31 +179,55 @@ artifact-type/bundle). A spec is:
   composition (children present and correctly wired); it reaches `implemented` only once
   **every non-`deprecated` child is `implemented`** (`approved` is not rolled up).
 
-## Freeze (state transition)
+## Freeze (per suite file)
 
-Reaching `approved` **freezes the `.feature`** — the behavior suite is the contract.
-Adding, removing, or rewriting scenarios requires reverting the spec to `draft` and passing
-the spec gate again.
+Freeze is the contract baseline of the behavior suite. The vocabulary is
+**freeze / unfreeze** — deliberately *not* lock/unlock, which is reserved for the
+concurrency layer (one CR per working tree; see `unit-and-organization.md`). A frozen suite
+file is a settled contract, not a held mutex.
 
-- **Freeze scope is the `.feature` only.** `spec.md` is **kept aligned, never frozen** — it
-  is the readable abstraction of the suite, free to be reworded/restructured (prose,
-  diagrams, pictures) as long as it does not contradict a frozen scenario. That invariant is
-  enforced by the alignment check + the spec-judge applying the Builder (coverage) lens at
-  the spec gate (and on demand by
+**Freeze scope is per suite file, not per project.** Each `.feature` carries its own
+**`@frozen` feature-level tag**. A spec-gate `approve` freezes the files that CR *touched*
+(re-freezing them at the new baseline); files the CR did not touch keep whatever state they
+held. "Which scenarios are currently the frozen contract" is answered by the set of
+`@frozen` files — a plain per-file flag, no computed baseline and no scenario-ID registry.
+The `@frozen` tag is metadata, excluded from the contract content the freeze protects;
+toggling it is not a scenario edit.
+
+- **The unfreeze trigger is risk, not phase.** A *narrowing or rewriting* of a scenario
+  unfreezes its file — in explore or deliver alike; at the gate that is **Clearance**
+  (`autonomy-rubric.md`), contract narrowed → escalate. An *additive* scenario never
+  unfreezes its file: it widens the contract, cannot break existing impl or contradict, and
+  **self-clears** — it folds into the frozen file under the operator's authority, logged as
+  a detail-adjustment (`provenance-model.md`). Explore is mostly narrowing/reshaping (much
+  unfreezing); deliver is mostly additive (stays frozen). One rule covers both phases.
+- **`spec.md` is kept aligned, never frozen** — it is the readable abstraction of the suite,
+  free to be reworded/restructured (prose, diagrams, pictures) as long as it does not
+  contradict a frozen scenario. That invariant is enforced by the alignment check + the
+  spec-judge applying the Builder (coverage) lens at the spec gate (and on demand by
   `../corpus/` `align-specs`), **not** by freezing the prose. Prose↔suite drift detection is
   judge-only (no scenario IDs in the prose); the mechanical handle is the scenario-diff
-  (narrowing a frozen scenario → Clearance). The sibling `combat-log.jsonl` ledger is
-  operational provenance, **never frozen and never gated**: it keeps appending across the
-  whole lifecycle, including while the spec sits at `approved`. (Ledger shape:
-  `provenance-model.md`.)
+  (narrowing a frozen scenario → Clearance).
+- **The combat log is never frozen and never gated** — it keeps appending across the whole
+  lifecycle, including while files sit `@frozen`. (Ledger + the durable per-CR `gate` and
+  freeze record: `provenance-model.md`.)
 - **Spec owns behavior.** If the implementation disagrees with `spec.md`, the
-  implementation is wrong — fix it, or revert the spec to `draft` for a new cycle.
-- **The impl gate is the only place a frozen `.feature` can reopen** — via the
-  Director-lens revert: building proved the contract wrong, so unfreeze and return to draft.
-  Rare and deliberate.
-- **Two modes.** Before `approved`, exploration may update `spec.md`, the `.feature`,
-  `plan.md`, `tasks.md`, and spikes. After `approved`, implementation proceeds against the
-  frozen `.feature`; every frozen scenario must pass before `implemented`.
+  implementation is wrong — fix it, or unfreeze the relevant file for a new cycle.
+- **The impl gate is the only place a frozen file can reopen** — via the Director-lens
+  revert: building proved the contract wrong, so unfreeze that file and return its layer to
+  draft. Rare and deliberate.
+
+**Iteration economy.** During explore, the spec-judge re-judges **only unfrozen files** —
+frozen files already cleared their gate, so each iteration grades just what changed. The
+**impl gate runs the full suite regardless**: the **impl-producer** runs *every* file
+(frozen included, plus any additive scenarios that folded in during deliver) and hands the
+result to the **impl-judge** to judge — preserving producer/judge separation (the judge
+grades a result, it does not run the build). The full run is the safety net that catches any
+regression the per-file skip hid.
+
+- **Two modes.** Before a file's freeze, exploration may update `spec.md`, that `.feature`,
+  `plan.md`, `tasks.md`, and spikes. After it freezes, implementation proceeds against it;
+  every frozen scenario must pass the full impl-gate run before `implemented`.
 
 ## Gate accountability
 
