@@ -79,21 +79,24 @@ from edges, `domain-type` removed, `domain-plugin` distinct from `produced-by`).
   Standalone `sdd-spec-digest` spec + `plugins/sdd/skills/spec-digest` superseded (sweep).
 - **M — RESOLVED.** Three-tier provenance: ephemeral per-worktree **plan**
   (`.agents/plans/<cr-ref>.plan.md`, gitignored, portable handoff artifact) holds mid-flight
-  `report`/`correction`/CR-scoped-`seq`; slim durable **ledger** (root `combat-log.jsonl`,
-  `merge=union`) keeps `gate`+`strategy`+distilled recurrence; durable **public** trail
-  (CR source + changesets + git) feeds campaign/formation via a cursor. Doctrine reads the plan,
-  distills, discards. Forge reads distilled corrections, not `frozen[]`. Dissolves M's
-  concurrency. Rationale: **ADR-0015** + survey. `design/provenance-model.md` swept; **capability
-  sweep pending** (stale-sweep #8).
+  `report`/`correction`/CR-scoped-`seq` — the **combat log** (the `.log.jsonl`); slim durable
+  **ledger** (root `ledger.jsonl`, **renamed** from `combat-log.jsonl`, `merge=union`) keeps
+  `gate`+`strategy`+distilled recurrence; durable **public** trail (CR source + changesets + git)
+  feeds campaign/formation via a cursor. Doctrine reads the plan, distills, discards. Forge reads
+  distilled corrections, not `frozen[]`. Mission writes a public conclusion summary at handoff.
+  The SDD `init` skill symlinks `.cursor/plans → .agents/plans`. Rationale: **ADR-0015** + survey.
+  **Spec-tree sweep DONE** (this session); only the `plugins/sdd/` impl sweep remains.
 
-**All open rulings (A–M) are now resolved.** What remains is implementation, not design:
+**All open rulings (A–M) are now resolved**, and a holistic-review-driven sweep this session
+brought the whole spec tree into line with them (combat-log/ledger naming, the `squad` rename,
+the three-tier provenance across every capability doc). What remains is implementation:
 
 ## Decided-but-stale sweeps still pending
 
-The 7 items under **"Decided — sources are stale, sweep needed"** in `OPEN-QUESTIONS.md`
-describe *source specs* (the old `plugins/sdd/` skills/governances and old sibling specs) that
-still contradict the rulings. The new spec tree is correct; the sweep into the actual
-`plugins/sdd/` implementation has **not** been done.
+The items under **"Decided — sources are stale, sweep needed"** in `OPEN-QUESTIONS.md` describe
+the old `plugins/sdd/` skills/governances that still contradict the rulings. The **new spec tree
+is now fully aligned** (including item 8's three-tier-provenance + naming + squad sweep, done this
+session); the sweep into the actual `plugins/sdd/` implementation has **not** been done.
 
 ## Open follow-up after the spec gate
 
@@ -102,12 +105,13 @@ fresh plugin** from the new spec.
 
 ## How to resume
 
-All design rulings (A–L) are resolved. The remaining work is **implementation**, in two
-phases:
+All design rulings (A–M) are resolved and the spec tree is aligned. The remaining work is
+**implementation**, in two phases:
 
-1. **The decided-but-stale sweep** (7 items in `OPEN-QUESTIONS.md`): the new spec tree is
-   correct, but the old `plugins/sdd/` skills/governances and old sibling specs still
-   contradict the rulings. Sweep them.
+1. **The decided-but-stale sweep** (items in `OPEN-QUESTIONS.md`): the new spec tree is
+   correct, but the old `plugins/sdd/` skills/governances still contradict the rulings — including
+   the `ledger.jsonl` rename, the `squad` term, the three-tier provenance, and the `init`
+   `.cursor/plans` symlink/migration. Sweep them.
 2. **The plugin decision** (above): update `plugins/sdd/` in place vs archive-and-rebuild
    from the new spec tree. Decide, then execute.
 
