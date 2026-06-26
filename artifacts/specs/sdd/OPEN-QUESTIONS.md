@@ -20,15 +20,18 @@ spec already follows our ruling; the *source* specs are stale and need a sweep) 
    `autonomy-governance` + `freeze-alignment` frontmatter carry the fabricated `impl-producer: sdd:builder`.
 7. **Dead vocab** — `sdd-inject-channel` uses Battler/Warden/Executioner and depends on the dead
    `sdd-orchestrator`; reframed to neutral "inner-loop producers and judges".
-8. **Three-tier provenance capability sweep (from M).** `design/provenance-model.md` is updated,
-   but the capability files still carry the old single per-corpus combat-log model: `doctrine/`
-   (reads "the spec's combat log" / "across N specs"; must read the concluded **plan** + distill
-   + **discard** it), `campaign/` & `formation/` (read combat logs; must read the durable
-   **public** trail via a **cursor**), `forge/` (confirm it reads the distilled correction, not
-   `frozen[]`), `intake/` (add the public conclusion-summary write-back), `mission/handoff/`
-   (write the public summary; note the plan as a handoff artifact). Doctrine/campaign also carry
-   **fleet-era "N specs" framing** that predates the one-project-spec model (B). Plus the
-   `plugins/sdd/` `combat-log-governance` + `ownership-governance` skills.
+8. **Three-tier provenance + naming sweep (from M).** The **spec tree is now DONE**: `design/`
+   renamed `combat-log.jsonl → ledger.jsonl`, anchored the combat-log metaphor (mid-flight log)
+   vs the ledger (durable book); swept `doctrine/` (reads the concluded plan, distills, discards;
+   strategy lands in the one project ledger; no more "N specs" scan), `campaign/` & `formation/`
+   (read the durable **public** trail via a cursor; formation gained its Input section), `forge/`
+   (distilled correction, not `frozen[]`), `gateway/` (single `ledger.jsonl`), `mission/handoff/`
+   (public conclusion write-back + plan-as-handoff-artifact), `intake/` (cr-keyed ledger join). The
+   **`knowledge bundle` → `squad`** rename also landed tree-wide, and the `.cursor/plans` symlink +
+   `init`/migration requirement is recorded in `plugin/`. **Still pending — the `plugins/sdd/`
+   implementation**: `combat-log-governance` (the cause-enum contract, keep the name) +
+   `ownership-governance` skills, the `init` skill's symlink/migration code, and every impl
+   reference to the old `combat-log.jsonl` file name / "bundle" term / fleet-era "N specs" framing.
 
 ## Open — needs a ruling
 
@@ -164,7 +167,10 @@ spec already follows our ruling; the *source* specs are stale and need a sweep) 
   per-corpus log into an **ephemeral per-worktree plan** (`.agents/plans/<cr-ref>.plan.md` +
   `.log.jsonl`, **gitignored**), which dissolves the concurrency conflict (one plan per tree —
   nothing shared to merge) *and* makes the plan a **portable handoff artifact** (Markdown,
-  co-located with the work, `*.plan.md` for Cursor interop). The durable `combat-log.jsonl`
+  co-located with the work, `*.plan.md` for Cursor interop; the SDD `init` skill symlinks
+  `.cursor/plans → .agents/plans`, no-clobber migration). The durable **ledger** — `ledger.jsonl`,
+  **renamed** from `combat-log.jsonl`; "combat log" is now the **metaphor** for the mid-flight
+  `.log.jsonl`, "ledger" the durable book doctrine distills into —
   (sibling to the **root** `spec.md`) keeps only **`gate` + `strategy`** (incl. the distilled
   recurrence count); it is sparse, so its rare cross-tree appends reconcile by **union merge**
   (`merge=union`), never the hard floor. `seq` is **CR-scoped** (collision-free, since one CR =
@@ -176,4 +182,5 @@ spec already follows our ruling; the *source* specs are stale and need a sweep) 
   `correction`-with-`cause`, **not** `frozen[]` (a prior mis-attribution, now fixed). The
   mission writes a **public-worthy conclusion summary** back to the CR source at handoff.
   Rationale + cross-harness survey: **ADR-0015** + `docs/research/2026-06-agent-plan-persistence.md`.
-  Written into `design/provenance-model.md`. **Capability sweep pending** (see stale-sweep #8).
+  Written into `design/provenance-model.md`. The **spec-tree capability sweep is DONE**; only the
+  `plugins/sdd/` implementation sweep remains (see stale-sweep #8).
