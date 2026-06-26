@@ -1,6 +1,12 @@
 .agents/*.local.*
+.agents/plans/
 .github/setup-state.json
 .local/
 .turbo/
 node_modules/
 dist
+.env
+cursor.mcp.json
+factory.mcp.json
+gemini.mcp.json
+windsurf.mcp.json
