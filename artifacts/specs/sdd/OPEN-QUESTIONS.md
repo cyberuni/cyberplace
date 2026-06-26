@@ -58,13 +58,19 @@ spec already follows our ruling; the *source* specs are stale and need a sweep) 
   review of correction records) — a different concept under the same name. Harness-evolution,
   field-telemetry, or both (telemetry as a sub-dimension)?
 
-- **E. Corpus tooling tier.** New model is one project spec (folders are views, not lifecycle
-  units), so split/dedupe/deprecate/`blocked-by` only apply **cross-project** (the project-spec
-  DAG); **intra-project** a "split" is folder reorg with no new gate. Confirm the two-tier split.
+- **E. Corpus tooling tier. RESOLVED — two-tier confirmed.** Cross-project (the project-spec
+  DAG): split/dedupe/deprecate/`blocked-by` are real gated lifecycle acts. Intra-project: a
+  "split" is folder reorg — a view change with no new gate. Corpus tools operate at the
+  cross-project tier; intra-project reorg is plain editing.
 
-- **F. Multi-artifact CR / per-file bundle scoping.** A project-spec CR touches many
-  artifact-types → summons multiple specialists. Make explicit: one bundle **per artifact-type**,
-  "no two producers on the same **file**" (per-file, not per-spec).
+- **F. Multi-artifact CR / per-file bundle scoping. BAGGED — folds into a sharper question.**
+  The per-file rule still holds (one bundle **per artifact-type**, "no two producers on the same
+  **file**"), but the open thing is not bundle scoping — it's concurrency: **how do we handle CR
+  and CR-inflight?** A CR is the unit of work (git-PR-shaped). What happens when a second CR
+  targets a file/artifact-type/scenario that an **in-flight** CR is already mutating — serialize,
+  lock at file granularity, branch/merge like PRs, or reject-on-conflict? And does an in-flight
+  CR's not-yet-frozen `.feature` count as the contract for a concurrent CR's Clearance check?
+  Reframe F around CR-vs-CR-inflight before answering bundle scoping.
 
 - **G. Durable approval/freeze record.** With no per-folder `status`/`approval`, where does
   "this CR's diff was approved + which scenarios are now frozen" live — the combat log, a per-CR
