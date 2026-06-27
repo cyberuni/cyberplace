@@ -11,7 +11,7 @@ todos:
     content: "Explore, level 1 — MACRO grill: holistic pass over design/ for correct direction + nothing big missing. DONE (64b8c01, 745ae42): 4 coherence fixes (Compatibility floor in spec.md; judge lens split; type->artifact-type; gateway loads NO governance — corrected after a wrong-direction first pass). Surfaced 4 model refinements now pending in model-refinements. Reconcile rule learned: reason to the CORRECT answer from design intent, not a reference count."
     status: completed
   - id: model-refinements
-    content: "Explore, level 1 — land the macro-grill's model refinements in design/: (a) Mission Loop step 1 (intake) CREATES the plan from a basic template; (b) step 2 (explore) grills the PLAN + spec + suite (when it exists) and builds impl (build-to-learn) — implementation is not deferred to deliver; (c) per-UNIT suites — one .feature per skill/unit, producer!=gate (generalize from authoring into unit-and-organization.md + suite-style.md, replacing 'one .feature per capability folder'); (d) unit-of-work = co-committable unit (commit-discipline), CR = unit of change-intent (intake done; sweep loops.md/mission for 'unit of work' misuse); (e) USE CASES are PER-UNIT under the project-spec model (refined from per-capability via the authoring restructure) — a spec node with a .feature carries its own ## Use Cases mapping to that suite; a capability README that hosts no .feature is a no-Use-Cases OVERVIEW/index that references its unit specs. Clarify in spec-governance (Use Cases required only on .feature-bearing spec nodes) + unit-and-organization (capability overview + per-unit-spec folders; one .feature per unit). The spec-judge checks ## Use Cases on .feature-bearing nodes only — consistent with the digest reporting a no-.feature area as zero scenarios, not an error. Touch loops.md, intake/, mission/, unit-and-organization.md, suite-style.md, provenance-model.md, spec-governance."
+    content: "Explore, level 1 — land the macro-grill's model refinements in design/: (a) Mission Loop step 1 (intake) CREATES the plan from a basic template; (b) step 2 (explore) grills the PLAN + spec + suite (when it exists) and builds impl (build-to-learn) — implementation is not deferred to deliver; (c) per-UNIT suites — one .feature per skill/unit, producer!=gate (generalize from authoring into unit-and-organization.md + suite-style.md, replacing 'one .feature per capability folder'); (d) unit-of-work = co-committable unit (commit-discipline), CR = unit of change-intent (intake done; sweep loops.md/mission for 'unit of work' misuse); (e) USE CASES are PER-TYPE — LANDED via the spec-types taxonomy (commit 369318c): every spec node is descriptive (no subject/suite; no marker), reference artifact (spec-type: reference; ## Subject, no .feature), or behavioral artifact (spec-type: behavioral; ## Use Cases + .feature). Only behavioral nodes carry ## Use Cases; descriptive indexes and reference artifacts carry none. spec-type declared not inferred; classification not lifecycle (lifecycle stays root-spec.md-only). Landed in unit-and-organization.md (## Spec types), spec.md, suite-style.md, lifecycle-model.md, abstraction-stack.md, authoring/README.md. STILL PENDING from (a)-(d): intake-creates-plan, explore-builds-impl, unit-of-work-vocabulary sweep across loops.md/intake/mission/. Touch loops.md, intake/, mission/."
     status: pending
   - id: sub-authoring
     content: "Sub-mission authoring/ — prose (reconcile rule + per-unit split note), per-unit suites (spec-producer.feature 10 + validate-spec.feature 19), impl spec-producer-governance in sdd-new. RESTRUCTURED to overview + per-unit specs: authoring/README.md is now a no-.feature OVERVIEW/index; each unit lives in its own folder with its own README (## Use Cases mapping to its suite) + .feature — authoring/spec-producer/ and authoring/validate-spec/. This CLOSES the Use Cases gap (F3) for authoring: use cases are per-UNIT, the overview carries none (a no-.feature node is an index). Gate-digest behavior folded into validate-spec/README. NOT DONE: suites+impls for create-spec, revise-spec (the two user-facing entry skills — overview lists them as pending units); validate-spec impl in sdd-new."
@@ -258,6 +258,20 @@ the new judge until it is built):
   gates. Generalized into the design via `model-refinements`.
 - **D-E — unit-of-work vocabulary.** `unit of work` = co-committable unit; CR = unit of
   change-intent. No TDD ordering required inside a commit.
+- **D-F — spec-types taxonomy + spec-format (this session).** Every spec node is **descriptive**
+  (no subject/suite; no marker), **reference artifact** (`spec-type: reference`; `## Subject`, no
+  `.feature` — verified through a consumer's suite), or **behavioral artifact**
+  (`spec-type: behavioral`; `## Use Cases` + `.feature`; everyday word "unit spec"). Declared not
+  inferred; classification not lifecycle. `spec-governance` renamed → **`spec-format`** (the odd
+  alias; `governance-resolution.md` already called the concept spec-format). spec-format is the
+  worked **reference artifact**: node `authoring/spec-format/`, impl
+  `plugins/sdd-new/skills/spec-format-governance/`. Concern split: spec-format owns the required
+  `## Use Cases` section + `spec.md` enrichment; the `.feature` form + scenario ordering → `suite-style`;
+  granularity → `unit-and-organization`. FOLLOW-UPS: (1) build the `sdd:suite-style` governance
+  (producer + spec-format both reference it; not yet a skill); (2) the new `sdd-new` copy of
+  `check-spec-state.mts` must carry the per-node `spec-type` reconcile (reference ⇒ `## Subject` +
+  no `.feature`; behavioral ⇒ `## Use Cases`) — built when `validate-spec` lands in sdd-new
+  (baseline lives at `plugins/sdd/skills/validate-spec/scripts/`, predates the marker).
 
 ## Step 3/4 — deliver & handoff
 
