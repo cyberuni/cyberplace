@@ -1,6 +1,6 @@
 ---
 name: "github-34: SDD project spec + behavior suite to the spec gate"
-overview: "Carry CR #34 through the new SDD Mission Loop: the spec-tree cleanup (Phase 0) is done; the live work is the explore phase — build the missing behavior suite (e2e acceptance/ + colocated unit suites), add root spec.md lifecycle frontmatter, and bring the project spec to a spec-gate approve (Draft -> Approved). Deliver phase (the plugins/sdd impl sweep + in-place-vs-rebuild) follows the gate."
+overview: "Carry CR #34 through the new SDD Mission Loop as a self-hosting bootstrap: the spec-tree cleanup (Phase 0) is done; the live work is the explore phase, hand-run in the main loop (no spec-producer/spec-judge to delegate to yet) — build the missing behavior suite (e2e acceptance/ + colocated unit suites), add root spec.md lifecycle frontmatter, and bring the project spec to a spec-gate approve (Draft -> Approved). Deliver phase builds a fresh plugins/sdd-new from the approved spec, keeping the existing plugins/sdd as a reference baseline."
 cr: github-34
 cr-url: https://github.com/cyberuni/cyber-skills/issues/34
 todos:
@@ -22,11 +22,11 @@ todos:
   - id: spec-gate
     content: "Spec gate (Draft -> Approved): run validate-spec / sdd-operator over the project spec; cold spec-judge judges the suite; on approve, freeze touched .feature files"
     status: pending
-  - id: deliver-decision
-    content: "Deliver (follow-up) — decide plugins/sdd in-place sweep vs archive + rebuild from the approved spec"
+  - id: deliver-build-sdd-new
+    content: "Deliver — build fresh plugins/sdd-new from the approved spec (operator, spec/plan/impl producers + judges, governances, plan-retirement .mts skill W-1; no spec-graph); keep plugins/sdd as reference baseline"
     status: pending
-  - id: deliver-impl-sweep
-    content: "Deliver — build against the frozen suite: delete render-spec-graph skill/agent + DAG kernel, build the plan-retirement .mts skill (W-1), align plugins/sdd to the new model"
+  - id: deliver-self-host
+    content: "Deliver — once sdd-new's spec-producer + spec-judge exist, re-run the explore/spec gate through them to verify the bootstrap closes (self-hosting check)"
     status: pending
 isProject: false
 ---
@@ -45,9 +45,18 @@ the source of truth; the **CR is the unit of work**; the **Mission Loop** carrie
 (intake → explore → deliver → handoff). This plan runs CR #34 through that loop against its own
 spec tree (`artifacts/specs/sdd/`) — dogfooding the model on itself.
 
+**This is a self-hosting bootstrap** (building a compiler with itself). The explore phase
+*should* delegate grilling to a spec-producer and a spec-judge — but the new ones don't exist
+yet, so we **hand-run explore in the main loop** to kickstart: grill the CR by hand into the
+spec + suite diff, run the spec gate by hand. We *build* the new delegates as deliver-phase
+output, then re-run the loop through them to prove the bootstrap closes.
+
+We keep the existing `plugins/sdd/` as a **reference baseline** and build the new
+implementation fresh under `plugins/sdd-new/`, so the two can be compared rather than the old
+one mutated in place.
+
 **Issue scope (verbatim):** get the project spec + behavior suite *in and organized* so it can
-be **approved at the spec gate** (Mission Loop step 2). Then, as follow-up, decide whether to
-update `plugins/sdd/` in-place or archive + rebuild from the approved spec (step 3).
+be **approved at the spec gate** (Mission Loop step 2). Then build the implementation (step 3).
 
 ## Mission Loop position
 
@@ -55,8 +64,8 @@ update `plugins/sdd/` in-place or archive + rebuild from the approved spec (step
 - **Step 2 — explore (authoring).** **The live work.** The spec prose/rules are largely written
   and Phase 0 cleaned them up, but the **behavior suite does not exist yet** and the root spec
   has no lifecycle frontmatter. Build both, reconcile prose, end at the spec gate.
-- **Step 3 — deliver.** The deferred `plugins/sdd/` impl sweep, built against the frozen suite,
-  including the in-place-vs-rebuild call.
+- **Step 3 — deliver.** Build `plugins/sdd-new/` fresh from the frozen suite (operator,
+  producers + judges, governances, W-1 skill); keep `plugins/sdd/` as a reference baseline.
 - **Step 4 — handoff.** Land as a branch → PR (this repo is PR-flow). Plan retirement waits for
   merge + doctrine distill.
 
@@ -98,42 +107,44 @@ Order: prose first (grill phase 1), then the suite (grill phase 2), then frontma
   `design/lifecycle-model.md`: `status: draft`, `artifact-types`, `aligned: false`, and the
   workflow fields as they apply. Drop the `## TODO` block once the suite is in.
 
-## Spec gate (Draft → Approved)
+## Spec gate (Draft → Approved) — hand-run
 
-Run the spec gate over the project spec (the issue's target milestone):
+Run the spec gate over the project spec **by hand in the main loop** (the issue's target
+milestone). We cannot delegate to `sdd:sdd-spec-judge`/`sdd:validate-spec` yet — those belong to
+the old `plugins/sdd/` and the new judge is not built. So we apply the gate criteria directly:
 
-- Use the SDD machinery to dogfood it — `sdd:validate-spec` / `sdd:sdd-operator` running the
-  authoring gate, with the cold `sdd:sdd-spec-judge` judging the suite (boolean + `@rubric`
-  structure). See **open decision** below on hand-author vs full-machinery.
+- Judge the suite against `design/suite-style.md` (every untagged scenario boolean; `@rubric`
+  scenarios structurally well-formed) and the authoring criteria in `authoring/README.md`.
 - Never advance with judge failures, open markers, or a misaligned suite (they fail the
   confidence dimension and forbid self-assertion).
 - On **approve**: freeze each touched `.feature` via its `@frozen` tag; record the verdict as a
   durable per-CR `gate` ledger line; set `status: approved`. `spec.md` stays aligned, never
   frozen.
 
-## Open decisions (need a ruling)
+## Resolved decisions
 
-- **D-A. Hand-author the suite, or drive it through the SDD machinery?** Building the suite by
-  hand is faster and we control it; driving it via `sdd:create-spec` → `sdd:sdd-operator`
-  (explore) → `sdd:validate-spec` (spec gate) **dogfoods** the loop on its own spec — the
-  point of CR #34. Lean: **hybrid** — author the suite by hand (the machinery is still being
-  swept and may fabricate roles, per `project_sdd_operator_builder_fabrication`), then run the
-  real gate via `validate-spec`. **DECIDE.**
-- **D-B. `plugins/sdd/` in-place vs archive + rebuild** (the issue's follow-up). Defer until
-  after the spec gate — the approved spec is the input either way. Tracked as
-  `deliver-decision`. (`project_sdd_impl_sweep_pending`.)
+- **D-A — hand-author to bootstrap.** Step 2 *is* the explore phase; we hand-run grill → diff in
+  the main loop because there is no spec-producer/spec-judge to delegate to until we build them
+  (deliver). Step 2 and D-A are the same act. (`project_sdd_operator_builder_fabrication` is moot
+  while hand-running.)
+- **D-B — build fresh under `plugins/sdd-new/`, keep `plugins/sdd/` as reference.** Not an
+  in-place sweep: the old impl stays untouched as a baseline to compare against; the new impl is
+  authored from the approved spec. (`project_sdd_impl_sweep_pending`.)
 
-## Step 3 — deliver (follow-up, after the gate)
+## Step 3 — deliver: build `plugins/sdd-new/` from the approved spec
 
-Build the implementation against the **frozen** suite:
+Build the new implementation against the **frozen** suite, fresh (not by mutating `plugins/sdd/`):
 
-- Resolve **D-B** (in-place vs rebuild).
-- Delete the `render-spec-graph` skill/agent + the DAG kernel (the spec-graph capability was
-  removed in Phase 0; the impl still carries it).
+- Author the operator, the spec/plan/impl **producers + judges**, and the governances the new
+  spec defines (artifact-types resolution, **no** spec-graph / render-spec-graph / DAG kernel).
 - Build the **W-1 plan-retirement `.mts` skill** (doctrine-owned, glob `.agents/plans/*.plan.md`,
   delete only when source = done/merged AND distilled; idempotent). Pin the `../.agents/plans`
   init symlink gotcha.
-- Align `plugins/sdd/` skills/agents to the new model (artifact-types resolution, no spec graph).
+- **Self-hosting check:** once `sdd-new`'s spec-producer + spec-judge exist, re-run explore + the
+  spec gate *through them* over the same spec to confirm the hand-run result reproduces — the
+  bootstrap closes.
+- Diff `plugins/sdd-new/` against the reference `plugins/sdd/` to confirm the deltas are
+  intended; decide retirement of the old plugin as a later CR, not here.
 
 ## Step 4 — handoff & plan retirement
 
