@@ -1,227 +1,158 @@
 ---
-name: "github-34: SDD spec redesign, post-review cleanup"
-overview: "Post-holistic-review cleanup of artifacts/specs/sdd/ — resolve the frontmatter schema (remove spec graph/subtasks/blocked-by/priority, type->artifact-types), fix the stale acceptance freeze seed, track mission plans instead of gitignoring them, and close the mechanical schema contradictions."
+name: "github-34: SDD project spec + behavior suite to the spec gate"
+overview: "Carry CR #34 through the new SDD Mission Loop: the spec-tree cleanup (Phase 0) is done; the live work is the explore phase — build the missing behavior suite (e2e acceptance/ + colocated unit suites), add root spec.md lifecycle frontmatter, and bring the project spec to a spec-gate approve (Draft -> Approved). Deliver phase (the plugins/sdd impl sweep + in-place-vs-rebuild) follows the gate."
 cr: github-34
 cr-url: https://github.com/cyberuni/cyber-skills/issues/34
 todos:
-  - id: remove-spec-graph
-    content: "D-1 + Q-1 — remove subtasks + blocked-by + the spec-graph apparatus and its 3 consumers"
+  - id: cleanup-phase
+    content: "Phase 0 — spec-tree post-review cleanup (schema, acceptance seed, tracked plans, mechanical fixes). COMPLETE — see conclusion."
     status: completed
-  - id: remove-priority
-    content: "D-2 + T-4 — remove the priority field"
-    status: completed
-  - id: artifact-types
-    content: "D-3 — type -> artifact-types (plural), resolve per file"
-    status: completed
-  - id: acceptance-fixes
-    content: "D-4 + D-5 — rewrite acceptance D1 to per-file @frozen; relocate B7 to mission unit"
-    status: completed
-  - id: plans-tracked
-    content: "D-6 + Q-4 + W-2 + W-3 — track plans not gitignore; wording sweep; plan retirement; combat-log hygiene"
-    status: completed
-  - id: mechanical-fixes
-    content: "T-1 + T-2 + T-3 + T-5 — approval.cause, root spec narrative, gate example path, gateway routing"
-    status: completed
-  - id: plan-retirement-spec
-    content: "W-1 + W-1b — spec the doctrine-owned plan-retirement sweep; pin the init symlink gotcha"
-    status: completed
-  - id: design-notes-superseded
-    content: "mark DESIGN-NOTES.md superseded with a divergence list"
-    status: completed
-  - id: plugins-sdd-impl-sweep
-    content: "separate phase — sweep plugins/sdd impl (delete render-spec-graph skill/agent + DAG kernel, build W-1 retirement .mts skill, in-place-vs-rebuild decision)"
+  - id: suite-e2e
+    content: "Explore — author acceptance/acceptance.feature (e2e suite) from the A-F seed inventory; boolean/rubric Gherkin per design/suite-style.md"
+    status: pending
+  - id: suite-unit
+    content: "Explore — author one colocated unit .feature per capability folder (intake, authoring, mission, mission/deliver, mission/handoff, campaign, formation, doctrine, forge, corpus, plugin, gateway)"
+    status: pending
+  - id: root-frontmatter
+    content: "Explore — add project-spec lifecycle frontmatter to root spec.md (status: draft, artifact-types, etc.) per design/lifecycle-model.md; drop the ## TODO once filled"
+    status: pending
+  - id: prose-reconcile
+    content: "Explore — grill phase 1: ensure each capability README has What/Why/decisions so every use case maps to a scenario; no dangling open: markers"
+    status: pending
+  - id: spec-gate
+    content: "Spec gate (Draft -> Approved): run validate-spec / sdd-operator over the project spec; cold spec-judge judges the suite; on approve, freeze touched .feature files"
+    status: pending
+  - id: deliver-decision
+    content: "Deliver (follow-up) — decide plugins/sdd in-place sweep vs archive + rebuild from the approved spec"
+    status: pending
+  - id: deliver-impl-sweep
+    content: "Deliver — build against the frozen suite: delete render-spec-graph skill/agent + DAG kernel, build the plan-retirement .mts skill (W-1), align plugins/sdd to the new model"
     status: pending
 isProject: false
 ---
 
-# Plan — github-34: SDD spec redesign, post-review cleanup
+# Plan — github-34: SDD project spec + behavior suite to the spec gate
 
-> Mission plan (portable handoff brief). Tracked (NOT gitignored — see D-6), per-worktree.
-> CR: [github-34](https://github.com/cyberuni/cyber-skills/issues/34) — SDD spec redesign (project-spec model).
-> Phase: post-holistic-review cleanup of `artifacts/specs/sdd/`.
+> Mission plan (portable handoff brief). Tracked (NOT gitignored), per-worktree.
+> CR: [github-34](https://github.com/cyberuni/cyber-skills/issues/34) — redo the SDD spec +
+> behavior suite as **one durable project spec** under `artifacts/specs/sdd`, organized into
+> files and folders, ready to approve at the spec gate.
 
 ## What we are doing
 
-Holistic review of the SDD spec tree found defects + drift after the big redesign +
-naming sweep. This phase resolves the frontmatter schema, fixes stale acceptance seed,
-and closes a few schema contradictions. Design is otherwise sound; this is cleanup +
-two real open design calls.
+The CR was refreshed to the **new SDD model**: one durable per-project spec + behavior suite is
+the source of truth; the **CR is the unit of work**; the **Mission Loop** carries it
+(intake → explore → deliver → handoff). This plan runs CR #34 through that loop against its own
+spec tree (`artifacts/specs/sdd/`) — dogfooding the model on itself.
 
-## Decided (ready to apply)
+**Issue scope (verbatim):** get the project spec + behavior suite *in and organized* so it can
+be **approved at the spec gate** (Mission Loop step 2). Then, as follow-up, decide whether to
+update `plugins/sdd/` in-place or archive + rebuild from the approved spec (step 3).
 
-- **D-1. Remove `subtasks` from the schema.** Composition was the fleet ghost. One spec
-  per project, folders are views, no child statuses. Cross-project parent/child is project
-  management (lives in the source tracker), not spec frontmatter. Also delete the
-  composition-rollup legal-state rules in `design/lifecycle-model.md` and the
-  "Composition role (derived from edges) and rollup" section.
-- **D-2. Remove `priority` from the schema.** Ranking hint; nothing load-bearing reads it.
-- **D-3. `type` → `artifact-types` (plural).** A project touches many artifact-types;
-  squads already resolve **per file**. Singular `type` was the leftover tension.
-  Consequence: resolution stops matching one spec-`type` against `domains[]` and goes
-  per-file (each file's artifact-type → its squad) — already implied by
-  `design/specialists-and-squads.md`. Sweep `mission/` resolution + registry-shape prose.
-- **D-4. acceptance `D1` is stale — rewrite.** "co-freezes the chain at descending strength
-  (spec.md+.feature firmest, plan.md lower, tasks.md live)" is dead. Model is now **per-file
-  `@frozen`**, spec.md kept aligned (never frozen), plan/tasks never frozen.
-- **D-6. `.agents/plans/` is TRACKED, not gitignored.** Reversal of the earlier spec line.
-  Reasons: Cursor treats `.cursor/plans` as tracked (gitignoring its symlink target is
-  self-contradictory); the no-collision property comes from per-`cr-ref` filenames + the
-  source-claim lock, NOT from gitignore (the spec conflated these); "discarded at retro"
-  becomes a **tracked deletion** (better provenance — git history shows when a plan was
-  distilled and dropped). Lifecycle is a **soft direction** managed by the doctrine loop, not
-  a hard gitignore wall: create → mission appends → doctrine distills into the ledger →
-  doctrine deletes. Apply: remove `.agents/plans/` from `.gitignore`; sweep the
-  "gitignored" + "never merges / no-collision-because-gitignored" wording in
-  `design/provenance-model.md`, `mission/handoff/README.md`, `doctrine/README.md`,
-  `plugin/README.md` (init "gitignored home"). Fix the collision justification to
-  per-`cr-ref` + source-claim. Update memory `project_combat_log_sibling_file` (says
-  gitignored).
+## Mission Loop position
 
-- **D-5. acceptance `B7` is misplaced, not wrong.** Mid-flight halt IS written to the combat
-  log (`.agents/plans/<cr-ref>.log.jsonl`) during the mission — that is a **mission unit
-  scenario**, not an e2e/acceptance one (acceptance = cross-capability only). Move the
-  log-write assertion under `mission/`. Keep in `acceptance/` only the cross-capability
-  outcome (CR halts → human resolves → resumes). Three homes for "a halt": mid-flight →
-  combat log (mission); durable "why I paused" → ledger `gate` line; recurrence distill →
-  doctrine. Same for the exemplar "every step is recorded in the combat log" wording.
+- **Step 1 — intake.** Done: issue #34 is the CR.
+- **Step 2 — explore (authoring).** **The live work.** The spec prose/rules are largely written
+  and Phase 0 cleaned them up, but the **behavior suite does not exist yet** and the root spec
+  has no lifecycle frontmatter. Build both, reconcile prose, end at the spec gate.
+- **Step 3 — deliver.** The deferred `plugins/sdd/` impl sweep, built against the frozen suite,
+  including the in-place-vs-rebuild call.
+- **Step 4 — handoff.** Land as a branch → PR (this repo is PR-flow). Plan retirement waits for
+  merge + doctrine distill.
 
-## Open questions (need a ruling before applying)
+## Current state (gap analysis, verified this session)
 
-- **Q-1. `blocked-by` — keep or remove?** User proposed removing it with subtasks/priority.
-  CHALLENGE: blocked-by is *dependency*, not composition (design says orthogonal). It is the
-  only cross-project execution-order edge and feeds THREE subsystems:
-  - `corpus/render-spec-graph` — the spec DAG renders *from* it;
-  - `autonomy-rubric` blast radius — "blocked-by dependents" is a mechanical high-blast signal;
-  - `formation` — "keep the spec graph sound" is one of its four acts.
-  Removing it deletes the spec-graph capability, not just a field. Either (a) keep it
-  (dependency = the real survivor of the fleet death — my lean), or (b) consciously move the
-  cross-project graph to the tracker (PM) and strip the three consumers. **DECIDE.**
+- `artifacts/specs/sdd/` is organized into capability folders + `design/` + `acceptance/`, and
+  `spec.md` carries the project-index narrative (abstraction stack, Mission Loop, 4 outer loops,
+  capability map, invariants). Good.
+- **No `.feature` files exist anywhere** — `find . -name '*.feature'` is empty. The behavior
+  suite (the issue's core deliverable) is entirely unbuilt. `acceptance/README.md` holds an
+  organized **seed inventory** (themes A–F with named scenario rows) but no `.feature`.
+- **Root `spec.md` has no frontmatter** — no `status`, no lifecycle. Under the one-spec model
+  the project needs a single lifecycle baseline to be gate-eligible. (The `status:` lines in
+  `design/lifecycle-model.md` and `design/provenance-model.md` are schema/example snippets, not
+  real frontmatter.)
+- Capability folders are `README.md` (prose) only — they still need their colocated unit
+  `.feature` (root `spec.md` `## TODO`: "fill each capability folder" + "build the behavior
+  suite (acceptance/ + colocated unit)").
 
-- **Q-2. Gate + role naming.** User proposed `spec|impl` gate → `explore|deliver` gate, and
-  `spec|impl-producer|judge` → `explore|deliver-producer|judge`. CHALLENGE:
-  - Gates are named by *what they judge* (contract vs implementation), not the preceding
-    phase — more legible.
-  - Roles don't map: 3 producers (spec/plan/impl) vs 2 phases. plan-producer + impl-producer
-    both land in "deliver" → collision; plan has no gate at all. Roles align to **artifacts**.
-  - Real itch is likely "spec" is overloaded (project spec corpus vs spec gate's object).
-  Options: (a) keep `spec|impl`; (b) `contract|impl` gate + keep artifact-aligned role names
-  (de-overloads "spec", no phase collision, plan not orphaned) — my offer; (c) full
-  `explore|deliver` rename (accept the orphaned-plan + object-legibility cost). **DECIDE.**
+## Step 2 — explore: build to the spec gate
 
-- **Q-3. `produced-by` → `updated-by`?** PUSH BACK: produced-by is framed as *immutable
-  historical provenance* (trace a bad artifact to its maker; ACES needs this) + resume cache.
-  `updated-by` connotes mutable last-writer-wins and fights that framing. It already overwrites
-  to the latest producer on resume, so it already means "who last made this." Recommend **keep
-  produced-by**; the word "updated" is the regression. **DECIDE / confirm.**
+Order: prose first (grill phase 1), then the suite (grill phase 2), then frontmatter, then gate.
 
-- **Q-4. Who deletes the plan, and when — RESOLVED: (a), doctrine owns, deferred to
-  post-merge via a sweep skill.** The combat log is intentionally kept **in the PR** — the
-  `report`/`correction` trail is the decision + failure history reviewers want (what broke,
-  what the agent decided, did it do something bad), which the polished handoff conclusion
-  hides. Conditions that make this work:
-  - **Decouple distill from delete.** Doctrine's distill fires at `→ implemented` (step 3,
-    before the PR exists); the **delete** is a separate, later act. Distill early, delete late.
-  - **Delete is gated on TWO conditions: source = `done`/merged AND distilled.** Never delete
-    an un-distilled plan (the retro never ran). Ordering: delete runs as doctrine's **last
-    retro step**, after the distill writes strategy/recurrence to the ledger.
-  - **Free-text hygiene (the only residual leak).** The committed combat log is structured
-    decision metadata (role/agent/outcome/correction-kind/cause enums + terse `summary` /
-    `detail`) — NOT code, prompts, or transcripts (those stay in the uncommitted raw `.jsonl`,
-    read only for token-waste). So no redaction pipeline; just one **`combat-log-governance`
-    rule**: `summary`/`detail` describe the decision/class, never embed code, secrets, or
-    values.
-  - **Reframe "ephemeral".** Committed → permanent in git history (commit-message-grade).
-    Reword "ephemeral / discarded at retro" → "transient in the working tree, durable in
-    history; removed from the tree at retro." Sweep `design/provenance-model.md`,
-    `doctrine/README.md`, `mission/handoff/README.md`.
+- **prose-reconcile.** Walk each capability README; confirm What / Why / design decisions are
+  present and current so every use case has a scenario home. Resolve any `<!-- open: -->`
+  markers the suite will touch. This is authoring's grill phase 1.
+- **suite-e2e.** Author `acceptance/acceptance.feature` from the A–F seed inventory
+  (CR lifecycle, escalation floor, resolve-a-squad, freeze, gate verdicts, handoff). Only
+  cross-capability outcomes; boolean Gherkin by default, `@rubric` where a gradient rule needs
+  it (autonomy bar, freeze condition). Conventions: `design/suite-style.md`. Exemplars already
+  drafted in `acceptance/README.md`.
+- **suite-unit.** Author one colocated unit `.feature` per capability folder for the
+  single-capability behaviors (e.g. the mid-flight combat-log halt-write belongs under
+  `mission/`, not acceptance). Folders to cover: `intake/`, `authoring/`, `mission/`,
+  `mission/deliver/`, `mission/handoff/`, `campaign/`, `formation/`, `doctrine/`, `forge/`,
+  `corpus/`, `plugin/`, `gateway/`. A folder with genuinely no unit behavior stays `.feature`-less
+  (the digest reports zero scenarios, not an error).
+- **root-frontmatter.** Add project-spec frontmatter to `spec.md` per
+  `design/lifecycle-model.md`: `status: draft`, `artifact-types`, `aligned: false`, and the
+  workflow fields as they apply. Drop the `## TODO` block once the suite is in.
 
-## New work from D-6 / Q-4 (specs + impl, beyond the cleanup)
+## Spec gate (Draft → Approved)
 
-- **W-1. Plan-retirement sweep skill.** New `plugins/sdd/` skill carrying a `.mts` script
-  (per the repo's node-≥23.6 / no-deps convention, agent fallback when node absent):
-  - glob `.agents/plans/*.plan.md`;
-  - for each `<cr-ref>`, query its **source** status natively (`cr-ref` is source-qualified —
-    `github-34` → GH issue #34, `asana-<gid>` → Asana, `local-<slug>` → local store);
-  - delete `<cr-ref>.plan.md` + `<cr-ref>.log.jsonl` **only when source = `done`/merged AND
-    distilled**; idempotent (missing plan or open CR = no-op, safe to re-run).
-  - **Owner: doctrine** (runs as its last retro step). CI post-merge invocation optional.
-  - Spec home: `doctrine/` behavior + a `provenance-model.md` note on retirement.
-- **W-2. `combat-log-governance` free-text hygiene rule** (one line; see Q-4).
-- **W-1b. init symlink gotcha (pin in `plugin/` init spec).** The Cursor symlink target must be
-  **`../.agents/plans`** (relative to `.cursor/`), NOT `.agents/plans`. A verbatim
-  `ln -s .agents/plans .cursor/plans` resolves relative to `.cursor/` → broken
-  `.cursor/.agents/plans`. Use `../.agents/plans` (or an absolute path) + `ln -sfn` to replace
-  an existing link. Verified by hand this session (the naive form created a dangling link).
-- **W-3. Remove `.agents/plans/` from `.gitignore`** + the "gitignored / no-collision-because-
-  gitignored / ephemeral" wording sweep (D-6 + Q-4 reframe) across `provenance-model.md`,
-  `doctrine/README.md`, `mission/handoff/README.md`, `plugin/README.md`, and memory
-  `project_combat_log_sibling_file`.
+Run the spec gate over the project spec (the issue's target milestone):
 
-## TODO — mechanical fixes already confirmed by review (independent of Q-1..3)
+- Use the SDD machinery to dogfood it — `sdd:validate-spec` / `sdd:sdd-operator` running the
+  authoring gate, with the cold `sdd:sdd-spec-judge` judging the suite (boolean + `@rubric`
+  structure). See **open decision** below on hand-author vs full-machinery.
+- Never advance with judge failures, open markers, or a misaligned suite (they fail the
+  confidence dimension and forbid self-assertion).
+- On **approve**: freeze each touched `.feature` via its `@frozen` tag; record the verdict as a
+  durable per-CR `gate` ledger line; set `status: approved`. `spec.md` stays aligned, never
+  frozen.
 
-- **T-1. `approval.cause` schema disagreement.** `mission/README.md` stop-provenance requires
-  `cause: dimension | ceiling` on each `approval` entry, but the canonical schema in
-  `design/lifecycle-model.md` and the `gate` ledger line in `design/provenance-model.md` omit
-  it. Pick one: add `cause` to the schema + ledger line, OR drop it from mission.
-- **T-2. Root `spec.md` is a STUB.** Under the project-spec model the root IS the whole-project
-  index. Write the narrative (abstraction stack + Mission Loop 1–4 + 4 outer loops, in brief);
-  stop pointing at DESIGN-NOTES.md as "the working model."
-- **T-3. `design/provenance-model.md` `gate` example uses `design/lifecycle.feature`** — but
-  `design/` holds rules, no `.feature` (rule-in-design / behavior-in-capability). Fix the
-  example path to a capability-folder `.feature`.
-- **T-4. `forge/README.md` states `priority: 3`** — a spec-frontmatter field on a folder-view,
-  which "folders get no status/priority" forbids (and `priority` is being removed, D-2). Drop it.
-- **T-5. `gateway/` routing table routes directly to `mission/handoff`** — handoff is step 4,
-  mission-owned, not independently invoked. Drop or reword that row.
+## Open decisions (need a ruling)
 
-## Notes
+- **D-A. Hand-author the suite, or drive it through the SDD machinery?** Building the suite by
+  hand is faster and we control it; driving it via `sdd:create-spec` → `sdd:sdd-operator`
+  (explore) → `sdd:validate-spec` (spec gate) **dogfoods** the loop on its own spec — the
+  point of CR #34. Lean: **hybrid** — author the suite by hand (the machinery is still being
+  swept and may fabricate roles, per `project_sdd_operator_builder_fabrication`), then run the
+  real gate via `validate-spec`. **DECIDE.**
+- **D-B. `plugins/sdd/` in-place vs archive + rebuild** (the issue's follow-up). Defer until
+  after the spec gate — the approved spec is the input either way. Tracked as
+  `deliver-decision`. (`project_sdd_impl_sweep_pending`.)
 
-- Q-1 and Q-2 are real design forks; Q-3 is a confirm. T-1..T-5 are mechanical.
-- D-1..D-3 are schema edits — touch `design/lifecycle-model.md` (schema + legal-state +
-  composition section), `design/specialists-and-squads.md` (resolution by per-file type),
-  `mission/README.md` (resolution). Grep the whole tree for `subtasks`, `priority`,
-  `blocked-by`, `\btype:`, `produced-by` before editing.
-- D-4/D-5 touch `acceptance/README.md` + `mission/README.md`.
-- Apply T-1..T-5 + D-1..D-5 first (safe), resolve Q-1..Q-3, then sweep `plugins/sdd/` impl
-  (separate pending work — see memory `project_sdd_impl_sweep_pending`).
+## Step 3 — deliver (follow-up, after the gate)
 
-## Conclusion (applied 2026-06-26, spec-tree cleanup, on `next`)
+Build the implementation against the **frozen** suite:
 
-**Rulings.** Q-1 = **remove `blocked-by`** + strip its 3 consumers (the spec graph is an
-nx-style project-dependency graph; out of SDD scope, belongs in the source tracker). Q-2 =
-**keep `spec|impl`** (rename dropped). Q-3 = **keep `produced-by`** (rename dropped).
+- Resolve **D-B** (in-place vs rebuild).
+- Delete the `render-spec-graph` skill/agent + the DAG kernel (the spec-graph capability was
+  removed in Phase 0; the impl still carries it).
+- Build the **W-1 plan-retirement `.mts` skill** (doctrine-owned, glob `.agents/plans/*.plan.md`,
+  delete only when source = done/merged AND distilled; idempotent). Pin the `../.agents/plans`
+  init symlink gotcha.
+- Align `plugins/sdd/` skills/agents to the new model (artifact-types resolution, no spec graph).
 
-**Commits** (spec tree only; `plugins/sdd/` impl sweep deferred):
+## Step 4 — handoff & plan retirement
 
-1. `b519821` D-1 + Q-1 — remove the spec-graph apparatus (subtasks + blocked-by + composition
-   section; strip render-spec-graph/DAG kernel in corpus, blast-radius blocked-by signal in
-   autonomy-rubric, formation graph-soundness act 4→3, project|feature axis).
-2. `ab3e9c0` D-2 + T-4 — remove `priority` (schema + forge folder-view line).
-3. `1e2ccac` D-3 — `type` → `artifact-types` (plural), resolution per file.
-4. `65dd3d7` D-4 + D-5 — rewrite acceptance D1 to per-file `@frozen`; relocate B7 (halt-log)
-   to mission unit; drop the two combat-log-mechanics exemplar lines.
-5. `b8c916a` D-6 + Q-4 + W-2 + W-3 — plans are tracked, not gitignored; reframe
-   ephemeral/discarded wording; fix collision justification; decouple distill/delete; add
-   the Plan-retirement section + the combat-log free-text hygiene rule.
-6. `bf7443f` T-2 — root spec narrative.
-7. `d42b7f4` T-1 + T-3 — `cause: dimension|ceiling` across schema + gate ledger line; fix the
-   gate example path (`design/lifecycle.feature` → capability folder).
-8. `b2a0721` T-5 — drop the gateway row routing directly to `mission/handoff`.
-9. `ca51c30` W-1 + W-1b — spec the doctrine-owned plan-retirement sweep; pin the
-   `../.agents/plans` init symlink gotcha.
-10. (plan write-back) — record this conclusion in the tracked mission plan.
-11. `DESIGN-NOTES.md` superseded — banner + divergence list; historical body preserved.
+- Land on a branch → PR (repo is PR-flow). Keep the combat log in the PR (decision/failure
+  trail reviewers want).
+- **Do NOT delete this plan yet** — github-34 is not `done`/merged and not distilled. It stays
+  tracked until doctrine distills + deletes post-merge.
 
-Memory `project_combat_log_sibling_file` updated (plans tracked, not gitignored).
+## Phase 0 conclusion (cleanup — COMPLETE, applied 2026-06-26 on `next`)
 
-**Spec-tree cleanup: COMPLETE.** Full-tree grep clean (no stale
-`subtasks`/`blocked-by`/`priority`/spec-graph/`ephemeral`/`gitignored` outside intentional
-"not gitignored" phrasing); `DESIGN-NOTES.md` flagged superseded.
+The post-holistic-review cleanup of `artifacts/specs/sdd/` is done. **Rulings:** removed
+`blocked-by` + the spec-graph apparatus (Q-1); kept `spec|impl` gate naming (Q-2); kept
+`produced-by` (Q-3). Schema edits: removed `subtasks`/`priority`, `type` → `artifact-types`
+(per-file resolution). Acceptance D1 rewritten to per-file `@frozen`; B7 halt-log relocated to
+the mission unit. Plans are **tracked, not gitignored**; ephemeral/discarded wording reframed;
+distill decoupled from delete. Mechanical fixes T-1..T-5 applied; root `spec.md` narrative
+written; `DESIGN-NOTES.md` flagged superseded. Full-tree grep clean. Commits `b519821`,
+`ab3e9c0`, `1e2ccac`, `65dd3d7`, `b8c916a`, `bf7443f`, `d42b7f4`, `b2a0721`, `ca51c30` + the
+DESIGN-NOTES banner. Memory `project_combat_log_sibling_file` updated.
 
-**Still pending (separate work, NOT this cleanup phase):** `plugins/sdd/` impl sweep — incl.
-deleting the render-spec-graph skill/agent + DAG kernel, building the W-1 retirement `.mts`
-skill, and the in-place-vs-rebuild decision (memory `project_sdd_impl_sweep_pending`).
-
-**This plan's own retirement:** do NOT delete yet — github-34 (CR #34) is not `done`/merged
-(work sits on `next`, impl sweep outstanding) and has not been distilled. Per the retirement
-model it stays tracked until doctrine distills + deletes post-merge.
+> Phase 0 closed the cleanup; this plan's live frontier is the **behavior suite + spec gate**
+> (Step 2 above) — the actual deliverable named in the refreshed issue.
