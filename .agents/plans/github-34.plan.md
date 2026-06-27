@@ -52,7 +52,7 @@ isProject: false
 The CR was refreshed to the **new SDD model**: one durable per-project spec + behavior suite is
 the source of truth; the **CR is the unit of work**; the **Mission Loop** carries it
 (intake → explore → deliver → handoff). This plan runs CR #34 through that loop against its own
-spec tree (`artifacts/specs/sdd/`) — dogfooding the model on itself.
+spec tree (`.agents/specs/sdd/`, relocated from `artifacts/specs/sdd/`) — dogfooding the model on itself.
 
 **This is a self-hosting bootstrap** (building a compiler with itself). The explore phase
 *should* delegate grilling to a spec-producer and a spec-judge — but the new ones don't exist
@@ -80,7 +80,7 @@ be **approved at the spec gate** (Mission Loop step 2). Then build the implement
 
 ## Current state (gap analysis, verified this session)
 
-- `artifacts/specs/sdd/` is organized into capability folders + `design/` + `acceptance/`, and
+- `.agents/specs/sdd/` (relocated from `artifacts/specs/sdd/`) is organized into capability folders + `design/` + `acceptance/`, and
   `spec.md` carries the project-index narrative (abstraction stack, Mission Loop, 4 outer loops,
   capability map, invariants). Good.
 - **No `.feature` files exist anywhere** — `find . -name '*.feature'` is empty. The behavior
@@ -184,9 +184,11 @@ independently get their own. One `Feature:` per file.
     the plugin's `skills/`; `init` lists their `<plugin>:<name>` in the consuming
     `.agents/universal-plugin.json` keyed by `(artifact-type,actor,face)`; SDD asks the harness to
     load `<plugin>:<name>` (harness version-routes).
-  - **Project/user governances** (addressable): plain files in `<project>/.agents/governances/`;
-    the operator **Reads them directly** — no harness, no build, no registry. [OPEN: enforce skill
-    form? lean **no**.]
+  - **Project/user governances** (addressable): **both forms supported** — a plain file *or* a
+    SKILL.md — in `<project>/.agents/governances/`; the operator reads them directly (no harness,
+    no build). **The mechanical resolution + composition is a deterministic helper script** (a
+    `.mts`, sibling to `check-spec-state.mts`): discovers candidates, matches `metadata`, applies
+    precedence, emits the load/compose plan — the agent never hand-enumerates.
   - **sdd defaults:** the sdd plugin's own governances (skills, `sdd:<name>`), lowest precedence.
 - **Composition:** **union** default; **most-specific wins on conflict** (project > plugin >
   default); **opt-in `replace`**; driven by the `governance-composition` governance (explicit
