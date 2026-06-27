@@ -12,9 +12,9 @@ todos:
     status: completed
   - id: model-refinements
     content: "Explore, level 1 — land the macro-grill's model refinements in design/: (a) Mission Loop step 1 (intake) CREATES the plan from a basic template; (b) step 2 (explore) grills the PLAN + spec + suite (when it exists) and builds impl (build-to-learn) — implementation is not deferred to deliver; (c) per-UNIT suites — one .feature per skill/unit, producer!=gate (generalize from authoring into unit-and-organization.md + suite-style.md, replacing 'one .feature per capability folder'); (d) unit-of-work = co-committable unit (commit-discipline), CR = unit of change-intent (intake done; sweep loops.md/mission for 'unit of work' misuse); (e) USE CASES are PER-TYPE — LANDED via the spec-types taxonomy (commit 369318c): every spec node is descriptive (no subject/suite; no marker), reference artifact (spec-type: reference; ## Subject, no .feature), or behavioral artifact (spec-type: behavioral; ## Use Cases + .feature). Only behavioral nodes carry ## Use Cases; descriptive indexes and reference artifacts carry none. spec-type declared not inferred; classification not lifecycle (lifecycle stays root-spec.md-only). Landed in unit-and-organization.md (## Spec types), spec.md, suite-style.md, lifecycle-model.md, abstraction-stack.md, authoring/README.md. STILL PENDING from (a)-(d): intake-creates-plan, explore-builds-impl, unit-of-work-vocabulary sweep across loops.md/intake/mission/. Touch loops.md, intake/, mission/."
-    status: pending
+    status: in_progress
   - id: sub-authoring
-    content: "Sub-mission authoring/ — prose (reconcile rule + per-unit split note), per-unit suites (spec-producer.feature 10 + validate-spec.feature 19), impl spec-producer-governance in sdd-new. RESTRUCTURED to overview + per-unit specs: authoring/README.md is now a no-.feature OVERVIEW/index; each unit lives in its own folder with its own README (## Use Cases mapping to its suite) + .feature — authoring/spec-producer/ and authoring/validate-spec/. This CLOSES the Use Cases gap (F3) for authoring: use cases are per-UNIT, the overview carries none (a no-.feature node is an index). Gate-digest behavior folded into validate-spec/README. NOT DONE: suites+impls for create-spec, revise-spec (the two user-facing entry skills — overview lists them as pending units); validate-spec impl in sdd-new."
+    content: "Sub-mission authoring/ — prose (reconcile rule + per-unit split note), per-unit suites (spec-producer.feature 10 + validate-spec.feature 19), impl spec-producer-governance in sdd-new. RESTRUCTURED to overview + per-unit specs: authoring/README.md is now a no-.feature OVERVIEW/index; each unit lives in its own folder with its own README (## Use Cases mapping to its suite) + .feature — authoring/spec-producer/ and authoring/validate-spec/. This CLOSES the Use Cases gap (F3) for authoring: use cases are per-UNIT, the overview carries none (a no-.feature node is an index). Gate-digest behavior folded into validate-spec/README. ALSO built this session: the two fixed-universal governances as reference-artifact nodes under authoring/ — spec-format (78d9d8c) + suite-format (4f68659), each a spec-type:reference node + a self-contained impl in plugins/sdd-new/skills/ (spec-governance renamed -> spec-format); see D-F. NOT DONE: suites+impls for create-spec, revise-spec (the two user-facing entry skills — overview lists them as pending units); validate-spec SKILL.md impl in sdd-new (only its check-spec-state.mts helper exists)."
     status: in_progress
   - id: sub-intake
     content: "Sub-mission intake/ — extract the inline README scenarios into per-unit .feature suites (channels/sources, escape hatch, inject channel); build impls in sdd-new. Carries the intake-adapter-store decision."
@@ -59,7 +59,7 @@ todos:
     content: "Sub-mission marketplace (NEW cap, R2+R3, SDD-owned NOT forge) — a plugin declares the artifact-types it serves (R2); a register-plugin-to-marketplace skill + website shows plugins per artifact-type (R3). Two layers: marketplace=global catalog (website), registry=per-project resolution. Home: plugin/ + apps/website. Prose -> suite -> impl."
     status: pending
   - id: core-agents
-    content: "Deliver — the cross-cutting agents in sdd-new (not owned by one capability): sdd-operator, cold sdd-spec-judge + sdd-implementer (impl-judge), doctrine Scanner, formation Warden; plus the deterministic .mts helpers (check-spec-state, governance-resolution). Built to the CORRECTED lens sets (spec gate {director,builder,architect}; impl gate {builder,architect}) — the baseline 2-lens skills are reference only."
+    content: "Deliver — the cross-cutting agents in sdd-new (not owned by one capability): sdd-operator, cold sdd-spec-judge + sdd-implementer (impl-judge), doctrine Scanner, formation Warden; plus the deterministic .mts helpers (check-spec-state, governance-resolution). Built to the CORRECTED lens sets (spec gate {director,builder,architect}; impl gate {builder,architect}) — the baseline 2-lens skills are reference only. PROGRESS: check-spec-state.mts (new-model) DONE in plugins/sdd-new/skills/validate-spec/scripts/ (48a0c1e, 24 node:tests, typed under tsconfig.specs.json) — root tuple + per-node spec-type reconcile, validates the live tree via `pnpm verify:specs-new`. STILL PENDING: governance-resolution.mts + all the cross-cutting agents."
     status: pending
   - id: root-frontmatter
     content: "Explore — add project-spec lifecycle frontmatter to root spec.md (status: draft, artifact-types, aligned: false, strategy) per design/lifecycle-model.md; drop the ## TODO once the suites are in."
@@ -105,24 +105,36 @@ The work is organized in **two levels of grill**:
 
 Invoke the `resume-mission` skill, or follow it by hand.
 
-1. **Live frontier = the per-capability vertical sub-missions.** `model-refinements` is
-   **upstream** and should land first (it changes the project-wide suite + Use Cases rules).
-   `sub-authoring` is **in progress, not done** (Use Cases gap below).
+1. **What landed this session (the model deepened — not a new sub-mission).** See `## D-F` for
+   the full decision record. In brief:
+   - **`model-refinements` (e) LANDED** — the **spec-types taxonomy** (descriptive / reference /
+     behavioral) is now the model (369318c). `spec-type` is declared-not-inferred, classification-
+     not-lifecycle. Remaining (a)-(d) still pending: intake-creates-plan, explore-builds-impl,
+     unit-of-work-vocabulary sweep across `loops.md`/`intake/`/`mission/`.
+   - **Two fixed-universal governances built as reference artifacts** — `spec-format` (78d9d8c) +
+     `suite-format` (4f68659): each a `spec-type: reference` node under `authoring/` plus a
+     self-contained impl in `plugins/sdd-new/skills/`. `spec-governance` renamed → `spec-format`;
+     `suite-style.md` moved → `authoring/suite-format/`. Freeze split: marker in suite-format,
+     model stays in `lifecycle-model.md` (kept-as-is, be0b5a4).
+   - **`check-spec-state.mts` (new-model)** in `plugins/sdd-new` (48a0c1e) — root tuple + per-node
+     spec-type reconcile, 24 tests, validates the live tree via `pnpm verify:specs-new`.
+   - **Repo hygiene** (not CR-scoped): `user-invocable` hoisted to top-level repo-wide (6dfa3f7,
+     c15c134 — it was inert under `metadata:`); `typecheck:specs` (root `tsconfig.specs.json`) now
+     types **all** plugin `.mts` and fixed the latent `Dirent` errors (6a2c1fa, 0b04898);
+     `.agents/skills` ↔ `.claude/skills` synced, 9 empty dirs removed (c41956f).
 
-2. **Macro grill finding — the Use Cases gap (F3, blocks the gate). RESOLVED PATTERN (applied
-   to authoring/).** `spec-governance` requires a `## Use Cases` section and the spec-judge
-   checks every use case maps to ≥1 scenario. Resolution (refined from "per-capability"): split
-   each capability into a no-`.feature` **OVERVIEW** README + **per-unit spec folders**, and put
-   `## Use Cases` in each **unit** spec (next to its `.feature`); the overview carries none (a
-   no-`.feature` node is an index). `authoring/` is the worked example
-   (`authoring/{spec-producer,validate-spec}/README.md`). Land the clarification
-   (`model-refinements` (e)), then apply the same overview+per-unit-spec split in **every** other
-   sub-mission's prose step.
+2. **Live frontier = the per-capability vertical sub-missions.** `model-refinements` (a)-(d) is
+   **upstream** and should land first. `sub-authoring` is **in progress** — its remainder is
+   `create-spec`/`revise-spec` suites+impls + the `validate-spec` **SKILL.md** impl (only its
+   check-spec-state helper exists). Then `sub-intake` / `sub-gateway` / `sub-mission` / … per the
+   todo order, each applying the **overview + per-unit-spec** split (the worked `authoring/`
+   pattern). Use Cases gap (F3) is **RESOLVED** by the taxonomy — only behavioral nodes carry
+   `## Use Cases`; descriptive indexes + reference artifacts carry none.
 
-3. **Open decisions blocking the spec gate (resolve before `spec-gate`):**
-   - `intake-adapter-store` — author the adapter-directive + local-CR-store scenarios now, or
-     carve to a follow-up CR (the open marker blocks the gate).
-   - Use Cases per-capability (F3) — confirm the reading and apply.
+3. **Open decision still blocking the spec gate:** `intake-adapter-store` — author the
+   adapter-directive + local-CR-store scenarios now (grows #34), or carve to a follow-up CR and
+   drop the `<!-- open: -->` marker. Unresolved → the open marker blocks the gate. (The F3 Use
+   Cases call is now settled.)
 
 4. **Working method (do not relearn or relitigate — see `## Resolved decisions`):** vertical
    sub-missions; rhythm **prose → per-unit suites (one `.feature` per skill) → impl in
