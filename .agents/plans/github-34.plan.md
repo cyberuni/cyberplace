@@ -8,8 +8,8 @@ todos:
     content: "Phase 0 — spec-tree post-review cleanup (schema, acceptance seed, tracked plans, mechanical fixes). COMPLETE — see conclusion."
     status: completed
   - id: design-grill
-    content: "Explore (FIRST) — critical pass over design/ rules: coherence, internal consistency, no contradictions across rules or with the capabilities; tensions -> open: markers or a follow-up CR, NOT a redesign. The rules are upstream of every scenario."
-    status: pending
+    content: "Explore (FIRST) — critical pass over design/ rules. DONE (commit 64b8c01): grilled all 10 design files; found 4 prose-lagging-model gaps, all mechanically aligned (no redesign, no markers, no follow-up CR): (1) spec.md floor list missing Compatibility; (2) loops.md gave both judges all 3 lenses — impl gate is {Builder,Architect}; (3) unit-and-organization retired `type` -> `artifact-type`; (4) actors-and-governance 'gateways hold no governance' scoped to embedding. Load-bearing claims (layers, loops, leash, freeze, two-face provenance, write-ownership, governance tiers) cross-checked consistent."
+    status: completed
   - id: prose-reconcile
     content: "Explore — lighter pass over each capability README: What/Why/decisions present and current so every use case maps to a scenario; no dangling open: markers"
     status: pending
