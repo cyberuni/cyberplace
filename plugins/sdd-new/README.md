@@ -106,8 +106,8 @@ A request to change a frozen scenario is never edited in place; it re-enters as 
 
 ## Harness requirement — two-level spawning
 
-SDD's conductor runs as a spawned agent that **itself spawns cold judges**, so the loop needs
-a harness that supports subagent nesting **at least two levels deep** (session → conductor →
+SDD's operator runs as a spawned agent that **itself spawns cold judges**, so the loop needs
+a harness that supports subagent nesting **at least two levels deep** (session → operator →
 judge). SDD targets only harnesses that clear this bar: **Claude Code** (up to 5 levels) and
 **Cursor** (two). **Codex** ships flat (one level) and must have `agents.max_depth` raised to
 at least `2`; harnesses that forbid nesting outright (e.g. Gemini CLI, Amp) cannot run the
@@ -134,7 +134,7 @@ skills, agent definitions, React components, docs, and more. A **domain plugin**
 a new one by filling five production-chain roles (spec-producer, solution-producer,
 spec-judge, impl-producer, impl-judge) and registering itself into your project's
 `.agents/universal-plugin.json`. Any role it leaves open falls back to a sensible SDD
-default. Producers run inline with the conductor; judges always spawn cold, so a grader
+default. Producers run inline with the operator; judges always spawn cold, so a grader
 never shares the author's context.
 
 This repo ships example domain plugins — **ACES** (agent-configuration domains) and
