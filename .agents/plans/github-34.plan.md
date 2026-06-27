@@ -127,17 +127,18 @@ The work is organized in **two levels of grill**:
      (impl-producer also reconciles); the 3 self-align lenses aren't yet explicit
      scope/coverage/structure checks.
 
-4. **The "plan" terminology collision — DECISION MADE (2026-06-27): the functional spec is
-   SEPARATED from the CR execution plan.** The word **plan** means two things: **old SDD**
-   (`plugins/sdd`) `plan.md`+`tasks.md` = the **functional spec** (per-CR solution: approach,
-   structures, chosen design + rejected alternatives, how each scenario is met) + a build-task
-   DAG; **new SDD** `plan` = `.agents/plans/<cr-ref>.plan.md`, the **execution** plan / handoff
-   brief. New SDD had *folded* the old plan.md+tasks.md roles into the one `.plan.md`; that fold
-   is **reversed** — `.plan.md` carries only execution state, the functional spec becomes its own
-   durable artifact. REMAINING (do in `sub-mission` / `sub-deliver`): design the functional spec's
-   **home, lifecycle, and producer**; rework `plan-producer-governance` and undo the fold marked
-   `<!-- open: -->` in `design/provenance-model.md`. Old→new terms tracked in
-   `.agents/specs/sdd/TERMINOLOGY.md` (temporary, deleted when old SDD is erased). (Memory:
+4. **The "plan" terminology collision — DESIGNED & LANDED (2026-06-27).** The old
+   `plan.md`+`tasks.md` split two ways by scope+lifetime: the **functional spec** (`plan.md` —
+   approach, structures, chosen design + rejected alternatives) is now the per-unit **solution**
+   `<unit>.solution.md` (durable, beside the unit's spec + suite); the **task DAG** (`tasks.md`)
+   is the execution `.plan.md` `todos`, **operator**-filled (per-CR, transient). The `plan-producer`
+   role → **`solution-producer`** (ungated, no judge; impl gate validates transitively). The
+   solution is OPTIONAL (only when a unit has a real design fork — never restates code or suite),
+   boundary-aligned not coverage-aligned, not frozen. Landed in `design/` (provenance-model,
+   specialists-and-squads, unit-and-organization §"third facet", loops, mission/README,
+   mission/deliver, plugin, intake), `TERMINOLOGY.md`, and the fold-marker removed. REMAINING =
+   **impl only** (in `sub-mission` / `sub-deliver`): build `solution-producer-governance` in
+   `plugins/sdd-new` + the per-unit spec/suite for the role. (Memory:
    `project_sdd_plan_terminology_collision`.)
 
 5. **Do not relearn** — the working method and settled calls live in `## Resolved decisions`:
