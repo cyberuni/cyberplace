@@ -25,11 +25,8 @@ todos:
   - id: cap-create-governance
     content: "Explore — spec a create-governance skill (author a governance: metadata{artifact-type,actor,face} + compose mode union|replace; place at <project>/.agents/governances/; validate schema). Sibling to create-spec/validate-spec; consumes the A model."
     status: pending
-  - id: cap-publish-artifact-types
-    content: "Explore — spec publishing artifact-types: a specialist plugin declares/exports the artifact-types it covers so they are discoverable/reusable. Home: plugin/ (manifest + registry)."
-    status: pending
-  - id: cap-forge-learn-artifact-types
-    content: "Explore — spec the forge loop learning NEW artifact-types from opt-in field usage (discovered-from-usage growth, same as the cause enum). Home: forge/."
+  - id: cap-marketplace
+    content: "Explore — spec marketplace registration & artifact-type discovery (R2+R3, SDD-owned, NOT forge): a plugin publishes DECLARING the artifact-types it serves (R2); a register-plugin-to-marketplace skill; the website shows which plugins are available per artifact-type (R3). Two layers: marketplace = global catalog (discover+install, website); registry = per-project resolution. Home: plugin/ + apps/website. Builds on universal-plugin marketplace + publish-universal-plugin + awesome-list."
     status: pending
   - id: spec-gate
     content: "Spec gate (Draft -> Approved): run validate-spec / sdd-operator over the project spec; cold spec-judge judges the suite; on approve, freeze touched .feature files"
@@ -150,20 +147,27 @@ independently get their own. One `Feature:` per file.
   file. Same principle; the formation loop polices it after the bootstrap. Do **not** pre-split a
   single capability's units before there is a folder reason to.
 
-### New capabilities — artifact-type & governance lifecycle (added 2026-06-26)
-
-A clean arc around the actor-governance model (A): **create → publish → learn**.
+### New capabilities — governance authoring + marketplace (added 2026-06-26)
 
 - **create-governance skill (R1).** User-facing aid to author a governance: choose artifact-type
   + actor + face, scaffold `metadata:{artifact-type,actor,face}` + compose mode (union default,
   opt-in replace), place at `<project>/.agents/governances/`, validate the schema. A new SDD skill
-  (sibling to `create-spec`/`validate-spec`); consumes the A model.
-- **publish artifact-types (R2).** A specialist plugin **declares and exports** the artifact-types
-  it covers so they are discoverable/reusable beyond one project's registry. Home: `plugin/`
-  (manifest + registry).
-- **forge learns new artifact-types (R3).** The forge loop (opt-in field corrections, Consent
-  floor) **discovers artifact-types not yet modeled** and proposes them back — the same
-  discovered-from-usage growth as the `cause` enum, applied to artifact-types. Home: `forge/`.
+  (sibling to `create-spec`/`validate-spec`); consumes the A model. (Scaffold shape — plain file
+  vs SKILL.md — follows the open end-user-governance-form call in A.)
+- **Marketplace registration & artifact-type discovery (R2+R3).** Two halves of one ecosystem
+  capability, **SDD-owned, NOT forge**:
+  - **R2 — declare.** On publish, a plugin **declares the artifact-types it serves** (its squad
+    coverage). The declaration side.
+  - **R3 — discover + install.** A skill **registers a plugin to the marketplace**; the **website
+    shows which plugins are available per artifact-type** so a user needing a specialist for type X
+    can find and install one. Builds on the existing universal-plugin marketplace +
+    `publish-universal-plugin` + the awesome-list website.
+  - **Two layers:** **marketplace** = global catalog (discover + install, rendered on the website);
+    **registry** (`.agents/universal-plugin.json`, from A) = per-project record (resolve which
+    installed plugin covers X). Flow: marketplace → install → registry.
+  - New artifact-types enter the ecosystem when a plugin **publishes coverage**, not via forge
+    field-learning. Forge keeps field corrections → the `cause` enum; it no longer learns
+    artifact-types. Home: `plugin/` + `apps/website/`.
 
 ### A — locked: actor-governance resolution (from the grill)
 
