@@ -17,7 +17,10 @@ todos:
     content: "Sub-mission authoring/ — prose (done: reconcile rule + per-unit split note), per-unit suites (done: spec-producer.feature 10 + validate-spec.feature 19), impl in sdd-new (done: spec-producer-governance). REMAINING: suites+impls for create-spec, revise-spec, validate-spec; the gate-digest behavior."
     status: in_progress
   - id: sub-intake
-    content: "Sub-mission intake/ — extract the inline README scenarios into per-unit .feature suites (channels/sources, escape hatch, inject channel); RESOLVE the open marker (adapter directive + local CR store — author or carve to follow-up CR); build impls in sdd-new."
+    content: "Sub-mission intake/ — extract the inline README scenarios into per-unit .feature suites (channels/sources, escape hatch, inject channel); build impls in sdd-new. Carries the intake-adapter-store decision."
+    status: pending
+  - id: intake-adapter-store
+    content: "DECISION + scope — the intake open marker (intake/README.md): the thin adapter directive (source selection + per-source convention + multi-source orchestration) and the local CR store (on-disk CR body + open->accepted->done; candidate beads) are flagged NEW WORK needing their own spec+suite. Decide: author their intake scenarios now (grows #34) OR carve to a follow-up CR and drop the marker. BLOCKS the spec gate until resolved (open markers block the gate)."
     status: pending
   - id: sub-gateway
     content: "Sub-mission gateway/ — extract the inline README scenarios to gateway.feature; build the thin-relay sdd gateway skill in sdd-new (NO governance load — the macro-grill ruling)."
