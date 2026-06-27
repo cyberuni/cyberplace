@@ -1,11 +1,27 @@
 # SDD redesign — design notes
 
-Working notes for the SDD redesign. Source of truth for the model behind **CR #34**
-(<https://github.com/cyberuni/cyber-skills/issues/34>): redo the SDD spec + behavior
-suite as one durable project spec under `artifacts/specs/sdd`.
+> **SUPERSEDED — historical record, not the working model.** These are the original CR #34
+> (<https://github.com/cyberuni/cyber-skills/issues/34>) design-discussion notes, kept for
+> provenance. The working model is now the root [`spec.md`](./spec.md) narrative + the
+> [`design/`](./design/) rules + the capability folders. The model evolved past these notes
+> during the post-review cleanup; where this doc disagrees with the spec tree, **the spec
+> tree wins.**
+>
+> **What changed since these notes** (CR #34 post-review cleanup):
+> - **No spec graph.** `subtasks` (composition) and `blocked-by` (dependency) were both
+>   removed — the spec is flat, not a graph. The "structural axis derived from graph edges /
+>   `root` vs `composite`" idea below is **dead**; one project is one spec. Cross-project
+>   execution ordering lives in the source tracker, not in frontmatter.
+> - **No `priority` field.**
+> - **`type` → `artifact-types`** (plural): a project spans many artifact-types and squads
+>   resolve **per file** — not one spec-`type` matched against `domains[]`. ("One squad per
+>   spec" below is superseded by "one squad per artifact-type, one producer per file".)
+> - **Plans are tracked, not gitignored** — committed with the work, distilled then deleted
+>   from the tree at retro (durable in git history). The combat log is no longer "ephemeral".
+> - The `corpus/` `sdd-spec-graph` + `dag-tooling` entries in the skeleton below are **gone**.
 
-These notes capture the full design discussion so the CR's grilling phase has every
-detail, even where the issue body is terse. Not a spec — superseded once the spec lands.
+These notes capture the full design discussion so the CR's grilling phase had every
+detail, even where the issue body was terse. Not a spec.
 
 ## Core reframe — the abstraction stack
 
