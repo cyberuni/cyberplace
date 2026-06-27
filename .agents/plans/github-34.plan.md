@@ -1,7 +1,43 @@
+---
+name: "github-34: SDD spec redesign, post-review cleanup"
+overview: "Post-holistic-review cleanup of artifacts/specs/sdd/ — resolve the frontmatter schema (remove spec graph/subtasks/blocked-by/priority, type->artifact-types), fix the stale acceptance freeze seed, track mission plans instead of gitignoring them, and close the mechanical schema contradictions."
+cr: github-34
+cr-url: https://github.com/cyberuni/cyber-skills/issues/34
+todos:
+  - id: remove-spec-graph
+    content: "D-1 + Q-1 — remove subtasks + blocked-by + the spec-graph apparatus and its 3 consumers"
+    status: completed
+  - id: remove-priority
+    content: "D-2 + T-4 — remove the priority field"
+    status: completed
+  - id: artifact-types
+    content: "D-3 — type -> artifact-types (plural), resolve per file"
+    status: completed
+  - id: acceptance-fixes
+    content: "D-4 + D-5 — rewrite acceptance D1 to per-file @frozen; relocate B7 to mission unit"
+    status: completed
+  - id: plans-tracked
+    content: "D-6 + Q-4 + W-2 + W-3 — track plans not gitignore; wording sweep; plan retirement; combat-log hygiene"
+    status: completed
+  - id: mechanical-fixes
+    content: "T-1 + T-2 + T-3 + T-5 — approval.cause, root spec narrative, gate example path, gateway routing"
+    status: completed
+  - id: plan-retirement-spec
+    content: "W-1 + W-1b — spec the doctrine-owned plan-retirement sweep; pin the init symlink gotcha"
+    status: completed
+  - id: design-notes-superseded
+    content: "mark DESIGN-NOTES.md superseded with a divergence list"
+    status: completed
+  - id: plugins-sdd-impl-sweep
+    content: "separate phase — sweep plugins/sdd impl (delete render-spec-graph skill/agent + DAG kernel, build W-1 retirement .mts skill, in-place-vs-rebuild decision)"
+    status: pending
+isProject: false
+---
+
 # Plan — github-34: SDD spec redesign, post-review cleanup
 
 > Mission plan (portable handoff brief). Tracked (NOT gitignored — see D-6), per-worktree.
-> CR: github-34 — SDD spec redesign (project-spec model).
+> CR: [github-34](https://github.com/cyberuni/cyber-skills/issues/34) — SDD spec redesign (project-spec model).
 > Phase: post-holistic-review cleanup of `artifacts/specs/sdd/`.
 
 ## What we are doing

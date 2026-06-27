@@ -41,6 +41,34 @@ tool-agnostic home; for Cursor interop the SDD `init` skill symlinks
 migration: `../plugin/README.md`). The two faces below describe the **durable** record; the
 chatty mid-flight lines live in the plan.
 
+### Plan frontmatter (Cursor-compatible)
+
+`<cr-ref>.plan.md` opens with YAML frontmatter that **matches Cursor's plan schema** so the
+same file renders natively in Cursor's plan UI (the `.cursor/plans` symlink), plus two SDD
+fields. Cursor ignores unknown keys, so the SDD additions are safe:
+
+```yaml
+---
+name: <short plan title>                 # Cursor: the plan's display name
+overview: <one-paragraph summary>        # Cursor: quote if it contains : or other YAML-special chars
+cr: <cr-ref>                             # SDD: the source-qualified CR id (github-34, asana-<gid>, local-<slug>)
+cr-url: <web URL of the CR>              # SDD: the CR's source link, so a reader opens it in one click
+todos:                                   # Cursor: the editable task list (the plan's tasks.md DAG, flattened)
+  - id: <kebab-id>
+    content: <task description>
+    status: pending                      # pending | in_progress | completed
+isProject: false                         # Cursor: always false — SDD has no Cursor "project" plans
+---
+```
+
+- **`cr` + `cr-url`** are the SDD extension. Always record **both**: `cr` is the matchable
+  source-qualified id used for retirement (source-status query) and collision-free naming;
+  `cr-url` is the human link (`github-<n>` → `https://github.com/<owner>/<repo>/issues/<n>`,
+  `asana-<gid>` → the task URL, `local-<slug>` → omit or a local anchor). Anywhere the plan
+  body or a conclusion references the CR, give the **URL** too, not just the ref.
+- **`name` / `overview` / `todos` / `isProject`** are Cursor's own fields — populate them as
+  Cursor does so the plan stays first-class in both tools.
+
 ## Two faces, two homes
 
 | Face | Home | Shape | Mutability | Holds |
