@@ -1,41 +1,77 @@
 ---
 name: "github-34: SDD project spec + behavior suite to the spec gate"
-overview: "Carry CR #34 through the new SDD Mission Loop as a self-hosting bootstrap: the spec-tree cleanup (Phase 0) is done; the live work is the explore phase, hand-run in the main loop (no spec-producer/spec-judge to delegate to yet) — build the missing behavior suite (e2e acceptance/ + colocated unit suites), add root spec.md lifecycle frontmatter, and bring the project spec to a spec-gate approve (Draft -> Approved). Deliver phase builds a fresh plugins/sdd-new from the approved spec, keeping the existing plugins/sdd as a reference baseline."
+overview: "Carry CR #34 through the new SDD Mission Loop as a self-hosting bootstrap. The macro grill (holistic direction check over design/) is done. The live work is a series of per-capability VERTICAL SUB-MISSIONS: for each capability, tighten the prose, author per-unit .feature suites (one suite per skill/unit), and build the matching implementation fresh under plugins/sdd-new (build-to-learn, during explore). Then root frontmatter, the hand-run spec gate, the cross-cutting agents, plugin assembly, and the self-hosting check. plugins/sdd stays an untouched reference baseline."
 cr: github-34
 cr-url: https://github.com/cyberuni/cyber-skills/issues/34
 todos:
   - id: cleanup-phase
     content: "Phase 0 — spec-tree post-review cleanup (schema, acceptance seed, tracked plans, mechanical fixes). COMPLETE — see conclusion."
     status: completed
-  - id: design-grill
-    content: "Explore (FIRST) — critical pass over design/ rules. DONE (commit 64b8c01): grilled all 10 design files; found 4 prose-lagging-model gaps, all mechanically aligned (no redesign, no markers, no follow-up CR): (1) spec.md floor list missing Compatibility; (2) loops.md gave both judges all 3 lenses — impl gate is {Builder,Architect}; (3) unit-and-organization retired `type` -> `artifact-type`; (4) specialists-and-squads falsely claimed the `sdd` gateway loads lifecycle-governance — corrected to 'loads none' to match the shipping thin-relay gateway skill + actors-and-governance + gateway/README (commit 745ae42; initial 64b8c01 had reconciled the wrong way). Load-bearing claims (layers, loops, leash, freeze, two-face provenance, write-ownership, governance tiers) cross-checked consistent."
+  - id: macro-grill
+    content: "Explore, level 1 — MACRO grill: holistic pass over design/ for correct direction + nothing big missing. DONE (64b8c01, 745ae42): 4 coherence fixes (Compatibility floor in spec.md; judge lens split; type->artifact-type; gateway loads NO governance — corrected after a wrong-direction first pass). Surfaced 4 model refinements now pending in model-refinements. Reconcile rule learned: reason to the CORRECT answer from design intent, not a reference count."
     status: completed
-  - id: prose-reconcile
-    content: "Explore — lighter pass over each capability README: What/Why/decisions present and current so every use case maps to a scenario; no dangling open: markers"
+  - id: model-refinements
+    content: "Explore, level 1 — land the macro-grill's model refinements in design/: (a) Mission Loop step 1 (intake) CREATES the plan from a basic template; (b) step 2 (explore) grills the PLAN + spec + suite (when it exists) and builds impl (build-to-learn) — implementation is not deferred to deliver; (c) per-UNIT suites — one .feature per skill/unit, producer!=gate (generalize from authoring into unit-and-organization.md + suite-style.md, replacing 'one .feature per capability folder'); (d) unit-of-work = co-committable unit (commit-discipline), CR = unit of change-intent (intake done; sweep loops.md/mission for 'unit of work' misuse). Touch loops.md, intake/, mission/, unit-and-organization.md, suite-style.md, provenance-model.md."
     status: pending
-  - id: suite-e2e
-    content: "Explore — author the e2e suite split by the A-F seed theme (one Feature per file: cr-lifecycle, escalation-floor, resolve-squad, freeze, gate-verdicts, handoff); boolean/rubric Gherkin per design/suite-style.md"
+  - id: sub-authoring
+    content: "Sub-mission authoring/ — prose (done: reconcile rule + per-unit split note), per-unit suites (done: spec-producer.feature 10 + validate-spec.feature 19), impl in sdd-new (done: spec-producer-governance). REMAINING: suites+impls for create-spec, revise-spec, validate-spec; the gate-digest behavior."
+    status: in_progress
+  - id: sub-intake
+    content: "Sub-mission intake/ — extract the inline README scenarios into per-unit .feature suites (channels/sources, escape hatch, inject channel); RESOLVE the open marker (adapter directive + local CR store — author or carve to follow-up CR); build impls in sdd-new."
     status: pending
-  - id: suite-unit
-    content: "Explore — author colocated unit .feature per capability folder, following the folder tree (mission -> mission/deliver/handoff = 3 files); single file per capability until a folder reason to split"
+  - id: sub-gateway
+    content: "Sub-mission gateway/ — extract the inline README scenarios to gateway.feature; build the thin-relay sdd gateway skill in sdd-new (NO governance load — the macro-grill ruling)."
+    status: pending
+  - id: sub-mission
+    content: "Sub-mission mission/ — the operator (sdd-operator): resolution (registry READ), production chain, impl gate, in-flight service, stop-provenance. Prose -> per-unit suites -> operator agent in sdd-new."
+    status: pending
+  - id: sub-deliver
+    content: "Sub-mission mission/deliver/ — build-to-keep behaviors + impl-producer-governance; per-unit suites -> impl in sdd-new."
+    status: pending
+  - id: sub-handoff
+    content: "Sub-mission mission/handoff/ — delivery-shape contract, unit-of-delivery, conclusion write-back; per-unit suites -> impl."
+    status: pending
+  - id: sub-corpus
+    content: "Sub-mission corpus/ — discovery, digest, dedupe, split, align-specs tools; per-unit suites -> impls in sdd-new (NO spec-graph/DAG)."
+    status: pending
+  - id: sub-campaign
+    content: "Sub-mission campaign/ — the product outer loop; per-unit suites -> impl."
+    status: pending
+  - id: sub-formation
+    content: "Sub-mission formation/ — the structure outer loop + the Warden delegate; per-unit suites -> impl."
+    status: pending
+  - id: sub-doctrine
+    content: "Sub-mission doctrine/ — the process outer loop + the Scanner delegate + plan retirement (W-1 .mts skill); per-unit suites -> impl."
+    status: pending
+  - id: sub-forge
+    content: "Sub-mission forge/ — the field outer loop (Consent floor, cross-installation corrections); per-unit suites -> impl."
+    status: pending
+  - id: sub-plugin
+    content: "Sub-mission plugin/ — SDD's plugin nature: ships-as-plugin, extended-by-plugins, registry init-WRITE, workspace init (the ../.agents/plans symlink gotcha); per-unit suites -> impl."
+    status: pending
+  - id: sub-create-governance
+    content: "Sub-mission create-governance (NEW cap, R1) — author a governance: metadata{artifact-type,actor,face} + compose mode union|replace; place at <project>/.agents/governances/; validate schema. Sibling to create-spec/validate-spec; consumes the A model. Prose -> suite -> impl."
+    status: pending
+  - id: sub-marketplace
+    content: "Sub-mission marketplace (NEW cap, R2+R3, SDD-owned NOT forge) — a plugin declares the artifact-types it serves (R2); a register-plugin-to-marketplace skill + website shows plugins per artifact-type (R3). Two layers: marketplace=global catalog (website), registry=per-project resolution. Home: plugin/ + apps/website. Prose -> suite -> impl."
+    status: pending
+  - id: core-agents
+    content: "Deliver — the cross-cutting agents in sdd-new (not owned by one capability): sdd-operator, cold sdd-spec-judge + sdd-implementer (impl-judge), doctrine Scanner, formation Warden; plus the deterministic .mts helpers (check-spec-state, governance-resolution). Built to the CORRECTED lens sets (spec gate {director,builder,architect}; impl gate {builder,architect}) — the baseline 2-lens skills are reference only."
     status: pending
   - id: root-frontmatter
-    content: "Explore — add project-spec lifecycle frontmatter to root spec.md (status: draft, artifact-types, etc.) per design/lifecycle-model.md; drop the ## TODO once filled"
-    status: pending
-  - id: cap-create-governance
-    content: "Explore — spec a create-governance skill (author a governance: metadata{artifact-type,actor,face} + compose mode union|replace; place at <project>/.agents/governances/; validate schema). Sibling to create-spec/validate-spec; consumes the A model."
-    status: pending
-  - id: cap-marketplace
-    content: "Explore — spec marketplace registration & artifact-type discovery (R2+R3, SDD-owned, NOT forge): a plugin publishes DECLARING the artifact-types it serves (R2); a register-plugin-to-marketplace skill; the website shows which plugins are available per artifact-type (R3). Two layers: marketplace = global catalog (discover+install, website); registry = per-project resolution. Home: plugin/ + apps/website. Builds on universal-plugin marketplace + publish-universal-plugin + awesome-list."
+    content: "Explore — add project-spec lifecycle frontmatter to root spec.md (status: draft, artifact-types, aligned: false, strategy) per design/lifecycle-model.md; drop the ## TODO once the suites are in."
     status: pending
   - id: spec-gate
-    content: "Spec gate (Draft -> Approved): run validate-spec / sdd-operator over the project spec; cold spec-judge judges the suite; on approve, freeze touched .feature files"
+    content: "Spec gate (Draft -> Approved) — HAND-RUN in the main loop: judge the suite against suite-style.md + authoring criteria; never advance with judge failures/open markers/misaligned suite; on approve freeze touched .feature files, record per-CR gate ledger line, set status: approved."
     status: pending
-  - id: deliver-build-sdd-new
-    content: "Deliver — build fresh plugins/sdd-new from the approved spec (operator, spec/plan/impl producers + judges, governances, plan-retirement .mts skill W-1; no spec-graph); keep plugins/sdd as reference baseline"
+  - id: assemble-plugin
+    content: "Deliver — assemble plugins/sdd-new as a real plugin: .plugin/plugin.json manifest, governances-as-skills layout, agents/, registry role-map; diff against plugins/sdd to confirm intended deltas. Old-plugin retirement is a LATER CR."
     status: pending
-  - id: deliver-self-host
-    content: "Deliver — once sdd-new's spec-producer + spec-judge exist, re-run the explore/spec gate through them to verify the bootstrap closes (self-hosting check)"
+  - id: self-host
+    content: "Deliver — once sdd-new's spec-producer + spec-judge + operator exist, re-run explore + the spec gate THROUGH them over the same spec to confirm the hand-run result reproduces (the bootstrap closes)."
+    status: pending
+  - id: handoff
+    content: "Handoff (step 4) — land as a branch -> PR (repo is PR-flow); keep the combat log in the PR. Do NOT delete this plan until github-34 is done/merged AND doctrine-distilled."
     status: pending
 isProject: false
 ---
@@ -44,132 +80,100 @@ isProject: false
 
 > Mission plan (portable handoff brief). Tracked (NOT gitignored), per-worktree.
 > CR: [github-34](https://github.com/cyberuni/cyber-skills/issues/34) — redo the SDD spec +
-> behavior suite as **one durable project spec** under `artifacts/specs/sdd`, organized into
-> files and folders, ready to approve at the spec gate.
+> behavior suite as **one durable project spec** under `.agents/specs/sdd`, organized into
+> files and folders, ready to approve at the spec gate, then build the implementation.
 
 ## What we are doing
 
-The CR was refreshed to the **new SDD model**: one durable per-project spec + behavior suite is
-the source of truth; the **CR is the unit of work**; the **Mission Loop** carries it
-(intake → explore → deliver → handoff). This plan runs CR #34 through that loop against its own
-spec tree (`.agents/specs/sdd/`, relocated from `artifacts/specs/sdd/`) — dogfooding the model on itself.
+CR #34 carried through the **new SDD Mission Loop** as a **self-hosting bootstrap**
+(dogfooding the model on its own spec tree, `.agents/specs/sdd/`). Because the new
+spec-producer/spec-judge don't exist yet, we **hand-run explore in the main loop**, building
+the new delegates as we go.
 
-**This is a self-hosting bootstrap** (building a compiler with itself). The explore phase
-*should* delegate grilling to a spec-producer and a spec-judge — but the new ones don't exist
-yet, so we **hand-run explore in the main loop** to kickstart: grill the CR by hand into the
-spec + suite diff, run the spec gate by hand. We *build* the new delegates as deliver-phase
-output, then re-run the loop through them to prove the bootstrap closes.
+The work is organized in **two levels of grill**:
 
-We keep the existing `plugins/sdd/` as a **reference baseline** and build the new
-implementation fresh under `plugins/sdd-new/`, so the two can be compared rather than the old
-one mutated in place.
+1. **Macro grill (level 1) — DONE.** A holistic pass over `design/` checking the direction is
+   correct and nothing big is missing. It produced 4 coherence fixes and surfaced 4 model
+   refinements (now the `model-refinements` todo).
+2. **Vertical sub-missions (level 2) — the live work.** Go through the capabilities **one at a
+   time, vertically**, each as an individual sub-mission with the rhythm below.
 
-**Issue scope (verbatim):** get the project spec + behavior suite *in and organized* so it can
-be **approved at the spec gate** (Mission Loop step 2). Then build the implementation (step 3).
+## The Mission Loop — refined this session
 
-## Mission Loop position
+- **Step 1 — intake.** Get the CR into the system **and create the plan from a basic
+  template** (this `.plan.md`). The plan is a step-1 artifact, not something authoring invents
+  later.
+- **Step 2 — explore.** Grill the **plan + spec + suite** (the suite when it exists) into a
+  concrete diff, **and build the implementation** (build-to-learn, fresh in `plugins/sdd-new`)
+  — implementation is **not** deferred to deliver; `loops.md` already says impl happens in
+  both phases, the freeze is the boundary. Ends at the spec gate.
+- **Step 3 — deliver.** Build-to-keep against the frozen suite; here it mostly means the
+  cross-cutting agents, plugin assembly, and the self-hosting check (most per-capability impl
+  was already built in explore).
+- **Step 4 — handoff.** Branch → PR.
 
-- **Step 1 — intake.** Done: issue #34 is the CR.
-- **Step 2 — explore (authoring).** **The live work.** The spec prose/rules are largely written
-  and Phase 0 cleaned them up, but the **behavior suite does not exist yet** and the root spec
-  has no lifecycle frontmatter. Build both, reconcile prose, end at the spec gate.
-- **Step 3 — deliver.** Build `plugins/sdd-new/` fresh from the frozen suite (operator,
-  producers + judges, governances, W-1 skill); keep `plugins/sdd/` as a reference baseline.
-- **Step 4 — handoff.** Land as a branch → PR (this repo is PR-flow). Plan retirement waits for
-  merge + doctrine distill.
+## The per-capability sub-mission rhythm
 
-## Current state (gap analysis, verified this session)
+Each capability is its own sub-mission, run **vertically**:
 
-- `.agents/specs/sdd/` (relocated from `artifacts/specs/sdd/`) is organized into capability folders + `design/` + `acceptance/`, and
-  `spec.md` carries the project-index narrative (abstraction stack, Mission Loop, 4 outer loops,
-  capability map, invariants). Good.
-- **No `.feature` files exist anywhere** — `find . -name '*.feature'` is empty. The behavior
-  suite (the issue's core deliverable) is entirely unbuilt. `acceptance/README.md` holds an
-  organized **seed inventory** (themes A–F with named scenario rows) but no `.feature`.
-- **Root `spec.md` has no frontmatter** — no `status`, no lifecycle. Under the one-spec model
-  the project needs a single lifecycle baseline to be gate-eligible. (The `status:` lines in
-  `design/lifecycle-model.md` and `design/provenance-model.md` are schema/example snippets, not
-  real frontmatter.)
-- Capability folders are `README.md` (prose) only — they still need their colocated unit
-  `.feature` (root `spec.md` `## TODO`: "fill each capability folder" + "build the behavior
-  suite (acceptance/ + colocated unit)").
+1. **Prose** — tighten the capability `README.md`: What / Why / decisions current, every use
+   case has a scenario home, resolve the `<!-- open: -->` markers it touches.
+2. **Per-unit suites** — author one `.feature` **per unit of code (skill)**, not one per
+   folder. A producer suite never tests a gate; a gate suite never tests grilling. Cross-
+   capability outcomes go to `acceptance/`, never the capability folder.
+3. **Impl** — build the matching skills/governances/agents fresh in `plugins/sdd-new`
+   (build-to-learn; implementing surfaces suite gaps and stale-baseline bugs). Pre-gate it is
+   provisional; the freeze hardens it to build-to-keep.
 
-## Step 2 — explore: build to the spec gate
+`authoring/` is the worked example: prose (reconcile rule + the per-unit split note),
+`spec-producer.feature` (10) + `validate-spec.feature` (19), and
+`plugins/sdd-new/skills/spec-producer-governance/`. Building the impl already caught a
+baseline bug (the old spec-producer self-aligns to 2 lenses, not 3).
 
-Order: **rules first** (`design/`), then capability prose, then the suite, then frontmatter,
-then gate. Rules are upstream of every scenario — authoring scenarios against unsettled rules
-makes them chase a moving target.
+## Per-unit suite organization (the split rule)
 
-- **design-grill (FIRST).** A critical-thinking pass over `design/` — the rules the whole suite
-  encodes: `abstraction-stack`, `actors-and-governance`, `autonomy-rubric`, `lifecycle-model`,
-  `loops`, `provenance-model`, `specialists-and-squads`, `suite-style`, `unit-and-organization`.
-  Check each rule for internal coherence, consistency with the others, and contradiction with the
-  capability folders. Phase 0 only did the *mechanical* schema sweep here; this is the real grill.
-  **Scope guardrail:** this is grilling, not redesign — a tension becomes an `<!-- open: -->`
-  marker or a **follow-up CR**, never an in-place model rewrite that balloons #34. The model's own
-  rule holds: nothing changes except through a CR.
-- **prose-reconcile.** Lighter pass over each capability README; confirm What / Why / design
-  decisions are present and current so every use case has a scenario home. Resolve any
-  `<!-- open: -->` markers the suite will touch. Authoring's grill phase 1 at the capability level.
-- **suite-e2e.** Author the e2e suite from the A–F seed inventory, **split by theme** (see Suite
-  file organization). Only cross-capability outcomes; boolean Gherkin by default, `@rubric` where
-  a gradient rule needs it (autonomy bar, freeze condition). Conventions: `design/suite-style.md`.
-  Exemplars drafted in `acceptance/README.md`.
-- **suite-unit.** Author colocated unit `.feature` per capability folder for the
-  single-capability behaviors (e.g. the mid-flight combat-log halt-write belongs under
-  `mission/`, not acceptance). Folders to cover: `intake/`, `authoring/`, `mission/`,
-  `mission/deliver/`, `mission/handoff/`, `campaign/`, `formation/`, `doctrine/`, `forge/`,
-  `corpus/`, `plugin/`, `gateway/`. A folder with genuinely no unit behavior stays `.feature`-less
-  (the digest reports zero scenarios, not an error).
-- **root-frontmatter.** Add project-spec frontmatter to `spec.md` per
-  `design/lifecycle-model.md`: `status: draft`, `artifact-types`, `aligned: false`, and the
-  workflow fields as they apply. Drop the `## TODO` block once the suite is in.
+The unit of test is the **unit of code (a skill)**, and `@frozen` is per `.feature` file:
 
-### Suite file organization
+- **One `.feature` per skill/unit**, named for the unit; a capability hosting several skills
+  holds several suites. (Replaces the older "one `.feature` per capability folder" — see
+  `model-refinements`, which lands this in `unit-and-organization.md` + `suite-style.md`.)
+- **No mixing units in one file** — a producer suite testing gates is a category error.
+- **Split further** only when there is a unit reason to; the freeze grain is per file, so two
+  units in two files freeze independently.
+- **e2e (cross-capability)** scenarios live in `acceptance/`, split by theme (the A–F seed):
+  `cr-lifecycle` (A), `escalation-floor` (B), `resolve-squad` (C), `freeze` (D),
+  `gate-verdicts` (E), `handoff` (F).
 
-The split criterion is **freeze blast-radius**: `@frozen` lives per `.feature` file, so
-scenarios a single CR tends to freeze/unfreeze together share a file; scenarios re-opened
-independently get their own. One `Feature:` per file.
+## Model refinements pending (`model-refinements` todo)
 
-- **Unit suites — partitioned by the folder tree (free).** "Folders are views" → the capability
-  folder *is* the split. One `.feature` per capability folder, named for the capability; a
-  capability's file splits only when its folder splits. The only day-one multi-file case is
-  `mission/`, which already has subfolders → `mission/mission.feature` +
-  `mission/deliver/deliver.feature` + `mission/handoff/handoff.feature`.
-- **e2e suite — split by theme now, not later.** The seed already decomposed the outcomes into
-  six cohesive themes, and theme-level freeze is the right grain (a handoff CR must not freeze
-  CR-lifecycle scenarios). Start as six files, one `Feature:` each:
-  `acceptance/cr-lifecycle.feature` (A), `escalation-floor.feature` (B), `resolve-squad.feature`
-  (C), `freeze.feature` (D), `gate-verdicts.feature` (E), `handoff.feature` (F). Bonus: the gate
-  digest's "scenarios this CR touched" then maps cleanly to a theme.
-- **The split seam, along the way.** Split a `.feature` when a CR keeps re-opening *part* of it
-  while the rest stays frozen — for units that shows up as a folder split, for e2e as a new theme
-  file. Same principle; the formation loop polices it after the bootstrap. Do **not** pre-split a
-  single capability's units before there is a folder reason to.
+The macro grill surfaced four model points to land in `design/` before/with the sub-missions:
 
-### New capabilities — governance authoring + marketplace (added 2026-06-26)
+- **Step 1 creates the plan.** `loops.md` / `intake/` / `mission/` must say intake scaffolds
+  the `.plan.md` from a basic template; the plan-producer then fills it during explore.
+- **Step 2 grills plan + spec + suite, and builds impl.** Make explicit that explore builds
+  implementation (build-to-learn), not only spec + suite.
+- **Per-unit suites.** Generalize the authoring decision into `unit-and-organization.md` +
+  `suite-style.md`: the unit of test is the skill, one `.feature` per unit.
+- **Unit-of-work vocabulary.** `unit of work` = the **co-committable** unit (commit-
+  discipline); the **CR** is the **unit of change-intent** (intake fixed; sweep `loops.md` /
+  `mission/` for misuse). SDD requires no TDD ordering inside a commit.
+
+## New capabilities — governance authoring + marketplace (added 2026-06-26)
 
 - **create-governance skill (R1).** User-facing aid to author a governance: choose artifact-type
   + actor + face, scaffold `metadata:{artifact-type,actor,face}` + compose mode (union default,
   opt-in replace), place at `<project>/.agents/governances/`, validate the schema. A new SDD skill
-  (sibling to `create-spec`/`validate-spec`); consumes the A model. (Scaffold shape — plain file
-  vs SKILL.md — follows the open end-user-governance-form call in A.)
-- **Marketplace registration & artifact-type discovery (R2+R3).** Two halves of one ecosystem
-  capability, **SDD-owned, NOT forge**:
-  - **R2 — declare.** On publish, a plugin **declares the artifact-types it serves** (its squad
-    coverage). The declaration side.
-  - **R3 — discover + install.** A skill **registers a plugin to the marketplace**; the **website
-    shows which plugins are available per artifact-type** so a user needing a specialist for type X
-    can find and install one. Builds on the existing universal-plugin marketplace +
-    `publish-universal-plugin` + the awesome-list website.
-  - **Two layers:** **marketplace** = global catalog (discover + install, rendered on the website);
-    **registry** (`.agents/universal-plugin.json`, from A) = per-project record (resolve which
-    installed plugin covers X). Flow: marketplace → install → registry.
-  - New artifact-types enter the ecosystem when a plugin **publishes coverage**, not via forge
-    field-learning. Forge keeps field corrections → the `cause` enum; it no longer learns
-    artifact-types. Home: `plugin/` + `apps/website/`.
+  (sibling to `create-spec`/`validate-spec`); consumes the A model.
+- **Marketplace registration & artifact-type discovery (R2+R3), SDD-owned, NOT forge.**
+  - **R2 — declare.** On publish, a plugin **declares the artifact-types it serves**.
+  - **R3 — discover + install.** A skill **registers a plugin to the marketplace**; the
+    **website shows which plugins are available per artifact-type**. Builds on the universal-
+    plugin marketplace + `publish-universal-plugin` + the awesome-list website.
+  - **Two layers:** marketplace = global catalog (website); registry
+    (`.agents/universal-plugin.json`) = per-project resolution. Flow: marketplace → install →
+    registry. Home: `plugin/` + `apps/website/`.
 
-### A — locked: actor-governance resolution (from the grill)
+## A — locked: actor-governance resolution (from the macro grill)
 
 - **Bars:** director / builder / architect, each with **two faces** (forward=producer self-align,
   backward=judge), split so a role loads only its face. Strategist via the doctrine loop, no
@@ -179,73 +183,55 @@ independently get their own. One `Feature:` per file.
 - **Two tiers:** fixed-universal (ownership, lifecycle, spec-format, gate-validation — ship with
   sdd) vs resolved-actor (per artifact-type/face).
 - **Discovery is SDD-owned** — not harness precedence, not `${CLAUDE_PLUGIN_ROOT}`. The deciding
-  factor is *can SDD address the file?*
-  - **Plugin governances** (not addressable — version-routed): `user-invocable:false` **skills** in
-    the plugin's `skills/`; `init` lists their `<plugin>:<name>` in the consuming
-    `.agents/universal-plugin.json` keyed by `(artifact-type,actor,face)`; SDD asks the harness to
-    load `<plugin>:<name>` (harness version-routes).
-  - **Project/user governances** (addressable): **both forms supported** — a plain file *or* a
-    SKILL.md — in `<project>/.agents/governances/`; the operator reads them directly (no harness,
-    no build). **The mechanical resolution + composition is a deterministic helper script** (a
-    `.mts`, sibling to `check-spec-state.mts`): discovers candidates, matches `metadata`, applies
-    precedence, emits the load/compose plan — the agent never hand-enumerates.
-  - **sdd defaults:** the sdd plugin's own governances (skills, `sdd:<name>`), lowest precedence.
+  factor is *can SDD address the file?* Plugin governances are version-routed `user-invocable:false`
+  skills listed in `.agents/universal-plugin.json`; project/user governances are addressable files
+  the operator reads directly; the mechanical resolution + composition is a deterministic `.mts`
+  helper. sdd defaults are the sdd plugin's own governances, lowest precedence.
 - **Composition:** **union** default; **most-specific wins on conflict** (project > plugin >
-  default); **opt-in `replace`**; driven by the `governance-composition` governance (explicit
-  instructions, not positional last-wins).
-- **Lens sets** (sdd-default squad, overridable per squad): spec gate `{director,builder,architect}`;
+  default); **opt-in `replace`**; driven by the `governance-composition` governance.
+- **Lens sets** (sdd-default squad, overridable): spec gate `{director,builder,architect}`;
   impl gate `{builder,architect}`; plan `{architect}` (ungated). Producer self-aligns to exactly the
-  bars its judge grades (bar-level symmetry; faces loaded separately).
-- **Packaging:** the spec is **never inside a distributable plugin dir** (install full-copies, no
-  exclude). Spec → `<repo>/.agents/specs/<project>/` (or `.agents/spec/` if single project). Plugins
-  ship `skills/` (governances-as-skills) + `agents/`. Registry + plans are consumer/runtime-side at
-  `<repo>/.agents/`.
+  bars its judge grades.
+- **Packaging:** the spec is **never inside a distributable plugin dir**. Spec →
+  `<repo>/.agents/specs/<project>/`. Plugins ship `skills/` (governances-as-skills) + `agents/`.
+  Registry + plans are consumer/runtime-side at `<repo>/.agents/`.
 
 ## Spec gate (Draft → Approved) — hand-run
 
-Run the spec gate over the project spec **by hand in the main loop** (the issue's target
-milestone). We cannot delegate to `sdd:sdd-spec-judge`/`sdd:validate-spec` yet — those belong to
-the old `plugins/sdd/` and the new judge is not built. So we apply the gate criteria directly:
+Run the spec gate over the project spec **by hand in the main loop** (we cannot delegate to
+the new judge until it is built):
 
-- Judge the suite against `design/suite-style.md` (every untagged scenario boolean; `@rubric`
-  scenarios structurally well-formed) and the authoring criteria in `authoring/README.md`.
-- Never advance with judge failures, open markers, or a misaligned suite (they fail the
-  confidence dimension and forbid self-assertion).
+- Judge each unit suite against `design/suite-style.md` (untagged scenarios boolean; `@rubric`
+  structurally well-formed) and the authoring criteria in `authoring/README.md`.
+- Never advance with judge failures, open markers, or a misaligned suite.
 - On **approve**: freeze each touched `.feature` via its `@frozen` tag; record the verdict as a
-  durable per-CR `gate` ledger line; set `status: approved`. `spec.md` stays aligned, never
-  frozen.
+  durable per-CR `gate` ledger line; set `status: approved`. `spec.md` stays aligned, never frozen.
 
 ## Resolved decisions
 
-- **D-A — hand-author to bootstrap.** Step 2 *is* the explore phase; we hand-run grill → diff in
-  the main loop because there is no spec-producer/spec-judge to delegate to until we build them
-  (deliver). Step 2 and D-A are the same act. (`project_sdd_operator_builder_fabrication` is moot
-  while hand-running.)
-- **D-B — build fresh under `plugins/sdd-new/`, keep `plugins/sdd/` as reference.** Not an
-  in-place sweep: the old impl stays untouched as a baseline to compare against; the new impl is
-  authored from the approved spec. (`project_sdd_impl_sweep_pending`.)
+- **D-A — hand-author to bootstrap.** Hand-run grill → diff in the main loop because there is no
+  spec-producer/spec-judge to delegate to until we build them.
+- **D-B — build fresh under `plugins/sdd-new/`, keep `plugins/sdd/` as reference.** The old impl
+  stays untouched as a baseline; the new impl is authored from the spec.
+- **D-C — build impl during explore (build-to-learn).** Per the Mission Loop refinement,
+  implementation interleaves with suite-building per capability; it is not deferred wholesale to
+  deliver. Pre-gate impl is provisional; the freeze hardens it.
+- **D-D — per-unit suites.** One `.feature` per unit of code (skill); a producer suite never tests
+  gates. Generalized into the design via `model-refinements`.
+- **D-E — unit-of-work vocabulary.** `unit of work` = co-committable unit; CR = unit of
+  change-intent. No TDD ordering required inside a commit.
 
-## Step 3 — deliver: build `plugins/sdd-new/` from the approved spec
+## Step 3/4 — deliver & handoff
 
-Build the new implementation against the **frozen** suite, fresh (not by mutating `plugins/sdd/`):
-
-- Author the operator, the spec/plan/impl **producers + judges**, and the governances the new
-  spec defines (artifact-types resolution, **no** spec-graph / render-spec-graph / DAG kernel).
-- Build the **W-1 plan-retirement `.mts` skill** (doctrine-owned, glob `.agents/plans/*.plan.md`,
-  delete only when source = done/merged AND distilled; idempotent). Pin the `../.agents/plans`
-  init symlink gotcha.
-- **Self-hosting check:** once `sdd-new`'s spec-producer + spec-judge exist, re-run explore + the
-  spec gate *through them* over the same spec to confirm the hand-run result reproduces — the
+- **core-agents:** the cross-cutting agents (operator, cold spec-judge + impl-judge, Scanner,
+  Warden) + the `.mts` helpers, built to the corrected lens sets.
+- **assemble-plugin:** `.plugin/plugin.json`, governances-as-skills, `agents/`, registry; diff vs
+  `plugins/sdd/`. **W-1 plan-retirement `.mts` skill** (doctrine-owned, glob
+  `.agents/plans/*.plan.md`, delete only when source = done/merged AND distilled; idempotent).
+- **self-host:** re-run explore + the spec gate through sdd-new's producer + judge to confirm the
   bootstrap closes.
-- Diff `plugins/sdd-new/` against the reference `plugins/sdd/` to confirm the deltas are
-  intended; decide retirement of the old plugin as a later CR, not here.
-
-## Step 4 — handoff & plan retirement
-
-- Land on a branch → PR (repo is PR-flow). Keep the combat log in the PR (decision/failure
-  trail reviewers want).
-- **Do NOT delete this plan yet** — github-34 is not `done`/merged and not distilled. It stays
-  tracked until doctrine distills + deletes post-merge.
+- **handoff:** branch → PR; keep the combat log in the PR. **Do NOT delete this plan** until
+  github-34 is done/merged and doctrine-distilled.
 
 ## Phase 0 conclusion (cleanup — COMPLETE, applied 2026-06-26 on `next`)
 
@@ -253,11 +239,7 @@ The post-holistic-review cleanup of `artifacts/specs/sdd/` is done. **Rulings:**
 `blocked-by` + the spec-graph apparatus (Q-1); kept `spec|impl` gate naming (Q-2); kept
 `produced-by` (Q-3). Schema edits: removed `subtasks`/`priority`, `type` → `artifact-types`
 (per-file resolution). Acceptance D1 rewritten to per-file `@frozen`; B7 halt-log relocated to
-the mission unit. Plans are **tracked, not gitignored**; ephemeral/discarded wording reframed;
-distill decoupled from delete. Mechanical fixes T-1..T-5 applied; root `spec.md` narrative
-written; `DESIGN-NOTES.md` flagged superseded. Full-tree grep clean. Commits `b519821`,
-`ab3e9c0`, `1e2ccac`, `65dd3d7`, `b8c916a`, `bf7443f`, `d42b7f4`, `b2a0721`, `ca51c30` + the
-DESIGN-NOTES banner. Memory `project_combat_log_sibling_file` updated.
-
-> Phase 0 closed the cleanup; this plan's live frontier is the **behavior suite + spec gate**
-> (Step 2 above) — the actual deliverable named in the refreshed issue.
+the mission unit. Plans are **tracked, not gitignored**; distill decoupled from delete.
+Mechanical fixes T-1..T-5 applied; root `spec.md` narrative written; `DESIGN-NOTES.md` flagged
+superseded. Commits `b519821`, `ab3e9c0`, `1e2ccac`, `65dd3d7`, `b8c916a`, `bf7443f`,
+`d42b7f4`, `b2a0721`, `ca51c30`.
