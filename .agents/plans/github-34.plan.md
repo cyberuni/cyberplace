@@ -173,11 +173,19 @@ nx-style project-dependency graph; out of SDD scope, belongs in the source track
 8. `b2a0721` T-5 — drop the gateway row routing directly to `mission/handoff`.
 9. `ca51c30` W-1 + W-1b — spec the doctrine-owned plan-retirement sweep; pin the
    `../.agents/plans` init symlink gotcha.
+10. (plan write-back) — record this conclusion in the tracked mission plan.
+11. `DESIGN-NOTES.md` superseded — banner + divergence list; historical body preserved.
 
 Memory `project_combat_log_sibling_file` updated (plans tracked, not gitignored).
 
-**Still pending (separate work):** `plugins/sdd/` impl sweep (incl. deleting the
-render-spec-graph skill/agent + DAG kernel, and the W-1 retirement `.mts` skill); the
-in-place-vs-rebuild decision (memory `project_sdd_impl_sweep_pending`). Optional: delete or
-scrub `DESIGN-NOTES.md` (now superseded by the root narrative; still carries stale
-subtasks/graph references).
+**Spec-tree cleanup: COMPLETE.** Full-tree grep clean (no stale
+`subtasks`/`blocked-by`/`priority`/spec-graph/`ephemeral`/`gitignored` outside intentional
+"not gitignored" phrasing); `DESIGN-NOTES.md` flagged superseded.
+
+**Still pending (separate work, NOT this cleanup phase):** `plugins/sdd/` impl sweep — incl.
+deleting the render-spec-graph skill/agent + DAG kernel, building the W-1 retirement `.mts`
+skill, and the in-place-vs-rebuild decision (memory `project_sdd_impl_sweep_pending`).
+
+**This plan's own retirement:** do NOT delete yet — github-34 (CR #34) is not `done`/merged
+(work sits on `next`, impl sweep outstanding) and has not been distilled. Per the retirement
+model it stays tracked until doctrine distills + deletes post-merge.
