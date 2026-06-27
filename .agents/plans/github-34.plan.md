@@ -11,10 +11,10 @@ todos:
     content: "Explore, level 1 — MACRO grill: holistic pass over design/ for correct direction + nothing big missing. DONE (64b8c01, 745ae42): 4 coherence fixes (Compatibility floor in spec.md; judge lens split; type->artifact-type; gateway loads NO governance — corrected after a wrong-direction first pass). Surfaced 4 model refinements now pending in model-refinements. Reconcile rule learned: reason to the CORRECT answer from design intent, not a reference count."
     status: completed
   - id: model-refinements
-    content: "Explore, level 1 — land the macro-grill's model refinements in design/: (a) Mission Loop step 1 (intake) CREATES the plan from a basic template; (b) step 2 (explore) grills the PLAN + spec + suite (when it exists) and builds impl (build-to-learn) — implementation is not deferred to deliver; (c) per-UNIT suites — one .feature per skill/unit, producer!=gate (generalize from authoring into unit-and-organization.md + suite-style.md, replacing 'one .feature per capability folder'); (d) unit-of-work = co-committable unit (commit-discipline), CR = unit of change-intent (intake done; sweep loops.md/mission for 'unit of work' misuse); (e) USE CASES are PER-CAPABILITY under the project-spec model — clarify in spec-governance + unit-and-organization that each capability README carries its own ## Use Cases (the requirement was written for one-spec-per-feature). Touch loops.md, intake/, mission/, unit-and-organization.md, suite-style.md, provenance-model.md, spec-governance."
+    content: "Explore, level 1 — land the macro-grill's model refinements in design/: (a) Mission Loop step 1 (intake) CREATES the plan from a basic template; (b) step 2 (explore) grills the PLAN + spec + suite (when it exists) and builds impl (build-to-learn) — implementation is not deferred to deliver; (c) per-UNIT suites — one .feature per skill/unit, producer!=gate (generalize from authoring into unit-and-organization.md + suite-style.md, replacing 'one .feature per capability folder'); (d) unit-of-work = co-committable unit (commit-discipline), CR = unit of change-intent (intake done; sweep loops.md/mission for 'unit of work' misuse); (e) USE CASES are PER-UNIT under the project-spec model (refined from per-capability via the authoring restructure) — a spec node with a .feature carries its own ## Use Cases mapping to that suite; a capability README that hosts no .feature is a no-Use-Cases OVERVIEW/index that references its unit specs. Clarify in spec-governance (Use Cases required only on .feature-bearing spec nodes) + unit-and-organization (capability overview + per-unit-spec folders; one .feature per unit). The spec-judge checks ## Use Cases on .feature-bearing nodes only — consistent with the digest reporting a no-.feature area as zero scenarios, not an error. Touch loops.md, intake/, mission/, unit-and-organization.md, suite-style.md, provenance-model.md, spec-governance."
     status: pending
   - id: sub-authoring
-    content: "Sub-mission authoring/ — prose (reconcile rule + per-unit split note), per-unit suites (spec-producer.feature 10 + validate-spec.feature 19), impl spec-producer-governance in sdd-new. NOT DONE: (1) USE CASES GAP — authoring/README has no ## Use Cases section (required by spec-governance, checked by the spec-judge); add it and map the existing producer/gate scenarios to use cases; (2) suites+impls for create-spec, revise-spec, validate-spec; (3) the gate-digest behavior."
+    content: "Sub-mission authoring/ — prose (reconcile rule + per-unit split note), per-unit suites (spec-producer.feature 10 + validate-spec.feature 19), impl spec-producer-governance in sdd-new. RESTRUCTURED to overview + per-unit specs: authoring/README.md is now a no-.feature OVERVIEW/index; each unit lives in its own folder with its own README (## Use Cases mapping to its suite) + .feature — authoring/spec-producer/ and authoring/validate-spec/. This CLOSES the Use Cases gap (F3) for authoring: use cases are per-UNIT, the overview carries none (a no-.feature node is an index). Gate-digest behavior folded into validate-spec/README. NOT DONE: suites+impls for create-spec, revise-spec (the two user-facing entry skills — overview lists them as pending units); validate-spec impl in sdd-new."
     status: in_progress
   - id: sub-intake
     content: "Sub-mission intake/ — extract the inline README scenarios into per-unit .feature suites (channels/sources, escape hatch, inject channel); build impls in sdd-new. Carries the intake-adapter-store decision."
@@ -109,13 +109,15 @@ Invoke the `resume-mission` skill, or follow it by hand.
    **upstream** and should land first (it changes the project-wide suite + Use Cases rules).
    `sub-authoring` is **in progress, not done** (Use Cases gap below).
 
-2. **Macro grill finding — the Use Cases gap (F3, blocks the gate).** `spec-governance`
-   requires a `## Use Cases` section in every `spec.md`, and the spec-judge checks every use
-   case maps to ≥1 scenario. **No capability README has one** — so every capability currently
-   fails the spec gate and the suite scenarios are orphan tests. Right answer (project-spec
-   model): **Use Cases is per-capability** — each README gets its own `## Use Cases` covering
-   its own scenarios. Land the clarification (`model-refinements` (e)), then add `## Use Cases`
-   + remap scenarios in **every** sub-mission's prose step, starting by reopening `authoring/`.
+2. **Macro grill finding — the Use Cases gap (F3, blocks the gate). RESOLVED PATTERN (applied
+   to authoring/).** `spec-governance` requires a `## Use Cases` section and the spec-judge
+   checks every use case maps to ≥1 scenario. Resolution (refined from "per-capability"): split
+   each capability into a no-`.feature` **OVERVIEW** README + **per-unit spec folders**, and put
+   `## Use Cases` in each **unit** spec (next to its `.feature`); the overview carries none (a
+   no-`.feature` node is an index). `authoring/` is the worked example
+   (`authoring/{spec-producer,validate-spec}/README.md`). Land the clarification
+   (`model-refinements` (e)), then apply the same overview+per-unit-spec split in **every** other
+   sub-mission's prose step.
 
 3. **Open decisions blocking the spec gate (resolve before `spec-gate`):**
    - `intake-adapter-store` — author the adapter-directive + local-CR-store scenarios now, or
