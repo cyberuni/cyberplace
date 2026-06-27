@@ -42,6 +42,10 @@ Gate *rules* live in `../design/`: legal-state transitions and the freeze model 
 
 ## The grilling workflow
 
+**Breadth-first, depth one-at-a-time.** First scan the CR holistically and summarize every
+issue found; then grill the single most important issue to resolution before the next — one
+deep thread, not many shallow. Restate the summary plus the current focused issue at each step.
+
 Two phases, in order: **grill the prose first** to settle the contract's intent, **then**
 bring the `.feature` into line. Editing scenarios before the prose is settled wastes work —
 the scenarios chase a moving target.
