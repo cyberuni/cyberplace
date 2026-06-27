@@ -7,17 +7,20 @@ todos:
   - id: cleanup-phase
     content: "Phase 0 — spec-tree post-review cleanup (schema, acceptance seed, tracked plans, mechanical fixes). COMPLETE — see conclusion."
     status: completed
+  - id: design-grill
+    content: "Explore (FIRST) — critical pass over design/ rules: coherence, internal consistency, no contradictions across rules or with the capabilities; tensions -> open: markers or a follow-up CR, NOT a redesign. The rules are upstream of every scenario."
+    status: pending
+  - id: prose-reconcile
+    content: "Explore — lighter pass over each capability README: What/Why/decisions present and current so every use case maps to a scenario; no dangling open: markers"
+    status: pending
   - id: suite-e2e
-    content: "Explore — author acceptance/acceptance.feature (e2e suite) from the A-F seed inventory; boolean/rubric Gherkin per design/suite-style.md"
+    content: "Explore — author the e2e suite split by the A-F seed theme (one Feature per file: cr-lifecycle, escalation-floor, resolve-squad, freeze, gate-verdicts, handoff); boolean/rubric Gherkin per design/suite-style.md"
     status: pending
   - id: suite-unit
-    content: "Explore — author one colocated unit .feature per capability folder (intake, authoring, mission, mission/deliver, mission/handoff, campaign, formation, doctrine, forge, corpus, plugin, gateway)"
+    content: "Explore — author colocated unit .feature per capability folder, following the folder tree (mission -> mission/deliver/handoff = 3 files); single file per capability until a folder reason to split"
     status: pending
   - id: root-frontmatter
     content: "Explore — add project-spec lifecycle frontmatter to root spec.md (status: draft, artifact-types, etc.) per design/lifecycle-model.md; drop the ## TODO once filled"
-    status: pending
-  - id: prose-reconcile
-    content: "Explore — grill phase 1: ensure each capability README has What/Why/decisions so every use case maps to a scenario; no dangling open: markers"
     status: pending
   - id: spec-gate
     content: "Spec gate (Draft -> Approved): run validate-spec / sdd-operator over the project spec; cold spec-judge judges the suite; on approve, freeze touched .feature files"
@@ -87,17 +90,26 @@ be **approved at the spec gate** (Mission Loop step 2). Then build the implement
 
 ## Step 2 — explore: build to the spec gate
 
-Order: prose first (grill phase 1), then the suite (grill phase 2), then frontmatter, then gate.
+Order: **rules first** (`design/`), then capability prose, then the suite, then frontmatter,
+then gate. Rules are upstream of every scenario — authoring scenarios against unsettled rules
+makes them chase a moving target.
 
-- **prose-reconcile.** Walk each capability README; confirm What / Why / design decisions are
-  present and current so every use case has a scenario home. Resolve any `<!-- open: -->`
-  markers the suite will touch. This is authoring's grill phase 1.
-- **suite-e2e.** Author `acceptance/acceptance.feature` from the A–F seed inventory
-  (CR lifecycle, escalation floor, resolve-a-squad, freeze, gate verdicts, handoff). Only
-  cross-capability outcomes; boolean Gherkin by default, `@rubric` where a gradient rule needs
-  it (autonomy bar, freeze condition). Conventions: `design/suite-style.md`. Exemplars already
-  drafted in `acceptance/README.md`.
-- **suite-unit.** Author one colocated unit `.feature` per capability folder for the
+- **design-grill (FIRST).** A critical-thinking pass over `design/` — the rules the whole suite
+  encodes: `abstraction-stack`, `actors-and-governance`, `autonomy-rubric`, `lifecycle-model`,
+  `loops`, `provenance-model`, `specialists-and-squads`, `suite-style`, `unit-and-organization`.
+  Check each rule for internal coherence, consistency with the others, and contradiction with the
+  capability folders. Phase 0 only did the *mechanical* schema sweep here; this is the real grill.
+  **Scope guardrail:** this is grilling, not redesign — a tension becomes an `<!-- open: -->`
+  marker or a **follow-up CR**, never an in-place model rewrite that balloons #34. The model's own
+  rule holds: nothing changes except through a CR.
+- **prose-reconcile.** Lighter pass over each capability README; confirm What / Why / design
+  decisions are present and current so every use case has a scenario home. Resolve any
+  `<!-- open: -->` markers the suite will touch. Authoring's grill phase 1 at the capability level.
+- **suite-e2e.** Author the e2e suite from the A–F seed inventory, **split by theme** (see Suite
+  file organization). Only cross-capability outcomes; boolean Gherkin by default, `@rubric` where
+  a gradient rule needs it (autonomy bar, freeze condition). Conventions: `design/suite-style.md`.
+  Exemplars drafted in `acceptance/README.md`.
+- **suite-unit.** Author colocated unit `.feature` per capability folder for the
   single-capability behaviors (e.g. the mid-flight combat-log halt-write belongs under
   `mission/`, not acceptance). Folders to cover: `intake/`, `authoring/`, `mission/`,
   `mission/deliver/`, `mission/handoff/`, `campaign/`, `formation/`, `doctrine/`, `forge/`,
@@ -106,6 +118,28 @@ Order: prose first (grill phase 1), then the suite (grill phase 2), then frontma
 - **root-frontmatter.** Add project-spec frontmatter to `spec.md` per
   `design/lifecycle-model.md`: `status: draft`, `artifact-types`, `aligned: false`, and the
   workflow fields as they apply. Drop the `## TODO` block once the suite is in.
+
+### Suite file organization
+
+The split criterion is **freeze blast-radius**: `@frozen` lives per `.feature` file, so
+scenarios a single CR tends to freeze/unfreeze together share a file; scenarios re-opened
+independently get their own. One `Feature:` per file.
+
+- **Unit suites — partitioned by the folder tree (free).** "Folders are views" → the capability
+  folder *is* the split. One `.feature` per capability folder, named for the capability; a
+  capability's file splits only when its folder splits. The only day-one multi-file case is
+  `mission/`, which already has subfolders → `mission/mission.feature` +
+  `mission/deliver/deliver.feature` + `mission/handoff/handoff.feature`.
+- **e2e suite — split by theme now, not later.** The seed already decomposed the outcomes into
+  six cohesive themes, and theme-level freeze is the right grain (a handoff CR must not freeze
+  CR-lifecycle scenarios). Start as six files, one `Feature:` each:
+  `acceptance/cr-lifecycle.feature` (A), `escalation-floor.feature` (B), `resolve-squad.feature`
+  (C), `freeze.feature` (D), `gate-verdicts.feature` (E), `handoff.feature` (F). Bonus: the gate
+  digest's "scenarios this CR touched" then maps cleanly to a theme.
+- **The split seam, along the way.** Split a `.feature` when a CR keeps re-opening *part* of it
+  while the rest stays frozen — for units that shows up as a folder split, for e2e as a new theme
+  file. Same principle; the formation loop polices it after the bootstrap. Do **not** pre-split a
+  single capability's units before there is a folder reason to.
 
 ## Spec gate (Draft → Approved) — hand-run
 
