@@ -274,10 +274,14 @@ the new judge until it is built):
   the freeze/unfreeze *model* (triggers, gate, iteration economy) stays in `lifecycle-model.md`;
   suite-format owns only the `@frozen` marker convention + the suite-edit rule. Clean concern
   split — freeze-as-state-transition is a lifecycle concern.
-  (2) the new `sdd-new` copy of `check-spec-state.mts` must carry the per-node `spec-type` reconcile
-  (reference ⇒ `## Subject` + no `.feature`; behavioral ⇒ `## Use Cases`) — built when
-  `validate-spec` lands in sdd-new (baseline at `plugins/sdd/skills/validate-spec/scripts/`,
-  predates the marker).
+  (2) DONE — `plugins/sdd-new/skills/validate-spec/scripts/check-spec-state.mts` (+ `.test.mts`, 24
+  tests) carries the per-node `spec-type` reconcile (reference ⇒ `## Subject` + no `.feature`;
+  behavioral ⇒ `## Use Cases`; descriptive no-op) plus the root lifecycle tuple (status/aligned/
+  markers/approval — dropped the old type/subtasks/composition + the descriptive-root `.feature`
+  requirement). Runs via `pnpm verify:specs-new` (manual, like the baseline `verify:specs`; not in
+  CI). Validates the live `.agents/specs` tree green. OPEN: the full `validate-spec` skill (SKILL.md)
+  + the project-spec gate-legality (what "approved" requires of the distributed suite) is the larger
+  remaining piece; `check-feature.mts` not yet ported either.
 
 ## Step 3/4 — deliver & handoff
 
