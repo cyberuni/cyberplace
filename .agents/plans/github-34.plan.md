@@ -12,8 +12,8 @@ todos:
     content: "Explore, level 1 — land the macro-grill's model refinements in design/: (a) Mission Loop step 1 (intake) CREATES the plan from a basic template; (b) step 2 (explore) grills the PLAN + spec + suite (when it exists) and builds impl (build-to-learn) — implementation is not deferred to deliver; (c) per-UNIT suites — one .feature per skill/unit, producer!=gate (generalize from authoring into unit-and-organization.md + suite-style.md, replacing 'one .feature per capability folder'); (d) unit-of-work = co-committable unit (commit-discipline), CR = unit of change-intent (intake done; sweep loops.md/mission for 'unit of work' misuse); (e) USE CASES are PER-TYPE — LANDED via the spec-types taxonomy (commit 369318c): every spec node is descriptive (no subject/suite; no marker), reference artifact (spec-type: reference; ## Subject, no .feature), or behavioral artifact (spec-type: behavioral; ## Use Cases + .feature). Only behavioral nodes carry ## Use Cases; descriptive indexes and reference artifacts carry none. spec-type declared not inferred; classification not lifecycle (lifecycle stays root-spec.md-only). Landed in unit-and-organization.md (## Spec types), spec.md, suite-style.md, lifecycle-model.md, abstraction-stack.md, authoring/README.md. ALL LANDED: (a) intake-creates-plan swept across loops.md/intake/mission/+provenance (intake scaffolds the .plan.md from a basic template, plan-producer fills it during explore); (b) explore-builds-impl in loops.md step 2 (grill plan+spec+suite, build impl to learn); (c) per-unit suites already in unit-and-organization.md+suite-format; (d) unit-of-work-vocabulary verified clean (every usage commit-level, intake contrasts CR=unit-of-change-intent); (e) spec-types taxonomy landed earlier."
     status: completed
   - id: sub-authoring
-    content: "Sub-mission authoring/ — prose (reconcile rule + per-unit split note), per-unit suites (spec-producer.feature 10 + validate-spec.feature 19), impl spec-producer-governance in sdd-new. RESTRUCTURED to overview + per-unit specs: authoring/README.md is now a no-.feature OVERVIEW/index; each unit lives in its own folder with its own README (## Use Cases mapping to its suite) + .feature — authoring/spec-producer/ and authoring/validate-spec/. This CLOSES the Use Cases gap (F3) for authoring: use cases are per-UNIT, the overview carries none (a no-.feature node is an index). Gate-digest behavior folded into validate-spec/README. ALSO built this session: the two fixed-universal governances as reference-artifact nodes under authoring/ — spec-format (78d9d8c) + suite-format (4f68659), each a spec-type:reference node + a self-contained impl in plugins/sdd-new/skills/ (spec-governance renamed -> spec-format); see D-F. NOT DONE: suites+impls for create-spec, revise-spec (the two user-facing entry skills — overview lists them as pending units); validate-spec SKILL.md impl in sdd-new (only its check-spec-state.mts helper exists)."
-    status: in_progress
+    content: "Sub-mission authoring/ — prose (reconcile rule + per-unit split note), per-unit suites (spec-producer.feature 10 + validate-spec.feature 19), impl spec-producer-governance in sdd-new. RESTRUCTURED to overview + per-unit specs: authoring/README.md is now a no-.feature OVERVIEW/index; each unit lives in its own folder with its own README (## Use Cases mapping to its suite) + .feature — authoring/spec-producer/ and authoring/validate-spec/. This CLOSES the Use Cases gap (F3) for authoring: use cases are per-UNIT, the overview carries none (a no-.feature node is an index). Gate-digest behavior folded into validate-spec/README. ALSO built this session: the two fixed-universal governances as reference-artifact nodes under authoring/ — spec-format (78d9d8c) + suite-format (4f68659), each a spec-type:reference node + a self-contained impl in plugins/sdd-new/skills/ (spec-governance renamed -> spec-format); see D-F. COMPLETE: create-spec unit (README ## Use Cases + create-spec.feature 12 + impl plugins/sdd-new/skills/create-spec/) and revise-spec unit (README + revise-spec.feature 9 + impl, carries the frozen-feature re-open guard), both marked done in the authoring overview; validate-spec SKILL.md spec-gate impl built in plugins/sdd-new/skills/validate-spec/ (spec-gate ONLY — impl gate is the mission's; folds digest in-session, freezes per .feature, writes gate line to ledger.jsonl). All 5 authoring units (spec-producer, validate-spec, spec-format, suite-format, create-spec, revise-spec) now have spec + impl. verify:specs-new green."
+    status: completed
   - id: sub-intake
     content: Sub-mission intake/ — extract the inline README scenarios into per-unit .feature suites (channels/sources, escape hatch, inject channel); build impls in sdd-new. Carries the intake-adapter-store decision.
     status: pending
@@ -101,16 +101,13 @@ The work is organized in **two levels of grill**:
 
 ## NEXT — resume here (read this first)
 
-1. **Next action — finish `sub-authoring`** (in `authoring/`, applying the worked **overview +
-   per-unit-spec** split; validate with `pnpm verify:specs-new`). `model-refinements` is DONE
-   (the upstream blocker is cleared — see that todo), so go straight at the remaining units:
-   - `create-spec` + `revise-spec` — author each unit's spec (README + `## Use Cases` +
-     `.feature`), then its entry-skill impl in `plugins/sdd-new/skills/`; dogfood `/create-spec`
-     once it exists.
-   - `validate-spec` **SKILL.md** impl in `plugins/sdd-new/skills/validate-spec/` — only its
-     `check-spec-state.mts` helper exists so far.
-   Then the remaining sub-missions in todo order (`sub-intake`, `sub-gateway`, `sub-mission`, …),
-   same overview + per-unit-spec split each.
+1. **Next action — start `sub-intake`** (`sub-authoring` is DONE: all 5 authoring units have
+   spec + impl — create-spec/revise-spec/validate-spec landed this session; verify:specs-new
+   green). Extract `intake/README.md`'s inline scenarios into per-unit `.feature` suites
+   (channels/sources, escape hatch, inject channel) and build the impls in
+   `plugins/sdd-new/skills/`, same **overview + per-unit-spec** split each. Carry the
+   `intake-adapter-store` blocking decision (below). Then the remaining sub-missions in todo
+   order (`sub-gateway`, `sub-mission`, …). Validate every step with `pnpm verify:specs-new`.
 
 2. **Blocking decision (resolve before the spec gate):** `intake-adapter-store` — author the
    adapter-directive + local-CR-store scenarios now (grows #34), or carve them to a follow-up CR
