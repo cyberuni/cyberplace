@@ -127,16 +127,17 @@ The work is organized in **two levels of grill**:
      (impl-producer also reconciles); the 3 self-align lenses aren't yet explicit
      scope/coverage/structure checks.
 
-4. **Open question — the "plan" terminology collision** (raised 2026-06-27, not yet resolved):
-   the word **plan** means two different things across old and new SDD. **Old SDD** (`plugins/sdd`):
-   `plan.md` + `tasks.md` are the **functional spec** — the per-CR *solution* (approach,
+4. **The "plan" terminology collision — DECISION MADE (2026-06-27): the functional spec is
+   SEPARATED from the CR execution plan.** The word **plan** means two things: **old SDD**
+   (`plugins/sdd`) `plan.md`+`tasks.md` = the **functional spec** (per-CR solution: approach,
    structures, chosen design + rejected alternatives, how each scenario is met) + a build-task
-   DAG; impl-tied (spec=PRD, suite=test plan, plan=functional spec). **New SDD**: `plan` =
-   `.agents/plans/<cr-ref>.plan.md`, the local **execution** plan / handoff brief. New SDD's
-   `provenance-model.md` **folded** the old plan.md+tasks.md roles into the one `.plan.md`.
-   DECIDE during `sub-mission` / `sub-deliver`: is the functional-spec concept still needed as a
-   *distinct* artifact, or is the fold correct? It bites `plan-producer-governance` (which today
-   carries the old plan.md/tasks.md procedure). The fold stands until resolved. (Memory:
+   DAG; **new SDD** `plan` = `.agents/plans/<cr-ref>.plan.md`, the **execution** plan / handoff
+   brief. New SDD had *folded* the old plan.md+tasks.md roles into the one `.plan.md`; that fold
+   is **reversed** — `.plan.md` carries only execution state, the functional spec becomes its own
+   durable artifact. REMAINING (do in `sub-mission` / `sub-deliver`): design the functional spec's
+   **home, lifecycle, and producer**; rework `plan-producer-governance` and undo the fold marked
+   `<!-- open: -->` in `design/provenance-model.md`. Old→new terms tracked in
+   `.agents/specs/sdd/TERMINOLOGY.md` (temporary, deleted when old SDD is erased). (Memory:
    `project_sdd_plan_terminology_collision`.)
 
 5. **Do not relearn** — the working method and settled calls live in `## Resolved decisions`:
