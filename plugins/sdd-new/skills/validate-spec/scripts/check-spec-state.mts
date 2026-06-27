@@ -14,7 +14,7 @@
 // and design/unit-and-organization.md (spec types). Pure functions are exported
 // for node:test; running the file directly drives the CLI. No dependencies.
 
-import { existsSync, readdirSync, readFileSync } from 'node:fs'
+import { type Dirent, existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 export interface GateVerdict {
@@ -192,7 +192,7 @@ function hasFeatureFile(dir: string): boolean {
 function discoverDirsWith(root: string, name: string): string[] {
 	const out: string[] = []
 	const walk = (dir: string, rel: string) => {
-		let entries: ReturnType<typeof readdirSync>
+		let entries: Dirent[]
 		try {
 			entries = readdirSync(dir, { withFileTypes: true })
 		} catch {
