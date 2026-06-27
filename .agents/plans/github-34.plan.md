@@ -22,6 +22,15 @@ todos:
   - id: root-frontmatter
     content: "Explore — add project-spec lifecycle frontmatter to root spec.md (status: draft, artifact-types, etc.) per design/lifecycle-model.md; drop the ## TODO once filled"
     status: pending
+  - id: cap-create-governance
+    content: "Explore — spec a create-governance skill (author a governance: metadata{artifact-type,actor,face} + compose mode union|replace; place at <project>/.agents/governances/; validate schema). Sibling to create-spec/validate-spec; consumes the A model."
+    status: pending
+  - id: cap-publish-artifact-types
+    content: "Explore — spec publishing artifact-types: a specialist plugin declares/exports the artifact-types it covers so they are discoverable/reusable. Home: plugin/ (manifest + registry)."
+    status: pending
+  - id: cap-forge-learn-artifact-types
+    content: "Explore — spec the forge loop learning NEW artifact-types from opt-in field usage (discovered-from-usage growth, same as the cause enum). Home: forge/."
+    status: pending
   - id: spec-gate
     content: "Spec gate (Draft -> Approved): run validate-spec / sdd-operator over the project spec; cold spec-judge judges the suite; on approve, freeze touched .feature files"
     status: pending
@@ -140,6 +149,21 @@ independently get their own. One `Feature:` per file.
   while the rest stays frozen — for units that shows up as a folder split, for e2e as a new theme
   file. Same principle; the formation loop polices it after the bootstrap. Do **not** pre-split a
   single capability's units before there is a folder reason to.
+
+### New capabilities — artifact-type & governance lifecycle (added 2026-06-26)
+
+A clean arc around the actor-governance model (A): **create → publish → learn**.
+
+- **create-governance skill (R1).** User-facing aid to author a governance: choose artifact-type
+  + actor + face, scaffold `metadata:{artifact-type,actor,face}` + compose mode (union default,
+  opt-in replace), place at `<project>/.agents/governances/`, validate the schema. A new SDD skill
+  (sibling to `create-spec`/`validate-spec`); consumes the A model.
+- **publish artifact-types (R2).** A specialist plugin **declares and exports** the artifact-types
+  it covers so they are discoverable/reusable beyond one project's registry. Home: `plugin/`
+  (manifest + registry).
+- **forge learns new artifact-types (R3).** The forge loop (opt-in field corrections, Consent
+  floor) **discovers artifact-types not yet modeled** and proposes them back — the same
+  discovered-from-usage growth as the `cause` enum, applied to artifact-types. Home: `forge/`.
 
 ## Spec gate (Draft → Approved) — hand-run
 
