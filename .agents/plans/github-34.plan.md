@@ -267,11 +267,16 @@ the new judge until it is built):
   worked **reference artifact**: node `authoring/spec-format/`, impl
   `plugins/sdd-new/skills/spec-format-governance/`. Concern split: spec-format owns the required
   `## Use Cases` section + `spec.md` enrichment; the `.feature` form + scenario ordering → `suite-style`;
-  granularity → `unit-and-organization`. FOLLOW-UPS: (1) build the `sdd:suite-style` governance
-  (producer + spec-format both reference it; not yet a skill); (2) the new `sdd-new` copy of
-  `check-spec-state.mts` must carry the per-node `spec-type` reconcile (reference ⇒ `## Subject` +
-  no `.feature`; behavioral ⇒ `## Use Cases`) — built when `validate-spec` lands in sdd-new
-  (baseline lives at `plugins/sdd/skills/validate-spec/scripts/`, predates the marker).
+  granularity → `unit-and-organization`. FOLLOW-UPS: (1) DONE — built the `suite-format` governance
+  (renamed from `suite-style`; pairs with `spec-format`): moved `design/suite-style.md` →
+  `authoring/suite-format/` reference node + impl `plugins/sdd-new/skills/suite-format-governance/`;
+  owns Gherkin form + `@rubric` + scenario ordering + the `@frozen` marker. OPEN: freeze/unfreeze
+  *model* (triggers, gate, iteration economy) still in `lifecycle-model.md` — suite-format carries
+  only the `@frozen` marker convention + suite-edit rule; decide whether to move the full model.
+  (2) the new `sdd-new` copy of `check-spec-state.mts` must carry the per-node `spec-type` reconcile
+  (reference ⇒ `## Subject` + no `.feature`; behavioral ⇒ `## Use Cases`) — built when
+  `validate-spec` lands in sdd-new (baseline at `plugins/sdd/skills/validate-spec/scripts/`,
+  predates the marker).
 
 ## Step 3/4 — deliver & handoff
 

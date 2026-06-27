@@ -1,6 +1,6 @@
 ---
 name: spec-format-governance
-description: "Internal skill: the SDD spec-format bar — the required ## Use Cases section and the spec.md enrichment a spec node must satisfy. Loaded by the spec-producer to self-align and the spec-judge to verify; the .feature form and scenario ordering live in sdd:suite-style. Not triggered by users directly."
+description: "Internal skill: the SDD spec-format bar — the required ## Use Cases section and the spec.md enrichment a spec node must satisfy. Loaded by the spec-producer to self-align and the spec-judge to verify; the .feature form and scenario ordering live in sdd:suite-format-governance. Not triggered by users directly."
 metadata:
   user-invocable: false
 ---
@@ -13,7 +13,7 @@ the **spec-producer** loads it to self-align before writing, and the **spec-judg
 grade structure backward at the spec gate. It owns no `.feature`; its conformance shows up in the
 judge's verdict on real specs.
 
-Boundary: the `.feature` Gherkin/rubric form and scenario ordering belong to **`sdd:suite-style`**;
+Boundary: the `.feature` Gherkin/rubric form and scenario ordering belong to **`sdd:suite-format-governance`**;
 spec *granularity* (when a spec grows too big → carve it into more folders/units) is a
 corpus-organization concern. This bar owns only `spec.md` structure.
 
@@ -48,4 +48,4 @@ never a wall of prose:
 - **Format for humans** — clear heading hierarchy, tables for structured comparisons, short
   paragraphs, callouts for the load-bearing decisions.
 
-Enrichment applies to `spec.md` only; the `.feature` stays plain boolean Gherkin (`sdd:suite-style`).
+Enrichment applies to `spec.md` only; the `.feature` stays plain boolean Gherkin (`sdd:suite-format-governance`).
