@@ -1,8 +1,7 @@
 ---
 name: suite-format-governance
 description: "Internal skill: the SDD suite-format bar — how a .feature behavior suite is written and judged (boolean Gherkin, the @rubric exception, scenario ordering, the @frozen marker). Loaded by the spec-producer to self-align and the spec-judge to verify; the spec.md structure lives in sdd:spec-format-governance. Not triggered by users directly."
-metadata:
-  user-invocable: false
+user-invocable: false
 ---
 
 # Suite-Format Governance — the .feature behavior-suite bar

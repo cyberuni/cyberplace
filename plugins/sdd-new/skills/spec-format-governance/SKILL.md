@@ -1,8 +1,7 @@
 ---
 name: spec-format-governance
 description: "Internal skill: the SDD spec-format bar — the required ## Use Cases section and the spec.md enrichment a spec node must satisfy. Loaded by the spec-producer to self-align and the spec-judge to verify; the .feature form and scenario ordering live in sdd:suite-format-governance. Not triggered by users directly."
-metadata:
-  user-invocable: false
+user-invocable: false
 ---
 
 # Spec-Format Governance — the spec.md structure bar
