@@ -270,9 +270,10 @@ the new judge until it is built):
   granularity → `unit-and-organization`. FOLLOW-UPS: (1) DONE — built the `suite-format` governance
   (renamed from `suite-style`; pairs with `spec-format`): moved `design/suite-style.md` →
   `authoring/suite-format/` reference node + impl `plugins/sdd-new/skills/suite-format-governance/`;
-  owns Gherkin form + `@rubric` + scenario ordering + the `@frozen` marker. OPEN: freeze/unfreeze
-  *model* (triggers, gate, iteration economy) still in `lifecycle-model.md` — suite-format carries
-  only the `@frozen` marker convention + suite-edit rule; decide whether to move the full model.
+  owns Gherkin form + `@rubric` + scenario ordering + the `@frozen` marker. RESOLVED (keep-as-is):
+  the freeze/unfreeze *model* (triggers, gate, iteration economy) stays in `lifecycle-model.md`;
+  suite-format owns only the `@frozen` marker convention + the suite-edit rule. Clean concern
+  split — freeze-as-state-transition is a lifecycle concern.
   (2) the new `sdd-new` copy of `check-spec-state.mts` must carry the per-node `spec-type` reconcile
   (reference ⇒ `## Subject` + no `.feature`; behavioral ⇒ `## Use Cases`) — built when
   `validate-spec` lands in sdd-new (baseline at `plugins/sdd/skills/validate-spec/scripts/`,
