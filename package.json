@@ -14,7 +14,7 @@
 		"typecheck": "turbo typecheck",
 		"typecheck:specs": "tsc -p tsconfig.specs.json",
 		"verify": "turbo verify",
-		"verify:specs": "node --experimental-strip-types --test plugins/sdd/skills/validate-spec/scripts/check-spec-state.test.mts plugins/sdd/skills/validate-spec/scripts/check-feature.test.mts plugins/sdd/agents/sdd-operator.test.mts && node plugins/sdd/skills/validate-spec/scripts/check-spec-state.mts && node plugins/sdd/skills/validate-spec/scripts/check-feature.mts",
+		"verify:specs": "pnpm typecheck:specs && node --experimental-strip-types --test plugins/sdd/skills/validate-spec/scripts/check-spec-state.test.mts plugins/sdd/skills/validate-spec/scripts/check-feature.test.mts plugins/sdd/agents/sdd-operator.test.mts && node plugins/sdd/skills/validate-spec/scripts/check-spec-state.mts && node plugins/sdd/skills/validate-spec/scripts/check-feature.mts",
 		"verify:specs-new": "pnpm typecheck:specs && node --experimental-strip-types --test plugins/sdd-new/skills/validate-spec/scripts/check-spec-state.test.mts && node plugins/sdd-new/skills/validate-spec/scripts/check-spec-state.mts --root .agents/specs",
 		"version": "changeset version",
 		"web": "pnpm run --filter=website"
