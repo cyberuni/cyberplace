@@ -101,9 +101,6 @@ The work is organized in **two levels of grill**:
 
 ## NEXT — resume here (read this first)
 
-The plan is self-sufficient — read it and continue; `resume-mission` is one convenient reader (it
-finds the next todo and reloads the working method), not a required step.
-
 1. **Next action — finish `sub-authoring`** (in `authoring/`, applying the worked **overview +
    per-unit-spec** split; validate with `pnpm verify:specs-new`):
    - `create-spec` + `revise-spec` — author each unit's spec (README + `## Use Cases` +

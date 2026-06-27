@@ -58,6 +58,9 @@ the plan stands on its own). Capture *enough to continue, nothing to relitigate.
 - **Not a duplicate.** If it already lives in a commit, an ADR, the spec, or an issue, link it.
 - **Not buried.** The next action leads the anchor; if a resumer has to hunt for where to start,
   the pause failed.
+- **Not self-referential.** The plan never tells its reader to "invoke `resume-mission`" or
+  explains how to resume — a session reading the plan is already past that, and the
+  `## NEXT — resume here` heading orients a human on its own. Open `## NEXT` with the *work*.
 - **Not final-sounding.** A pause is a *resumable* checkpoint — leave the live frontier and the
   open questions explicit, not smoothed into a summary that hides where to begin.
 
