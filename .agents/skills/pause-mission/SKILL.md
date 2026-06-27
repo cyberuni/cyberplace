@@ -1,6 +1,6 @@
 ---
 name: pause-mission
-description: "Checkpoint an in-progress SDD mission INTO its plan brief so it can be resumed cleanly later. Use when asked to 'pause', 'checkpoint', 'save state to the plan', 'wrap up for now', or 'stop here' mid-mission — update the plan's todo statuses and rewrite its ## NEXT anchor so a fresh session (or resume-mission) picks up exactly where you left off."
+description: "Checkpoint an in-progress SDD mission INTO its plan brief so it can be resumed cleanly later. Use this skill when asked to 'pause', 'wrap up for now', or 'stop here' mid-mission — update the plan's todo statuses and rewrite its ## NEXT anchor so a fresh session (or resume-mission) picks up exactly where you left off."
 metadata:
   internal: true
 ---
