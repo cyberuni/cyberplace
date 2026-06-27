@@ -6,5 +6,5 @@ enrichment / human-readability rule.
 
 Loaded by the **spec-producer** (to self-align before writing) and the **spec-judge** (to grade
 structure backward at the spec gate). It carries no `.feature`: the `.feature` Gherkin/rubric form
-and scenario ordering live in `suite-style`, and spec granularity lives in the corpus-organization
+and scenario ordering live in `suite-format`, and spec granularity lives in the corpus-organization
 bar. Not triggered by users directly.
