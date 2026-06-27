@@ -165,6 +165,36 @@ A clean arc around the actor-governance model (A): **create → publish → lear
   floor) **discovers artifact-types not yet modeled** and proposes them back — the same
   discovered-from-usage growth as the `cause` enum, applied to artifact-types. Home: `forge/`.
 
+### A — locked: actor-governance resolution (from the grill)
+
+- **Bars:** director / builder / architect, each with **two faces** (forward=producer self-align,
+  backward=judge), split so a role loads only its face. Strategist via the doctrine loop, no
+  per-spec governance.
+- **Match key:** frontmatter `metadata:{artifact-type, actor, face}`; SDD matches on these (names
+  need not be unique).
+- **Two tiers:** fixed-universal (ownership, lifecycle, spec-format, gate-validation — ship with
+  sdd) vs resolved-actor (per artifact-type/face).
+- **Discovery is SDD-owned** — not harness precedence, not `${CLAUDE_PLUGIN_ROOT}`. The deciding
+  factor is *can SDD address the file?*
+  - **Plugin governances** (not addressable — version-routed): `user-invocable:false` **skills** in
+    the plugin's `skills/`; `init` lists their `<plugin>:<name>` in the consuming
+    `.agents/universal-plugin.json` keyed by `(artifact-type,actor,face)`; SDD asks the harness to
+    load `<plugin>:<name>` (harness version-routes).
+  - **Project/user governances** (addressable): plain files in `<project>/.agents/governances/`;
+    the operator **Reads them directly** — no harness, no build, no registry. [OPEN: enforce skill
+    form? lean **no**.]
+  - **sdd defaults:** the sdd plugin's own governances (skills, `sdd:<name>`), lowest precedence.
+- **Composition:** **union** default; **most-specific wins on conflict** (project > plugin >
+  default); **opt-in `replace`**; driven by the `governance-composition` governance (explicit
+  instructions, not positional last-wins).
+- **Lens sets** (sdd-default squad, overridable per squad): spec gate `{director,builder,architect}`;
+  impl gate `{builder,architect}`; plan `{architect}` (ungated). Producer self-aligns to exactly the
+  bars its judge grades (bar-level symmetry; faces loaded separately).
+- **Packaging:** the spec is **never inside a distributable plugin dir** (install full-copies, no
+  exclude). Spec → `<repo>/.agents/specs/<project>/` (or `.agents/spec/` if single project). Plugins
+  ship `skills/` (governances-as-skills) + `agents/`. Registry + plans are consumer/runtime-side at
+  `<repo>/.agents/`.
+
 ## Spec gate (Draft → Approved) — hand-run
 
 Run the spec gate over the project spec **by hand in the main loop** (the issue's target
