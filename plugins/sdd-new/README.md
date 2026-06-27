@@ -104,6 +104,16 @@ contract the implementation must satisfy. Freezing is per file, not per project.
 
 A request to change a frozen scenario is never edited in place; it re-enters as a new CR.
 
+## Harness requirement — two-level spawning
+
+SDD's conductor runs as a spawned agent that **itself spawns cold judges**, so the loop needs
+a harness that supports subagent nesting **at least two levels deep** (session → conductor →
+judge). SDD targets only harnesses that clear this bar: **Claude Code** (up to 5 levels) and
+**Cursor** (two). **Codex** ships flat (one level) and must have `agents.max_depth` raised to
+at least `2`; harnesses that forbid nesting outright (e.g. Gemini CLI, Amp) cannot run the
+cold-judge model and are not supported. Deeper chains than two levels are not assumed — SDD is
+designed to fit within a two-level budget.
+
 ## Getting started
 
 1. **Install the plugin** through your agent's marketplace.
