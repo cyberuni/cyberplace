@@ -8,15 +8,18 @@ metadata:
 # Resume an SDD mission from its plan
 
 An SDD mission is carried by a single tracked **plan brief** at
-`.agents/plans/<cr-ref>.plan.md` (the portable handoff artifact). This skill re-establishes
-context from that brief and continues the Mission Loop where it left off — the plan is the
-**state**, this skill is the **procedure**.
+`.agents/plans/<cr-ref>.plan.md` (the portable handoff artifact). The plan is the **state**;
+this skill is one convenient **procedure** for picking it up — any session that reads the plan
+can continue without it. It re-establishes context from the brief and continues the Mission Loop
+where it left off.
 
 ## Procedure
 
-1. **Read the plan brief in full.** Open `.agents/plans/<cr-ref>.plan.md` — both the
-   frontmatter `todos` (the task DAG, ordered; `status: pending | in_progress | completed`)
-   and the body (the working method, resolved decisions, findings, and the `## NEXT` anchor).
+1. **Open the plan — create it if missing.** Open `.agents/plans/<cr-ref>.plan.md` and read it in
+   full: the frontmatter `todos` (the ordered task list; `status: pending | in_progress |
+   completed`) and the body (working method, resolved decisions, findings, `## NEXT`). **If no
+   plan exists** (the mission was never intook), scaffold a minimal one from a basic template
+   (frontmatter `todos` + a `## NEXT` anchor) and start the mission from there.
 
 2. **Find the next action.** Resume the single `in_progress` todo if one exists; otherwise the
    first `pending` todo whose prerequisites are met. The body's `## NEXT` section names the
