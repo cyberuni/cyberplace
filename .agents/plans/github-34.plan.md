@@ -60,8 +60,8 @@ todos:
     content: "DEFERRED (Tier 4, net-new — no baseline; ## Migration ordering). Sub-mission marketplace (NEW cap, R2+R3, SDD-owned NOT forge) — a plugin declares the artifact-types it serves (R2); a register-plugin-to-marketplace skill + website shows plugins per artifact-type (R3). Two layers: marketplace=global catalog (website), registry=per-project resolution. Home: plugin/ + apps/website. Prose -> suite -> impl."
     status: pending
   - id: sub-governances
-    content: "Tier 1 (migration) — carry the cross-cutting governances to sdd-new. IN PROGRESS; the session REWORKED the governance model, so the old 'reference-artifact nodes' framing in the body/## Migration ordering is PARTLY SUPERSEDED — trust ## NEXT + common-governances.solution.md. DECIDED + COMMITTED (d439420, d186622): (1) granularity = Model B — one bar per (actor,gate), discipline SECTIONS, faces MERGED (producer+judge load the shared bar; producer!=judge holds at the AGENT level); spec|impl KEPT (coverage vs conformance); subjective slices split to judge-only @rubric. Model A (per-role <actor>-<gate>-<face>, 10) kept as the FALLBACK for asymmetric-input/large-rubric bars. Recorded in .agents/specs/sdd/common-governances/common-governances.solution.md + examples/acme-ui (A) & examples/acme-ui-merged (B). (2) Placement: single-consumer governance -> its owning capability folder (spec-format/suite-format under authoring/, plugin-contract under plugin/); cross-cutting -> NEW common-governances/ folder; rules/models stay in design/. (3) Disciplines (engineer/designer/a11y/security/qa) compose onto the SDD generic core via compose:union, project/plugin-supplied per artifact-type at resolution — SDD ships only the GENERIC core bars; disciplines are OUT OF SCOPE here. (4) universal-plugin build is OUT OF SCOPE -> governances are harness-loaded skills authored in the mission loop. (5) Governances are GENERAL standing criteria, never per-CR. COVERED: the ACTOR bars (director/builder/architect) — decided + exemplified. DESIGN-PREP DONE this session: (a) ~/.claude/plans/swirling-foraging-moore.md fixed to Model B (5 bars, faces merged); (b) non-actor governances RECORDED in common-governances.solution.md (0317e8b) — fixed-universal = one invariant skill each (not face-split); plugin-contract single-owner under plugin/; autonomy descriptive+baked-in (no node/skill); reconciles RESOLVED: gate-validation model FOLDS into lifecycle-model.md (no new design doc), gate-validation carries NO leash (moved to autonomy-rubric, 3-dim gradient), architect-spec asymmetry absorbed by Model B per-face footer; (c) design/ aligned (82aade4): renamed actors-and-governance.md -> actors-governance.md, dropped universal-plugin-build embedding (one harness-loaded delivery model), adopted Model B match-key metadata{artifact-type,actor,gate} (was face), added combat-log to fixed-universal. REMAINING (the live frontier): (d) BUILD the bars as sdd-new skills + their reference nodes — common-governances/{lifecycle,ownership,combat-log,gate-validation}/ + the 5 actor bars (director-spec, builder-spec, builder-impl, architect-spec, architect-impl); plugin/plugin-contract/; then spec.md capability-map row + verify autonomy acceptance theme (no node/skill). Follow the design plan's commit plan #2-6."
-    status: in_progress
+    content: "Tier 1 (migration) — carry the cross-cutting governances to sdd-new. IN PROGRESS; the session REWORKED the governance model, so the old 'reference-artifact nodes' framing in the body/## Migration ordering is PARTLY SUPERSEDED — trust ## NEXT + common-governances.solution.md. DECIDED + COMMITTED (d439420, d186622): (1) granularity = Model B — one bar per (actor,gate), discipline SECTIONS, faces MERGED (producer+judge load the shared bar; producer!=judge holds at the AGENT level); spec|impl KEPT (coverage vs conformance); subjective slices split to judge-only @rubric. Model A (per-role <actor>-<gate>-<face>, 10) kept as the FALLBACK for asymmetric-input/large-rubric bars. Recorded in .agents/specs/sdd/common-governances/common-governances.solution.md + examples/acme-ui (A) & examples/acme-ui-merged (B). (2) Placement: single-consumer governance -> its owning capability folder (spec-format/suite-format under authoring/, plugin-contract under plugin/); cross-cutting -> NEW common-governances/ folder; rules/models stay in design/. (3) Disciplines (engineer/designer/a11y/security/qa) compose onto the SDD generic core via compose:union, project/plugin-supplied per artifact-type at resolution — SDD ships only the GENERIC core bars; disciplines are OUT OF SCOPE here. (4) universal-plugin build is OUT OF SCOPE -> governances are harness-loaded skills authored in the mission loop. (5) Governances are GENERAL standing criteria, never per-CR. COVERED: the ACTOR bars (director/builder/architect) — decided + exemplified. DESIGN-PREP DONE this session: (a) ~/.claude/plans/swirling-foraging-moore.md fixed to Model B (5 bars, faces merged); (b) non-actor governances RECORDED in common-governances.solution.md (0317e8b) — fixed-universal = one invariant skill each (not face-split); plugin-contract single-owner under plugin/; autonomy descriptive+baked-in (no node/skill); reconciles RESOLVED: gate-validation model FOLDS into lifecycle-model.md (no new design doc), gate-validation carries NO leash (moved to autonomy-rubric, 3-dim gradient), architect-spec asymmetry absorbed by Model B per-face footer; (c) design/ aligned (82aade4): renamed actors-and-governance.md -> actors-governance.md, dropped universal-plugin-build embedding (one harness-loaded delivery model), adopted Model B match-key metadata{artifact-type,actor,gate} (was face), added combat-log to fixed-universal. DONE (commit plan #2-6, this session): BUILT all bars as sdd-new skills + reference nodes — 5 actor bars (director-spec, builder-spec, builder-impl, architect-spec[+per-face footer], architect-impl) under common-governances/{director,builder,architect}/ (962c02f); the 4 fixed-universal (lifecycle 422a0e7, ownership ae87283, combat-log 301749d, gate-validation 3f54d9b — gate-validation carries NO leash, model folds into lifecycle-model.md) under common-governances/; plugin-contract (1eacb3c) under plugin/plugin-contract/ (single-owner; plan-producer->solution-producer, operator->conductor, Model-B governances map, artifact-type resolution); spec.md capability-map row (c3ac0a1). autonomy CONFIRMED recorded as descriptive design/autonomy-rubric.md + baked-in + acceptance theme B (no node/skill). pnpm verify green (incl. test:audit over all 10 new governance skills). NOTE: live .agents/universal-plugin.json still uses plan-producer + flat governances{director,builder,architect} — migrated when governance-resolution.mts/plugins land (core-agents/sub-plugin)."
+    status: completed
   - id: core-agents
     content: "Deliver — the cross-cutting agents in sdd-new (not owned by one capability). PER arch-conductor-pivot (D-G): the DEFAULT conductor is the main session (no spawned operator) — so build the SPAWNED workers: cold sdd-spec-judge + sdd-implementer (impl-judge), the impl-producer builder, doctrine Scanner, formation Warden; sdd-operator is built ONLY as the headless/fan-out fallback. Plus the deterministic .mts helpers (check-spec-state, governance-resolution). Built to the CORRECTED lens sets (spec gate {director,builder,architect}; impl gate {builder,architect}) — the baseline 2-lens skills are reference only. PROGRESS: check-spec-state.mts (new-model) DONE in plugins/sdd-new/skills/validate-spec/scripts/ (48a0c1e, 24 node:tests, typed under tsconfig.specs.json) — root tuple + per-node spec-type reconcile, validates the live tree via `pnpm verify:specs-new`. STILL PENDING: governance-resolution.mts + all the cross-cutting agents."
     status: pending
@@ -112,32 +112,25 @@ The work is organized in **two levels of grill**:
 > superseded** — trust this anchor and
 > `.agents/specs/sdd/common-governances/common-governances.solution.md` over the old body.
 
-1. **Next action — BUILD the bars as sdd-new skills + their reference nodes.** All design-prep is
-   DONE (this session): the design plan `~/.claude/plans/swirling-foraging-moore.md` is Model B; the
-   non-actor governances are recorded in `common-governances/common-governances.solution.md`
-   (`0317e8b`); `design/` is aligned to harness-loaded + Model B (`82aade4`, renamed
-   `actors-governance.md`, match-key `metadata{artifact-type, actor, gate}`). Now follow the design
-   plan's **commit plan #2-6** (`~/.claude/plans/swirling-foraging-moore.md`):
-     - **#2 actor bars** — `common-governances/{architect,builder,director}/` reference nodes + the
-       **5 Model-B skills** `plugins/sdd-new/skills/{director-spec, builder-spec, builder-impl,
-       architect-spec, architect-impl}-governance/` (faces merged; `architect-spec` carries the
-       per-face footer for the solution-producer-vs-cold-judge asymmetry).
-     - **#3 fixed-universal** — `common-governances/{lifecycle,ownership,combat-log,gate-validation}/`
-       thin reference nodes + one invariant skill each. gate-validation's model FOLDS into
-       `lifecycle-model.md`; the new `gate-validation-governance` **drops the baseline's leash
-       section** (leash lives in `autonomy-rubric.md`). Apply the stale-baseline corrections
-       (`domain-type`→`artifact-type`; `plan-producer`→`solution-producer`; spec-types taxonomy).
-     - **#4 plugin-contract** — `plugin/plugin-contract/` node + `plugin-contract-governance` skill.
-     - **#5 autonomy** — verify `design/autonomy-rubric.md` current + an `acceptance/` theme exists;
-       **no node, no skill** (descriptive + baked-in).
-     - **#6 spec.md** — add a `## Capability map` row for `common-governances/`.
-   - **Validate each step:** `pnpm verify:specs-new` (reference-node legality) + `audit validate
-     --path plugins/sdd-new/skills/<name>-governance` per skill; `pnpm verify` before any push.
-   - **Findings the commits won't show (the model shift):** governances are **general** standing
-     criteria, never per-CR; a bar (esp. builder) **composes disciplines** (engineer/designer/a11y/
-     security/qa) via `compose: union` — **SDD ships only the generic core**, disciplines are
-     project/plugin per artifact-type at resolution (out of scope here); **`universal-plugin build`
-     is out of scope** → governances are **harness-loaded** skills built in the mission loop.
+1. **Next action — `core-agents` (Tier-1 #7).** `sub-governances` is **DONE** (all 10 bars built +
+   audited; see its todo). Now build the **spawned workers** that load those bars
+   (`arch-conductor-pivot` D-G): the cold `sdd-spec-judge` + `sdd-implementer` (impl-judge), the
+   generic impl-producer builder, the doctrine Scanner, the formation Warden; `sdd-operator` only as
+   the headless/fan-out fallback. Plus the deterministic `.mts` helpers — `check-spec-state.mts`
+   DONE (48a0c1e); **`governance-resolution.mts` PENDING** (resolves `(artifact-type, actor, gate)`
+   → bar per `plugin-contract-governance`, composes union/replace per precedence). Build to the
+   CORRECTED lens sets (spec gate `{director,builder,architect}`; impl gate `{builder,architect}`)
+   and the Model-B `(actor, gate)` bar names now in `common-governances/`. The baseline 2-lens
+   agents in `plugins/sdd/` are reference only.
+   - **Registry migration (do here or note):** the live `.agents/universal-plugin.json` still uses
+     `plan-producer` + flat `governances{director,builder,architect}`; the resolution helper +
+     aces/quill entries move to `solution-producer` + the Model-B `(actor,gate)` governances map
+     when `governance-resolution.mts` lands.
+   - **Validate:** `pnpm verify:specs-new` + `audit validate` per skill; `pnpm verify` before push.
+   - **Findings (the model shift):** governances are **general** standing criteria, never per-CR; a
+     bar (esp. builder) **composes disciplines** via `compose: union` — SDD ships only the generic
+     core (disciplines out of scope here); `universal-plugin build` is out of scope → governances are
+     **harness-loaded** skills.
 
    **Dependency note (still holds):** the spawned **agents** (`sdd-operator` headless fallback, cold
    `sdd-spec-judge` + `sdd-implementer`, the impl-producer builder) are built in `core-agents`,
@@ -209,13 +202,13 @@ impl); only the **order** changed.
    conductor-enacted, realized by the operator agent in core-agents).
 5. `sub-gateway` — ✅ DONE (single behavioral unit + gateway.feature; thin-relay `sdd` skill built,
    corrected to spawn-nothing-by-default).
-6. `sub-governances` (NEW todo) — **← next.** Port the cross-cutting governances to `sdd-new` as
-   reference-artifact nodes + impls: **actor** bars (architect / builder / director / autonomy)
-   and **fixed-universal** (lifecycle / ownership / gate-validation / combat-log / plugin-contract).
-   These are loaded by the mission gates, so they land alongside `sub-mission`/`core-agents`.
-7. `core-agents` — the spawned workers (cold `sdd-spec-judge` + `sdd-implementer`, impl-producer
-   builder, doctrine Scanner, formation Warden; `sdd-operator` as headless fallback) + the `.mts`
-   helpers (`check-spec-state` done; `governance-resolution` pending).
+6. `sub-governances` — ✅ DONE. Built all 10 governance bars in `sdd-new` as reference nodes +
+   skills: 5 Model-B actor bars (director-spec, builder-spec, builder-impl, architect-spec,
+   architect-impl), 4 fixed-universal (lifecycle, ownership, combat-log, gate-validation — no
+   leash), and single-owner plugin-contract. autonomy stays descriptive + baked-in (no node/skill).
+7. `core-agents` — **← next.** The spawned workers (cold `sdd-spec-judge` + `sdd-implementer`,
+   impl-producer builder, doctrine Scanner, formation Warden; `sdd-operator` as headless fallback) +
+   the `.mts` helpers (`check-spec-state` done; `governance-resolution` pending).
 
 **Tier 2 — existing supporting capabilities:**
 
