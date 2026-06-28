@@ -13,6 +13,10 @@ fallback only): it loads the spec-producer governance and **grills the human liv
 the positional ratifier and leaves the node at `status: draft`, ready for the spec gate
 (`validate-spec`). An **existing** node is `revise-spec`, not this skill.
 
+> **On entry, advise the user that a capable model (e.g. Opus) is recommended.** The grill runs in
+> the main session, so its quality tracks the session model; surface this before the live grill
+> begins so the user can switch if needed.
+
 Load `sdd:lifecycle-governance` (the status enum and what `draft` means),
 `sdd:ownership-governance` (which fields a producer may write vs. the conductor and the gate),
 `sdd:spec-producer-governance` (the grilling procedure run inline), and
