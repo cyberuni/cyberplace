@@ -15,10 +15,10 @@ todos:
     content: "Sub-mission authoring/ — prose (reconcile rule + per-unit split note), per-unit suites (spec-producer.feature 10 + validate-spec.feature 19), impl spec-producer-governance in sdd-new. RESTRUCTURED to overview + per-unit specs: authoring/README.md is now a no-.feature OVERVIEW/index; each unit lives in its own folder with its own README (## Use Cases mapping to its suite) + .feature — authoring/spec-producer/ and authoring/validate-spec/. This CLOSES the Use Cases gap (F3) for authoring: use cases are per-UNIT, the overview carries none (a no-.feature node is an index). Gate-digest behavior folded into validate-spec/README. ALSO built this session: the two fixed-universal governances as reference-artifact nodes under authoring/ — spec-format (78d9d8c) + suite-format (4f68659), each a spec-type:reference node + a self-contained impl in plugins/sdd-new/skills/ (spec-governance renamed -> spec-format); see D-F. COMPLETE: create-spec unit (README ## Use Cases + create-spec.feature 12 + impl plugins/sdd-new/skills/create-spec/) and revise-spec unit (README + revise-spec.feature 9 + impl, carries the frozen-feature re-open guard), both marked done in the authoring overview; validate-spec SKILL.md spec-gate impl built in plugins/sdd-new/skills/validate-spec/ (spec-gate ONLY — impl gate is the mission's; folds digest in-session, freezes per .feature, writes gate line to ledger.jsonl). All 5 authoring units (spec-producer, validate-spec, spec-format, suite-format, create-spec, revise-spec) now have spec + impl. verify:specs-new green."
     status: completed
   - id: sub-intake
-    content: Sub-mission intake/ — extract the inline README scenarios into per-unit .feature suites (channels/sources, escape hatch, inject channel); build impls in sdd-new. Carries the intake-adapter-store decision.
+    content: "DEFERRED (Tier 4, net-new — not on the sdd->sdd-new migration path; ## Migration ordering). Sub-mission intake/ — extract the inline README scenarios into per-unit .feature suites (channels/sources, escape hatch, inject channel); build impls in sdd-new. Intake has NO baseline skill; escape hatch + inject are enacted by the conductor/gateway. Carve to a follow-up CR after the migration."
     status: pending
   - id: intake-adapter-store
-    content: "DECISION + scope — the intake open marker (intake/README.md): the thin adapter directive (source selection + per-source convention + multi-source orchestration) and the local CR store (on-disk CR body + open->accepted->done; candidate beads) are flagged NEW WORK needing their own spec+suite. Decide: author their intake scenarios now (grows #34) OR carve to a follow-up CR and drop the marker. BLOCKS the spec gate until resolved (open markers block the gate)."
+    content: "DEFERRED (resolved 2026-06-27 — carve to follow-up CR). The intake open marker (intake/README.md): the thin adapter directive (source selection + per-source convention + multi-source orchestration) and the local CR store (on-disk CR body + open->accepted->done; candidate beads) are NEW WORK with no baseline. Carved to a follow-up CR; the <!-- open: --> marker stays and blocks only the intake node's gate, not the migration of the existing capabilities."
     status: pending
   - id: sub-gateway
     content: Sub-mission gateway/ — extract the inline README scenarios to gateway.feature; build the thin-relay sdd gateway skill in sdd-new (NO governance load — the macro-grill ruling).
@@ -39,7 +39,7 @@ todos:
     content: Sub-mission corpus/ — discovery, digest, dedupe, split, align-specs tools; per-unit suites -> impls in sdd-new (NO spec-graph/DAG).
     status: pending
   - id: sub-campaign
-    content: Sub-mission campaign/ — the product outer loop; per-unit suites -> impl.
+    content: "DEFERRED (Tier 4, net-new — no baseline; ## Migration ordering). Sub-mission campaign/ — the product outer loop; per-unit suites -> impl."
     status: pending
   - id: sub-formation
     content: Sub-mission formation/ — the structure outer loop + the Warden delegate; per-unit suites -> impl.
@@ -48,16 +48,19 @@ todos:
     content: Sub-mission doctrine/ — the process outer loop + the Scanner delegate + plan retirement (W-1 .mts skill); per-unit suites -> impl.
     status: pending
   - id: sub-forge
-    content: Sub-mission forge/ — the field outer loop (Consent floor, cross-installation corrections); per-unit suites -> impl.
+    content: "DEFERRED (Tier 4, net-new — no baseline; ## Migration ordering). Sub-mission forge/ — the field outer loop (Consent floor, cross-installation corrections); per-unit suites -> impl."
     status: pending
   - id: sub-plugin
     content: "Sub-mission plugin/ — SDD's plugin nature: ships-as-plugin, extended-by-plugins, registry init-WRITE, workspace init (the ../.agents/plans symlink gotcha); per-unit suites -> impl."
     status: pending
   - id: sub-create-governance
-    content: "Sub-mission create-governance (NEW cap, R1) — author a governance: metadata{artifact-type,actor,face} + compose mode union|replace; place at <project>/.agents/governances/; validate schema. Sibling to create-spec/validate-spec; consumes the A model. Prose -> suite -> impl."
+    content: "DEFERRED (Tier 4, net-new — no baseline; ## Migration ordering). Sub-mission create-governance (NEW cap, R1) — author a governance: metadata{artifact-type,actor,face} + compose mode union|replace; place at <project>/.agents/governances/; validate schema. Sibling to create-spec/validate-spec; consumes the A model. Prose -> suite -> impl."
     status: pending
   - id: sub-marketplace
-    content: "Sub-mission marketplace (NEW cap, R2+R3, SDD-owned NOT forge) — a plugin declares the artifact-types it serves (R2); a register-plugin-to-marketplace skill + website shows plugins per artifact-type (R3). Two layers: marketplace=global catalog (website), registry=per-project resolution. Home: plugin/ + apps/website. Prose -> suite -> impl."
+    content: "DEFERRED (Tier 4, net-new — no baseline; ## Migration ordering). Sub-mission marketplace (NEW cap, R2+R3, SDD-owned NOT forge) — a plugin declares the artifact-types it serves (R2); a register-plugin-to-marketplace skill + website shows plugins per artifact-type (R3). Two layers: marketplace=global catalog (website), registry=per-project resolution. Home: plugin/ + apps/website. Prose -> suite -> impl."
+    status: pending
+  - id: sub-governances
+    content: "Tier 1 (migration) — port the cross-cutting governances to sdd-new as reference-artifact nodes (spec-type:reference) + impls: actor bars (architect/builder/director/autonomy) and fixed-universal (lifecycle/ownership/gate-validation/combat-log/plugin-contract). Baseline: the *-governance skills in plugins/sdd/skills/. These are loaded by the mission gates, so land alongside sub-mission/core-agents. spec-format + suite-format already done under authoring/. Prose (reference ## Subject) -> impl; verified through a consumer suite (no .feature)."
     status: pending
   - id: core-agents
     content: "Deliver — the cross-cutting agents in sdd-new (not owned by one capability). PER arch-conductor-pivot (D-G): the DEFAULT conductor is the main session (no spawned operator) — so build the SPAWNED workers: cold sdd-spec-judge + sdd-implementer (impl-judge), the impl-producer builder, doctrine Scanner, formation Warden; sdd-operator is built ONLY as the headless/fan-out fallback. Plus the deterministic .mts helpers (check-spec-state, governance-resolution). Built to the CORRECTED lens sets (spec gate {director,builder,architect}; impl gate {builder,architect}) — the baseline 2-lens skills are reference only. PROGRESS: check-spec-state.mts (new-model) DONE in plugins/sdd-new/skills/validate-spec/scripts/ (48a0c1e, 24 node:tests, typed under tsconfig.specs.json) — root tuple + per-node spec-type reconcile, validates the live tree via `pnpm verify:specs-new`. STILL PENDING: governance-resolution.mts + all the cross-cutting agents."
@@ -104,19 +107,32 @@ The work is organized in **two levels of grill**:
 
 ## NEXT — resume here (read this first)
 
-1. **Next action — start `sub-intake`** (`sub-authoring` is DONE: all 5 authoring units have
-   spec + impl — create-spec/revise-spec/validate-spec landed this session; verify:specs-new
-   green). Extract `intake/README.md`'s inline scenarios into per-unit `.feature` suites
-   (channels/sources, escape hatch, inject channel) and build the impls in
-   `plugins/sdd-new/skills/`, same **overview + per-unit-spec** split each. Carry the
-   `intake-adapter-store` blocking decision (below). Then the remaining sub-missions in todo
-   order (`sub-gateway`, `sub-mission`, …). Validate every step with `pnpm verify:specs-new`.
+1. **Next action — start `sub-mission`** (`sub-authoring` is DONE: all 5 authoring units have
+   spec + impl; verify:specs-new green). The sub-mission ordering was **reprioritized
+   (2026-06-27, ## Migration ordering)** to drive the **sdd → sdd-new migration**: do the
+   capabilities that have a **baseline `sdd` impl to port** first, defer the **net-new**
+   capabilities to follow-up CRs. `mission/` is the core (conductor/operator, gates,
+   impl/solution-producer, judges) and the heaviest baseline surface, so it leads. Run it in the
+   usual rhythm — **prose → per-unit `.feature` suites (one per skill) → impl in
+   `plugins/sdd-new/skills/`** (build-to-learn) — `overview + per-unit-spec` split. Validate every
+   step with `pnpm verify:specs-new`.
 
-2. **Blocking decision (resolve before the spec gate):** `intake-adapter-store` — author the
-   adapter-directive + local-CR-store scenarios now (grows #34), or carve them to a follow-up CR
-   and drop the `<!-- open: -->` marker. Left open, the marker blocks the gate.
+2. **Migration-first order (authoritative): see `## Migration ordering`.** Existing-baseline
+   capabilities first (`sub-mission` → `sub-deliver` → `sub-handoff` → `sub-gateway` →
+   `sub-governances` → `core-agents` → `sub-corpus` → `sub-formation` → `sub-doctrine` →
+   `sub-plugin`), then assembly/bootstrap (`root-frontmatter` → `spec-gate` → `assemble-plugin` →
+   `self-host`), then handoff. **DEFERRED** (net-new, carve to follow-up CRs, NOT on the migration
+   path): `sub-intake` (+ `intake-adapter-store`), `sub-campaign`, `sub-forge`,
+   `sub-create-governance`, `sub-marketplace`.
 
-3. **Findings the commits don't show** (full record in `## D-F`):
+3. **`intake-adapter-store` decision — RESOLVED: deferred.** Carve the adapter directive + local
+   CR store to a follow-up CR; intake itself is net-new (no baseline skill) and its real behaviors
+   (escape hatch, inject channel) are enacted by the conductor/gateway, so the whole `sub-intake`
+   moves behind the migration set. The `<!-- open: -->` marker in `intake/README.md` stays until
+   that follow-up CR — it only blocks the **intake** node's gate, not the migration of the
+   existing capabilities.
+
+4. **Findings the commits don't show** (full record in `## D-F`):
    - The model now has a **spec-types taxonomy** (descriptive / reference / behavioral); only
      **behavioral** nodes carry `## Use Cases`. This **resolved** the F3 Use Cases gap and is the
      pattern every remaining sub-mission applies.
@@ -127,7 +143,7 @@ The work is organized in **two levels of grill**:
      (impl-producer also reconciles); the 3 self-align lenses aren't yet explicit
      scope/coverage/structure checks.
 
-4. **The "plan" terminology collision — DESIGNED & LANDED (2026-06-27).** The old
+5. **The "plan" terminology collision — DESIGNED & LANDED (2026-06-27).** The old
    `plan.md`+`tasks.md` split two ways by scope+lifetime: the **functional spec** (`plan.md` —
    approach, structures, chosen design + rejected alternatives) is now the per-unit **solution**
    `<unit>.solution.md` (durable, beside the unit's spec + suite); the **task DAG** (`tasks.md`)
@@ -141,11 +157,56 @@ The work is organized in **two levels of grill**:
    `plugins/sdd-new` + the per-unit spec/suite for the role. (Memory:
    `project_sdd_plan_terminology_collision`.)
 
-5. **Do not relearn** — the working method and settled calls live in `## Resolved decisions`:
+6. **Do not relearn** — the working method and settled calls live in `## Resolved decisions`:
    vertical sub-missions; **prose → per-unit suites (one `.feature` per skill) → impl in
    `plugins/sdd-new`** (build-to-learn during explore); `plugins/sdd` is an **untouched baseline**;
    reconcile to the **correct answer, not a vote**; spec the behavior, never hand-edit the impl;
    commit per unit; CR = unit of change-intent.
+
+## Migration ordering (reprioritized 2026-06-27)
+
+The goal driving the remaining sub-missions is the **`sdd` → `sdd-new` migration**: get
+`plugins/sdd-new` to a real, shippable plugin that supersedes `plugins/sdd`. So the sub-missions
+are ordered by **does this capability have a baseline `sdd` impl to port?** — existing first,
+net-new deferred. Same per-capability spec-first rhythm throughout (prose → per-unit suites →
+impl); only the **order** changed.
+
+**Tier 1 — migration core (existing baseline, on the critical path):**
+
+1. `sub-authoring` — ✅ DONE.
+2. `sub-mission` — the conductor/operator, gates, impl-producer, solution-producer, the cold
+   judges. The heaviest baseline surface (sdd-operator, impl/plan-producer-gov, sdd-implementer,
+   sdd-spec-judge). **← next.**
+3. `sub-deliver` — build-to-keep + impl-producer-governance.
+4. `sub-handoff` — delivery-shape contract, conclusion write-back.
+5. `sub-gateway` — the thin-relay entry door (baseline: the `sdd` entry skill).
+6. `sub-governances` (NEW todo) — port the cross-cutting governances to `sdd-new` as
+   reference-artifact nodes + impls: **actor** bars (architect / builder / director / autonomy)
+   and **fixed-universal** (lifecycle / ownership / gate-validation / combat-log / plugin-contract).
+   These are loaded by the mission gates, so they land alongside `sub-mission`/`core-agents`.
+7. `core-agents` — the spawned workers (cold `sdd-spec-judge` + `sdd-implementer`, impl-producer
+   builder, doctrine Scanner, formation Warden; `sdd-operator` as headless fallback) + the `.mts`
+   helpers (`check-spec-state` done; `governance-resolution` pending).
+
+**Tier 2 — existing supporting capabilities:**
+
+8. `sub-corpus` — dedupe-specs, split-spec (baseline exists; NO spec-graph/DAG).
+9. `sub-formation` — formation-loop + the Warden delegate.
+10. `sub-doctrine` — doctrine-loop + the Scanner delegate + plan-retirement `.mts`.
+11. `sub-plugin` — SDD's plugin nature, registry, workspace init.
+
+**Tier 3 — assembly & bootstrap close (existing):**
+
+12. `root-frontmatter` → 13. `spec-gate` (hand-run) → 14. `assemble-plugin` (diff vs `plugins/sdd`)
+→ 15. `self-host` → 16. `handoff` (branch → PR).
+
+**Tier 4 — DEFERRED (net-new, carve to follow-up CRs; NOT on the migration path):**
+
+- `sub-intake` (+ `intake-adapter-store`) — no baseline skill; escape hatch + inject are enacted
+  by the conductor/gateway. The `intake/README.md` `<!-- open: -->` marker stays for the follow-up
+  CR; it blocks only the intake node's gate, not the migration.
+- `sub-campaign`, `sub-forge` — net-new outer loops (no baseline).
+- `sub-create-governance` (R1), `sub-marketplace` (R2+R3) — net-new capabilities.
 
 ## The Mission Loop — refined this session
 
