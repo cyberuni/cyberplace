@@ -13,6 +13,10 @@ The node exists, so there is nothing to lay down; the work is to pressure-test t
 suite back into line, and leave the node at `status: draft`, ready for the spec gate
 (`validate-spec`). A **new** node is `create-spec`, not this skill.
 
+> **On entry, advise the user that a capable model (e.g. Opus) is recommended.** The grill runs in
+> the main session, so its quality tracks the session model; surface this before the live grill
+> begins so the user can switch if needed.
+
 Load `sdd:lifecycle-governance` (the status enum and the freeze re-open transition),
 `sdd:ownership-governance` (which fields a producer may write vs. the conductor and the gate), and
 `sdd:spec-producer-governance` (the grilling procedure run inline).
