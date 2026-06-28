@@ -21,6 +21,7 @@ This directory contains Architecture Decision Records (ADRs) for cyber-skills �
 | [0013](0013-governance-skills.md) | Governance Skills (reference content as non-user-invocable skills) | Accepted | — |
 | [0014](0014-sdd-governance-split.md) | Split SDD lifecycle/frontmatter knowledge into named governance skills | Accepted | 2026-06-21 |
 | [0015](0015-three-tier-provenance-and-plan-handoff.md) | Three-tier provenance; the plan as a portable `*.plan.md` handoff artifact | Accepted | 2026-06-26 |
+| [0016](0016-impl-judge-verification-independence.md) | Impl-judge verification independence — re-derive from the frozen contract, objective backstop, judge≠producer model | Accepted | 2026-06-28 |
 
 ## Creating a new ADR
 

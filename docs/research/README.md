@@ -25,6 +25,7 @@ Use `YYYY-MM-<topic>.md` (for example `2026-05-skill-ecosystem-landscape.md`). O
 | 2026-05 | [CLI output format for agents](2026-05-cli-output-format-for-agents.md) | `agent-tool-output` governance, ADR-0004 |
 | 2026-05 | [npm package structure for skills and plugin packages](2026-05-npm-package-structure-plugin-manifest.md) | `skill-repo-structure` governance, potential upstream proposal to `vercel-labs/open-plugin-spec` and `agentskills/agentskills` |
 | 2026-06 | [Agent plan / session-state persistence across harnesses](2026-06-agent-plan-persistence.md) | ADR-0015, SDD `provenance-model`, the plan/ledger/cursor design |
+| 2026-06 | [Impl-judge verification independence](2026-06-impl-judge-independence.md) | ADR-0016, SDD `mission/deliver/impl-judge` + `impl-producer` + conductor impl gate, `autonomy-rubric` |
 
 ## Adding research
 
