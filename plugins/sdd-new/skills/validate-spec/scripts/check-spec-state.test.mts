@@ -15,7 +15,14 @@ import {
 } from './check-spec-state.mts'
 
 function state(over: Partial<SpecState> = {}): SpecState {
-	return { status: 'draft', aligned: false, markerCount: 0, approval: null, ...over }
+	return {
+		status: 'draft',
+		aligned: false,
+		markerCount: 0,
+		approval: null,
+		layout: { present: false, strategy: null, location: null },
+		...over,
+	}
 }
 
 function node(over: Partial<NodeSpec> = {}): NodeSpec {
@@ -138,6 +145,52 @@ test('a fully approved-and-implemented spec passes', () => {
 
 test('a descriptive root with no frontmatter is a no-op (no .feature requirement)', () => {
 	assert.deepEqual(checkSpec('sdd', parseSpecState('# Spec\n\nbody only, no frontmatter\n')), [])
+})
+
+// ── spec-layout (declared organization) ──
+
+test('parseSpecState reads a declared spec-layout block', () => {
+	const text = [
+		'---',
+		'status: draft',
+		'spec-layout:',
+		'  strategy: capability-first',
+		'  location: hoisted',
+		'  placement-map: "#placement-map"',
+		'---',
+		'',
+	].join('\n')
+	const s = parseSpecState(text)
+	assert.deepEqual(s.layout, { present: true, strategy: 'capability-first', location: 'hoisted' })
+})
+
+test('a spec with no spec-layout block is a no-op (additive — predating specs stay legal)', () => {
+	const s = parseSpecState('---\nstatus: draft\n---\n')
+	assert.equal(s.layout.present, false)
+	assert.deepEqual(checkSpec('x', state({ layout: s.layout })), [])
+})
+
+test('a declared spec-layout with legal strategy + location passes', () => {
+	assert.deepEqual(
+		checkSpec('x', state({ layout: { present: true, strategy: 'mirror-source', location: 'colocated' } })),
+		[],
+	)
+})
+
+test('a declared spec-layout with an unknown strategy is illegal', () => {
+	const v = checkSpec('x', state({ layout: { present: true, strategy: 'feature-sliced', location: 'colocated' } }))
+	assert.ok(v.some((m) => /unknown strategy "feature-sliced"/.test(m)))
+})
+
+test('a declared spec-layout with an unknown location is illegal', () => {
+	const v = checkSpec('x', state({ layout: { present: true, strategy: 'capability-first', location: 'somewhere' } }))
+	assert.ok(v.some((m) => /unknown location "somewhere"/.test(m)))
+})
+
+test('a declared spec-layout missing strategy or location is illegal', () => {
+	const v = checkSpec('x', state({ layout: { present: true, strategy: null, location: null } }))
+	assert.ok(v.some((m) => /no strategy/.test(m)))
+	assert.ok(v.some((m) => /no location/.test(m)))
 })
 
 // ── per-node spec-type reconcile ──
