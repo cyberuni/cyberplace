@@ -16,7 +16,7 @@
 		{
 			"name": "sdd",
 			"description": "Spec-Driven Development. Scaffold, validate, and maintain behavioral specs (spec.md + .feature files) for software features.",
-			"source": "./plugins/sdd"
+			"source": "./plugins/sdd-new"
 		},
 		{
 			"name": "tmux",
