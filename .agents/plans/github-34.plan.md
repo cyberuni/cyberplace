@@ -113,12 +113,25 @@ The work is organized in **two levels of grill**:
 
 ## NEXT — resume here (read this first)
 
-> **Model shift this session.** The governance design was substantially reworked. The old
-> "reference-artifact nodes" framing in the body below and in `## Migration ordering` is **partly
-> superseded** — trust this anchor and
-> `.agents/specs/sdd/common-governances/common-governances.solution.md` over the old body.
+> **Session update (2026-06-28).** The gateway + skill-surface reshape **LANDED** (`5af5be7`,
+> `13bbe4a`, `1bdf8bb`, `fa8a00d`, `bf7d536`, `7fd8b40`): gateway loads the route skill in-session;
+> `operator` retired → `conductor` (role) / `automaton` (headless agent); **`start-mission`** is the
+> single CR entry; create/revise-spec retired into it; spec gate internal; pause/resume-mission ship
+> in the sdd plugin. `pnpm verify` green. (Older "reference-artifact nodes" framing below is partly
+> superseded — trust this anchor + `common-governances/common-governances.solution.md`.)
 
-1. **Next action — `core-agents` (Tier-1 #7).** `sub-governances` is **DONE** (all 10 bars built +
+**▶ NEXT ACTION — `combat-log-location` (a DESIGN decision, then reconcile).** SETTLED: the durable
+root `ledger.jsonl` (gate + strategy, doctrine-distilled) stays. **OPEN — decide with the user
+first:** under one-plan-per-CR, does the chatty per-mission `report`/`correction` **combat log** live
+**(a)** INSIDE the plan brief `.agents/plans/<cr-ref>.plan.md` (one CR artifact, retired together at
+retro), or **(b)** a sibling `.agents/plans/<cr-ref>.log.jsonl` (the current design)? Then reconcile
+the choice across `plugins/sdd-new/skills/combat-log-governance/SKILL.md`,
+`.agents/specs/sdd/design/provenance-model.md`, and `start-mission`'s "Combat log" line; `pnpm verify`.
+The gateway strategy-count bug is already **FIXED** (`5af5be7`) — only the log-home design call remains.
+
+**After `combat-log-location`, resume the migration build (Tier-1 order):**
+
+1. **`core-agents` (Tier-1 #7).** `sub-governances` is **DONE** (all 10 bars built +
    audited; see its todo). Now build the **spawned workers** that load those bars
    (`arch-conductor-pivot` D-G): the cold `sdd-spec-judge` + `sdd-implementer` (impl-judge), the
    generic impl-producer builder, the doctrine Scanner, the formation Warden; `sdd-operator` only as
