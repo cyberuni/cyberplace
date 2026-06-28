@@ -33,8 +33,8 @@ todos:
     content: "Sub-mission mission/deliver/ — DONE. deliver/README restructured to a descriptive phase overview (Units table); split on producer!=judge into impl-producer/ unit (README + impl-producer.feature 11) and impl-judge/ unit (README + impl-judge.feature 10). IMPL DONE: plugins/sdd-new/skills/impl-producer-governance/ — CORRECTED to the D-G model (impl-producer is mechanical + SPAWNED via a generic builder, not inline; produced-by sdd:sdd-operator). The impl-judge AGENT (sdd-implementer) deferred to core-agents. verify:specs-new green."
     status: completed
   - id: sub-handoff
-    content: Sub-mission mission/handoff/ — delivery-shape contract, unit-of-delivery, conclusion write-back; per-unit suites -> impl.
-    status: pending
+    content: "Sub-mission mission/handoff/ — DONE. handoff/ made a single behavioral unit (spec-type: behavioral + ## Use Cases; no sub-skills — conductor-enacted) + handoff.feature (13): land in the declared shape (PR-flow/commit-to-main), decompose by unit of work, conditional status write-back, distilled public summary + follow-ups as new CRs, no new floor, plan kept-but-not-landed/not-retired-early. NO separate sdd-new impl — handoff is realized by the operator agent (built in core-agents). verify:specs-new green."
+    status: completed
   - id: sub-corpus
     content: Sub-mission corpus/ — discovery, digest, dedupe, split, align-specs tools; per-unit suites -> impls in sdd-new (NO spec-graph/DAG).
     status: pending
@@ -107,15 +107,14 @@ The work is organized in **two levels of grill**:
 
 ## NEXT — resume here (read this first)
 
-1. **Next action — start `sub-handoff`** (`sub-mission` + `sub-deliver` are DONE — operator,
-   solution-producer, impl-producer, impl-judge units specced + suited; `solution-producer-governance`
-   + `impl-producer-governance` built; spawned agents deferred to `core-agents`). `sub-handoff`
-   covers the delivery-shape contract, the unit-of-delivery, and the conclusion write-back: restructure
-   `mission/handoff/README.md` (descriptive overview if it has units, else a behavioral unit) → suite →
-   impl in `plugins/sdd-new/`. The sub-mission ordering is the **sdd → sdd-new migration** order
-   (## Migration ordering): baseline-existing capabilities first, net-new deferred. Usual rhythm —
-   **prose → per-unit `.feature` suites (one per skill) → impl** (build-to-learn). Validate every step
-   with `pnpm verify:specs-new`.
+1. **Next action — start `sub-gateway`** (mission/ is fully specced — operator, solution-producer,
+   impl-producer, impl-judge, handoff units done; governances built; spawned agents deferred to
+   `core-agents`). `sub-gateway` is the universal router / entry door: extract `gateway/README.md`'s
+   inline scenarios to `gateway.feature` and build the **thin-relay** `sdd` gateway skill in
+   `plugins/sdd-new/` — **NO governance load** (the macro-grill ruling). Baseline: the `sdd` entry
+   skill. The sub-mission ordering is the **sdd → sdd-new migration** order (## Migration ordering):
+   baseline-existing first, net-new deferred. Usual rhythm — **prose → per-unit `.feature` suites →
+   impl** (build-to-learn). Validate every step with `pnpm verify:specs-new`.
 
    **Dependency note (set this session):** the spawned **agents** (`sdd-operator` headless
    fallback, cold `sdd-spec-judge` + `sdd-implementer`, the impl-producer builder) are all built in
@@ -185,8 +184,9 @@ impl); only the **order** changed.
    `solution-producer-governance` built; spawned agents deferred to `core-agents`).
 3. `sub-deliver` — ✅ DONE (impl-producer + impl-judge units specced + suited;
    `impl-producer-governance` built, corrected to the spawned-builder model).
-4. `sub-handoff` — delivery-shape contract, conclusion write-back. **← next.**
-5. `sub-gateway` — the thin-relay entry door (baseline: the `sdd` entry skill).
+4. `sub-handoff` — ✅ DONE (single behavioral unit + handoff.feature; no separate impl —
+   conductor-enacted, realized by the operator agent in core-agents).
+5. `sub-gateway` — the thin-relay entry door (baseline: the `sdd` entry skill). **← next.**
 6. `sub-governances` (NEW todo) — port the cross-cutting governances to `sdd-new` as
    reference-artifact nodes + impls: **actor** bars (architect / builder / director / autonomy)
    and **fixed-universal** (lifecycle / ownership / gate-validation / combat-log / plugin-contract).
