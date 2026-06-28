@@ -27,8 +27,8 @@ todos:
     content: "Architecture pivot (D-G) — fold the operator into the MAIN-SESSION CONDUCTOR. The conductor is the main session running the operator role (not a spawned subagent); spec-producer + solution-producer run inline (the live grill); impl-producer + both judges spawn at depth 1 from the main session. Preserves grader independence on every harness; collapses the spawn tree caller->operator->judge (depth 2) to main->judge (depth 1). Spec gate = cold spec-judge over spec.md + .feature ONLY (solution out of view). Spawnable sdd-operator demoted to the headless/fan-out fallback (kept). Plugin surfaces are role-dependent: spec/solution-producer persona-loaded in-session, impl-producer + judges spawnable. DONE: swept design/ (specialists-and-squads, harness-spawning [inverted], lifecycle positional-auth, loops, provenance, governance-resolution, autonomy-rubric, unit-and-organization), capability specs (mission, gateway, intake, deliver, acceptance), and the entry skills + spec-producer-governance (specs + sdd-new impls). verify:specs-new green. Approved plan: ~/.claude/plans/write-it-up-as-federated-wreath.md."
     status: completed
   - id: sub-mission
-    content: "Sub-mission mission/ — the CONDUCTOR (operator role, main-session by default; spawnable sdd-operator = headless fallback): resolution (registry READ), production chain, impl gate, in-flight service, stop-provenance. Prose -> per-unit suites -> build the cold judges + impl-producer builder in sdd-new; the sdd-operator agent def is built ONLY as the headless fallback (default conductor behavior lives in the entry skills + loadable producer governances). Finalize the spawned-default-impl-producer provenance (produced-by marker)."
-    status: pending
+    content: "Sub-mission mission/ — the CONDUCTOR (operator role). SPEC+SUITE DONE: mission/README.md restructured to a descriptive overview (Units table); operator/ unit spec (resolution, five-role chain, explore orchestration, segment, impl gate, stop-provenance) + operator.feature (38); solution-producer/ unit spec + solution-producer.feature (10). IMPL DONE: plugins/sdd-new/skills/solution-producer-governance/ (the plan-terminology-collision remaining impl — writes <unit>.solution.md only; produced-by.solution-producer: sdd:sdd-operator). IMPL DEFERRED to core-agents (dependency-correct — they reference governances not yet in sdd-new): the sdd-operator AGENT (headless/fan-out fallback), the cold judges, the impl-producer builder all wait until sub-deliver (impl-producer-governance) + sub-governances (actor/fixed bars) populate the skills they load. Decision: ONE operator unit (one agent: sdd-operator), suite grouped by 6 concerns, split later only if freeze grain demands. produced-by for spawned-default impl-producer = sdd:sdd-operator (recorded in operator/README). verify:specs-new green."
+    status: completed
   - id: sub-deliver
     content: Sub-mission mission/deliver/ — build-to-keep behaviors + impl-producer-governance; per-unit suites -> impl in sdd-new.
     status: pending
@@ -107,15 +107,21 @@ The work is organized in **two levels of grill**:
 
 ## NEXT — resume here (read this first)
 
-1. **Next action — start `sub-mission`** (`sub-authoring` is DONE: all 5 authoring units have
-   spec + impl; verify:specs-new green). The sub-mission ordering was **reprioritized
-   (2026-06-27, ## Migration ordering)** to drive the **sdd → sdd-new migration**: do the
-   capabilities that have a **baseline `sdd` impl to port** first, defer the **net-new**
-   capabilities to follow-up CRs. `mission/` is the core (conductor/operator, gates,
-   impl/solution-producer, judges) and the heaviest baseline surface, so it leads. Run it in the
-   usual rhythm — **prose → per-unit `.feature` suites (one per skill) → impl in
-   `plugins/sdd-new/skills/`** (build-to-learn) — `overview + per-unit-spec` split. Validate every
-   step with `pnpm verify:specs-new`.
+1. **Next action — start `sub-deliver`** (`sub-mission` is DONE: operator + solution-producer
+   units specced + suited, `solution-producer-governance` built; the spawned agents deferred to
+   `core-agents` by dependency — see that todo). `sub-deliver` builds the deliver phase (step 3):
+   the `impl-producer-governance` (build-to-keep + one verification per frozen scenario) and the
+   impl-judge behaviors, per-unit suites → impl in `plugins/sdd-new/`. The sub-mission ordering is
+   the **sdd → sdd-new migration** order (## Migration ordering): baseline-existing capabilities
+   first, net-new deferred. Usual rhythm — **prose → per-unit `.feature` suites (one per skill) →
+   impl in `plugins/sdd-new/`** (build-to-learn). Validate every step with `pnpm verify:specs-new`.
+
+   **Dependency note (set this session):** the spawned **agents** (`sdd-operator` headless
+   fallback, cold `sdd-spec-judge` + `sdd-implementer`, the impl-producer builder) are all built in
+   `core-agents`, AFTER `sub-deliver` (impl-producer-governance) and `sub-governances` (actor +
+   fixed bars) exist in sdd-new — building them earlier would forward-reference skills that do not
+   yet exist. So each per-capability sub-mission builds its **governances/skills**; `core-agents`
+   batches the **agents** last.
 
 2. **Migration-first order (authoritative): see `## Migration ordering`.** Existing-baseline
    capabilities first (`sub-mission` → `sub-deliver` → `sub-handoff` → `sub-gateway` →
@@ -174,10 +180,9 @@ impl); only the **order** changed.
 **Tier 1 — migration core (existing baseline, on the critical path):**
 
 1. `sub-authoring` — ✅ DONE.
-2. `sub-mission` — the conductor/operator, gates, impl-producer, solution-producer, the cold
-   judges. The heaviest baseline surface (sdd-operator, impl/plan-producer-gov, sdd-implementer,
-   sdd-spec-judge). **← next.**
-3. `sub-deliver` — build-to-keep + impl-producer-governance.
+2. `sub-mission` — ✅ DONE (operator + solution-producer units specced + suited;
+   `solution-producer-governance` built; spawned agents deferred to `core-agents`).
+3. `sub-deliver` — build-to-keep + impl-producer-governance. **← next.**
 4. `sub-handoff` — delivery-shape contract, conclusion write-back.
 5. `sub-gateway` — the thin-relay entry door (baseline: the `sdd` entry skill).
 6. `sub-governances` (NEW todo) — port the cross-cutting governances to `sdd-new` as
