@@ -32,12 +32,37 @@ test('parseSpecState reads status, aligned, and marker count', () => {
 })
 
 test('parseSpecState ignores marker syntax inside code spans and fences', () => {
-	const text = ['---', 'status: approved', '---', '', 'an inline `<!-- open: x -->` marker', '', '```', '<!-- open: y -->', '```', ''].join('\n')
+	const text = [
+		'---',
+		'status: approved',
+		'---',
+		'',
+		'an inline `<!-- open: x -->` marker',
+		'',
+		'```',
+		'<!-- open: y -->',
+		'```',
+		'',
+	].join('\n')
 	assert.equal(parseSpecState(text).markerCount, 0)
 })
 
 test('parseSpecState reads a nested approval map with verdict and why', () => {
-	const text = ['---', 'status: approved', 'approval:', '  spec:', '    verdict: approve', '    by: unional', '  impl:', '    verdict: approve', '    by: agent', '    why:', '      reversibility: safe', '---', ''].join('\n')
+	const text = [
+		'---',
+		'status: approved',
+		'approval:',
+		'  spec:',
+		'    verdict: approve',
+		'    by: unional',
+		'  impl:',
+		'    verdict: approve',
+		'    by: agent',
+		'    why:',
+		'      reversibility: safe',
+		'---',
+		'',
+	].join('\n')
 	const s = parseSpecState(text)
 	assert.equal(s.approval?.spec.by, 'unional')
 	assert.equal(s.approval?.spec.hasWhy, false)
@@ -59,14 +84,20 @@ test('implemented requires aligned:true', () => {
 		state({
 			status: 'implemented',
 			aligned: false,
-			approval: { spec: { verdict: 'approve', by: 'u', hasWhy: false }, impl: { verdict: 'approve', by: 'u', hasWhy: false } },
+			approval: {
+				spec: { verdict: 'approve', by: 'u', hasWhy: false },
+				impl: { verdict: 'approve', by: 'u', hasWhy: false },
+			},
 		}),
 	)
 	assert.ok(v.some((m) => /implemented requires aligned:true/.test(m)))
 })
 
 test('open markers block the gate once approved', () => {
-	const v = checkSpec('x', state({ status: 'approved', markerCount: 1, approval: { spec: { verdict: 'approve', by: 'u', hasWhy: false } } }))
+	const v = checkSpec(
+		'x',
+		state({ status: 'approved', markerCount: 1, approval: { spec: { verdict: 'approve', by: 'u', hasWhy: false } } }),
+	)
 	assert.ok(v.some((m) => /open marker/.test(m)))
 })
 
@@ -96,7 +127,10 @@ test('a fully approved-and-implemented spec passes', () => {
 		state({
 			status: 'implemented',
 			aligned: true,
-			approval: { spec: { verdict: 'approve', by: 'u', hasWhy: false }, impl: { verdict: 'approve', by: 'u', hasWhy: false } },
+			approval: {
+				spec: { verdict: 'approve', by: 'u', hasWhy: false },
+				impl: { verdict: 'approve', by: 'u', hasWhy: false },
+			},
 		}),
 	)
 	assert.deepEqual(v, [])
@@ -162,7 +196,10 @@ test('discoverSpecDirs finds the project root; discoverNodeDirs finds README nod
 		mkdirSync(join(root, 'sdd', 'authoring', 'spec-format'), { recursive: true })
 		writeFileSync(join(root, 'sdd', 'spec.md'), '---\nstatus: draft\n---\n')
 		writeFileSync(join(root, 'sdd', 'authoring', 'README.md'), '# overview\n')
-		writeFileSync(join(root, 'sdd', 'authoring', 'spec-format', 'README.md'), '---\nspec-type: reference\n---\n## Subject\n')
+		writeFileSync(
+			join(root, 'sdd', 'authoring', 'spec-format', 'README.md'),
+			'---\nspec-type: reference\n---\n## Subject\n',
+		)
 		assert.deepEqual(discoverSpecDirs(root), ['sdd'])
 		assert.deepEqual(
 			discoverNodeDirs(root).sort(),
