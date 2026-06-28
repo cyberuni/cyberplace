@@ -4,7 +4,7 @@ User-facing SDD entry skill for an **existing** spec node: run the explore produ
 **in-session** to grill and tighten what is already written — **no scaffolding**. Leaves the node
 at `status: draft`, ready for the spec gate (`validate-spec`). The smaller twin of `create-spec`.
 
-revise-spec runs in the **main session as the conductor** (spawned `sdd-operator` is the headless
+revise-spec runs in the **main session as the conductor** (spawned `automaton` is the headless
 fallback only): it carries the **re-open precondition** — an `approved`/`implemented` node's
 `.feature` is frozen and may not be revised without a ratified re-open — runs the spec-producer
 **inline**, grilling the human live and spawning the **cold spec-judge** each round, and routes

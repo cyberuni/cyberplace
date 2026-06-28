@@ -20,15 +20,15 @@ means the conductor **spawns** it.
 
 | Role key | Acts | SDD default |
 |---|---|---|
-| `spec-producer` | writes the `spec.md` body + the `.feature` | conductor loads `spec-producer-governance`, authors inline (`sdd:sdd-operator`) |
-| `solution-producer` | writes `<unit>.solution.md` (the durable, ungated design fork) | conductor loads `solution-producer-governance`, authors inline (`sdd:sdd-operator`) |
+| `spec-producer` | writes the `spec.md` body + the `.feature` | conductor loads `spec-producer-governance`, authors inline (`sdd:automaton`) |
+| `solution-producer` | writes `<unit>.solution.md` (the durable, ungated design fork) | conductor loads `solution-producer-governance`, authors inline (`sdd:automaton`) |
 | `spec-judge` | judges `spec.md` + the `.feature` at the spec gate | `sdd-spec-judge` — spawned cold agent |
-| `impl-producer` | builds the artifact **and** its verification | conductor loads `impl-producer-governance`, dispatches a generic builder (`sdd:sdd-operator`) |
+| `impl-producer` | builds the artifact **and** its verification | conductor loads `impl-producer-governance`, dispatches a generic builder (`sdd:automaton`) |
 | `impl-judge` | runs the verification against the frozen `.feature` | `sdd-implementer` — spawned cold agent |
 
 **Producers run inline (or via a mechanical builder), judges spawn cold** ("conductor writes, cold
 judges grade"): an SDD-default spec/solution-producer is a governance the conductor loads and runs in
-its own warm main-session context (recorded `produced-by.<role>: sdd:sdd-operator`); the SDD-default
+its own warm main-session context (recorded `produced-by.<role>: sdd:automaton`); the SDD-default
 impl-producer is mechanical and spawned via a generic builder; an SDD-default judge is a cold agent
 the conductor spawns, because a grader must not share the author's context. A plugin delegate — or a
 model-tuned producer agent named for the slot — is always spawned.
