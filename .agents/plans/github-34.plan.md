@@ -23,8 +23,11 @@ todos:
   - id: sub-gateway
     content: Sub-mission gateway/ — extract the inline README scenarios to gateway.feature; build the thin-relay sdd gateway skill in sdd-new (NO governance load — the macro-grill ruling).
     status: pending
+  - id: arch-conductor-pivot
+    content: "Architecture pivot (D-G) — fold the operator into the MAIN-SESSION CONDUCTOR. The conductor is the main session running the operator role (not a spawned subagent); spec-producer + solution-producer run inline (the live grill); impl-producer + both judges spawn at depth 1 from the main session. Preserves grader independence on every harness; collapses the spawn tree caller->operator->judge (depth 2) to main->judge (depth 1). Spec gate = cold spec-judge over spec.md + .feature ONLY (solution out of view). Spawnable sdd-operator demoted to the headless/fan-out fallback (kept). Plugin surfaces are role-dependent: spec/solution-producer persona-loaded in-session, impl-producer + judges spawnable. DONE: swept design/ (specialists-and-squads, harness-spawning [inverted], lifecycle positional-auth, loops, provenance, governance-resolution, autonomy-rubric, unit-and-organization), capability specs (mission, gateway, intake, deliver, acceptance), and the entry skills + spec-producer-governance (specs + sdd-new impls). verify:specs-new green. Approved plan: ~/.claude/plans/write-it-up-as-federated-wreath.md."
+    status: completed
   - id: sub-mission
-    content: "Sub-mission mission/ — the operator (sdd-operator): resolution (registry READ), production chain, impl gate, in-flight service, stop-provenance. Prose -> per-unit suites -> operator agent in sdd-new."
+    content: "Sub-mission mission/ — the CONDUCTOR (operator role, main-session by default; spawnable sdd-operator = headless fallback): resolution (registry READ), production chain, impl gate, in-flight service, stop-provenance. Prose -> per-unit suites -> build the cold judges + impl-producer builder in sdd-new; the sdd-operator agent def is built ONLY as the headless fallback (default conductor behavior lives in the entry skills + loadable producer governances). Finalize the spawned-default-impl-producer provenance (produced-by marker)."
     status: pending
   - id: sub-deliver
     content: Sub-mission mission/deliver/ — build-to-keep behaviors + impl-producer-governance; per-unit suites -> impl in sdd-new.
@@ -57,7 +60,7 @@ todos:
     content: "Sub-mission marketplace (NEW cap, R2+R3, SDD-owned NOT forge) — a plugin declares the artifact-types it serves (R2); a register-plugin-to-marketplace skill + website shows plugins per artifact-type (R3). Two layers: marketplace=global catalog (website), registry=per-project resolution. Home: plugin/ + apps/website. Prose -> suite -> impl."
     status: pending
   - id: core-agents
-    content: "Deliver — the cross-cutting agents in sdd-new (not owned by one capability): sdd-operator, cold sdd-spec-judge + sdd-implementer (impl-judge), doctrine Scanner, formation Warden; plus the deterministic .mts helpers (check-spec-state, governance-resolution). Built to the CORRECTED lens sets (spec gate {director,builder,architect}; impl gate {builder,architect}) — the baseline 2-lens skills are reference only. PROGRESS: check-spec-state.mts (new-model) DONE in plugins/sdd-new/skills/validate-spec/scripts/ (48a0c1e, 24 node:tests, typed under tsconfig.specs.json) — root tuple + per-node spec-type reconcile, validates the live tree via `pnpm verify:specs-new`. STILL PENDING: governance-resolution.mts + all the cross-cutting agents."
+    content: "Deliver — the cross-cutting agents in sdd-new (not owned by one capability). PER arch-conductor-pivot (D-G): the DEFAULT conductor is the main session (no spawned operator) — so build the SPAWNED workers: cold sdd-spec-judge + sdd-implementer (impl-judge), the impl-producer builder, doctrine Scanner, formation Warden; sdd-operator is built ONLY as the headless/fan-out fallback. Plus the deterministic .mts helpers (check-spec-state, governance-resolution). Built to the CORRECTED lens sets (spec gate {director,builder,architect}; impl gate {builder,architect}) — the baseline 2-lens skills are reference only. PROGRESS: check-spec-state.mts (new-model) DONE in plugins/sdd-new/skills/validate-spec/scripts/ (48a0c1e, 24 node:tests, typed under tsconfig.specs.json) — root tuple + per-node spec-type reconcile, validates the live tree via `pnpm verify:specs-new`. STILL PENDING: governance-resolution.mts + all the cross-cutting agents."
     status: pending
   - id: root-frontmatter
     content: "Explore — add project-spec lifecycle frontmatter to root spec.md (status: draft, artifact-types, aligned: false, strategy) per design/lifecycle-model.md; drop the ## TODO once the suites are in."
@@ -290,6 +293,29 @@ requirement). Runs via `pnpm verify:specs-new` (manual, like the baseline `verif
 CI). Validates the live `.agents/specs` tree green. OPEN: the full `validate-spec` skill (SKILL.md)
   - the project-spec gate-legality (what "approved" requires of the distributed suite) is the larger
   remaining piece; `check-feature.mts` not yet ported either.
+
+- **D-G — main session is the conductor (operator folded in-session).** The operator is **not** a
+spawned subagent by default — the **main (user) session runs the operator role** (the
+**conductor**). The grill is heavy human interaction, so spec-producing belongs where the user
+channel lives: **spec-producer + solution-producer run inline in the main session**;
+**impl-producer + both judges spawn at depth 1 from the main session** (impl-producer is
+mechanical, spawned in BOTH phases — build-to-learn vs non-frozen, build-to-keep vs frozen; judges
+cold for grader independence). This preserves grader independence on **every** harness and
+collapses the spawn tree `caller→operator→judge` (depth 2) → `main→judge` (depth 1) — it promotes
+the old `harness-spawning.md` "flat-harness fallback" to the default and drops its
+"forfeits-independence" caveat. **Spec gate** = the main session writes spec + solution + feature,
+spawns a **cold spec-judge that reads spec.md + .feature ONLY** (solution out of view, ungated,
+never frozen). **Positional authority** is trivial — the conductor *is* the in-session ratifier.
+**Plugin surfaces are role-dependent**: spec/solution-producer **persona-loaded in-session**,
+impl-producer + judges **spawnable subagents**. The **spawnable `sdd-operator` is kept as the
+headless / fan-out fallback** (unattended scheduler, multi-CR fan-out on a depth-2 harness), not
+the single-mission default. SWEPT this session across `design/` (8 files), capability specs
+(mission/gateway/intake/deliver/acceptance), and the entry skills + spec-producer-governance
+(specs + sdd-new impls); `verify:specs-new` green. Approved plan:
+`~/.claude/plans/write-it-up-as-federated-wreath.md`. OPEN (deferred, independent of this pivot):
+the "model-tuned producer" vs "specialist/tuned producer" terminology; the exact provenance marker
+for a spawned SDD-default impl-producer builder (finalize in `sub-mission`/`sub-deliver`).
+(Memory: `project_sdd_conductor_in_session`.)
 
 ## Step 3/4 — deliver & handoff
 
