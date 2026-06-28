@@ -10,8 +10,11 @@
 //   2. the per-node spec-type reconcile — a node README's `spec-type` marker must
 //      agree with its shape: reference => ## Subject and NO sibling .feature;
 //      behavioral => ## Use Cases; descriptive (no marker) => no requirement.
-// See design/lifecycle-model.md (legal-state tuples + per-node spec-type checks)
-// and design/unit-and-organization.md (spec types). Pure functions are exported
+//   3. the declared `spec-layout` block — validated only when present (additive):
+//      a declared strategy/location must be a legal enum value.
+// See design/lifecycle-model.md (legal-state tuples + per-node spec-type checks),
+// design/spec-structure.md (spec types), and design/spec-layout.md (the layout
+// strategies + the spec-layout field). Pure functions are exported
 // for node:test; running the file directly drives the CLI. No dependencies.
 
 import { type Dirent, existsSync, readdirSync, readFileSync } from 'node:fs'
@@ -23,11 +26,18 @@ export interface GateVerdict {
 	hasWhy: boolean
 }
 
+export interface SpecLayout {
+	present: boolean
+	strategy: string | null
+	location: string | null
+}
+
 export interface SpecState {
 	status: string
 	aligned: boolean | null
 	markerCount: number
 	approval: Record<string, GateVerdict> | null
+	layout: SpecLayout
 }
 
 export interface NodeSpec {
@@ -39,6 +49,8 @@ export interface NodeSpec {
 const GATES = ['spec', 'impl']
 const VERDICTS = ['approve', 'pause', 'reject']
 const SPEC_TYPES = ['reference', 'behavioral']
+const LAYOUT_STRATEGIES = ['capability-first', 'mirror-source', 'bounded-context', 'layered', 'doc-envelope']
+const LAYOUT_LOCATIONS = ['colocated', 'hoisted', 'monorepo-member']
 
 function frontmatter(text: string): string[] {
 	const m = /^---\n([\s\S]*?)\n---/.exec(text)
@@ -92,7 +104,27 @@ export function parseSpecState(text: string): SpecState {
 	}
 
 	const markerCount = (prose(text).match(/<!--\s*open:/g) ?? []).length
-	return { status, aligned, markerCount, approval }
+	return { status, aligned, markerCount, approval, layout: parseSpecLayout(lines) }
+}
+
+// The declared `spec-layout` block (strategy + location). Read, never inferred —
+// design/spec-layout.md. Validated only when present, so specs predating the field
+// stay legal; a declared block must carry legal enum values.
+export function parseSpecLayout(lines: string[]): SpecLayout {
+	const layout: SpecLayout = { present: false, strategy: null, location: null }
+	for (let i = 0; i < lines.length; i++) {
+		if (!/^spec-layout:\s*$/.test(lines[i])) continue
+		layout.present = true
+		for (let j = i + 1; j < lines.length; j++) {
+			if (!/^\s/.test(lines[j])) break // dedent to top level ends the block
+			const strat = /^ {2}strategy:\s*(.+)$/.exec(lines[j])
+			if (strat) layout.strategy = strat[1].trim().replace(/^["']|["']$/g, '')
+			const loc = /^ {2}location:\s*(.+)$/.exec(lines[j])
+			if (loc) layout.location = loc[1].trim().replace(/^["']|["']$/g, '')
+		}
+		break
+	}
+	return layout
 }
 
 // The root project spec.md lifecycle tuple.
@@ -136,6 +168,17 @@ export function checkSpec(slug: string, state: SpecState): string[] {
 		tag(
 			'status is implemented but approval.impl has no approve verdict with an approver — the impl gate has no recorded ratification',
 		)
+
+	// spec-layout: validated only when declared (additive — specs predating it stay
+	// legal). A declared block must carry a legal strategy and location.
+	if (state.layout.present) {
+		if (!state.layout.strategy) tag('spec-layout is declared but has no strategy')
+		else if (!LAYOUT_STRATEGIES.includes(state.layout.strategy))
+			tag(`spec-layout has unknown strategy "${state.layout.strategy}" (expected ${LAYOUT_STRATEGIES.join(' | ')})`)
+		if (!state.layout.location) tag('spec-layout is declared but has no location')
+		else if (!LAYOUT_LOCATIONS.includes(state.layout.location))
+			tag(`spec-layout has unknown location "${state.layout.location}" (expected ${LAYOUT_LOCATIONS.join(' | ')})`)
+	}
 
 	return v
 }
