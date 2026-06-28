@@ -50,12 +50,22 @@ test('skill source requires a skill name', () => {
 })
 
 test('skill list lists init companion skills', () => {
-	const result = run('skill', 'list', '--grep', 'init-*', '--json')
-	expect(result.status).toBe(0)
-	const parsed = JSON.parse(result.stdout) as { name: string; description: string; foundIn: string }[]
-	expect(parsed.some((s) => s.name === 'init-commit-discipline')).toBe(true)
-	expect(parsed.every((s) => s.name.startsWith('init-'))).toBe(true)
-	expect(parsed.every((s) => s.foundIn)).toBe(true)
+	// Hermetic: point --root at a temp repo carrying a known init- skill, so the
+	// result does not depend on skills installed on the machine.
+	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-list-cli-'))
+	try {
+		const dir = path.join(root, '.agents', 'skills', 'init-commit-discipline')
+		fs.mkdirSync(dir, { recursive: true })
+		fs.writeFileSync(path.join(dir, 'SKILL.md'), '---\nname: init-commit-discipline\ndescription: Init commit discipline.\n---\n')
+		const result = run('skill', 'list', '--grep', 'init-*', '--json', '--root', root)
+		expect(result.status).toBe(0)
+		const parsed = JSON.parse(result.stdout) as { name: string; description: string; foundIn: string }[]
+		expect(parsed.some((s) => s.name === 'init-commit-discipline')).toBe(true)
+		expect(parsed.every((s) => s.name.startsWith('init-'))).toBe(true)
+		expect(parsed.every((s) => s.foundIn)).toBe(true)
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
 })
 
 test('skill source returns JSON for a skill in repo lock', () => {

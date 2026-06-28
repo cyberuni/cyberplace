@@ -15,7 +15,14 @@ import {
 } from './check-spec-state.mts'
 
 function state(over: Partial<SpecState> = {}): SpecState {
-	return { status: 'draft', aligned: false, markerCount: 0, approval: null, ...over }
+	return {
+		status: 'draft',
+		aligned: false,
+		markerCount: 0,
+		approval: null,
+		layout: { present: false, strategy: null, location: null },
+		...over,
+	}
 }
 
 function node(over: Partial<NodeSpec> = {}): NodeSpec {
@@ -32,12 +39,37 @@ test('parseSpecState reads status, aligned, and marker count', () => {
 })
 
 test('parseSpecState ignores marker syntax inside code spans and fences', () => {
-	const text = ['---', 'status: approved', '---', '', 'an inline `<!-- open: x -->` marker', '', '```', '<!-- open: y -->', '```', ''].join('\n')
+	const text = [
+		'---',
+		'status: approved',
+		'---',
+		'',
+		'an inline `<!-- open: x -->` marker',
+		'',
+		'```',
+		'<!-- open: y -->',
+		'```',
+		'',
+	].join('\n')
 	assert.equal(parseSpecState(text).markerCount, 0)
 })
 
 test('parseSpecState reads a nested approval map with verdict and why', () => {
-	const text = ['---', 'status: approved', 'approval:', '  spec:', '    verdict: approve', '    by: unional', '  impl:', '    verdict: approve', '    by: agent', '    why:', '      reversibility: safe', '---', ''].join('\n')
+	const text = [
+		'---',
+		'status: approved',
+		'approval:',
+		'  spec:',
+		'    verdict: approve',
+		'    by: unional',
+		'  impl:',
+		'    verdict: approve',
+		'    by: agent',
+		'    why:',
+		'      reversibility: safe',
+		'---',
+		'',
+	].join('\n')
 	const s = parseSpecState(text)
 	assert.equal(s.approval?.spec.by, 'unional')
 	assert.equal(s.approval?.spec.hasWhy, false)
@@ -59,14 +91,20 @@ test('implemented requires aligned:true', () => {
 		state({
 			status: 'implemented',
 			aligned: false,
-			approval: { spec: { verdict: 'approve', by: 'u', hasWhy: false }, impl: { verdict: 'approve', by: 'u', hasWhy: false } },
+			approval: {
+				spec: { verdict: 'approve', by: 'u', hasWhy: false },
+				impl: { verdict: 'approve', by: 'u', hasWhy: false },
+			},
 		}),
 	)
 	assert.ok(v.some((m) => /implemented requires aligned:true/.test(m)))
 })
 
 test('open markers block the gate once approved', () => {
-	const v = checkSpec('x', state({ status: 'approved', markerCount: 1, approval: { spec: { verdict: 'approve', by: 'u', hasWhy: false } } }))
+	const v = checkSpec(
+		'x',
+		state({ status: 'approved', markerCount: 1, approval: { spec: { verdict: 'approve', by: 'u', hasWhy: false } } }),
+	)
 	assert.ok(v.some((m) => /open marker/.test(m)))
 })
 
@@ -96,7 +134,10 @@ test('a fully approved-and-implemented spec passes', () => {
 		state({
 			status: 'implemented',
 			aligned: true,
-			approval: { spec: { verdict: 'approve', by: 'u', hasWhy: false }, impl: { verdict: 'approve', by: 'u', hasWhy: false } },
+			approval: {
+				spec: { verdict: 'approve', by: 'u', hasWhy: false },
+				impl: { verdict: 'approve', by: 'u', hasWhy: false },
+			},
 		}),
 	)
 	assert.deepEqual(v, [])
@@ -104,6 +145,52 @@ test('a fully approved-and-implemented spec passes', () => {
 
 test('a descriptive root with no frontmatter is a no-op (no .feature requirement)', () => {
 	assert.deepEqual(checkSpec('sdd', parseSpecState('# Spec\n\nbody only, no frontmatter\n')), [])
+})
+
+// ── spec-layout (declared organization) ──
+
+test('parseSpecState reads a declared spec-layout block', () => {
+	const text = [
+		'---',
+		'status: draft',
+		'spec-layout:',
+		'  strategy: capability-first',
+		'  location: hoisted',
+		'  placement-map: "#placement-map"',
+		'---',
+		'',
+	].join('\n')
+	const s = parseSpecState(text)
+	assert.deepEqual(s.layout, { present: true, strategy: 'capability-first', location: 'hoisted' })
+})
+
+test('a spec with no spec-layout block is a no-op (additive — predating specs stay legal)', () => {
+	const s = parseSpecState('---\nstatus: draft\n---\n')
+	assert.equal(s.layout.present, false)
+	assert.deepEqual(checkSpec('x', state({ layout: s.layout })), [])
+})
+
+test('a declared spec-layout with legal strategy + location passes', () => {
+	assert.deepEqual(
+		checkSpec('x', state({ layout: { present: true, strategy: 'mirror-source', location: 'colocated' } })),
+		[],
+	)
+})
+
+test('a declared spec-layout with an unknown strategy is illegal', () => {
+	const v = checkSpec('x', state({ layout: { present: true, strategy: 'feature-sliced', location: 'colocated' } }))
+	assert.ok(v.some((m) => /unknown strategy "feature-sliced"/.test(m)))
+})
+
+test('a declared spec-layout with an unknown location is illegal', () => {
+	const v = checkSpec('x', state({ layout: { present: true, strategy: 'capability-first', location: 'somewhere' } }))
+	assert.ok(v.some((m) => /unknown location "somewhere"/.test(m)))
+})
+
+test('a declared spec-layout missing strategy or location is illegal', () => {
+	const v = checkSpec('x', state({ layout: { present: true, strategy: null, location: null } }))
+	assert.ok(v.some((m) => /no strategy/.test(m)))
+	assert.ok(v.some((m) => /no location/.test(m)))
 })
 
 // ── per-node spec-type reconcile ──
@@ -162,7 +249,10 @@ test('discoverSpecDirs finds the project root; discoverNodeDirs finds README nod
 		mkdirSync(join(root, 'sdd', 'authoring', 'spec-format'), { recursive: true })
 		writeFileSync(join(root, 'sdd', 'spec.md'), '---\nstatus: draft\n---\n')
 		writeFileSync(join(root, 'sdd', 'authoring', 'README.md'), '# overview\n')
-		writeFileSync(join(root, 'sdd', 'authoring', 'spec-format', 'README.md'), '---\nspec-type: reference\n---\n## Subject\n')
+		writeFileSync(
+			join(root, 'sdd', 'authoring', 'spec-format', 'README.md'),
+			'---\nspec-type: reference\n---\n## Subject\n',
+		)
 		assert.deepEqual(discoverSpecDirs(root), ['sdd'])
 		assert.deepEqual(
 			discoverNodeDirs(root).sort(),

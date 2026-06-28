@@ -1,12 +1,12 @@
 ---
 name: solution-producer-governance
-description: "Internal skill: the SDD default solution-producer procedure — how to record a unit's <unit>.solution.md (chosen approach + rejected alternatives) for a domain no plugin covers, only when the unit carries durable design rationale. Loaded in-session by the conductor when it runs the solution-producer role inline (produced-by sdd:sdd-operator); not triggered by users directly."
+description: "Internal skill: the SDD default solution-producer procedure — how to record a unit's <unit>.solution.md (chosen approach + rejected alternatives) for a domain no plugin covers, only when the unit carries durable design rationale. Loaded in-session by the conductor when it runs the solution-producer role inline (produced-by sdd:automaton); not triggered by users directly."
 user-invocable: false
 ---
 
 # Solution-Producer Governance — the default solution-recording procedure
 
-The procedure the **conductor** follows when it runs the **solution-producer** role from the SDD default — no plugin covers the domain and no model-tuned producer agent is named for the slot, so the conductor **loads this governance and authors inline** in its own warm context (recorded `produced-by.solution-producer: sdd:sdd-operator`). This is the relocation of the former `plan-producer` role's *functional-spec* half: the solution is the chosen approach + rejected alternatives, now recorded **per unit** as `<unit>.solution.md` rather than as a `plan.md`. The task DAG that `plan-producer` also wrote is **not** this role's output — it is the conductor's transient execution `.plan.md` `todos`.
+The procedure the **conductor** follows when it runs the **solution-producer** role from the SDD default — no plugin covers the domain and no model-tuned producer agent is named for the slot, so the conductor **loads this governance and authors inline** in its own warm context (recorded `produced-by.solution-producer: sdd:automaton`). This is the relocation of the former `plan-producer` role's *functional-spec* half: the solution is the chosen approach + rejected alternatives, now recorded **per unit** as `<unit>.solution.md` rather than as a `plan.md`. The task DAG that `plan-producer` also wrote is **not** this role's output — it is the conductor's transient execution `.plan.md` `todos`.
 
 The solution is the unit's **third facet** (spec = *what*, suite = *proof*, solution = *why this shape*). It is **optional** and **ungated**: it gets no judge of its own, stays out of the spec-judge's view, and is never frozen. The implementation's frozen-scenario result validates it transitively.
 
