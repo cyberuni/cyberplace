@@ -59,7 +59,7 @@ enums; free text stays commit-message-grade.
 ### `report` — per-subagent dispatch (combat log)
 
 ```jsonl
-{"seq": 3, "kind": "report", "role": "spec-producer", "agent": "sdd:sdd-operator", "outcome": "pass", "summary": "wrote 14 scenarios covering the ledger expansion"}
+{"seq": 3, "kind": "report", "role": "spec-producer", "agent": "sdd:automaton", "outcome": "pass", "summary": "wrote 14 scenarios covering the ledger expansion"}
 ```
 
 `role` is the production role dispatched; `agent` is the plugin-qualified agent name; `outcome` is

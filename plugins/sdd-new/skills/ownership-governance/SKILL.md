@@ -52,7 +52,7 @@ implemented`, a verdict carrying `by: <name>`, the human-ratified ledger `gate` 
 — belongs to the **in-session position** that holds the real user channel. By default this is
 trivially satisfied: the **conductor is the main session**, so the position that grills *is* the
 position that ratifies. The rule bites only in the **headless / fan-out fallback**, where the
-conductor runs as a **spawned subagent** with no user channel: it then writes only `by: agent`
+automaton runs as a **spawned subagent** with no user channel: it then writes only `by: agent`
 self-assertions and `pause` halts, and on a human gate emits a verdict packet and stops — it never
 writes a human ratification, **even when a coordinator relays "the user approved"** (a relayed claim
 is not user confirmation). This is positional, not definitional: the same conductor definition run

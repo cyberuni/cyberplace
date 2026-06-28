@@ -7,7 +7,7 @@ description: Use this skill when the user wants to create a spec for a new or ex
 
 The user-facing **entry skill** for **new** capability content: scaffold a new spec node under the
 project tree (`.agents/specs/<project>/`), then run the explore producer chain **in-session** over
-it. create-spec runs in the **main session** as the conductor (`sdd:sdd-operator` is the headless
+it. create-spec runs in the **main session** as the conductor (`sdd:automaton` is the headless
 fallback only): it loads the spec-producer governance and **grills the human live**, spawns the
 **cold spec-judge** each round, and — for build-to-learn — spawns the impl-producer builder. It is
 the positional ratifier and leaves the node at `status: draft`, ready for the spec gate

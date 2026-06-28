@@ -7,7 +7,7 @@ description: Use this skill when revising an existing SDD spec — re-open a dra
 
 The user-facing **entry skill** for an **existing** spec node: run the explore producer chain
 **in-session** to grill and tighten what is already written — **no scaffolding**. revise-spec runs
-in the **main session** as the conductor (`sdd-operator` is the headless fallback only): it loads the
+in the **main session** as the conductor (`automaton` is the headless fallback only): it loads the
 spec-producer governance and **grills the human live**, spawning the **cold spec-judge** each round.
 The node exists, so there is nothing to lay down; the work is to pressure-test the prose, bring the
 suite back into line, and leave the node at `status: draft`, ready for the spec gate
