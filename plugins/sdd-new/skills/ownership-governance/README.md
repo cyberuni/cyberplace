@@ -5,7 +5,7 @@ each `spec.md` frontmatter field and artifact: the write-ownership matrix, the p
 boundary, positional ratification authority, and the frozen-`.feature` write constraint.
 
 A fixed-universal SDD governance, invariant per role (not face-split). Loaded by every producer,
-judge, the conductor, and the create-spec/validate-spec skills. The field definitions live in
+judge, the conductor, and the start-mission/validate-spec skills. The field definitions live in
 `lifecycle-governance`; the legality of the resulting state in `gate-validation-governance`; the
 plan/ledger write split in `combat-log-governance`; the model + rationale in
 `design/provenance-model.md`. Not triggered by users directly.

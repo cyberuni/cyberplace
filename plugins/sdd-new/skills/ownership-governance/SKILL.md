@@ -1,6 +1,6 @@
 ---
 name: ownership-governance
-description: "Internal skill: the SDD write-ownership contract — who may write each spec.md frontmatter field and artifact, plus the freeze write-constraint. Loaded by every SDD producer, judge, the conductor, and the create-spec/validate-spec skills. Not triggered by users directly."
+description: "Internal skill: the SDD write-ownership contract — who may write each spec.md frontmatter field and artifact, plus the freeze write-constraint. Loaded by every SDD producer, judge, the conductor, and the start-mission/validate-spec skills. Not triggered by users directly."
 user-invocable: false
 ---
 
@@ -19,10 +19,10 @@ is in `sdd:gate-validation-governance`; the plan/ledger write split is in `sdd:c
 | `approval` **self-assertion** (`verdict: approve`/`pause` + `by: agent`/none + `why`) | the **conductor** (synthesis only) | producers, the gate skill |
 | `approval` **human ratification** (`verdict: approve`/`reject` + `by: <name>`) | the gate skill (`validate-spec`), **in-session position only** | the conductor, any producer, any spawned delegate |
 | `aligned` | the **conductor** (synthesis only) | producers, the gate skill |
-| `artifact-types` | `create-spec` (classifies the artifact-types at scaffold; the resolution axis) | producers, judges, the conductor, the gate skill |
+| `artifact-types` | `start-mission` (classifies the artifact-types at scaffold; the resolution axis) | producers, judges, the conductor, the gate skill |
 | `<!-- open: -->` markers | the **conductor** | producers (they *emit gaps*, not markers) |
-| `produced-by` map | the **conductor** (records the resolved producer per role at production); `create-spec` (records the user's choice for a contested artifact-type) | producers, judges, the gate skill |
-| `domain-plugin` map | the **conductor** (or `create-spec` for a contested artifact-type) | producers, judges, the gate skill |
+| `produced-by` map | the **conductor** (records the resolved producer per role at production); `start-mission` (records the user's choice for a contested artifact-type) | producers, judges, the gate skill |
+| `domain-plugin` map | the **conductor** (or `start-mission` for a contested artifact-type) | producers, judges, the gate skill |
 | combat-log `report` / `correction` lines | the **conductor** (append-only, to the plan's `*.log.jsonl`) | producers, judges, the gate skill |
 | ledger `gate` line — self-asserted (`by: agent`) | the **conductor** (append-only, to `ledger.jsonl`) | producers, judges |
 | ledger `gate` line — human-ratified (`by: <name>`) | the gate skill (`validate-spec`), **in-session position only** | the conductor, producers, judges |
