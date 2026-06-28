@@ -2,6 +2,10 @@
 name: builder-spec-governance
 description: "Internal skill: the Builder actor bar at the spec gate — testability and coverage of the .feature. Loaded by the spec-producer to self-align and by the cold spec-judge to grade. The SDD default for the builder spec bar; a plugin may bind its own per artifact-type. Not triggered by users directly."
 user-invocable: false
+metadata:
+  actor: builder
+  gate: spec
+  compose: union
 ---
 
 # Builder-Spec Governance — the testability & coverage bar
