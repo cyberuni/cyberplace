@@ -2,6 +2,10 @@
 name: director-spec-governance
 description: "Internal skill: the Director actor bar at the spec gate — scope and kill-or-ship. Loaded by the spec-producer to self-align and by the cold spec-judge to grade scope. The SDD default for the director bar; a plugin may bind its own per artifact-type. Not triggered by users directly."
 user-invocable: false
+metadata:
+  actor: director
+  gate: spec
+  compose: union
 ---
 
 # Director-Spec Governance — the scope & kill-or-ship bar

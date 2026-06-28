@@ -2,6 +2,10 @@
 name: architect-impl-governance
 description: "Internal skill: the Architect actor bar at the impl gate — structural fit of the implementation. Loaded by the impl-producer to self-align and by the impl-judge to verify. The SDD default for the architect impl bar; a plugin may bind its own per artifact-type. Not triggered by users directly."
 user-invocable: false
+metadata:
+  actor: architect
+  gate: impl
+  compose: union
 ---
 
 # Architect-Impl Governance — the structural-fit bar (impl gate)
