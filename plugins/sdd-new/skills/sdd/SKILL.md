@@ -1,27 +1,27 @@
 ---
 name: sdd
 description: Use this skill when the user explicitly invokes SDD or wants to work on a creation artifact with Spec-Driven Development.
-model: haiku
-effort: low
 ---
 
 # SDD
 
-Gateway skill for Spec-Driven Development — the front door to the project. It **activates** SDD, gathers missing intent, classifies the requested action, and **routes** it to the handling capability, then hands the resolved work to the **conductor**. It is a **thin relay**: it holds **no production logic**, loads **no governance**, and writes no contract state. It does not edit project files, register hooks, install packages, or require a CLI command.
+Gateway skill for Spec-Driven Development — the front door to the project. It **activates** SDD, gathers missing intent, classifies what the user wants to do to the project, and **loads the handling skill in the current session**, where the session works the task directly. It is a **thin classifier**: it holds **no production logic**, loads **no governance**, and writes no contract state. It does not edit project files, register hooks, install packages, or require a CLI command.
 
-By default the gateway **spawns nothing** — it runs the conductor **in-session** (the operator role is the main session itself). It spawns the `sdd-operator` subagent **only** in the headless fallback (no live session). It carries the Council's answers down and the conductor's escalations up.
+For an attended session the gateway **spawns nothing** — it loads the matched skill (for a change to the project, `start-mission`) in the **main session** and the work proceeds there. The session itself is the **conductor** (the user in the driver's seat). The only thing the gateway spawns is the **automaton** — the headless driver — when there is **no user channel** (an unattended scheduler or a multi-CR fan-out).
+
+> **Model is set by the skill you load, not here.** The gateway does not pin a model: classification is light, but the skill it loads declares the model + effort its work needs (`start-mission` advises a capable model for the live grill). The routed skill advises; the user switches manually. (Harness gap: the gateway cannot switch the session model itself.)
 
 ## Gateway intake
 
-Treat `$sdd`, "use SDD", and "use Spec-Driven Development" as explicit activation. **Most** activating requests are CRs; classification decides which source carried it and which capability handles it. A task with **no suite-relevant behavior** is **not a CR** and escapes (below); recognition is the grill, so ambiguity routes *into* the lifecycle and is decided during explore.
+Treat `$sdd`, "use SDD", and "use Spec-Driven Development" as explicit activation. **Most** activating requests are CRs; classification decides which source carried it and which skill handles it. A task with **no suite-relevant behavior** is **not a CR** and escapes (below); recognition is the grill, so ambiguity routes *into* the lifecycle and is decided during explore.
 
 ### Surface pending strategy
 
-When the Council re-enters, **surface the count of pending (unratified) strategy** — count the `strategy` lines with `"ratified": false` across the specs' sibling `*.log.jsonl` ledgers and state "N pending strategy" alongside the intake; if the Council picks it, route them to review those entries. The gateway only *surfaces* the count — it never **drafts** strategy (the Scanner's job) nor **ratifies** it (the Council's positional act). A zero count is not surfaced.
+When the Council re-enters, **surface the count of pending (unratified) strategy** — count the `strategy` lines with `"ratified": false` in the project's **root `ledger.jsonl`** (the durable sibling of the root `spec.md`) and state "N pending strategy" alongside the intake; if the Council picks it, route them to review those entries. The gateway only *surfaces* the count — it never **drafts** strategy (the Scanner's job) nor **ratifies** it (the Council's positional act). A zero count is not surfaced. (`strategy` lives in the durable `ledger.jsonl`, **never** in the per-mission `*.log.jsonl` combat log.)
 
 ### Fast path — skip the menu
 
-When the invocation already names **both** an artifact and an action — "implement the auth spec", "review X again", "dedupe these specs" — skip the menu and route directly through the Routing Table. A partially-specified request resolves what it can and asks only for the missing piece, within the four-option rule.
+When the invocation already names **both** a change and a target — "add a start-mission skill to sdd", "implement the auth capability", "work on <issue url>" — skip the menu and load the handling skill directly. A partially-specified request resolves what it can and asks only for the missing piece, within the four-option rule.
 
 ### Two-level menu — bare invocation
 
@@ -29,39 +29,36 @@ When `$sdd` is invoked with no work item, artifact, or action, do not guess. Con
 
 | # | Top-level option | Covers |
 |---|---|---|
-| 1 | **Create or backfill a spec** | start a new spec; detect new-vs-backfill by whether an implementation already exists for the named work |
-| 2 | **Work on an existing spec** | route a CR against the project spec by what the user wants to do to it (grill / implement / revise) |
-| 3 | **Manage the corpus** | dedupe overlapping specs, split a large spec, reconcile a contradiction, inspect the corpus |
+| 1 | **Make a change to the project** | open a CR against the project spec (add a capability, revise behavior, implement, land) → `start-mission` |
+| 2 | **Manage the corpus** | dedupe overlapping specs, split a large spec, reconcile a contradiction, inspect the corpus |
+| 3 | **Review pending strategy** | the doctrine loop's unratified `strategy` lines, when any are pending |
 | 4 | **Help me choose** | scan the spec + statuses, suggest the most-actionable few (≤ 4), let the user pick |
 
 When a derived list would exceed four, present only the most-actionable few (≤ 4) or ask the user to name the target directly; never enumerate into an over-four question and never truncate silently.
 
 ## The routing table is the user-skill→capability index
 
-Classification routes a request to the **capability** that handles it; the routing table doubles as the index of what a user can invoke (there is no separate `skills.md`).
+Classification routes a request to the **skill** that handles it; the routing table doubles as the index of what a user can invoke (there is no separate `skills.md`).
 
-| User intent | Capability (handler) |
+| User intent | Skill (handler) |
 |---|---|
-| Raise / record a change | **intake** — open a CR through a source |
-| Grill a CR into spec + suite deltas; review the diff at the spec gate | **authoring** (owns the spec gate) |
-| Implement + verify against the acceptance suite, then land it | **mission** (owns the impl gate + handoff; the autonomous orchestrator) |
-| Dedupe, split, reconcile, or inspect the corpus | **corpus** |
-| Zoom into one inner-loop agent (live) / durably tune one | **inject** / **project** |
+| Make any change to the project / spec (add, revise, implement, land) | **`start-mission`** — opens a CR against the project spec and runs the mission loop |
+| Dedupe, split, reconcile, or inspect the corpus | **corpus** tools |
 | A task with no suite-relevant behavior (not a CR) | **escape** — proceeds outside the lifecycle, leaves no SDD record |
-| Product / structure / process retrospective, or field corrections | the **campaign / formation / doctrine / forge** loop — emits a new CR |
+| Product / structure / process retrospective, or field corrections | the **campaign / formation / doctrine / forge** loop — emits a new CR (→ `start-mission`) |
 
-One project is one spec — routing classifies *what a user wants to do to the project*, never *which spec in a fleet*.
+One project is one spec — routing classifies *what a user wants to do to the project*, never *which spec in a fleet*. Almost every change is one entry — `start-mission` — which runs the mission loop; whether the CR adds a capability, revises behavior, or reconciles overlap is decided during its **explore** phase, not by a separate entry skill.
 
-## Hand the work to the conductor
+## Load the handling skill in-session
 
-When the route resolves, hand the work to the **conductor** — the operator role run in the main session.
+When the route resolves, **load the matched skill in the current session** and work the task directly — spawn nothing.
 
-- **Default (a live session hosts the conductor): spawn nothing.** The authoring, validation, and mission stations are stations the conductor runs **in-session**; the cold judges + impl-producer builder are spawned later by the conductor itself (depth 1). The conductor holds the user channel directly — the grill and every escalation happen in-session, at the autonomy bar (a gate go/no-go, or a scrub kill).
-- **Headless fallback (no live session — an unattended scheduler or a multi-CR fan-out): spawn the operator and relay.** Spawn `sdd-operator` as a subagent for the segment; relay each `STATUS: needs-input` (batched `QUESTIONS`) to the Council, re-spawn with the answers, and repeat until `complete` / `blocked`. The spawned operator has no user channel and never asks the Council directly.
+- **Default (a user session hosts the conductor): load in-session.** For a change to the project, load `start-mission`; it runs the mission loop over the project spec. The session **is** the conductor (the user in the driver's seat); it holds the user channel directly and spawns only the **cold judges** and the **impl-producer builder** at depth 1, where grader independence requires it.
+- **Headless (no user channel — an unattended scheduler or a multi-CR fan-out): spawn the automaton.** The **automaton** is the headless driver (the orchestrator delegate). It runs the same mission loop with no human in the seat: it self-asserts at the autonomy bar and batches `needs-input` rather than asking live, and whatever spawned it relays those questions. The automaton is **not** a separate orchestrator role — it is the driver run headless.
 
-**Write-ownership is preserved in both modes.** The gate station owns the `status` write and the human ratification of `approval` — the in-session conductor performs it directly by default; in the headless fallback the in-session relay position performs it on a returned verdict packet. The gateway-as-relay writes neither, and never writes `aligned`.
+**Write-ownership.** The gateway writes **no** contract state. The internal spec / impl gates own the `status` write and the human ratification of `approval`; the conductor (the in-session user, or the automaton when headless) owns `aligned` and any provisional self-assertion. The gateway writes neither.
 
 ## Recognize the escape and the freeze
 
-- **Escape.** A task that is **not a CR** — no suite-relevant behavior — escapes: state that the work is leaving the lifecycle, create no draft, invoke neither gate, and **write no record** (a non-CR is not SDD's to track; a spec-prose-only change is already in git). Recognition is the **grill + impact analysis**, not a gateway classifier; ambiguity defaults *into* the lifecycle and is decided during explore.
-- **Freeze.** SDD freezes the `.feature` at approval. A request to change a frozen scenario is **not** edited in place; it re-enters as a CR routed back through **authoring**, which grills the spec open before scenarios may be revised.
+- **Escape.** A task that is **not a CR** — no suite-relevant behavior — escapes: state that the work is leaving the lifecycle, create no draft, invoke no gate, and **write no record** (a non-CR is not SDD's to track; a spec-prose-only change is already in git). Recognition is the **grill + impact analysis**, not a gateway classifier; ambiguity defaults *into* the lifecycle and is decided during explore.
+- **Freeze.** SDD freezes the `.feature` at approval. A request to change a frozen scenario is **not** edited in place; it loads **`start-mission`**, which grills the spec back open through the explore phase before scenarios may be revised.
