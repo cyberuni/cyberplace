@@ -1,16 +1,18 @@
 ---
 name: validate-spec
-description: Use this skill when the user wants to check a spec for completeness, consistency, or readiness to advance — run the SDD spec gate (Draft → Approved) over a CR's spec + suite diff, freezing each touched .feature on approve.
+description: "Internal skill: the SDD spec gate (Draft → Approved) — the verdict on a CR's spec + suite diff, freezing each touched .feature on approve. Run by the conductor (start-mission) inside the mission loop; not triggered by users directly."
+user-invocable: false
 ---
 
 # validate-spec
 
 Run the SDD **spec gate**: the verdict on a CR's spec + suite **diff** before it becomes the
-contract. validate-spec runs **in-session** as the conductor at the gate — it **spawns a distinct
-cold spec-judge**, derives the **leash**, takes the verdict (it holds the user channel, so it is the
-positional ratifier), and on approval **freezes** each touched `.feature` file and records a durable
-per-CR `gate` line. The impl gate (Approved → Implemented) is **not** here — it is the mission's.
-This skill never collapses producing and judging into one voice.
+contract. This is an **internal step the conductor runs inside the mission loop** (loaded by
+`start-mission` at the end of explore), **not** a user-invocable skill. It **spawns a distinct
+cold spec-judge**, derives the **leash**, takes the verdict (the in-session conductor holds the user
+channel, so it is the positional ratifier), and on approval **freezes** each touched `.feature` file
+and records a durable per-CR `gate` line. The impl gate (Approved → Implemented) is **not** here — it
+is the mission's. This skill never collapses producing and judging into one voice.
 
 Load `sdd:lifecycle-governance` (status enum, transitions, the freeze state-transition),
 `sdd:ownership-governance` (who may write `status` / `aligned` / `approval`),
