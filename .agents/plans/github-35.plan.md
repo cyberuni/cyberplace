@@ -18,8 +18,8 @@ todos:
     content: "Build testcases/spec-layout/<strategy>/<case>/ fixtures: input project + expected backfilled spec tree. >=1 per strategy (incl. alternatives), 2+ where variation matters, plus hoist + monorepo location cases. check-spec-state --root green on each expected tree. (ACES already serves as the S1-capability-first + hoist case.)"
     status: pending
   - id: land
-    content: "Validate (pnpm verify:specs-new; audit validate on the skill; pnpm verify), land CR #35 as branch -> PR. Branch: github-35-backfill-project-spec."
-    status: pending
+    content: "Validate (pnpm verify:specs-new; audit validate on the skill; pnpm verify) — all green. Landed: PR #36 (base next) closing #35. DONE pending review/merge. Do NOT delete this plan until merged AND doctrine-distilled."
+    status: completed
 isProject: false
 ---
 
@@ -35,11 +35,13 @@ isProject: false
 **Done so far (branch `github-35-backfill-project-spec`):** `design` (`a3878dc`+`ffdeec0`), mission brief
 (`08b0f70`), `unit-spec` (`ee2d0c8`), `impl` (`11816f8`), `aces` proof (`19aac5d`). `verify:specs-new` green.
 
-**Next action — `testcases`.** Build `testcases/spec-layout/<strategy>/<case>/` fixtures (input project +
-expected backfilled tree) validating each strategy definition. ACES already covers **S1 capability-first +
-hoist**; still needed: **S2 mirror-source** (feature-first clean + layer-organized cautionary variant), the
-**monorepo** multi-project case, and stubs for the alternatives (S3/S4/S5). Run `check-spec-state --root` over
-each expected tree. Then **`land`**: `pnpm verify`, push, open the PR.
+**All steps DONE.** `testcases` (`c93927a`, 10 expected roots green) and `land` (PR #36, base `next`, closing
+#35; `pnpm verify` + `verify:specs-new` green) complete. The mission has landed pending review/merge.
+
+**Remaining (do not delete this plan until then):** address PR review; on merge, **doctrine-distill** any
+reusable lesson; only then retire this brief. Follow-ups noted in the approved plan: the ACES **impl**
+overhaul to the new target spec; promoting S3/S4/S5 to first-class compass routes; nearest-neighbor
+"belongs near X" automation.
 
 ## Working method (do not relitigate)
 
