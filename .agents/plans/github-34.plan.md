@@ -60,8 +60,8 @@ todos:
     content: "DEFERRED (Tier 4, net-new — no baseline; ## Migration ordering). Sub-mission marketplace (NEW cap, R2+R3, SDD-owned NOT forge) — a plugin declares the artifact-types it serves (R2); a register-plugin-to-marketplace skill + website shows plugins per artifact-type (R3). Two layers: marketplace=global catalog (website), registry=per-project resolution. Home: plugin/ + apps/website. Prose -> suite -> impl."
     status: pending
   - id: sub-governances
-    content: "Tier 1 (migration) — port the cross-cutting governances to sdd-new as reference-artifact nodes (spec-type:reference) + impls: actor bars (architect/builder/director/autonomy) and fixed-universal (lifecycle/ownership/gate-validation/combat-log/plugin-contract). Baseline: the *-governance skills in plugins/sdd/skills/. These are loaded by the mission gates, so land alongside sub-mission/core-agents. spec-format + suite-format already done under authoring/. Prose (reference ## Subject) -> impl; verified through a consumer suite (no .feature)."
-    status: pending
+    content: "Tier 1 (migration) — carry the cross-cutting governances to sdd-new. IN PROGRESS; the session REWORKED the governance model, so the old 'reference-artifact nodes' framing in the body/## Migration ordering is PARTLY SUPERSEDED — trust ## NEXT + common-governances.solution.md. DECIDED + COMMITTED (d439420, d186622): (1) granularity = Model B — one bar per (actor,gate), discipline SECTIONS, faces MERGED (producer+judge load the shared bar; producer!=judge holds at the AGENT level); spec|impl KEPT (coverage vs conformance); subjective slices split to judge-only @rubric. Model A (per-role <actor>-<gate>-<face>, 10) kept as the FALLBACK for asymmetric-input/large-rubric bars. Recorded in .agents/specs/sdd/common-governances/common-governances.solution.md + examples/acme-ui (A) & examples/acme-ui-merged (B). (2) Placement: single-consumer governance -> its owning capability folder (spec-format/suite-format under authoring/, plugin-contract under plugin/); cross-cutting -> NEW common-governances/ folder; rules/models stay in design/. (3) Disciplines (engineer/designer/a11y/security/qa) compose onto the SDD generic core via compose:union, project/plugin-supplied per artifact-type at resolution — SDD ships only the GENERIC core bars; disciplines are OUT OF SCOPE here. (4) universal-plugin build is OUT OF SCOPE -> governances are harness-loaded skills authored in the mission loop. (5) Governances are GENERAL standing criteria, never per-CR. COVERED: the ACTOR bars (director/builder/architect) — decided + exemplified. REMAINING: (a) fix ~/.claude/plans/swirling-foraging-moore.md to Model B (still says role-level 10); (b) RECORD the non-actor governances (fixed-universal lifecycle/ownership/gate-validation/combat-log + plugin-contract + autonomy) — placement + structure, like the actor solution; (c) rename design/actors-and-governance.md -> actors-governance.md + drop its universal-plugin-build embedding section, sweep governance-resolution.md for build-embed language; (d) then build the bars as sdd-new skills. autonomy = descriptive design/autonomy-rubric.md + baked-in (NO loaded skill), tested via acceptance/ — confirm as its recording."
+    status: in_progress
   - id: core-agents
     content: "Deliver — the cross-cutting agents in sdd-new (not owned by one capability). PER arch-conductor-pivot (D-G): the DEFAULT conductor is the main session (no spawned operator) — so build the SPAWNED workers: cold sdd-spec-judge + sdd-implementer (impl-judge), the impl-producer builder, doctrine Scanner, formation Warden; sdd-operator is built ONLY as the headless/fan-out fallback. Plus the deterministic .mts helpers (check-spec-state, governance-resolution). Built to the CORRECTED lens sets (spec gate {director,builder,architect}; impl gate {builder,architect}) — the baseline 2-lens skills are reference only. PROGRESS: check-spec-state.mts (new-model) DONE in plugins/sdd-new/skills/validate-spec/scripts/ (48a0c1e, 24 node:tests, typed under tsconfig.specs.json) — root tuple + per-node spec-type reconcile, validates the live tree via `pnpm verify:specs-new`. STILL PENDING: governance-resolution.mts + all the cross-cutting agents."
     status: pending
@@ -107,24 +107,45 @@ The work is organized in **two levels of grill**:
 
 ## NEXT — resume here (read this first)
 
-1. **Next action — start `sub-governances`** (mission/ + gateway/ fully specced + built — operator,
-   solution-producer, impl-producer, impl-judge, handoff, gateway; `solution-producer-governance` +
-   `impl-producer-governance` + the `sdd` gateway skill in sdd-new; spawned agents deferred to
-   `core-agents`). `sub-governances` ports the **cross-cutting governances** to `sdd-new` as
-   **reference-artifact** nodes (spec-type: reference, `## Subject`, no `.feature`) + impls: the
-   **actor** bars (architect / builder / director / autonomy) and the **fixed-universal** governances
-   (lifecycle / ownership / gate-validation / combat-log / plugin-contract). Baseline: the
-   `*-governance` skills in `plugins/sdd/skills/`. `spec-format` + `suite-format` are already done
-   under `authoring/`. These are loaded by the mission gates, so they unblock `core-agents` (the
-   spawned agents reference them). The sub-mission ordering is the **sdd → sdd-new migration** order
-   (## Migration ordering). Validate every step with `pnpm verify:specs-new`.
+> **Model shift this session.** The governance design was substantially reworked. The old
+> "reference-artifact nodes" framing in the body below and in `## Migration ordering` is **partly
+> superseded** — trust this anchor and
+> `.agents/specs/sdd/common-governances/common-governances.solution.md` over the old body.
 
-   **Dependency note (set this session):** the spawned **agents** (`sdd-operator` headless
-   fallback, cold `sdd-spec-judge` + `sdd-implementer`, the impl-producer builder) are all built in
-   `core-agents`, AFTER `sub-deliver` (impl-producer-governance) and `sub-governances` (actor +
-   fixed bars) exist in sdd-new — building them earlier would forward-reference skills that do not
-   yet exist. So each per-capability sub-mission builds its **governances/skills**; `core-agents`
-   batches the **agents** last.
+1. **Next action — fix the design plan, then record the non-actor governances.**
+   First update `~/.claude/plans/swirling-foraging-moore.md` to **Model B** — it still says
+   **role-level (10)**, which now contradicts the committed solution (Model B = one bar per
+   `(actor, gate)`, discipline **sections**, **faces merged**; Model A is the documented fallback).
+   Then resume `sub-governances` by **recording the non-actor governances** — the **actor** bars
+   (director / builder / architect) are *covered* (solution + examples committed `d439420`,
+   `d186622`). The ones still to record (placement + structure, the way the actor solution did it):
+   the **fixed-universal** `lifecycle` / `ownership` / `gate-validation` / `combat-log`,
+   **plugin-contract**, and **autonomy**. Then build the bars as sdd-new skills. Validate each step
+   with `pnpm verify:specs-new`.
+
+   - **Placement rule (decided):** single-consumer governance → its owning capability folder
+     (`authoring/spec-format`, `authoring/suite-format`, `plugin/plugin-contract`); **cross-cutting →
+     `common-governances/`** (new folder, stub node committed); rules/models stay in `design/`.
+     **autonomy** → descriptive `design/autonomy-rubric.md` + baked-in conductor logic (**no loaded
+     skill**), tested via `acceptance/` — confirm that as its recording.
+   - **Open reconciles to resolve while recording:** (i) `gate-validation` has **no `design/` rule**
+     today — new `design/gate-validation.md` or fold into `lifecycle-model.md`; (ii) **leash 4 vs 5
+     dims** — align gate-validation's leash to autonomy's 5 (adds `contract-impact`) unless a reason
+     to keep 4; (iii) `architect-spec` **asymmetric inputs** (solution-producer writes the solution,
+     the cold spec-judge reads spec+suite only) — Model B absorbs it with a per-face footer (see the
+     merged example).
+   - **Findings the commits won't show (the model shift):** governances are **general** standing
+     criteria, never per-CR; a bar (esp. builder) **composes disciplines** (engineer/designer/a11y/
+     security/qa) via `compose: union` — **SDD ships only the generic core**, disciplines are
+     project/plugin per artifact-type at resolution (out of scope here); **`universal-plugin build`
+     is out of scope** → governances are **harness-loaded** skills built in the mission loop, so
+     `design/actors-and-governance.md` (→ rename `actors-governance.md`) and `governance-resolution.md`
+     carry stale build-embedding language to sweep.
+
+   **Dependency note (still holds):** the spawned **agents** (`sdd-operator` headless fallback, cold
+   `sdd-spec-judge` + `sdd-implementer`, the impl-producer builder) are built in `core-agents`,
+   AFTER `sub-deliver` + `sub-governances` exist in sdd-new. Each per-capability sub-mission builds
+   its **governances/skills**; `core-agents` batches the **agents** last.
 
 2. **Migration-first order (authoritative): see `## Migration ordering`.** Existing-baseline
    capabilities first (`sub-mission` → `sub-deliver` → `sub-handoff` → `sub-gateway` →
