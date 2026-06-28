@@ -71,6 +71,12 @@ todos:
   - id: core-agents
     content: "Deliver — the cross-cutting agents in sdd-new (not owned by one capability). PER arch-conductor-pivot (D-G): the DEFAULT conductor is the main session (no spawned operator) — so build the SPAWNED workers: cold sdd-spec-judge + sdd-implementer (impl-judge), the impl-producer builder, doctrine Scanner, formation Warden; sdd-operator is built ONLY as the headless/fan-out fallback. Plus the deterministic .mts helpers (check-spec-state, governance-resolution). Built to the CORRECTED lens sets (spec gate {director,builder,architect}; impl gate {builder,architect}) — the baseline 2-lens skills are reference only. PROGRESS: check-spec-state.mts (new-model) DONE in plugins/sdd-new/skills/validate-spec/scripts/ (48a0c1e, 24 node:tests). EXPLORE-PHASE SUBSET DONE (2026-06-28, user-scoped to 'pieces the Explore phase needs'; plan ~/.claude/plans/focus-on-the-pieces-crispy-kettle.md): (1) bar match-key metadata on the 5 actor bars + registry migrated to Model-B (solution-producer + (actor,gate) governances); (2) check-feature.mts ported to sdd-new (+ wired into verify:specs-new; surfaced+fixed 2 rubric-confinement .feature meta-assertions); (3) governance-resolution.mts + 36 tests (migrate-on-read, matchPlugin, resolveBar precedence/compose, resolveRole, buildLoadPlan, validateRegistry; --root=project-root); (4) cold sdd-spec-judge agent (3-lens {director,builder,architect} backward, spec.md+.feature only, per-lens PASS/FAIL+ALIGNED) — created plugins/sdd-new/agents/. KEY FINDING: the impl-producer is a GENERIC builder (no named agent) loading impl-producer-governance, dispatched by start-mission — no new agent needed for build-to-learn. STILL PENDING (Deliver / outer loops, NOT Explore): sdd-implementer (impl-judge), doctrine Scanner, formation Warden, headless automaton; nested-project anchor union in the resolver. verify green."
     status: pending
+  - id: impl-judge-independence
+    content: "ADR-0016 — impl-judge verification independence (landed 2026-06-28, spec-only; surfaced by a user design question during Explore). The impl-judge verdict is now LAYERED + contract-independent: (b) re-derive the oracle from each frozen scenario, never trust the producer's assertions; (c) leash-scoped behavioral-exercise/mutation backstop on high-blast-radius scenarios; (a) producer green run = pre-filter, never the verdict; prefer DIRECT .feature execution over a unit-test mapping (faithful mapping where unavoidable); judge model != producer model. Grounded by two adversarial research sweeps: dossier .research/impl-judge-independence/ -> survey docs/research/2026-06-impl-judge-independence.md <- artifacts/adr/0016. LANDED in mission/deliver/impl-judge (README+.feature, b4eadb7/d0e4f81), mission/deliver/impl-producer + mission/conductor impl gate + autonomy-rubric cross-link (ad8b90b). Memory project_sdd_impl_judge_independence. IMPL (the sdd-implementer agent built to this model) is part of core-agents remainder. AGENTS.md research-path doc-drift fixed (e5344f2). verify green."
+    status: completed
+  - id: dogfood-readiness
+    content: "Run a REAL Explore pass over .agents/specs/sdd through the new sdd-new skills (the self-host's point). BLOCKER first: the cold sdd-spec-judge agent was created this session AFTER plugin load, so subagent_type sdd:sdd-spec-judge is NOT spawnable until a session/plugin RELOAD — verify on restart (manifest already declares agents:./agents; marketplace mounts sdd<-plugins/sdd-new). Then root-frontmatter (root spec.md needs status:draft+artifact-types+strategy) so the tree is a proper draft. Then a SCOPED dogfood of one already-specced capability is viable (start-mission inline producer + cold sdd-spec-judge + the 3 .mts gates from Bash). FULL CR-wide explore NOT ready: acceptance/ e2e suite unbuilt + sub-corpus/formation/doctrine/plugin specs pending. Usable WITHOUT reload: start-mission/validate-spec skills, all producer+bar governances, governance-resolution/check-spec-state/check-feature .mts, inline producers, generic build-to-learn builder."
+    status: pending
   - id: root-frontmatter
     content: "Explore — add project-spec lifecycle frontmatter to root spec.md (status: draft, artifact-types, aligned: false, strategy) per design/lifecycle-model.md. The root ## TODO was REMOVED from spec.md (it belonged to the CR, not the durable spec) and rolled into this plan: item 1 'fill each capability folder' = the sub-* todos; item 2 'build the behavior suite' = colocated unit suites (per sub-mission) + the acceptance/ e2e suite (A–F seed themes, still unbuilt — see Per-unit suite organization)."
     status: pending
@@ -113,46 +119,57 @@ The work is organized in **two levels of grill**:
 
 ## NEXT — resume here (read this first)
 
-> **Session update (2026-06-28).** The gateway + skill-surface reshape **LANDED** (`5af5be7`,
-> `13bbe4a`, `1bdf8bb`, `fa8a00d`, `bf7d536`, `7fd8b40`): gateway loads the route skill in-session;
-> `operator` retired → `conductor` (role) / `automaton` (headless agent); **`start-mission`** is the
-> single CR entry; create/revise-spec retired into it; spec gate internal; pause/resume-mission ship
-> in the sdd plugin. `pnpm verify` green. (Older "reference-artifact nodes" framing below is partly
-> superseded — trust this anchor + `common-governances/common-governances.solution.md`.)
+> **Session update (2026-06-28, late).** The **Explore-phase subset of `core-agents` LANDED** plus
+> an **impl-judge independence refinement (ADR-0016)**. Two plans drove it:
+> `~/.claude/plans/focus-on-the-pieces-crispy-kettle.md`. Commits on `next`: `4a86e4e` `7398ede`
+> `bf51266` `0eb3a0c` `dcb72a7` `83243ee` `fd7c51b` (Explore subset); `b4eadb7` `d0e4f81` `ad8b90b`
+> `e5344f2` (ADR-0016). `pnpm verify` green (13/13). Earlier reshape (`5af5be7` `13bbe4a` `1bdf8bb`
+> `fa8a00d` `bf7d536` `7fd8b40`) + `combat-log-location` are settled below.
 
-**▶ NEXT ACTION — `core-agents` (Tier-1 #7).** `combat-log-location` is **RESOLVED** (2026-06-28,
-user-confirmed): the chatty `report`/`correction` combat log **stays a sibling `.log.jsonl`** beside
-the plan (append-only JSONL + `merge=union` + symmetry with the durable `ledger.jsonl`; retires with
-the plan at retro). The spec tree, `combat-log-governance`, and `start-mission` already use the
-sibling form — verified consistent, no edits needed. The gateway strategy-count bug was already
-**FIXED** (`5af5be7`).
+**▶ NEXT ACTION (first thing after restart) — REGISTER THE NEW COLD JUDGE.** A `plugins/sdd-new/
+agents/` dir was created **this session** (`83243ee`) holding `sdd-spec-judge.md`; the sdd plugin is
+mounted from `plugins/sdd-new` (`.claude-plugin/marketplace.json:19`) and its manifest already
+declares `"agents": "./agents"` — but the harness registered the plugin **at startup before that dir
+existed**, so `subagent_type: sdd:sdd-spec-judge` is **NOT spawnable in the paused session**. **On
+restart, verify it: spawn a trivial `sdd:sdd-spec-judge` (or check the agent list).** Once it
+resolves, the cold spec-judge step of explore can run the clean (registered) way instead of a
+`general-purpose`+persona workaround.
 
-**Resume the migration build (Tier-1 order):**
+**THEN — readiness gaps to run a real Explore pass over this `.agents/specs/sdd` tree (dogfood):**
 
-1. **`core-agents` (Tier-1 #7).** `sub-governances` is **DONE** (all 10 bars built +
-   audited; see its todo). Now build the **spawned workers** that load those bars
-   (`arch-conductor-pivot` D-G): the cold `sdd-spec-judge` + `sdd-implementer` (impl-judge), the
-   generic impl-producer builder, the doctrine Scanner, the formation Warden; `sdd-operator` only as
-   the headless/fan-out fallback. Plus the deterministic `.mts` helpers — `check-spec-state.mts`
-   DONE (48a0c1e); **`governance-resolution.mts` PENDING** (resolves `(artifact-type, actor, gate)`
-   → bar per `plugin-contract-governance`, composes union/replace per precedence). Build to the
-   CORRECTED lens sets (spec gate `{director,builder,architect}`; impl gate `{builder,architect}`)
-   and the Model-B `(actor, gate)` bar names now in `common-governances/`. The baseline 2-lens
-   agents in `plugins/sdd/` are reference only.
-   - **Registry migration (do here or note):** the live `.agents/universal-plugin.json` still uses
-     `plan-producer` + flat `governances{director,builder,architect}`; the resolution helper +
-     aces/quill entries move to `solution-producer` + the Model-B `(actor,gate)` governances map
-     when `governance-resolution.mts` lands.
+1. **`root-frontmatter` (Tier-3 #12, but needed to dogfood).** Root `spec.md` still has **no**
+   lifecycle frontmatter (`status: draft`, `artifact-types`, `aligned: false`, `strategy`) per
+   `design/lifecycle-model.md`. Add it so the tree is a proper `draft` a spec gate can act on.
+   `check-spec-state.mts` currently passes only because empty-status raises no violation — that is
+   not the same as a valid draft.
+2. **Then a SCOPED dogfood is viable now** without the rest of the tree: pick one already-specced
+   capability (e.g. `authoring/spec-producer` or `gateway/`), load `sdd:start-mission`, author the
+   inline producer, and run the cold `sdd:sdd-spec-judge` over its `spec.md` + `.feature`. Drive the
+   deterministic gates from Bash: `node plugins/sdd-new/skills/validate-spec/scripts/
+   governance-resolution.mts --root . --artifact-type <type>`, `check-spec-state.mts --root
+   .agents/specs`, `check-feature.mts --root .agents/specs`. A FULL CR-wide explore-to-spec-gate is
+   NOT ready — `acceptance/` e2e suite unbuilt and `sub-corpus`/`formation`/`doctrine`/`plugin`
+   capability specs still pending.
+
+**What's already usable (no restart needed):** the `sdd:start-mission` / `sdd:validate-spec` skills,
+all producer + `(actor,gate)` bar governances, and the three `.mts` helpers all load/run today; the
+inline producers and the generic build-to-learn builder (`general-purpose` + `impl-producer-
+governance`) need no registration. **Only the cold judge needs the reload.**
+
+**Resume the migration build (Tier-1 order) — `core-agents` REMAINDER (Deliver / outer loops):**
+
+1. **`core-agents` remainder.** The Explore subset is DONE (see the `core-agents` todo). **Still
+   pending:** the `sdd-implementer` (impl-judge) agent — now build it to the **ADR-0016 layered
+   model** (re-derive the oracle from the frozen `.feature`; producer green = pre-filter; leash-
+   scoped behavioral-exercise backstop; judge ≠ producer model) per `mission/deliver/impl-judge/`;
+   the doctrine Scanner; the formation Warden; the headless `automaton` fallback. Plus
+   **nested-project anchor union** in `governance-resolution.mts` (MVP did single project + plugin +
+   sdd; `resolveBar` already orders project candidates inner-first). The baseline agents in
+   `plugins/sdd/` are reference only.
+   - **Registry:** already migrated to Model-B this session (`7398ede`) — `.agents/universal-plugin.json`
+     now uses `solution-producer` + the `(actor,gate)` governances map; `governance-resolution.mts`
+     keeps migrate-on-read for any legacy registry.
    - **Validate:** `pnpm verify:specs-new` + `audit validate` per skill; `pnpm verify` before push.
-   - **Findings (the model shift):** governances are **general** standing criteria, never per-CR; a
-     bar (esp. builder) **composes disciplines** via `compose: union` — SDD ships only the generic
-     core (disciplines out of scope here); `universal-plugin build` is out of scope → governances are
-     **harness-loaded** skills.
-
-   **Dependency note (still holds):** the spawned **agents** (`sdd-operator` headless fallback, cold
-   `sdd-spec-judge` + `sdd-implementer`, the impl-producer builder) are built in `core-agents`,
-   AFTER `sub-deliver` + `sub-governances` exist in sdd-new. Each per-capability sub-mission builds
-   its **governances/skills**; `core-agents` batches the **agents** last.
 
 2. **Migration-first order (authoritative): see `## Migration ordering`.** Existing-baseline
    capabilities first (`sub-mission` → `sub-deliver` → `sub-handoff` → `sub-gateway` →
