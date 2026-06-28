@@ -1,6 +1,6 @@
 ---
 name: lifecycle-governance
-description: "Internal skill: the SDD spec lifecycle contract — the root spec.md frontmatter schema, status enum, status transitions, open-marker gating, and the per-file freeze state-transition. Loaded by sdd, validate-spec, create-spec, the conductor, and the spec-judge. Not triggered by users directly."
+description: "Internal skill: the SDD spec lifecycle contract — the root spec.md frontmatter schema, status enum, status transitions, open-marker gating, and the per-file freeze state-transition. Loaded by sdd, validate-spec, start-mission, the conductor, and the spec-judge. Not triggered by users directly."
 user-invocable: false
 ---
 
@@ -85,7 +85,7 @@ spec is `aligned: false`.
 
 ```mermaid
 stateDiagram-v2
-    [*] --> draft: create-spec (new or backfill)
+    [*] --> draft: start-mission (new or backfill)
     draft --> approved: spec gate (validate-spec --target spec)
     approved --> implemented: impl gate (validate-spec --target impl)
     approved --> draft: behavior change (re-open)
