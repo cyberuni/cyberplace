@@ -6,19 +6,19 @@ todos:
     content: "Design — design/spec-layout.md (strategy menu, shared envelope, nesting rule, compass, #35 mechanisms, per-strategy SDD-fit, spec-org-vs-source-org divergence, declared spec-layout field). Repoint spec-structure.md. Add spec-layout to lifecycle-model.md. Enforce in check-spec-state.mts (validate-if-present) + tests. DONE: commits a3878dc (docs) + ffdeec0 (feat). verify:specs-new green."
     status: completed
   - id: unit-spec
-    content: "Spec the backfill-project-spec authoring unit — authoring/backfill-project-spec/{README.md behavioral + ## Use Cases, backfill-project-spec.feature}. Cover detect -> choose location -> recommend (S1/S2) -> scaffold envelope+skeleton -> write spec-layout + placement map -> hand back to start-mission explore; Warden-confirms. Update authoring/README.md Units list."
-    status: in_progress
-  - id: testcases
-    content: "Build testcases/spec-layout/<strategy>/<case>/ fixtures: input project + expected backfilled spec tree. >=1 per strategy (incl. alternatives), 2+ where variation matters, plus hoist + monorepo location cases. check-spec-state --root green on each expected tree."
-    status: pending
+    content: "Spec the backfill-project-spec authoring unit. DONE (ee2d0c8): authoring/backfill-project-spec/{README behavioral + ## Use Cases, .feature 23 scenarios}; authoring/README.md Units list updated."
+    status: completed
   - id: impl
-    content: "Implement plugins/sdd-new/skills/backfill-project-spec/{SKILL.md,README.md} as internal (user-invocable: false) conductor-loaded step during start-mission explore. Leaves tree at status: draft; reuses corpus discovery+digest for belongs-near-X."
-    status: pending
+    content: "Implement the backfill-project-spec internal skill. DONE (11816f8): plugins/sdd-new/skills/backfill-project-spec/{SKILL.md,README.md}, user-invocable: false, six-step procedure. audit validate clean (only the standard internal-skill Q1 warning, same as siblings)."
+    status: completed
   - id: aces
-    content: "ACES proof — scaffold .agents/specs/aces/ for the TARGET ACES (agent-config plugin of SDD) at status: draft. S1 capability-first; location: hoisted; S2-mirror recorded as counter-fixture. Spec the target, NOT the current 8-skill/4-agent impl (which needs overhaul — follow-up)."
+    content: "ACES proof. DONE (19aac5d): .agents/specs/aces/ scaffolded capability-first + hoisted; root spec.md with spec-layout frontmatter + placement map; envelope (design/ + decisions/, acceptance/, glossary) + capability skeleton (eval-run, config-authoring, suite-authoring, sdd-roles, registry) as declared-spec-type stubs. Target spec, not current impl. check-spec-state green."
+    status: completed
+  - id: testcases
+    content: "Build testcases/spec-layout/<strategy>/<case>/ fixtures: input project + expected backfilled spec tree. >=1 per strategy (incl. alternatives), 2+ where variation matters, plus hoist + monorepo location cases. check-spec-state --root green on each expected tree. (ACES already serves as the S1-capability-first + hoist case.)"
     status: pending
   - id: land
-    content: "Validate (run skill vs each testcase; pnpm verify:specs-new; audit validate on the skill; pnpm verify), commit per unit, land CR #35 as branch -> PR. Branch: github-35-backfill-project-spec."
+    content: "Validate (pnpm verify:specs-new; audit validate on the skill; pnpm verify), land CR #35 as branch -> PR. Branch: github-35-backfill-project-spec."
     status: pending
 isProject: false
 ---
@@ -32,16 +32,14 @@ isProject: false
 
 ## NEXT — resume here
 
-`design` is DONE (commits `a3878dc` + `ffdeec0`; `verify:specs-new` green). The design doc
-`.agents/specs/sdd/design/spec-layout.md` is the authority for everything below.
+**Done so far (branch `github-35-backfill-project-spec`):** `design` (`a3878dc`+`ffdeec0`), mission brief
+(`08b0f70`), `unit-spec` (`ee2d0c8`), `impl` (`11816f8`), `aces` proof (`19aac5d`). `verify:specs-new` green.
 
-**Next action — `unit-spec`.** Author the `authoring/backfill-project-spec/` behavioral unit (README with
-`## Use Cases` + `backfill-project-spec.feature`). The behavior, in order: **detect** project shape →
-**choose spec location** (colocate default / agentic-plugin hoist / monorepo-wide) → **recommend +
-choose** strategy (S1 default vs S2) → **scaffold** the shared envelope + the strategy skeleton + stub
-READMEs (declared `spec-type`) + root `spec.md` with `spec-layout` frontmatter + the placement map →
-**hand back** to `start-mission`'s per-unit explore. Update `authoring/README.md`'s Units list. Then
-`testcases` → `impl` → `aces` → `land`.
+**Next action — `testcases`.** Build `testcases/spec-layout/<strategy>/<case>/` fixtures (input project +
+expected backfilled tree) validating each strategy definition. ACES already covers **S1 capability-first +
+hoist**; still needed: **S2 mirror-source** (feature-first clean + layer-organized cautionary variant), the
+**monorepo** multi-project case, and stubs for the alternatives (S3/S4/S5). Run `check-spec-state --root` over
+each expected tree. Then **`land`**: `pnpm verify`, push, open the PR.
 
 ## Working method (do not relitigate)
 
