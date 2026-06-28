@@ -32,16 +32,28 @@ isProject: false
 
 ## NEXT — resume here
 
-**Done so far (branch `github-35-backfill-project-spec`):** `design` (`a3878dc`+`ffdeec0`), mission brief
-(`08b0f70`), `unit-spec` (`ee2d0c8`), `impl` (`11816f8`), `aces` proof (`19aac5d`). `verify:specs-new` green.
+github-35 has **landed** — all todos done; **PR #36** (base `next`, closing #35); `pnpm verify` +
+`verify:specs-new` green; 10 commits `a3878dc`…`252fa0e`. This brief stays until the PR **merges** and any
+lesson is **doctrine-distilled** (then retire it). The mission itself is complete; what follows is the
+**queued follow-up work** the user flagged at pause.
 
-**All steps DONE.** `testcases` (`c93927a`, 10 expected roots green) and `land` (PR #36, base `next`, closing
-#35; `pnpm verify` + `verify:specs-new` green) complete. The mission has landed pending review/merge.
+1. **Next action — the ACES implementation overhaul (a NEW CR).** The target ACES spec exists only as
+   **draft stubs** at `.agents/specs/aces/` (capability-first, hoisted; behavioral nodes carry `## Use Cases`
+   placeholders, **no `.feature` yet**). Drive it through SDD: **`start-mission`** against the ACES project →
+   **explore** one capability at a time (fill `## Use Cases` + author the `.feature` suite) — suggest starting
+   with **`eval-run/`** (run/compare/report, the core) → spec gate → **deliver**: overhaul `plugins/aces/` to
+   the frozen spec. Build to the **target**, not the present (the current 8-skill/4-agent layout is out of
+   date). Open it as its own CR and scaffold its own `.plan.md` — it is not a github-35 todo.
 
-**Remaining (do not delete this plan until then):** address PR review; on merge, **doctrine-distill** any
-reusable lesson; only then retire this brief. Follow-ups noted in the approved plan: the ACES **impl**
-overhaul to the new target spec; promoting S3/S4/S5 to first-class compass routes; nearest-neighbor
-"belongs near X" automation.
+2. **Blocking decision the user raised — promote S3/S4/S5, or defer?** Whether to make the three
+   recorded-alternative strategies first-class compass routes. **What they are** (full text in
+   `.agents/specs/sdd/design/spec-layout.md` §"Alternatives under investigation", each with a fixture under
+   `testcases/spec-layout/`): **S3 bounded-context (DDD)** — top-level by subdomain + glossary + context-map;
+   **S4 layered** — top-level by ring/layer, the highest placement burden (today a *nest-inside* rule, not a
+   top-level option); **S5 doc-envelope (arc42)** — predetermined doc sections, only runtime/quality
+   behavioral. Decide by **demand**: ship one only when a concrete project needs it. Recommendation: **defer**
+   — do the ACES overhaul first; revisit S3/S4/S5 if a real target calls for it.
+   - Lower-priority follow-up: nearest-neighbor "belongs near X" placement automation beyond `corpus/`.
 
 ## Working method (do not relitigate)
 
