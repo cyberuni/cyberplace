@@ -6,12 +6,18 @@
 			"domains": ["skill", "subagent", "command", "agents-section"],
 			"roles": {
 				"spec-producer": "aces-scenario-writer",
-				"plan-producer": null,
+				"solution-producer": null,
 				"spec-judge": "aces-spec-validator",
 				"impl-producer": null,
 				"impl-judge": "aces-implementer"
 			},
-			"governances": { "director": null, "builder": null, "architect": null }
+			"governances": {
+				"director-spec": null,
+				"builder-spec": null,
+				"builder-impl": null,
+				"architect-spec": null,
+				"architect-impl": null
+			}
 		},
 		{
 			"name": "quill",
@@ -19,12 +25,18 @@
 			"domains": ["documentation", "guide", "tutorial", "article", "reference"],
 			"roles": {
 				"spec-producer": "quill-writer",
-				"plan-producer": null,
+				"solution-producer": null,
 				"spec-judge": null,
 				"impl-producer": "quill-doc-writer",
 				"impl-judge": "quill-implementer"
 			},
-			"governances": { "director": null, "builder": null, "architect": null }
+			"governances": {
+				"director-spec": null,
+				"builder-spec": null,
+				"builder-impl": null,
+				"architect-spec": null,
+				"architect-impl": null
+			}
 		}
 	]
 }
