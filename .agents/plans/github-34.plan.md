@@ -21,8 +21,8 @@ todos:
     content: "DEFERRED (resolved 2026-06-27 — carve to follow-up CR). The intake open marker (intake/README.md): the thin adapter directive (source selection + per-source convention + multi-source orchestration) and the local CR store (on-disk CR body + open->accepted->done; candidate beads) are NEW WORK with no baseline. Carved to a follow-up CR; the <!-- open: --> marker stays and blocks only the intake node's gate, not the migration of the existing capabilities."
     status: pending
   - id: sub-gateway
-    content: Sub-mission gateway/ — extract the inline README scenarios to gateway.feature; build the thin-relay sdd gateway skill in sdd-new (NO governance load — the macro-grill ruling).
-    status: pending
+    content: "Sub-mission gateway/ — DONE. gateway/ made a single behavioral unit (spec-type: behavioral + ## Use Cases); extracted the inline scenarios to gateway.feature (10) atomically (README points to it). IMPL DONE: plugins/sdd-new/skills/sdd/ (SKILL.md + README.md) — the thin-relay front door, CORRECTED to the D-G model (spawns NOTHING by default, runs the conductor in-session; spawns sdd-operator + relays ONLY in the headless fallback), loads NO governance (macro-grill ruling). verify:specs-new green."
+    status: completed
   - id: arch-conductor-pivot
     content: "Architecture pivot (D-G) — fold the operator into the MAIN-SESSION CONDUCTOR. The conductor is the main session running the operator role (not a spawned subagent); spec-producer + solution-producer run inline (the live grill); impl-producer + both judges spawn at depth 1 from the main session. Preserves grader independence on every harness; collapses the spawn tree caller->operator->judge (depth 2) to main->judge (depth 1). Spec gate = cold spec-judge over spec.md + .feature ONLY (solution out of view). Spawnable sdd-operator demoted to the headless/fan-out fallback (kept). Plugin surfaces are role-dependent: spec/solution-producer persona-loaded in-session, impl-producer + judges spawnable. DONE: swept design/ (specialists-and-squads, harness-spawning [inverted], lifecycle positional-auth, loops, provenance, governance-resolution, autonomy-rubric, unit-and-organization), capability specs (mission, gateway, intake, deliver, acceptance), and the entry skills + spec-producer-governance (specs + sdd-new impls). verify:specs-new green. Approved plan: ~/.claude/plans/write-it-up-as-federated-wreath.md."
     status: completed
@@ -107,14 +107,17 @@ The work is organized in **two levels of grill**:
 
 ## NEXT — resume here (read this first)
 
-1. **Next action — start `sub-gateway`** (mission/ is fully specced — operator, solution-producer,
-   impl-producer, impl-judge, handoff units done; governances built; spawned agents deferred to
-   `core-agents`). `sub-gateway` is the universal router / entry door: extract `gateway/README.md`'s
-   inline scenarios to `gateway.feature` and build the **thin-relay** `sdd` gateway skill in
-   `plugins/sdd-new/` — **NO governance load** (the macro-grill ruling). Baseline: the `sdd` entry
-   skill. The sub-mission ordering is the **sdd → sdd-new migration** order (## Migration ordering):
-   baseline-existing first, net-new deferred. Usual rhythm — **prose → per-unit `.feature` suites →
-   impl** (build-to-learn). Validate every step with `pnpm verify:specs-new`.
+1. **Next action — start `sub-governances`** (mission/ + gateway/ fully specced + built — operator,
+   solution-producer, impl-producer, impl-judge, handoff, gateway; `solution-producer-governance` +
+   `impl-producer-governance` + the `sdd` gateway skill in sdd-new; spawned agents deferred to
+   `core-agents`). `sub-governances` ports the **cross-cutting governances** to `sdd-new` as
+   **reference-artifact** nodes (spec-type: reference, `## Subject`, no `.feature`) + impls: the
+   **actor** bars (architect / builder / director / autonomy) and the **fixed-universal** governances
+   (lifecycle / ownership / gate-validation / combat-log / plugin-contract). Baseline: the
+   `*-governance` skills in `plugins/sdd/skills/`. `spec-format` + `suite-format` are already done
+   under `authoring/`. These are loaded by the mission gates, so they unblock `core-agents` (the
+   spawned agents reference them). The sub-mission ordering is the **sdd → sdd-new migration** order
+   (## Migration ordering). Validate every step with `pnpm verify:specs-new`.
 
    **Dependency note (set this session):** the spawned **agents** (`sdd-operator` headless
    fallback, cold `sdd-spec-judge` + `sdd-implementer`, the impl-producer builder) are all built in
@@ -186,8 +189,9 @@ impl); only the **order** changed.
    `impl-producer-governance` built, corrected to the spawned-builder model).
 4. `sub-handoff` — ✅ DONE (single behavioral unit + handoff.feature; no separate impl —
    conductor-enacted, realized by the operator agent in core-agents).
-5. `sub-gateway` — the thin-relay entry door (baseline: the `sdd` entry skill). **← next.**
-6. `sub-governances` (NEW todo) — port the cross-cutting governances to `sdd-new` as
+5. `sub-gateway` — ✅ DONE (single behavioral unit + gateway.feature; thin-relay `sdd` skill built,
+   corrected to spawn-nothing-by-default).
+6. `sub-governances` (NEW todo) — **← next.** Port the cross-cutting governances to `sdd-new` as
    reference-artifact nodes + impls: **actor** bars (architect / builder / director / autonomy)
    and **fixed-universal** (lifecycle / ownership / gate-validation / combat-log / plugin-contract).
    These are loaded by the mission gates, so they land alongside `sub-mission`/`core-agents`.
