@@ -1,8 +1,6 @@
 ---
 name: resume-mission
 description: "Resume an in-progress SDD mission from its plan brief. Use when asked to 'load the plan', 'resume the mission', 'continue github-NN', or otherwise pick up an SDD .plan.md where it left off — re-establish the working method and spec context, find the next todo, and continue without relitigating settled ground."
-metadata:
-  internal: true
 ---
 
 # Resume an SDD mission from its plan

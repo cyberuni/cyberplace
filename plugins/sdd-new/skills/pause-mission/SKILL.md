@@ -2,8 +2,6 @@
 name: pause-mission
 description: "Checkpoint an in-progress SDD mission INTO its plan brief so any later session can pick it up. Use this skill when asked to 'pause', 'wrap up for now', or 'stop here' mid-mission — update the plan's todo statuses and rewrite its ## NEXT anchor so a fresh session continues exactly where you left off."
 argument-hint: "[what the next session should focus on]"
-metadata:
-  internal: true
 ---
 
 # Pause an SDD mission into its plan
@@ -31,7 +29,7 @@ the plan stands on its own). Capture *enough to continue, nothing to relitigate.
    start in under a minute. Order it for pickup, **action first**:
    - **The next action — first, concrete, runnable.** One line the resumer can act on
      immediately: the file or unit to touch *and the skill or command to invoke for it* — e.g.
-     "author `create-spec/`'s `.feature` via `/create-spec`, then `pnpm verify:specs-new`," never
+     "build `<unit>`'s spec + suite via `start-mission`, then run the project's spec check," never
      a vague "continue authoring."
    - **Blocking decisions** — open scope calls and unresolved `<!-- open: -->` markers, each with
      its options, so the next session *resolves* rather than rediscovers them.
