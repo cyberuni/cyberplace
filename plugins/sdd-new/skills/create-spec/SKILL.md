@@ -1,18 +1,22 @@
 ---
 name: create-spec
-description: Use this skill when the user wants to create a spec for a new or existing capability — scaffold a new spec node under the project tree and dispatch the producer to grill it to draft.
+description: Use this skill when the user wants to create a spec for a new or existing capability — scaffold a new spec node under the project tree and grill it to draft in-session.
 ---
 
 # create-spec
 
 The user-facing **entry skill** for **new** capability content: scaffold a new spec node under the
-project tree (`.agents/specs/<project>/`), then dispatch the explore producer chain (`sdd-operator`)
-over it. create-spec owns the **user channel** the operator lacks — the up-front grill and the
-iteration loop — and leaves the node at `status: draft`, ready for the spec gate (`validate-spec`).
-An **existing** node is `revise-spec`, not this skill.
+project tree (`.agents/specs/<project>/`), then run the explore producer chain **in-session** over
+it. create-spec runs in the **main session** as the conductor (`sdd:sdd-operator` is the headless
+fallback only): it loads the spec-producer governance and **grills the human live**, spawns the
+**cold spec-judge** each round, and — for build-to-learn — spawns the impl-producer builder. It is
+the positional ratifier and leaves the node at `status: draft`, ready for the spec gate
+(`validate-spec`). An **existing** node is `revise-spec`, not this skill.
 
-Load `sdd:lifecycle-governance` (the status enum and what `draft` means) and
-`sdd:ownership-governance` (which fields a producer may write vs. the operator and the gate).
+Load `sdd:lifecycle-governance` (the status enum and what `draft` means),
+`sdd:ownership-governance` (which fields a producer may write vs. the conductor and the gate),
+`sdd:spec-producer-governance` (the grilling procedure run inline), and
+`sdd:spec-format-governance` + `sdd:suite-format-governance` (the skeleton + suite bars).
 
 ## Locate the node
 
@@ -31,9 +35,9 @@ be inferred:
   `## Subject` section, **no** `.feature`.
 - **descriptive** (a capability overview / index) → **no** marker, no subject, no `.feature`.
 
-Also classify `artifact-types` — the squad key the operator matches plugins against. An
+Also classify `artifact-types` — the squad key the conductor matches plugins against. An
 agent-configuration artifact names its type (`skill` / `subagent` / `command` / `agents-section`);
-plain product code omits it (the operator resolves the SDD defaults). Infer from the implementation
+plain product code omits it (the conductor resolves the SDD defaults). Infer from the implementation
 path when unclear and **confirm with the user**; it is set once here and never rewritten by a
 producer. When the type or artifact-types cannot be settled, **ask** — do not guess.
 
@@ -42,25 +46,28 @@ producer. When the type or artifact-types cannot be settled, **ask** — do not 
 Write the node README skeleton matching the declared type (sections per `sdd:spec-format-governance`;
 the `.feature` form per `sdd:suite-format-governance`). Write **no** control frontmatter
 (`status` / `aligned` / `approval` / `produced-by`) — those live on the root `spec.md` and belong to
-the operator and the gate.
+the conductor and the gate.
 
-## Grill the user (new feature only)
+## Collect the seed intent (new feature only)
 
-The operator has **no user channel**, so collect intent here **before** the first dispatch. For a
-new feature with missing What / Why / interface, ask 3–5 targeted questions: the core problem and
-who experiences it; observable behavior from the user's view; the public interface (commands,
+Before the grill loop, collect the core intent so the spec-producer has a seed. For a new feature
+with missing What / Why / interface, ask 3–5 targeted questions: the core problem and who
+experiences it; observable behavior from the user's view; the public interface (commands,
 signatures, events); known edge cases or explicit non-goals; which reviewers must be heard. For
-**backfill** (behavior already in code), skip the grill and signal backfill to the operator.
+**backfill** (behavior already in code), skip this — the producer reads source, tests, and history.
 
-## Drive the operator (the user loop)
+## Run the grill in-session (the user loop)
 
-Set an **iteration cap** (default **3**; override if the user named one), then loop:
+You **are** the conductor (main session). Run the spec-producer **inline** (load
+`sdd:spec-producer-governance`, or persona-load a plugin specialist for the `artifact-types`) and
+**spawn the cold spec-judge** each round; for build-to-learn, spawn the impl-producer builder
+against the non-frozen suite and fold its learnings into the grill. Set an **iteration cap**
+(default **3**; override if the user named one), then loop:
 
-1. Dispatch `sdd-operator` with the node path, `artifact-types`, the collected intent (or
-   `backfill`), and any `USER_ANSWERS` from the previous wave.
-2. On `complete` → exit.
-3. On `needs-input` → ask the **batched** questions, re-dispatch with the answers, count the
-   iteration.
+1. Grill the user **live** with the node path, `artifact-types`, and the seed intent (or
+   `backfill`); write the draft `spec.md` + `.feature`.
+2. Spawn the cold spec-judge; incorporate its verdict and any open markers.
+3. On convergence → exit.
 4. On `blocked`, or the cap hit without converging → **do not auto-accept**. Present the failing
    scenarios and ask the user to **accept as-is**, **keep looping** (reset the count), or **change
    the spec**.

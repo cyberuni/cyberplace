@@ -6,10 +6,11 @@ description: Use this skill when the user wants to check a spec for completeness
 # validate-spec
 
 Run the SDD **spec gate**: the verdict on a CR's spec + suite **diff** before it becomes the
-contract. The gate judges the diff via a **distinct judge actor**, derives the **leash**, takes the
-verdict, and on approval **freezes** each touched `.feature` file and records a durable per-CR
-`gate` line. The impl gate (Approved → Implemented) is **not** here — it is the mission's
-(`../../`/`sdd-operator`). This skill never collapses producing and judging into one voice.
+contract. validate-spec runs **in-session** as the conductor at the gate — it **spawns a distinct
+cold spec-judge**, derives the **leash**, takes the verdict (it holds the user channel, so it is the
+positional ratifier), and on approval **freezes** each touched `.feature` file and records a durable
+per-CR `gate` line. The impl gate (Approved → Implemented) is **not** here — it is the mission's.
+This skill never collapses producing and judging into one voice.
 
 Load `sdd:lifecycle-governance` (status enum, transitions, the freeze state-transition),
 `sdd:ownership-governance` (who may write `status` / `aligned` / `approval`),
@@ -52,12 +53,13 @@ footprint, never the whole tree and never one fleet-era folder.
 
 ## 3. Judge and derive the leash
 
-Dispatch `sdd-operator` over the touched node(s). It resolves the **spec-judge** for each
-`artifact-types` (a plugin judge or the SDD default `sdd-spec-judge`), runs it cold against the
-spec-gate lens set **{director, builder, architect}**, synthesizes `aligned`, and **derives the
-leash** (the assessment in `../../design/autonomy-rubric.md`). Relay its `STATUS`, `ALIGNED`,
-failing scenarios, remaining `<!-- open: -->` markers, `OBSERVATIONS`, and the gate report. The
-judge is a **distinct actor** and never edits the artifact it grades.
+Resolve the **spec-judge** for each `artifact-types` (a plugin judge or the SDD default
+`sdd-spec-judge`) and **spawn it cold** over the touched node(s) — pass it `spec.md` + the
+`.feature` only (the solution stays out of its view). It grades against the spec-gate lens set
+**{director, builder, architect}**. Then synthesize `aligned` and **derive the leash** (the
+assessment in `../../design/autonomy-rubric.md`) in-session. Collect the judge's `STATUS`,
+`ALIGNED`, failing scenarios, remaining `<!-- open: -->` markers, `OBSERVATIONS`, and the gate
+report. The judge is a **distinct cold actor** and never edits the artifact it grades.
 
 **Never advance** — by self-assertion or human verdict — with judge failures, any remaining open
 markers, or a misaligned suite. They fail the confidence dimension, so they forbid self-assertion
@@ -66,7 +68,7 @@ node, never a marker grown into this spec).
 
 ## 4. Take the verdict — self-assert within leash, else the human
 
-- **In leash** (every dimension reads safe): the operator **self-asserted** — wrote
+- **In leash** (every dimension reads safe): the conductor **self-asserts** — writes
   `approval.spec: { verdict: approve, by: agent, why }` and `aligned`. The diff lands
   **provisionally** into the asynchronous review queue. Still emit the digest + gate report,
   flagged **"agent-asserted — ratify or kick back."**
