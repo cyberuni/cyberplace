@@ -11,10 +11,28 @@ test('globToRegExp matches glob patterns', () => {
 	expect(globToRegExp('audit-skill').test('audit-skill')).toBe(true)
 })
 
-test('listSkills includes package skills and filters with grep', () => {
-	const skills = listSkills(process.cwd(), { grep: 'init-*' })
-	expect(skills.every((s) => s.name.startsWith('init-'))).toBe(true)
-	expect(skills.some((s) => s.name === 'init-commit-discipline')).toBe(true)
+test('listSkills filters by grep and finds matching skills', () => {
+	// Hermetic: scan a temp root + empty home so the result does not depend on
+	// what is installed on the machine (skills now ship under plugins/*/skills,
+	// which listSkills does not scan — see #36 follow-up).
+	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-list-grep-'))
+	const home = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-list-grep-home-'))
+	try {
+		const mk = (name: string) => {
+			const dir = path.join(root, '.agents', 'skills', name)
+			fs.mkdirSync(dir, { recursive: true })
+			fs.writeFileSync(path.join(dir, 'SKILL.md'), `---\nname: ${name}\ndescription: ${name} skill.\n---\n`)
+		}
+		mk('init-commit-discipline')
+		mk('audit-skill')
+		const skills = listSkills(root, { grep: 'init-*', home })
+		expect(skills.every((s) => s.name.startsWith('init-'))).toBe(true)
+		expect(skills.some((s) => s.name === 'init-commit-discipline')).toBe(true)
+		expect(skills.some((s) => s.name === 'audit-skill')).toBe(false)
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+		fs.rmSync(home, { recursive: true, force: true })
+	}
 })
 
 test('listSkills discovers repo and global skills with repo taking precedence', () => {
