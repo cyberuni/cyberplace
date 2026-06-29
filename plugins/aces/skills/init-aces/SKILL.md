@@ -24,8 +24,8 @@ Read ACES's own version from its plugin manifest (it ships inside the plugin, so
 Find the entry where `"name": "aces"` in the `sdd-plugins` array:
 
 - **Not found** → append the canonical entry (create the array if absent).
-- **Found, old shape** (the pre-operator `scenario-advisor` / `implementer` keys) → **rewrite** it to the role-map shape below.
-- **Found, role-map shape, stale `version`** → rewrite when the recorded version differs (install / upgrade / manual re-run reconciles drift here; the operator never compares versions at runtime).
+- **Found, old shape** (the pre-operator `scenario-advisor` / `implementer` keys, or the legacy `domains[]` + shared `roles`/`governances`) → **rewrite** it to the `squads[]` shape below.
+- **Found, `squads[]` shape, stale `version`** → rewrite when the recorded version differs (install / upgrade / manual re-run reconciles drift here; the conductor never compares versions at runtime).
 
 Do not reorder or reformat other entries.
 
@@ -35,21 +35,31 @@ Do not reorder or reformat other entries.
 {
   "name": "aces",
   "version": "<aces version>",
-  "domains": ["skill", "subagent", "command", "agents-section"],
-  "roles": {
-    "spec-producer": "aces-scenario-writer",
-    "plan-producer": null,
-    "spec-judge": "aces-spec-validator",
-    "impl-producer": null,
-    "impl-judge": "aces-implementer"
-  },
-  "governances": { "director": null, "builder": null, "architect": null }
+  "squads": [
+    {
+      "artifact-types": ["skill", "subagent", "command", "agents-section"],
+      "roles": {
+        "spec-producer": "aces-scenario-writer",
+        "solution-producer": null,
+        "spec-judge": "aces-spec-validator",
+        "impl-producer": null,
+        "impl-judge": "aces-implementer"
+      },
+      "governances": {
+        "director-spec": null,
+        "builder-spec": null,
+        "builder-impl": null,
+        "architect-spec": null,
+        "architect-impl": null
+      }
+    }
+  ]
 }
 ```
 
-`impl-producer: null` — writing the agent config is done by the `define-agent` / `improve` skills or the SDD-default impl-producer (the Operator running `impl-producer-governance` inline), not a bound impl-producer agent. `plan-producer: null` uses the SDD default. Each `null` governance uses the SDD default actor governance.
+ACES serves its four agent-config artifact-types with one squad. `impl-producer: null` — writing the agent config is done by the `define-agent` / `improve` skills or the SDD-default impl-producer (the conductor running `impl-producer-governance` via a spawned builder), not a bound impl-producer agent. `solution-producer: null` uses the SDD default. Each `null` governance uses the SDD default actor-gate bar.
 
-**The `governances` block is required.** Every entry must carry a `governances` map (each binding may be `null`, but the block itself must be present). Reject a payload with no `governances` block — fail with an error and **do not write** the file.
+**Each squad's `governances` block is required.** Every squad must carry a `governances` map (each binding may be `null`, but the block itself must be present). Reject a payload with a squad missing its `governances` block — fail with an error and **do not write** the file.
 
 ### 4. Write the updated file
 
@@ -57,6 +67,6 @@ Write `.agents/universal-plugin.json` back with the updated contents.
 
 ### 5. Report
 
-Confirm the `.agents/universal-plugin.json` aces role-map entry is present under `sdd-plugins`, stamped with the ACES version, with domains `skill`, `subagent`, `command`, `agents-section`.
+Confirm the `.agents/universal-plugin.json` aces entry is present under `sdd-plugins`, stamped with the ACES version, with a squad serving artifact-types `skill`, `subagent`, `command`, `agents-section`.
 
 Next step: use `create-spec` (sdd plugin) to scaffold an agent-configuration spec; the operator resolves the ACES roles automatically.
