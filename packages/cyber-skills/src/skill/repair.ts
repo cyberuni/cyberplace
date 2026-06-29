@@ -84,14 +84,18 @@ export function repairPrivateSkills(root: string): RepairResult {
 
 	if (!fs.existsSync(privateSkillsDir)) return { changed: false, actions }
 
+	// Resolve publicSkillsDir to handle macOS /var -> /private/var symlink
+	const resolvedPublicSkillsDir = fs.existsSync(publicSkillsDir) ? fs.realpathSync(publicSkillsDir) : publicSkillsDir
+
 	for (const entry of fs.readdirSync(privateSkillsDir, { withFileTypes: true })) {
 		const skillDir = path.join(privateSkillsDir, entry.name)
-		const publicSkillDir = path.join(publicSkillsDir, entry.name)
+		const resolvedPublicSkillDir = path.join(resolvedPublicSkillsDir, entry.name)
 
 		const stat = fs.lstatSync(skillDir)
 		if (stat.isSymbolicLink()) {
 			const resolved = fs.realpathSync(skillDir)
-			const inPublicTree = resolved === publicSkillDir || resolved.startsWith(`${publicSkillsDir}${path.sep}`)
+			const inPublicTree =
+				resolved === resolvedPublicSkillDir || resolved.startsWith(`${resolvedPublicSkillsDir}${path.sep}`)
 			if (inPublicTree) {
 				fs.unlinkSync(skillDir)
 				actions.push({
@@ -143,14 +147,18 @@ export function validatePrivateSkills(root: string): PrivateSkillCheckResult {
 
 	if (!fs.existsSync(privateSkillsDir)) return { ok: true, issues }
 
+	// Resolve publicSkillsDir to handle macOS /var -> /private/var symlink
+	const resolvedPublicSkillsDir = fs.existsSync(publicSkillsDir) ? fs.realpathSync(publicSkillsDir) : publicSkillsDir
+
 	for (const entry of fs.readdirSync(privateSkillsDir, { withFileTypes: true })) {
 		const skillDir = path.join(privateSkillsDir, entry.name)
-		const publicSkillDir = path.join(publicSkillsDir, entry.name)
+		const resolvedPublicSkillDir = path.join(resolvedPublicSkillsDir, entry.name)
 
 		const stat = fs.lstatSync(skillDir)
 		if (stat.isSymbolicLink()) {
 			const resolved = fs.realpathSync(skillDir)
-			const inPublicTree = resolved === publicSkillDir || resolved.startsWith(`${publicSkillsDir}${path.sep}`)
+			const inPublicTree =
+				resolved === resolvedPublicSkillDir || resolved.startsWith(`${resolvedPublicSkillsDir}${path.sep}`)
 			if (inPublicTree) {
 				issues.push({
 					skill: entry.name,
