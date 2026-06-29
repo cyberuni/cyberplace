@@ -79,6 +79,12 @@ In the same act that writes root `spec.md`, record both so a later edit reads, n
   **location mode** (`colocated | hoisted | monorepo-member`) is *derived* from it, not stored. There is
   **no `spec-layout` block** (ADR-0017: frontmatter is the router index — the strategy is not something the
   router needs).
+- **`name` frontmatter (the project name)** — write it when the project's name is **not reliably
+  derivable** from the location (`discover-specs` derives `repo` for a repo-root single-project and the
+  folder for a `.agents/specs/<project>`, but only **guesses** a nested project's folder basename). For a
+  **hoisted / nested** project, **ask the user for the name and store it** (infer a default from the
+  invocation when the user named the project — e.g. `backfill <this-project>`); confirm before writing.
+  Skip it when the derived name is already right (a plain colocated repo-root project).
 - the **placement map** in the body — the maintained "a concept of kind K lives in home H" taxonomy + the
   nesting rule, **naming the chosen strategy** in its heading/intro, so a newcomer routes a new concept
   without holding the tree in their head and `start-mission` / the Warden read the strategy on demand.
