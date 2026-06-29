@@ -35,7 +35,7 @@ and it names *the orchestration pattern*. In an agents/skills repo, naming a met
 `workflow.md` collides head-on with that distinction. The same sources use **"process" loosely and
 safely** ("agents direct their own *processes*", "the *process* of coordinating agents").
 
-So the two camps diverge differently, and both point the same way for naming a methodology slice:
+So the two camps diverge differently, and both point the same way for naming the governing layer:
 `process` is the umbrella (academia) and the unclaimed word (agentic industry).
 
 ### SDD vs Anthropic's agentic workflow — same domain, one altitude up
@@ -62,7 +62,7 @@ automations: run the chain, get output, done. SDD wraps that runtime in a durabl
 
 | Layer | Word | In SDD |
 |---|---|---|
-| Governing methodology — *what SDD is* | **process** | the lifecycle, gates, governance, the doctrine ("Process") loop, the per-project methodology slice |
+| Governing methodology — *what SDD is* | **process** | the lifecycle, gates, governance, the doctrine ("Process") loop, the repo-level process spec |
 | Runtime orchestration — *how SDD runs* | **workflow** | the Mission Loop engine: orchestrator-workers + evaluator-optimizer |
 
 One-line positioning:
@@ -70,15 +70,19 @@ One-line positioning:
 > **SDD is a spec-governed *process* (methodology) whose *runtime* is an agentic *workflow*
 > (orchestrator-workers + evaluator-optimizer).**
 
-This is why `process` names the doctrine loop and the per-project methodology slice, while
-`workflow` is reserved for the engine — and why naming a per-project policy file `workflow.md` would
-be an altitude mismatch in the one repo where the distinction is load-bearing.
+This is why `process` names the doctrine loop and the repo-level process spec, while `workflow` is
+reserved for the engine — and why calling the governing "how we work" layer a `workflow` would be an
+altitude mismatch in the one repo where the distinction is load-bearing.
 
 ## Decision (recorded in ADR-0011)
 
-- The per-project "how we work" slice is named **process** (`## Process`, extracted to a sibling
-  `process.md` only when it grows — same optionality rule as `<unit>.solution.md`). Not `workflow`.
-- `workflow` stays available to describe the **runtime engine** (the Mission Loop).
+- The governing "how we work" layer is named **process**, not `workflow` (which stays reserved for
+  the runtime engine, the Mission Loop).
+- **Process is a repo-level concern, not a per-project section.** Process-targeting changes land in
+  the repo-level process spec at `<repo-root>/.agents/spec` (simple repo and monorepo alike). A
+  project's own quality/convention rules are **content of that project's spec**; per-project process
+  *variation* is config/data in the project spec or registry. There is **no per-project `## Process`
+  section**. (An earlier draft proposed one; retracted — see ADR-0011.)
 - The spec's `## What SDD is` states the positioning: a governed process whose runtime is an agentic
   workflow, distinct from Anthropic's ephemeral agentic workflow by the durable spec corpus +
   lifecycle + gates + governance.
