@@ -233,9 +233,7 @@ export function parseArtifactTypeMap(text: string): TypeBinding[] {
 function globToRegExp(glob: string): RegExp {
 	const re = glob
 		.replace(/[.+^${}()|[\]\\]/g, '\\$&') // escape regex specials (leave * ?)
-		.replace(/\*\*/g, ' ') // ** placeholder
-		.replace(/\*/g, '[^/]*')
-		.replace(/ /g, '.*')
+		.replace(/\*+/g, (m) => (m.length > 1 ? '.*' : '[^/]*')) // ** spans separators, * does not
 		.replace(/\?/g, '.')
 	return new RegExp(`^${re}$`)
 }
