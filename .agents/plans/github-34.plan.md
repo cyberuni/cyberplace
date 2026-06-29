@@ -45,8 +45,8 @@ todos:
     content: Sub-mission formation/ — the structure outer loop + the Warden delegate; per-unit suites -> impl.
     status: pending
   - id: sub-doctrine
-    content: Sub-mission doctrine/ — the process outer loop + the Scanner delegate + plan retirement (W-1 .mts skill); per-unit suites -> impl.
-    status: pending
+    content: "Sub-mission doctrine/ — DONE (2026-06-28). Restructured doctrine/ to overview + 2 behavioral units (mission/ pattern): doctrine/scanner/ (README + scanner.feature 16 — the six lifecycle triggers, sole-writer/observe-not-write/post-hoc/combat-log-alone invariants, episodic surfacing, out-of-loop routing) + doctrine/plan-retirement/ (README + plan-retirement.feature 7 — decoupled distill/delete, gated idempotent two-file tracked deletion, fail-closed clearance). IMPL in sdd-new: doctrine-loop skill + sdd-scanner agent (refreshed to the project-spec model — ONE ledger.jsonl, handle sdd-scanner, recurring-pattern reads the distilled cause recurrence count, token-waste split categorical-in-log/numeric-transcript-only, conductor/automaton terminology); plan-retirement skill + retire-plans.mts (PURE decision fn + injected inputs per user — caller clears cr-refs via --retire, script is the mechanical fail-closed gate; 11 node:tests wired into verify:specs-new). This also satisfies the core-agents 'doctrine Scanner' piece. Commits (next): 9b93d33 (spec), 4cabdfd (loop+agent), 5aa4fdb (retirement). pnpm verify green (13/13). DEFERRED (noted, not built): the acceptance e2e theme (ratified strategy re-tunes doctrine end-to-end) waits on acceptance/; the repo-process-spec <repo>/.agents/spec artifact is a separate CR; forge-side redaction reader coverage is the forge sub-mission; a machine-readable 'distilled' marker for a fully-autonomous sweep is an open follow-up (out by the pure-fn decision)."
+    status: completed
   - id: sub-forge
     content: "DEFERRED (Tier 4, net-new — no baseline; ## Migration ordering). Sub-mission forge/ — the field outer loop (Consent floor, cross-installation corrections); per-unit suites -> impl."
     status: pending
