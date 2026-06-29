@@ -15,8 +15,8 @@
 					},
 					"governances": {
 						"director-spec": null,
-						"builder-spec": null,
-						"builder-impl": null,
+						"builder-spec": "aces-builder-spec",
+						"builder-impl": "aces-builder-impl",
 						"architect-spec": null,
 						"architect-impl": null
 					}
