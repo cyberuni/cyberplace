@@ -16,7 +16,7 @@ autonomy rubric (`design/autonomy-rubric.md`), a hard floor + a three-dimension 
 The mechanical authority is `validate-spec/scripts/check-spec-state.mts` — run it
 (`node <skill>/scripts/check-spec-state.mts`) to enforce; if `node` is unavailable, apply the same
 rules by reading frontmatter. The `(status, markers, .feature, approval)` tuple of the root
-`spec.md` is **illegal** when:
+`spec.md` — plus the durable gate lines in its sibling `ledger.jsonl` — is **illegal** when:
 
 - `status: approved` with no `.feature` — a spec requires a frozen `.feature` to be approved.
 - `status: approved` or `implemented` with any `<!-- open: -->` markers — markers block the gate.
@@ -29,10 +29,13 @@ rules by reading frontmatter. The `(status, markers, .feature, approval)` tuple 
 - an `approval.<gate>` is `verdict: pause` on a gate the spec has already passed (spec once `approved`/`implemented`, impl once `implemented`).
 - `status: approved` or `implemented` with no `approval.spec` `verdict: approve` + `by` — the spec gate has no recorded ratification.
 - `status: implemented` with no `approval.impl` `verdict: approve` + `by` — the impl gate has no recorded ratification.
+- `status: approved` or `implemented` with no `gate` line `gate: spec`, `verdict: approve` in the sibling `ledger.jsonl` — **the durable gate floor is missing**. The `approval` map is the overwritten current-state twin; the ledger line is the **immutable durable twin**, so a status advance with no ledger gate line is an unenforced gate.
+- `status: implemented` with no `gate` line `gate: impl`, `verdict: approve` in the ledger — the impl-gate durable floor is missing.
 
 `implemented` is backed by the impl gate's runtime suite run, not a stored flag (ADR-0017); its
 static guard here is the recorded `approval.impl` ratification. Open markers at `draft` are permitted
-(they block only the *gate*, not the draft state).
+(they block only the *gate*, not the draft state). A `draft` requires **no** `ledger.jsonl` (no gate
+has run); the durable floor applies only once a gate has advanced the status.
 
 Reject illegal tuples **before** any other gate work. If `check-spec-state.mts` changes, this list
 follows it — the script is the source of truth, this prose is the readable mirror.
