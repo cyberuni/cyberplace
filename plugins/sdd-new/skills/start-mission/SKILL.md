@@ -18,7 +18,7 @@ Load `sdd:lifecycle-governance` (status enum, the freeze re-open transition), `s
 Get the CR into the system and create its plan brief — the plan is a step-1 artifact, not something explore invents later.
 
 - **Recover the request.** From a general change prompt, name the change and the target. From a **source URL** (`work on <github issue url>`), fetch the issue and read it as the CR body.
-- **Locate the project spec** under `.agents/specs/<project>/`. One project is one spec — there is no spec fleet to pick from.
+- **Locate the project spec** by running the **`discover-specs`** skill (the `corpus/discovery` engine) — it returns the TOON list of every project spec at the three SDD spec locations with its `status` and `project-path`. Resolve the CR's target to one spec by folder slug or `project-path`; an ambiguous match is disambiguated with the user, never guessed. One project is one spec — there is no spec fleet to pick from. If `discover-specs` finds **no** spec for the target project, that is the **backfill** path (load `backfill-project-spec`).
 - **Scaffold `.agents/plans/<cr-ref>.plan.md`** from a basic template: frontmatter `todos` (ordered, `status: pending`) + a `## NEXT` anchor + the CR link. This is the portable handoff brief `pause-mission` / `resume-mission` operate on.
 - **Escape a non-CR.** If the grill shows no suite-relevant behavior, state that the work leaves the lifecycle, create no draft, invoke no gate, write no record.
 
