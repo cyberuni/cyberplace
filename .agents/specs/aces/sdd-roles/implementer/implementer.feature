@@ -1,3 +1,4 @@
+@frozen
 Feature: implementer — the impl-judge role
   Unit suite for the ACES impl-judge the conductor dispatches at the impl gate: run the eval suite the
   impl-producer authored over N runs, collapse each frozen scenario to a boolean, and roll up the gate

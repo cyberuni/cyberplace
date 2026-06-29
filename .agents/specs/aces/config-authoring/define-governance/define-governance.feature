@@ -1,3 +1,4 @@
+@frozen
 Feature: define-governance — author a reference-only governance
   Unit suite for the define-governance skill: classify the content as governance, resolve placement,
   scaffold the canonical file and runtime symlinks, enforce the non-auto-trigger contract, then

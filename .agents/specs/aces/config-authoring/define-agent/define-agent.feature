@@ -1,3 +1,4 @@
+@frozen
 Feature: define-agent — author an agent definition
   Unit suite for the define-agent skill: choose a mode, resolve placement, scaffold the canonical
   agent file plus runtime symlinks and (invokable) a companion command, then verify and report.

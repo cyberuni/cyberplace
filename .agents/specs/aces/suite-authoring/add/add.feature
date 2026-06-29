@@ -1,3 +1,4 @@
+@frozen
 Feature: add — add a test case to the golden set
   Unit suite for the add skill: capture a failure, edge, or gap as one golden-set case with a
   scenario, expected behaviors, must-not-do guards, and a scoring guide. Fixing the config when

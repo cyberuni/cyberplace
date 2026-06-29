@@ -1,3 +1,4 @@
+@frozen
 Feature: judge — the internal scorer
   Unit suite for the ACES scorer invoked by implementer and the run/compare reporting skills: score one
   simulated agent behavior against a rubric for a single scenario and layer, and emit the four-field

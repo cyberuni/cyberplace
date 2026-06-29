@@ -1,3 +1,4 @@
+@frozen
 Feature: improve — diagnose failures and propose config fixes
   Unit suite for the improve skill: load the latest results, collect failing cases, group them by
   failure pattern, propose before/after config diffs, and auto-run compare after edits. Capturing a

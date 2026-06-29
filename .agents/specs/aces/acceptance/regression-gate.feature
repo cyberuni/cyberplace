@@ -1,3 +1,4 @@
+@frozen
 Feature: acceptance — the regression gate
   Cross-capability e2e: compare's regression gate as the guard that blocks a config change which
   drops a previously passing case. Unit-level diff behavior lives in eval-run/compare; this suite

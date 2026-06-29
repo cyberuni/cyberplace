@@ -1,3 +1,4 @@
+@frozen
 Feature: spec-validator — the spec-judge role
   Unit suite for the ACES spec-judge the conductor dispatches at the spec gate: grade an agent-config
   .feature against the agent-scenario criteria and report a per-scenario verdict. Authoring the suite
