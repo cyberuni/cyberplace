@@ -4,11 +4,14 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { test } from 'node:test'
 import {
+	checkGateFloor,
 	checkNode,
 	checkSpec,
 	discoverNodeDirs,
 	discoverSpecDirs,
+	type LedgerGate,
 	type NodeSpec,
+	parseLedgerGates,
 	parseNode,
 	parseSpecState,
 	type SpecState,
@@ -260,4 +263,51 @@ test('discoverSpecDirs skips node_modules and dot dirs', () => {
 	} finally {
 		rmSync(root, { recursive: true, force: true })
 	}
+})
+
+// ── the durable gate-line floor ──
+
+const gate = (over: Partial<LedgerGate> = {}): LedgerGate => ({ gate: 'spec', verdict: 'approve', ...over })
+
+test('parseLedgerGates reads gate lines and skips blank, malformed, and non-gate lines', () => {
+	const text = [
+		'{"seq":1,"kind":"gate","gate":"spec","verdict":"approve","by":"unional"}',
+		'',
+		'{"seq":2,"kind":"strategy","recommendation":"x","ratified":false}',
+		'not json at all',
+		'{"seq":3,"kind":"gate","gate":"impl","verdict":"approve","by":"unional"}',
+	].join('\n')
+	assert.deepEqual(parseLedgerGates(text), [
+		{ gate: 'spec', verdict: 'approve' },
+		{ gate: 'impl', verdict: 'approve' },
+	])
+})
+
+test('checkGateFloor: a draft needs no ledger gate line', () => {
+	assert.deepEqual(checkGateFloor('sdd', 'draft', []), [])
+})
+
+test('checkGateFloor: approved with no spec gate line is illegal', () => {
+	const v = checkGateFloor('sdd', 'approved', [])
+	assert.equal(v.length, 1)
+	assert.match(v[0], /no spec gate approve line/)
+})
+
+test('checkGateFloor: approved with a spec gate approve line is legal', () => {
+	assert.deepEqual(checkGateFloor('sdd', 'approved', [gate()]), [])
+})
+
+test('checkGateFloor: a spec gate reject does not satisfy the floor', () => {
+	const v = checkGateFloor('sdd', 'approved', [gate({ verdict: 'reject' })])
+	assert.equal(v.length, 1)
+	assert.match(v[0], /no spec gate approve line/)
+})
+
+test('checkGateFloor: implemented requires both a spec and an impl approve line', () => {
+	assert.deepEqual(checkGateFloor('sdd', 'implemented', [gate(), gate({ gate: 'impl' })]), [])
+	const missingImpl = checkGateFloor('sdd', 'implemented', [gate()])
+	assert.equal(missingImpl.length, 1)
+	assert.match(missingImpl[0], /no impl gate approve line/)
+	const missingBoth = checkGateFloor('sdd', 'implemented', [])
+	assert.equal(missingBoth.length, 2)
 })

@@ -15,6 +15,14 @@
 //      A node README also carries `spec-type` as its ONLY frontmatter: lifecycle
 //      (status / project-path / approval / produced-by / freeze) is root-spec.md-
 //      only (lifecycle-governance), so a stray lifecycle field on a node fails closed.
+//   3. the gate-line floor — a root spec.md at `approved`/`implemented` must have the
+//      DURABLE proof of the gate in its sibling `ledger.jsonl`: a `gate` line with the
+//      matching `verdict: approve`. The spec.md `approval` map is the overwritten
+//      current-state twin (checked in 1); the ledger line is the immutable durable twin,
+//      and a status advance with no ledger gate line is an unenforced gate. `draft`
+//      requires no ledger (no gate ran). Provenance write is the conductor/gate's job
+//      (combat-log-governance); this is the static floor that makes the missing-line
+//      state uncommittable.
 // `project-path` (the source dir a spec governs) is parsed for the router; its
 // presence is the producer's job, not a lifecycle-legality concern, so it is not
 // enforced here. See design/lifecycle-model.md (legal-state tuples + per-node
@@ -42,6 +50,11 @@ export interface NodeSpec {
 	hasSubject: boolean
 	hasUseCases: boolean
 	lifecycleFields: string[]
+}
+
+export interface LedgerGate {
+	gate: string
+	verdict: string
 }
 
 const GATES = ['spec', 'impl']
@@ -210,6 +223,43 @@ export function checkNode(slug: string, node: NodeSpec, hasFeature: boolean): st
 	return v
 }
 
+// The durable gate-line floor. Parse the sibling `ledger.jsonl` for its `gate` lines — the
+// immutable durable verdicts (one JSON object per line; a malformed or non-gate line is skipped,
+// integrity being a separate concern).
+export function parseLedgerGates(text: string): LedgerGate[] {
+	const gates: LedgerGate[] = []
+	for (const line of text.split('\n')) {
+		const s = line.trim()
+		if (!s) continue
+		let obj: { kind?: string; gate?: string; verdict?: string }
+		try {
+			obj = JSON.parse(s)
+		} catch {
+			continue
+		}
+		if (obj.kind === 'gate' && typeof obj.gate === 'string' && typeof obj.verdict === 'string')
+			gates.push({ gate: obj.gate, verdict: obj.verdict })
+	}
+	return gates
+}
+
+// A root spec.md at `approved`/`implemented` must carry the matching durable `gate` approve line
+// in its sibling ledger — the `approval` map (checked in checkSpec) is the overwritten current-state
+// twin; this is the immutable durable twin. A status advance with no ledger gate line is an
+// unenforced gate. `draft` requires no ledger (no gate ran).
+export function checkGateFloor(slug: string, status: string, gates: LedgerGate[]): string[] {
+	const v: string[] = []
+	const tag = (msg: string) => v.push(`${slug}: ${msg}`)
+	const approved = (gate: string) => gates.some((g) => g.gate === gate && g.verdict === 'approve')
+
+	if ((status === 'approved' || status === 'implemented') && !approved('spec'))
+		tag(`status is ${status} but ledger.jsonl has no spec gate approve line — the durable gate floor is missing`)
+	if (status === 'implemented' && !approved('impl'))
+		tag('status is implemented but ledger.jsonl has no impl gate approve line — the durable gate floor is missing')
+
+	return v
+}
+
 function hasFeatureFile(dir: string): boolean {
 	try {
 		return readdirSync(dir).some((f) => f.endsWith('.feature'))
@@ -249,7 +299,11 @@ export function main(argv: string[]): number {
 	for (const slug of discoverSpecDirs(root)) {
 		const specPath = join(root, slug, 'spec.md')
 		if (!existsSync(specPath)) continue
-		violations = violations.concat(checkSpec(slug, parseSpecState(readFileSync(specPath, 'utf8'))))
+		const state = parseSpecState(readFileSync(specPath, 'utf8'))
+		violations = violations.concat(checkSpec(slug, state))
+		const ledgerPath = join(root, slug, 'ledger.jsonl')
+		const gates = existsSync(ledgerPath) ? parseLedgerGates(readFileSync(ledgerPath, 'utf8')) : []
+		violations = violations.concat(checkGateFloor(slug, state.status, gates))
 	}
 	for (const slug of discoverNodeDirs(root)) {
 		const dir = join(root, slug)
