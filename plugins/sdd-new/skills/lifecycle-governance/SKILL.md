@@ -37,8 +37,9 @@ produced-by:            # who produced each artifact; see sdd:combat-log-governa
 
 Open input is recorded in the body as `<!-- open: ... -->` markers, not in frontmatter.
 
-The frontmatter is the **router's upfront index** (ADR-0017): the gateway scans every `spec.md`
-frontmatter (no bodies) to route, so it carries only what routing needs. `status` is the base schema;
+The frontmatter is the **router's upfront index** (ADR-0017): the gateway scans every spec at the
+three SDD spec locations, frontmatter only (no bodies), to route, so it carries only what routing
+needs. `status` is the base schema;
 `project-path`, `approval`, and `produced-by` are the SDD-workflow additions. `project-path` records
 the repo-relative source dir the spec governs; the spec **location mode** (`colocated | hoisted |
 monorepo-member`) is *derived* from it (hoisted iff `project-path` is not the spec's own dir), never
@@ -60,10 +61,19 @@ root.
 
 ## Spec discovery
 
-A spec is defined by its **shape, not its location**: an SDD spec is any git-tracked `spec.md` whose
-frontmatter `status` is one of the enum values below. There is no spec registry to keep in sync — to
-locate specs, glob `**/spec.md` repo-wide, keep git-tracked files whose `status` is in the enum. A
-`spec.md` without a lifecycle `status` is not an SDD spec.
+A spec is **location-bounded and shape-confirmed** (ADR-0017): an SDD spec is a git-tracked
+`spec.md` that sits at one of the three SDD spec locations **and** whose frontmatter `status` is one
+of the enum values below:
+
+1. `.agents/spec/spec.md` — repo-root single-project
+2. `.agents/specs/<project>/spec.md` — repo-root multi-project
+3. `<project-path>/.agents/spec/spec.md` — a nested project (the `**` is the project-path, any depth)
+
+There is no spec registry to keep in sync — the locations are fixed conventions, not a stored list.
+To locate specs, scan the three locations and keep git-tracked files whose `status` is in the enum.
+A `spec.md` at a spec location with no lifecycle `status` is **not** a spec (so a stray file is never
+grabbed by accident); a status-bearing `spec.md` **outside** the three locations is not a spec
+either. The concrete engine is the `discover-specs` skill (frontmatter only, TOON output).
 
 **Sync is derived, not stored (no `aligned` flag).** "Synced" is two properties, each derived or
 judged (ADR-0017): contract-sync (`spec.md` ↔ `.feature`) is *judged* at the spec gate (Builder
