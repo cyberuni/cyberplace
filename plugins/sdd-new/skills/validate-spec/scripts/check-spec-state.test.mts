@@ -25,7 +25,7 @@ function state(over: Partial<SpecState> = {}): SpecState {
 }
 
 function node(over: Partial<NodeSpec> = {}): NodeSpec {
-	return { type: null, hasSubject: false, hasUseCases: false, ...over }
+	return { type: null, hasSubject: false, hasUseCases: false, lifecycleFields: [], ...over }
 }
 
 // ── root lifecycle tuple ──
@@ -146,9 +146,9 @@ test('project-path is a router hint, not a lifecycle-legality concern — its ab
 
 test('parseNode reads spec-type and detects Subject / Use Cases sections', () => {
 	const ref = parseNode('---\nspec-type: reference\n---\n\n# x\n\n## Subject\n\nfoo\n')
-	assert.deepEqual(ref, { type: 'reference', hasSubject: true, hasUseCases: false })
+	assert.deepEqual(ref, { type: 'reference', hasSubject: true, hasUseCases: false, lifecycleFields: [] })
 	const beh = parseNode('---\nspec-type: behavioral\n---\n\n# y\n\n## Use Cases\n\nbar\n')
-	assert.deepEqual(beh, { type: 'behavioral', hasSubject: false, hasUseCases: true })
+	assert.deepEqual(beh, { type: 'behavioral', hasSubject: false, hasUseCases: true, lifecycleFields: [] })
 	const desc = parseNode('# overview\n\nno marker\n')
 	assert.equal(desc.type, null)
 })
@@ -188,6 +188,43 @@ test('a behavioral node with no Use Cases section is illegal', () => {
 test('an unknown spec-type is rejected', () => {
 	const v = checkNode('x', node({ type: 'descriptive' }), false)
 	assert.ok(v.some((m) => /unknown spec-type "descriptive"/.test(m)))
+})
+
+// ── lifecycle frontmatter is root-spec.md-only ──
+
+test('parseNode collects forbidden lifecycle fields from a node README', () => {
+	const n = parseNode('---\nspec-type: behavioral\nstatus: draft\nproject-path: x\n---\n\n## Use Cases\n')
+	assert.deepEqual(n.lifecycleFields, ['status', 'project-path'])
+	assert.equal(n.type, 'behavioral')
+})
+
+test('a node carrying a stray status field fails closed', () => {
+	const v = checkNode(
+		'mission/conductor',
+		node({ type: 'behavioral', hasUseCases: true, lifecycleFields: ['status'] }),
+		true,
+	)
+	assert.ok(v.some((m) => /carries lifecycle field "status" — lifecycle frontmatter is root-spec.md-only/.test(m)))
+})
+
+test('a descriptive node carrying lifecycle frontmatter still fails closed', () => {
+	const v = checkNode('mission', node({ type: null, lifecycleFields: ['approval', 'produced-by'] }), false)
+	assert.ok(v.some((m) => /carries lifecycle field "approval"/.test(m)))
+	assert.ok(v.some((m) => /carries lifecycle field "produced-by"/.test(m)))
+})
+
+test('a clean spec-type-only node raises no lifecycle violation', () => {
+	assert.deepEqual(checkNode('authoring/spec-producer', node({ type: 'behavioral', hasUseCases: true }), true), [])
+})
+
+test('a retired schema field on a node fails closed', () => {
+	const v = checkNode(
+		'x',
+		node({ type: 'reference', hasSubject: true, lifecycleFields: ['aligned', 'spec-layout'] }),
+		false,
+	)
+	assert.ok(v.some((m) => /carries lifecycle field "aligned"/.test(m)))
+	assert.ok(v.some((m) => /carries lifecycle field "spec-layout"/.test(m)))
 })
 
 // ── discovery ──

@@ -45,6 +45,9 @@ must agree with its shape (`sdd:spec-format-governance`):
 - `spec-type: reference` with a sibling `.feature` — illegal (a reference artifact is suite-less by design).
 - `spec-type: reference` with no `## Subject` section — illegal (the reference descriptor is required).
 - `spec-type: behavioral` with no `## Use Cases` section — illegal (a behavioral spec maps use cases to scenarios).
+- a node README carrying any **lifecycle field** (`status`, `project-path`, `approval`, `produced-by`,
+  or a retired `aligned` / `spec-layout` / `strategy`) — illegal: lifecycle frontmatter is
+  **root-`spec.md`-only** (`sdd:lifecycle-governance`); a node carries only its `spec-type` marker.
 
 ## The two gates
 
