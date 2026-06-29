@@ -1,5 +1,5 @@
 ---
-status: approved
+status: implemented
 project-path: plugins/aces
 approval:
   spec:
@@ -8,6 +8,13 @@ approval:
     why:
       leash: within — a draft agent-config spec on a feature branch; freeze is reversible via the re-open flag
       basis: every behavioral unit cold-judged ALIGNED (3-lens {director,builder,architect}) and the glossary Subject + acceptance e2e pass; the three .mts gates are green over the tree
+      cr: 38
+  impl:
+    verdict: approve
+    by: agent
+    why:
+      leash: within — agent-config impl on a feature branch, reversible
+      basis: two cold impl-judges verified all 12 units conform to their frozen .feature (oracle re-derived per scenario, ADR-0016); the four found gaps were fixed in code and re-verified; pnpm verify green
       cr: 38
 ---
 
