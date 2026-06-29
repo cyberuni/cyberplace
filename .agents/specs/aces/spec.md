@@ -1,15 +1,6 @@
 ---
 status: draft
-artifact-types:
-  - skill
-  - subagent
-  - command
-  - agents-section
-spec-layout:
-  strategy: capability-first
-  location: hoisted
-  placement-map: "#placement-map"
-aligned: false
+project-path: plugins/aces
 ---
 
 # ACES — Agent Config Examination & Specification
@@ -31,9 +22,10 @@ the impl overhaul is a follow-up.
 
 ## Layout
 
-This spec is organized **capability-first** (`spec-layout: capability-first`), hoisted to
-`<repo>/.agents/specs/aces/` because the plugin's own folders (`plugins/aces/skills/`, `agents/`) are fixed by
-the plugin format and the spec must not ship inside the distributable. A capability therefore spans several
+This spec is organized **capability-first**, hoisted to
+`<repo>/.agents/specs/aces/` (derivable from `project-path: plugins/aces`) because the plugin's own folders
+(`plugins/aces/skills/`, `agents/`) are fixed by the plugin format and the spec must not ship inside the
+distributable. A capability therefore spans several
 fixed source folders — the accepted spec↔source divergence (`../sdd/design/spec-layout.md`).
 
 ## Capability map
