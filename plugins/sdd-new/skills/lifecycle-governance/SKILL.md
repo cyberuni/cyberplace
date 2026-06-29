@@ -19,6 +19,7 @@ The **root** `spec.md` carries YAML frontmatter:
 ---
 status: draft           # draft | approved | implemented | deprecated
 project-path: plugins/sdd-new   # repo-relative source dir this spec governs; the location mode is derivable
+name: SDD               # OPTIONAL declared project name; authoritative for name→spec resolution
 approval:               # per-gate verdict
   spec:                 # verdict: approve | pause | reject
     verdict: approve
@@ -74,6 +75,13 @@ To locate specs, scan the three locations and keep git-tracked files whose `stat
 A `spec.md` at a spec location with no lifecycle `status` is **not** a spec (so a stray file is never
 grabbed by accident); a status-bearing `spec.md` **outside** the three locations is not a spec
 either. The concrete engine is the `discover-specs` skill (frontmatter only, TOON output).
+
+Each spec carries a **project name** so a consumer can resolve a name → spec. The name is `declared`
+(the optional frontmatter `name`, authoritative), else `derived` (the repo-root single-project →
+`repo`; a `.agents/specs/<project>` folder names itself), else `guessed` (a nested project's folder
+basename — confirm with the user). The optional `name` field is **written at spec creation**
+(`sdd:backfill-project-spec`) — it earns its router slot because the gateway presents project names
+to the user; it is required in practice only for a nested project whose folder is not the user's name.
 
 **Sync is derived, not stored (no `aligned` flag).** "Synced" is two properties, each derived or
 judged (ADR-0017): contract-sync (`spec.md` ↔ `.feature`) is *judged* at the spec gate (Builder
