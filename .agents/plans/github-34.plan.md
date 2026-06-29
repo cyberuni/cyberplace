@@ -490,6 +490,7 @@ Warden) + the `.mts` helpers, built to the corrected lens sets.
 - **assemble-plugin:** `.plugin/plugin.json`, governances-as-skills, `agents/`, registry; diff vs
 `plugins/sdd/`. **W-1 plan-retirement `.mts` skill** (doctrine-owned, glob
 `.agents/plans/*.plan.md`, delete only when source = done/merged AND distilled; idempotent).
+  - **Lesson (github-35 close-out):** Hand-run bootstrap missions emit no combat log, so the Scanner has nothing to distill — the doctrine loop / retirement-sweep (W-1) must define a **manual distill+retire fallback** for combat-log-less plans (github-35 was retired this way: lesson captured in-thread, plan deleted directly, no Scanner pass).
 - **self-host:** re-run explore + the spec gate through sdd-new's producer + judge to confirm the
 bootstrap closes.
 - **handoff:** branch → PR; keep the combat log in the PR. **Do NOT delete this plan** until
