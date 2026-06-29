@@ -61,16 +61,30 @@ export const SDD_DEFAULT_AGENT: Record<RoleKey, string | null> = {
 
 // ─── types ──────────────────────────────────────────────────────────────────────
 
-export interface RegistryEntry {
-	name: string
-	version?: string
-	domains: string[]
+// A squad serves a SET of artifact-types with one production chain. A plugin lists
+// one or more squads (specialists-and-squads.md "Registry SHAPE"); a type appears
+// in at most one squad per plugin.
+export interface Squad {
+	'artifact-types': string[]
 	roles: Partial<Record<RoleKey, string | null>>
 	governances: Partial<Record<BarKey, string | null>>
 }
 
+export interface RegistryEntry {
+	name: string
+	version?: string
+	squads: Squad[]
+}
+
 export interface Registry {
 	'sdd-plugins': RegistryEntry[]
+}
+
+// A matched squad carries its owning plugin name (for `<plugin>:<bar>` /
+// `<plugin>-<role>` refs).
+export interface SquadMatch {
+	plugin: string
+	squad: Squad
 }
 
 export interface GovMetadata {
@@ -120,21 +134,23 @@ export interface LoadPlan {
 
 // ─── registry parse + migrate-on-read ───────────────────────────────────────────
 
-// Rename the legacy plan-producer role key to solution-producer and expand the
-// flat governances{director,builder,architect} to the Model-B (actor,gate) keys.
-// A live registry still on the legacy shape is migrated on encounter
-// (plugin-contract-governance).
-export function migrateEntry(entry: RegistryEntry): RegistryEntry {
-	const roles: Partial<Record<RoleKey, string | null>> = { ...entry.roles }
-	if ('plan-producer' in (entry.roles as Record<string, string | null>)) {
-		const legacy = (entry.roles as Record<string, string | null>)['plan-producer']
+// Within a squad: rename the legacy plan-producer role key to solution-producer
+// and expand the flat governances{director,builder,architect} to the Model-B
+// (actor,gate) keys.
+function migrateRoles(rolesIn: Record<string, string | null> | undefined): Partial<Record<RoleKey, string | null>> {
+	const roles = { ...(rolesIn ?? {}) }
+	if ('plan-producer' in roles) {
+		const legacy = roles['plan-producer']
 		if (!('solution-producer' in roles)) roles['solution-producer'] = legacy
-		delete (roles as Record<string, string | null>)['plan-producer']
+		delete roles['plan-producer']
 	}
+	return roles as Partial<Record<RoleKey, string | null>>
+}
 
-	const g = (entry.governances ?? {}) as Record<string, string | null>
+function migrateGovernances(gIn: Record<string, string | null> | undefined): Partial<Record<BarKey, string | null>> {
+	const g = (gIn ?? {}) as Record<string, string | null>
 	const isLegacy = 'director' in g || 'builder' in g || 'architect' in g
-	const governances: Partial<Record<BarKey, string | null>> = isLegacy
+	return isLegacy
 		? {
 				'director-spec': g.director ?? null,
 				'builder-spec': g.builder ?? null,
@@ -142,9 +158,27 @@ export function migrateEntry(entry: RegistryEntry): RegistryEntry {
 				'architect-spec': g.architect ?? null,
 				'architect-impl': g.architect ?? null,
 			}
-		: { ...(entry.governances ?? {}) }
+		: { ...(g as Partial<Record<BarKey, string | null>>) }
+}
 
-	return { ...entry, roles, governances }
+function migrateSquad(sq: Record<string, unknown>): Squad {
+	const types = (sq['artifact-types'] ?? sq.domains ?? []) as string[]
+	return {
+		'artifact-types': Array.isArray(types) ? types : [],
+		roles: migrateRoles(sq.roles as Record<string, string | null>),
+		governances: migrateGovernances(sq.governances as Record<string, string | null>),
+	}
+}
+
+// Migrate a registry entry on read. The legacy shape carried `domains[]` + a
+// shared `roles{}` + `governances{}` directly on the entry; fold it into one
+// squad. A live registry still on the legacy shape is migrated on encounter
+// (plugin-contract-governance).
+export function migrateEntry(entry: Record<string, unknown>): RegistryEntry {
+	const squads = Array.isArray(entry.squads)
+		? (entry.squads as Record<string, unknown>[]).map(migrateSquad)
+		: [migrateSquad({ 'artifact-types': entry.domains, roles: entry.roles, governances: entry.governances })]
+	return { name: entry.name as string, version: entry.version as string | undefined, squads }
 }
 
 export function parseRegistry(text: string): Registry {
@@ -154,9 +188,9 @@ export function parseRegistry(text: string): Registry {
 	} catch (e) {
 		throw new Error(`registry is not valid JSON: ${(e as Error).message}`)
 	}
-	if (!raw || typeof raw !== 'object' || !Array.isArray((raw as Registry)['sdd-plugins']))
+	if (!raw || typeof raw !== 'object' || !Array.isArray((raw as { 'sdd-plugins': unknown })['sdd-plugins']))
 		throw new Error('registry has no sdd-plugins array')
-	const entries = (raw as Registry)['sdd-plugins'].map(migrateEntry)
+	const entries = (raw as { 'sdd-plugins': Record<string, unknown>[] })['sdd-plugins'].map(migrateEntry)
 	return { 'sdd-plugins': entries }
 }
 
@@ -231,18 +265,22 @@ export function discoverProjectGovernances(root: string): GovCandidate[] {
 
 // ─── plugin matching ────────────────────────────────────────────────────────────
 
-// Match an artifact-type against each plugin's domains[]. Zero matches → all SDD
-// defaults; one → that plugin; two or more → ambiguous (the conductor consults
-// produced-by or asks).
-export function matchPlugin(
+// Match an artifact-type against each plugin's squads: the squad whose
+// artifact-types contains it serves the file. Zero matches → all SDD defaults;
+// one → that squad; two or more distinct plugins → ambiguous (the conductor
+// consults the contested-type choice or asks).
+export function matchSquad(
 	registry: Registry,
 	artifactType: string | null,
-): { entry: RegistryEntry | null; ambiguous: RegistryEntry[] } {
-	if (!artifactType) return { entry: null, ambiguous: [] }
-	const matches = registry['sdd-plugins'].filter((p) => p.domains?.includes(artifactType))
-	if (matches.length === 0) return { entry: null, ambiguous: [] }
-	if (matches.length === 1) return { entry: matches[0], ambiguous: [] }
-	return { entry: null, ambiguous: matches }
+): { match: SquadMatch | null; ambiguous: string[] } {
+	if (!artifactType) return { match: null, ambiguous: [] }
+	const matches: SquadMatch[] = []
+	for (const p of registry['sdd-plugins'])
+		for (const sq of p.squads ?? [])
+			if (sq['artifact-types']?.includes(artifactType)) matches.push({ plugin: p.name, squad: sq })
+	if (matches.length === 0) return { match: null, ambiguous: [] }
+	if (matches.length === 1) return { match: matches[0], ambiguous: [] }
+	return { match: null, ambiguous: [...new Set(matches.map((m) => m.plugin))] }
 }
 
 // ─── bar resolution ─────────────────────────────────────────────────────────────
@@ -255,7 +293,7 @@ export function resolveBar(
 	artifactType: string | null,
 	actor: string,
 	gate: string,
-	ctx: { entry: RegistryEntry | null; projectGovs: GovCandidate[] },
+	ctx: { match: SquadMatch | null; projectGovs: GovCandidate[] },
 ): BarPlan {
 	const key = `${actor}-${gate}` as BarKey
 	const candidates: LoadInstruction[] = []
@@ -267,13 +305,13 @@ export function resolveBar(
 		.sort((a, b) => (a.artifactType === artifactType ? -1 : 0) - (b.artifactType === artifactType ? -1 : 0))
 	for (const c of proj) candidates.push({ source: 'project', kind: 'direct-read', ref: c.path, compose: c.compose })
 
-	// plugin — a named bar in the matched registry entry's governances map.
-	const pluginBar = ctx.entry?.governances?.[key]
-	if (ctx.entry && pluginBar)
+	// plugin — a named bar in the matched squad's governances map.
+	const pluginBar = ctx.match?.squad.governances?.[key]
+	if (ctx.match && pluginBar)
 		candidates.push({
 			source: 'plugin',
 			kind: 'harness-load',
-			ref: `${ctx.entry.name}:${pluginBar}`,
+			ref: `${ctx.match.plugin}:${pluginBar}`,
 			compose: 'union',
 		})
 
@@ -293,20 +331,20 @@ export function resolveBar(
 
 // Resolve the agent that runs a role: a named plugin delegate, the SDD default,
 // or — for a present-but-missing role key — the <plugin>-<role> convention.
-export function resolveAgent(role: RoleKey, entry: RegistryEntry | null): AgentResolution {
-	if (!entry) return { source: 'sdd', ref: SDD_DEFAULT_AGENT[role] }
-	if (role in entry.roles) {
-		const named = entry.roles[role]
+export function resolveAgent(role: RoleKey, match: SquadMatch | null): AgentResolution {
+	if (!match) return { source: 'sdd', ref: SDD_DEFAULT_AGENT[role] }
+	if (role in match.squad.roles) {
+		const named = match.squad.roles[role]
 		if (named) return { source: 'plugin', ref: named }
 		return { source: 'sdd', ref: SDD_DEFAULT_AGENT[role] } // explicit null = SDD default
 	}
-	return { source: 'plugin', ref: `${entry.name}-${role}` } // omitted = convention
+	return { source: 'plugin', ref: `${match.plugin}-${role}` } // omitted = convention
 }
 
 export function resolveRole(
 	role: RoleKey,
 	artifactType: string | null,
-	ctx: { entry: RegistryEntry | null; projectGovs: GovCandidate[] },
+	ctx: { match: SquadMatch | null; projectGovs: GovCandidate[] },
 ): RolePlan {
 	const loadout = ROLE_LOADOUT[role]
 	const fixed: LoadInstruction[] = loadout.fixed.map((name) => ({
@@ -319,24 +357,24 @@ export function resolveRole(
 		const [actor, gate] = b.split('-')
 		return resolveBar(artifactType, actor, gate, ctx)
 	})
-	return { role, agent: resolveAgent(role, ctx.entry), fixed, bars }
+	return { role, agent: resolveAgent(role, ctx.match), fixed, bars }
 }
 
 export function buildLoadPlan(artifactType: string | null, registry: Registry, projectGovs: GovCandidate[]): LoadPlan {
-	const { entry, ambiguous } = matchPlugin(registry, artifactType)
+	const { match, ambiguous } = matchSquad(registry, artifactType)
 	if (ambiguous.length > 0)
 		return {
 			artifactType,
 			status: 'needs-input',
 			plugin: null,
-			ambiguous: ambiguous.map((p) => p.name),
+			ambiguous,
 			roles: [],
 		}
-	const ctx = { entry, projectGovs }
+	const ctx = { match, projectGovs }
 	return {
 		artifactType,
 		status: 'complete',
-		plugin: entry?.name ?? null,
+		plugin: match?.plugin ?? null,
 		ambiguous: [],
 		roles: ROLE_KEYS.map((r) => resolveRole(r, artifactType, ctx)),
 	}
@@ -345,24 +383,35 @@ export function buildLoadPlan(artifactType: string | null, registry: Registry, p
 // ─── registry structural validation (the no-artifact-type CLI gate) ─────────────
 
 // Validate the registry is well-formed and unambiguous: known role/governance
-// keys, and no artifact-type claimed by two plugins (which would force every spec
-// of that type into needs-input).
+// keys, a type in at most one squad per plugin, and no artifact-type claimed by
+// two plugins (which would force every spec of that type into needs-input).
 export function validateRegistry(registry: Registry): string[] {
 	const v: string[] = []
-	const domainOwners = new Map<string, string[]>()
+	const typeOwners = new Map<string, string[]>()
 	for (const entry of registry['sdd-plugins']) {
 		const where = entry.name || '<unnamed plugin>'
 		if (!entry.name) v.push('an sdd-plugins entry has no name')
-		if (!Array.isArray(entry.domains)) v.push(`${where}: domains is not an array`)
-		for (const r of Object.keys(entry.roles ?? {}))
-			if (!ROLE_KEYS.includes(r as RoleKey)) v.push(`${where}: unknown role key "${r}"`)
-		for (const k of Object.keys(entry.governances ?? {}))
-			if (!BAR_KEYS.includes(k as BarKey)) v.push(`${where}: unknown governance key "${k}"`)
-		for (const d of entry.domains ?? []) domainOwners.set(d, [...(domainOwners.get(d) ?? []), where])
+		if (!Array.isArray(entry.squads)) {
+			v.push(`${where}: squads is not an array`)
+			continue
+		}
+		const seenTypes = new Set<string>()
+		for (const sq of entry.squads) {
+			if (!Array.isArray(sq['artifact-types'])) v.push(`${where}: a squad's artifact-types is not an array`)
+			for (const r of Object.keys(sq.roles ?? {}))
+				if (!ROLE_KEYS.includes(r as RoleKey)) v.push(`${where}: unknown role key "${r}"`)
+			for (const k of Object.keys(sq.governances ?? {}))
+				if (!BAR_KEYS.includes(k as BarKey)) v.push(`${where}: unknown governance key "${k}"`)
+			for (const t of sq['artifact-types'] ?? []) {
+				if (seenTypes.has(t)) v.push(`${where}: artifact-type "${t}" appears in more than one squad`)
+				seenTypes.add(t)
+			}
+		}
+		for (const t of seenTypes) typeOwners.set(t, [...(typeOwners.get(t) ?? []), where])
 	}
-	for (const [domain, owners] of domainOwners)
+	for (const [t, owners] of typeOwners)
 		if (owners.length > 1)
-			v.push(`artifact-type "${domain}" is claimed by ${owners.length} plugins (${owners.join(', ')}) — ambiguous`)
+			v.push(`artifact-type "${t}" is claimed by ${owners.length} plugins (${owners.join(', ')}) — ambiguous`)
 	return v
 }
 

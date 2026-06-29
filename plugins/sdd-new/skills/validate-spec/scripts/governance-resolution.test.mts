@@ -8,40 +8,47 @@ import {
 	discoverProjectGovernances,
 	type GovCandidate,
 	main,
-	matchPlugin,
+	matchSquad,
 	migrateEntry,
 	parseGovernanceFrontmatter,
 	parseRegistry,
 	type Registry,
-	type RegistryEntry,
 	resolveAgent,
 	resolveBar,
 	resolveRole,
+	type Squad,
+	type SquadMatch,
 	validateRegistry,
 } from './governance-resolution.mts'
 
 // ─── migrate-on-read ────────────────────────────────────────────────────────────
 
+test('migrateEntry folds a legacy flat entry into one squad', () => {
+	const e = migrateEntry({ name: 'x', domains: ['skill', 'command'], roles: {}, governances: {} })
+	assert.equal(e.squads.length, 1)
+	assert.deepEqual(e.squads[0]['artifact-types'], ['skill', 'command'])
+})
+
 test('migrateEntry renames plan-producer to solution-producer', () => {
 	const e = migrateEntry({
 		name: 'x',
 		domains: ['skill'],
-		roles: { 'plan-producer': null, 'spec-judge': 'x-judge' } as RegistryEntry['roles'],
+		roles: { 'plan-producer': null, 'spec-judge': 'x-judge' },
 		governances: {},
 	})
-	assert.equal('plan-producer' in e.roles, false)
-	assert.equal('solution-producer' in e.roles, true)
-	assert.equal(e.roles['spec-judge'], 'x-judge')
+	assert.equal('plan-producer' in e.squads[0].roles, false)
+	assert.equal('solution-producer' in e.squads[0].roles, true)
+	assert.equal(e.squads[0].roles['spec-judge'], 'x-judge')
 })
 
 test('migrateEntry keeps an existing solution-producer over a legacy plan-producer', () => {
 	const e = migrateEntry({
 		name: 'x',
 		domains: [],
-		roles: { 'plan-producer': 'old', 'solution-producer': 'new' } as RegistryEntry['roles'],
+		roles: { 'plan-producer': 'old', 'solution-producer': 'new' },
 		governances: {},
 	})
-	assert.equal(e.roles['solution-producer'], 'new')
+	assert.equal(e.squads[0].roles['solution-producer'], 'new')
 })
 
 test('migrateEntry expands flat governances to the Model-B keys', () => {
@@ -49,9 +56,9 @@ test('migrateEntry expands flat governances to the Model-B keys', () => {
 		name: 'x',
 		domains: [],
 		roles: {},
-		governances: { director: 'd', builder: 'b', architect: null } as RegistryEntry['governances'],
+		governances: { director: 'd', builder: 'b', architect: null },
 	})
-	assert.deepEqual(e.governances, {
+	assert.deepEqual(e.squads[0].governances, {
 		'director-spec': 'd',
 		'builder-spec': 'b',
 		'builder-impl': 'b',
@@ -60,7 +67,7 @@ test('migrateEntry expands flat governances to the Model-B keys', () => {
 	})
 })
 
-test('migrateEntry leaves an already-Model-B entry unchanged', () => {
+test('migrateEntry leaves an already-squads entry unchanged in shape', () => {
 	const g = {
 		'director-spec': null,
 		'builder-spec': 'b',
@@ -68,8 +75,21 @@ test('migrateEntry leaves an already-Model-B entry unchanged', () => {
 		'architect-spec': null,
 		'architect-impl': null,
 	}
-	const e = migrateEntry({ name: 'x', domains: [], roles: {}, governances: { ...g } })
-	assert.deepEqual(e.governances, g)
+	const e = migrateEntry({
+		name: 'x',
+		squads: [{ 'artifact-types': ['skill'], roles: {}, governances: { ...g } }],
+	})
+	assert.equal(e.squads.length, 1)
+	assert.deepEqual(e.squads[0].governances, g)
+})
+
+test('migrateEntry migrates per-squad roles and governances on a squads entry', () => {
+	const e = migrateEntry({
+		name: 'x',
+		squads: [{ 'artifact-types': ['skill'], roles: { 'plan-producer': null }, governances: { director: 'd' } }],
+	})
+	assert.equal('solution-producer' in e.squads[0].roles, true)
+	assert.equal('director-spec' in e.squads[0].governances, true)
 })
 
 test('parseRegistry parses and migrates every entry', () => {
@@ -79,8 +99,8 @@ test('parseRegistry parses and migrates every entry', () => {
 		],
 	})
 	const r = parseRegistry(text)
-	assert.equal('solution-producer' in r['sdd-plugins'][0].roles, true)
-	assert.equal('director-spec' in r['sdd-plugins'][0].governances, true)
+	assert.equal('solution-producer' in r['sdd-plugins'][0].squads[0].roles, true)
+	assert.equal('director-spec' in r['sdd-plugins'][0].squads[0].governances, true)
 })
 
 test('parseRegistry throws on malformed JSON', () => {
@@ -127,50 +147,58 @@ test('parseGovernanceFrontmatter returns null without an actor/gate', () => {
 	assert.equal(parseGovernanceFrontmatter(text), null)
 })
 
-// ─── plugin matching ─────────────────────────────────────────────────────────────
+// ─── squad matching ──────────────────────────────────────────────────────────────
 
 const REG: Registry = {
 	'sdd-plugins': [
-		{ name: 'aces', domains: ['skill', 'command'], roles: { 'spec-judge': 'aces-spec-validator' }, governances: {} },
-		{ name: 'quill', domains: ['guide'], roles: {}, governances: {} },
+		{
+			name: 'aces',
+			squads: [
+				{ 'artifact-types': ['skill', 'command'], roles: { 'spec-judge': 'aces-spec-validator' }, governances: {} },
+			],
+		},
+		{ name: 'quill', squads: [{ 'artifact-types': ['guide'], roles: {}, governances: {} }] },
 	],
 }
 
-test('matchPlugin returns the single matching plugin', () => {
-	const { entry, ambiguous } = matchPlugin(REG, 'skill')
-	assert.equal(entry?.name, 'aces')
+test('matchSquad returns the single matching squad', () => {
+	const { match, ambiguous } = matchSquad(REG, 'skill')
+	assert.equal(match?.plugin, 'aces')
+	assert.deepEqual(match?.squad['artifact-types'], ['skill', 'command'])
 	assert.equal(ambiguous.length, 0)
 })
 
-test('matchPlugin returns no entry for an unmatched artifact-type', () => {
-	const { entry, ambiguous } = matchPlugin(REG, 'unknown')
-	assert.equal(entry, null)
+test('matchSquad returns no match for an unmatched artifact-type', () => {
+	const { match, ambiguous } = matchSquad(REG, 'unknown')
+	assert.equal(match, null)
 	assert.equal(ambiguous.length, 0)
 })
 
-test('matchPlugin returns no entry for a null artifact-type', () => {
-	assert.equal(matchPlugin(REG, null).entry, null)
+test('matchSquad returns no match for a null artifact-type', () => {
+	assert.equal(matchSquad(REG, null).match, null)
 })
 
-test('matchPlugin flags two plugins claiming the same artifact-type', () => {
+test('matchSquad flags two plugins claiming the same artifact-type', () => {
 	const reg: Registry = {
 		'sdd-plugins': [
-			{ name: 'a', domains: ['skill'], roles: {}, governances: {} },
-			{ name: 'b', domains: ['skill'], roles: {}, governances: {} },
+			{ name: 'a', squads: [{ 'artifact-types': ['skill'], roles: {}, governances: {} }] },
+			{ name: 'b', squads: [{ 'artifact-types': ['skill'], roles: {}, governances: {} }] },
 		],
 	}
-	const { entry, ambiguous } = matchPlugin(reg, 'skill')
-	assert.equal(entry, null)
-	assert.deepEqual(
-		ambiguous.map((p) => p.name),
-		['a', 'b'],
-	)
+	const { match, ambiguous } = matchSquad(reg, 'skill')
+	assert.equal(match, null)
+	assert.deepEqual(ambiguous, ['a', 'b'])
 })
 
 // ─── resolveBar — precedence + compose ──────────────────────────────────────────
 
+const squadMatch = (plugin: string, governances: Squad['governances'], roles: Squad['roles'] = {}): SquadMatch => ({
+	plugin,
+	squad: { 'artifact-types': ['skill'], roles, governances },
+})
+
 test('resolveBar floors to the sdd default when nothing overrides', () => {
-	const plan = resolveBar(null, 'director', 'spec', { entry: null, projectGovs: [] })
+	const plan = resolveBar(null, 'director', 'spec', { match: null, projectGovs: [] })
 	assert.equal(plan.key, 'director-spec')
 	assert.deepEqual(plan.instructions, [
 		{ source: 'sdd', kind: 'harness-load', ref: 'sdd:director-spec-governance', compose: 'union' },
@@ -181,13 +209,8 @@ test('resolveBar unions project > plugin > sdd', () => {
 	const projectGovs: GovCandidate[] = [
 		{ path: '.agents/governances/d.md', artifactType: null, actor: 'director', gate: 'spec', compose: 'union' },
 	]
-	const entry: RegistryEntry = {
-		name: 'aces',
-		domains: ['skill'],
-		roles: {},
-		governances: { 'director-spec': 'aces-dir' },
-	}
-	const plan = resolveBar('skill', 'director', 'spec', { entry, projectGovs })
+	const match = squadMatch('aces', { 'director-spec': 'aces-dir' })
+	const plan = resolveBar('skill', 'director', 'spec', { match, projectGovs })
 	assert.deepEqual(
 		plan.instructions.map((i) => i.source),
 		['project', 'plugin', 'sdd'],
@@ -199,13 +222,8 @@ test('resolveBar — a project replace supersedes plugin and sdd', () => {
 	const projectGovs: GovCandidate[] = [
 		{ path: '.agents/governances/d.md', artifactType: null, actor: 'director', gate: 'spec', compose: 'replace' },
 	]
-	const entry: RegistryEntry = {
-		name: 'aces',
-		domains: ['skill'],
-		roles: {},
-		governances: { 'director-spec': 'aces-dir' },
-	}
-	const plan = resolveBar('skill', 'director', 'spec', { entry, projectGovs })
+	const match = squadMatch('aces', { 'director-spec': 'aces-dir' })
+	const plan = resolveBar('skill', 'director', 'spec', { match, projectGovs })
 	assert.deepEqual(
 		plan.instructions.map((i) => i.source),
 		['project'],
@@ -217,7 +235,7 @@ test('resolveBar ranks an artifact-type-specific project bar above a typeless on
 		{ path: '.agents/governances/typeless.md', artifactType: null, actor: 'builder', gate: 'spec', compose: 'union' },
 		{ path: '.agents/governances/typed.md', artifactType: 'skill', actor: 'builder', gate: 'spec', compose: 'union' },
 	]
-	const plan = resolveBar('skill', 'builder', 'spec', { entry: null, projectGovs })
+	const plan = resolveBar('skill', 'builder', 'spec', { match: null, projectGovs })
 	assert.equal(plan.instructions[0].ref, '.agents/governances/typed.md')
 	assert.equal(plan.instructions[1].ref, '.agents/governances/typeless.md')
 })
@@ -226,7 +244,7 @@ test('resolveBar ignores a project bar for a different gate', () => {
 	const projectGovs: GovCandidate[] = [
 		{ path: '.agents/governances/d.md', artifactType: null, actor: 'builder', gate: 'impl', compose: 'union' },
 	]
-	const plan = resolveBar('skill', 'builder', 'spec', { entry: null, projectGovs })
+	const plan = resolveBar('skill', 'builder', 'spec', { match: null, projectGovs })
 	assert.deepEqual(
 		plan.instructions.map((i) => i.source),
 		['sdd'],
@@ -235,35 +253,30 @@ test('resolveBar ignores a project bar for a different gate', () => {
 
 // ─── resolveAgent ────────────────────────────────────────────────────────────────
 
-test('resolveAgent returns the SDD default agent when no plugin matches', () => {
+test('resolveAgent returns the SDD default agent when no squad matches', () => {
 	assert.deepEqual(resolveAgent('spec-judge', null), { source: 'sdd', ref: 'sdd-spec-judge' })
 	assert.deepEqual(resolveAgent('spec-producer', null), { source: 'sdd', ref: null })
 })
 
 test('resolveAgent uses a named plugin delegate', () => {
-	const entry: RegistryEntry = {
-		name: 'aces',
-		domains: ['skill'],
-		roles: { 'spec-judge': 'aces-spec-validator' },
-		governances: {},
-	}
-	assert.deepEqual(resolveAgent('spec-judge', entry), { source: 'plugin', ref: 'aces-spec-validator' })
+	const match = squadMatch('aces', {}, { 'spec-judge': 'aces-spec-validator' })
+	assert.deepEqual(resolveAgent('spec-judge', match), { source: 'plugin', ref: 'aces-spec-validator' })
 })
 
 test('resolveAgent treats an explicit null role as the SDD default', () => {
-	const entry: RegistryEntry = { name: 'aces', domains: ['skill'], roles: { 'impl-judge': null }, governances: {} }
-	assert.deepEqual(resolveAgent('impl-judge', entry), { source: 'sdd', ref: 'sdd-implementer' })
+	const match = squadMatch('aces', {}, { 'impl-judge': null })
+	assert.deepEqual(resolveAgent('impl-judge', match), { source: 'sdd', ref: 'sdd-implementer' })
 })
 
 test('resolveAgent falls back to the <plugin>-<role> convention for a missing role key', () => {
-	const entry: RegistryEntry = { name: 'quill', domains: ['guide'], roles: {}, governances: {} }
-	assert.deepEqual(resolveAgent('impl-producer', entry), { source: 'plugin', ref: 'quill-impl-producer' })
+	const match = squadMatch('quill', {}, {})
+	assert.deepEqual(resolveAgent('impl-producer', match), { source: 'plugin', ref: 'quill-impl-producer' })
 })
 
 // ─── resolveRole — fixed + bars per the contract ────────────────────────────────
 
 test('resolveRole gives the spec-judge its fixed-universal + three -spec bars', () => {
-	const plan = resolveRole('spec-judge', null, { entry: null, projectGovs: [] })
+	const plan = resolveRole('spec-judge', null, { match: null, projectGovs: [] })
 	assert.deepEqual(
 		plan.fixed.map((i) => i.ref),
 		[
@@ -280,7 +293,7 @@ test('resolveRole gives the spec-judge its fixed-universal + three -spec bars', 
 })
 
 test('resolveRole gives the impl-judge the builder/architect impl bars', () => {
-	const plan = resolveRole('impl-judge', null, { entry: null, projectGovs: [] })
+	const plan = resolveRole('impl-judge', null, { match: null, projectGovs: [] })
 	assert.deepEqual(
 		plan.bars.map((b) => b.key),
 		['builder-impl', 'architect-impl'],
@@ -309,8 +322,8 @@ test('buildLoadPlan binds the matched plugin', () => {
 test('buildLoadPlan returns needs-input on an ambiguous artifact-type', () => {
 	const reg: Registry = {
 		'sdd-plugins': [
-			{ name: 'a', domains: ['skill'], roles: {}, governances: {} },
-			{ name: 'b', domains: ['skill'], roles: {}, governances: {} },
+			{ name: 'a', squads: [{ 'artifact-types': ['skill'], roles: {}, governances: {} }] },
+			{ name: 'b', squads: [{ 'artifact-types': ['skill'], roles: {}, governances: {} }] },
 		],
 	}
 	const plan = buildLoadPlan('skill', reg, [])
@@ -327,7 +340,9 @@ test('validateRegistry passes a clean registry', () => {
 
 test('validateRegistry flags an unknown role key', () => {
 	const reg: Registry = {
-		'sdd-plugins': [{ name: 'x', domains: [], roles: { bogus: null } as RegistryEntry['roles'], governances: {} }],
+		'sdd-plugins': [
+			{ name: 'x', squads: [{ 'artifact-types': [], roles: { bogus: null } as Squad['roles'], governances: {} }] },
+		],
 	}
 	assert.ok(validateRegistry(reg).some((m) => /unknown role key "bogus"/.test(m)))
 })
@@ -335,20 +350,38 @@ test('validateRegistry flags an unknown role key', () => {
 test('validateRegistry flags an unknown governance key', () => {
 	const reg: Registry = {
 		'sdd-plugins': [
-			{ name: 'x', domains: [], roles: {}, governances: { director: null } as RegistryEntry['governances'] },
+			{
+				name: 'x',
+				squads: [{ 'artifact-types': [], roles: {}, governances: { director: null } as Squad['governances'] }],
+			},
 		],
 	}
 	assert.ok(validateRegistry(reg).some((m) => /unknown governance key "director"/.test(m)))
 })
 
-test('validateRegistry flags a domain claimed by two plugins', () => {
+test('validateRegistry flags an artifact-type claimed by two plugins', () => {
 	const reg: Registry = {
 		'sdd-plugins': [
-			{ name: 'a', domains: ['skill'], roles: {}, governances: {} },
-			{ name: 'b', domains: ['skill'], roles: {}, governances: {} },
+			{ name: 'a', squads: [{ 'artifact-types': ['skill'], roles: {}, governances: {} }] },
+			{ name: 'b', squads: [{ 'artifact-types': ['skill'], roles: {}, governances: {} }] },
 		],
 	}
 	assert.ok(validateRegistry(reg).some((m) => /claimed by 2 plugins/.test(m)))
+})
+
+test('validateRegistry flags an artifact-type appearing in two squads of one plugin', () => {
+	const reg: Registry = {
+		'sdd-plugins': [
+			{
+				name: 'x',
+				squads: [
+					{ 'artifact-types': ['skill'], roles: {}, governances: {} },
+					{ 'artifact-types': ['skill'], roles: {}, governances: {} },
+				],
+			},
+		],
+	}
+	assert.ok(validateRegistry(reg).some((m) => /appears in more than one squad/.test(m)))
 })
 
 // ─── discoverProjectGovernances + main ──────────────────────────────────────────
