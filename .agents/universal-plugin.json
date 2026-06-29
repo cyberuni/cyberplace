@@ -3,40 +3,48 @@
 		{
 			"name": "aces",
 			"version": "0.7.0",
-			"domains": ["skill", "subagent", "command", "agents-section"],
-			"roles": {
-				"spec-producer": "aces-scenario-writer",
-				"solution-producer": null,
-				"spec-judge": "aces-spec-validator",
-				"impl-producer": null,
-				"impl-judge": "aces-implementer"
-			},
-			"governances": {
-				"director-spec": null,
-				"builder-spec": null,
-				"builder-impl": null,
-				"architect-spec": null,
-				"architect-impl": null
-			}
+			"squads": [
+				{
+					"artifact-types": ["skill", "subagent", "command", "agents-section"],
+					"roles": {
+						"spec-producer": "aces-scenario-writer",
+						"solution-producer": null,
+						"spec-judge": "aces-spec-validator",
+						"impl-producer": null,
+						"impl-judge": "aces-implementer"
+					},
+					"governances": {
+						"director-spec": null,
+						"builder-spec": null,
+						"builder-impl": null,
+						"architect-spec": null,
+						"architect-impl": null
+					}
+				}
+			]
 		},
 		{
 			"name": "quill",
 			"version": "0.7.0",
-			"domains": ["documentation", "guide", "tutorial", "article", "reference"],
-			"roles": {
-				"spec-producer": "quill-writer",
-				"solution-producer": null,
-				"spec-judge": null,
-				"impl-producer": "quill-doc-writer",
-				"impl-judge": "quill-implementer"
-			},
-			"governances": {
-				"director-spec": null,
-				"builder-spec": null,
-				"builder-impl": null,
-				"architect-spec": null,
-				"architect-impl": null
-			}
+			"squads": [
+				{
+					"artifact-types": ["documentation", "guide", "tutorial", "article", "reference"],
+					"roles": {
+						"spec-producer": "quill-writer",
+						"solution-producer": null,
+						"spec-judge": null,
+						"impl-producer": "quill-doc-writer",
+						"impl-judge": "quill-implementer"
+					},
+					"governances": {
+						"director-spec": null,
+						"builder-spec": null,
+						"builder-impl": null,
+						"architect-spec": null,
+						"architect-impl": null
+					}
+				}
+			]
 		}
 	]
 }
