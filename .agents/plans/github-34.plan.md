@@ -77,11 +77,14 @@ todos:
   - id: impl-judge-independence
     content: "ADR-0016 — impl-judge verification independence (landed 2026-06-28, spec-only; surfaced by a user design question during Explore). The impl-judge verdict is now LAYERED + contract-independent: (b) re-derive the oracle from each frozen scenario, never trust the producer's assertions; (c) leash-scoped behavioral-exercise/mutation backstop on high-blast-radius scenarios; (a) producer green run = pre-filter, never the verdict; prefer DIRECT .feature execution over a unit-test mapping (faithful mapping where unavoidable); judge model != producer model. Grounded by two adversarial research sweeps: dossier .research/impl-judge-independence/ -> survey docs/research/2026-06-impl-judge-independence.md <- artifacts/adr/0016. LANDED in mission/deliver/impl-judge (README+.feature, b4eadb7/d0e4f81), mission/deliver/impl-producer + mission/conductor impl gate + autonomy-rubric cross-link (ad8b90b). Memory project_sdd_impl_judge_independence. IMPL (the sdd-implementer agent built to this model) is part of core-agents remainder. AGENTS.md research-path doc-drift fixed (e5344f2). verify green."
     status: completed
+  - id: artifact-type-model
+    content: "Sub-mission — the artifact-type model. Universal squad key; squads[] registry (shape D, folds domains[]+roles+governances); convention-first per-file resolution + optional .agents/sdd/artifact-types.toml TOML tiebreaker; dropped root artifact-types field (resolved-not-stored); domain*->artifact-type naming sweep. LANDED ea20694/9f5d1a9/0c77bb4/f3a724c/3837f9b/debc7f8/91fae26/77a8f8f/f1fa716/6022837; pnpm verify green (13/13); plan ~/.claude/plans/a-file-s-artifact-type-is-floofy-quilt.md; memory project_sdd_artifact_type_model. OPEN impl-detail (out of scope): the contested-type->plugin disambiguation PERSISTENCE isn't built — governance-resolution.mts returns needs-input but doesn't yet write the choice to .agents/sdd; sub-marketplace R2 (supported-artifacts publish side) still deferred."
+    status: completed
   - id: dogfood-readiness
-    content: "Run a REAL Explore pass over .agents/specs/sdd through the new sdd-new skills (the self-host's point). BLOCKER first: the cold sdd-spec-judge agent was created this session AFTER plugin load, so subagent_type sdd:sdd-spec-judge is NOT spawnable until a session/plugin RELOAD — verify on restart (manifest already declares agents:./agents; marketplace mounts sdd<-plugins/sdd-new). Then root-frontmatter (root spec.md needs status:draft+artifact-types+strategy) so the tree is a proper draft. Then a SCOPED dogfood of one already-specced capability is viable (start-mission inline producer + cold sdd-spec-judge + the 3 .mts gates from Bash). FULL CR-wide explore NOT ready: acceptance/ e2e suite unbuilt + sub-corpus/formation/doctrine/plugin specs pending. Usable WITHOUT reload: start-mission/validate-spec skills, all producer+bar governances, governance-resolution/check-spec-state/check-feature .mts, inline producers, generic build-to-learn builder."
-    status: pending
+    content: "Run a REAL Explore pass over .agents/specs/sdd through the sdd-new skills (the self-host's point). BLOCKER CLEARED: the cold sdd:sdd-spec-judge is registered + spawnable — a SCOPED dogfood over mission/conductor ran end-to-end (6022837 fixed its one finding; the judge also flagged a PRE-EXISTING conductor hard-floor scenario gap, out of scope). Scoped dogfood is viable now (start-mission inline producer + cold sdd-spec-judge + the 3 .mts gates from Bash). root-frontmatter (next) makes a full draft->approved gate runnable. FULL CR-wide explore still NOT ready: acceptance/ e2e suite unbuilt + sub-corpus/formation/doctrine/plugin specs pending."
+    status: in_progress
   - id: root-frontmatter
-    content: "Explore — add project-spec lifecycle frontmatter to root spec.md (status: draft, artifact-types, aligned: false, strategy) per design/lifecycle-model.md. The root ## TODO was REMOVED from spec.md (it belonged to the CR, not the durable spec) and rolled into this plan: item 1 'fill each capability folder' = the sub-* todos; item 2 'build the behavior suite' = colocated unit suites (per sub-mission) + the acceptance/ e2e suite (A–F seed themes, still unbuilt — see Per-unit suite organization)."
+    content: "Explore (NEXT) — add project-spec lifecycle frontmatter to root spec.md per design/lifecycle-model.md: status: draft, aligned: false, spec-layout{strategy: capability-first, location, placement-map: '#capability-map' (the body's ## Capability map IS the placement map)}, strategy{leash, by, approach}. Do NOT add artifact-types — it was DROPPED (3837f9b; resolved per file, not stored). The root ## TODO was removed (belonged to the CR); item 1 'fill each capability folder' = the sub-* todos; item 2 'build the behavior suite' = colocated unit suites + the acceptance/ e2e suite (A–F seed themes, still unbuilt)."
     status: pending
   - id: spec-gate
     content: "Spec gate (Draft -> Approved) — HAND-RUN in the main loop: judge the suite against authoring/suite-format/ + authoring criteria; never advance with judge failures/open markers/misaligned suite; on approve freeze touched .feature files, record per-CR gate ledger line, set status: approved."
@@ -147,22 +150,30 @@ spec does not exist yet and is the real artifact owed. Adjacent OPEN: CR↔plan 
 > `e5344f2` (ADR-0016). `pnpm verify` green (13/13). Earlier reshape (`5af5be7` `13bbe4a` `1bdf8bb`
 > `fa8a00d` `bf7d536` `7fd8b40`) + `combat-log-location` are settled below.
 
-**▶ NEXT ACTION (first thing after restart) — REGISTER THE NEW COLD JUDGE.** A `plugins/sdd-new/
-agents/` dir was created **this session** (`83243ee`) holding `sdd-spec-judge.md`; the sdd plugin is
-mounted from `plugins/sdd-new` (`.claude-plugin/marketplace.json:19`) and its manifest already
-declares `"agents": "./agents"` — but the harness registered the plugin **at startup before that dir
-existed**, so `subagent_type: sdd:sdd-spec-judge` is **NOT spawnable in the paused session**. **On
-restart, verify it: spawn a trivial `sdd:sdd-spec-judge` (or check the agent list).** Once it
-resolves, the cold spec-judge step of explore can run the clean (registered) way instead of a
-`general-purpose`+persona workaround.
+> **Session update (2026-06-28, late evening) — the artifact-type model sub-mission LANDED.**
+> Universal squad key + **squads[] registry (shape D)** + convention-first per-file resolution +
+> optional **`.agents/sdd/artifact-types.toml`** tiebreaker + **dropped** the root `artifact-types`
+> frontmatter field + the **`domain*→artifact-type` naming sweep**. Commits on `next`: `ea20694`
+> `9f5d1a9` `0c77bb4` `f3a724c` `3837f9b` `debc7f8` `91fae26` `77a8f8f` `f1fa716` `6022837`.
+> `pnpm verify` green (13/13). Plan `~/.claude/plans/a-file-s-artifact-type-is-floofy-quilt.md`;
+> memory `project_sdd_artifact_type_model`. The cold `sdd:sdd-spec-judge` is **registered and
+> spawnable — the prior restart blocker is CLEARED**; a scoped dogfood over `mission/conductor`
+> ran end-to-end (`6022837` fixed its one finding).
 
-**THEN — readiness gaps to run a real Explore pass over this `.agents/specs/sdd` tree (dogfood):**
+**▶ NEXT ACTION — `root-frontmatter`.** Add project-spec lifecycle frontmatter to the root
+`.agents/specs/sdd/spec.md` per `design/lifecycle-model.md`: `status: draft`, `aligned: false`,
+the `spec-layout` block (strategy `capability-first`; location; the body's line-84 `## Capability
+map` **is** the placement map → `placement-map: "#capability-map"`), and a run-level `strategy`
+block (`leash` / `by` / `approach[]`). **Do NOT add `artifact-types`** — it was **dropped** (`3837f9b`;
+resolved per file, never stored). Then `check-spec-state.mts` validates a real draft tuple and a
+full draft→approved gate becomes runnable.
 
-1. **`root-frontmatter` (Tier-3 #12, but needed to dogfood).** Root `spec.md` still has **no**
-   lifecycle frontmatter (`status: draft`, `artifact-types`, `aligned: false`, `strategy`) per
-   `design/lifecycle-model.md`. Add it so the tree is a proper `draft` a spec gate can act on.
-   `check-spec-state.mts` currently passes only because empty-status raises no violation — that is
-   not the same as a valid draft.
+**THEN — widen the dogfood / fill gaps:**
+
+0. **Pre-existing conductor coverage gap** (surfaced by the dogfood, OUT of the artifact-type CR's
+   scope): `mission/conductor`'s in-flight hard-floor behaviors (Clearance / Compatibility /
+   Conflict + detail-adjustment) are in prose but have **no scenarios** → the cold judge fails
+   Director+Builder. Fill them in `conductor.feature` if that unit must pass its gate.
 2. **Then a SCOPED dogfood is viable now** without the rest of the tree: pick one already-specced
    capability (e.g. `authoring/spec-producer` or `gateway/`), load `sdd:start-mission`, author the
    inline producer, and run the cold `sdd:sdd-spec-judge` over its `spec.md` + `.feature`. Drive the
