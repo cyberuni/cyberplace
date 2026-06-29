@@ -4,30 +4,36 @@ overview: "CR against the sdd project spec. Implement corpus/discovery's concret
 todos:
   - id: script
     content: "Explore (build-to-learn): write scripts/discover-specs.mts (3-location scan, status filter, frontmatter-only parse, TOON output) + discover-specs.test.mts (node:test). Green = the behavior oracle."
-    status: pending
+    status: completed
   - id: discovery-spec
     content: "Explore: rewrite corpus/discovery/README.md + re-open & rewrite discovery.feature to the location-bounded recognition + the TOON-returning engine. Keep status-shape filter + name-resolution-over-the-list."
-    status: pending
+    status: completed
   - id: spec-gate
     content: "Spec gate: review discovery spec+feature against suite/spec-format bars; freeze discovery.feature (@frozen); record gate line in .agents/specs/sdd/ledger.jsonl."
-    status: pending
+    status: completed
   - id: skill-wrapper
     content: "Deliver: SKILL.md (user-invocable:false, internal:true) + README.md for discover-specs, naming the script run-line (plan-retirement pattern)."
-    status: pending
+    status: completed
   - id: reconcile
     content: "Deliver: reconcile the narrowed recognition rule across corpus/README.md (discovery row), lifecycle-governance/SKILL.md (recognition paragraph), and amend ADR-0017."
-    status: pending
+    status: completed
   - id: gateway-wire
     content: "Deliver: wire the gateway (`sdd` skill SKILL.md) to use discover-specs for the status scan (Help me choose / surfacing); note in gateway README. No gateway.feature re-open (consistent with frozen contract)."
-    status: pending
+    status: completed
   - id: verify-commit
     content: "Run node:test + pnpm verify (specs); commit per concern (skill+spec, reconcile, gateway)."
-    status: pending
+    status: completed
 ---
 
 ## NEXT
 
-Start with `script` — write discover-specs.mts + its node:test, get green. That proves the behavior the discovery spec will freeze.
+▶ MISSION COMPLETE (2026-06-29) — reconciled-forward from git + ledger. Spec gate landed twice
+(ledger seq 2, then seq 3 after the cold impl-judge prompted a re-spec adding project name +
+name-source + deterministic resolve-by-name); `corpus/discovery/discovery.feature` frozen. Engine +
+node:test green; gateway + start-mission wired to discover-specs; recognition narrowed to the three
+`.agents/spec(s)` locations + status filter (ADR-0017 amended). Commits `58540fa` `c66192c`
+`bcc0108` `88e517f` `3258765` `1a50f8c`. Nothing to resume — awaiting doctrine-distill +
+`plan-retirement` (same as discover-plans).
 
 ## CR
 
