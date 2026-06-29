@@ -47,9 +47,9 @@ sibling. They are never the same file.
 
 One JSON object per line (JSON Lines). Every line carries a **CR-scoped `seq`** (append order
 *within its CR*, restarting per CR — never a global counter), a **write-time UTC `ts`**, an optional
-pseudonymous **`handle`**, and a `kind`. Four kinds, split by tier: `report` / `correction` → the
-combat log; `gate` / `strategy` → the ledger. Every line carries an optional `cr` (one ledger now
-spans many CRs against the one durable spec; outer-loop `strategy` lines may omit it).
+pseudonymous **`handle`**, and a `kind`. Five kinds, split by tier: `report` / `correction` / `halt`
+→ the combat log; `gate` / `strategy` → the ledger. Every line carries an optional `cr` (one ledger
+now spans many CRs against the one durable spec; outer-loop `strategy` lines may omit it).
 
 **Safe-to-publish floor (committed-record rule).** The combat log is committed → every line is
 **published to git history permanently** ("deleted at retro" is tree-only) and a distilled line may
@@ -106,6 +106,21 @@ the ledger's `strategy` count.
   Council** (a producer/judge/conductor never edits the enum). An **absent or off-enum `cause` fails
   closed** (it breaks cross-mission matchability).
 
+### `halt` — a mid-flight stop, not at a gate (combat log)
+
+The agent halts mid-phase (a hard floor, an input it cannot supply, a blast radius it will not cross).
+A gate-time stop is a `gate` line (`verdict: pause`); this `halt` line is its mid-flight twin, so *"why I
+halted"* is as durable as *"why I went"*. **Flush it to the committed log during the mission** — the
+doctrine loop reads only the committed log post-merge.
+
+```jsonl
+{"seq": 5, "ts": "2026-06-28T18:50:33Z", "handle": "unional", "kind": "halt", "phase": "explore", "why": {"floor": "clearance", "blast": "high — would drop scenarios from a frozen suite", "novelty": "low", "confidence": "high"}}
+```
+
+- **`phase`** — `intake | explore | deliver | handoff`, where the mission stopped.
+- **`why`** — the same categorical block the `approval` map carries (`floor` / `blast` / `novelty` /
+  `confidence`), **classes only** — never the raw blocker content.
+
 ### `gate` — the durable per-CR gate verdict (ledger)
 
 ```jsonl
@@ -137,7 +152,7 @@ Append-only; lines added with the next CR-scoped `seq`, never edited or deleted.
 
 | Writer | May append | To |
 |---|---|---|
-| **conductor** | `report`, `correction` | the **combat log** (plan `*.log.jsonl`) |
+| **conductor** | `report`, `correction`, `halt` | the **combat log** (plan `*.log.jsonl`) |
 | **conductor** | self-asserted `gate` (`by: agent`) | the **ledger** |
 | **gate skill (`validate-spec`), in-session** | human-ratified `gate` (`by: <name>`) | the **ledger** |
 | **doctrine-loop Scanner** | `strategy` | the **ledger** |
