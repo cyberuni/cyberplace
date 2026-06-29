@@ -1,6 +1,6 @@
 ---
 name: backfill-project-spec
-description: "Internal skill: the SDD project-level layout bootstrap. When an existing project has no consolidated spec, the conductor loads this during start-mission explore to choose an organization strategy + spec location, scaffold the skeleton, and declare spec-layout — then hand back to per-unit explore. Not user-triggered; reached through start-mission."
+description: "Internal skill: the SDD project-level layout bootstrap. When an existing project has no consolidated spec, the conductor loads this during start-mission explore to choose an organization strategy + spec location, scaffold the skeleton, and declare project-path + the body placement map — then hand back to per-unit explore. Not user-triggered; reached through start-mission."
 user-invocable: false
 ---
 
@@ -12,7 +12,7 @@ project with **no consolidated spec**. It chooses *how the spec is organized*, s
 homes. It is **internal** — reached through `start-mission`, never a user entry — and leaves the tree at
 `status: draft`; it authors no node's `## Use Cases`/`.feature`, renders no gate verdict, and freezes nothing.
 
-The model is `.agents/specs/sdd/design/spec-layout.md` (strategies, envelope, fit, the `spec-layout` field) and
+The model is `.agents/specs/sdd/design/spec-layout.md` (strategies, envelope, fit, the body placement map) and
 `project-unit.md` (spec location). Run the six steps in order, surfacing each choice to the user
 (recommended-first), never assuming silently.
 
@@ -50,7 +50,7 @@ doc-envelope) are recorded in `spec-layout.md`; surface them only on an explicit
 
 Write the **shared envelope** every strategy ships:
 
-- root **`spec.md`** (the index + the declared block + the placement map — step 5);
+- root **`spec.md`** (the index + the `project-path` frontmatter + the placement map — step 5);
 - **`design/`** — the rules/model home, **including `design/decisions/`** (the ADR log: append-only,
   descriptive, ungated — the project-scope sibling of a unit's `<unit>.solution.md`; *organize no node as an
   ADR body*);
@@ -72,15 +72,19 @@ detail). A capability node README carries **only** its `spec-type` marker — ne
 
 ## 5 — Declare the organization (do not leave it to be re-derived)
 
-In the same act that writes root `spec.md`, record **both** halves so a later edit reads, never re-scans:
+In the same act that writes root `spec.md`, record both so a later edit reads, never re-scans:
 
-- **`spec-layout` frontmatter** — `strategy` (capability-first | mirror-source | bounded-context | layered |
-  doc-envelope), `location` (colocated | hoisted | monorepo-member), and a `placement-map` pointer;
+- **`project-path` frontmatter** — the repo-relative source dir this spec governs (the package for a
+  hoisted spec; the project root for a colocated one). It is the router's source→spec map; the spec
+  **location mode** (`colocated | hoisted | monorepo-member`) is *derived* from it, not stored. There is
+  **no `spec-layout` block** (ADR-0017: frontmatter is the router index — the strategy is not something the
+  router needs).
 - the **placement map** in the body — the maintained "a concept of kind K lives in home H" taxonomy + the
-  nesting rule, so a newcomer routes a new concept without holding the tree in their head.
+  nesting rule, **naming the chosen strategy** in its heading/intro, so a newcomer routes a new concept
+  without holding the tree in their head and `start-mission` / the Warden read the strategy on demand.
 
 Validate the result with the `validate-spec` skill's `check-spec-state` script (`check-spec-state.mts --root
-<specs-dir>`): the `spec-layout` block and the root tuple must be legal.
+<specs-dir>`): the root lifecycle tuple must be legal.
 
 ## 6 — Hand back
 
@@ -89,7 +93,7 @@ and **propose** the node placement for the formation **Warden** to confirm or re
 
 ## Output boundary
 
-Write the skeleton, the root envelope (`spec-layout` + placement map), and the `design/decisions/` + glossary
-homes — nothing else. Do **not** author any node's `## Use Cases`/`.feature`, render a gate verdict, freeze, or
-write `status` / `aligned` / `approval` / `produced-by` (the conductor's and `validate-spec`'s; see
+Write the skeleton, the root envelope (`project-path` frontmatter + placement map), and the `design/decisions/`
++ glossary homes — nothing else. Do **not** author any node's `## Use Cases`/`.feature`, render a gate verdict,
+freeze, or write `status` / `approval` / `produced-by` (the conductor's and `validate-spec`'s; see
 `ownership-governance`).
