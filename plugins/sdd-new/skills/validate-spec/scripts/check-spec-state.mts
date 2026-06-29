@@ -12,6 +12,9 @@
 //   2. the per-node spec-type reconcile — a node README's `spec-type` marker must
 //      agree with its shape: reference => ## Subject and NO sibling .feature;
 //      behavioral => ## Use Cases; descriptive (no marker) => no requirement.
+//      A node README also carries `spec-type` as its ONLY frontmatter: lifecycle
+//      (status / project-path / approval / produced-by / freeze) is root-spec.md-
+//      only (lifecycle-governance), so a stray lifecycle field on a node fails closed.
 // `project-path` (the source dir a spec governs) is parsed for the router; its
 // presence is the producer's job, not a lifecycle-legality concern, so it is not
 // enforced here. See design/lifecycle-model.md (legal-state tuples + per-node
@@ -38,11 +41,24 @@ export interface NodeSpec {
 	type: string | null
 	hasSubject: boolean
 	hasUseCases: boolean
+	lifecycleFields: string[]
 }
 
 const GATES = ['spec', 'impl']
 const VERDICTS = ['approve', 'pause', 'reject']
 const SPEC_TYPES = ['reference', 'behavioral']
+// Lifecycle frontmatter is root-spec.md-only (lifecycle-governance). A node README
+// carries `spec-type` and nothing else; any of these on a node fails closed —
+// including the retired schema fields, which must never reappear on a node.
+const NODE_FORBIDDEN_FIELDS = [
+	'status',
+	'project-path',
+	'approval',
+	'produced-by',
+	'aligned',
+	'spec-layout',
+	'strategy',
+]
 
 function frontmatter(text: string): string[] {
 	const m = /^---\n([\s\S]*?)\n---/.exec(text)
@@ -146,11 +162,15 @@ export function checkSpec(slug: string, state: SpecState): string[] {
 
 export function parseNode(text: string): NodeSpec {
 	let type: string | null = null
+	const lifecycleFields: string[] = []
 	for (const l of frontmatter(text)) {
-		const m = /^spec-type:\s*(.+)$/.exec(l)
-		if (m) {
-			type = m[1].trim().replace(/^["']|["']$/g, '')
-			break
+		const key = /^([\w-]+):/.exec(l) // top-level key (no leading whitespace)
+		if (!key) continue
+		if (key[1] === 'spec-type') {
+			const m = /^spec-type:\s*(.+)$/.exec(l)
+			if (m) type = m[1].trim().replace(/^["']|["']$/g, '')
+		} else if (NODE_FORBIDDEN_FIELDS.includes(key[1])) {
+			lifecycleFields.push(key[1])
 		}
 	}
 	const body = prose(text)
@@ -158,15 +178,22 @@ export function parseNode(text: string): NodeSpec {
 		type,
 		hasSubject: /^##\s+Subject\b/m.test(body),
 		hasUseCases: /^##\s+Use Cases\b/m.test(body),
+		lifecycleFields,
 	}
 }
 
 // The per-node spec-type reconcile. A node README's marker must agree with its
 // shape; descriptive (no marker) carries no requirement.
 export function checkNode(slug: string, node: NodeSpec, hasFeature: boolean): string[] {
-	const { type, hasSubject, hasUseCases } = node
+	const { type, hasSubject, hasUseCases, lifecycleFields } = node
 	const v: string[] = []
 	const tag = (msg: string) => v.push(`${slug}: ${msg}`)
+
+	// Lifecycle is root-spec.md-only — flagged for every node, descriptive included.
+	for (const f of lifecycleFields)
+		tag(
+			`carries lifecycle field "${f}" — lifecycle frontmatter is root-spec.md-only (a node README carries only spec-type)`,
+		)
 
 	if (type === null) return v
 	if (!SPEC_TYPES.includes(type)) {
