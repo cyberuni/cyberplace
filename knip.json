@@ -5,6 +5,9 @@
 	"workspaces": {
 		"plugins/sdd": {
 			"entry": ["skills/*/scripts/*.mts"]
+		},
+		"plugins/sdd-new": {
+			"entry": ["skills/*/scripts/*.mts"]
 		}
 	}
 }
