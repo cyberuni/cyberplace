@@ -39,21 +39,20 @@ approval:               # per-gate verdict
   impl: { verdict: approve, by: <human name> }   # ratified — no why needed
 produced-by:            # who produced each artifact; see sdd:combat-log-governance
   spec-producer: <plugin>:<agent>
-domain-plugin:          # map: artifact-type -> owning plugin, when an artifact-type is contested
-  <artifact-type>: <plugin>
 ---
 ```
 
 Open input is recorded in the body as `<!-- open: ... -->` markers, not in frontmatter.
 
-`status` is the base schema; `artifact-types`, `aligned`, `strategy`, `approval`, `produced-by`, and
-`domain-plugin` are the SDD-workflow additions.
+`status` is the base schema; `aligned`, `strategy`, `approval`, and `produced-by` are the
+SDD-workflow additions.
 
-**`artifact-types` is the resolution axis, set once at scaffold.** It is the only field a plugin's
-`domains[]` is matched against during delegate resolution (`sdd:plugin-contract-governance`):
-resolution is **per file** — each file's artifact-type resolves its own squad. It draws from the
-artifact-type vocabulary the project's registered plugins cover (for agent-configuration work:
-`skill | subagent | command | agents-section`). Plain-code specs omit it.
+**A file's artifact-type is resolved per file, never stored here.** Each file's artifact-type (the
+squad key) resolves its own squad against the project's registered plugins
+(`sdd:plugin-contract-governance`); the conductor classifies it by convention, falling back to the
+optional `.agents/sdd/artifact-types.toml` tiebreaker on ambiguity. The contested-type →
+chosen-plugin disambiguation lives in `.agents/sdd/` resolution state, **distinct from
+`produced-by`**, never a frontmatter field. The project carries no root `artifact-types` summary.
 
 **This whole frontmatter is root-`spec.md`-only.** A capability node README (a `reference` or
 `behavioral` spec — `sdd:spec-format-governance`) carries **only** its `spec-type` marker, never a
