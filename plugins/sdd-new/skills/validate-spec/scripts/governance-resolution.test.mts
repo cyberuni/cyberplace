@@ -458,9 +458,7 @@ test('parseArtifactTypeMap reads quoted globs and skips comments, blanks, sectio
 })
 
 test('resolveArtifactTypeFromMap picks the most-specific matching glob', () => {
-	const map = parseArtifactTypeMap(
-		['"apps/**" = "asset"', '"apps/website/src/content/**" = "docs"'].join('\n'),
-	)
+	const map = parseArtifactTypeMap(['"apps/**" = "asset"', '"apps/website/src/content/**" = "docs"'].join('\n'))
 	assert.equal(resolveArtifactTypeFromMap(map, 'apps/website/src/content/x.md'), 'docs')
 	assert.equal(resolveArtifactTypeFromMap(map, 'apps/other/y.png'), 'asset')
 })
