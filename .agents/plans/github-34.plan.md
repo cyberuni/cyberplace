@@ -84,8 +84,8 @@ todos:
     content: "Run a REAL Explore pass over .agents/specs/sdd through the sdd-new skills (the self-host's point). BLOCKER CLEARED: the cold sdd:sdd-spec-judge is registered + spawnable — a SCOPED dogfood over mission/conductor ran end-to-end (6022837 fixed its one finding; the judge also flagged a PRE-EXISTING conductor hard-floor scenario gap, out of scope). Scoped dogfood is viable now (start-mission inline producer + cold sdd-spec-judge + the 3 .mts gates from Bash). root-frontmatter (next) makes a full draft->approved gate runnable. FULL CR-wide explore still NOT ready: acceptance/ e2e suite unbuilt + sub-corpus/formation/doctrine/plugin specs pending."
     status: in_progress
   - id: root-frontmatter
-    content: "Explore (NEXT) — add project-spec lifecycle frontmatter to root spec.md per design/lifecycle-model.md: status: draft, aligned: false, spec-layout{strategy: capability-first, location, placement-map: '#capability-map' (the body's ## Capability map IS the placement map)}, strategy{leash, by, approach}. Do NOT add artifact-types — it was DROPPED (3837f9b; resolved per file, not stored). The root ## TODO was removed (belonged to the CR); item 1 'fill each capability folder' = the sub-* todos; item 2 'build the behavior suite' = colocated unit suites + the acceptance/ e2e suite (A–F seed themes, still unbuilt)."
-    status: pending
+    content: "DONE — but it grew into a FRONTMATTER SCHEMA REDESIGN (ADR-0017: frontmatter is the router's upfront index). Probing each field against 'does the cross-project router need this without the body?' collapsed the schema to status + project-path. DROPPED: aligned (derive-don't-store — contract-sync judged at spec gate, impl-sync = the impl gate's runtime suite run, per-node state = @frozen scan, in-flux = .plan.md todos), spec-layout.location (derivable from project-path), spec-layout.placement-map (an in-file anchor is information-free to a frontmatter scan), the run-level strategy/leash block (session-local, lives on ledger/plan), artifact-types (already dropped). ADDED project-path (the governed source dir; replaces location with the router's source→spec map). The organization strategy moved to the BODY placement map. Landed as 8 commits: ADR-0017 (+supersede 0012); check-spec-state.mts+tests; design/lifecycle-model+spec-layout+spec-structure; the 3 governance SKILLs (lifecycle/gate-validation/ownership); the producers (backfill/start-mission/spec-producer + their specs/.features); the behavioral re-home (conductor.feature/README, acceptance E2/E4/D1, validate-spec); root sdd spec.md (status: draft + project-path: plugins/sdd-new) + aces sibling reconcile. pnpm verify green (13/13); check-spec-state over the live tree green. Memory: project_sdd_frontmatter_router_index."
+    status: completed
   - id: spec-gate
     content: "Spec gate (Draft -> Approved) — HAND-RUN in the main loop: judge the suite against authoring/suite-format/ + authoring criteria; never advance with judge failures/open markers/misaligned suite; on approve freeze touched .feature files, record per-CR gate ledger line, set status: approved."
     status: pending
@@ -160,13 +160,23 @@ spec does not exist yet and is the real artifact owed. Adjacent OPEN: CR↔plan 
 > spawnable — the prior restart blocker is CLEARED**; a scoped dogfood over `mission/conductor`
 > ran end-to-end (`6022837` fixed its one finding).
 
-**▶ NEXT ACTION — `root-frontmatter`.** Add project-spec lifecycle frontmatter to the root
-`.agents/specs/sdd/spec.md` per `design/lifecycle-model.md`: `status: draft`, `aligned: false`,
-the `spec-layout` block (strategy `capability-first`; location; the body's line-84 `## Capability
-map` **is** the placement map → `placement-map: "#capability-map"`), and a run-level `strategy`
-block (`leash` / `by` / `approach[]`). **Do NOT add `artifact-types`** — it was **dropped** (`3837f9b`;
-resolved per file, never stored). Then `check-spec-state.mts` validates a real draft tuple and a
-full draft→approved gate becomes runnable.
+> **Session update (2026-06-28) — `root-frontmatter` DONE, and it became a FRONTMATTER SCHEMA
+> REDESIGN.** ADR-0017: frontmatter is the router's upfront index → the schema collapses to
+> **`status` + `project-path`**. Dropped `aligned` (derive-don't-store: contract-sync judged, impl-sync
+> = the impl gate's suite run, per-node = `@frozen` scan, in-flux = `.plan.md` todos),
+> `spec-layout.location` (derivable from `project-path`), `placement-map` (useless to a frontmatter
+> scan), the run-level leash block (session-local → ledger/plan). The organization strategy now lives in
+> the **body placement map**. 8 commits; `pnpm verify` green. Root sdd spec.md + aces are now legal
+> `draft`s on the new schema. Memory: `project_sdd_frontmatter_router_index`.
+
+**▶ NEXT ACTION — the migration critical path resumes at `core-agents` remainder** (Deliver / outer
+loops): the `sdd-implementer` (impl-judge) agent built to the ADR-0016 layered model, the doctrine
+Scanner, the formation Warden, the headless `automaton`, and the nested-project anchor union in
+`governance-resolution.mts`. OR run a **scoped dogfood** now: the cold `sdd:sdd-spec-judge` is
+registered + spawnable and the root is a legal draft, so a single capability (e.g. `gateway/` or
+`authoring/spec-producer`) can run `start-mission` (inline producer) → cold judge → the three `.mts`
+gates from Bash. A FULL CR-wide explore still waits on `acceptance/` + sub-corpus/formation/doctrine/
+plugin specs.
 
 **THEN — widen the dogfood / fill gaps:**
 
