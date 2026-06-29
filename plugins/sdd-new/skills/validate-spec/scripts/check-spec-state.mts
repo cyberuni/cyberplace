@@ -2,20 +2,21 @@
 // Static state check for an SDD project spec (the project-spec model). Two
 // fail-closed responsibilities, both the safety net that makes an illegal state
 // uncommittable:
-//   1. the root spec.md lifecycle tuple — status / aligned / open-markers /
-//      approval attribution. (The project-spec model dropped the old
-//      type/subtasks/composition axis; the root is a descriptive index that owns
-//      no .feature of its own, so there is no per-spec .feature requirement — the
-//      behavior suite lives in the behavioral nodes.)
+//   1. the root spec.md lifecycle tuple — status / open-markers / approval
+//      attribution. The frontmatter is the router's upfront index (ADR-0017):
+//      minimal status + project-path. `aligned` was dropped — impl-sync is the
+//      impl gate's runtime suite run, contract-sync is judged, per-node settled
+//      state is the @frozen scan. The root is a descriptive index that owns no
+//      .feature of its own, so there is no per-spec .feature requirement — the
+//      behavior suite lives in the behavioral nodes.
 //   2. the per-node spec-type reconcile — a node README's `spec-type` marker must
 //      agree with its shape: reference => ## Subject and NO sibling .feature;
 //      behavioral => ## Use Cases; descriptive (no marker) => no requirement.
-//   3. the declared `spec-layout` block — validated only when present (additive):
-//      a declared strategy/location must be a legal enum value.
-// See design/lifecycle-model.md (legal-state tuples + per-node spec-type checks),
-// design/spec-structure.md (spec types), and design/spec-layout.md (the layout
-// strategies + the spec-layout field). Pure functions are exported
-// for node:test; running the file directly drives the CLI. No dependencies.
+// `project-path` (the source dir a spec governs) is parsed for the router; its
+// presence is the producer's job, not a lifecycle-legality concern, so it is not
+// enforced here. See design/lifecycle-model.md (legal-state tuples + per-node
+// spec-type checks) and design/spec-structure.md (spec types). Pure functions are
+// exported for node:test; running the file directly drives the CLI. No dependencies.
 
 import { type Dirent, existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -26,18 +27,11 @@ export interface GateVerdict {
 	hasWhy: boolean
 }
 
-export interface SpecLayout {
-	present: boolean
-	strategy: string | null
-	location: string | null
-}
-
 export interface SpecState {
 	status: string
-	aligned: boolean | null
+	projectPath: string | null
 	markerCount: number
 	approval: Record<string, GateVerdict> | null
-	layout: SpecLayout
 }
 
 export interface NodeSpec {
@@ -49,8 +43,6 @@ export interface NodeSpec {
 const GATES = ['spec', 'impl']
 const VERDICTS = ['approve', 'pause', 'reject']
 const SPEC_TYPES = ['reference', 'behavioral']
-const LAYOUT_STRATEGIES = ['capability-first', 'mirror-source', 'bounded-context', 'layered', 'doc-envelope']
-const LAYOUT_LOCATIONS = ['colocated', 'hoisted', 'monorepo-member']
 
 function frontmatter(text: string): string[] {
 	const m = /^---\n([\s\S]*?)\n---/.exec(text)
@@ -66,7 +58,7 @@ function prose(text: string): string {
 export function parseSpecState(text: string): SpecState {
 	const lines = frontmatter(text)
 	let status = ''
-	let aligned: boolean | null = null
+	let projectPath: string | null = null
 	let approval: Record<string, GateVerdict> | null = null
 
 	for (let i = 0; i < lines.length; i++) {
@@ -75,9 +67,9 @@ export function parseSpecState(text: string): SpecState {
 			status = s[1].trim().replace(/^["']|["']$/g, '')
 			continue
 		}
-		const a = /^aligned:\s*(true|false)\b/.exec(lines[i])
-		if (a) {
-			aligned = a[1] === 'true'
+		const p = /^project-path:\s*(.+)$/.exec(lines[i])
+		if (p) {
+			projectPath = p[1].trim().replace(/^["']|["']$/g, '')
 			continue
 		}
 		const ap = /^approval:\s*(.*)$/.exec(lines[i])
@@ -104,38 +96,18 @@ export function parseSpecState(text: string): SpecState {
 	}
 
 	const markerCount = (prose(text).match(/<!--\s*open:/g) ?? []).length
-	return { status, aligned, markerCount, approval, layout: parseSpecLayout(lines) }
-}
-
-// The declared `spec-layout` block (strategy + location). Read, never inferred —
-// design/spec-layout.md. Validated only when present, so specs predating the field
-// stay legal; a declared block must carry legal enum values.
-export function parseSpecLayout(lines: string[]): SpecLayout {
-	const layout: SpecLayout = { present: false, strategy: null, location: null }
-	for (let i = 0; i < lines.length; i++) {
-		if (!/^spec-layout:\s*$/.test(lines[i])) continue
-		layout.present = true
-		for (let j = i + 1; j < lines.length; j++) {
-			if (!/^\s/.test(lines[j])) break // dedent to top level ends the block
-			const strat = /^ {2}strategy:\s*(.+)$/.exec(lines[j])
-			if (strat) layout.strategy = strat[1].trim().replace(/^["']|["']$/g, '')
-			const loc = /^ {2}location:\s*(.+)$/.exec(lines[j])
-			if (loc) layout.location = loc[1].trim().replace(/^["']|["']$/g, '')
-		}
-		break
-	}
-	return layout
+	return { status, projectPath, markerCount, approval }
 }
 
 // The root project spec.md lifecycle tuple.
 export function checkSpec(slug: string, state: SpecState): string[] {
-	const { status, aligned, markerCount, approval } = state
+	const { status, markerCount, approval } = state
 	const v: string[] = []
 	const tag = (msg: string) => v.push(`${slug}: ${msg}`)
 
-	// draft + aligned:true is LEGAL ("contract synced, ready for the spec gate") —
-	// aligned is layer-scoped, so it may hold at draft. No rejection here.
-	if (status === 'implemented' && aligned !== true) tag('illegal state — implemented requires aligned:true')
+	// `implemented` is backed by the impl gate's runtime suite run (ADR-0017), not a
+	// stored flag — the static guard here is the recorded approval.impl ratification
+	// (below). No `aligned` cross-check.
 	if ((status === 'approved' || status === 'implemented') && markerCount > 0)
 		tag(`illegal state — ${markerCount} open marker(s) but status is ${status} (markers block the gate)`)
 
@@ -168,17 +140,6 @@ export function checkSpec(slug: string, state: SpecState): string[] {
 		tag(
 			'status is implemented but approval.impl has no approve verdict with an approver — the impl gate has no recorded ratification',
 		)
-
-	// spec-layout: validated only when declared (additive — specs predating it stay
-	// legal). A declared block must carry a legal strategy and location.
-	if (state.layout.present) {
-		if (!state.layout.strategy) tag('spec-layout is declared but has no strategy')
-		else if (!LAYOUT_STRATEGIES.includes(state.layout.strategy))
-			tag(`spec-layout has unknown strategy "${state.layout.strategy}" (expected ${LAYOUT_STRATEGIES.join(' | ')})`)
-		if (!state.layout.location) tag('spec-layout is declared but has no location')
-		else if (!LAYOUT_LOCATIONS.includes(state.layout.location))
-			tag(`spec-layout has unknown location "${state.layout.location}" (expected ${LAYOUT_LOCATIONS.join(' | ')})`)
-	}
 
 	return v
 }
