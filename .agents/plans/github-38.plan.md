@@ -59,20 +59,30 @@ The full operating model, phase detail, and verification live in the meta-plan:
 
 ## NEXT — resume here
 
-**▶ Phase A — bind the custom ACES bars.** Author `aces-builder-spec` (the agent-scenario
-contract criteria from `plugins/aces/agents/aces-spec-validator.md`) and `aces-builder-impl` (the
-eval-suite conformance criteria from `aces-implementer.md`) as `user-invocable:false` governance
-skills under `plugins/aces/skills/`, each with `metadata: { artifact-type, actor, gate, compose:
-union }`. Wire them into `.agents/universal-plugin.json` (ACES squad `governances`:
-`builder-spec` → `aces-builder-spec`, `builder-impl` → `aces-builder-impl`; others stay null).
-Verify: `node plugins/sdd-new/skills/validate-spec/scripts/governance-resolution.mts --root .
---artifact-type skill` names them in the resolved `bars[]`.
+**▶ EXPLORE + SPEC GATE COMPLETE (2026-06-29).** Phases A–D landed on `next`. The ACES project
+spec is **`status: approved`** — all 14 `.feature` files (12 behavioral units + 2 acceptance e2e)
+are `@frozen`, the durable spec gate line is in `.agents/specs/aces/ledger.jsonl`, and
+`pnpm verify:specs-new` is green over the whole tree. Every behavioral unit was cold-judged ALIGNED
+on the 3-lens {director,builder,architect} set, dogfooding the real sdd-new explore loop; the
+custom `aces-builder-spec`/`aces-builder-impl` bars are bound and resolve. Commits: `95fcc4c`
+(intake) `c2a4e39` (bars) `b185035` `84e1f0e` `e8c7d9c` `7d161f7` `81ac5c7` `58b8e05` `ff1f1a9`
+(unit suites) `be93a7c` (spec gate). Spec-gate ratification self-asserted `by: agent` within leash
+→ ACES draft lands in the async review queue (the user may re-open any frozen `.feature`).
 
-**THEN — Phase B explore, one unit at a time.** Start with `eval-run/run` as the end-to-end proof
-of the loop, then fan out. Per unit: resolve → inline spec-producer authors `## Use Cases` +
-`<unit>.feature` (backfill from impl source, write to the new vocabulary) → spawn cold
-`sdd-spec-judge` over spec.md+.feature only → `check-feature.mts` + `check-spec-state.mts --root
-.agents/specs` green → iterate (cap 3). One commit per unit; `status` stays draft.
+**▶ NEXT ACTION — Phase E (deliver): rebuild `plugins/aces/` from the frozen specs.** This is the
+in-place impl overhaul, done now (post-freeze) so it respects "spec the behavior, never hand-edit
+the impl to pass." Two parts:
+1. **Vocabulary sweep + governance-load alignment** across `plugins/aces/` agents + skills +
+   `readme.md`: `sdd-operator`/"the Operator" → `conductor`/`automaton`; `sdd:create-spec` →
+   `sdd:start-mission`; `sdd:spec-governance` → `sdd:spec-format-governance` (+ `suite-format`);
+   `plan-producer` → `solution-producer`; drop `aligned`/`domain-plugin` from prose; align each
+   role's Model-B bar loads (spec-producer/judge load the ACES `builder-spec`; impl-judge/producer
+   load `builder-impl`); refresh the `init-aces` canonical entry to show the bound bars.
+2. **Impl gate (Approved → Implemented):** verify each unit against its frozen `.feature` via the
+   ACES impl-judge, then advance `spec.md` to `status: implemented` + `approval.impl` + the durable
+   `impl` gate line in `ledger.jsonl`.
+
+Then **Phase F** — `pnpm verify` green, PR (next → main) for #38, update memory.
 
 ## The loop (per behavioral unit)
 
