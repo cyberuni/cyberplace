@@ -1,6 +1,6 @@
 ---
 name: gate-validation-governance
-description: "Internal skill: the SDD gate-legality contract — legal frontmatter-state tuples, per-node spec-type checks, aligned layer-scoping, approval attribution, and the no-resolvable-producer fail-closed rule. Loaded by validate-spec, the conductor, and the spec-judge. Not triggered by users directly."
+description: "Internal skill: the SDD gate-legality contract — legal frontmatter-state tuples, per-node spec-type checks, derived sync (no aligned flag), approval attribution, and the no-resolvable-producer fail-closed rule. Loaded by validate-spec, the conductor, and the spec-judge. Not triggered by users directly."
 user-invocable: false
 ---
 
@@ -15,11 +15,10 @@ autonomy rubric (`design/autonomy-rubric.md`), a hard floor + a three-dimension 
 
 The mechanical authority is `validate-spec/scripts/check-spec-state.mts` — run it
 (`node <skill>/scripts/check-spec-state.mts`) to enforce; if `node` is unavailable, apply the same
-rules by reading frontmatter. The `(status, aligned, markers, .feature, approval)` tuple of the root
+rules by reading frontmatter. The `(status, markers, .feature, approval)` tuple of the root
 `spec.md` is **illegal** when:
 
 - `status: approved` with no `.feature` — a spec requires a frozen `.feature` to be approved.
-- `status: implemented` with `aligned` not `true` — implemented requires `aligned: true`.
 - `status: approved` or `implemented` with any `<!-- open: -->` markers — markers block the gate.
 - `approval` names a gate other than `spec` or `impl`.
 - an `approval.<gate>` has a `verdict` other than `approve`, `pause`, or `reject`.
@@ -31,9 +30,9 @@ rules by reading frontmatter. The `(status, aligned, markers, .feature, approval
 - `status: approved` or `implemented` with no `approval.spec` `verdict: approve` + `by` — the spec gate has no recorded ratification.
 - `status: implemented` with no `approval.impl` `verdict: approve` + `by` — the impl gate has no recorded ratification.
 
-`status: draft` with `aligned: true` is **legal** — `aligned` is layer-scoped, so a synced contract
-may hold `aligned: true` while still draft, ready for the spec gate. Open markers at `draft` are
-permitted (they block only the *gate*, not the draft state).
+`implemented` is backed by the impl gate's runtime suite run, not a stored flag (ADR-0017); its
+static guard here is the recorded `approval.impl` ratification. Open markers at `draft` are permitted
+(they block only the *gate*, not the draft state).
 
 Reject illegal tuples **before** any other gate work. If `check-spec-state.mts` changes, this list
 follows it — the script is the source of truth, this prose is the readable mirror.
@@ -57,18 +56,20 @@ must agree with its shape (`sdd:spec-format-governance`):
 `producer ≠ judge` survives the gate fold: even though gates are no longer a fixed station, the judge
 stays a distinct actor from the producer, and never patches what it grades.
 
-## `aligned` is layer-scoped
+## Sync is derived, not stored (no `aligned` flag)
 
-`aligned` means *the current layer's artifacts are synced* — which layer depends on the gate:
+There is no `aligned` field (ADR-0017). "Synced" is two properties at two layers, each derived or
+judged — never a stored boolean:
 
-- **At the spec gate**, `aligned: true` means the **contract layer** (`spec.md` ↔ `.feature`) is in
-  sync. Implementation is **not** required; exploratory spike code is excluded as scaffolding.
-- **At the impl gate**, `aligned: true` means the **impl layer** conforms to the frozen `.feature`.
-  Set it only when **every** impl-judge returns a pass; if any fails, leave `aligned: false` and
-  surface the blocker.
+- **Contract layer** (`spec.md` ↔ `.feature`) — **judged** at the spec gate by the Builder coverage
+  lens; implementation is not required, and spike code is excluded as scaffolding.
+- **Impl layer** (impl ↔ frozen `.feature`) — derived by **running the frozen suite**; the impl gate
+  advances to `implemented` only when **every** impl-judge passes, else it stays `approved` and
+  surfaces the blocker.
+- **Per-node settled state** is the **`@frozen`** scan; **what is in flux now** is the `.plan.md`
+  todos.
 
-`aligned: true` never on its own means "implemented." The conductor sets `aligned: false` at the
-start of a segment and only synthesis sets it back to `true` (`sdd:ownership-governance`).
+`status` alone carries the lifecycle — no segment-level toggle.
 
 ## No-resolvable-producer fails closed
 

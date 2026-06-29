@@ -18,14 +18,7 @@ The **root** `spec.md` carries YAML frontmatter:
 ```yaml
 ---
 status: draft           # draft | approved | implemented | deprecated
-artifact-types:         # the artifact-types / squad keys this project touches: e.g. skill,
-  - skill               # subagent, command, agents-section, npm-package, docs. Resolution is
-                        # per file (each file's artifact-type -> its squad). Omit for plain code.
-aligned: false          # true once the current layer's artifacts are synced
-strategy:               # run-level initial evaluation (leash + approach)
-  leash: auto-all       # first-evaluated reach: auto-none | auto-spec | auto-all
-  by: derived           # derived | user
-  approach: [no-spike, mocks, worktree]   # blast-radius-containment choices
+project-path: plugins/sdd-new   # repo-relative source dir this spec governs; the location mode is derivable
 approval:               # per-gate verdict
   spec:                 # verdict: approve | pause | reject
     verdict: approve
@@ -44,8 +37,14 @@ produced-by:            # who produced each artifact; see sdd:combat-log-governa
 
 Open input is recorded in the body as `<!-- open: ... -->` markers, not in frontmatter.
 
-`status` is the base schema; `aligned`, `strategy`, `approval`, and `produced-by` are the
-SDD-workflow additions.
+The frontmatter is the **router's upfront index** (ADR-0017): the gateway scans every `spec.md`
+frontmatter (no bodies) to route, so it carries only what routing needs. `status` is the base schema;
+`project-path`, `approval`, and `produced-by` are the SDD-workflow additions. `project-path` records
+the repo-relative source dir the spec governs; the spec **location mode** (`colocated | hoisted |
+monorepo-member`) is *derived* from it (hoisted iff `project-path` is not the spec's own dir), never
+stored. There is **no `aligned`, `spec-layout`, or run-level `strategy` field** — sync is derived
+(below), the organization strategy is declared in the body placement map, and the leash is
+session-local on the ledger/plan (`sdd:autonomy-rubric`).
 
 **A file's artifact-type is resolved per file, never stored here.** Each file's artifact-type (the
 squad key) resolves its own squad against the project's registered plugins
@@ -66,10 +65,12 @@ frontmatter `status` is one of the enum values below. There is no spec registry 
 locate specs, glob `**/spec.md` repo-wide, keep git-tracked files whose `status` is in the enum. A
 `spec.md` without a lifecycle `status` is not an SDD spec.
 
-**`aligned` and commit timing.** `aligned: false` means the current layer's artifacts are being
-updated or contain unresolved markers; `aligned: true` means the layer is synced (which layer
-depends on the gate — `sdd:gate-validation-governance`). Do not commit SDD artifacts while their
-spec is `aligned: false`.
+**Sync is derived, not stored (no `aligned` flag).** "Synced" is two properties, each derived or
+judged (ADR-0017): contract-sync (`spec.md` ↔ `.feature`) is *judged* at the spec gate (Builder
+coverage lens); impl-sync is the impl gate's *runtime suite run* (advance to `implemented` only when
+every impl-judge passes); per-node settled state is the **`@frozen`** scan; what is in flux now is the
+`.plan.md` todos. Do not commit SDD artifacts while a touched `.feature` is unfrozen or the plan's
+todos are incomplete.
 
 ## Status enum
 
@@ -116,7 +117,7 @@ write constraint ("never write a frozen `.feature`") is in `sdd:ownership-govern
   the autonomy bar), contract narrowed → escalate. An *additive* scenario never unfreezes its file:
   it widens the contract, cannot break existing impl, and **self-clears** — folding into the frozen
   file under the conductor's authority, logged as a detail-adjustment.
-- **`spec.md` is kept aligned, never frozen** — the readable abstraction of the suite, free to be
+- **`spec.md` is kept in sync, never frozen** — the readable abstraction of the suite, free to be
   reworded/restructured as long as it does not contradict a frozen scenario. Enforced by the
   spec-judge applying the Builder (coverage) lens, not by freezing the prose.
 - **The ledger is never frozen and never gated** — it keeps appending across the whole lifecycle,

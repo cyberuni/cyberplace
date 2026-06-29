@@ -15,10 +15,10 @@ is in `sdd:gate-validation-governance`; the plan/ledger write split is in `sdd:c
 | Field / artifact | Written by | Never written by |
 |---|---|---|
 | `status` | the gate skill (`validate-spec`) — on a human verdict, or to match a conductor self-assertion within leash | the conductor, any producer |
-| `strategy` (run-level leash + approach) | the **conductor** (initial evaluation) | producers, the gate skill |
+| `project-path` | the **conductor** (at scaffold; `backfill-project-spec`) | producers, the gate skill |
+| run-level leash + approach (session-local; to `ledger.jsonl`, **not** spec.md frontmatter — `sdd:autonomy-rubric`) | the **conductor** (initial evaluation) | producers, the gate skill |
 | `approval` **self-assertion** (`verdict: approve`/`pause` + `by: agent`/none + `why`) | the **conductor** (synthesis only) | producers, the gate skill |
 | `approval` **human ratification** (`verdict: approve`/`reject` + `by: <name>`) | the gate skill (`validate-spec`), **in-session position only** | the conductor, any producer, any spawned delegate |
-| `aligned` | the **conductor** (synthesis only) | producers, the gate skill |
 | `<!-- open: -->` markers | the **conductor** | producers (they *emit gaps*, not markers) |
 | `produced-by` map | the **conductor** (records the resolved producer per role at production) | producers, judges, the gate skill |
 | contested-type → chosen-plugin state (`.agents/sdd/`) | the **conductor** (or `start-mission` for a contested artifact-type); **distinct from `produced-by`** | producers, judges, the gate skill |
@@ -39,15 +39,16 @@ Each appended `*.log.jsonl` / `ledger.jsonl` line is stamped with its writer's p
 ## Producer write boundary
 
 A **spec-producer** writes the `spec.md` body and the `.feature` only. It must **not** write the
-control frontmatter (`status`, `aligned`, `approval`, `produced-by`) or the `.agents/sdd/`
+control frontmatter (`status`, `project-path`, `approval`, `produced-by`) or the `.agents/sdd/`
 resolution state. A required input it cannot supply or infer is returned as a `CONTENT_GAP` — the
 conductor turns it into an `<!-- open: -->` marker. Producers do not write markers directly.
 
-The **conductor** writes `<!-- open: -->` markers, `aligned`, the run-level `strategy` block, the
-`produced-by` map, and — when it self-asserts a gate within the effective leash — the provisional
-`approval.<gate>` entry (`verdict: approve` + `by: agent` with the `why` derivation; a halt is
-`verdict: pause` with its `why` and no `by`). There is no `leash` field in the entry — the leash is
-the run-level `strategy`. The **gate skill** writes `status` (on a human verdict or to match the
+The **conductor** writes `<!-- open: -->` markers, the `produced-by` map, the run-level leash (to
+`ledger.jsonl`, session-local — there is no `aligned` or `strategy` spec.md field), and — when it
+self-asserts a gate within the effective leash — the provisional `approval.<gate>` entry
+(`verdict: approve` + `by: agent` with the `why` derivation; a halt is `verdict: pause` with its
+`why` and no `by`). There is no `leash` field in the `approval` entry — the leash is the run-level
+record on the ledger. The **gate skill** writes `status` (on a human verdict or to match the
 conductor's in-leash self-assertion) and the human ratification of `approval` (rewriting `by: agent`
 → `by: <name>`).
 
