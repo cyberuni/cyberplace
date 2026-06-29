@@ -7,13 +7,16 @@ import {
 	buildLoadPlan,
 	discoverProjectGovernances,
 	type GovCandidate,
+	loadArtifactTypeMap,
 	main,
 	matchSquad,
 	migrateEntry,
+	parseArtifactTypeMap,
 	parseGovernanceFrontmatter,
 	parseRegistry,
 	type Registry,
 	resolveAgent,
+	resolveArtifactTypeFromMap,
 	resolveBar,
 	resolveRole,
 	type Squad,
@@ -430,6 +433,74 @@ test('main treats a missing registry as zero plugins (legal)', () => {
 	const root = mkdtempSync(join(tmpdir(), 'sdd-gov-'))
 	try {
 		assert.equal(main(['--root', root]), 0)
+	} finally {
+		rmSync(root, { recursive: true, force: true })
+	}
+})
+
+// ─── artifact-type tiebreaker map ────────────────────────────────────────────────
+
+test('parseArtifactTypeMap reads quoted globs and skips comments, blanks, sections', () => {
+	const toml = [
+		'# the tiebreaker map',
+		'',
+		'[meta]',
+		'"apps/website/src/content/**" = "docs"',
+		"'plugins/*/agents/**' = 'subagent'",
+		'plugins/*/skills/** = "skill"  # bare key',
+	].join('\n')
+	const map = parseArtifactTypeMap(toml)
+	assert.deepEqual(map, [
+		{ glob: 'apps/website/src/content/**', type: 'docs' },
+		{ glob: 'plugins/*/agents/**', type: 'subagent' },
+		{ glob: 'plugins/*/skills/**', type: 'skill' },
+	])
+})
+
+test('resolveArtifactTypeFromMap picks the most-specific matching glob', () => {
+	const map = parseArtifactTypeMap(
+		['"apps/**" = "asset"', '"apps/website/src/content/**" = "docs"'].join('\n'),
+	)
+	assert.equal(resolveArtifactTypeFromMap(map, 'apps/website/src/content/x.md'), 'docs')
+	assert.equal(resolveArtifactTypeFromMap(map, 'apps/other/y.png'), 'asset')
+})
+
+test('resolveArtifactTypeFromMap: ** spans separators, * does not', () => {
+	const map = parseArtifactTypeMap(['"plugins/*/skills/**" = "skill"'].join('\n'))
+	assert.equal(resolveArtifactTypeFromMap(map, 'plugins/sdd/skills/foo/SKILL.md'), 'skill')
+	assert.equal(resolveArtifactTypeFromMap(map, 'plugins/a/b/skills/foo/SKILL.md'), null)
+})
+
+test('resolveArtifactTypeFromMap returns null when nothing matches', () => {
+	const map = parseArtifactTypeMap(['"docs/**" = "docs"'].join('\n'))
+	assert.equal(resolveArtifactTypeFromMap(map, 'src/index.ts'), null)
+})
+
+test('loadArtifactTypeMap returns [] when the file is absent', () => {
+	const root = mkdtempSync(join(tmpdir(), 'sdd-gov-'))
+	try {
+		assert.deepEqual(loadArtifactTypeMap(root), [])
+	} finally {
+		rmSync(root, { recursive: true, force: true })
+	}
+})
+
+test('main --path resolves the artifact-type via the tiebreaker and emits the plan', () => {
+	const root = mkdtempSync(join(tmpdir(), 'sdd-gov-'))
+	try {
+		mkdirSync(join(root, '.agents', 'sdd'), { recursive: true })
+		writeFileSync(join(root, '.agents', 'sdd', 'artifact-types.toml'), '"docs/**" = "documentation"\n')
+		writeFileSync(join(root, '.agents', 'universal-plugin.json'), JSON.stringify(REG))
+		assert.equal(main(['--root', root, '--path', 'docs/guide.md']), 0)
+	} finally {
+		rmSync(root, { recursive: true, force: true })
+	}
+})
+
+test('main --path with no tiebreaker match returns 0 (falls back to convention)', () => {
+	const root = mkdtempSync(join(tmpdir(), 'sdd-gov-'))
+	try {
+		assert.equal(main(['--root', root, '--path', 'src/whatever.ts']), 0)
 	} finally {
 		rmSync(root, { recursive: true, force: true })
 	}

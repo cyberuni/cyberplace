@@ -202,6 +202,64 @@ export function loadRegistry(root: string): Registry {
 	return parseRegistry(readFileSync(path, 'utf8'))
 }
 
+// ─── artifact-type tiebreaker map (.agents/sdd/artifact-types.toml) ──────────────
+
+// An OPTIONAL, agent-maintained lookup that records resolved path->type bindings
+// for the ambiguities convention can't settle (design/artifact-type.md). It is
+// NOT the primary classifier — convention is, and that is the conductor's
+// judgment; this table is consulted only on a known ambiguity or a user-flagged
+// path. A flat TOML map "<path-or-glob>" = "<artifact-type>"; most-specific glob
+// wins. No TOML dependency — the table is intentionally flat key=value.
+export interface TypeBinding {
+	glob: string
+	type: string
+}
+
+export function parseArtifactTypeMap(text: string): TypeBinding[] {
+	const out: TypeBinding[] = []
+	for (const raw of text.split('\n')) {
+		const line = raw.trim()
+		if (!line || line.startsWith('#') || line.startsWith('[')) continue // blanks, comments, [section] headers
+		const m = /^(?:"([^"]+)"|'([^']+)'|(\S+))\s*=\s*(?:"([^"]+)"|'([^']+)')\s*(?:#.*)?$/.exec(line)
+		if (!m) continue
+		const glob = m[1] ?? m[2] ?? m[3]
+		const type = m[4] ?? m[5]
+		if (glob && type) out.push({ glob, type })
+	}
+	return out
+}
+
+// Compile a glob to a full-match RegExp: ** spans path separators, * does not.
+function globToRegExp(glob: string): RegExp {
+	const re = glob
+		.replace(/[.+^${}()|[\]\\]/g, '\\$&') // escape regex specials (leave * ?)
+		.replace(/\*\*/g, ' ') // ** placeholder
+		.replace(/\*/g, '[^/]*')
+		.replace(/ /g, '.*')
+		.replace(/\?/g, '.')
+	return new RegExp(`^${re}$`)
+}
+
+// Resolve a file path to an artifact-type via the tiebreaker map: the
+// most-specific matching glob wins (most literal characters, then longest
+// pattern). Returns null when nothing matches — the caller falls back to
+// convention.
+export function resolveArtifactTypeFromMap(map: TypeBinding[], path: string): string | null {
+	const matches = map.filter((b) => globToRegExp(b.glob).test(path))
+	if (matches.length === 0) return null
+	const literal = (g: string) => g.replace(/[*?]/g, '').length
+	matches.sort((a, b) => literal(b.glob) - literal(a.glob) || b.glob.length - a.glob.length)
+	return matches[0].type
+}
+
+// Load the optional tiebreaker map. A missing file is legal (most projects need
+// none) — returns an empty table.
+export function loadArtifactTypeMap(root: string): TypeBinding[] {
+	const path = join(root, '.agents', 'sdd', 'artifact-types.toml')
+	if (!existsSync(path)) return []
+	return parseArtifactTypeMap(readFileSync(path, 'utf8'))
+}
+
 // ─── project governance discovery ───────────────────────────────────────────────
 
 function frontmatter(text: string): string[] {
@@ -419,7 +477,14 @@ export function validateRegistry(registry: Registry): string[] {
 
 export function main(argv: string[]): number {
 	const root = argv.includes('--root') ? argv[argv.indexOf('--root') + 1] : '.'
-	const artifactType = argv.includes('--artifact-type') ? argv[argv.indexOf('--artifact-type') + 1] : null
+	const explicitType = argv.includes('--artifact-type') ? argv[argv.indexOf('--artifact-type') + 1] : null
+	const pathArg = argv.includes('--path') ? argv[argv.indexOf('--path') + 1] : null
+
+	// --artifact-type wins (explicit override); else --path consults the optional
+	// tiebreaker map (most-specific glob). A --path with no map match stays null —
+	// the caller falls back to convention, it is not a registry-validation request.
+	let artifactType = explicitType
+	if (!artifactType && pathArg) artifactType = resolveArtifactTypeFromMap(loadArtifactTypeMap(root), pathArg)
 
 	let registry: Registry
 	try {
@@ -429,7 +494,14 @@ export function main(argv: string[]): number {
 		return 1
 	}
 
-	// No artifact-type → validate the registry is well-formed + unambiguous.
+	if (!artifactType && pathArg) {
+		process.stdout.write(
+			`${JSON.stringify({ path: pathArg, artifactType: null, note: 'no tiebreaker match — classify by convention' }, null, 2)}\n`,
+		)
+		return 0
+	}
+
+	// No artifact-type and no path → validate the registry is well-formed + unambiguous.
 	if (!artifactType) {
 		const violations = validateRegistry(registry)
 		if (violations.length) {
