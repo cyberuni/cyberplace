@@ -36,6 +36,10 @@ When `$sdd` is invoked with no work item, artifact, or action, do not guess. Con
 
 When a derived list would exceed four, present only the most-actionable few (≤ 4) or ask the user to name the target directly; never enumerate into an over-four question and never truncate silently.
 
+### Scan statuses with discover-specs
+
+For **Help me choose** — and whenever it needs to locate the project spec or rank the most-actionable few — the gateway runs the **`discover-specs`** skill, the frontmatter-only engine for `corpus/discovery`. It returns the TOON list of every project spec at the three SDD spec locations with its `status`, `project-path`, and gate `approvals`; the gateway ranks from that and never opens a spec body. This is a read, not production logic — the same category as counting `ledger.jsonl` lines for pending strategy — so the thin-classifier rule still holds.
+
 ## The routing table is the user-skill→capability index
 
 Classification routes a request to the **skill** that handles it; the routing table doubles as the index of what a user can invoke (there is no separate `skills.md`).
