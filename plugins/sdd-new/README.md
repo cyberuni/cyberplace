@@ -127,6 +127,24 @@ Your spec lives at `<repo>/.agents/specs/<project>/` (or `.agents/spec/` for a
 single-project repo) — **outside** any distributable plugin directory, so it never ships to
 your consumers.
 
+## Your identity in the committed trail
+
+SDD keeps a per-mission **combat log** (committed with your work) so the doctrine loop can
+learn from a mission after it merges — even on another machine. Each entry is attributed by a
+pseudonymous **handle**, never your email, and the committed log is **safe-to-publish by
+construction** (no emails, paths, secrets, or raw token counts).
+
+By default the handle falls back to your git commit author. If you'd rather not have your git
+name in the committed trail (or shared upstream via the forge loop), set **`SDD_HANDLE`** to a
+pseudonym:
+
+```bash
+export SDD_HANDLE=scanner-7
+```
+
+Leave it unset and SDD reads nothing from your git config — attribution simply comes from the
+commit you already author.
+
 ## Extending SDD to new artifact types
 
 SDD knows how to produce and judge specs for many kinds of artifacts — npm packages, agent
