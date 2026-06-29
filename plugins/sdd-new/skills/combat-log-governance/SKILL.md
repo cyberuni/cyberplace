@@ -106,6 +106,12 @@ the ledger's `strategy` count.
   Council** (a producer/judge/conductor never edits the enum). An **absent or off-enum `cause` fails
   closed** (it breaks cross-mission matchability).
 
+  **Efficiency** is a categorical correction class the committed log is designed to carry — the
+  conductor flagging notable token-waste (a class, **never raw counts**), so the post-merge doctrine
+  loop keeps the dimension. Its concrete `correction-kind` / `cause` are **not seeded**; they enter by
+  the same Council-ratified growth, and the numeric depth stays transcript-only (the floor admits no
+  raw token number).
+
 ### `halt` — a mid-flight stop, not at a gate (combat log)
 
 The agent halts mid-phase (a hard floor, an input it cannot supply, a blast radius it will not cross).
