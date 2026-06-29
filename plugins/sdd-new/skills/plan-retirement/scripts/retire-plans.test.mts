@@ -75,6 +75,30 @@ test('an uncleared plan is never deleted (fail-closed)', () => {
 	}
 })
 
+test('clearing a cr-ref does not collateral-delete a different cr-ref it is a prefix of', () => {
+	const dir = plansDir(['github-3', 'github-34'])
+	try {
+		main(['--root', dir, '--retire', 'github-3']) // exact stem only
+		assert.ok(!existsSync(join(dir, 'github-3.plan.md')))
+		assert.ok(existsSync(join(dir, 'github-34.plan.md')))
+		assert.ok(existsSync(join(dir, 'github-34.log.jsonl')))
+	} finally {
+		rmSync(dir, { recursive: true, force: true })
+	}
+})
+
+test('the sweep only deletes — it creates no new file (writes nothing to the ledger)', () => {
+	const dir = plansDir(['github-34', 'local-bar'])
+	try {
+		const before = new Set(readdirSync(dir))
+		main(['--root', dir, '--retire', 'github-34'])
+		// every surviving entry was present before; the sweep added nothing.
+		for (const f of readdirSync(dir)) assert.ok(before.has(f), `unexpected new file ${f}`)
+	} finally {
+		rmSync(dir, { recursive: true, force: true })
+	}
+})
+
 test('a cleared cr-ref with no plan on disk is a no-op', () => {
 	const dir = plansDir(['github-34'])
 	try {
