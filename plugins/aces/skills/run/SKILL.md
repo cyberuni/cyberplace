@@ -9,7 +9,7 @@ Run the eval suite for a target agent configuration and report results.
 
 ## Locate the eval suite
 
-If the user specifies a target, find `artifacts/specs/<feature-name>/eval.md`. If no target is specified and only one `artifacts/specs/` directory with an `eval.md` exists, use it. If multiple exist, ask which to run.
+If the user specifies a target, find `artifacts/specs/<feature-name>/eval.md`. If no target is specified and only one `artifacts/specs/` directory with an `eval.md` exists, use it. If multiple exist, ask which to run. **If no eval suite exists at all, report that no eval suite is initialized and stop — do not run.**
 
 Read `eval.md` for: `target`, `judge_model`, `threshold`, `layers`.
 

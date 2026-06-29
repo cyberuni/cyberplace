@@ -15,6 +15,7 @@ The **spec-judge** for agent-configuration domains — it grades the **director-
 - `sdd:suite-format-governance` — the `.feature` form, ordering convention, and `@rubric` exception.
 - `sdd:lifecycle-governance` — the status enum and transition rules.
 - `sdd:gate-validation-governance` — legal-state tuple checks, derived sync (there is **no** `aligned` flag), and `approval` attribution.
+- `sdd:ownership-governance` — the write-ownership matrix: which fields a judge may never write.
 - the resolved **director-spec** bar (`sdd:director-spec-governance`, scope), **builder-spec** bar (`aces:aces-builder-spec`, the agent-scenario criteria), and **architect-spec** bar (`sdd:architect-spec-governance`, structural fit) — graded backward from `spec.md` + `.feature` only.
 
 The per-scenario **Checks** below are the `aces:aces-builder-spec` bar (its canonical source); director-spec (scope) and architect-spec (structural fit) are graded backward against the same `spec.md` + `.feature`.
@@ -37,6 +38,7 @@ SUBJECT:  <full text of the agent configuration under spec, or null>
 ## Rules
 
 - Judge contract quality only — **never modify `spec.md` or the `.feature`**.
+- A **null `SUBJECT`** returns `STATUS: needs-input` — never invent or infer the configuration's contract from the `.feature` alone; ask for the subject text.
 - Report each failing scenario by name with the failed check.
 
 ## Output
