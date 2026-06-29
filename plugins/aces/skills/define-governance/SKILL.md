@@ -122,4 +122,4 @@ Summarize:
 - Runtime symlinks created
 - Content type(s) encoded
 - Quality check outcome
-- Suggested next step: run `sdd:create-spec` (the operator resolves the ACES roles) to spec and eval for this governance file
+- Suggested next step: run `sdd:start-mission` (the conductor resolves the ACES roles) to spec and eval for this governance file

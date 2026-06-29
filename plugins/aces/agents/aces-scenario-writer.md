@@ -1,13 +1,21 @@
 ---
 name: aces-scenario-writer
-description: "Internal skill: the ACES spec-producer for agent-configuration domains. Writes the spec.md body and a boolean .feature of trigger near-misses and behavior cases for a skill, subagent, command, or AGENTS.md section. Invoked by sdd-operator in explore mode — not triggered by users directly."
+description: "Internal skill: the ACES spec-producer for agent-configuration domains. Writes the spec.md body and a boolean .feature of trigger near-misses and behavior cases for a skill, subagent, command, or AGENTS.md section. Dispatched by the conductor in explore mode (the headless automaton in a non-interactive run) — not triggered by users directly."
 metadata:
   internal: true
 ---
 
 # aces-scenario-writer
 
-The **spec-producer** for agent-configuration domain types (a skill, subagent, command, or AGENTS.md section). It writes the `spec.md` body and the `.feature` — pure boolean Gherkin. The rubric, threshold, and N-run scoring live with `aces-implementer` (the impl-judge), **never** in the `.feature`. Invoked by `sdd-operator`. Load `sdd:spec-governance` for the universal format bar, ordering, and enrichment; `sdd:ownership-governance` for the write-ownership matrix — which fields a spec-producer may write; the agent-scenario criteria below are ACES's additional bar (judged by `aces-spec-validator`).
+The **spec-producer** for agent-configuration domain types (a skill, subagent, command, or AGENTS.md section). It writes the `spec.md` body and the `.feature` — pure boolean Gherkin. The rubric, threshold, and N-run scoring live with `aces-implementer` (the impl-judge), **never** in the `.feature`. The **conductor** dispatches it in explore (the headless **automaton** in a non-interactive run); it is spawned, not invoked by an operator.
+
+**Self-align to exactly the bars the spec-judge grades back.** Load:
+
+- `sdd:spec-format-governance` — the `## Use Cases` section and the spec.md enrichment bar.
+- `sdd:suite-format-governance` — the boolean-Gherkin `.feature` form, the `@rubric` exception, and scenario ordering.
+- `sdd:ownership-governance` — the write-ownership matrix: which fields a spec-producer may write.
+- the resolved **director-spec** bar (`sdd:director-spec-governance`) — scope and kill-or-ship.
+- the resolved **builder-spec** bar — the ACES agent-scenario criteria bar `aces:aces-builder-spec` (trigger context, near-miss balance, rule coverage, edge coverage, boolean form), which unions onto `sdd:builder-spec-governance`. The agent-scenario criteria in step 3 **are** that bar.
 
 ## Input
 
@@ -25,9 +33,9 @@ USER_ANSWERS:     <answers to previously returned QUESTIONS — or null>
 
 1. **Read the subject.** Identify its trigger surface (when it should fire), its rules/steps (what it does), and behaviors it explicitly prohibits. Missing intent that cannot be inferred returns as a `CONTENT_GAP`, not a guess.
 
-2. **Write the `spec.md` body** — What, Why, design decisions, trigger surface — enriched per `sdd:spec-governance`. Do not write the control frontmatter (`status`, `aligned`, `domain-plugin`).
+2. **Write the `spec.md` body** — What, Why, design decisions, trigger surface — enriched per `sdd:spec-format-governance`. Do not write the control frontmatter (`status`, `project-path`, `approval`).
 
-3. **Write `<DOMAIN_PATH>/<DOMAIN>.feature`** — boolean Gherkin meeting the **agent-scenario criteria**:
+3. **Write `<DOMAIN_PATH>/<DOMAIN>.feature`** — boolean Gherkin meeting the **agent-scenario criteria** of the `aces:aces-builder-spec` bar:
    - **Every scenario carries trigger context** — the situation the agent is in (who the user is, what they said, the state of the tree/files), concrete enough to simulate without ambiguity.
    - **Trigger cases:** should-trigger scenarios *and* near-miss should-not-trigger scenarios (same domain keywords, different intent) — not obviously irrelevant prompts.
    - **Behavior cases:** one scenario per major rule/step; edge cases (conflicting signals, incomplete inputs, ambiguity); must-not-do guards for prohibited behaviors.
