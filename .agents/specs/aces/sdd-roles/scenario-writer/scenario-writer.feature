@@ -1,3 +1,4 @@
+@frozen
 Feature: scenario-writer — the spec-producer role
   Unit suite for the ACES spec-producer the conductor dispatches in explore: write the spec.md body
   and a boolean .feature for one agent-config artifact. Grading the suite is spec-validator; running

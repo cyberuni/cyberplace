@@ -1,3 +1,4 @@
+@frozen
 Feature: acceptance — the author → run → improve → compare loop
   Cross-capability e2e: the full ACES eval loop tying add, run, improve, and compare across a single
   agent configuration. Unit-level behavior lives in each capability folder; this suite asserts the

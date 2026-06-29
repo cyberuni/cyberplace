@@ -1,3 +1,4 @@
+@frozen
 Feature: compare — diff two config versions for regressions
   Unit suite for the compare skill: score a before-version and an after-version against the same
   golden set and classify the per-case change, gating on regressions. Single-version scoring is

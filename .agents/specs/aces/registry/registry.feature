@@ -1,3 +1,4 @@
+@frozen
 Feature: registry — register ACES as the agent-config SDD plugin
   Unit suite for the init-aces skill: upsert the ACES entry in .agents/universal-plugin.json so the
   conductor resolves ACES for the agent-config artifact-types. Idempotent, fail-closed. Cross-
