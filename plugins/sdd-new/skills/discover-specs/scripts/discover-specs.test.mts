@@ -155,6 +155,41 @@ test('collectSpecs only matches root-level .agents/specs (pattern 2 has no ** pr
 	}
 })
 
+// A spec is found at whatever spec location it currently sits — no path index to keep in sync.
+test('collectSpecs finds a moved spec at its new location (no path registry)', () => {
+	const dir = mkdtempSync(join(tmpdir(), 'discover-specs-'))
+	try {
+		seed(dir, '.agents/specs/proj/spec.md', 'status: draft') // original location
+		assert.deepEqual(
+			collectSpecs(dir).map((s) => s.path),
+			['.agents/specs/proj'],
+		)
+		// "move" it to a different spec location — nothing else updated
+		rmSync(join(dir, '.agents/specs/proj'), { recursive: true, force: true })
+		seed(dir, 'packages/proj/.agents/spec/spec.md', 'status: draft')
+		assert.deepEqual(
+			collectSpecs(dir).map((s) => s.path),
+			['packages/proj/.agents/spec'],
+		)
+	} finally {
+		rmSync(dir, { recursive: true, force: true })
+	}
+})
+
+test('collectSpecs joins multiple gate approvals in order', () => {
+	const dir = mkdtempSync(join(tmpdir(), 'discover-specs-'))
+	try {
+		seed(
+			dir,
+			'.agents/specs/sdd/spec.md',
+			'status: implemented\napproval:\n  spec:\n    verdict: approve\n  impl:\n    verdict: approve',
+		)
+		assert.equal(collectSpecs(dir)[0].approvals, 'spec:approve;impl:approve')
+	} finally {
+		rmSync(dir, { recursive: true, force: true })
+	}
+})
+
 test('collectSpecs carries name, name-source, status, project-path, and approvals', () => {
 	const dir = mkdtempSync(join(tmpdir(), 'discover-specs-'))
 	try {
