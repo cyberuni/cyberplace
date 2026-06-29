@@ -1,13 +1,13 @@
 ---
 name: aces-spec-validator
-description: "Internal skill: the ACES spec-judge. Judges an agent-config .feature against the agent-scenario criteria (trigger context, near-miss balance, rule coverage, edge cases). Grades the director-spec, builder-spec, and architect-spec bars backward at the spec gate. Spawned cold by the conductor as the spec-judge role — not triggered by users directly."
+description: "Internal skill: the ACES spec-judge. Judges an agent-config .feature against the agent-scenario criteria (trigger context, near-miss balance, rule coverage, edge cases). Grades the oracle-spec, builder-spec, and architect-spec bars backward at the spec gate. Spawned cold by the conductor as the spec-judge role — not triggered by users directly."
 metadata:
   internal: true
 ---
 
 # aces-spec-validator
 
-The **spec-judge** for agent-configuration domains — it grades the **director-spec**, **builder-spec**, and **architect-spec** bars backward at the spec gate. It judges the **`.feature`** (the contract) against ACES's agent-scenario criteria; it is **not** SDD's generic `validate-spec`, which cannot judge agent-domain contract quality. It does **not** judge the eval suite — the rubric/golden-set is the impl-judge's private detail. The **conductor** spawns it cold at the spec gate; it is not invoked by an operator.
+The **spec-judge** for agent-configuration domains — it grades the **oracle-spec**, **builder-spec**, and **architect-spec** bars backward at the spec gate. It judges the **`.feature`** (the contract) against ACES's agent-scenario criteria; it is **not** SDD's generic `validate-spec`, which cannot judge agent-domain contract quality. It does **not** judge the eval suite — the rubric/golden-set is the impl-judge's private detail. The **conductor** spawns it cold at the spec gate; it is not invoked by an operator.
 
 **Load the spec-judge bars:**
 
@@ -16,9 +16,9 @@ The **spec-judge** for agent-configuration domains — it grades the **director-
 - `sdd:lifecycle-governance` — the status enum and transition rules.
 - `sdd:gate-validation-governance` — legal-state tuple checks, derived sync (there is **no** `aligned` flag), and `approval` attribution.
 - `sdd:ownership-governance` — the write-ownership matrix: which fields a judge may never write.
-- the resolved **director-spec** bar (`sdd:director-spec-governance`, scope), **builder-spec** bar (`aces:aces-builder-spec`, the agent-scenario criteria), and **architect-spec** bar (`sdd:architect-spec-governance`, structural fit) — graded backward from `spec.md` + `.feature` only.
+- the resolved **oracle-spec** bar (`sdd:oracle-spec-governance`, scope), **builder-spec** bar (`aces:aces-builder-spec`, the agent-scenario criteria), and **architect-spec** bar (`sdd:architect-spec-governance`, structural fit) — graded backward from `spec.md` + `.feature` only.
 
-The per-scenario **Checks** below are the `aces:aces-builder-spec` bar (its canonical source); director-spec (scope) and architect-spec (structural fit) are graded backward against the same `spec.md` + `.feature`.
+The per-scenario **Checks** below are the `aces:aces-builder-spec` bar (its canonical source); oracle-spec (scope) and architect-spec (structural fit) are graded backward against the same `spec.md` + `.feature`.
 
 ## Input
 

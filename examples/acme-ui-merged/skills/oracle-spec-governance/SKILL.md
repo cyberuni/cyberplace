@@ -1,18 +1,18 @@
 ---
-name: director-spec-governance
-description: "Internal governance (not user-invokable): the Director bar for react-component at the spec gate. Scope / kill-or-ship criteria by discipline, loaded by both the spec-producer (self-align) and spec-judge (grade)."
+name: oracle-spec-governance
+description: "Internal governance (not user-invokable): the Oracle bar for react-component at the spec gate. Scope / kill-or-ship criteria by discipline, loaded by both the spec-producer (self-align) and spec-judge (grade)."
 user-invocable: false
 metadata:
   artifact-type: react-component
-  actor: director
+  actor: oracle
   gate: spec
   face: both
   compose: union
 ---
 
-# director · spec — the scope / kill-or-ship bar, by discipline
+# oracle · spec — the scope / kill-or-ship bar, by discipline
 
-The Director bar (spec gate only — no impl face). Stated once; the spec-producer self-aligns scope,
+The Oracle bar (spec gate only — no impl face). Stated once; the spec-producer self-aligns scope,
 the spec-judge grades it. Generic core: one coherent unit, bounded surface, explicit non-goals, value
 clears cost.
 

@@ -58,7 +58,7 @@ footprint, never the whole tree and never one fleet-era folder.
 Resolve the **spec-judge** for each `artifact-types` (a plugin judge or the SDD default
 `sdd-spec-judge`) and **spawn it cold** over the touched node(s) — pass it `spec.md` + the
 `.feature` only (the solution stays out of its view). It grades against the spec-gate lens set
-**{director, builder, architect}**. Then synthesize `aligned` and **derive the leash** (the
+**{oracle, builder, architect}**. Then synthesize `aligned` and **derive the leash** (the
 assessment in `../../design/autonomy-rubric.md`) in-session. Collect the judge's `STATUS`,
 `ALIGNED`, failing scenarios, remaining `<!-- open: -->` markers, `OBSERVATIONS`, and the gate
 report. The judge is a **distinct cold actor** and never edits the artifact it grades.

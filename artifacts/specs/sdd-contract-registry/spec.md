@@ -41,7 +41,7 @@ Each entry names a plugin, its version, the domains it covers, a five-role map, 
         "impl-judge": "<agent>"
       },
       "governances": {
-        "director": null,
+        "oracle": null,
         "builder": "<skill>",
         "architect": null
       }
@@ -79,7 +79,7 @@ Each entry's `roles` map uses the production-chain roles: `spec-producer`, `plan
 
 ### `null` and missing keys degenerate to the SDD default
 
-For **roles**: a `null` value, or a missing role key, is a legal entry shape — a plugin lists only the roles it specializes and leaves the rest null or absent. For **governances**: the `governances` block itself is required on every entry; each individual binding (`director`, `builder`, `architect`) may be `null`.
+For **roles**: a `null` value, or a missing role key, is a legal entry shape — a plugin lists only the roles it specializes and leaves the rest null or absent. For **governances**: the `governances` block itself is required on every entry; each individual binding (`oracle`, `builder`, `architect`) may be `null`.
 
 A non-null role value **names a spawned agent** (a plugin delegate or a model-tuned producer) that runs at its own model. Degeneration of a `null` or absent role is performed by `sdd-operator` at resolution time and **differs by role kind** — this spec only guarantees what is a valid stored entry shape, not the traversal:
 
@@ -116,7 +116,7 @@ If `.agents/universal-plugin.json` exists but contains malformed JSON, `init-<pl
 | `version` | Yes | Installed plugin version |
 | `domains` | Yes | Open-string domain types this plugin covers |
 | `roles` | Yes | Map of the five production-chain roles to spawned agents; `null` or omitted = SDD default (a producer role → operator authors inline as `sdd:sdd-operator`; a judge role → operator spawns the cold SDD-default judge agent) |
-| `governances` | Yes | Actor-governance bindings (`director`, `builder`, `architect`); the block is required, each binding may be `null` = SDD default |
+| `governances` | Yes | Actor-governance bindings (`oracle`, `builder`, `architect`); the block is required, each binding may be `null` = SDD default |
 
 Init-write behavior:
 

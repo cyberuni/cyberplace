@@ -3,14 +3,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { test } from 'node:test'
-import {
-	collectPlans,
-	main,
-	nextLead,
-	parsePlanFrontmatter,
-	TODO_STATUSES,
-	toToon,
-} from './discover-plans.mts'
+import { collectPlans, main, nextLead, parsePlanFrontmatter, TODO_STATUSES, toToon } from './discover-plans.mts'
 
 // Write a <cr>.plan.md under <dir>/.agents/plans with the given contents.
 function seedPlan(dir: string, cr: string, contents: string): void {
@@ -21,18 +14,14 @@ function seedPlan(dir: string, cr: string, contents: string): void {
 
 // A minimal plan brief: name + a todos list with the given statuses + a NEXT anchor.
 function brief(name: string, statuses: string[], next: string): string {
-	const todos = statuses
-		.map((s, i) => `  - id: t${i}\n    content: "step ${i}"\n    status: ${s}`)
-		.join('\n')
+	const todos = statuses.map((s, i) => `  - id: t${i}\n    content: "step ${i}"\n    status: ${s}`).join('\n')
 	return `---\nname: "${name}"\ntodos:\n${todos}\n---\n\n## NEXT\n\n${next}\n`
 }
 
 // ── parsePlanFrontmatter ──
 
 test('parsePlanFrontmatter reads name and tallies todos by status', () => {
-	const fm = parsePlanFrontmatter(
-		brief('demo', ['completed', 'completed', 'in_progress', 'pending'], 'do the thing'),
-	)
+	const fm = parsePlanFrontmatter(brief('demo', ['completed', 'completed', 'in_progress', 'pending'], 'do the thing'))
 	assert.equal(fm?.name, 'demo')
 	assert.equal(fm?.total, 4)
 	assert.equal(fm?.completed, 2)
@@ -52,9 +41,7 @@ test('parsePlanFrontmatter strips quotes from the name', () => {
 
 test('parsePlanFrontmatter ignores status-like keys outside the todos block', () => {
 	// A non-todos key after the list must not inflate the tally.
-	const fm = parsePlanFrontmatter(
-		'---\nname: x\ntodos:\n  - id: a\n    status: completed\nisProject: false\n---\n',
-	)
+	const fm = parsePlanFrontmatter('---\nname: x\ntodos:\n  - id: a\n    status: completed\nisProject: false\n---\n')
 	assert.equal(fm?.total, 1)
 	assert.equal(fm?.completed, 1)
 })
@@ -76,10 +63,7 @@ test('nextLead returns the first content line under ## NEXT', () => {
 })
 
 test('nextLead matches a decorated NEXT heading and strips bullet/emphasis markers', () => {
-	assert.equal(
-		nextLead('## NEXT — resume here\n\n- **Build** the `foo` unit\n'),
-		'Build the `foo` unit',
-	)
+	assert.equal(nextLead('## NEXT — resume here\n\n- **Build** the `foo` unit\n'), 'Build the `foo` unit')
 })
 
 test('nextLead returns empty when there is no NEXT section', () => {
@@ -156,9 +140,7 @@ test('collectPlans returns empty when there is no plans dir', () => {
 // ── toToon ──
 
 test('toToon emits a TOON table keyed by the plan columns', () => {
-	const toon = toToon([
-		{ cr: 'github-34', name: 'four', total: 2, completed: 1, inProgress: 0, next: 'do, it' },
-	])
+	const toon = toToon([{ cr: 'github-34', name: 'four', total: 2, completed: 1, inProgress: 0, next: 'do, it' }])
 	const lines = toon.split('\n')
 	assert.equal(lines[0], 'plans[1]{cr,name,total,completed,inProgress,next}:')
 	// `next` carries a comma → it must be quoted.

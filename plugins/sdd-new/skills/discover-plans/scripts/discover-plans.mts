@@ -100,7 +100,10 @@ export function nextLead(text: string): string {
 		const l = lines[i].replace(/\r$/, '').trim()
 		if (l === '') continue
 		if (l.startsWith('#')) return '' // hit the next heading with no content between
-		const cleaned = l.replace(/^[-*]\s+/, '').replace(/\*\*/g, '').trim()
+		const cleaned = l
+			.replace(/^[-*]\s+/, '')
+			.replace(/\*\*/g, '')
+			.trim()
 		return cleaned.length > 200 ? `${cleaned.slice(0, 197)}...` : cleaned
 	}
 	return ''
@@ -161,9 +164,7 @@ function toonField(v: string): string {
 
 export function toToon(plans: PlanRecord[]): string {
 	const header = `plans[${plans.length}]{${COLUMNS.join(',')}}:`
-	const rows = plans.map(
-		(p) => `  ${COLUMNS.map((c) => toonField(String(p[c]))).join(',')}`,
-	)
+	const rows = plans.map((p) => `  ${COLUMNS.map((c) => toonField(String(p[c]))).join(',')}`)
 	return [header, ...rows].join('\n')
 }
 

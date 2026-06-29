@@ -4,11 +4,11 @@ A single, consistent reading of the SDD agent architecture. The **neutral actors
 
 ## Two layers
 
-Implementation is **keyed by the actor name** (neutral, from the motive-model): `director`, `builder`, `architect`, `strategist` — registry `governances{}` keys, governance skills, the `OBSERVATIONS owner:` enum, spec prose. The **fleet unit names** are a presentation layer only — narrative, never keys.
+Implementation is **keyed by the actor name** (neutral, from the motive-model): `oracle`, `builder`, `architect`, `strategist` — registry `governances{}` keys, governance skills, the `OBSERVATIONS owner:` enum, spec prose. The **fleet unit names** are a presentation layer only — narrative, never keys.
 
 | Actor (motive-model, neutral) | Fleet unit | SDD machinery |
 |---|---|---|
-| **Director** | **Commander** | the `director` role — scope, go/scrub; `director-governance` |
+| **Oracle** | **Commander** | the `oracle` role — scope, go/scrub; `oracle-governance` |
 | **Builder** | **Battler** | the spec/impl **producer**; `builder-governance` |
 | **Architect** | **Warden** | the `architect` role — structure/conventions; `architect-governance` |
 | **Strategist** | **Scanner** *(in the Bunker)* | the outer-loop agent (`sdd-doctrine-loop`) — not yet built |

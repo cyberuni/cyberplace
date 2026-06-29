@@ -1,21 +1,21 @@
 ---
-name: director-spec-governance
-description: "Internal skill: the Director actor bar at the spec gate — scope and kill-or-ship. Loaded by the spec-producer to self-align and by the cold spec-judge to grade scope. The SDD default for the director bar; a plugin may bind its own per artifact-type. Not triggered by users directly."
+name: oracle-spec-governance
+description: "Internal skill: the Oracle actor bar at the spec gate — scope and kill-or-ship. Loaded by the spec-producer to self-align and by the cold spec-judge to grade scope. The SDD default for the oracle bar; a plugin may bind its own per artifact-type. Not triggered by users directly."
 user-invocable: false
 metadata:
-  actor: director
+  actor: oracle
   gate: spec
   compose: union
 ---
 
-# Director-Spec Governance — the scope & kill-or-ship bar
+# Oracle-Spec Governance — the scope & kill-or-ship bar
 
-The **Director** bar at the **spec gate**: is the intent worth committing? One merged bar loaded by
+The **Oracle** bar at the **spec gate**: is the intent worth committing? One merged bar loaded by
 **both** faces — the **spec-producer** reads it forward to self-align on scope before writing, and
 the **cold spec-judge** reads it backward to judge kill-or-ship. `producer ≠ judge` holds at the
-agent level. Director applies at the spec gate only — there is no Director impl face.
+agent level. Oracle applies at the spec gate only — there is no Oracle impl face.
 
-The SDD default for the `director` bar — a plugin may bind its own per artifact-type (governance resolution); this loads when the registry leaves `director` unbound.
+The SDD default for the `oracle` bar — a plugin may bind its own per artifact-type (governance resolution); this loads when the registry leaves `oracle` unbound.
 
 ## The bar
 

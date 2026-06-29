@@ -111,7 +111,7 @@ The survey of escalation points produced four buckets. The rubric must classify 
 
 | Bucket | Meaning | Examples | Rubric behavior |
 |---|---|---|---|
-| **A** | Already risk-gated — the model being generalized | spec gate, impl gate, leash ceiling, Director-revert | self-clears **when low-risk**, escalates when any dimension is high |
+| **A** | Already risk-gated — the model being generalized | spec gate, impl gate, leash ceiling, Oracle-revert | self-clears **when low-risk**, escalates when any dimension is high |
 | **B** | Mandatory today, but risk-gradable → *should* self-clear when low-risk | freeze re-open, split-spec checkpoints, dedupe-specs checkpoints, formation-loop cycle surfacing, doctrine keep-or-cut, campaign go/keep, change-request accept, forced spec re-review | self-clears when the change is additive / low-risk — this is the value the governance unlocks |
 | **C** | Irreducibly human (intent) — must stay escalate | iteration-cap accept/change, observation accept/decline, operator needs-input, domain disambiguation, escape-hatch classification, inject, gateway 4-option menu | **always escalate**, regardless of computed score — these are intent decisions, not risk decisions |
 | **D** | Hard floor — must stay escalate by invariant | forge-loop redaction / data egress | **always escalate** by the hard-floor invariant |
@@ -167,7 +167,7 @@ This governance is the **risk-assessment** side. It **cooperates with** — and 
 
 ## Placement and portability
 
-Ships as an **SDD fallback governance** at `plugins/sdd/skills/autonomy-governance/`, sibling to `architect-governance`, `director-governance`, and `gate-validation-governance`.
+Ships as an **SDD fallback governance** at `plugins/sdd/skills/autonomy-governance/`, sibling to `architect-governance`, `oracle-governance`, and `gate-validation-governance`.
 
 The contract is **plugin-portable**. It is **designed to migrate or be enhanced into ACES** — the agent-configuration domain — when ACES is ready to own the agent-config autonomy concern. **ACES is the intended future home.** Nothing in the contract binds it to the SDD plugin; the rubric is a general agent-config-autonomy bar that SDD hosts until ACES adopts it.
 

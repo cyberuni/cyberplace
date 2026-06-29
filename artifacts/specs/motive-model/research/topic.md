@@ -37,8 +37,8 @@ Most of the framework's spine is grounded: the Actor/Delegate split mirrors **ag
 ### Session verdicts folded into the spec
 
 - **Architect is distinct by OBJECT, not scope.** "Builder at system scope" is a category error: a Builder zoomed out still makes a *part*; the Architect makes *relations between parts*. Resolves former open question #1.
-- **The gate is a two-axis decision:** verdict (accept/block) × change-request (none/yes, timing within-PR/deferred). `block+none` = Director's kill at the gate; `accept+deferred` = the feedback edge. Timing is free only under `accept` (block forces within-PR).
-- **The deferred branch is a scheduling decision over a dependency tree**, owned by the Director (Architect detects/estimates). Two flavors: defer new work (stub now, rework later) vs defer current work (build prerequisite first). Determined by rework-cost vs switch-cost.
+- **The gate is a two-axis decision:** verdict (accept/block) × change-request (none/yes, timing within-PR/deferred). `block+none` = Oracle's kill at the gate; `accept+deferred` = the feedback edge. Timing is free only under `accept` (block forces within-PR).
+- **The deferred branch is a scheduling decision over a dependency tree**, owned by the Oracle (Architect detects/estimates). Two flavors: defer new work (stub now, rework later) vs defer current work (build prerequisite first). Determined by rework-cost vs switch-cost.
 - **The Conductor's signature move** is fanning the dependency out to a parallel delegate, so "build prerequisite first" stops meaning "stop everything" — a direct instance of the abundance premise, grounded in the orchestrator-worker pattern.
 
 ## Contradictions

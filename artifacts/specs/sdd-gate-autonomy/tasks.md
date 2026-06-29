@@ -13,7 +13,7 @@ The runtime machinery is **blocked-by sdd-operator** (draft). The enforcement sl
 - [x] leash derivation at runtime — `sdd-operator` Step 4b (four-dimension assessment per gate, ceiling, re-derived per run)
 - [x] gate report emission — `sdd-operator` Step 4b + Return contract (verdict per face + leash derivation + markers-as-questions + decision menu)
 - [x] `approved-by` writing — `ownership-governance` matrix + operator self-assert (`by: agent` + `leash` + `why`), `validate-spec` ratify (`by: <human>`)
-- [x] gate actions — `validate-spec` §6 (approve/change/reject per gate; impl-gate Director-revert unfreeze)
+- [x] gate actions — `validate-spec` §6 (approve/change/reject per gate; impl-gate Oracle-revert unfreeze)
 
 Awaiting the human **impl gate** (derived `auto-none` — blast radius reaches core SDD governance): the work above is provisional until ratified.
 

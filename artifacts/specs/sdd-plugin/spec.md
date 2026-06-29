@@ -117,7 +117,7 @@ A **use case** is an entry-point — a trigger, its inputs, and its outcome. Eac
 | **Scaffold or backfill a contract** | the user runs `create-spec` for a domain | a brief (or existing implementation, in backfill) | the co-delivered artifact chain is scaffolded; missing core intent suspends before any write; backfill confirms inferred intent before writing |
 | **Surface gaps and observations** | a producer returns a discovery or cross-cutting note | the operator result | content gaps become open markers surfaced before the gate; observations are reported without blocking the current spec |
 | **Run the spec gate** | the user runs `validate-spec` at the spec gate | `spec.md` + `.feature` | the contract layer is judged (universal format bar + domain criteria); markers fail it; on approval `status → approved` and the `.feature` is frozen with recorded provenance |
-| **Honor the frozen contract** | an agent attempts to edit a frozen `.feature` | an `approved` spec | the agent refuses and directs reverting to draft; a fatal contract gap reopens via a Director revert through the gate |
+| **Honor the frozen contract** | an agent attempts to edit a frozen `.feature` | an `approved` spec | the agent refuses and directs reverting to draft; a fatal contract gap reopens via a Oracle revert through the gate |
 | **Run the impl gate** | `validate-spec` targets the impl gate | the frozen `.feature` + implementation | implementation runs against frozen scenarios; the gate passes only when every frozen scenario passes, then `status → implemented` with `aligned` true; uncovered scenarios fail it |
 | **Render the spec graph** | `render-spec-graph` runs | `blocked-by` and `subtasks` edges | the DAG and composition views render; a feature with more than one project parent fails; tasks trace to scenarios |
 
@@ -131,7 +131,7 @@ The frontmatter schema (`status`, `type`, `aligned`, `blocked-by`, `subtasks`, `
 
 ## Lifecycle
 
-Exploration → spec gate → implementation → impl gate → deprecation. The autonomous production chain that runs each phase is owned by `sdd-operator`; gate mechanics, legal state tuples, and layer-scoped `aligned` by `sdd-gate-autonomy`; approval provenance by `sdd-provenance`. At a glance: exploration runs while `draft`; the spec gate moves `draft → approved` and freezes the `.feature`; implementation runs against the frozen `.feature`; the impl gate moves `approved → implemented`; deprecation is a Director decision that retains the spec for history.
+Exploration → spec gate → implementation → impl gate → deprecation. The autonomous production chain that runs each phase is owned by `sdd-operator`; gate mechanics, legal state tuples, and layer-scoped `aligned` by `sdd-gate-autonomy`; approval provenance by `sdd-provenance`. At a glance: exploration runs while `draft`; the spec gate moves `draft → approved` and freezes the `.feature`; implementation runs against the frozen `.feature`; the impl gate moves `approved → implemented`; deprecation is a Oracle decision that retains the spec for history.
 
 ---
 

@@ -18,9 +18,9 @@ approval: {}
 
 ## What
 
-An **outer loop** of the SDD model — the cross-mission loop that **grows and prunes the product**: it decides which features the product should *have*. Fleet role: the **Commander**. Actor: the **Director**. Its delegate watches missions reach a terminal state and reasons across the whole portfolio: *"We shipped feature A; B is the natural next; and with B, feature C is now redundant — deprecate it."* In the metaphor: which **theaters** to open and which to close.
+An **outer loop** of the SDD model — the cross-mission loop that **grows and prunes the product**: it decides which features the product should *have*. Fleet role: the **Commander**. Actor: the **Oracle**. Its delegate watches missions reach a terminal state and reasons across the whole portfolio: *"We shipped feature A; B is the natural next; and with B, feature C is now redundant — deprecate it."* In the metaphor: which **theaters** to open and which to close.
 
-It operates at **portfolio altitude**, across many specs — distinct from the Director's per-spec act at the gate. Its outputs are **proposals** that feed the Build loop: it **drafts new feature specs** and **triggers deprecations**, never auto-applying either. The human **Council** holds the keep-or-cut / go decision.
+It operates at **portfolio altitude**, across many specs — distinct from the Oracle's per-spec act at the gate. Its outputs are **proposals** that feed the Build loop: it **drafts new feature specs** and **triggers deprecations**, never auto-applying either. The human **Council** holds the keep-or-cut / go decision.
 
 ```mermaid
 flowchart LR

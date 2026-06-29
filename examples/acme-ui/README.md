@@ -7,7 +7,7 @@ A worked example to evaluate the **governance granularity** for `sub-governances
 React component library; artifact-type **`react-component`**. The governances live in `skills/` as
 `user-invocable: false` skills, named `<actor>-<gate>-<face>-governance`, each **one skill sectioned
 by discipline** (engineer / designer / a11y / security / qa for builder; product / api-design / dx
-for director; module-structure / dependency-hygiene / bundle for architect).
+for oracle; module-structure / dependency-hygiene / bundle for architect).
 
 This is a **structure demo**, not a runnable library.
 
@@ -15,14 +15,14 @@ This is a **structure demo**, not a runnable library.
 
 ```
 skills/
-  director-spec-producer-governance/    director-spec-judge-governance/     (spec gate only)
+  oracle-spec-producer-governance/    oracle-spec-judge-governance/     (spec gate only)
   builder-spec-producer-governance/     builder-spec-judge-governance/
   builder-impl-producer-governance/     builder-impl-judge-governance/
   architect-spec-producer-governance/   architect-spec-judge-governance/
   architect-impl-producer-governance/   architect-impl-judge-governance/
 ```
 
-`director` has **no impl face** (scope is settled at the spec gate) → 2, not 4. builder + architect
+`oracle` has **no impl face** (scope is settled at the spec gate) → 2, not 4. builder + architect
 span both gates → 4 each. Total **10**.
 
 ## What building all 10 actually revealed
@@ -47,7 +47,7 @@ bar can be loaded by both the (distinct) producer and judge agents without viola
 **3. Disciplines-as-sections works.** One skill per `(actor, gate, face)` with discipline sections
 reads cleanly and keeps each discipline's criteria in one place. The disciplines are **project
 governances** (here) composed onto the **SDD generic core** via `compose: union` — so
-`sub-governances` ships only the generic `director/builder/architect` core; squads like this one are
+`sub-governances` ships only the generic `oracle/builder/architect` core; squads like this one are
 project/plugin-supplied at resolution.
 
 ## The granularity question, now grounded
@@ -58,7 +58,7 @@ project/plugin-supplied at resolution.
 | `producer | judge` | **merge for objective bars** | mirror sections; `do X` ↔ `is X done?`; independence is per-agent, not per-file |
 | subjective rubric slice | **split out** | the judge's rubric is the one thing the producer shouldn't self-grade |
 
-So the as-built **10** compresses to **~5 per-`(actor,gate)`** bars (`director-spec`,
+So the as-built **10** compresses to **~5 per-`(actor,gate)`** bars (`oracle-spec`,
 `builder-spec`, `builder-impl`, `architect-spec`, `architect-impl`), each sectioned by discipline and
 loaded by both faces, **plus** a split-out `@rubric` only where a discipline has a subjective slice.
 

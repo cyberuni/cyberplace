@@ -25,7 +25,7 @@ artifact-type.
 
 Run `governance-resolution` for the node's `artifact-type` and load the plan it emits; the bars
 below are the SDD-default floor (and the only bars for a typeless spec). The **impl-gate lens set is
-{builder, architect}** — there is no director at the impl gate (contrast the spec gate's three):
+{builder, architect}** — there is no oracle at the impl gate (contrast the spec gate's three):
 
 - **Resolved-actor (the two backward faces):** the resolved `builder-impl` and `architect-impl`
   bars (floor `sdd:builder-impl-governance` / `sdd:architect-impl-governance`). Grade against

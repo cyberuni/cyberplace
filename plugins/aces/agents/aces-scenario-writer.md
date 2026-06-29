@@ -14,7 +14,7 @@ The **spec-producer** for agent-configuration domain types (a skill, subagent, c
 - `sdd:spec-format-governance` — the `## Use Cases` section and the spec.md enrichment bar.
 - `sdd:suite-format-governance` — the boolean-Gherkin `.feature` form, the `@rubric` exception, and scenario ordering.
 - `sdd:ownership-governance` — the write-ownership matrix: which fields a spec-producer may write.
-- the resolved **director-spec** bar (`sdd:director-spec-governance`) — scope and kill-or-ship.
+- the resolved **oracle-spec** bar (`sdd:oracle-spec-governance`) — scope and kill-or-ship.
 - the resolved **builder-spec** bar — the ACES agent-scenario criteria bar `aces:aces-builder-spec` (trigger context, near-miss balance, rule coverage, edge coverage, boolean form), which unions onto `sdd:builder-spec-governance`. The agent-scenario criteria in step 3 **are** that bar.
 
 ## Input

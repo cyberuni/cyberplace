@@ -5,7 +5,7 @@ User-facing SDD skill that runs the **spec gate** (Draft → Approved) over a CR
 lifecycle tuple + the per-node `spec-type` reconcile) and the provenance structural checks first
 (fail-closed on malformed `produced-by` / no resolvable producer; flag-only on uninstalled
 producers), then — running **in-session** as the conductor at the gate — **spawns a distinct cold
-spec-judge** over `spec.md` + the `.feature` (the **{director, builder, architect}** lens set; the
+spec-judge** over `spec.md` + the `.feature` (the **{oracle, builder, architect}** lens set; the
 solution stays out of its view) and derives the leash, then takes the verdict — self-asserting into
 the async review queue when in leash, else showing the in-session digest and taking the human
 verdict directly (it holds the user channel).

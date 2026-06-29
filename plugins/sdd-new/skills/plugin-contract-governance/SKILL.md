@@ -40,14 +40,14 @@ model-tuned producer agent named for the slot — is always spawned.
 ## Which governances each role loads
 
 Bars are the Model-B `(actor, gate)` governances (`sdd:governance-resolution` / `common-governances/`);
-a producer self-aligns to exactly the bars its judge grades. The lens sets are spec gate `{director,
+a producer self-aligns to exactly the bars its judge grades. The lens sets are spec gate `{oracle,
 builder, architect}`, impl gate `{builder, architect}`, solution `{architect}` (ungated).
 
 | Role | Loads |
 |---|---|
-| spec-producer | `spec-format`, `suite-format`, `ownership`, the resolved `director-spec` + `builder-spec` bars |
+| spec-producer | `spec-format`, `suite-format`, `ownership`, the resolved `oracle-spec` + `builder-spec` bars |
 | solution-producer | `ownership`, the resolved `architect-spec` bar |
-| spec-judge | `spec-format`, `suite-format`, `lifecycle`, `gate-validation`, the resolved `director-spec` + `builder-spec` + `architect-spec` bars |
+| spec-judge | `spec-format`, `suite-format`, `lifecycle`, `gate-validation`, the resolved `oracle-spec` + `builder-spec` + `architect-spec` bars |
 | impl-producer | `ownership`, the resolved `builder-impl` + `architect-impl` bars |
 | impl-judge | `ownership`, `gate-validation`, the resolved `builder-impl` + `architect-impl` bars |
 
@@ -82,7 +82,7 @@ not scan plugin directories. Each entry:
         "impl-judge":        "<agent | null>"
       },
       "governances": {
-        "director-spec":  "<name | null>",
+        "oracle-spec":  "<name | null>",
         "builder-spec":   "<name | null>",
         "builder-impl":   "<name | null>",
         "architect-spec": "<name | null>",
