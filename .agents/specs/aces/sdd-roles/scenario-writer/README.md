@@ -8,4 +8,18 @@ Author spec.md + a boolean .feature of trigger near-misses and behavior cases fo
 
 ## Use Cases
 
-<!-- to be authored in explore (spec-producer) — use cases mapped to scenario-writer.feature -->
+**Subject** — when the conductor dispatches it in explore, authoring the `spec.md` body and a
+boolean `.feature` (trigger near-misses + behavior cases) for one agent-config artifact (skill,
+subagent, command, or AGENTS.md section).
+**Non-goals** — grading the suite (that is `spec-validator`); running the evals (`implementer`);
+scoring one simulated case (`judge`); writing the control frontmatter (`status`, `domain-plugin`);
+authoring the eval rubric or golden set.
+
+| Use case | Trigger / inputs | Outcome |
+|---|---|---|
+| Produce a spec for an artifact | dispatched as the spec-producer with a subject (or null for a new one), trigger surface, and any user input | it writes the `spec.md` body and a sibling `.feature`, leaving control frontmatter and the eval suite untouched |
+| Frame the use cases | the subject's trigger surface and rules | the `spec.md` carries a `## Use Cases` section with Subject + Non-goals, enriched for the gate reader |
+| Cover triggering both ways | the subject's intended trigger surface | the `.feature` carries should-trigger scenarios and same-keyword near-miss should-not-trigger scenarios |
+| Cover the rules and guards | each major rule/step and each prohibited behavior of the subject | each rule gets at least one behavior scenario and each prohibition a must-not-do guard, every `Then` a boolean |
+| Surface missing intent | intent that cannot be read from the subject or inferred | it returns a content gap instead of inventing the behavior |
+| Revise on judge feedback or unclear input | spec-judge failures from a prior pass, or ambiguous inputs | it revises the named scenarios, or returns batched questions when it cannot proceed |
