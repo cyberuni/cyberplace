@@ -28,7 +28,7 @@ Evaluation runs in layers:
 | `improve` | Diagnose failing cases and propose targeted edits |
 | `report` | Project-wide health dashboard across all eval suites |
 
-Spec creation is owned by the `sdd` plugin's `create-spec` / `validate-spec`: once ACES is registered, the operator resolves the ACES production-chain roles automatically. The `run`/`compare`/`add`/`report` skills are thin reporting over the impl-judge's eval suite.
+Spec creation is owned by the `sdd` plugin's `start-mission` / `validate-spec`: once ACES is registered, the conductor resolves the ACES production-chain roles automatically. The `run`/`compare`/`add`/`report` skills are thin reporting over the impl-judge's eval suite.
 
 ## Agents (production-chain roles)
 
@@ -39,19 +39,19 @@ Spec creation is owned by the `sdd` plugin's `create-spec` / `validate-spec`: on
 | `aces-implementer` | impl-judge — **runs** the scenario→rubric eval suite (authored by the impl-producer) over N runs, collapses to a boolean per scenario |
 | `aces-judge` | internal scorer for `aces-implementer` — scores one scenario on a 1–5 rubric |
 
-The impl-producer (writing the agent config **and its scenario→rubric eval suite**) is the `define-agent` / `improve` skills or the SDD-default impl-producer (the Operator running `impl-producer-governance` inline); ACES does not bind a plan-producer (SDD default).
+The impl-producer (writing the agent config **and its scenario→rubric eval suite**) is the `define-agent` / `improve` skills or the SDD-default impl-producer (the conductor running `impl-producer-governance` via a spawned builder); ACES does not bind a solution-producer (SDD default).
 
 ## Workflow
 
 ```
-sdd:create-spec → sdd:validate-spec (spec gate) → implement → run/compare → improve
+sdd:start-mission → sdd:validate-spec (spec gate) → implement → run/compare → improve
                                                                    ↑
                                                              add (new cases)
                                                                    ↑
                                                              report (project-wide)
 ```
 
-1. **`sdd:create-spec`** — the operator resolves `aces-scenario-writer` to write the `.feature`; `aces-spec-validator` judges it at the spec gate.
+1. **`sdd:start-mission`** — the conductor resolves `aces-scenario-writer` to write the `.feature`; `aces-spec-validator` judges it at the spec gate.
 2. **implement** — the impl-producer (`define-agent` / `improve`) authors the scenario→rubric eval suite alongside the agent config; `aces-implementer` (impl-judge) **runs** it, scoring each scenario via `aces-judge` and writing results to `artifacts/specs/<suite>/results/`.
 3. **`compare`** — before committing an edit, diff the before/after scores. Warns on regressions.
 4. **`improve`** — reads failing cases, groups by failure pattern, proposes before/after diffs to the agent configuration. Automatically runs `compare` after edits.

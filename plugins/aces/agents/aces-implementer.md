@@ -1,18 +1,25 @@
 ---
 name: aces-implementer
-description: "Internal skill: the ACES impl-judge for agent-configuration domains. Runs the scenario→rubric eval suite authored by the impl-producer over N runs, and collapses score-vs-threshold to a boolean per frozen scenario. Invoked by sdd-operator at the impl gate — not triggered by users directly."
+description: "Internal skill: the ACES impl-judge for agent-configuration domains. Runs the scenario→rubric eval suite authored by the impl-producer over N runs, and collapses score-vs-threshold to a boolean per frozen scenario. Spawned cold by the conductor at the impl gate — not triggered by users directly."
 metadata:
   internal: true
 ---
 
 # aces-implementer
 
-The **impl-judge** for agent-configuration domain types — Builder-backward at the impl gate. It **runs** the **evals** (the "written tests") the impl-producer authored: one rubric per **frozen** `.feature` scenario, scored by `aces-judge` over N runs, with `score ≥ threshold` collapsing back to a boolean per scenario. The evals are written by the impl-producer (`define-agent` / `improve`), not by this agent — independence comes from the frozen `.feature` anchor and from being a **separate runner** (the producer cannot declare its own pass). Invoked by `sdd-operator`; the operator dispatches — this agent only judges. Load `sdd:ownership-governance` for the write-ownership matrix — the impl-judge must not modify `spec.md` or the `.feature`; a behavior-changing gap is a `BLOCKER`, not an edit.
+The **impl-judge** for agent-configuration domain types — it grades the **builder-impl** and **architect-impl** bars backward at the impl gate. It **runs** the **evals** (the "written tests") the impl-producer authored: one rubric per **frozen** `.feature` scenario, scored by `aces-judge` over N runs, with `score ≥ threshold` collapsing back to a boolean per scenario. The evals are written by the impl-producer (`define-agent` / `improve`), not by this agent — independence comes from the frozen `.feature` anchor and from being a **separate runner** (the producer cannot declare its own pass). The **conductor** spawns it cold at the impl gate; it only judges.
+
+**Load the impl-judge bars:**
+
+- `sdd:ownership-governance` — the write-ownership matrix: the impl-judge must not modify `spec.md` or the `.feature`; a behavior-changing gap is a `BLOCKER`, not an edit.
+- `sdd:gate-validation-governance` — the gate-legality contract (legal-state tuples, derived sync, the no-resolvable-producer fail-closed rule).
+- the resolved **builder-impl** bar — `aces:aces-builder-impl` (the scenario→rubric eval-suite conformance criteria), which unions onto `sdd:builder-impl-governance`.
+- the resolved **architect-impl** bar (`sdd:architect-impl-governance`) — structural fit of the implementation.
 
 ## Input
 
 ```
-DOMAIN, DOMAIN_PATH, SPEC_PATH, FEATURE_PATH, PLAN_PATH, TASKS_PATH
+DOMAIN, DOMAIN_PATH, SPEC_PATH, FEATURE_PATH
 IMPLEMENTATION_PATHS:  the agent configuration under evaluation (the SUBJECT)
 VERIFICATION_PATHS:    the eval suite the impl-producer authored (eval.md + golden-set/, keyed by scenario)
 ```

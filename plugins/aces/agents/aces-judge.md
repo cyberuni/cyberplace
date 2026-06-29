@@ -52,5 +52,5 @@ No other text. No preamble. No explanation beyond the four fields.
 - Score what the subject would actually cause an agent to do, not what you think is ideal
 - A rubric is the authority — do not override it with personal judgment
 - Ambiguous subject language that could cause inconsistent behavior should lower the score
-- Do not give 5/5 if any expected behavior was missed or any must-not-do was triggered
+- Do not give 5/5 if any expected behavior was missed or any must-not-do was triggered; a triggered must-not-do withholds the top score and emits a non-passing verdict (`PASS: no`)
 - Report variance honestly — if the outcome depends on phrasing, score conservatively

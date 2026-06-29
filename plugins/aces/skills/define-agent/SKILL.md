@@ -9,7 +9,7 @@ metadata:
 
 Create or improve an agent definition — a named role encoded in a single file.
 
-When dispatched by `sdd-operator` as the ACES **impl-producer** (implement mode, against a frozen `.feature`), this skill co-produces **two** artifacts: the agent definition **and its verification** — the scenario→rubric eval suite (`eval.md` + `golden-set/`, one eval per frozen scenario) that the impl-judge (`aces-implementer`) will run. The judge never authors evals, so write any missing eval here. (Invoked standalone — no frozen `.feature` — only the agent definition is produced.)
+When the conductor dispatches this skill as a generic builder (`produced-by sdd:automaton`) for the ACES **impl-producer** role (implement mode, against a frozen `.feature`), it co-produces **two** artifacts: the agent definition **and its verification** — the scenario→rubric eval suite (`eval.md` + `golden-set/`, one eval per frozen scenario) that the impl-judge (`aces-implementer`) will run. As impl-producer it self-aligns to `sdd:ownership-governance` plus the resolved **builder-impl + architect-impl** bars (the ACES builder-impl is `aces:aces-builder-impl`). The judge never authors evals, so write any missing eval here. (Invoked standalone — no frozen `.feature` — only the agent definition is produced.)
 
 ## Agent definition modes
 
@@ -153,4 +153,4 @@ Summarize:
 - Runtime symlinks created
 - Companion command path (Invokable mode only)
 - Quality check outcome
-- Suggested next step: run `sdd:create-spec` (the operator resolves the ACES roles) to spec and eval for this agent definition
+- Suggested next step: run `sdd:start-mission` (the conductor resolves the ACES roles) to spec and eval for this agent definition
