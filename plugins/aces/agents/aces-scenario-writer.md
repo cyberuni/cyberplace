@@ -41,6 +41,8 @@ USER_ANSWERS:     <answers to previously returned QUESTIONS — or null>
    - **Behavior cases:** one scenario per major rule/step; edge cases (conflicting signals, incomplete inputs, ambiguity); must-not-do guards for prohibited behaviors.
    - Each `Then` is **boolean** — the agent *does* X / the agent *does not* fire — never a 1–5 score, threshold, or "usually". A non-deterministic subject still reduces to one boolean per scenario; how that boolean is reached (rubric → threshold over N runs) is the impl-judge's hidden detail.
 
+4. **On `JUDGE_FEEDBACK`, revise surgically.** When re-dispatched with `JUDGE_FEEDBACK` (and any `USER_ANSWERS`), edit **only** the scenarios it names as failing and fold in the answers; leave every already-passing scenario **unchanged**. Never rewrite the whole suite on a revision pass.
+
 ## Output
 
 ```

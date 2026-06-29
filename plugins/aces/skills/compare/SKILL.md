@@ -19,7 +19,7 @@ The user may also provide:
 - Two explicit file paths
 - A git ref (branch, commit SHA, tag) for the "before" version
 
-Read both versions in full before proceeding.
+Read both versions in full before proceeding. **If the "before" version cannot be read (an unresolvable git ref or a missing path), report that the version cannot be resolved and stop — score neither side.**
 
 ## Run evals on both versions
 
