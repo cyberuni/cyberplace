@@ -190,6 +190,13 @@ governance`) need no registration. **Only the cold judge needs the reload.**
    - **Registry:** already migrated to Model-B this session (`7398ede`) — `.agents/universal-plugin.json`
      now uses `solution-producer` + the `(actor,gate)` governances map; `governance-resolution.mts`
      keeps migrate-on-read for any legacy registry.
+   - **Squad shape — DONE (`9f5d1a9`).** `governance-resolution.mts` carried from the flat
+     `domains/roles/governances` entry to the `squads[]` shape (specialists-and-squads.md "Registry
+     SHAPE", landed in `ea20694`): an entry holds `squads[]`, each serving a SET of artifact-types
+     with one chain. `matchPlugin` → `matchSquad` (returns a `SquadMatch` = plugin + squad);
+     `resolveBar`/`resolveAgent`/`resolveRole`/`buildLoadPlan` thread the match; `validateRegistry`
+     flags a type in two squads of one plugin and across two plugins; migrate-on-read folds a legacy
+     flat entry into one squad. Live registry already on squads. `pnpm verify` green.
    - **Validate:** `pnpm verify:specs-new` + `audit validate` per skill; `pnpm verify` before push.
 
 2. **Migration-first order (authoritative): see `## Migration ordering`.** Existing-baseline
