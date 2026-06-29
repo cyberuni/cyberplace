@@ -46,20 +46,36 @@ sibling. They are never the same file.
 ## Entry shapes
 
 One JSON object per line (JSON Lines). Every line carries a **CR-scoped `seq`** (append order
-*within its CR*, restarting per CR — never a global counter) and a `kind`. Four kinds, split by
-tier: `report` / `correction` → the combat log; `gate` / `strategy` → the ledger. Every line carries
-an optional `cr` (one ledger now spans many CRs against the one durable spec; outer-loop `strategy`
-lines may omit it).
+*within its CR*, restarting per CR — never a global counter), a **write-time UTC `ts`**, an optional
+pseudonymous **`handle`**, and a `kind`. Four kinds, split by tier: `report` / `correction` → the
+combat log; `gate` / `strategy` → the ledger. Every line carries an optional `cr` (one ledger now
+spans many CRs against the one durable spec; outer-loop `strategy` lines may omit it).
 
-**Free-text hygiene (committed-plan rule).** Because the combat log is committed, the free-text
-`summary` / `detail` fields describe the **decision or its class** only — **never** code, prompts,
-secrets, or literal values (those stay in the uncommitted raw transcripts). Structured fields are
-enums; free text stays commit-message-grade.
+**Safe-to-publish floor (committed-record rule).** The combat log is committed → every line is
+**published to git history permanently** ("deleted at retro" is tree-only) and a distilled line may
+go **upstream via Forge**. The floor binds **all** fields:
+
+- **Categorical only** — structured fields are enums; the free-text `summary` / `detail` give the
+  decision or its class, commit-message-grade.
+- **Never committed:** email, OS usernames, hostnames, absolute paths, session/machine ids, secrets,
+  code, prompts, literal values, **raw numbers** (token/cost) — those stay in the uncommitted transcripts.
+- **Identity is a pseudonym** (`handle`, below), never `user.email`.
+
+**Write-time `ts`.** Every line carries a UTC `ts` (ISO-8601) stamped at write-time — the doctrine
+loop reads the committed log post-merge (possibly another machine), when the session clock is gone.
+`seq` orders within a CR; `ts` orders across missions.
+
+**Identity — the per-entry `handle`.** `report` / `correction` / `strategy` carry a `handle` (the
+writer's pseudonym); a `gate` line keeps `by` (the ratifier). Resolution at write-time: `SDD_HANDLE`
+(env) if set, else omit `handle` and fall back to the git commit author; **never** `user.email`,
+never a `git config` read. The in-file `handle` / `by` is **advisory, not proof** — a self-asserter
+can write any string, so the git commit signature plus positional authority are the control, not the
+field.
 
 ### `report` — per-subagent dispatch (combat log)
 
 ```jsonl
-{"seq": 3, "kind": "report", "role": "spec-producer", "agent": "sdd:automaton", "outcome": "pass", "summary": "wrote 14 scenarios covering the ledger expansion"}
+{"seq": 3, "ts": "2026-06-28T18:30:11Z", "handle": "unional", "kind": "report", "role": "spec-producer", "agent": "sdd:automaton", "outcome": "pass", "summary": "wrote 14 scenarios covering the ledger expansion"}
 ```
 
 `role` is the production role dispatched; `agent` is the plugin-qualified agent name; `outcome` is
@@ -72,7 +88,7 @@ matchable `cause` is the load-bearing field; at retro the doctrine loop folds re
 the ledger's `strategy` count.
 
 ```jsonl
-{"seq": 7, "kind": "correction", "correction-kind": "gate-reject", "cause": "coverage-gap", "detail": "spec gate rejected — no negative scenario for the malformed-entry path"}
+{"seq": 7, "ts": "2026-06-28T18:41:02Z", "handle": "unional", "kind": "correction", "correction-kind": "gate-reject", "cause": "coverage-gap", "detail": "spec gate rejected — no negative scenario for the malformed-entry path"}
 ```
 
 - **`correction-kind`** — the closed set `gate-reject | judge-iteration | council-kickback` (the
@@ -93,7 +109,7 @@ the ledger's `strategy` count.
 ### `gate` — the durable per-CR gate verdict (ledger)
 
 ```jsonl
-{"seq": 9, "kind": "gate", "cr": 34, "gate": "spec", "verdict": "approve", "by": "unional", "cause": "dimension", "frozen": ["intake/intake.feature", "mission/mission.feature"]}
+{"seq": 9, "ts": "2026-06-28T19:02:55Z", "kind": "gate", "cr": 34, "gate": "spec", "verdict": "approve", "by": "unional", "cause": "dimension", "frozen": ["intake/intake.feature", "mission/mission.feature"]}
 ```
 
 - **`gate`** — `spec | impl`. **`verdict`** — `approve | pause | reject`. **`by`** — a human name
@@ -109,7 +125,7 @@ The Scanner records drafted strategy; this contract defines the **shape**, the *
 the doctrine-loop Scanner**. It carries the distilled recurrence count for a `cause` (in `evidence`).
 
 ```jsonl
-{"seq": 12, "kind": "strategy", "recommendation": "codify the coverage-gap pattern as a spec-format-governance check", "evidence": ["coverage-gap x3 across sdd-foo, sdd-bar, sdd-baz"], "ratified": false}
+{"seq": 12, "ts": "2026-06-29T08:15:40Z", "handle": "sdd-scanner", "kind": "strategy", "recommendation": "codify the coverage-gap pattern as a spec-format-governance check", "evidence": ["coverage-gap x3 across sdd-foo, sdd-bar, sdd-baz"], "ratified": false}
 ```
 
 `ratified: false` means the Council holds keep-or-cut — unratified strategy never enters the corpus.

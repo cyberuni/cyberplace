@@ -31,6 +31,11 @@ is in `sdd:gate-validation-governance`; the plan/ledger write split is in `sdd:c
 | plan brief + `todos` | the **conductor** | producers, judges |
 | implementation + its verification | the **impl-producer** | the impl-judge (it *runs*, never authors) |
 
+Each appended `*.log.jsonl` / `ledger.jsonl` line is stamped with its writer's pseudonymous `handle`
+(`SDD_HANDLE` if set, else omitted — attribution falls back to the git commit author; **never**
+`user.email`, never a `git config` read) and a write-time UTC `ts`. The in-file `handle` / `by` is
+**advisory** — the git commit signature is the attestation (`sdd:combat-log-governance`).
+
 ## Producer write boundary
 
 A **spec-producer** writes the `spec.md` body and the `.feature` only. It must **not** write the
