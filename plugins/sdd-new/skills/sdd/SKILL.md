@@ -19,6 +19,12 @@ Treat `$sdd`, "use SDD", and "use Spec-Driven Development" as explicit activatio
 
 When the Council re-enters, **surface the count of pending (unratified) strategy** — count the `strategy` lines with `"ratified": false` in the project's **root `ledger.jsonl`** (the durable sibling of the root `spec.md`) and state "N pending strategy" alongside the intake; if the Council picks it, route them to review those entries. The gateway only *surfaces* the count — it never **drafts** strategy (the Scanner's job) nor **ratifies** it (the Council's positional act). A zero count is not surfaced. (`strategy` lives in the durable `ledger.jsonl`, **never** in the per-mission `*.log.jsonl` combat log.)
 
+### Surface in-progress missions
+
+On re-entry, **surface the resumable missions** — run the **`discover-plans`** skill (the engine for `intake/plan-discovery`), which scans `.agents/plans/` for `*.plan.md` briefs and returns each one's CR ref, todo tally, and `## NEXT` lead as TOON. A present brief is an **unretired** mission (the doctrine loop's `plan-retirement` deletes a brief once its CR is done/merged and distilled), so each one listed is **resumable**; state them alongside the intake (e.g. "3 in-progress: `github-34` 21/34, …") and, if the user picks one, **load `resume-mission`** on it. The gateway only *surfaces* — it never **resumes** (that's `resume-mission`) nor **retires** (that's `plan-retirement`). An empty set is not surfaced. This is a **read** (the same category as counting strategy lines), so the thin-classifier rule holds.
+
+This is the **resumable-mission** sibling of surface-pending-strategy — two distinct concerns, both surfaced: pending strategy is the doctrine loop's unratified ledger lines for the **Council** to keep-or-cut; in-progress missions are **paused work** any user can continue.
+
 ### Fast path — skip the menu
 
 When the invocation already names **both** a change and a target — "add a start-mission skill to sdd", "implement the auth capability", "work on <issue url>" — skip the menu and load the handling skill directly. A partially-specified request resolves what it can and asks only for the missing piece, within the four-option rule.
