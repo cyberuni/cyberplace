@@ -15,7 +15,7 @@
 		"typecheck:specs": "tsc -p tsconfig.specs.json",
 		"verify": "turbo verify",
 		"verify:specs": "pnpm typecheck:specs && node --experimental-strip-types --test plugins/sdd/skills/validate-spec/scripts/check-spec-state.test.mts plugins/sdd/skills/validate-spec/scripts/check-feature.test.mts plugins/sdd/agents/sdd-operator.test.mts && node plugins/sdd/skills/validate-spec/scripts/check-spec-state.mts && node plugins/sdd/skills/validate-spec/scripts/check-feature.mts",
-		"verify:specs-new": "pnpm typecheck:specs && node --experimental-strip-types --test plugins/sdd-new/skills/validate-spec/scripts/check-spec-state.test.mts plugins/sdd-new/skills/validate-spec/scripts/check-feature.test.mts plugins/sdd-new/skills/validate-spec/scripts/governance-resolution.test.mts && node plugins/sdd-new/skills/validate-spec/scripts/check-spec-state.mts --root .agents/specs && node plugins/sdd-new/skills/validate-spec/scripts/check-feature.mts --root .agents/specs && node plugins/sdd-new/skills/validate-spec/scripts/governance-resolution.mts --root .",
+		"verify:specs-new": "pnpm typecheck:specs && node --experimental-strip-types --test plugins/sdd-new/skills/validate-spec/scripts/check-spec-state.test.mts plugins/sdd-new/skills/validate-spec/scripts/check-feature.test.mts plugins/sdd-new/skills/validate-spec/scripts/governance-resolution.test.mts plugins/sdd-new/skills/plan-retirement/scripts/retire-plans.test.mts && node plugins/sdd-new/skills/validate-spec/scripts/check-spec-state.mts --root .agents/specs && node plugins/sdd-new/skills/validate-spec/scripts/check-feature.mts --root .agents/specs && node plugins/sdd-new/skills/validate-spec/scripts/governance-resolution.mts --root .",
 		"version": "changeset version",
 		"web": "pnpm run --filter=website"
 	},
