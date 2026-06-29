@@ -17,10 +17,9 @@ import {
 function state(over: Partial<SpecState> = {}): SpecState {
 	return {
 		status: 'draft',
-		aligned: false,
+		projectPath: null,
 		markerCount: 0,
 		approval: null,
-		layout: { present: false, strategy: null, location: null },
 		...over,
 	}
 }
@@ -31,10 +30,12 @@ function node(over: Partial<NodeSpec> = {}): NodeSpec {
 
 // ── root lifecycle tuple ──
 
-test('parseSpecState reads status, aligned, and marker count', () => {
-	const s = parseSpecState('---\nstatus: draft\naligned: false\n---\n\n<!-- open: a -->\n<!--   open: b -->\n')
+test('parseSpecState reads status, project-path, and marker count', () => {
+	const s = parseSpecState(
+		'---\nstatus: draft\nproject-path: plugins/sdd-new\n---\n\n<!-- open: a -->\n<!--   open: b -->\n',
+	)
 	assert.equal(s.status, 'draft')
-	assert.equal(s.aligned, false)
+	assert.equal(s.projectPath, 'plugins/sdd-new')
 	assert.equal(s.markerCount, 2)
 })
 
@@ -81,25 +82,6 @@ test('a clean draft passes', () => {
 	assert.deepEqual(checkSpec('x', state()), [])
 })
 
-test('draft + aligned:true is legal (contract synced, ready for the spec gate)', () => {
-	assert.deepEqual(checkSpec('x', state({ status: 'draft', aligned: true })), [])
-})
-
-test('implemented requires aligned:true', () => {
-	const v = checkSpec(
-		'x',
-		state({
-			status: 'implemented',
-			aligned: false,
-			approval: {
-				spec: { verdict: 'approve', by: 'u', hasWhy: false },
-				impl: { verdict: 'approve', by: 'u', hasWhy: false },
-			},
-		}),
-	)
-	assert.ok(v.some((m) => /implemented requires aligned:true/.test(m)))
-})
-
 test('open markers block the gate once approved', () => {
 	const v = checkSpec(
 		'x',
@@ -133,7 +115,6 @@ test('a fully approved-and-implemented spec passes', () => {
 		'x',
 		state({
 			status: 'implemented',
-			aligned: true,
 			approval: {
 				spec: { verdict: 'approve', by: 'u', hasWhy: false },
 				impl: { verdict: 'approve', by: 'u', hasWhy: false },
@@ -147,50 +128,15 @@ test('a descriptive root with no frontmatter is a no-op (no .feature requirement
 	assert.deepEqual(checkSpec('sdd', parseSpecState('# Spec\n\nbody only, no frontmatter\n')), [])
 })
 
-// ── spec-layout (declared organization) ──
+// ── project-path (the router index) ──
 
-test('parseSpecState reads a declared spec-layout block', () => {
-	const text = [
-		'---',
-		'status: draft',
-		'spec-layout:',
-		'  strategy: capability-first',
-		'  location: hoisted',
-		'  placement-map: "#placement-map"',
-		'---',
-		'',
-	].join('\n')
-	const s = parseSpecState(text)
-	assert.deepEqual(s.layout, { present: true, strategy: 'capability-first', location: 'hoisted' })
+test('parseSpecState reads project-path; absent leaves it null', () => {
+	assert.equal(parseSpecState('---\nstatus: draft\nproject-path: plugins/sdd-new\n---\n').projectPath, 'plugins/sdd-new')
+	assert.equal(parseSpecState('---\nstatus: draft\n---\n').projectPath, null)
 })
 
-test('a spec with no spec-layout block is a no-op (additive — predating specs stay legal)', () => {
-	const s = parseSpecState('---\nstatus: draft\n---\n')
-	assert.equal(s.layout.present, false)
-	assert.deepEqual(checkSpec('x', state({ layout: s.layout })), [])
-})
-
-test('a declared spec-layout with legal strategy + location passes', () => {
-	assert.deepEqual(
-		checkSpec('x', state({ layout: { present: true, strategy: 'mirror-source', location: 'colocated' } })),
-		[],
-	)
-})
-
-test('a declared spec-layout with an unknown strategy is illegal', () => {
-	const v = checkSpec('x', state({ layout: { present: true, strategy: 'feature-sliced', location: 'colocated' } }))
-	assert.ok(v.some((m) => /unknown strategy "feature-sliced"/.test(m)))
-})
-
-test('a declared spec-layout with an unknown location is illegal', () => {
-	const v = checkSpec('x', state({ layout: { present: true, strategy: 'capability-first', location: 'somewhere' } }))
-	assert.ok(v.some((m) => /unknown location "somewhere"/.test(m)))
-})
-
-test('a declared spec-layout missing strategy or location is illegal', () => {
-	const v = checkSpec('x', state({ layout: { present: true, strategy: null, location: null } }))
-	assert.ok(v.some((m) => /no strategy/.test(m)))
-	assert.ok(v.some((m) => /no location/.test(m)))
+test('project-path is a router hint, not a lifecycle-legality concern — its absence is not a violation', () => {
+	assert.deepEqual(checkSpec('x', state({ projectPath: null })), [])
 })
 
 // ── per-node spec-type reconcile ──
