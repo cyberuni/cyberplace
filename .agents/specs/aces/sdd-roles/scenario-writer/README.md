@@ -12,7 +12,7 @@ Author spec.md + a boolean .feature of trigger near-misses and behavior cases fo
 boolean `.feature` (trigger near-misses + behavior cases) for one agent-config artifact (skill,
 subagent, command, or AGENTS.md section).
 **Non-goals** — grading the suite (that is `spec-validator`); running the evals (`implementer`);
-scoring one simulated case (`judge`); writing the control frontmatter (`status`, `domain-plugin`);
+scoring one simulated case (`judge`); writing the control frontmatter (`status`, `project-path`);
 authoring the eval rubric or golden set.
 
 | Use case | Trigger / inputs | Outcome |

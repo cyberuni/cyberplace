@@ -15,7 +15,7 @@ Feature: scenario-writer — the spec-producer role
   Scenario: it does not write the control frontmatter
     Given the conductor dispatches scenario-writer for an artifact
     When it authors the spec.md
-    Then it does not write the status or domain-plugin frontmatter fields
+    Then it does not write the status or project-path frontmatter fields
 
   Scenario: it does not grade the suite it produced
     Given scenario-writer has just written a .feature
