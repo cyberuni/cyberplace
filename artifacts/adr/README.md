@@ -14,9 +14,7 @@ This directory contains Architecture Decision Records (ADRs) for cyber-skills �
 | [0006](0006-agent-extension-terminology.md) | Agent Extension Terminology | Accepted | 2026-05-25 |
 | [0007](0007-universal-plugin-spec.md) | Universal Plugin — Single-Source Spec with Vendor Derivation | Accepted | 2026-05-31 |
 | [0008](0008-drop-skill-augmentations.md) | Drop SKILL.project.md and Skill Augmentation Layers | Accepted | — |
-| [0009](0009-feature-first-artifact-organization.md) | Feature-First Artifact Organization | Accepted | — |
-| [0010](0010-spec-structure-why-first-and-command-surface.md) | Spec Structure — Why-First Ordering and Command Surface in Spec | Accepted | — |
-| [0011](0011-spec-plan-file-naming.md) | Use `spec/plan` as the Core File Name Pair | Accepted | 2026-06-04 |
+| [0011](0011-sdd-process-vs-agentic-workflow.md) | SDD is a Governed Process; Its Runtime Is an Agentic Workflow | Accepted | 2026-06-28 |
 | [0012](0012-spec-frontmatter-schema.md) | Spec Frontmatter Schema for Status, Priority, and Dependencies | Superseded by 0017 | 2026-06-15 |
 | [0013](0013-governance-skills.md) | Governance Skills (reference content as non-user-invocable skills) | Accepted | — |
 | [0014](0014-sdd-governance-split.md) | Split SDD lifecycle/frontmatter knowledge into named governance skills | Accepted | 2026-06-21 |
