@@ -22,7 +22,7 @@ is in `sdd:gate-validation-governance`; the plan/ledger write split is in `sdd:c
 | `<!-- open: -->` markers | the **conductor** | producers (they *emit gaps*, not markers) |
 | `produced-by` map | the **conductor** (records the resolved producer per role at production) | producers, judges, the gate skill |
 | contested-type → chosen-plugin state (`.agents/sdd/`) | the **conductor** (or `start-mission` for a contested artifact-type); **distinct from `produced-by`** | producers, judges, the gate skill |
-| combat-log `report` / `correction` lines | the **conductor** (append-only, to the plan's `*.log.jsonl`) | producers, judges, the gate skill |
+| combat-log `report` / `correction` / `halt` lines | the **conductor** (append-only, to the plan's `*.log.jsonl`) | producers, judges, the gate skill |
 | ledger `gate` line — self-asserted (`by: agent`) | the **conductor** (append-only, to `ledger.jsonl`) | producers, judges |
 | ledger `gate` line — human-ratified (`by: <name>`) | the gate skill (`validate-spec`), **in-session position only** | the conductor, producers, judges |
 | ledger `strategy` lines | the doctrine-loop Scanner (append-only) | the conductor, producers, judges |
