@@ -59,8 +59,22 @@ The full operating model, phase detail, and verification live in the meta-plan:
 
 ## NEXT — resume here
 
-**▶ EXPLORE + SPEC GATE COMPLETE (2026-06-29).** Phases A–D landed on `next`. The ACES project
-spec is **`status: approved`** — all 14 `.feature` files (12 behavioral units + 2 acceptance e2e)
+**▶ MISSION COMPLETE (2026-06-29) — ACES is `status: implemented`.** All phases A–F landed on
+`next`; both gates passed (self-asserted `by: agent`, async review queue). The dogfood of the
+sdd-new explore loop carried a second real project end-to-end without tooling changes — every
+behavioral unit cold-judged ALIGNED at the spec gate, every unit cold-impl-judged conformant at
+the impl gate (ADR-0016; the 4 found gaps were fixed in code and re-verified). Custom
+`aces-builder-spec`/`aces-builder-impl` bars bound + resolving; plugin impl swept to the new
+vocabulary + Model-B governance loads. `pnpm verify:specs-new` green; `pnpm verify` green except a
+**pre-existing, untracked, non-mission** knip flag on `plugins/sdd-new/skills/read-specs-frontmatter/`
+(not part of #38 — left untouched). Mission commits: `95fcc4c`→`6d40af7` (17 commits).
+**REMAINING (owner's call):** open the `next → main` PR for the broader SDD effort (carries #34 +
+#38); this mission did not push or open it (outward-facing — left to the user).
+
+---
+
+**Phases A–D record (superseded by the line above):** The ACES project spec reached
+**`status: approved`** — all 14 `.feature` files (12 behavioral units + 2 acceptance e2e)
 are `@frozen`, the durable spec gate line is in `.agents/specs/aces/ledger.jsonl`, and
 `pnpm verify:specs-new` is green over the whole tree. Every behavioral unit was cold-judged ALIGNED
 on the 3-lens {director,builder,architect} set, dogfooding the real sdd-new explore loop; the
