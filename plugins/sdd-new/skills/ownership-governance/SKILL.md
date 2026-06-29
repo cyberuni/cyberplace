@@ -19,10 +19,9 @@ is in `sdd:gate-validation-governance`; the plan/ledger write split is in `sdd:c
 | `approval` **self-assertion** (`verdict: approve`/`pause` + `by: agent`/none + `why`) | the **conductor** (synthesis only) | producers, the gate skill |
 | `approval` **human ratification** (`verdict: approve`/`reject` + `by: <name>`) | the gate skill (`validate-spec`), **in-session position only** | the conductor, any producer, any spawned delegate |
 | `aligned` | the **conductor** (synthesis only) | producers, the gate skill |
-| `artifact-types` | `start-mission` (classifies the artifact-types at scaffold; the resolution axis) | producers, judges, the conductor, the gate skill |
 | `<!-- open: -->` markers | the **conductor** | producers (they *emit gaps*, not markers) |
-| `produced-by` map | the **conductor** (records the resolved producer per role at production); `start-mission` (records the user's choice for a contested artifact-type) | producers, judges, the gate skill |
-| `domain-plugin` map | the **conductor** (or `start-mission` for a contested artifact-type) | producers, judges, the gate skill |
+| `produced-by` map | the **conductor** (records the resolved producer per role at production) | producers, judges, the gate skill |
+| contested-type → chosen-plugin state (`.agents/sdd/`) | the **conductor** (or `start-mission` for a contested artifact-type); **distinct from `produced-by`** | producers, judges, the gate skill |
 | combat-log `report` / `correction` lines | the **conductor** (append-only, to the plan's `*.log.jsonl`) | producers, judges, the gate skill |
 | ledger `gate` line — self-asserted (`by: agent`) | the **conductor** (append-only, to `ledger.jsonl`) | producers, judges |
 | ledger `gate` line — human-ratified (`by: <name>`) | the gate skill (`validate-spec`), **in-session position only** | the conductor, producers, judges |
@@ -35,9 +34,9 @@ is in `sdd:gate-validation-governance`; the plan/ledger write split is in `sdd:c
 ## Producer write boundary
 
 A **spec-producer** writes the `spec.md` body and the `.feature` only. It must **not** write the
-control frontmatter (`status`, `aligned`, `artifact-types`, `domain-plugin`). A required input it
-cannot supply or infer is returned as a `CONTENT_GAP` — the conductor turns it into an
-`<!-- open: -->` marker. Producers do not write markers directly.
+control frontmatter (`status`, `aligned`, `approval`, `produced-by`) or the `.agents/sdd/`
+resolution state. A required input it cannot supply or infer is returned as a `CONTENT_GAP` — the
+conductor turns it into an `<!-- open: -->` marker. Producers do not write markers directly.
 
 The **conductor** writes `<!-- open: -->` markers, `aligned`, the run-level `strategy` block, the
 `produced-by` map, and — when it self-asserts a gate within the effective leash — the provisional

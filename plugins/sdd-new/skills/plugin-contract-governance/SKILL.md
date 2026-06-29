@@ -71,29 +71,37 @@ not scan plugin directories. Each entry:
 {
   "name": "<plugin>",
   "version": "<semver>",
-  "domains": ["<artifact-type>", "..."],
-  "roles": {
-    "spec-producer":     "<agent | null>",
-    "solution-producer": "<agent | null>",
-    "spec-judge":        "<agent | null>",
-    "impl-producer":     "<agent | null>",
-    "impl-judge":        "<agent | null>"
-  },
-  "governances": {
-    "director-spec":  "<name | null>",
-    "builder-spec":   "<name | null>",
-    "builder-impl":   "<name | null>",
-    "architect-spec": "<name | null>",
-    "architect-impl": "<name | null>"
-  }
+  "squads": [
+    {
+      "artifact-types": ["<artifact-type>", "..."],
+      "roles": {
+        "spec-producer":     "<agent | null>",
+        "solution-producer": "<agent | null>",
+        "spec-judge":        "<agent | null>",
+        "impl-producer":     "<agent | null>",
+        "impl-judge":        "<agent | null>"
+      },
+      "governances": {
+        "director-spec":  "<name | null>",
+        "builder-spec":   "<name | null>",
+        "builder-impl":   "<name | null>",
+        "architect-spec": "<name | null>",
+        "architect-impl": "<name | null>"
+      }
+    }
+  ]
 }
 ```
 
-Resolution: match the spec file's **`artifact-type`** (the resolution axis, **not** the domain/folder
-name) against each entry's `domains[]`. `domains[]` enumerates artifact *types* a plugin covers
-(e.g. ACES covers `skill`, `subagent`, `command`, `agents-section`), never folder names. An absent or
-unmatched `artifact-type` → zero matches → all roles degenerate to SDD defaults. One match → resolve
-each role and governance key (name = use it; `null` = SDD default; missing role key =
-`<plugin>-<role>`). Two or more matches → read the `produced-by` map in `spec.md` frontmatter (the
-resolution cache); if it names the owner, use it, else return `STATUS: needs-input` for the skill to
-ask which plugin owns the artifact-type (written to `produced-by`, decisive on resume).
+A plugin declares one or more **squads**, each serving a **set of artifact-types** with one
+production chain; a type appears in at most one squad per plugin (the plugin's served set = the union
+of its squads' `artifact-types`).
+
+Resolution: match each file's **`artifact-type`** (the squad key, **not** the folder name) against
+each plugin's `squads[]` — the squad whose `artifact-types` contains it serves the file (e.g. ACES's
+one squad covers `skill`, `subagent`, `command`, `agents-section`). An absent or unmatched
+`artifact-type` → all roles degenerate to SDD defaults. One matching squad → resolve each role and
+governance key (name = use it; `null` = SDD default; missing role key = `<plugin>-<role>`). Two or
+more plugins claiming the type → return `STATUS: needs-input` for the skill to ask which plugin owns
+it; the choice is recorded as `.agents/sdd/` resolution state (**distinct from `produced-by`**),
+decisive on resume.
