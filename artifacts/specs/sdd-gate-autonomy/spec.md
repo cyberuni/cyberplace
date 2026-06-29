@@ -79,11 +79,11 @@ The names follow an `auto-<reach>` scheme — they name **how far autonomy reach
 | **Blast radius** | contained to the artifacts **this spec owns** (its Artifacts table) | reaches beyond — another spec, a shared/frozen contract, an installed/public surface, prod, security |
 | **Decision novelty** | trivial / defaulted, or already ratified by the human | new contestable choices the human has not seen |
 | **Confidence** | clear pass on the judge bar | marginal verdict, unresolved markers |
-| **Contract impact (semver)** | additive / non-breaking change to the contract | a **breaking** change to the contract — at the impl gate the **Director-revert** (unfreezing a frozen `.feature` because building proved it wrong), weighted by `blocked-by` dependents |
+| **Contract impact (semver)** | additive / non-breaking change to the contract | a **breaking** change to the contract — at the impl gate the **Oracle-revert** (unfreezing a frozen `.feature` because building proved it wrong), weighted by `blocked-by` dependents |
 
 **Contract impact is scoped to where the operator's gates actually touch it.** It is the fifth dimension, classified by the **semver model**, not by frozen-ness:
 
-- **Impl gate** — the **Director-revert** (unfreezing a frozen `.feature` because building proved the contract wrong) is a **breaking** change to the contract → reads `escalate · contract impact`, weighted by the count of `blocked-by` dependents on the frozen contract. This is the dimension's primary bite; the earlier four-dimension leash caught the Director-revert only incidentally (through blast radius / novelty), never by name.
+- **Impl gate** — the **Oracle-revert** (unfreezing a frozen `.feature` because building proved the contract wrong) is a **breaking** change to the contract → reads `escalate · contract impact`, weighted by the count of `blocked-by` dependents on the frozen contract. This is the dimension's primary bite; the earlier four-dimension leash caught the Oracle-revert only incidentally (through blast radius / novelty), never by name.
 - **Spec gate** — a change to an already-approved contract classifies **additive / non-breaking** (low) versus **breaking** (high) per the semver model. Frozen-ness is **not** the signal — the semver class is.
 
 The operator has **no hard-floor decision** (irreversible external publication / data egress is the Forge loop's Bucket D, not the operator's). Contract impact never escalates to a hard floor here — it weights the leash like the other four dimensions.
@@ -154,7 +154,7 @@ The incident's real error was therefore not the field's meaning but **committing
 
 When the agent reaches a gate under any autonomy level, it emits a **gate report** — the same two-axis verdict a judge produces, made reviewable and **decidable**. Its sections:
 
-- **Verdict per backward face**: Director (scope — still worth shipping?), Builder (contract/impl complete & testable against the bar?), Architect (fit — conventions, no dup/conflict).
+- **Verdict per backward face**: Oracle (scope — still worth shipping?), Builder (contract/impl complete & testable against the bar?), Architect (fit — conventions, no dup/conflict).
 - **Leash derivation** (the reasoning home): the five-dimension assessment (reversibility, blast radius, decision novelty, confidence, contract impact) for each gate, the **derived** leash, the **effective** leash after any human ceiling, and a one-line reason per dimension. This is *why the agent stopped where it did*, made auditable.
 - **Open markers as questions** — each blocking marker phrased as a question **with the agent's proposed answer**, so "approve" can mean "accept my proposals" and the human only engages where they disagree.
 - **Contestable defaults**: the decisions a human might have made differently, listed explicitly with a jump link (`file:line` / marker) to each decision point.
@@ -171,7 +171,7 @@ GATE REPORT — sdd-gate-autonomy @ spec gate
 STATUS: ready for spec gate · agent-asserted — ratify or kick back
 
 Verdict
-  Director  (scope)    PASS — real incident, contained, worth shipping
+  Oracle  (scope)    PASS — real incident, contained, worth shipping
   Builder (contract) PASS — 22 scenarios cover leash / attribution / FSM / report / gate-actions
   Architect (fit)    PASS — extends operator + sdd-plugin; reuses aligned as-is
 
@@ -217,7 +217,7 @@ STATUS: implemented · agent-asserted — ratify or kick back
 Verdict
   Builder (impl)     PASS — 14 node:test cases green; every .feature scenario maps to a test
   Architect (fit)    PASS — self-contained skill, no new deps, biome clean
-  Director (scope)     PASS — contract unchanged, no goal drift
+  Oracle (scope)     PASS — contract unchanged, no goal drift
 
 Leash derivation
   gate        reversibility  blast        novelty       confidence    contract     read
@@ -229,7 +229,7 @@ Leash derivation
     blast radius     one skill folder; no shared or frozen surface    → safe
     novelty          contract ratified; impl is mechanical            → safe
     confidence       every scenario passes as a test                  → safe
-    contract impact  no Director-revert; frozen .feature unchanged    → safe
+    contract impact  no Oracle-revert; frozen .feature unchanged    → safe
 
 Contestable defaults
   - node:test over the pure functions (no vitest dependency)
@@ -237,7 +237,7 @@ Contestable defaults
 Decision menu
   approve → set approved-by.impl (by: <you>); status stays implemented   [recommended]
   change  → point me at a weak/failing scenario; I fix code vs the frozen .feature
-  reject  → redo impl — or Director-revert if building proved the contract wrong
+  reject  → redo impl — or Oracle-revert if building proved the contract wrong
 ```
 
 Here both gates' reads diverge: the spec gate was `auto-none` and human-ratified in Run 1, while the impl gate independently derives `auto-all` and is self-asserted in Run 2 — provisional until the human ratifies `approved-by.impl`.
@@ -250,12 +250,12 @@ Here both gates' reads diverge: the spec gate was `auto-none` and human-ratified
 |---|---|---|
 | **approve** | → Approved; **freeze** the `.feature`; set `approved-by.spec` | → Implemented; set `approved-by.impl` |
 | **change** | revise the **contract** (`spec.md` / `.feature`); stays Draft | fix the **code** against the frozen `.feature`; contract **stays frozen** |
-| **reject** | scope-kill — drop or return to Draft | redo the implementation — **or** the **Director-revert**: building proved the contract wrong, so **unfreeze** and return to Draft |
+| **reject** | scope-kill — drop or return to Draft | redo the implementation — **or** the **Oracle-revert**: building proved the contract wrong, so **unfreeze** and return to Draft |
 
 Two asymmetries matter:
 
 - At the spec gate **change edits the contract**; at the impl gate **change edits the code** (the frozen contract is off-limits — that is the whole point of freezing).
-- The impl gate is the **only** place a frozen `.feature` can reopen, via the Director-revert. It is rare and deliberate: a scenario that passed every check but turns out fatal sends the whole spec back to Draft (per *Freeze is a strength* in sdd-operator).
+- The impl gate is the **only** place a frozen `.feature` can reopen, via the Oracle-revert. It is rare and deliberate: a scenario that passed every check but turns out fatal sends the whole spec back to Draft (per *Freeze is a strength* in sdd-operator).
 
 ### Skill-domain implementation is ACES-delegated
 
@@ -274,11 +274,11 @@ A **use case** is an entry-point — a trigger, its inputs, and its outcome. Eac
 | **Derive `auto-all`** | ratified-or-trivial contract, reversible local impl, clear pass | both gates' assessment | the leash is `auto-all`; both gates are self-asserted |
 | **Independent impl-gate leash** | an `auto-none` spec gate was ratified in an earlier run | a later run reaching the impl gate with reversible, local, passing impl | the impl gate independently derives `auto-all`; the agent self-asserts it provisionally |
 | **Cap with a human ceiling** | the Conductor caps the run below the derivation | the derived leash + the ceiling | effective leash = `min(ceiling, derived)`; the agent stops at the capped gate |
-| **Escalate on breaking contract impact** | building forces a Director-revert on a depended-on frozen contract | the impl-gate assessment + `blocked-by` dependents | contract impact reads risky (breaking, weighted by dependents); derived `auto-none`; the agent escalates the impl gate |
+| **Escalate on breaking contract impact** | building forces a Oracle-revert on a depended-on frozen contract | the impl-gate assessment + `blocked-by` dependents | contract impact reads risky (breaking, weighted by dependents); derived `auto-none`; the agent escalates the impl gate |
 | **Emit the gate report** | the agent reaches a gate | current artifact state, faces, markers | a decidable report: per-face verdict, five-dimension leash derivation, markers-as-questions with proposals, contestable defaults, and a decision menu; regenerated, not stored |
 | **Record a self-assertion** | the agent self-asserts a gate | the leash derivation | `approved-by.<gate>` gets `by: agent` + a five-dimension `why`; written by the operator |
 | **Record a human ratification** | the human ratifies a gate | the human verdict | `approved-by.<gate>` gets `by: <name>` (no `why` required); written by the skill; the spec leaves the review queue |
-| **Act at a gate** | a gate report is returned with `approve`/`change`/`reject` | the chosen action + the gate | spec gate: approve freezes the `.feature`; change edits the contract; impl gate: change edits the code (contract frozen); reject can Director-revert (unfreeze, return to draft) |
+| **Act at a gate** | a gate report is returned with `approve`/`change`/`reject` | the chosen action + the gate | spec gate: approve freezes the `.feature`; change edits the contract; impl gate: change edits the code (contract frozen); reject can Oracle-revert (unfreeze, return to draft) |
 | **Advance provisionally** | the agent self-asserts within the leash | the recorded gate | the run advances immediately, no synchronous human stop; the spec is enqueued for asynchronous ratify-or-kick-back review |
 | **Enforce state integrity** | `validate-spec` runs | the `(status, aligned, markers, .feature)` tuple | an illegal tuple is rejected and cannot be committed; layer-scoped `aligned: true` at draft is accepted as contract sync, not implemented |
 | **Derive the review queue** | the human asks what awaits review | the `approved-by` values across specs | the queue is the set of specs with a `by: agent` approver; no separate backlog file |

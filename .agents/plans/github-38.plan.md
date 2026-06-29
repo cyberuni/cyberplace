@@ -77,7 +77,7 @@ vocabulary + Model-B governance loads. `pnpm verify:specs-new` green; `pnpm veri
 **`status: approved`** — all 14 `.feature` files (12 behavioral units + 2 acceptance e2e)
 are `@frozen`, the durable spec gate line is in `.agents/specs/aces/ledger.jsonl`, and
 `pnpm verify:specs-new` is green over the whole tree. Every behavioral unit was cold-judged ALIGNED
-on the 3-lens {director,builder,architect} set, dogfooding the real sdd-new explore loop; the
+on the 3-lens {oracle,builder,architect} set, dogfooding the real sdd-new explore loop; the
 custom `aces-builder-spec`/`aces-builder-impl` bars are bound and resolve. Commits: `95fcc4c`
 (intake) `c2a4e39` (bars) `b185035` `84e1f0e` `e8c7d9c` `7d161f7` `81ac5c7` `58b8e05` `ff1f1a9`
 (unit suites) `be93a7c` (spec gate). Spec-gate ratification self-asserted `by: agent` within leash
@@ -105,7 +105,7 @@ Then **Phase F** — `pnpm verify` green, PR (next → main) for #38, update mem
    sibling `<unit>.feature` (boolean Gherkin; observable `Then`; every use case ≥1 scenario;
    `# ── <stage> ──` sections when >6 scenarios; `@rubric` only where a rubric is the contract).
    Write **no** control frontmatter.
-3. Spawn `sdd-spec-judge` (cold); fold its `{director,builder,architect}` verdict + open markers.
+3. Spawn `sdd-spec-judge` (cold); fold its `{oracle,builder,architect}` verdict + open markers.
 4. `check-feature.mts --root .agents/specs` + `check-spec-state.mts --root .agents/specs` green.
 5. Cap 3; on cap/blocked do not auto-accept — surface failing scenarios, ask accept/loop/change.
 
@@ -132,7 +132,7 @@ Plus: glossary/ (reference, `## Subject`) and acceptance/ (e2e `.feature`).
 
 - **Self-host on the live ACES tree** — no aces-new; explore authors specs in place, deliver
   overhauls `plugins/aces/` in place (backfill/overhaul, not a parallel rebuild).
-- **Bind builder-spec + builder-impl custom**; director/architect bars stay SDD default unless
+- **Bind builder-spec + builder-impl custom**; oracle/architect bars stay SDD default unless
   explore surfaces a real ACES need (confirm, don't pre-invent).
 - **Vocabulary sweep happens at deliver** (Phase E), from the frozen spec — not pre-explore — so
   it respects "spec the behavior, never hand-edit the impl to pass."

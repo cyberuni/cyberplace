@@ -8,7 +8,7 @@ blocked-by:
 
 # aces-spec-designer Governance-Aware Flow
 
-> **Deprecated (Director kill decision).** This spec is obsolete. Its core change —
+> **Deprecated (Oracle kill decision).** This spec is obsolete. Its core change —
 > renaming `aces-spec-designer` and loading SDD governance at construction — already
 > shipped (the agent is now `aces-scenario-writer`), and the design direction has
 > flipped: under the SDD operator/plugin-delegate model, ACES **provides the

@@ -7,7 +7,7 @@ approval:
     by: agent
     why:
       leash: within — a draft agent-config spec on a feature branch; freeze is reversible via the re-open flag
-      basis: every behavioral unit cold-judged ALIGNED (3-lens {director,builder,architect}) and the glossary Subject + acceptance e2e pass; the three .mts gates are green over the tree
+      basis: every behavioral unit cold-judged ALIGNED (3-lens {oracle,builder,architect}) and the glossary Subject + acceptance e2e pass; the three .mts gates are green over the tree
       cr: 38
   impl:
     verdict: approve

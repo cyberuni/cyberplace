@@ -113,7 +113,7 @@ Every run produces a **finding set covering every spec in the corpus** — each 
 
 The Warden owns corpus structure only. It routes out-of-loop requests away and emits **no** out-of-loop decision:
 
-- a **build-or-deprecate** request → **Campaign loop** (Director); no build-or-deprecate decision;
+- a **build-or-deprecate** request → **Campaign loop** (Oracle); no build-or-deprecate decision;
 - a **process lesson** → **Doctrine loop** (Strategist); no governance or process edit;
 - a **per-spec gate structural check** → **declined**; the Warden does not run as the gate check.
 

@@ -46,7 +46,7 @@ Do not reorder or reformat other entries.
         "impl-judge": "aces-implementer"
       },
       "governances": {
-        "director-spec": null,
+        "oracle-spec": null,
         "builder-spec": "aces-builder-spec",
         "builder-impl": "aces-builder-impl",
         "architect-spec": null,

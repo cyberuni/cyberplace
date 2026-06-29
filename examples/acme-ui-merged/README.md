@@ -11,7 +11,7 @@ the other way so we can diff the two granularity models directly.
 
 ```
 skills/
-  director-spec-governance/        (spec gate only)
+  oracle-spec-governance/        (spec gate only)
   builder-spec-governance/         builder-impl-governance/
   architect-spec-governance/       architect-impl-governance/
   designer-coherence-rubric-governance/   (judge-only — the one subjective slice)

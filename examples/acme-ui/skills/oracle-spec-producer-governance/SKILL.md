@@ -1,18 +1,18 @@
 ---
-name: director-spec-producer-governance
-description: "Internal governance (not user-invokable): the Director bar for react-component, spec-producer face. Scope / kill-or-ship self-align, by discipline. Loaded while scoping the spec."
+name: oracle-spec-producer-governance
+description: "Internal governance (not user-invokable): the Oracle bar for react-component, spec-producer face. Scope / kill-or-ship self-align, by discipline. Loaded while scoping the spec."
 user-invocable: false
 metadata:
   artifact-type: react-component
-  actor: director
+  actor: oracle
   gate: spec
   face: producer
   compose: union
 ---
 
-# director · spec · producer — scope the component, by discipline
+# oracle · spec · producer — scope the component, by discipline
 
-The **Director** bar (spec gate only — director has no impl face), **forward**: self-align on scope
+The **Oracle** bar (spec gate only — oracle has no impl face), **forward**: self-align on scope
 and kill-or-ship while writing the spec. Generic core: one coherent unit, bounded surface, explicit
 non-goals, value clears cost.
 

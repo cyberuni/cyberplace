@@ -63,7 +63,7 @@ todos:
     content: "DEFERRED (Tier 4, net-new R2+R3). Sub-mission marketplace — plugin artifact-type declaration + discovery."
     status: pending
   - id: sub-governances
-    content: "Tier 1 — DONE. Built all 10 governance bars: 5 actor (director/builder/architect) + 4 fixed-universal + plugin-contract."
+    content: "Tier 1 — DONE. Built all 10 governance bars: 5 actor (oracle/builder/architect) + 4 fixed-universal + plugin-contract."
     status: completed
   - id: combat-log-location
     content: "DESIGN — SETTLED. Combat log stays <cr-ref>.log.jsonl sibling; ledger.jsonl for gate+strategy. Fixed gateway count bug."
@@ -185,7 +185,7 @@ plugin specs.
 0. **Pre-existing conductor coverage gap** (surfaced by the dogfood, OUT of the artifact-type CR's
    scope): `mission/conductor`'s in-flight hard-floor behaviors (Clearance / Compatibility /
    Conflict + detail-adjustment) are in prose but have **no scenarios** → the cold judge fails
-   Director+Builder. Fill them in `conductor.feature` if that unit must pass its gate.
+   Oracle+Builder. Fill them in `conductor.feature` if that unit must pass its gate.
 2. **Then a SCOPED dogfood is viable now** without the rest of the tree: pick one already-specced
    capability (e.g. `authoring/spec-producer` or `gateway/`), load `sdd:start-mission`, author the
    inline producer, and run the cold `sdd:sdd-spec-judge` over its `spec.md` + `.feature`. Drive the
@@ -288,7 +288,7 @@ impl); only the **order** changed.
 5. `sub-gateway` — ✅ DONE (single behavioral unit + gateway.feature; thin-relay `sdd` skill built,
    corrected to spawn-nothing-by-default).
 6. `sub-governances` — ✅ DONE. Built all 10 governance bars in `sdd-new` as reference nodes +
-   skills: 5 Model-B actor bars (director-spec, builder-spec, builder-impl, architect-spec,
+   skills: 5 Model-B actor bars (oracle-spec, builder-spec, builder-impl, architect-spec,
    architect-impl), 4 fixed-universal (lifecycle, ownership, combat-log, gate-validation — no
    leash), and single-owner plugin-contract. autonomy stays descriptive + baked-in (no node/skill).
 7. `core-agents` — **← next.** The spawned workers (cold `sdd-spec-judge` + `sdd-implementer`,
@@ -392,7 +392,7 @@ discipline); the **CR** is the **unit of change-intent** (intake fixed; sweep `l
 
 ## A — locked: actor-governance resolution (from the macro grill)
 
-- **Bars:** director / builder / architect, each with **two faces** (forward=producer self-align,
+- **Bars:** oracle / builder / architect, each with **two faces** (forward=producer self-align,
 backward=judge), split so a role loads only its face. Strategist via the doctrine loop, no
 per-spec governance.
 - **Match key:** frontmatter `metadata:{artifact-type, actor, face}`; SDD matches on these (names
@@ -406,7 +406,7 @@ the operator reads directly; the mechanical resolution + composition is a determ
 helper. sdd defaults are the sdd plugin's own governances, lowest precedence.
 - **Composition:** **union** default; **most-specific wins on conflict** (project > plugin >
 default); **opt-in `replace`**; driven by the `governance-composition` governance.
-- **Lens sets** (sdd-default squad, overridable): spec gate `{director,builder,architect}`;
+- **Lens sets** (sdd-default squad, overridable): spec gate `{oracle,builder,architect}`;
 impl gate `{builder,architect}`; plan `{architect}` (ungated). Producer self-aligns to exactly the
 bars its judge grades.
 - **Packaging:** the spec is **never inside a distributable plugin dir**. Spec →

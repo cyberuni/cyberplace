@@ -46,7 +46,7 @@ Three entry-points invoke this dispatch behavior. Each is verified by one-or-mor
 
 ## References
 
-`sdd:plugin-contract-governance` (the five roles, governances each loads); `sdd:ownership-governance` (write boundary); `sdd:builder-governance` / `sdd:architect-governance` / `sdd:director-governance` (the actor bars). The parent `sdd-operator` holds the warm-producer / cold-judge model invariants; the sibling `sdd-operator-resolution` owns the resolution (who) side — this spec owns the dispatch (how / I-O) side.
+`sdd:plugin-contract-governance` (the five roles, governances each loads); `sdd:ownership-governance` (write boundary); `sdd:builder-governance` / `sdd:architect-governance` / `sdd:oracle-governance` (the actor bars). The parent `sdd-operator` holds the warm-producer / cold-judge model invariants; the sibling `sdd-operator-resolution` owns the resolution (who) side — this spec owns the dispatch (how / I-O) side.
 
 ## Artifacts
 

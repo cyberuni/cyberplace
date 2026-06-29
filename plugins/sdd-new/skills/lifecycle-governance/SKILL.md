@@ -108,7 +108,7 @@ stateDiagram-v2
     approved --> implemented: impl gate (validate-spec --target impl)
     approved --> draft: behavior change (re-open)
     implemented --> draft: behavior change (re-open)
-    draft --> deprecated: Director-lens kill (scope)
+    draft --> deprecated: Oracle-lens kill (scope)
     approved --> deprecated
     implemented --> deprecated
 ```
@@ -142,7 +142,7 @@ write constraint ("never write a frozen `.feature`") is in `sdd:ownership-govern
   including while files sit `@frozen` (`sdd:combat-log-governance`).
 - **Spec owns behavior.** If the implementation disagrees with `spec.md`, the implementation is
   wrong — fix it, or unfreeze the relevant file for a new cycle. The **impl gate** is the only place
-  a frozen file reopens — via the Director-lens revert (building proved the contract wrong). Rare
+  a frozen file reopens — via the Oracle-lens revert (building proved the contract wrong). Rare
   and deliberate.
 
 **Two modes.** Before a file's freeze, exploration may update `spec.md`, that `.feature`, the plan

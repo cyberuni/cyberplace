@@ -115,7 +115,7 @@ approval:
 
 Key properties:
 
-- **`verdict` is the go/stop record.** `approve` = gate passed (provisional if `by: agent`, ratified if `by: <name>`); `pause` = gate halted, awaiting input; `reject` = gate failed (scope-kill or Director-revert). There is **no separate stop field and no `leash` field** inside the entry — `verdict` already says go or stop, and leash is layer 2.
+- **`verdict` is the go/stop record.** `approve` = gate passed (provisional if `by: agent`, ratified if `by: <name>`); `pause` = gate halted, awaiting input; `reject` = gate failed (scope-kill or Oracle-revert). There is **no separate stop field and no `leash` field** inside the entry — `verdict` already says go or stop, and leash is layer 2.
 - **`why` is durable for every verdict.** A `pause` carries the four-dimension halt reasoning just as an `approve` carries the advance reasoning. This is the original gap closed: "why I halted" is now as durable as "why I went," in the *same* map, distinguished only by `verdict`.
 - **`cause: dimension | ceiling`** is kept. It distinguishes a `pause` forced by a risky dimension read from one forced by the run ceiling (every dimension safe, but capped below this gate). The two call for different human responses — resolve the risk vs raise the ceiling.
 - **`by`** records who reached the verdict — but **only on `approve` and `reject`**. A `pause` is **always** the agent's act, so `by` is **omitted** on a pause entry (`verdict` + `cause` + `why` suffice). `by: agent` on an `approve` is provisional (review queue); a human name is ratified.

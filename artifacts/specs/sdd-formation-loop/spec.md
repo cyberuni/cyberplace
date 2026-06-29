@@ -54,7 +54,7 @@ flowchart TB
   classDef s fill:#eef,stroke:#88a;
 ```
 
-What it is **not**: it does **not** decide *what* to build or deprecate (that is the **Campaign / Product** loop, the Director), and it does **not** grow *how we work* (that is the **Doctrine / Process** loop, the Strategist). Formation is altitude-disciplined to corpus organization alone.
+What it is **not**: it does **not** decide *what* to build or deprecate (that is the **Campaign / Product** loop, the Oracle), and it does **not** grow *how we work* (that is the **Doctrine / Process** loop, the Strategist). Formation is altitude-disciplined to corpus organization alone.
 
 ---
 
@@ -97,7 +97,7 @@ A spec is a split candidate when it trips the granularity heuristic owned by `sp
 
 ### Altitude discipline — Formation owns structure only
 
-Formation never decides what to build (Campaign/Director) and never grows the process (Doctrine/Strategist). A "we should build feature X" or "we should add cause Y to the enum" observation is **out of scope** here and belongs to the sibling loop that owns it.
+Formation never decides what to build (Campaign/Oracle) and never grows the process (Doctrine/Strategist). A "we should build feature X" or "we should add cause Y to the enum" observation is **out of scope** here and belongs to the sibling loop that owns it.
 
 ---
 

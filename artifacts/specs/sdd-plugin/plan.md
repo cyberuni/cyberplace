@@ -101,7 +101,7 @@ Each plugin's `init-<plugin>` skill writes a resolved entry into `.agents/univer
         "impl-judge": "quill-implementer"
       },
       "governances": {
-        "director": null,
+        "oracle": null,
         "builder": "quill-doc-bar",
         "architect": null
       }
