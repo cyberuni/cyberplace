@@ -131,7 +131,10 @@ test('a descriptive root with no frontmatter is a no-op (no .feature requirement
 // ── project-path (the router index) ──
 
 test('parseSpecState reads project-path; absent leaves it null', () => {
-	assert.equal(parseSpecState('---\nstatus: draft\nproject-path: plugins/sdd-new\n---\n').projectPath, 'plugins/sdd-new')
+	assert.equal(
+		parseSpecState('---\nstatus: draft\nproject-path: plugins/sdd-new\n---\n').projectPath,
+		'plugins/sdd-new',
+	)
 	assert.equal(parseSpecState('---\nstatus: draft\n---\n').projectPath, null)
 })
 
