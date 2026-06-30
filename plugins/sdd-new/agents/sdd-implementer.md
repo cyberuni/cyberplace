@@ -23,13 +23,18 @@ artifact-type.
 
 ## Governances to load
 
-Run `resolve-governances` for the node's `artifact-type` and load the plan it emits; the bars
-below are the SDD-default floor (and the only bars for a typeless spec). The **impl-gate lens set is
-{builder, architect}** — there is no oracle at the impl gate (contrast the spec gate's three):
+Run `resolve-governances` for the node's `artifact-type`. It is a **matcher**: per role it returns
+the **resolved-actor bar candidates bucketed by tier** (`project` / `project-root` / `plugin` /
+`sdd`) and does **not** compose. **Load each candidate** (direct-read for project files, harness-load
+for `<plugin>:<bar>` / `sdd:<…>`) and **compose them yourself** by precedence
+`sdd-default < plugin < project-root < project` — union the non-conflicting criteria; **on conflict
+the more-specific wins**; a governance's own `compose: replace` (read from the loaded file)
+supersedes lower-precedence candidates for its bar. The **impl-gate lens set is {builder, architect}**
+— there is no oracle at the impl gate (contrast the spec gate's three):
 
-- **Resolved-actor (the two backward faces):** the resolved `builder-impl` and `architect-impl`
-  bars (floor `sdd:builder-impl-governance` / `sdd:architect-impl-governance`). Grade against
-  **whatever the resolution plan hands you** for the artifact-type — never hand-enumerate.
+- **Resolved-actor (the two backward faces):** the matched `builder-impl` and `architect-impl` bar
+  candidates the matcher hands you (floor `sdd:builder-impl-governance` /
+  `sdd:architect-impl-governance`). Compose per the precedence above — never hand-enumerate.
 - **Fixed-universal:** `sdd:ownership-governance` — the write-ownership matrix; the impl-judge must
   not modify `spec.md` or the `.feature`, and a behavior-changing gap is a `BLOCKER`, not an edit.
 
