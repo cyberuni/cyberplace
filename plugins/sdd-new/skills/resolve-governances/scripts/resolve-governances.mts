@@ -1,20 +1,20 @@
 #!/usr/bin/env node
-// Deterministic governance resolution for SDD production-chain roles. Discovers
-// the bar candidates across sources (project governances, specialist plugins, the
-// sdd defaults), matches each by metadata{artifact-type, actor, gate}, applies
-// precedence, and emits the per-role LOAD/COMPOSE plan the conductor executes
-// (direct-read for project files, harness-load for <plugin>:<name> / sdd:<name>
-// skills). The conductor never hand-enumerates — it runs this and executes the
-// plan. See design/governance-resolution.md (the rule side) and
-// plugin-contract-governance (the registry shape + the per-role loadout).
+// Deterministic governance MATCHER for SDD production-chain roles. For a touched
+// file's artifact-type it NAMES, per role, the agent that runs it plus the
+// resolved-actor bar candidates it loads — matching governances by
+// metadata{artifact-type, actor, gate} across the caller-passed project anchors,
+// the matched plugin squad, and the sdd defaults. It does NOT order by precedence
+// or compose: each bar's candidates come back BUCKETED BY TIER (project /
+// project-root / plugin / sdd), and the consuming agent loads each ref and
+// composes by precedence (sdd-default < plugin < project-root < project), reading
+// each governance's own `compose` at load time (design/governance-resolution.md).
+// The conductor and the cold judges never hand-enumerate — they run this and load
+// what it names.
 //
-// --root here is the PROJECT ROOT (default "."), from which the registry
-// `.agents/universal-plugin.json` and project governances `.agents/governances/`
-// are derived — NOT the specs dir that the sibling check-spec-state.mts takes.
-//
-// MVP scope: single project + plugin + sdd. Nested-project anchor union
-// (inner > outer across several `.agents/governances/` anchors) is a documented
-// follow-up — resolveBar already orders the project candidates inner-first.
+// Anchors are CALLER-PASSED, never discovered: --project <path> (the file's own
+// project) and optional --project-root <path> (the outer shared layer in a
+// monorepo); a single-project repo passes only --project. --root is the registry
+// location (`.agents/universal-plugin.json`), default ".".
 //
 // Pure functions are exported for node:test; running the file directly drives the
 // CLI. No dependencies — plain node strips the types.
@@ -33,18 +33,17 @@ export type BarKey = (typeof BAR_KEYS)[number]
 export const ACTORS = ['oracle', 'builder', 'architect'] as const
 export const GATES = ['spec', 'impl'] as const
 
-// The fixed-universal bars + the resolved-actor bars each role loads
-// (plugin-contract-governance "Which governances each role loads"). `fixed` names
-// load as sdd:<name>-governance; `bars` resolve across sources.
-export const ROLE_LOADOUT: Record<RoleKey, { fixed: string[]; bars: BarKey[] }> = {
-	'spec-producer': { fixed: ['spec-format', 'suite-format', 'ownership'], bars: ['oracle-spec', 'builder-spec'] },
-	'solution-producer': { fixed: ['ownership'], bars: ['architect-spec'] },
-	'spec-judge': {
-		fixed: ['spec-format', 'suite-format', 'lifecycle', 'gate-validation'],
-		bars: ['oracle-spec', 'builder-spec', 'architect-spec'],
-	},
-	'impl-producer': { fixed: ['ownership'], bars: ['builder-impl', 'architect-impl'] },
-	'impl-judge': { fixed: ['ownership', 'gate-validation'], bars: ['builder-impl', 'architect-impl'] },
+// The resolved-actor bars each role loads (plugin-contract-governance "Which
+// governances each role loads"). Only the resolved-actor bars are matched here;
+// the FIXED-UNIVERSAL governances (ownership, lifecycle, spec-format,
+// suite-format, gate-validation, combat-log) are invariant per role and stay
+// declared in each role/agent definition — this matcher does not re-emit them.
+export const ROLE_LOADOUT: Record<RoleKey, { bars: BarKey[] }> = {
+	'spec-producer': { bars: ['oracle-spec', 'builder-spec'] },
+	'solution-producer': { bars: ['architect-spec'] },
+	'spec-judge': { bars: ['oracle-spec', 'builder-spec', 'architect-spec'] },
+	'impl-producer': { bars: ['builder-impl', 'architect-impl'] },
+	'impl-judge': { bars: ['builder-impl', 'architect-impl'] },
 }
 
 // The SDD-default agent per role. A null ref means the conductor runs the role
@@ -91,25 +90,29 @@ export interface GovMetadata {
 	artifactType: string | null
 	actor: string | null
 	gate: string | null
-	compose: 'union' | 'replace'
+	compose: 'union' | 'replace' // parsed but NOT emitted — the agent reads it from the loaded file
 }
 
+// The two project tiers a candidate can come from. project = the file's own
+// project (most specific); project-root = the outer shared layer in a monorepo.
+export type Tier = 'project' | 'project-root'
+
 export interface GovCandidate extends GovMetadata {
+	tier: Tier
 	path: string // root-relative file path (direct-read ref)
 }
 
-export type Source = 'project' | 'plugin' | 'sdd'
-
-export interface LoadInstruction {
-	source: Source
-	kind: 'direct-read' | 'harness-load'
-	ref: string // a file path (project) or <plugin>:<name> / sdd:<name> (harness)
-	compose: 'union' | 'replace'
-}
-
+// One bar's matched candidates, BUCKETED BY TIER — never ordered, never composed.
+// project / project-root are direct-read file paths; plugin / sdd are harness-load
+// skill refs. The agent applies precedence sdd < plugin < project-root < project.
 export interface BarPlan {
 	key: BarKey
-	instructions: LoadInstruction[]
+	candidates: {
+		project: string[]
+		'project-root': string[]
+		plugin: string | null // <plugin>:<bar> harness-load ref, or null when no squad bar
+		sdd: string // sdd:<key>-governance harness-load ref (always present)
+	}
 }
 
 export interface AgentResolution {
@@ -120,8 +123,7 @@ export interface AgentResolution {
 export interface RolePlan {
 	role: RoleKey
 	agent: AgentResolution
-	fixed: LoadInstruction[]
-	bars: BarPlan[]
+	bars: BarPlan[] // resolved-actor bars only; fixed-universal live in the role/agent def
 }
 
 export interface LoadPlan {
@@ -299,22 +301,26 @@ export function parseGovernanceFrontmatter(text: string): GovMetadata | null {
 	return { artifactType, actor, gate, compose }
 }
 
-// Discover project governance candidates under <root>/.agents/governances/ (flat;
-// nested-project anchor union is a follow-up). Both .md and SKILL.md are read in
-// place — no build.
-export function discoverProjectGovernances(root: string): GovCandidate[] {
-	const dir = join(root, '.agents', 'governances')
-	let entries: Dirent[]
-	try {
-		entries = readdirSync(dir, { withFileTypes: true })
-	} catch {
-		return []
-	}
+// Collect project governance candidates from the CALLER-PASSED anchors — never a
+// tree walk. Each anchor names a tier and a root; the candidate carries its tier
+// (for the agent's precedence) and its root-relative path (the direct-read ref).
+// A missing `.agents/governances/` at an anchor contributes nothing. Both .md and
+// SKILL.md are read in place — no build.
+export function collectAnchorGovernances(anchors: { tier: Tier; root: string }[]): GovCandidate[] {
 	const out: GovCandidate[] = []
-	for (const e of entries) {
-		if (!e.isFile() || !e.name.endsWith('.md')) continue
-		const meta = parseGovernanceFrontmatter(readFileSync(join(dir, e.name), 'utf8'))
-		if (meta) out.push({ ...meta, path: join('.agents', 'governances', e.name) })
+	for (const { tier, root } of anchors) {
+		const dir = join(root, '.agents', 'governances')
+		let entries: Dirent[]
+		try {
+			entries = readdirSync(dir, { withFileTypes: true })
+		} catch {
+			continue
+		}
+		for (const e of entries) {
+			if (!e.isFile() || !e.name.endsWith('.md')) continue
+			const meta = parseGovernanceFrontmatter(readFileSync(join(dir, e.name), 'utf8'))
+			if (meta) out.push({ ...meta, tier, path: join(root, '.agents', 'governances', e.name) })
+		}
 	}
 	return out
 }
@@ -339,48 +345,37 @@ export function matchSquad(
 	return { match: null, ambiguous: [...new Set(matches.map((m) => m.plugin))] }
 }
 
-// ─── bar resolution ─────────────────────────────────────────────────────────────
+// ─── bar matching ───────────────────────────────────────────────────────────────
 
-// Resolve one (actor, gate) bar across the three sources, most-specific first
-// (project > plugin > sdd). compose: a `replace` candidate supersedes everything
-// below it for the key; otherwise the bars union (the agent composes per
-// precedence, most-specific wins on conflict).
-export function resolveBar(
+// Match one (actor, gate) bar across the sources and return the candidates
+// BUCKETED BY TIER — no ordering, no compose collapse. A project candidate matches
+// when its frontmatter (actor, gate) matches and its artifact-type is the file's
+// type OR typeless (a typeless project bar applies to every type). The agent reads
+// each candidate's own `compose` at load time and composes by precedence
+// (sdd-default < plugin < project-root < project).
+export function matchBar(
 	artifactType: string | null,
 	actor: string,
 	gate: string,
 	ctx: { match: SquadMatch | null; projectGovs: GovCandidate[] },
 ): BarPlan {
 	const key = `${actor}-${gate}` as BarKey
-	const candidates: LoadInstruction[] = []
+	const bucket = (tier: Tier) =>
+		ctx.projectGovs
+			.filter((c) => c.tier === tier && c.actor === actor && c.gate === gate)
+			.filter((c) => c.artifactType === artifactType || c.artifactType === null)
+			.map((c) => c.path)
 
-	// project — artifact-type-specific candidates rank above typeless ones.
-	const proj = ctx.projectGovs
-		.filter((c) => c.actor === actor && c.gate === gate)
-		.filter((c) => c.artifactType === artifactType || c.artifactType === null)
-		.sort((a, b) => (a.artifactType === artifactType ? -1 : 0) - (b.artifactType === artifactType ? -1 : 0))
-	for (const c of proj) candidates.push({ source: 'project', kind: 'direct-read', ref: c.path, compose: c.compose })
-
-	// plugin — a named bar in the matched squad's governances map.
 	const pluginBar = ctx.match?.squad.governances?.[key]
-	if (ctx.match && pluginBar)
-		candidates.push({
-			source: 'plugin',
-			kind: 'harness-load',
-			ref: `${ctx.match.plugin}:${pluginBar}`,
-			compose: 'union',
-		})
-
-	// sdd default — always exists by convention; lowest precedence.
-	candidates.push({ source: 'sdd', kind: 'harness-load', ref: `sdd:${key}-governance`, compose: 'union' })
-
-	// Apply replace-supersession walking most-specific → least.
-	const instructions: LoadInstruction[] = []
-	for (const c of candidates) {
-		instructions.push(c)
-		if (c.compose === 'replace') break
+	return {
+		key,
+		candidates: {
+			project: bucket('project'),
+			'project-root': bucket('project-root'),
+			plugin: ctx.match && pluginBar ? `${ctx.match.plugin}:${pluginBar}` : null,
+			sdd: `sdd:${key}-governance`,
+		},
 	}
-	return { key, instructions }
 }
 
 // ─── role + plan resolution ─────────────────────────────────────────────────────
@@ -402,18 +397,11 @@ export function resolveRole(
 	artifactType: string | null,
 	ctx: { match: SquadMatch | null; projectGovs: GovCandidate[] },
 ): RolePlan {
-	const loadout = ROLE_LOADOUT[role]
-	const fixed: LoadInstruction[] = loadout.fixed.map((name) => ({
-		source: 'sdd',
-		kind: 'harness-load',
-		ref: `sdd:${name}-governance`,
-		compose: 'union',
-	}))
-	const bars = loadout.bars.map((b) => {
+	const bars = ROLE_LOADOUT[role].bars.map((b) => {
 		const [actor, gate] = b.split('-')
-		return resolveBar(artifactType, actor, gate, ctx)
+		return matchBar(artifactType, actor, gate, ctx)
 	})
-	return { role, agent: resolveAgent(role, ctx.match), fixed, bars }
+	return { role, agent: resolveAgent(role, ctx.match), bars }
 }
 
 export function buildLoadPlan(artifactType: string | null, registry: Registry, projectGovs: GovCandidate[]): LoadPlan {
@@ -477,6 +465,12 @@ export function main(argv: string[]): number {
 	const root = argv.includes('--root') ? argv[argv.indexOf('--root') + 1] : '.'
 	const explicitType = argv.includes('--artifact-type') ? argv[argv.indexOf('--artifact-type') + 1] : null
 	const pathArg = argv.includes('--path') ? argv[argv.indexOf('--path') + 1] : null
+	// Caller-passed project anchors. --project defaults to --root (single-project);
+	// --project-root is the outer shared layer in a monorepo (omitted otherwise).
+	const projectArg = argv.includes('--project') ? argv[argv.indexOf('--project') + 1] : root
+	const projectRootArg = argv.includes('--project-root') ? argv[argv.indexOf('--project-root') + 1] : null
+	const anchors: { tier: Tier; root: string }[] = [{ tier: 'project', root: projectArg }]
+	if (projectRootArg) anchors.push({ tier: 'project-root', root: projectRootArg })
 
 	// --artifact-type wins (explicit override); else --path consults the optional
 	// tiebreaker map (most-specific glob). A --path with no map match stays null —
@@ -510,8 +504,8 @@ export function main(argv: string[]): number {
 		return 0
 	}
 
-	// With an artifact-type → emit the resolution plan.
-	const plan = buildLoadPlan(artifactType, registry, discoverProjectGovernances(root))
+	// With an artifact-type → emit the per-role plan (agent + tier-bucketed bars).
+	const plan = buildLoadPlan(artifactType, registry, collectAnchorGovernances(anchors))
 	process.stdout.write(`${JSON.stringify(plan, null, 2)}\n`)
 	if (plan.status === 'needs-input')
 		console.error(`needs-input: artifact-type "${artifactType}" is claimed by ${plan.ambiguous.join(', ')}`)
