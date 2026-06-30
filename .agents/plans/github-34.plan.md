@@ -90,7 +90,7 @@ todos:
     content: "DONE. Full CR-wide explore ran through sdd-new skills. Spec gate passed (24 .feature frozen, ledger gate line)."
     status: completed
   - id: root-frontmatter
-    content: "DONE. ADR-0017 frontmatter schema redesign: collapsed to status + project-path. 8 commits landed."
+    content: "DONE. ADR-0017 frontmatter schema redesign: collapsed to status + project-path. 8 commits landed. FOLLOW-UP: swept retired `aligned` (+ co-retired `strategy`) refs across the sdd-new corpus — agents, gateway, governances, spec READMEs, design/solution docs (ab4c0bb, b1dc049). RESIDUAL: one stale `aligned` survives in the FROZEN `mission/impl-judge/impl-judge.feature:88` (Then-clause enumeration; behavior unchanged) — left in place per user; drop it at the next legit impl-judge contract revision (avoid an unfreeze-just-for-this gate cycle)."
     status: completed
   - id: spec-gate
     content: "Spec gate Draft->Approved — DONE (7ab8c98, ratified by unional). All 24 .feature frozen, ledger gate line written."
