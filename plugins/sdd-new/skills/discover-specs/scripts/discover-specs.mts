@@ -28,7 +28,7 @@ import { join } from 'node:path'
 export const LIFECYCLE_STATUSES = new Set(['draft', 'approved', 'implemented', 'deprecated'])
 
 // The repo-root single-project (`.agents/spec`) has no folder to name it; this assumable label does.
-export const ROOT_PROJECT_NAME = 'repo'
+const ROOT_PROJECT_NAME = 'repo'
 
 // Dirs the scan never descends into (keep `.agents` — specs live under it).
 const SKIP_DIRS = new Set(['node_modules', '.git', 'dist', '.turbo', '.next', 'coverage'])
