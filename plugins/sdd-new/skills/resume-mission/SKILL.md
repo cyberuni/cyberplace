@@ -29,7 +29,7 @@ where it left off.
    block) as settled; reopen one only on new evidence, and say so.
 
 4. **Load only the spec context the next todo needs.** For a capability sub-mission, read that
-   capability's `README.md` under `.agents/specs/<project>/<cap>/` plus the `design/` rules it
+   capability's `README.md` under `.agents/specs/<project>/<cap>/` plus the `.agents/specs/sdd/design/` rules it
    references — not the whole tree.
 
 5. **Continue, committing per unit.** Work in the plan's stated rhythm; commit each coherent

@@ -8,4 +8,4 @@ A fixed-universal SDD governance, invariant per role (not face-split). Loaded by
 `validate-spec`, `start-mission`, the conductor, and the spec-judge. Write-ownership of these fields
 lives in `ownership-governance`; legality of field combinations and gate verdicts in
 `gate-validation-governance`; the ledger shape in `combat-log-governance`; the model + rationale in
-`design/lifecycle-model.md`. Not triggered by users directly.
+`.agents/specs/sdd/design/lifecycle-model.md`. Not triggered by users directly.

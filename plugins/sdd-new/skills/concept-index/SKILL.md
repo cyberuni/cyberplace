@@ -27,7 +27,7 @@ node "<skill>/scripts/concept-index.mts" --spec-dir <corpus> [--write | --check]
   no-drift guard for CI).
 
 The view is **pure derivation** from the `concept:` tags: rendering twice is byte-identical and a
-`--write` over a current block is a no-op. Each node is annotated by **facet kind** — `design/` → rule,
+`--write` over a current block is a no-op. Each node is annotated by **facet kind** — `.agents/specs/sdd/design/` → rule,
 `acceptance/` → e2e, else `reference` / `behavior` / `index` from its `spec-type`.
 
 ## Boundaries

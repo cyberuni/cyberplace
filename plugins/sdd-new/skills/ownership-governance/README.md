@@ -8,4 +8,4 @@ A fixed-universal SDD governance, invariant per role (not face-split). Loaded by
 judge, the conductor, and the start-mission/validate-spec skills. The field definitions live in
 `lifecycle-governance`; the legality of the resulting state in `gate-validation-governance`; the
 plan/ledger write split in `combat-log-governance`; the model + rationale in
-`design/provenance-model.md`. Not triggered by users directly.
+`.agents/specs/sdd/design/provenance-model.md`. Not triggered by users directly.
