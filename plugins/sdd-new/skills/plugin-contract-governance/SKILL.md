@@ -40,7 +40,7 @@ model-tuned producer agent named for the slot — is always spawned.
 ## Which governances each role loads
 
 Bars are the Model-B `(actor, gate)` governances (matched by `resolve-governances` per
-`design/governance-resolution.md`; the bars themselves live in `common-governances/`); a producer
+`.agents/specs/sdd/design/governance-resolution.md`; the bars themselves live in `common-governances/`); a producer
 self-aligns to exactly the bars its judge grades. The lens sets are spec gate `{oracle, builder,
 architect}`, impl gate `{builder, architect}`, solution `{architect}` (ungated).
 

@@ -14,7 +14,7 @@ the **Warden** (`sdd-warden`), parallel to the conductor running the mission loo
 have organized right?** Its standing subject is `corpus/` and the whole organization: it evolves how
 the corpus is **arranged**, never what it says.
 
-Load `sdd:combat-log-governance` for any provenance it touches and `../design/autonomy-rubric.md`
+Load `sdd:combat-log-governance` for any provenance it touches and `.agents/specs/sdd/design/autonomy-rubric.md`
 for the floor + gradient the Warden renders its per-act verdict against — this skill defers both and
 never restates them.
 
@@ -63,7 +63,7 @@ finding. The acts are evidence-gated, not run unconditionally.
 
 The Warden is **rubric-subject**, exactly as the conductor is at a gate, and has **no direct user
 channel**. For **each structural act** it applies the full floor + gradient
-(`../design/autonomy-rubric.md`) — the floor (**Clearance** for a narrowing act; **Compatibility**
+(`.agents/specs/sdd/design/autonomy-rubric.md`) — the floor (**Clearance** for a narrowing act; **Compatibility**
 when the act's semver class exceeds the ceiling; **Conflict** for a contested reconciliation) plus
 the gradient (**blast** magnitude, **novelty**, **confidence**) — and renders its own verdict:
 

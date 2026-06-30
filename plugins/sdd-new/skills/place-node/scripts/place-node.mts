@@ -130,7 +130,7 @@ function render(homes: HomeSuggestion[], near: NodeRecord[], concept: string, na
 	} else {
 		lines.push('near[0]: (no name overlap)')
 	}
-	lines.push('note: placement is provisional — finalized at handoff (design/spec-layout.md)')
+	lines.push('note: placement is provisional — finalized at handoff (.agents/specs/sdd/design/spec-layout.md)')
 	return lines.join('\n')
 }
 

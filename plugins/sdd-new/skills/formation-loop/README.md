@@ -4,7 +4,7 @@ Internal, non-user-invocable SDD skill holding the **structure outer loop** — 
 **formation loop**, run by its delegate the Warden (`sdd-warden`) parallel to the conductor's
 mission loop. It encodes the **three corpus-wide acts** (split a monolith, dedupe overlap, reconcile
 a contradiction), the Warden's **self-clear-vs-escalate** verdict against the floor + gradient
-(`../design/autonomy-rubric.md`), the **frozen-contract guard** (keyed on contract impact, not the
+(`.agents/specs/sdd/design/autonomy-rubric.md`), the **frozen-contract guard** (keyed on contract impact, not the
 bare freeze), and the **altitude routing** that keeps formation to corpus structure alone.
 
 The loop fires **post-mission, corpus-wide and continuous**, asking one question — is what we have

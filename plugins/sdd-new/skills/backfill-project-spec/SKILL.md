@@ -51,7 +51,7 @@ doc-envelope) are recorded in `spec-layout.md`; surface them only on an explicit
 Write the **shared envelope** every strategy ships:
 
 - root **`spec.md`** (the index + the `project-path` frontmatter + the placement map — step 5);
-- **`design/`** — the rules/model home, **including `design/decisions/`** (the ADR log: append-only,
+- **`.agents/specs/sdd/design/`** — the rules/model home, **including `.agents/specs/sdd/design/decisions/`** (the ADR log: append-only,
   descriptive, ungated — the project-scope sibling of a unit's `<unit>.solution.md`; *organize no node as an
   ADR body*);
 - **`acceptance/`** — the e2e behavior suite home;
@@ -99,7 +99,7 @@ and **propose** the node placement for the formation **Warden** to confirm or re
 
 ## Output boundary
 
-Write the skeleton, the root envelope (`project-path` frontmatter + placement map), and the `design/decisions/`
+Write the skeleton, the root envelope (`project-path` frontmatter + placement map), and the `.agents/specs/sdd/design/decisions/`
 + glossary homes — nothing else. Do **not** author any node's `## Use Cases`/`.feature`, render a gate verdict,
 freeze, or write `status` / `approval` / `produced-by` (the conductor's and `validate-spec`'s; see
 `ownership-governance`).

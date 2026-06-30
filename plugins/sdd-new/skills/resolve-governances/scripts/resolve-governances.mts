@@ -7,7 +7,7 @@
 // or compose: each bar's candidates come back BUCKETED BY TIER (project /
 // project-root / plugin / sdd), and the consuming agent loads each ref and
 // composes by precedence (sdd-default < plugin < project-root < project), reading
-// each governance's own `compose` at load time (design/governance-resolution.md).
+// each governance's own `compose` at load time (.agents/specs/sdd/design/governance-resolution.md).
 // The conductor and the cold judges never hand-enumerate — they run this and load
 // what it names.
 //
@@ -207,7 +207,7 @@ export function loadRegistry(root: string): Registry {
 // ─── artifact-type tiebreaker map (.agents/sdd/artifact-types.toml) ──────────────
 
 // An OPTIONAL, agent-maintained lookup that records resolved path->type bindings
-// for the ambiguities convention can't settle (design/artifact-type.md). It is
+// for the ambiguities convention can't settle (.agents/specs/sdd/design/artifact-type.md). It is
 // NOT the primary classifier — convention is, and that is the conductor's
 // judgment; this table is consulted only on a known ambiguity or a user-flagged
 // path. A flat TOML map "<path-or-glob>" = "<artifact-type>"; most-specific glob
