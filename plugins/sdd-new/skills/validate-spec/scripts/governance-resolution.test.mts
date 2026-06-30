@@ -59,10 +59,10 @@ test('migrateEntry expands flat governances to the Model-B keys', () => {
 		name: 'x',
 		domains: [],
 		roles: {},
-		governances: { director: 'd', builder: 'b', architect: null },
+		governances: { oracle: 'd', builder: 'b', architect: null },
 	})
 	assert.deepEqual(e.squads[0].governances, {
-		'director-spec': 'd',
+		'oracle-spec': 'd',
 		'builder-spec': 'b',
 		'builder-impl': 'b',
 		'architect-spec': null,
@@ -72,7 +72,7 @@ test('migrateEntry expands flat governances to the Model-B keys', () => {
 
 test('migrateEntry leaves an already-squads entry unchanged in shape', () => {
 	const g = {
-		'director-spec': null,
+		'oracle-spec': null,
 		'builder-spec': 'b',
 		'builder-impl': null,
 		'architect-spec': null,
@@ -89,21 +89,21 @@ test('migrateEntry leaves an already-squads entry unchanged in shape', () => {
 test('migrateEntry migrates per-squad roles and governances on a squads entry', () => {
 	const e = migrateEntry({
 		name: 'x',
-		squads: [{ 'artifact-types': ['skill'], roles: { 'plan-producer': null }, governances: { director: 'd' } }],
+		squads: [{ 'artifact-types': ['skill'], roles: { 'plan-producer': null }, governances: { oracle: 'd' } }],
 	})
 	assert.equal('solution-producer' in e.squads[0].roles, true)
-	assert.equal('director-spec' in e.squads[0].governances, true)
+	assert.equal('oracle-spec' in e.squads[0].governances, true)
 })
 
 test('parseRegistry parses and migrates every entry', () => {
 	const text = JSON.stringify({
 		'sdd-plugins': [
-			{ name: 'aces', domains: ['skill'], roles: { 'plan-producer': null }, governances: { director: null } },
+			{ name: 'aces', domains: ['skill'], roles: { 'plan-producer': null }, governances: { oracle: null } },
 		],
 	})
 	const r = parseRegistry(text)
 	assert.equal('solution-producer' in r['sdd-plugins'][0].squads[0].roles, true)
-	assert.equal('director-spec' in r['sdd-plugins'][0].squads[0].governances, true)
+	assert.equal('oracle-spec' in r['sdd-plugins'][0].squads[0].governances, true)
 })
 
 test('parseRegistry throws on malformed JSON', () => {
@@ -121,7 +121,7 @@ test('parseGovernanceFrontmatter reads actor, gate, compose', () => {
 		'---',
 		'name: x',
 		'metadata:',
-		'  actor: director',
+		'  actor: oracle',
 		'  gate: spec',
 		'  compose: replace',
 		'---',
@@ -129,7 +129,7 @@ test('parseGovernanceFrontmatter reads actor, gate, compose', () => {
 	].join('\n')
 	assert.deepEqual(parseGovernanceFrontmatter(text), {
 		artifactType: null,
-		actor: 'director',
+		actor: 'oracle',
 		gate: 'spec',
 		compose: 'replace',
 	})
@@ -201,19 +201,19 @@ const squadMatch = (plugin: string, governances: Squad['governances'], roles: Sq
 })
 
 test('resolveBar floors to the sdd default when nothing overrides', () => {
-	const plan = resolveBar(null, 'director', 'spec', { match: null, projectGovs: [] })
-	assert.equal(plan.key, 'director-spec')
+	const plan = resolveBar(null, 'oracle', 'spec', { match: null, projectGovs: [] })
+	assert.equal(plan.key, 'oracle-spec')
 	assert.deepEqual(plan.instructions, [
-		{ source: 'sdd', kind: 'harness-load', ref: 'sdd:director-spec-governance', compose: 'union' },
+		{ source: 'sdd', kind: 'harness-load', ref: 'sdd:oracle-spec-governance', compose: 'union' },
 	])
 })
 
 test('resolveBar unions project > plugin > sdd', () => {
 	const projectGovs: GovCandidate[] = [
-		{ path: '.agents/governances/d.md', artifactType: null, actor: 'director', gate: 'spec', compose: 'union' },
+		{ path: '.agents/governances/d.md', artifactType: null, actor: 'oracle', gate: 'spec', compose: 'union' },
 	]
-	const match = squadMatch('aces', { 'director-spec': 'aces-dir' })
-	const plan = resolveBar('skill', 'director', 'spec', { match, projectGovs })
+	const match = squadMatch('aces', { 'oracle-spec': 'aces-dir' })
+	const plan = resolveBar('skill', 'oracle', 'spec', { match, projectGovs })
 	assert.deepEqual(
 		plan.instructions.map((i) => i.source),
 		['project', 'plugin', 'sdd'],
@@ -223,10 +223,10 @@ test('resolveBar unions project > plugin > sdd', () => {
 
 test('resolveBar — a project replace supersedes plugin and sdd', () => {
 	const projectGovs: GovCandidate[] = [
-		{ path: '.agents/governances/d.md', artifactType: null, actor: 'director', gate: 'spec', compose: 'replace' },
+		{ path: '.agents/governances/d.md', artifactType: null, actor: 'oracle', gate: 'spec', compose: 'replace' },
 	]
-	const match = squadMatch('aces', { 'director-spec': 'aces-dir' })
-	const plan = resolveBar('skill', 'director', 'spec', { match, projectGovs })
+	const match = squadMatch('aces', { 'oracle-spec': 'aces-dir' })
+	const plan = resolveBar('skill', 'oracle', 'spec', { match, projectGovs })
 	assert.deepEqual(
 		plan.instructions.map((i) => i.source),
 		['project'],
@@ -291,7 +291,7 @@ test('resolveRole gives the spec-judge its fixed-universal + three -spec bars', 
 	)
 	assert.deepEqual(
 		plan.bars.map((b) => b.key),
-		['director-spec', 'builder-spec', 'architect-spec'],
+		['oracle-spec', 'builder-spec', 'architect-spec'],
 	)
 })
 
@@ -355,11 +355,11 @@ test('validateRegistry flags an unknown governance key', () => {
 		'sdd-plugins': [
 			{
 				name: 'x',
-				squads: [{ 'artifact-types': [], roles: {}, governances: { director: null } as Squad['governances'] }],
+				squads: [{ 'artifact-types': [], roles: {}, governances: { oracle: null } as Squad['governances'] }],
 			},
 		],
 	}
-	assert.ok(validateRegistry(reg).some((m) => /unknown governance key "director"/.test(m)))
+	assert.ok(validateRegistry(reg).some((m) => /unknown governance key "oracle"/.test(m)))
 })
 
 test('validateRegistry flags an artifact-type claimed by two plugins', () => {
@@ -395,12 +395,12 @@ test('discoverProjectGovernances reads bar files and skips non-bars', () => {
 		mkdirSync(join(root, '.agents', 'governances'), { recursive: true })
 		writeFileSync(
 			join(root, '.agents', 'governances', 'bar.md'),
-			['---', 'metadata:', '  actor: director', '  gate: spec', '---', '# bar'].join('\n'),
+			['---', 'metadata:', '  actor: oracle', '  gate: spec', '---', '# bar'].join('\n'),
 		)
 		writeFileSync(join(root, '.agents', 'governances', 'notes.md'), '# just notes, no frontmatter')
 		const found = discoverProjectGovernances(root)
 		assert.equal(found.length, 1)
-		assert.equal(found[0].actor, 'director')
+		assert.equal(found[0].actor, 'oracle')
 		assert.equal(found[0].path, join('.agents', 'governances', 'bar.md'))
 	} finally {
 		rmSync(root, { recursive: true, force: true })
