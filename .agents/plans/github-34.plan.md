@@ -78,7 +78,7 @@ todos:
     content: "DESIGN/IMPL — DONE. Gateway loads route skill in-session; start-mission entry; operator->conductor/automaton rename."
     status: completed
   - id: core-agents
-    content: "Deliver — cross-cutting agents. DONE: sdd-spec-judge, sdd-implementer, Scanner (doctrine-loop), Warden (formation-loop), governance-resolution.mts. PENDING: automaton, nested-project anchor union."
+    content: "Deliver — cross-cutting agents. DONE: sdd-spec-judge, sdd-implementer, Scanner (doctrine-loop), Warden (formation-loop), resolve-governances matcher (ADR-0018 boundary + mission/resolution unit). PENDING: automaton."
     status: in_progress
   - id: impl-judge-independence
     content: "ADR-0016 — DONE. Impl-judge layered verification: re-derive oracle, leash-scoped exercise, producer-green=pre-filter."
@@ -130,6 +130,22 @@ The work is organized in **two levels of grill**:
   time, vertically**, each as an individual sub-mission with the rhythm below.
 
 ## NEXT — resume here (read this first)
+
+> **Session update (2026-06-30) — `core-agents` advanced: resolve-governances boundary LANDED;
+> only `automaton` remains.** Took the "nested-project anchor union" item and, on inspection with the
+> user, turned it into a script↔agent **boundary redesign** (ADR-0018): the governance resolver is a
+> **dumb matcher** (caller-passed `--project`/`--project-root` anchors, candidates **bucketed by tier**
+> `project`/`project-root`/`plugin`/`sdd`, no ordering, no `compose`, fixed-universal not emitted); the
+> **agent composes** by precedence `sdd-default < plugin < project-root < project` (conflict →
+> most-specific; `replace` supersedes). The `user` tier is **deferred** (recorded, ADR-0018). The engine
+> was **extracted** from `validate-spec/scripts/` into its own `resolve-governances` skill (consumed by
+> the conductor + both cold judges). New **`mission/resolution/`** behavioral unit (README + `.feature` +
+> solution) — cold `sdd-spec-judge` **ALIGNED** (3 lenses, no blocker; its 3 observations addressed
+> pre-freeze), frozen + ledger gate line (seq 6). Commits on `next`: `07954c1` (extract) `6fb56d7`
+> (dumb-matcher) `6a8c8ea` (design+ADR-0018) `c5a10d1` (consumers) `3b075b3` (mission/resolution unit) +
+> `47d330d` (de-export ROOT_PROJECT_NAME, knip). `pnpm verify` green (13/13). **STILL PENDING in
+> `core-agents`: only the headless `automaton` fallback agent.** Plan
+> `~/.claude/plans/yes-let-s-work-on-federated-crayon.md`.
 
 > **Session update (2026-06-29, later) — `core-agents` advanced: Scanner + Warden LANDED.** The
 > doctrine Scanner shipped earlier (`4cabdfd` doctrine-loop skill + `sdd-scanner` agent;
