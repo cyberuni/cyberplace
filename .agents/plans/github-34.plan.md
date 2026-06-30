@@ -78,8 +78,8 @@ todos:
     content: "DESIGN/IMPL — DONE. Gateway loads route skill in-session; start-mission entry; operator->conductor/automaton rename."
     status: completed
   - id: core-agents
-    content: "Deliver — cross-cutting agents. DONE: sdd-spec-judge, sdd-implementer, governance-resolution.mts. PENDING: Scanner, Warden, automaton."
-    status: pending
+    content: "Deliver — cross-cutting agents. DONE: sdd-spec-judge, sdd-implementer, Scanner (doctrine-loop), Warden (formation-loop), governance-resolution.mts. PENDING: automaton, nested-project anchor union."
+    status: in_progress
   - id: impl-judge-independence
     content: "ADR-0016 — DONE. Impl-judge layered verification: re-derive oracle, leash-scoped exercise, producer-green=pre-filter."
     status: completed
@@ -130,6 +130,18 @@ The work is organized in **two levels of grill**:
   time, vertically**, each as an individual sub-mission with the rhythm below.
 
 ## NEXT — resume here (read this first)
+
+> **Session update (2026-06-29, later) — `core-agents` advanced: Scanner + Warden LANDED.** The
+> doctrine Scanner shipped earlier (`4cabdfd` doctrine-loop skill + `sdd-scanner` agent;
+> `sdd-implementer` impl-judge `39c4e64`). This session built the **formation Warden** —
+> `formation-loop` skill + `sdd-warden` agent in `plugins/sdd-new`, to the frozen
+> `formation.feature` (`40f7818`). Also **completed the Director→Oracle rename** that `ef0b7fa`
+> left half-done in `governance-resolution.mts` + its test (`director-spec` → `oracle-spec`,
+> legacy migrate-on-read field), which had reds `pnpm verify:specs-new` on the `oracle-spec`
+> registry key (`6b5dc0e`). `verify:specs-new` green; full turbo test green via pre-commit.
+> **STILL PENDING in `core-agents`:** the headless **`automaton`** fallback agent + the
+> **nested-project anchor union** in `governance-resolution.mts` (MVP did single project + plugin
+> + sdd; `resolveBar` already orders project candidates inner-first).
 
 > **Session update (2026-06-29) — combat-log focus CLOSED; reconciled-forward.** The
 > `combat-log-contract` and `combat-log-timing-concurrency` todos both LANDED in git (contract:
