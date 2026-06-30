@@ -36,7 +36,7 @@ When `$sdd` is invoked with no work item, artifact, or action, do not guess. Con
 | # | Top-level option | Covers |
 |---|---|---|
 | 1 | **Make a change to the project** | open a CR against the project spec (add a capability, revise behavior, implement, land) → `start-mission` |
-| 2 | **Manage the corpus** | dedupe overlapping specs, split a large spec, reconcile a contradiction, inspect the corpus |
+| 2 | **Manage the corpus** | audit node-shape, align prose↔suite drift, reconcile a contradiction, inspect the corpus |
 | 3 | **Review pending strategy** | the doctrine loop's unratified `strategy` lines, when any are pending |
 | 4 | **Help me choose** | scan the spec + statuses, suggest the most-actionable few (≤ 4), let the user pick |
 
@@ -53,7 +53,7 @@ Classification routes a request to the **skill** that handles it; the routing ta
 | User intent | Skill (handler) |
 |---|---|
 | Make any change to the project / spec (add, revise, implement, land) | **`start-mission`** — opens a CR against the project spec and runs the mission loop |
-| Dedupe, split, reconcile, or inspect the corpus | **corpus** tools |
+| Audit node-shape, align, reconcile, or inspect the corpus | **corpus** tools |
 | A task with no suite-relevant behavior (not a CR) | **escape** — proceeds outside the lifecycle, leaves no SDD record |
 | Product / structure / process retrospective, or field corrections | the **campaign / formation / doctrine / forge** loop — emits a new CR (→ `start-mission`) |
 

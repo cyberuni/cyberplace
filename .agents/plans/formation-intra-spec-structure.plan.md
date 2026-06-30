@@ -1,28 +1,37 @@
 ---
 name: "formation-intra-spec-structure: the formation loop detects structural issues WITHIN a spec"
-overview: "CR against the sdd project spec. The corpus maintenance tools dedupe-specs / split-spec / align-specs are the FLEET-era station — they policed overlap, oversize, and contradiction ACROSS many specs. Under the new model one project = one spec, so cross-spec dedupe/split/align are obsolete: their @frozen but unimplemented .feature nodes (corpus/dedupe-specs, corpus/split-spec, corpus/align-specs) and the formation-loop station rows that point at them should be retired. Their SPATIAL SUCCESSOR is a formation-loop capability that detects structural issues WITHIN a single spec as a regular maintenance check — node-placement drift, capability-folder concept-scatter (the concern concept-index re-unifies), an oversized node that should split into sub-nodes, and contradictions between nodes inside the SAME spec. The Warden runs it post-mission and continuous, emitting findings each carrying a self-clear-or-escalate verdict. Net: replace the cross-spec corpus station with an intra-spec structural-maintenance station."
+overview: "CR against the sdd project spec. Retire the fleet-era cross-spec corpus tools (dedupe-specs, split-spec) and retarget the corpus to intra-spec structural maintenance now that one project = one spec. Reuse align-specs (renamed align-spec) for prose↔suite drift; add a new check-spec-structure node + .mts engine (untagged-node blocking + oversized-node advisory; intra-spec contradiction as a Warden @rubric arm; placement-drift deliberately deferred — concepts legitimately scatter). Rewrite the formation station table (spec + formation-loop skill + sdd-warden) and retarget the frozen formation.feature under the same Clearance umbrella. Both gates self-asserted (internal tooling, pre-authorized Clearance); cold sdd-spec-judge builder+architect PASS, oracle blocker fixed."
 todos:
   - id: intake
-    content: "Step 1 — open local CR `formation-intra-spec-structure`, scaffold this brief, run discover-specs to locate the sdd project spec (.agents/specs/sdd) and confirm the corpus/* + formation/* current shape. Source: user request (this session)."
-    status: pending
-  - id: explore-retire
-    content: "Explore: confirm and pre-authorize retirement of the obsolete cross-spec tools — corpus/dedupe-specs, corpus/split-spec, corpus/align-specs (all @frozen, none implemented). Deleting frozen scenarios is a NARROWING → Clearance hard floor; pre-authorize it in the CR. Decide remove-vs-repurpose for each node + its .feature; note that spec-digest (inlined into validate-spec) and discovery/concept-index/place-node STAY."
-    status: pending
-  - id: explore-define
-    content: "Explore (build-to-learn): author the intra-spec structural-maintenance capability under formation/ — ## Use Cases + boolean .feature. Cases: node-placement drift (a node home that no longer matches its concept), capability-folder concept-scatter (lean on concept-index), oversized-node split heuristic (a node that should become a parent + sub-nodes), intra-spec contradiction (two nodes in one spec that conflict). If a deterministic scan helps, prototype an engine sibling to concept-index/place-node; green node:test = the oracle."
-    status: pending
-  - id: wire-warden
-    content: "Explore/deliver: update the formation-loop station table — replace the dedupe/split/align rows with the intra-spec structural-maintenance checks; update sdd-warden.md and formation-loop README/SKILL so the Warden runs the new station with self-clear-or-escalate verdicts."
-    status: pending
+    content: "Open local CR; locate sdd spec; pre-authorize the Clearance narrowings (delete dedupe/split, narrow align #3, retarget formation.feature). DONE."
+    status: completed
+  - id: explore
+    content: "Confirm corpus/ home via place-node; set granularity threshold (40, advisory); reclassify placement-drift deterministic→Warden judgment after self-host data showed concept scatter is legitimate. DONE."
+    status: completed
+  - id: spec-new-node
+    content: "Author corpus/check-spec-structure/{README,.feature} — Use Cases, severity, 13 scenarios (12 boolean + 1 @rubric). DONE."
+    status: completed
+  - id: spec-retarget-align
+    content: "git mv align-specs→align-spec; reword #3 to project-spec; Director→Oracle fix; drop cross-spec README framing. DONE."
+    status: completed
+  - id: spec-retire
+    content: "git rm dedupe-specs + split-spec; fix sibling cross-refs; rewrite corpus/README (units table + tiers + History); spec.md prose. DONE."
+    status: completed
+  - id: spec-formation
+    content: "Retarget frozen formation.feature to intra-spec acts; rewrite station table in formation/README, formation-loop SKILL+README, sdd-warden, gateway README, sdd SKILL, plugins README. DONE."
+    status: completed
   - id: spec-gate
-    content: "Spec gate: spawn cold sdd:sdd-spec-judge over the new + retired nodes; on ALIGNED freeze the new .feature (@frozen) and record a gate line in .agents/specs/sdd/ledger.jsonl. The retirements ride the Clearance pre-authorization."
-    status: pending
-  - id: deliver
-    content: "Deliver: build the skill/engine (and remove the retired corpus skills/specs) against the frozen suite; spawn cold impl-judge; impl gate → status advance + impl ledger line."
-    status: pending
+    content: "Regen by-concept (concept-index --write); check-spec-state + check-feature green; cold sdd-spec-judge (builder+architect PASS, oracle fixed); ledger seq 24 spec gate; frozen 3 features. DONE."
+    status: completed
+  - id: deliver-engine
+    content: "Build check-spec-structure.mts + .test.mts (16 tests, 1:1 to deterministic scenarios); skill SKILL+README; wire verify:specs-new (test + self-host --check). DONE."
+    status: completed
+  - id: impl-gate
+    content: "Self-host --check exits 0; verify:specs-new green; ledger seq 25 impl gate. DONE."
+    status: completed
   - id: handoff
-    content: "Handoff: pnpm verify green; commit per concern (retire corpus tools / add intra-spec station / wire warden); update this ## NEXT; update memory (project_sdd_concept_axis_and_placement, project_sdd_fleet_vocab_locked)."
-    status: pending
+    content: "pnpm verify green; commit per unit (feat: new node+engine; refactor: retire+retarget); PR. IN PROGRESS."
+    status: in_progress
 isProject: false
 ---
 
@@ -32,23 +41,33 @@ isProject: false
 > Local CR `formation-intra-spec-structure`. Source: user request (this session).
 > Runs on branch `next` (the sdd-new line).
 
-## What we are doing
-
-Retire the fleet-era cross-spec corpus tooling (dedupe / split / align-specs — all `@frozen` but
-never implemented, and obsolete now that **one project = one spec**) and replace it with its
-**spatial successor**: a formation-loop station that checks the structure **inside a single spec**
-as regular maintenance. The Warden gains intra-spec checks — placement drift, concept-scatter,
-oversized-node split, intra-spec contradiction — each emitting a self-clear-or-escalate verdict.
-
 ## NEXT — resume here
 
-▶ NOT STARTED. Begin at `intake`: open the local CR, run `discover-specs --root .agents/specs` to
-confirm the current `corpus/` and `formation/` node shape, then in `explore-retire` pre-authorize
-the Clearance narrowing for the three obsolete corpus nodes before touching any frozen `.feature`.
+▶ MISSION COMPLETE (2026-06-30) pending final commit + PR. Both gates self-asserted in-session
+(ledger seq 24 spec, seq 25 impl) under the plan's pre-authorized Clearance; cold sdd-spec-judge
+returned builder+architect PASS with one oracle blocker (non-goals inline) which was fixed per the
+judge's instruction with no scenario change. `pnpm verify` green; self-host
+`check-spec-structure --check` exits 0 on the sdd corpus.
+
+Remaining: land the two commits (feat: check-spec-structure node + engine + wiring; refactor:
+retire dedupe/split + retarget align-spec + formation). Flag to the Council as **agent-asserted —
+ratify or kick back**. Then doctrine-distill + plan-retirement once merged.
 
 ## CR
 
-Local CR `formation-intra-spec-structure`. Source: user request (this session). Touches the sdd
-project spec at `.agents/specs/sdd`: retires `corpus/dedupe-specs`, `corpus/split-spec`,
-`corpus/align-specs`; adds an intra-spec structural-maintenance node under `formation/`. The
-retirement deletes frozen scenarios → **Clearance** hard floor, pre-authorized in this CR.
+Local CR `formation-intra-spec-structure`. Source: user request (this session). Pre-authorized
+Clearance narrowings (ratified by plan approval): delete frozen `corpus/dedupe-specs` +
+`corpus/split-spec`; reword/narrow `align-spec` detect-scope; retarget frozen `formation.feature`
+to intra-spec acts.
+
+## Resolved decisions
+
+- **align-specs retargeted, not retired** — it already did intra-spec prose↔suite drift.
+- **Two skills, not one blob** — `align-spec` (alignment) + `check-spec-structure` (node-shape).
+- **placement-drift is Warden judgment, not deterministic** — concepts legitimately scatter across
+  folders (concept-index re-unifies that); a concept-vs-folder scan false-positives on `formation/`
+  and `backfill-project-spec` which correctly carry `corpus-structure`. Deferred from the engine.
+- **Severity split** — untagged-node blocking (drives `--check`), oversized-node advisory (surfaces
+  `conductor` 59-scenario monolith without blocking CI).
+- **formation.feature retarget folded in** (D-1) — else the station-table prose would ship the exact
+  drift `align-spec` detects, against a retired station.
