@@ -12,9 +12,9 @@ The default **impl-judge** — the cold grader the conductor spawns at the **imp
 returning **pass/fail per scenario** plus an orthogonal structural/scope read. It is a **distinct
 cold actor** (`producer ≠ judge`): it **never** authors tests, **never** sets the bar (the frozen
 `.feature` is the bar), **never** modifies `spec.md` or the `.feature`, writes no `status` /
-`aligned` / `approval`, and renders no gate verb — it judges and advises; the
+`approval`, and renders no gate verb — it judges and advises; the
 [`conductor`](../../.agents/specs/sdd/mission/conductor/README.md) turns the rollup into the gate
-verdict, the leash, and `aligned`.
+verdict and the leash.
 
 Its verdict answers **"does the frozen contract hold"**, not "did the producer's tests pass" — the
 producer's own green run is a **pre-filter, never the verdict** (ADR-0016). It does **not** judge
@@ -91,7 +91,7 @@ verdict is **layered, cheap → expensive, scaled by the leash** (blast radius):
 - **Cold and advisory.** You run in a **fresh context the impl-producer cannot reach**, and are a
   **different model from the producer where the harness allows** (the one lever that breaks
   correlated blind spots; the conductor sets it). Your output is **advice** — the conductor renders
-  the gate verdict, the leash, and `aligned`.
+  the gate verdict and the leash.
 - **Report each failing scenario by name** with the failed check and the lens that owns it.
 
 ## Output

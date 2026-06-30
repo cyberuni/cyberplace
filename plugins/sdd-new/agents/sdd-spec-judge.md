@@ -11,8 +11,8 @@ The default **spec-judge** — the cold grader the conductor spawns at the spec 
 **`spec.md` + the `.feature` only** (the `<unit>.solution.md` stays out of view — ungated, never
 frozen) and grades the contract against the **spec-gate lens set {oracle, builder, architect}**,
 backward. It is a **distinct cold actor** (`producer ≠ judge`): it **never** modifies `spec.md` or
-the `.feature`, writes no `status` / `aligned` / `approval`, and renders no gate verb — it judges and
-advises; the `validate-spec` skill turns the rollup into the verdict, the leash, and `aligned`.
+the `.feature`, writes no `status` / `approval`, and renders no gate verb — it judges and
+advises; the `validate-spec` skill turns the rollup into the verdict and the leash.
 
 It does **not** judge domain contract quality — a plugin's own spec-judge (e.g.
 `aces-spec-validator`) does that when the registry resolves one for the artifact-type.
@@ -31,7 +31,7 @@ SDD-default floor — they stay listed here (the matcher does not emit them):
 - **Fixed-universal:** `sdd:spec-format-governance` (the required `## Use Cases` + spec.md
   enrichment), `sdd:suite-format-governance` (Gherkin form, the `@rubric` exception, scenario
   ordering, the `@frozen` marker), `sdd:lifecycle-governance` (status enum + transitions),
-  `sdd:gate-validation-governance` (legal-state tuples, `aligned` layer-scoping, `approval`
+  `sdd:gate-validation-governance` (legal-state tuples, derived sync — no stored flag, `approval`
   attribution).
 - **Resolved-actor (the three backward faces):** the matched `oracle-spec`, `builder-spec`, and
   `architect-spec` bar candidates the matcher hands you (floor `sdd:oracle-spec-governance` /
@@ -51,7 +51,7 @@ The `<unit>.solution.md` is **not** in view — do not request or read it.
 - **Optional deterministic step** — two NodeJS static-analysis CLIs for the mechanical checks
   (only accelerators; if `node`/`npx` is unavailable, perform the equivalent checks yourself by
   reading the files — the gate never hard-depends on NodeJS):
-  - State-machine legality of the `(status, aligned, markers, .feature, approval)` tuple:
+  - State-machine legality of the `(status, markers, .feature, approval)` tuple:
     ```bash
     node "<validate-spec skill>/scripts/check-spec-state.mts" [--root <specs-dir>]
     ```
@@ -75,7 +75,7 @@ The `<unit>.solution.md` is **not** in view — do not request or read it.
 ## Checks
 
 **Deterministic (CLI or equivalent self-check):**
-- State-machine legality of the `(status, aligned, markers, .feature, approval)` tuple.
+- State-machine legality of the `(status, markers, .feature, approval)` tuple.
 - `.feature` is valid Gherkin; in an **untagged** scenario every `Then` is a boolean assertion (no
   "sometimes", no rubric/threshold/score). Rubric lingo in an untagged scenario is a failure — the
   rejection names the untagged scenario as the cause.
