@@ -26,7 +26,7 @@ Get the CR into the system and create its plan brief — the plan is a step-1 ar
 
 Run authoring **in-session** as the conductor. Explore **builds the implementation to learn** (build-to-learn) — implementation is not deferred to deliver; the freeze is the boundary. The phase ends at the **spec gate**.
 
-**Resolution first.** Read **only** the project registry `.agents/universal-plugin.json` (never scan plugin dirs), match **each touched file's** `artifact-types`, and resolve each production-chain role to a plugin delegate or the SDD default. A required role with no real delegate **fails closed**. A domain claimed by two plugins → ask (answered live in-session).
+**Resolution first.** Run `resolve-governances` over **only** the project registry `.agents/universal-plugin.json` (never scan plugin dirs), passing the current project's anchors (`--project`, plus `--project-root` in a monorepo — you know the project from `discover-specs` / context). For **each touched file's** `artifact-type` it names each production-chain role's agent (a plugin delegate or the SDD default) plus the resolved-actor bar **candidates bucketed by tier** (`project` / `project-root` / `plugin` / `sdd`). It does **not** compose — **load each candidate and compose them yourself** by precedence `sdd-default < plugin < project-root < project` (most-specific wins on conflict; a governance's own `compose: replace` supersedes its bar's lower-precedence candidates); the fixed-universal governances are loaded from the role/agent definition (the matcher does not emit them). A required role with no real delegate **fails closed**. A domain claimed by two plugins → ask (answered live in-session).
 
 For each unit the CR touches:
 

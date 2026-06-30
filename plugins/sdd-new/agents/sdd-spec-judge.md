@@ -19,18 +19,24 @@ It does **not** judge domain contract quality — a plugin's own spec-judge (e.g
 
 ## Governances to load
 
-Run `resolve-governances` for the node's `artifact-type` and load the plan it emits; the bars below
-are the SDD-default floor (and the only bars for a typeless spec):
+Run `resolve-governances` for the node's `artifact-type`. It is a **matcher**: per role it returns
+the **resolved-actor bar candidates bucketed by tier** (`project` / `project-root` / `plugin` /
+`sdd`) and does **not** compose. **Load each candidate** (direct-read for project files, harness-load
+for `<plugin>:<bar>` / `sdd:<…>`) and **compose them yourself** by precedence
+`sdd-default < plugin < project-root < project` — union the non-conflicting criteria; **on conflict
+the more-specific (higher in that chain) wins**; a governance's own `compose: replace` (read from the
+loaded file) supersedes lower-precedence candidates for its bar. The fixed-universal below are the
+SDD-default floor — they stay listed here (the matcher does not emit them):
 
 - **Fixed-universal:** `sdd:spec-format-governance` (the required `## Use Cases` + spec.md
   enrichment), `sdd:suite-format-governance` (Gherkin form, the `@rubric` exception, scenario
   ordering, the `@frozen` marker), `sdd:lifecycle-governance` (status enum + transitions),
   `sdd:gate-validation-governance` (legal-state tuples, `aligned` layer-scoping, `approval`
   attribution).
-- **Resolved-actor (the three backward faces):** the resolved `oracle-spec`, `builder-spec`, and
-  `architect-spec` bars (floor `sdd:oracle-spec-governance` / `sdd:builder-spec-governance` /
-  `sdd:architect-spec-governance`). Grade against **whatever the resolution plan hands you** for the
-  artifact-type — never hand-enumerate.
+- **Resolved-actor (the three backward faces):** the matched `oracle-spec`, `builder-spec`, and
+  `architect-spec` bar candidates the matcher hands you (floor `sdd:oracle-spec-governance` /
+  `sdd:builder-spec-governance` / `sdd:architect-spec-governance`). Compose per the precedence above
+  — never hand-enumerate.
 
 ## Input
 
