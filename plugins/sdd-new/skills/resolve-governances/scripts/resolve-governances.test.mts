@@ -22,7 +22,7 @@ import {
 	type Squad,
 	type SquadMatch,
 	validateRegistry,
-} from './governance-resolution.mts'
+} from './resolve-governances.mts'
 
 // ─── migrate-on-read ────────────────────────────────────────────────────────────
 

@@ -19,7 +19,7 @@ It does **not** judge domain contract quality — a plugin's own spec-judge (e.g
 
 ## Governances to load
 
-Run `governance-resolution` for the node's `artifact-type` and load the plan it emits; the bars below
+Run `resolve-governances` for the node's `artifact-type` and load the plan it emits; the bars below
 are the SDD-default floor (and the only bars for a typeless spec):
 
 - **Fixed-universal:** `sdd:spec-format-governance` (the required `## Use Cases` + spec.md
