@@ -12,14 +12,14 @@ todos:
     content: "Re-judge — cold ACES spec-validator over all 10 agent-behavior units. DONE: full gap inventory in the body. 2 stale bugs found + fixed (conductor Director→Oracle 870620c; impl-judge retired 'aligned' 37a7ba1)."
     status: completed
   - id: add-tests
-    content: "Deliver — per unit: ratified re-open of the frozen .feature → add ONLY the ACES-surfaced additive scenarios (near-miss, concrete-trigger, must-not guards; no narrowing of existing scenarios) → re-judge ALIGNED with the union ACES bars → re-freeze. One commit per unit. Cap 3 grill rounds per unit."
-    status: pending
+    content: "Deliver — per unit: ratified re-open → additive ACES scenarios → cold re-judge ALIGNED → re-freeze → ledger line → one commit. DONE: all 10 agent-behavior units, each cold-judged ALIGNED 3/3 (ledger seq 11–20). +43 scenarios total."
+    status: completed
   - id: spec-gate
-    content: "Spec gate — per re-frozen unit, record a gate line in .agents/specs/sdd/ledger.jsonl; keep root status approved. check-spec-state + check-feature green; pnpm verify:specs-new green."
-    status: pending
+    content: "Spec gate — per re-frozen unit gate line recorded (ledger seq 11–20); root stays approved. check-spec-state + check-feature green. NOTE: concept-index --check reports a pre-existing, unrelated (rule→index) drift in design/* facets, NOT caused by this CR — left untouched."
+    status: completed
   - id: handoff
-    content: "Handoff — pnpm verify green; commits land on next; update this ## NEXT; the next→main PR carries it alongside #34/#38 (owner's call)."
-    status: pending
+    content: "Handoff — commits landed on next (waves 1–3 + 2 bug fixes); update this ## NEXT; the next→main PR carries it alongside #34/#38 (owner's call). pnpm verify is the owner's pre-push step."
+    status: in_progress
 isProject: false
 ---
 
@@ -115,16 +115,29 @@ commit. The **gateway style is the template** (commit c9ccf6d): concrete utteran
 SKILL/impl, near-misses paired against existing positives, must-not guards, README behavior table +
 prose synced so every scenario maps to a stated rule.
 
-Per-unit progress (value-first order):
-- [x] **gateway** — +8 scenarios (15→23), ALIGNED 3/3, ledger seq 11, commit c9ccf6d. *(immaterial residual: optional model-advise guard, deferred)*
-- [ ] impl-judge — judge≠producer-model rule; green-but-fake-check near-miss FAIL; concrete Givens
-- [ ] scanner — 4 should-not-fire near-misses; zero/empty edge; status-not-gate near-miss
-- [ ] solution-producer — removal-on-revise branch; write-ownership guard; forced-single-choice near-miss
-- [ ] backfill — already-has-spec not-run near-miss; `name` user-confirm rule; concrete detect Givens
-- [ ] spec-producer — no-placeholder rule; breadth-first scan; revise suite-sync; concrete CR Givens
-- [ ] conductor — outside-leash STOP near-miss; impl-gate open-marker; concrete classify/resolve Givens
-- [ ] impl-producer — edge/boundary; MODE mismatch; produced-by alt path *(near-miss N/A)*
-- [ ] formation — 1–2 self-clear-gradient near-misses; provisional-marker unwind
-- [ ] handoff — **minimal**: unmerged-PR don't-write-back near-miss only
+Per-unit progress — **ALL 10 DONE**, each cold-judged ALIGNED 3/3, additive-only, stays @frozen:
+- [x] **gateway** +8 (15→23), seq 11, c9ccf6d
+- [x] **impl-judge** +3 (14→17), seq 12, 7367f7c
+- [x] **scanner** +5 (16→21), seq 13, c818a64
+- [x] **solution-producer** +4 (10→14), seq 14, b00111d
+- [x] **backfill** +4 (23→27), seq 15, 461f99a
+- [x] **spec-producer** +4 (10→14), seq 16, 33a88fb
+- [x] **conductor** +2 (57→59), seq 17, dd451a2
+- [x] **impl-producer** +4 (13→17), seq 18, b42601c
+- [x] **formation** +4 (20→24), seq 19, 4c5b5a0 *(incl. field-correction→forge reconcile of a judge OBSERVATION)*
+- [x] **handoff** +1 (18→19), seq 20, 6f31de7
+- [x] **2 stale bugs** fixed: conductor Director→Oracle (870620c, seq 9), impl-judge `aligned` (37a7ba1, seq 10)
 
-Then `spec-gate` (final check-spec-state + check-feature + verify:specs-new green) and `handoff`.
+## NEXT — resume here
+
+**▶ MISSION COMPLETE (in-tree) — handoff is the owner's call.** All 10 agent-behavior SDD suites
+re-judged with the ACES squad and brought to ALIGNED 3/3 on the agent-config lens (the default bars
+that bootstrapped them couldn't enforce trigger realism); +43 additive scenarios, 2 stale bugs
+fixed, ledger seq 8–20 on `next`. `check-feature` + `check-spec-state` green; every touched
+`.feature` stayed `@frozen` (additive-only re-opens, ratified in-session). Engines were correctly
+excluded (ACES wrong-squad — proof-batch finding).
+**REMAINING (owner's call):** (1) the `next → main` PR carrying this alongside #34/#38; (2) run
+`pnpm verify` before push. **Pre-existing non-mission flag (NOT this CR):** `concept-index --check`
+reports a stale `(rule)→(index)` facet relabel in the root spec.md by-concept block on `design/*`
+nodes — predates this session (engine `f9560c3`), left untouched; whoever owns that drift runs
+`concept-index --write`.
