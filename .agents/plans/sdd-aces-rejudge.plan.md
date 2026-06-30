@@ -4,13 +4,13 @@ overview: "Re-judge the SDD project spec's agent-behavior suites with the ACES s
 todos:
   - id: intake
     content: "Step 1 — open the CR, scaffold this plan, emit the run-level strategy. DONE."
-    status: in_progress
+    status: completed
   - id: conductor-bugfix
-    content: "Quick win — fix the stale-rename bug in conductor.feature: 'a Director-lens revert' → 'an Oracle-lens revert' (lens triad is Oracle/Builder/Architect). Ratified re-open, additive-equivalent (rename only), re-judge, re-freeze, ledger gate line."
-    status: pending
+    content: "Quick win — fix the stale-rename bug in conductor.feature: 'a Director-lens revert' → 'an Oracle-lens revert' (lens triad is Oracle/Builder/Architect). DONE (870620c, ledger seq 9)."
+    status: completed
   - id: rejudge-sweep
-    content: "Re-judge — cold ACES spec-validator over the 8 remaining agent-behavior units (gateway + conductor already judged in the proof batch). Collect the full per-unit gap inventory (missing near-misses, abstract triggers, uncovered must-not rules) into the body."
-    status: pending
+    content: "Re-judge — cold ACES spec-validator over all 10 agent-behavior units. DONE: full gap inventory in the body. 2 stale bugs found + fixed (conductor Director→Oracle 870620c; impl-judge retired 'aligned' 37a7ba1)."
+    status: completed
   - id: add-tests
     content: "Deliver — per unit: ratified re-open of the frozen .feature → add ONLY the ACES-surfaced additive scenarios (near-miss, concrete-trigger, must-not guards; no narrowing of existing scenarios) → re-judge ALIGNED with the union ACES bars → re-freeze. One commit per unit. Cap 3 grill rounds per unit."
     status: pending
@@ -84,10 +84,35 @@ e2e suites (cross-cutting, not per-skill).
 - **gateway + conductor already cold-judged** in the proof batch — reuse those findings, don't re-run.
 - **Branch:** `next` (matches the SDD effort's integration branch).
 
+## Gap inventory (rejudge-sweep — all 10 cold-judged)
+
+Ranked by ACES fit + value. Three systemic patterns the SDD-default judge structurally missed:
+(a) **abstract stand-in `Given`s** — all 10 units use "a CR"/"a frozen scenario" not concrete
+state; (b) **near-miss imbalance** — many should-fire, few should-not; (c) **uncovered must-not /
+load-bearing rules**.
+
+| Unit | ACES | Fit | Add-tests scope |
+|---|---|---|---|
+| `gateway` | false | **strong** | confusable-trigger near-misses; concrete utterances (in SKILL.md); write-ownership + no-production-logic must-not guards; partial-intake middle case; two-level-menu/exactly-four |
+| `impl-judge` | false | **strong** | `judge≠producer model` rule; green-but-fake-check near-miss FAIL; concrete frozen-scenario+check Givens *(`aligned` bug FIXED)* |
+| `scanner` | false | **strong** | 4 should-not-fire near-misses (ordinary-correction, count-of-1, convention-still-true, under-bound don't-run); zero/empty edge; status-not-gate near-miss |
+| `solution-producer` | false | good | removal-on-revise branch; write-ownership guard; forced-single-choice near-miss; concrete unit Given |
+| `backfill` | false | partial | already-has-spec not-run near-miss; `name` user-confirm rule; concrete detect-signal Givens; neither-fits fallback |
+| `spec-producer` | false | partial | no-placeholder rule; breadth-first scan; revise suite-sync (add/retire scenarios); concrete CR Givens |
+| `impl-producer` | false | partial (mechanical) | edge/boundary (partial-verify, contradicting discovery, non-frozen precondition); MODE mismatch; produced-by alt path *(near-miss N/A — don't force)* |
+| `conductor` | true | good | outside-leash STOP near-miss; impl-gate open-marker scenario; concrete classify/resolve Givens *(Director bug FIXED)* |
+| `handoff` | true | mostly wrong-squad | **minimal**: unmerged-PR don't-write-back near-miss only |
+| `formation` | true | good | 1–2 self-clear-gradient near-misses (low-blast consistency-fix self-clears vs contested escalates); provisional-marker unwind-on-reject |
+
+Two stale-rename bugs already fixed (`conductor` Director→Oracle, `impl-judge` `aligned`).
+
 ## NEXT — resume here
 
-**▶ NEXT ACTION — `conductor-bugfix` (quick win), then `rejudge-sweep`.** Proof batch is done
-(gateway + conductor + discovery cold-judged; findings above and in memory). Start with the
-one-line `Director-lens` → `Oracle-lens` fix in `conductor.feature` (ratified re-open + re-freeze +
-ledger line), then fan out the cold ACES re-judge over units 3–10 to complete the gap inventory
-before adding tests.
+**▶ NEXT ACTION — `add-tests` (deliver).** Re-judge sweep + both quick-win bug fixes are DONE
+(commits 870620c, 37a7ba1; ledger seq 9–10). Remaining = add the ACES-surfaced **additive**
+scenarios per the inventory above, per-unit: ratified re-open → add scenarios (near-miss /
+concrete-trigger / must-not; never narrow an existing one) → cold re-judge ALIGNED with the union
+ACES bars → re-freeze → ledger gate line → one commit. **Suggested order (value-first):** gateway,
+impl-judge, scanner, solution-producer, backfill, spec-producer, then the light/partial ones
+(conductor, formation, impl-producer, handoff-minimal). **Pacing is an open call for the user** —
+all at once, value-first batch, or one unit at a time to review the scenario style first.
