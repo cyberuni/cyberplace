@@ -136,8 +136,10 @@ that bootstrapped them couldn't enforce trigger realism); +43 additive scenarios
 fixed, ledger seq 8–20 on `next`. `check-feature` + `check-spec-state` green; every touched
 `.feature` stayed `@frozen` (additive-only re-opens, ratified in-session). Engines were correctly
 excluded (ACES wrong-squad — proof-batch finding).
-**REMAINING (owner's call):** (1) the `next → main` PR carrying this alongside #34/#38; (2) run
-`pnpm verify` before push. **Pre-existing non-mission flag (NOT this CR):** `concept-index --check`
-reports a stale `(rule)→(index)` facet relabel in the root spec.md by-concept block on `design/*`
-nodes — predates this session (engine `f9560c3`), left untouched; whoever owns that drift runs
-`concept-index --write`.
+**REMAINING (owner's call):** the `next → main` PR carrying this alongside #34/#38 (outward-facing).
+**Verification done:** `pnpm verify` green (13/13) and `pnpm verify:specs-new` green (190/190, spec
+states + feature checks + governance registry OK, no concept-index drift). A **pre-existing
+regression** found during handoff (NOT the ACES add-tests) was fixed standalone in `b2300d1`:
+`f9560c3` ("prose-only") had also rewritten `facetKind`'s executable predicate, making `design/*`
+render `(index)` vs the committed `(rule)` block — restored `p.startsWith('design/')`, which
+re-greened the facetKind test + the `--check` with no `spec.md` regen.
