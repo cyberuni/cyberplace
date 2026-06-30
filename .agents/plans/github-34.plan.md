@@ -99,8 +99,8 @@ todos:
     content: "Deliver — assemble plugins/sdd-new as real plugin. DONE (reconcile-forward): manifest (plugin.json name+skills+agents pointers) ✓; 10 governances-as-skills ✓; 4 cold agents ✓; registry role-map (sdd=fallback default, resolve-governances --root . green) ✓; marketplace.json sdd->./plugins/sdd-new ✓. All 5 agents present (automaton b924051). Residual init skill (workspace-init + init-WRITE impl) owned by sdd-init-skill (deferred)."
     status: completed
   - id: self-host
-    content: "Deliver — re-run explore + spec gate through sdd-new to confirm bootstrap closes."
-    status: pending
+    content: "Deliver — re-run spec gate through sdd-new to confirm bootstrap closes. DONE on gateway/: cold sdd:sdd-spec-judge (default bars) ran the real machinery end-to-end and CAUGHT DRIFT the hand-run gate (seq 1) missed — orphan status-scan scenario + missing zero-count strategy boundary. Reconciled additively (README sync + self-clearing scenario), re-judge ALIGNED 3/3, ledger seq 7 (commit fc1aae3). Machinery-closure PROVEN. FINDING for #38: resolver routes every skill-type unit to ACES (aces-spec-validator + aces:aces-builder-spec) — that fully-resolved path is #38's dogfood, not this default-loop proof."
+    status: completed
   - id: handoff
     content: "Handoff — land as branch -> PR. Keep combat log. Do NOT delete plan until done/merged AND doctrine-distilled."
     status: pending
@@ -130,6 +130,23 @@ The work is organized in **two levels of grill**:
   time, vertically**, each as an individual sub-mission with the rhythm below.
 
 ## NEXT — resume here (read this first)
+
+> **Session update (2026-06-30, latest+1) — `self-host` DONE; the bootstrap CLOSES.** Re-ran the
+> spec gate through real sdd-new machinery on `gateway/`: spawned the cold `sdd:sdd-spec-judge`
+> (default bars, read-only) over the frozen unit. First pass returned **ALIGNED:false** — the default
+> judge caught drift the hand-run gate (ledger seq 1) had missed: an **orphan scenario** ("scans
+> statuses with the discover-specs engine") with no `## Use Cases` home, and a **missing zero-count
+> boundary** ("a zero count is not surfaced" promised in prose, no scenario). Reconciled **additively**
+> per lifecycle-governance (README Use Cases row + Intake bullet = free `spec.md` sync; "no pending
+> strategy surfaces nothing" scenario = additive, self-clears, stays `@frozen` — no unfreeze). Re-judge
+> **ALIGNED 3/3, no blocker**; `check-spec-state` + `check-feature` green; `verify:specs-new` 190/190.
+> Ledger **seq 7** gate line. Commit `fc1aae3`. **Machinery-closure proven**: resolver → cold judge →
+> gates → correct verdict, and it caught what hand-running missed (the ideal self-host result).
+> **FINDING handed to #38:** the resolver routes EVERY skill-type sdd unit to the **ACES** plugin
+> (`aces-spec-validator` + `aces:aces-builder-spec` unioned on the sdd default) — the fully-resolved
+> ACES path is github-38's dogfood to validate, and #38 already flags those bars provisional.
+> **▶ NEXT ACTION — `handoff`:** land github-34 as a branch → PR (next → main); keep the combat log;
+> do NOT delete the plan until done/merged AND doctrine-distilled.
 
 > **Session update (2026-06-30, latest) — `assemble-plugin` DONE (reconcile-forward).** Audited
 > `plugins/sdd-new/` against the packaging slice and found it already assembled by accumulated work:
