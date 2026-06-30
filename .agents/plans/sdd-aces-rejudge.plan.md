@@ -108,11 +108,23 @@ Two stale-rename bugs already fixed (`conductor` Director→Oracle, `impl-judge`
 
 ## NEXT — resume here
 
-**▶ NEXT ACTION — `add-tests` (deliver).** Re-judge sweep + both quick-win bug fixes are DONE
-(commits 870620c, 37a7ba1; ledger seq 9–10). Remaining = add the ACES-surfaced **additive**
-scenarios per the inventory above, per-unit: ratified re-open → add scenarios (near-miss /
-concrete-trigger / must-not; never narrow an existing one) → cold re-judge ALIGNED with the union
-ACES bars → re-freeze → ledger gate line → one commit. **Suggested order (value-first):** gateway,
-impl-judge, scanner, solution-producer, backfill, spec-producer, then the light/partial ones
-(conductor, formation, impl-producer, handoff-minimal). **Pacing is an open call for the user** —
-all at once, value-first batch, or one unit at a time to review the scenario style first.
+**▶ NEXT ACTION — `add-tests`, continue from impl-judge.** Per-unit loop: ratified re-open → add
+ACES-surfaced **additive** scenarios (near-miss / concrete-trigger / must-not; never narrow an
+existing one) → cold re-judge ALIGNED with union ACES bars → stays @frozen → ledger gate line → one
+commit. The **gateway style is the template** (commit c9ccf6d): concrete utterances from the real
+SKILL/impl, near-misses paired against existing positives, must-not guards, README behavior table +
+prose synced so every scenario maps to a stated rule.
+
+Per-unit progress (value-first order):
+- [x] **gateway** — +8 scenarios (15→23), ALIGNED 3/3, ledger seq 11, commit c9ccf6d. *(immaterial residual: optional model-advise guard, deferred)*
+- [ ] impl-judge — judge≠producer-model rule; green-but-fake-check near-miss FAIL; concrete Givens
+- [ ] scanner — 4 should-not-fire near-misses; zero/empty edge; status-not-gate near-miss
+- [ ] solution-producer — removal-on-revise branch; write-ownership guard; forced-single-choice near-miss
+- [ ] backfill — already-has-spec not-run near-miss; `name` user-confirm rule; concrete detect Givens
+- [ ] spec-producer — no-placeholder rule; breadth-first scan; revise suite-sync; concrete CR Givens
+- [ ] conductor — outside-leash STOP near-miss; impl-gate open-marker; concrete classify/resolve Givens
+- [ ] impl-producer — edge/boundary; MODE mismatch; produced-by alt path *(near-miss N/A)*
+- [ ] formation — 1–2 self-clear-gradient near-misses; provisional-marker unwind
+- [ ] handoff — **minimal**: unmerged-PR don't-write-back near-miss only
+
+Then `spec-gate` (final check-spec-state + check-feature + verify:specs-new green) and `handoff`.
