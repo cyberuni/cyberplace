@@ -5,10 +5,11 @@ import { join } from 'node:path'
 import { test } from 'node:test'
 import {
 	buildLoadPlan,
-	discoverProjectGovernances,
+	collectAnchorGovernances,
 	type GovCandidate,
 	loadArtifactTypeMap,
 	main,
+	matchBar,
 	matchSquad,
 	migrateEntry,
 	parseArtifactTypeMap,
@@ -17,7 +18,6 @@ import {
 	type Registry,
 	resolveAgent,
 	resolveArtifactTypeFromMap,
-	resolveBar,
 	resolveRole,
 	type Squad,
 	type SquadMatch,
@@ -193,65 +193,79 @@ test('matchSquad flags two plugins claiming the same artifact-type', () => {
 	assert.deepEqual(ambiguous, ['a', 'b'])
 })
 
-// ─── resolveBar — precedence + compose ──────────────────────────────────────────
+// ─── matchBar — tier-bucketed candidates, no compose, no collapse ───────────────
 
 const squadMatch = (plugin: string, governances: Squad['governances'], roles: Squad['roles'] = {}): SquadMatch => ({
 	plugin,
 	squad: { 'artifact-types': ['skill'], roles, governances },
 })
 
-test('resolveBar floors to the sdd default when nothing overrides', () => {
-	const plan = resolveBar(null, 'oracle', 'spec', { match: null, projectGovs: [] })
+const gov = (over: Partial<GovCandidate>): GovCandidate => ({
+	tier: 'project',
+	path: '.agents/governances/d.md',
+	artifactType: null,
+	actor: 'oracle',
+	gate: 'spec',
+	compose: 'union',
+	...over,
+})
+
+test('matchBar floors to the sdd default ref with empty project buckets', () => {
+	const plan = matchBar(null, 'oracle', 'spec', { match: null, projectGovs: [] })
 	assert.equal(plan.key, 'oracle-spec')
-	assert.deepEqual(plan.instructions, [
-		{ source: 'sdd', kind: 'harness-load', ref: 'sdd:oracle-spec-governance', compose: 'union' },
-	])
+	assert.deepEqual(plan.candidates, {
+		project: [],
+		'project-root': [],
+		plugin: null,
+		sdd: 'sdd:oracle-spec-governance',
+	})
 })
 
-test('resolveBar unions project > plugin > sdd', () => {
-	const projectGovs: GovCandidate[] = [
-		{ path: '.agents/governances/d.md', artifactType: null, actor: 'oracle', gate: 'spec', compose: 'union' },
+test('matchBar buckets project + plugin + sdd without ordering or collapsing', () => {
+	const projectGovs = [gov({ path: '.agents/governances/d.md' })]
+	const match = squadMatch('aces', { 'oracle-spec': 'aces-oracle' })
+	const plan = matchBar('skill', 'oracle', 'spec', { match, projectGovs })
+	assert.deepEqual(plan.candidates.project, ['.agents/governances/d.md'])
+	assert.equal(plan.candidates.plugin, 'aces:aces-oracle')
+	assert.equal(plan.candidates.sdd, 'sdd:oracle-spec-governance')
+})
+
+test('matchBar — a project replace is RETURNED, never collapses plugin/sdd', () => {
+	const projectGovs = [gov({ path: '.agents/governances/d.md', compose: 'replace' })]
+	const match = squadMatch('aces', { 'oracle-spec': 'aces-oracle' })
+	const plan = matchBar('skill', 'oracle', 'spec', { match, projectGovs })
+	assert.deepEqual(plan.candidates.project, ['.agents/governances/d.md'])
+	assert.equal(plan.candidates.plugin, 'aces:aces-oracle') // not truncated
+	assert.equal(plan.candidates.sdd, 'sdd:oracle-spec-governance')
+})
+
+test('matchBar puts project-root and project matches in their own buckets', () => {
+	const projectGovs = [
+		gov({ tier: 'project', path: 'packages/foo/.agents/governances/inner.md', actor: 'builder' }),
+		gov({ tier: 'project-root', path: '.agents/governances/outer.md', actor: 'builder' }),
 	]
-	const match = squadMatch('aces', { 'oracle-spec': 'aces-dir' })
-	const plan = resolveBar('skill', 'oracle', 'spec', { match, projectGovs })
+	const plan = matchBar('skill', 'builder', 'spec', { match: null, projectGovs })
+	assert.deepEqual(plan.candidates.project, ['packages/foo/.agents/governances/inner.md'])
+	assert.deepEqual(plan.candidates['project-root'], ['.agents/governances/outer.md'])
+})
+
+test('matchBar matches both a type-specific and a typeless project bar (agent composes)', () => {
+	const projectGovs = [
+		gov({ path: '.agents/governances/typeless.md', artifactType: null, actor: 'builder' }),
+		gov({ path: '.agents/governances/typed.md', artifactType: 'skill', actor: 'builder' }),
+	]
+	const plan = matchBar('skill', 'builder', 'spec', { match: null, projectGovs })
 	assert.deepEqual(
-		plan.instructions.map((i) => i.source),
-		['project', 'plugin', 'sdd'],
-	)
-	assert.equal(plan.instructions[1].ref, 'aces:aces-dir')
-})
-
-test('resolveBar — a project replace supersedes plugin and sdd', () => {
-	const projectGovs: GovCandidate[] = [
-		{ path: '.agents/governances/d.md', artifactType: null, actor: 'oracle', gate: 'spec', compose: 'replace' },
-	]
-	const match = squadMatch('aces', { 'oracle-spec': 'aces-dir' })
-	const plan = resolveBar('skill', 'oracle', 'spec', { match, projectGovs })
-	assert.deepEqual(
-		plan.instructions.map((i) => i.source),
-		['project'],
+		new Set(plan.candidates.project),
+		new Set(['.agents/governances/typed.md', '.agents/governances/typeless.md']),
 	)
 })
 
-test('resolveBar ranks an artifact-type-specific project bar above a typeless one', () => {
-	const projectGovs: GovCandidate[] = [
-		{ path: '.agents/governances/typeless.md', artifactType: null, actor: 'builder', gate: 'spec', compose: 'union' },
-		{ path: '.agents/governances/typed.md', artifactType: 'skill', actor: 'builder', gate: 'spec', compose: 'union' },
-	]
-	const plan = resolveBar('skill', 'builder', 'spec', { match: null, projectGovs })
-	assert.equal(plan.instructions[0].ref, '.agents/governances/typed.md')
-	assert.equal(plan.instructions[1].ref, '.agents/governances/typeless.md')
-})
-
-test('resolveBar ignores a project bar for a different gate', () => {
-	const projectGovs: GovCandidate[] = [
-		{ path: '.agents/governances/d.md', artifactType: null, actor: 'builder', gate: 'impl', compose: 'union' },
-	]
-	const plan = resolveBar('skill', 'builder', 'spec', { match: null, projectGovs })
-	assert.deepEqual(
-		plan.instructions.map((i) => i.source),
-		['sdd'],
-	)
+test('matchBar ignores a project bar for a different gate', () => {
+	const projectGovs = [gov({ actor: 'builder', gate: 'impl' })]
+	const plan = matchBar('skill', 'builder', 'spec', { match: null, projectGovs })
+	assert.deepEqual(plan.candidates.project, [])
+	assert.equal(plan.candidates.sdd, 'sdd:builder-spec-governance')
 })
 
 // ─── resolveAgent ────────────────────────────────────────────────────────────────
@@ -276,19 +290,11 @@ test('resolveAgent falls back to the <plugin>-<role> convention for a missing ro
 	assert.deepEqual(resolveAgent('impl-producer', match), { source: 'plugin', ref: 'quill-impl-producer' })
 })
 
-// ─── resolveRole — fixed + bars per the contract ────────────────────────────────
+// ─── resolveRole — agent + resolved-actor bars only (no fixed-universal) ─────────
 
-test('resolveRole gives the spec-judge its fixed-universal + three -spec bars', () => {
+test('resolveRole gives the spec-judge its three -spec bars and no fixed key', () => {
 	const plan = resolveRole('spec-judge', null, { match: null, projectGovs: [] })
-	assert.deepEqual(
-		plan.fixed.map((i) => i.ref),
-		[
-			'sdd:spec-format-governance',
-			'sdd:suite-format-governance',
-			'sdd:lifecycle-governance',
-			'sdd:gate-validation-governance',
-		],
-	)
+	assert.ok(!('fixed' in plan), 'fixed-universal is no longer emitted by the resolver')
 	assert.deepEqual(
 		plan.bars.map((b) => b.key),
 		['oracle-spec', 'builder-spec', 'architect-spec'],
@@ -387,9 +393,9 @@ test('validateRegistry flags an artifact-type appearing in two squads of one plu
 	assert.ok(validateRegistry(reg).some((m) => /appears in more than one squad/.test(m)))
 })
 
-// ─── discoverProjectGovernances + main ──────────────────────────────────────────
+// ─── collectAnchorGovernances + main ────────────────────────────────────────────
 
-test('discoverProjectGovernances reads bar files and skips non-bars', () => {
+test('collectAnchorGovernances reads a passed anchor, tags its tier, skips non-bars', () => {
 	const root = mkdtempSync(join(tmpdir(), 'sdd-gov-'))
 	try {
 		mkdirSync(join(root, '.agents', 'governances'), { recursive: true })
@@ -398,10 +404,41 @@ test('discoverProjectGovernances reads bar files and skips non-bars', () => {
 			['---', 'metadata:', '  actor: oracle', '  gate: spec', '---', '# bar'].join('\n'),
 		)
 		writeFileSync(join(root, '.agents', 'governances', 'notes.md'), '# just notes, no frontmatter')
-		const found = discoverProjectGovernances(root)
+		const found = collectAnchorGovernances([{ tier: 'project', root }])
 		assert.equal(found.length, 1)
 		assert.equal(found[0].actor, 'oracle')
-		assert.equal(found[0].path, join('.agents', 'governances', 'bar.md'))
+		assert.equal(found[0].tier, 'project')
+		assert.equal(found[0].path, join(root, '.agents', 'governances', 'bar.md'))
+	} finally {
+		rmSync(root, { recursive: true, force: true })
+	}
+})
+
+test('collectAnchorGovernances collects from multiple anchors, each tier-tagged', () => {
+	const proj = mkdtempSync(join(tmpdir(), 'sdd-proj-'))
+	const outer = mkdtempSync(join(tmpdir(), 'sdd-outer-'))
+	try {
+		const barFile = (actor: string) =>
+			['---', 'metadata:', `  actor: ${actor}`, '  gate: spec', '---', '# bar'].join('\n')
+		mkdirSync(join(proj, '.agents', 'governances'), { recursive: true })
+		mkdirSync(join(outer, '.agents', 'governances'), { recursive: true })
+		writeFileSync(join(proj, '.agents', 'governances', 'inner.md'), barFile('builder'))
+		writeFileSync(join(outer, '.agents', 'governances', 'outer.md'), barFile('builder'))
+		const found = collectAnchorGovernances([
+			{ tier: 'project', root: proj },
+			{ tier: 'project-root', root: outer },
+		])
+		assert.deepEqual(found.map((c) => c.tier).sort(), ['project', 'project-root'])
+	} finally {
+		rmSync(proj, { recursive: true, force: true })
+		rmSync(outer, { recursive: true, force: true })
+	}
+})
+
+test('collectAnchorGovernances skips an anchor with no .agents/governances', () => {
+	const root = mkdtempSync(join(tmpdir(), 'sdd-gov-'))
+	try {
+		assert.deepEqual(collectAnchorGovernances([{ tier: 'project', root }]), [])
 	} finally {
 		rmSync(root, { recursive: true, force: true })
 	}
