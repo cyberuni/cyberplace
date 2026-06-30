@@ -23,7 +23,7 @@ artifact-type.
 
 ## Governances to load
 
-Run `governance-resolution` for the node's `artifact-type` and load the plan it emits; the bars
+Run `resolve-governances` for the node's `artifact-type` and load the plan it emits; the bars
 below are the SDD-default floor (and the only bars for a typeless spec). The **impl-gate lens set is
 {builder, architect}** — there is no oracle at the impl gate (contrast the spec gate's three):
 
