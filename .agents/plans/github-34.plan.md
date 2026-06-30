@@ -96,8 +96,8 @@ todos:
     content: "Spec gate Draft->Approved — DONE (7ab8c98, ratified by unional). All 24 .feature frozen, ledger gate line written."
     status: completed
   - id: assemble-plugin
-    content: "Deliver — assemble plugins/sdd-new as real plugin: manifest, governances-as-skills, agents/, registry role-map."
-    status: pending
+    content: "Deliver — assemble plugins/sdd-new as real plugin. DONE (reconcile-forward): manifest (plugin.json name+skills+agents pointers) ✓; 10 governances-as-skills ✓; 4 cold agents ✓; registry role-map (sdd=fallback default, resolve-governances --root . green) ✓; marketplace.json sdd->./plugins/sdd-new ✓. All 5 agents present (automaton b924051). Residual init skill (workspace-init + init-WRITE impl) owned by sdd-init-skill (deferred)."
+    status: completed
   - id: self-host
     content: "Deliver — re-run explore + spec gate through sdd-new to confirm bootstrap closes."
     status: pending
@@ -130,6 +130,21 @@ The work is organized in **two levels of grill**:
   time, vertically**, each as an individual sub-mission with the rhythm below.
 
 ## NEXT — resume here (read this first)
+
+> **Session update (2026-06-30, latest) — `assemble-plugin` DONE (reconcile-forward).** Audited
+> `plugins/sdd-new/` against the packaging slice and found it already assembled by accumulated work:
+> `.plugin/plugin.json` declares name `sdd` + `./skills` + `./agents` pointers (satisfies the
+> `plugin.feature` manifest scenario); all 10 `*-governance` dirs ship as skills (every skill has
+> SKILL.md + README.md); all 5 cross-cutting agents present (sdd-spec-judge, sdd-implementer,
+> sdd-scanner, sdd-warden, sdd-automaton); registry role-map is the fallback default (sdd does NOT
+> self-register in `sdd-plugins[]` — `resolve-governances --root .` falls back to sdd bars, green);
+> `.claude-plugin/marketplace.json` already routes `sdd` → `./plugins/sdd-new`; `knip` workspace
+> wired. `pnpm verify:specs-new` green (190/190). No stray `plugins/sdd/` baseline cross-refs. The
+> **only residual** under the plugin capability is the **init skill** (workspace-init symlinks +
+> the registry init-WRITE impl for `plugin.feature`'s 11 init scenarios) — owned by the deferred
+> `sdd-init-skill` todo, NOT this one. **▶ NEXT ACTION — `self-host`:** re-run explore + the spec
+> gate through sdd-new on one capability to confirm the bootstrap closes, then `handoff` (branch →
+> PR, keep the combat log).
 
 > **Session update (2026-06-30, later) — `core-agents` COMPLETE: the headless `automaton`
 > LANDED.** Wrote `plugins/sdd-new/agents/sdd-automaton.md` — the **headless realization of the
