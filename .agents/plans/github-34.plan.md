@@ -78,8 +78,8 @@ todos:
     content: "DESIGN/IMPL — DONE. Gateway loads route skill in-session; start-mission entry; operator->conductor/automaton rename."
     status: completed
   - id: core-agents
-    content: "Deliver — cross-cutting agents. DONE: sdd-spec-judge, sdd-implementer, Scanner (doctrine-loop), Warden (formation-loop), resolve-governances matcher (ADR-0018 boundary + mission/resolution unit). PENDING: automaton."
-    status: in_progress
+    content: "Deliver — cross-cutting agents. DONE: sdd-spec-judge, sdd-implementer, Scanner (doctrine-loop), Warden (formation-loop), resolve-governances matcher (ADR-0018 boundary + mission/resolution unit), automaton (headless conductor). COMPLETE."
+    status: completed
   - id: impl-judge-independence
     content: "ADR-0016 — DONE. Impl-judge layered verification: re-derive oracle, leash-scoped exercise, producer-green=pre-filter."
     status: completed
@@ -130,6 +130,23 @@ The work is organized in **two levels of grill**:
   time, vertically**, each as an individual sub-mission with the rhythm below.
 
 ## NEXT — resume here (read this first)
+
+> **Session update (2026-06-30, later) — `core-agents` COMPLETE: the headless `automaton`
+> LANDED.** Wrote `plugins/sdd-new/agents/sdd-automaton.md` — the **headless realization of the
+> conductor role** (twin of the in-session `start-mission`). It points at the conductor unit
+> (`mission/conductor/`) + the same governance set + `resolve-governances` for behavior, and adds
+> ONLY the no-user-channel deltas: batch `needs-input` up the relay (never ask/auto-accept/guess
+> past ambiguity), self-assert within leash + emit a verdict packet and STOP at every gate, never
+> write a human ratification even when one is relayed, record halts as committed `kind: halt` log
+> lines, stop at the three hard floors, stateless-across-segments (derive position from artifacts +
+> the plan brief), and the depth-2 `caller → automaton → judge` spawn caveat. `model: opus, effort:
+> high` (it runs the live grill headless). `pnpm verify:specs-new` green (190/190, governance
+> registry OK, no concept-index drift). **All five cross-cutting agents now exist:** sdd-spec-judge,
+> sdd-implementer, sdd-scanner, sdd-warden, sdd-automaton.
+> **▶ NEXT ACTION — `assemble-plugin`:** turn `plugins/sdd-new/` into a real plugin — manifest
+> (`.claude-plugin/plugin.json`), governances-as-skills, agents/, registry role-map — then
+> `self-host` (re-run explore + spec gate through sdd-new to confirm the bootstrap closes), then
+> `handoff` (branch → PR, keep the combat log).
 
 > **Session update (2026-06-30) — `core-agents` advanced: resolve-governances boundary LANDED;
 > only `automaton` remains.** Took the "nested-project anchor union" item and, on inspection with the
