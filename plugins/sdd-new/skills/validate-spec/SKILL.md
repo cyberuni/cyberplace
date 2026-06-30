@@ -15,9 +15,9 @@ and records a durable per-CR `gate` line. The impl gate (Approved → Implemente
 is the mission's. This skill never collapses producing and judging into one voice.
 
 Load `sdd:lifecycle-governance` (status enum, transitions, the freeze state-transition),
-`sdd:ownership-governance` (who may write `status` / `aligned` / `approval`),
-`sdd:gate-validation-governance` (legal-state tuples, `aligned` layer-scoping, `approval`
-attribution). The `produced-by` and `ledger.jsonl` shapes the gate checks are in
+`sdd:ownership-governance` (who may write `status` / `approval`),
+`sdd:gate-validation-governance` (legal-state tuples, per-node spec-type checks, derived sync —
+no stored flag, `approval` attribution). The `produced-by` and `ledger.jsonl` shapes the gate checks are in
 `../../design/provenance-model.md`; the freeze model in `../../design/lifecycle-model.md`; the
 self-clear-vs-escalate bar and the four-C floor in `../../design/autonomy-rubric.md`.
 
@@ -58,8 +58,9 @@ footprint, never the whole tree and never one fleet-era folder.
 Resolve the **spec-judge** for each `artifact-types` (a plugin judge or the SDD default
 `sdd-spec-judge`) and **spawn it cold** over the touched node(s) — pass it `spec.md` + the
 `.feature` only (the solution stays out of its view). It grades against the spec-gate lens set
-**{oracle, builder, architect}**. Then synthesize `aligned` and **derive the leash** (the
-assessment in `../../design/autonomy-rubric.md`) in-session. Collect the judge's `STATUS`,
+**{oracle, builder, architect}**. Then take the judge's **contract-sync verdict** (derived at this
+gate, never stored) and **derive the leash** (the assessment in
+`../../design/autonomy-rubric.md`) in-session. Collect the judge's `STATUS`,
 `ALIGNED`, failing scenarios, remaining `<!-- open: -->` markers, `OBSERVATIONS`, and the gate
 report. The judge is a **distinct cold actor** and never edits the artifact it grades.
 
@@ -71,7 +72,7 @@ node, never a marker grown into this spec).
 ## 4. Take the verdict — self-assert within leash, else the human
 
 - **In leash** (every dimension reads safe): the conductor **self-asserts** — writes
-  `approval.spec: { verdict: approve, by: agent, why }` and `aligned`. The diff lands
+  `approval.spec: { verdict: approve, by: agent, why }`. The diff lands
   **provisionally** into the asynchronous review queue. Still emit the digest + gate report,
   flagged **"agent-asserted — ratify or kick back."**
 - **Gated** (the leash stops, or the hard floor fires): present the **digest** above the gate
