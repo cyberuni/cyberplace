@@ -1,7 +1,6 @@
 ---
 name: backfill-project-spec
 description: "Internal skill: the SDD project-level layout bootstrap. When an existing project has no consolidated spec, the conductor loads this during start-mission explore to choose an organization strategy + spec location, scaffold the skeleton, and declare project-path + the body placement map — then hand back to per-unit explore. Not user-triggered; reached through start-mission."
-user-invocable: false
 ---
 
 # backfill-project-spec — lay out an existing project's spec
