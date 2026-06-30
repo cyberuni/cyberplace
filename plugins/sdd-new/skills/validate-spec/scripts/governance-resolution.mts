@@ -27,21 +27,21 @@ import { join } from 'node:path'
 export const ROLE_KEYS = ['spec-producer', 'solution-producer', 'spec-judge', 'impl-producer', 'impl-judge'] as const
 export type RoleKey = (typeof ROLE_KEYS)[number]
 
-export const BAR_KEYS = ['director-spec', 'builder-spec', 'builder-impl', 'architect-spec', 'architect-impl'] as const
+export const BAR_KEYS = ['oracle-spec', 'builder-spec', 'builder-impl', 'architect-spec', 'architect-impl'] as const
 export type BarKey = (typeof BAR_KEYS)[number]
 
-export const ACTORS = ['director', 'builder', 'architect'] as const
+export const ACTORS = ['oracle', 'builder', 'architect'] as const
 export const GATES = ['spec', 'impl'] as const
 
 // The fixed-universal bars + the resolved-actor bars each role loads
 // (plugin-contract-governance "Which governances each role loads"). `fixed` names
 // load as sdd:<name>-governance; `bars` resolve across sources.
 export const ROLE_LOADOUT: Record<RoleKey, { fixed: string[]; bars: BarKey[] }> = {
-	'spec-producer': { fixed: ['spec-format', 'suite-format', 'ownership'], bars: ['director-spec', 'builder-spec'] },
+	'spec-producer': { fixed: ['spec-format', 'suite-format', 'ownership'], bars: ['oracle-spec', 'builder-spec'] },
 	'solution-producer': { fixed: ['ownership'], bars: ['architect-spec'] },
 	'spec-judge': {
 		fixed: ['spec-format', 'suite-format', 'lifecycle', 'gate-validation'],
-		bars: ['director-spec', 'builder-spec', 'architect-spec'],
+		bars: ['oracle-spec', 'builder-spec', 'architect-spec'],
 	},
 	'impl-producer': { fixed: ['ownership'], bars: ['builder-impl', 'architect-impl'] },
 	'impl-judge': { fixed: ['ownership', 'gate-validation'], bars: ['builder-impl', 'architect-impl'] },
@@ -135,7 +135,7 @@ export interface LoadPlan {
 // ─── registry parse + migrate-on-read ───────────────────────────────────────────
 
 // Within a squad: rename the legacy plan-producer role key to solution-producer
-// and expand the flat governances{director,builder,architect} to the Model-B
+// and expand the flat governances{oracle,builder,architect} to the Model-B
 // (actor,gate) keys.
 function migrateRoles(rolesIn: Record<string, string | null> | undefined): Partial<Record<RoleKey, string | null>> {
 	const roles = { ...(rolesIn ?? {}) }
@@ -149,10 +149,10 @@ function migrateRoles(rolesIn: Record<string, string | null> | undefined): Parti
 
 function migrateGovernances(gIn: Record<string, string | null> | undefined): Partial<Record<BarKey, string | null>> {
 	const g = (gIn ?? {}) as Record<string, string | null>
-	const isLegacy = 'director' in g || 'builder' in g || 'architect' in g
+	const isLegacy = 'oracle' in g || 'builder' in g || 'architect' in g
 	return isLegacy
 		? {
-				'director-spec': g.director ?? null,
+				'oracle-spec': g.oracle ?? null,
 				'builder-spec': g.builder ?? null,
 				'builder-impl': g.builder ?? null,
 				'architect-spec': g.architect ?? null,
