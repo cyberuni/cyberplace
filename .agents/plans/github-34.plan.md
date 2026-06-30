@@ -131,14 +131,19 @@ The work is organized in **two levels of grill**:
 
 ## NEXT — resume here (read this first)
 
-> **⏸ PAUSED (2026-06-30) — pivoting to ACES (github-38) next.** github-34 is **one todo from
-> done**: `handoff` (branch the session's commits off `next` → PR `next → main`, keep the combat
-> log, do NOT retire this plan until merged AND doctrine-distilled). Handoff is **deferred by
-> operator choice**, not blocked — resume github-34 here when ACES is parked.
-> **▶ NEXT ACTION (this session's pick): start github-38 (ACES).** Open `.agents/plans/github-38.plan.md`;
-> its next action is `phase-a-bars` (author the custom ACES governance bars, build-to-learn). The
-> self-host FINDING below is #38's entry context: the resolver already routes every skill-type unit
-> to the ACES squad, so #38 validates that fully-resolved path.
+> **⏸ PAUSED (2026-06-30) — at the handoff frontier; ACES (github-38) is already DONE.** github-34
+> is **one todo from done**: `handoff` (branch the session's commits off `next` → PR `next → main`,
+> keep the combat log, do NOT retire this plan until merged AND doctrine-distilled). Handoff is
+> **deferred by operator choice**, not blocked.
+> **CORRECTION (2026-06-30, reconcile-forward):** an earlier version of this note said to "pivot to
+> ACES (github-38), next action `phase-a-bars`." That was **stale** — github-38 is `status:
+> implemented`: both gates passed (ACES `ledger.jsonl` seq 1 spec + seq 2 impl), commits
+> `95fcc4c`→`9a30afa`, all landed on `next` **before** this session's github-34 work even started.
+> ACES needs no further in-tree work. The self-host FINDING below already validated the
+> fully-resolved ACES path (resolver routes every skill-type unit to the ACES squad).
+> **▶ NEXT ACTION — `handoff` (outward-facing, owner's call):** both github-34 and github-38
+> converge on the **same single remaining action** — open the `next → main` PR carrying #34 + #38.
+> Neither mission has in-tree work left; this is the only step, and it is left to the user.
 > **Done this session (committed, clean tree):** `assemble-plugin` (reconcile-forward, `261439d`);
 > `self-host` closed on gateway — cold default judge caught drift the hand-run gate missed, fixed
 > additively, re-judge ALIGNED, ledger seq 7 (`fc1aae3`, plan `cb5ef79`); combat-log flush for the
