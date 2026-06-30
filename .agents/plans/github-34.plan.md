@@ -131,6 +131,21 @@ The work is organized in **two levels of grill**:
 
 ## NEXT — resume here (read this first)
 
+> **⏸ PAUSED (2026-06-30) — pivoting to ACES (github-38) next.** github-34 is **one todo from
+> done**: `handoff` (branch the session's commits off `next` → PR `next → main`, keep the combat
+> log, do NOT retire this plan until merged AND doctrine-distilled). Handoff is **deferred by
+> operator choice**, not blocked — resume github-34 here when ACES is parked.
+> **▶ NEXT ACTION (this session's pick): start github-38 (ACES).** Open `.agents/plans/github-38.plan.md`;
+> its next action is `phase-a-bars` (author the custom ACES governance bars, build-to-learn). The
+> self-host FINDING below is #38's entry context: the resolver already routes every skill-type unit
+> to the ACES squad, so #38 validates that fully-resolved path.
+> **Done this session (committed, clean tree):** `assemble-plugin` (reconcile-forward, `261439d`);
+> `self-host` closed on gateway — cold default judge caught drift the hand-run gate missed, fixed
+> additively, re-judge ALIGNED, ledger seq 7 (`fc1aae3`, plan `cb5ef79`); combat-log flush for the
+> self-host mission (`fb302b5`); provenance-model gate→ledger clarification (`6cd4d76`). The
+> gate→ledger rationale was corrected (NOT "combat log deleted so lost" — see memory
+> `project_sdd_gate_to_ledger_rationale`).
+
 > **Session update (2026-06-30, latest+1) — `self-host` DONE; the bootstrap CLOSES.** Re-ran the
 > spec gate through real sdd-new machinery on `gateway/`: spawned the cold `sdd:sdd-spec-judge`
 > (default bars, read-only) over the frozen unit. First pass returned **ALIGNED:false** — the default
