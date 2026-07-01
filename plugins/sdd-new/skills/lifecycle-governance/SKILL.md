@@ -63,18 +63,22 @@ root.
 ## Spec discovery
 
 A spec is **location-bounded and shape-confirmed** (ADR-0017): an SDD spec is a git-tracked
-`spec.md` that sits at one of the three SDD spec locations **and** whose frontmatter `status` is one
-of the enum values below:
+`spec.md` that sits at one of the three fixed SDD spec locations — **or** at an extra anchor the
+project declared (ADR-0019) — **and** whose frontmatter `status` is one of the enum values below:
 
 1. `.agents/spec/spec.md` — repo-root single-project
 2. `.agents/specs/<project>/spec.md` — repo-root multi-project
 3. `<project-path>/.agents/spec/spec.md` — a nested project (the `**` is the project-path, any depth)
+4. any extra anchor declared in `.agents/sdd/spec-anchors.toml` — **opt-in and additive**; absent
+   config ⇒ only 1–3 (today's behavior). The three fixed conventions need no registry; the extra
+   anchors are a declared, curated registry (`manage-spec-anchors`), not a derived hot path.
 
-There is no spec registry to keep in sync — the locations are fixed conventions, not a stored list.
-To locate specs, scan the three locations and keep git-tracked files whose `status` is in the enum.
-A `spec.md` at a spec location with no lifecycle `status` is **not** a spec (so a stray file is never
-grabbed by accident); a status-bearing `spec.md` **outside** the three locations is not a spec
-either. The concrete engine is the `discover-specs` skill (frontmatter only, TOON output).
+To locate specs, scan the fixed conventions (plus any declared extra anchors) and keep git-tracked
+files whose `status` is in the enum. A `spec.md` at a recognized location with no lifecycle `status`
+is **not** a spec (so a stray file is never grabbed by accident); a status-bearing `spec.md` at
+neither a fixed convention nor a declared extra anchor is not a spec either. An unreadable/malformed
+`spec-anchors.toml` is ignored (fall back to the fixed conventions). The concrete engine is the
+`discover-specs` skill (frontmatter only, TOON output).
 
 Each spec carries a **project name** so a consumer can resolve a name → spec. The name is `declared`
 (the optional frontmatter `name`, authoritative), else `derived` (the repo-root single-project →
