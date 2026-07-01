@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // place-node — project-spec/place-node's concrete engine. Given a new node's concept (and optional name),
 // suggests a provisional capability home and surfaces possible duplicates, so explore places a node in
-// one lookup instead of holding the tree in its head (.agents/specs/sdd/design/spec-layout.md).
+// one lookup instead of holding the tree in its head.
 //
 // Derivation, not a registry: the home for a concept is where that concept's facets already sit — read
 // live from the project-spec's `concept:` tags, never a stored routing list (the corpus/discovery no-drift
@@ -130,7 +130,7 @@ function render(homes: HomeSuggestion[], near: NodeRecord[], concept: string, na
 	} else {
 		lines.push('near[0]: (no name overlap)')
 	}
-	lines.push('note: placement is provisional — finalized at handoff (.agents/specs/sdd/design/spec-layout.md)')
+	lines.push('note: placement is provisional — finalized at handoff')
 	return lines.join('\n')
 }
 
