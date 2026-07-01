@@ -50,6 +50,24 @@ the plan stands on its own). Capture *enough to continue, nothing to relitigate.
 7. **Commit the checkpoint.** Commit the plan update (`docs:`) so the pause is durable in git and
    the working tree is clean. Leave no uncommitted work behind.
 
+## Reconcile-forward checkpoint
+
+When the mission's live state is "this CR's work is already merged, not something this session
+ran live" (e.g. resuming a plan and finding its commits already landed on `main`), treat it as a
+checkpoint whose input is git/ledger evidence instead of a live conductor session — same
+procedure above, plus one gate before declaring the plan retirement-ready:
+
+- **Only for a CR-bearing mission.** A mission that opened a real CR and reached
+  `status: approved` or `implemented` gets this check. A non-CR mission (the `start-mission`
+  escape hatch — no suite-relevant behavior, no CR opened, no gate invoked) needs none; mark it
+  complete on its own merits.
+- **Run the gate floor.** Run `checkGateFloor` (`plugins/sdd-new/skills/spec-gate/scripts/
+  check-spec-state.mts`, wired into `pnpm verify:specs-new`) before marking the plan
+  retirement-ready. A clean floor → mark it. A violation (the status is approved/implemented but
+  the ledger has no matching gate approve line) → do **not** mark the plan retirement-ready on
+  git evidence alone; record the violation explicitly in `## NEXT` so a human resolves it (either
+  the ledger line was genuinely never written, or it needs relocating/re-checking).
+
 **Write scope.** A checkpoint writes **only the plan brief** — the `todos`, the `## NEXT` anchor,
 and (with `--approve`) the top-level `status`. It never touches `spec.md`'s `status` or `approval`:
 the mission's contract lifecycle is the gates', not the checkpoint's.
