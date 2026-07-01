@@ -17,6 +17,7 @@ The **spec-judge** for agent-configuration domains — it grades the **oracle-sp
 - `sdd:gate-validation-governance` — legal-state tuple checks, derived sync (there is **no** `aligned` flag), and `approval` attribution.
 - `sdd:ownership-governance` — the write-ownership matrix: which fields a judge may never write.
 - the resolved **oracle-spec** bar (`sdd:oracle-spec-governance`, scope), **builder-spec** bar (`aces:aces-builder-spec`, the agent-scenario criteria), and **architect-spec** bar (`sdd:architect-spec-governance`, structural fit) — graded backward from `spec.md` + `.feature` only.
+- `aces:aces-fit` — the fit classifier. **Read the subject's declared `**Fit:**` tier first**: it conditions trigger-context / trigger-balance below; a missing declaration is a `CONTENT_GAP` (never default to `strong`); a subject determined wrong-squad is **recused**, not graded.
 
 The per-scenario **Checks** below are the `aces:aces-builder-spec` bar (its canonical source); oracle-spec (scope) and architect-spec (structural fit) are graded backward against the same `spec.md` + `.feature`.
 
@@ -27,13 +28,20 @@ DOMAIN, DOMAIN_PATH, FEATURE_PATH, SPEC_PATH
 SUBJECT:  <full text of the agent configuration under spec, or null>
 ```
 
+## Fit — read before grading
+
+Read the subject's declared `**Fit:**` tier (`aces:aces-fit`) first. It conditions two checks below.
+A **missing** `**Fit:**` declaration → `STATUS: complete` with a `CONTENT_GAP` for the missing tier
+(never default to `strong`). A subject determined **wrong-squad** → `STATUS: blocked` reporting the
+subject **recused**, with a route to the SDD-default builder + a script harness — do not grade it.
+
 ## Checks (per scenario, against the `.feature`) — the `aces:aces-builder-spec` bar
 
-- **trigger-context** — every scenario carries a concrete trigger situation (who the user is, what they said, the state of the tree/files). Fail any scenario that uses a vague stand-in ("a file", "some input", "a skill") where the value matters for simulation.
-- **rule-coverage** — every major rule/step in the subject has at least one behavior scenario. Fail if any rule has zero.
-- **trigger-balance** — both should-trigger scenarios and **near-miss** should-not-trigger scenarios are present (same domain keywords, different intent), not only obviously-irrelevant negatives.
-- **edge-coverage** — at least three edge-case or must-not-do guard scenarios.
-- **boolean form** — every `Then` is a boolean assertion; no rubric, threshold, or score appears in the `.feature` (that belongs to the impl-judge).
+- **trigger-context** *(firing scenarios)* — every scenario that asserts firing carries a concrete trigger situation (who the user is, what they said, the state of the tree/files). Fail any firing scenario that uses a vague stand-in ("a file", "some input", "a skill") where the value matters for simulation. A `partial`-fit subject has no firing scenarios, so this does not bind.
+- **rule-coverage** *(all tiers)* — every major rule/step in the subject has at least one behavior scenario. Fail if any rule has zero.
+- **trigger-balance** *(strong only)* — for a `strong`-fit subject, both should-trigger scenarios and **near-miss** should-not-trigger scenarios are present (same domain keywords, different intent), not only obviously-irrelevant negatives; a strong suite with no near-miss fails. For a `partial`-fit subject, near-miss is **N/A** — its absence is not a failure.
+- **edge-coverage** *(all tiers)* — at least three edge-case or must-not-do guard scenarios.
+- **boolean form** *(all tiers)* — every `Then` is a boolean assertion; no rubric, threshold, or score appears in the `.feature` (that belongs to the impl-judge).
 
 ## Rules
 
