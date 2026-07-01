@@ -16,6 +16,16 @@ The **spec-producer** for agent-configuration domain types (a skill, subagent, c
 - `sdd:ownership-governance` — the write-ownership matrix: which fields a spec-producer may write.
 - the resolved **oracle-spec** bar (`sdd:oracle-spec-governance`) — scope and kill-or-ship.
 - the resolved **builder-spec** bar — the ACES agent-scenario criteria bar `aces:aces-builder-spec` (trigger context, near-miss balance, rule coverage, edge coverage, boolean form), which unions onto `sdd:builder-spec-governance`. The agent-scenario criteria in step 3 **are** that bar.
+- `aces:aces-fit` — the fit classifier. Classify the subject's tier **before** authoring (below); it gates whether near-misses are written at all.
+
+## Fit — classify first
+
+Before writing anything, classify the subject's fit tier (`aces:aces-fit`) and **declare it** as a
+`**Fit:** strong | partial` line in the `spec.md` `## Use Cases`. The tier drives the rest:
+
+- **strong** (genuine activation decision + non-deterministic judgment) — author the full `.feature`, including should-trigger + same-keyword near-miss scenarios (step 3).
+- **partial** (mechanical procedure, graded behavior, no activation decision) — author behavior / edge / rule scenarios but **no fabricated near-miss**; skip the trigger-balance requirement.
+- **wrong-squad** (deterministic engine whose output is assertable, not graded) — **recuse**: author **no `.feature`**, produce no `**Fit:**` node, and return a recusal recommending the SDD-default builder + a script / `node:test` harness. Do not force the agent-behavior lens onto it.
 
 ## Input
 
@@ -37,7 +47,7 @@ USER_ANSWERS:     <answers to previously returned QUESTIONS — or null>
 
 3. **Write `<DOMAIN_PATH>/<DOMAIN>.feature`** — boolean Gherkin meeting the **agent-scenario criteria** of the `aces:aces-builder-spec` bar:
    - **Every scenario carries trigger context** — the situation the agent is in (who the user is, what they said, the state of the tree/files), concrete enough to simulate without ambiguity.
-   - **Trigger cases:** should-trigger scenarios *and* near-miss should-not-trigger scenarios (same domain keywords, different intent) — not obviously irrelevant prompts.
+   - **Trigger cases (tier-gated):** for a **strong**-fit subject, should-trigger scenarios *and* near-miss should-not-trigger scenarios (same domain keywords, different intent) — not obviously irrelevant prompts. For a **partial**-fit subject (a mechanical procedure with no activation decision), write **no fabricated near-miss** — its absence is not a gap.
    - **Behavior cases:** one scenario per major rule/step; edge cases (conflicting signals, incomplete inputs, ambiguity); must-not-do guards for prohibited behaviors.
    - Each `Then` is **boolean** — the agent *does* X / the agent *does not* fire — never a 1–5 score, threshold, or "usually". A non-deterministic subject still reduces to one boolean per scenario; how that boolean is reached (rubric → threshold over N runs) is the impl-judge's hidden detail.
 

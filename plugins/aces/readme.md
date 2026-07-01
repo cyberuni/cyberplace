@@ -17,6 +17,21 @@ Evaluation runs in layers:
 | **Behavior** | When invoked, does the agent follow the steps and rules? |
 | **Quality** | Is the output actually good? |
 
+## When ACES fits (and when it doesn't)
+
+Not every agent configuration benefits from ACES. **Fit** = which of the four layers above carry
+real signal. ACES classifies each subject **in explore** (before authoring an eval suite) and
+records a `**Fit:**` line in its spec:
+
+| Fit | The subject… | ACES does |
+|---|---|---|
+| **strong** | makes a genuine activation decision + non-deterministic judgment | full eval — trigger near-misses required |
+| **partial** | mechanically executes a predetermined path (graded behavior, no activation choice) | behavior/quality evals; **no trigger near-miss** required |
+| **wrong-squad** | is a deterministic script/engine (assertable output, not graded) | **recuses** — use an ordinary test harness (`node:test`), not ACES |
+
+Only the **Structural** layer signal on a subject means it is **wrong-squad** — `cyber-skills audit`
+already covers that. The classifier lives in `skills/aces-fit/` (model: the spec's `design/fit.md`).
+
 ## Skills
 
 | Skill | When to use |
