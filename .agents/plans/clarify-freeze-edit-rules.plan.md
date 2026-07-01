@@ -1,16 +1,16 @@
 ---
 cr: clarify-freeze-edit-rules
 what: fix the overbroad "no edits to a frozen .feature without a ratified re-open" wording + add a testable move-preserves-freeze scenario
-status: in-progress
+status: done
 todos:
   - content: "spec-gate/README.md 'The three verbs and freeze' — replace the overbroad re-open clause with the three edit-classes (additive self-clears / narrowing re-opens+Clearance / pure move preserves), referencing design/lifecycle-model.md"
-    status: pending
+    status: completed
   - content: "start-mission/SKILL.md Freeze re-open guard — reword: re-open only for narrowing/rewriting; additive self-clears; pure move/rename preserves freeze"
-    status: pending
+    status: completed
   - content: "Add an additive scenario to spec-gate.feature: a pure move/rename of a frozen file preserves its freeze (stays @frozen, not gate-able); sync the README use-case row"
-    status: pending
+    status: completed
   - content: "Spec gate (cold sdd-spec-judge; additive stays @frozen); check-feature + check-spec-state + verify:specs-new + pnpm verify green"
-    status: pending
+    status: completed
 ---
 
 # CR: clarify the freeze-edit-rules wording
@@ -40,6 +40,10 @@ low blast, reversible.
 
 ## NEXT
 
-Run in worktree `sdd/clarify-freeze-edit-rules` (branched from `next`). Reword the two spots, add the
-additive move scenario + README use-case row, spec-gate (additive → stays `@frozen`), verify green.
-No impl, no changeset. Leave push + PR to the user.
+**Done on branch `sdd/clarify-freeze-edit-rules`** (worktree `.claude/worktrees/clarify-freeze-edit-rules`,
+branched from `next`). Reworded across spec-gate/README.md, start-mission/SKILL.md,
+lifecycle-governance + suite-format-governance SKILLs, and the suite-format node README; added the
+additive move scenario + synced the use-case row. Spec gate passed (cold sdd-spec-judge ALIGNED 3/3;
+ledger seq 44 strategy + 45 gate; spec-gate.feature stays `@frozen`). `pnpm verify` + `verify:specs-new`
+green. Commit `ebd21e4`. No impl, no changeset. **Remaining (human):** push the branch + open a PR
+(→ `next`); then this plan retires.
