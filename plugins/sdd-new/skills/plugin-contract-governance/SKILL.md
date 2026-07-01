@@ -58,7 +58,7 @@ procedure it runs — which itself references the bars above; a plugin delegate 
 procedure and loads these bars directly.
 
 The `sdd` gateway loads **no** governance (it only classifies and routes). The gate skill
-`validate-spec` loads `lifecycle`, `ownership`, `gate-validation`, `combat-log` (+ `spec-format` /
+`spec-gate` loads `lifecycle`, `ownership`, `gate-validation`, `combat-log` (+ `spec-format` /
 `suite-format` at the spec gate). A plugin's agents inherit the universal loads — e.g. `aces`/`quill`
 spec-producers load `sdd:spec-format-governance` + `sdd:ownership-governance`, and their judges load
 `sdd:gate-validation-governance`.

@@ -1,6 +1,6 @@
-# validate-spec
+# spec-gate
 
-User-facing SDD skill that runs the **spec gate** (Draft → Approved) over a CR's spec + suite
+Internal SDD skill that runs the **spec gate** (Draft → Approved) over a CR's spec + suite
 **diff**. It runs the deterministic structural checks (`scripts/check-spec-state.mts` — the root
 lifecycle tuple + the per-node `spec-type` reconcile) and the provenance structural checks first
 (fail-closed on malformed `produced-by` / no resolvable producer; flag-only on uninstalled
@@ -22,3 +22,5 @@ References `sdd:lifecycle-governance`, `sdd:ownership-governance`, `sdd:gate-val
 
 - `check-spec-state.mts` — deterministic state validator (root tuple + per-node spec-type
   reconcile); run via `pnpm verify:specs-new`. Tested by `check-spec-state.test.mts`.
+- `check-feature.mts` — deterministic `.feature`-form validator (Gherkin validity, boolean-`Then`
+  form, scenario ordering); run via `pnpm verify:specs-new`. Tested by `check-feature.test.mts`.

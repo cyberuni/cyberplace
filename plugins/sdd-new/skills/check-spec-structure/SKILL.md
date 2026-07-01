@@ -51,4 +51,4 @@ Frontmatter + scenario-count only — it never reads a node body, owns no lifecy
 nothing. It **never acts** on a finding (a split, a reconcile) — that is the Warden's
 (`sdd:formation-loop`) under its own self-clear-vs-escalate verdict. It does **not** render the
 by-concept view (`concept-index`), advise a new node's home (`place-node`), or check gate legality
-(`validate-spec`'s `check-spec-state`, fail-closed at the gate).
+(`spec-gate`'s `check-spec-state`, fail-closed at the gate).

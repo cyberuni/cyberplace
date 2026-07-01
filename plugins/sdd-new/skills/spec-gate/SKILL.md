@@ -1,10 +1,10 @@
 ---
-name: validate-spec
+name: spec-gate
 description: "Internal skill: the SDD spec gate (Draft → Approved) — the verdict on a CR's spec + suite diff, freezing each touched .feature on approve. Run by the conductor (start-mission) inside the mission loop; not triggered by users directly."
 user-invocable: false
 ---
 
-# validate-spec
+# spec-gate
 
 Run the SDD **spec gate**: the verdict on a CR's spec + suite **diff** before it becomes the
 contract. This is an **internal step the conductor runs inside the mission loop** (loaded by
@@ -34,6 +34,12 @@ It checks the root lifecycle tuple **and** the per-node `spec-type` reconcile: a
 carrying a `.feature` or missing its `## Subject`, and a `behavioral` node missing `## Use Cases`,
 **fail closed**; a descriptive node (no marker) raises no violation. If `node` is unavailable,
 perform the same checks by reading each README's frontmatter yourself.
+
+The sibling `scripts/check-feature.mts` is the **`.feature`-form** authority — Gherkin validity,
+boolean-`Then` form (hedge-word detection), and scenario ordering/sectioning. It runs tree-wide in the
+`verify:specs-new` CI script, not from this skill body; run it here too when the CR touches a `.feature`
+(`node "<skill>/scripts/check-feature.mts" [--root <specs-dir>]`). The cold spec-judge grades form
+qualitatively; this engine catches it mechanically.
 
 **Provenance structural checks** (`sdd:combat-log-governance`). Read the touched files'
 `produced-by` frontmatter and the root's `ledger.jsonl`:

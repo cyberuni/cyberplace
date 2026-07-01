@@ -1,6 +1,6 @@
 ---
 name: combat-log-governance
-description: "Internal skill: the SDD combat-log contract — the two-face provenance record (current-state frontmatter plus the tracked combat log and the durable ledger), the report / correction / halt / gate / strategy entry shapes, per-entry handle + write-time ts under a safe-to-publish floor, the matchable cause enum, and write-ownership. Loaded by the conductor, validate-spec, and the doctrine-loop Scanner. Not triggered by users directly."
+description: "Internal skill: the SDD combat-log contract — the two-face provenance record (current-state frontmatter plus the tracked combat log and the durable ledger), the report / correction / halt / gate / strategy entry shapes, per-entry handle + write-time ts under a safe-to-publish floor, the matchable cause enum, and write-ownership. Loaded by the conductor, spec-gate, and the doctrine-loop Scanner. Not triggered by users directly."
 user-invocable: false
 ---
 
@@ -160,7 +160,7 @@ Append-only; lines added with the next CR-scoped `seq`, never edited or deleted.
 |---|---|---|
 | **conductor** | `report`, `correction`, `halt` | the **combat log** (plan `*.log.jsonl`) |
 | **conductor** | self-asserted `gate` (`by: agent`) | the **ledger** |
-| **gate skill (`validate-spec`), in-session** | human-ratified `gate` (`by: <name>`) | the **ledger** |
+| **gate skill (`spec-gate`), in-session** | human-ratified `gate` (`by: <name>`) | the **ledger** |
 | **doctrine-loop Scanner** | `strategy` | the **ledger** |
 | producers / judges | nothing | — |
 

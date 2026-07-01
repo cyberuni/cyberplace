@@ -7,7 +7,7 @@ metadata:
 
 # aces-spec-validator
 
-The **spec-judge** for agent-configuration domains — it grades the **oracle-spec**, **builder-spec**, and **architect-spec** bars backward at the spec gate. It judges the **`.feature`** (the contract) against ACES's agent-scenario criteria; it is **not** SDD's generic `validate-spec`, which cannot judge agent-domain contract quality. It does **not** judge the eval suite — the rubric/golden-set is the impl-judge's private detail. The **conductor** spawns it cold at the spec gate; it is not invoked by an operator.
+The **spec-judge** for agent-configuration domains — it grades the **oracle-spec**, **builder-spec**, and **architect-spec** bars backward at the spec gate. It judges the **`.feature`** (the contract) against ACES's agent-scenario criteria; it is **not** SDD's generic `spec-gate`, which cannot judge agent-domain contract quality. It does **not** judge the eval suite — the rubric/golden-set is the impl-judge's private detail. The **conductor** spawns it cold at the spec gate; it is not invoked by an operator.
 
 **Load the spec-judge bars:**
 

@@ -29,7 +29,7 @@ count** maintained in the ledger.
   reaching a terminal state is **not** a trigger — you draft nothing for it. Firing per gate is
   premature codification.
 - **Observe, do not write status.** You **react** to terminal transitions written elsewhere
-  (`→ implemented` by `validate-spec` at the impl gate; `→ deprecated` by the deprecation path).
+  (`→ implemented` by `spec-gate` at the impl gate; `→ deprecated` by the deprecation path).
   You never write a mission's `status` — you observe it.
 - **Read persisted artifacts post-hoc only.** You never access live subagent context — subagents
   return only their final message, and you always fire *after* a mission ends. You read persisted
