@@ -30,7 +30,7 @@
 // exported for node:test; running the file directly drives the CLI. No dependencies.
 
 import { type Dirent, existsSync, readdirSync, readFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { dirname, join } from 'node:path'
 
 export interface GateVerdict {
 	verdict?: string
@@ -162,6 +162,45 @@ export function checkSpec(slug: string, state: SpecState): string[] {
 			'status is implemented but approval.impl has no approve verdict with an approver — the impl gate has no recorded ratification',
 		)
 
+	return v
+}
+
+// Referenced-artifact-exists: a backtick-wrapped token shaped like a path (a
+// relative `./`/`../` reference, or repo-root-relative under a known top-level
+// dir) must resolve to a real file/dir. Bounded to these prefixes deliberately —
+// unprefixed slash-containing tokens ("Given / When / Then", "oracle/builder")
+// are prose, not paths, and must never false-positive.
+const PATH_PREFIXES = ['.agents/', 'plugins/', 'packages/', 'apps/', 'docs/', '.claude/']
+
+export function extractPathRefs(text: string): string[] {
+	const out: string[] = []
+	const re = /`([^`\n]+)`/g
+	let m: RegExpExecArray | null
+	// biome-ignore lint/suspicious/noAssignInExpressions: standard regex-exec loop
+	while ((m = re.exec(text))) {
+		const token = m[1].trim()
+		// A template placeholder (`<project>`) or glob (`*.plan.md`) names a pattern,
+		// not a real file — never a violation regardless of prefix.
+		if (/[<*]/.test(token)) continue
+		const isRelative = token.startsWith('./') || token.startsWith('../')
+		const isRooted = PATH_PREFIXES.some((p) => token.startsWith(p))
+		if (isRelative || isRooted) out.push(token)
+	}
+	return out
+}
+
+// `dir` is the checked file's own directory (root-relative, matching this
+// script's CWD-is-repo-root convention) — the base a `./`/`../` token resolves
+// against. A repo-root-relative token resolves against the CWD directly.
+export function checkReferencedArtifacts(slug: string, dir: string, text: string): string[] {
+	const v: string[] = []
+	const tag = (msg: string) => v.push(`${slug}: ${msg}`)
+	for (const ref of extractPathRefs(text)) {
+		const clean = ref.replace(/#.*$/, '')
+		const isRelative = clean.startsWith('./') || clean.startsWith('../')
+		const resolved = isRelative ? join(dir, clean) : clean
+		if (!existsSync(resolved)) tag(`references nonexistent artifact \`${clean}\``)
+	}
 	return v
 }
 
@@ -301,7 +340,53 @@ function discoverDirsWith(root: string, name: string): string[] {
 export const discoverSpecDirs = (root: string): string[] => discoverDirsWith(root, 'spec.md')
 export const discoverNodeDirs = (root: string): string[] => discoverDirsWith(root, 'README.md')
 
+// referenced-artifact-exists is deliberately CR-scoped only (--files), never part of
+// the --root tree sweep: the existing corpus's accumulated prose legitimately names
+// example/convention paths (an opt-in config not yet created, a hypothetical nested
+// project) that a blind tree-wide scan cannot distinguish from a real broken
+// reference. Scoped to a CR's own touched files, same shape as check-feature.mts.
+export function parseFilesArg(argv: string[]): string[] {
+	const idx = argv.indexOf('--files')
+	if (idx === -1) return []
+	const paths: string[] = []
+	for (let i = idx + 1; i < argv.length; i++) {
+		if (argv[i].startsWith('--')) break
+		paths.push(argv[i])
+	}
+	return paths
+}
+
+export function checkReferencedArtifactsInFiles(paths: string[]): string[] {
+	const violations: string[] = []
+	for (const p of paths) {
+		let text: string
+		try {
+			text = readFileSync(p, 'utf8')
+		} catch {
+			violations.push(`${p}: cannot read file`)
+			continue
+		}
+		violations.push(...checkReferencedArtifacts(p, dirname(p), text))
+	}
+	return violations
+}
+
 export function main(argv: string[]): number {
+	if (argv.includes('--files')) {
+		const paths = parseFilesArg(argv)
+		if (paths.length === 0) {
+			console.error('✗ --files requires at least one spec.md/README.md path')
+			return 1
+		}
+		const violations = checkReferencedArtifactsInFiles(paths)
+		if (violations.length) {
+			for (const line of violations) console.error(`✗ ${line}`)
+			return 1
+		}
+		process.stdout.write('referenced-artifact checks OK\n')
+		return 0
+	}
+
 	const root = argv.includes('--root') ? argv[argv.indexOf('--root') + 1] : '.agents/specs'
 	let violations: string[] = []
 

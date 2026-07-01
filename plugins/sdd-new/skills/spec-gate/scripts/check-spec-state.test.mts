@@ -6,11 +6,15 @@ import { test } from 'node:test'
 import {
 	checkGateFloor,
 	checkNode,
+	checkReferencedArtifacts,
+	checkReferencedArtifactsInFiles,
 	checkSpec,
 	discoverNodeDirs,
 	discoverSpecDirs,
+	extractPathRefs,
 	type LedgerGate,
 	type NodeSpec,
+	parseFilesArg,
 	parseLedgerGates,
 	parseNode,
 	parseSpecState,
@@ -373,4 +377,72 @@ test('checkGateFloor: implemented requires both a spec and an impl approve line'
 	assert.match(missingImpl[0], /no impl gate approve line/)
 	const missingBoth = checkGateFloor('sdd', 'implemented', [])
 	assert.equal(missingBoth.length, 2)
+})
+
+// ── referenced-artifact-exists (--files only, never the --root sweep) ──
+
+test('extractPathRefs picks up relative and repo-root-relative backtick paths', () => {
+	const text = 'See `../../design/foo.md` and `plugins/sdd-new/skills/bar/` for the rest.'
+	assert.deepEqual(extractPathRefs(text), ['../../design/foo.md', 'plugins/sdd-new/skills/bar/'])
+})
+
+test('extractPathRefs ignores slash-containing prose with no path prefix', () => {
+	assert.deepEqual(extractPathRefs('The lens triad is `Oracle/Builder/Architect`.'), [])
+})
+
+test('extractPathRefs ignores template placeholders and globs', () => {
+	const text = 'See `.agents/specs/<project>/spec.md` and `.agents/plans/*.plan.md`.'
+	assert.deepEqual(extractPathRefs(text), [])
+})
+
+test('checkReferencedArtifacts flags a relative reference that resolves to nothing', () => {
+	const v = checkReferencedArtifacts('sdd/foo', '.agents/specs/sdd/foo', 'See `../bar/baz.md`.')
+	assert.equal(v.length, 1)
+	assert.match(v[0], /references nonexistent artifact `\.\.\/bar\/baz\.md`/)
+})
+
+test('checkReferencedArtifacts passes a relative reference that resolves to a real file', () => {
+	const v = checkReferencedArtifacts(
+		'sdd/spec-gate',
+		'plugins/sdd-new/skills/spec-gate',
+		'See `./scripts/check-spec-state.mts`.',
+	)
+	assert.deepEqual(v, [])
+})
+
+test('checkReferencedArtifacts passes a repo-root-relative reference that resolves', () => {
+	const v = checkReferencedArtifacts('sdd', '.', 'See `plugins/sdd-new/skills/spec-gate/README.md`.')
+	assert.deepEqual(v, [])
+})
+
+test('checkReferencedArtifacts strips an anchor fragment before resolving', () => {
+	const v = checkReferencedArtifacts('sdd', '.', 'See `plugins/sdd-new/skills/spec-gate/README.md#gate`.')
+	assert.deepEqual(v, [])
+})
+
+test('parseFilesArg collects paths after --files (spec-state)', () => {
+	assert.deepEqual(parseFilesArg(['--files', 'a.md', 'b.md']), ['a.md', 'b.md'])
+})
+
+test('parseFilesArg stops at the next flag (spec-state)', () => {
+	assert.deepEqual(parseFilesArg(['--files', 'a.md', '--root', 'x']), ['a.md'])
+})
+
+test('checkReferencedArtifactsInFiles fails closed on an unreadable path', () => {
+	const v = checkReferencedArtifactsInFiles(['/nonexistent/nope.md'])
+	assert.equal(v.length, 1)
+	assert.match(v[0], /cannot read file/)
+})
+
+test('checkReferencedArtifactsInFiles reads named files and reports their violations', () => {
+	const root = mkdtempSync(join(tmpdir(), 'sdd-spec-state-'))
+	try {
+		mkdirSync(join(root, 'sdd', 'foo'), { recursive: true })
+		writeFileSync(join(root, 'sdd', 'foo', 'README.md'), 'See `../bar/baz.md`.\n')
+		const v = checkReferencedArtifactsInFiles([join(root, 'sdd', 'foo', 'README.md')])
+		assert.equal(v.length, 1)
+		assert.match(v[0], /references nonexistent artifact/)
+	} finally {
+		rmSync(root, { recursive: true, force: true })
+	}
 })
