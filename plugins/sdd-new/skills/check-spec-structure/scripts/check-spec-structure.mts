@@ -2,7 +2,7 @@
 // check-spec-structure — project-spec/check-spec-structure's concrete engine. Audits the internal
 // node-shape of one project spec and emits a finding set for the formation Warden: the intra-spec
 // successor to the retired cross-spec dedupe/split tools, now that one project is one spec
-// (.agents/specs/sdd/project-spec/check-spec-structure/README.md).
+// (see this skill's README.md).
 //
 // Two deterministic checks, each with a severity:
 //   - untagged-node (blocking)  — a spec-typed node README with no `concept:` tag, so it never

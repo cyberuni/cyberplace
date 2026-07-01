@@ -13,7 +13,7 @@ returning **pass/fail per scenario** plus an orthogonal structural/scope read. I
 cold actor** (`producer ≠ judge`): it **never** authors tests, **never** sets the bar (the frozen
 `.feature` is the bar), **never** modifies `spec.md` or the `.feature`, writes no `status` /
 `approval`, and renders no gate verb — it judges and advises; the
-[`conductor`](../../.agents/specs/sdd/mission/conductor/README.md) turns the rollup into the gate
+the **conductor** (`start-mission`) turns the rollup into the gate
 verdict and the leash.
 
 Its verdict answers **"does the frozen contract hold"**, not "did the producer's tests pass" — the
