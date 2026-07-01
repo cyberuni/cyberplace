@@ -1,12 +1,12 @@
 # concept-index
 
-Internal SDD skill — the concrete engine for the **concept-index** step. Scans one spec corpus for
+Internal SDD skill — the concrete engine for the **concept-index** step. Scans one project-spec for
 every node's `concept:` frontmatter and renders the **by-concept view** into the root `spec.md`,
 re-unifying a cross-cutting concern the capability folder tree scatters.
 
 ```bash
-node scripts/concept-index.mts --spec-dir <corpus> --write   # refresh the block
-node scripts/concept-index.mts --spec-dir <corpus> --check   # no-drift guard
+node scripts/concept-index.mts --spec-dir <spec> --write   # refresh the block
+node scripts/concept-index.mts --spec-dir <spec> --check   # no-drift guard
 ```
 
 Pure derivation, frontmatter only; the write touches only the delimited generated block. See
