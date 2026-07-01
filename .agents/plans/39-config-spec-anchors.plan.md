@@ -4,48 +4,51 @@ overview: "CR against the sdd project spec (GitHub #39). Reframes #39's rejected
 todos:
   - id: config-format
     content: "Explore (build-to-learn): decide spec-anchors.toml schema (repo-relative dir vs <project>-glob capture), fixed-always + config-adds precedence, no-config back-compat, malformed handling. Prototype the config reader."
-    status: pending
+    status: completed
   - id: discovery-spec
     content: "Explore: re-open (ratified) & revise corpus/discovery/discovery.feature + README — replace the 'no path registry' scenario, add config-anchor recognition scenarios, keep status-shape + frontmatter-only + TOON."
-    status: pending
+    status: completed
   - id: anchors-node
     content: "Explore: new corpus/spec-anchors/ node (README + spec-anchors.feature) — config format; list fixed(explained)+custom; CRUD custom; induce-pattern-from-path; dry-run match preview."
-    status: pending
+    status: completed
   - id: manage-node
     content: "Explore: revise gateway/manage/manage.feature + README + manage/SKILL.md routing — add Housekeeping route 'configure the spec anchors' → the new engine."
-    status: pending
+    status: completed
   - id: adr
     content: "Explore/deliver: write artifacts/adr/0019-configurable-extra-spec-anchors.md; partially supersede ADR-0017 no-registry clause."
-    status: pending
+    status: completed
   - id: spec-gate
     content: "Spec gate: spawn cold sdd-spec-judge over the three touched nodes; on approve freeze each .feature (re-freeze discovery, freeze spec-anchors + manage), record gate lines in .agents/specs/sdd/ledger.jsonl, set status approved."
-    status: pending
+    status: completed
   - id: impl-discovery
     content: "Deliver: discover-specs.mts reads .agents/sdd/spec-anchors.toml (no-deps TOML), merges anchors into scan, name derivation for anchored specs; extend discover-specs.test.mts (incl. no-config back-compat)."
-    status: pending
+    status: completed
   - id: impl-anchors
     content: "Deliver: new plugins/sdd-new/skills/manage-spec-anchors/ (SKILL user-invocable:false internal:true, README, scripts/manage-spec-anchors.mts: --list/--add/--remove/--edit/--induce/--preview) + node:test."
-    status: pending
+    status: completed
   - id: impl-manage-wire
     content: "Deliver: wire manage/SKILL.md routing table + Housekeeping group to the new engine."
-    status: pending
+    status: completed
   - id: reconcile
     content: "Deliver: reconcile the 'three fixed locations' claim across corpus/README, lifecycle-governance, backfill/start-mission/resume-mission/sdd SKILLs, design/spec-structure.md."
-    status: pending
+    status: completed
   - id: impl-gate
     content: "Impl gate: spawn cold sdd-implementer over frozen scenarios; run node:test + pnpm verify; advance to implemented only when every frozen scenario's verification passes."
-    status: pending
+    status: completed
   - id: handoff
     content: "Handoff: Warden placement pass; commit per unit (ADR; discovery revise; spec-anchors node+engine; manage wire; reconcile); PR; close #39 with reframe rationale."
-    status: pending
+    status: completed
 ---
 
 ## NEXT
 
-▶ START — intake done (this brief scaffolded, branch `github-39-spec-anchors`). Next: explore step 1
-— run `resolve-governances` over the three touched nodes, get the user's **ratified re-open** of the
-frozen `corpus/discovery/discovery.feature`, then build-to-learn the config format (`config-format`
-todo) and author the three nodes' specs + suites.
+▶ MISSION COMPLETE (2026-07-01) — spec gate (ledger seq 38 strategy / 39 gate) froze all three nodes;
+impl gate (seq 40, ratified by unional in-session, leash was auto-spec) advanced the units to
+implemented. Both cold-judge rounds green (3 spec-judges, 1 impl-judge over 43 frozen scenarios; all
+Builder + verification gaps closed pre-advance). Engines + node:test green (discover-specs 37,
+manage-spec-anchors 23); `pnpm verify` 13/13 + `verify:specs-new` clean. Branch `github-39-spec-anchors`,
+PR to `next`, #39 closed with the reframe rationale. Nothing to resume — awaiting merge, then
+doctrine-distill + `plan-retirement`.
 
 ## CR
 
