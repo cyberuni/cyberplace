@@ -1,12 +1,11 @@
 {
 	"name": "skill-authoring",
-	"description": "Create, generalize, patch, persona, and audit skills. Prefer global install (-g).",
+	"description": "Create, generalize, patch, and audit skills. Prefer global install (-g).",
 	"author": { "name": "unional" },
 	"homepage": "https://github.com/cyberuni/cyber-skills",
 	"repository": "https://github.com/cyberuni/cyber-skills",
 	"skills": [
 		"../skills/create-skill",
-		"../skills/create-persona-skill",
 		"../skills/create-universal-plugin",
 		"../skills/skillify",
 		"../skills/patch-skill",
