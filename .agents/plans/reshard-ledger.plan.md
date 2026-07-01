@@ -10,10 +10,10 @@ todos:
     status: completed
   - content: "Deliver: check-spec-state.mts readLedgerText dir-glob + 3 tests (39/39); writer procedures in start-mission/spec-gate/doctrine-loop/sdd SKILLs + sdd-scanner/automaton agents (hash-per-session shard write, no ts); git mv sdd+aces ledgers into ledger/0000-legacy.jsonl; ADR-0020"
     status: completed
-  - content: "Impl gate: cold sdd-implementer PASS 3/3 frozen scenarios, no blocker; real git-merge concurrency smoke = no conflict; pnpm verify 13/13 + verify:specs-new 264 green. AWAITING human ratification (impl gate beyond auto-spec leash)"
-    status: in_progress
-  - content: "Handoff: record impl gate line to new shard on ratify; distill; follow-up CR for machine-invariant effort metric (stranded line 179)"
-    status: pending
+  - content: "Impl gate: cold sdd-implementer PASS 3/3 frozen scenarios, no blocker; real git-merge concurrency smoke = no conflict; pnpm verify 13/13 + verify:specs-new 264 green. Ratified by unional in-session; impl gate line to fresh no-ts shard reshard-ledger.<hash>.jsonl"
+    status: completed
+  - content: "Handoff: landed on next (no PR requested). Follow-up: machine-invariant coarse effort metric (engagement count) wired to the Scanner efficiency dimension — replaces the old ts-derived duration (stranded provenance-model line 179); open as a new CR when picked up"
+    status: completed
 ---
 
 # CR: reshard-ledger — kill ledger merge conflicts by sharding, not a merge driver
@@ -60,10 +60,7 @@ inline (sdd:spec-producer), spec-judge cold `sdd:sdd-spec-judge`, impl-judge col
 two-branch merge smoke = no conflict; self-host check-spec-state exits clean over globbed shards.
 
 ## NEXT
-Deliver. Spec gate passed (seq 55, both features re-frozen). Now: (1) `check-spec-state.mts` — replace the
-single `ledger.jsonl` read (lines 296-297) with a glob of `ledger/*.jsonl` + legacy `ledger.jsonl`,
-concat, feed unchanged `parseLedgerGates`; add tests. (2) Writer-procedure SKILLs — start-mission,
-doctrine-loop, sdd (gateway), spec-gate: mint a 6-hex session hash once, write/glob the shard dir instead
-of `ledger.jsonl`. (3) Migration: `git mv` sdd + aces `ledger.jsonl` → `ledger/0000-legacy.jsonl`.
-(4) Grep for other `ledger.jsonl` path literals. Then cold sdd-implementer at the impl gate + concurrency
-smoke test; `pnpm verify` + `verify:specs-new` green; impl gate line to a NEW shard (no ts, dogfood).
+DONE — both gates passed and ratified, landed on `next`. Spec gate seq 55 (legacy shard); impl gate on
+a fresh no-ts shard `reshard-ledger.<hash>.jsonl`. Nothing outstanding for this CR. If a PR is wanted
+later, branch from `next` and open one. Plan retirement (delete this brief + any log) is a later doctrine
+step once distilled. Open the effort-metric follow-up as a new CR when it's picked up.
