@@ -14,5 +14,5 @@ and the sdd defaults.
 node scripts/resolve-governances.mts --root . --artifact-type skill
 ```
 
-Consumed by the conductor (`start-mission`) and the cold judges (`sdd-spec-judge`, `sdd-implementer`)
+Consumed by the conductor (`start-mission`) and the cold judges (`sdd-spec-judge`, `sdd-impl-judge`)
 to load the right bars without hand-enumerating.

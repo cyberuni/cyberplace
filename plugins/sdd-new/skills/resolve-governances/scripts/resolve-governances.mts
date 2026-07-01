@@ -55,7 +55,7 @@ export const SDD_DEFAULT_AGENT: Record<RoleKey, string | null> = {
 	'solution-producer': null,
 	'spec-judge': 'sdd-spec-judge',
 	'impl-producer': null,
-	'impl-judge': 'sdd-implementer',
+	'impl-judge': 'sdd-impl-judge',
 }
 
 // ─── types ──────────────────────────────────────────────────────────────────────
