@@ -103,8 +103,16 @@ Validate the result with the `validate-spec` skill's `check-spec-state` script (
 
 ## 6 — Hand back
 
-Return control to `start-mission`'s per-unit explore to fill each behavioral node (`spec-producer-governance`),
-and **propose** the node placement for the formation **Warden** to confirm or relocate. Leave `status: draft`.
+Backfill ends with **stub** behavioral nodes (`## Use Cases` present, no `.feature`), not filled ones —
+filling them is the **per-unit explore grill** (`spec-producer-governance`), the interactive live loop. **Do
+not auto-continue into it.** Present the count of stub nodes and **ask the user**:
+
+- **Continue now** — proceed into per-unit explore in this session, node by node, to the spec gate.
+- **Defer to a mission** — stop at `status: draft`; the stubs stay a worklist any later `start-mission` /
+  `resume-mission` picks up (the explore grill may want a different model or session).
+
+Either way, **propose** the node placement for the formation **Warden** to confirm or relocate, and leave
+`status: draft`.
 
 ## Output boundary
 
