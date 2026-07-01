@@ -24,7 +24,7 @@ means the conductor **spawns** it.
 | `solution-producer` | writes `<unit>.solution.md` (the durable, ungated design fork) | conductor loads `solution-producer-governance`, authors inline (`sdd:automaton`) |
 | `spec-judge` | judges `spec.md` + the `.feature` at the spec gate | `sdd-spec-judge` — spawned cold agent |
 | `impl-producer` | builds the artifact **and** its verification | conductor loads `impl-producer-governance`, dispatches a generic builder (`sdd:automaton`) |
-| `impl-judge` | runs the verification against the frozen `.feature` | `sdd-implementer` — spawned cold agent |
+| `impl-judge` | runs the verification against the frozen `.feature` | `sdd-impl-judge` — spawned cold agent |
 
 **Producers run inline (or via a mechanical builder), judges spawn cold** ("conductor writes, cold
 judges grade"): an SDD-default spec/solution-producer is a governance the conductor loads and runs in

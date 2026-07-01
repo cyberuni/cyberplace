@@ -282,7 +282,7 @@ test('resolveAgent uses a named plugin delegate', () => {
 
 test('resolveAgent treats an explicit null role as the SDD default', () => {
 	const match = squadMatch('aces', {}, { 'impl-judge': null })
-	assert.deepEqual(resolveAgent('impl-judge', match), { source: 'sdd', ref: 'sdd-implementer' })
+	assert.deepEqual(resolveAgent('impl-judge', match), { source: 'sdd', ref: 'sdd-impl-judge' })
 })
 
 test('resolveAgent falls back to the <plugin>-<role> convention for a missing role key', () => {

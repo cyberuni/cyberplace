@@ -66,6 +66,16 @@ When the route resolves, **load the matched skill in the current session** and w
 - **Default (a user session hosts the conductor): load in-session.** For a change to the project, load `start-mission`; it runs the mission loop over the project spec. The session **is** the conductor (the user in the driver's seat); it holds the user channel directly and spawns only the **cold judges** and the **impl-producer builder** at depth 1, where grader independence requires it.
 - **Headless (no user channel — an unattended scheduler or a multi-CR fan-out): spawn the automaton.** The **automaton** is the headless driver (the orchestrator delegate). It runs the same mission loop with no human in the seat: it self-asserts at the autonomy bar and batches `needs-input` rather than asking live, and whatever spawned it relays those questions. The automaton is **not** a separate orchestrator role — it is the driver run headless.
 
+### Dispatch the approved queue — the multi-CR fan-out
+
+When the work is a **queue of already-reviewed missions** (each brief cleared with `status: approved`), run the **dispatch loop** — entered by an attended "run the approved missions" request or an unattended trigger (cron):
+
+1. **Select the queue.** Run `discover-plans --status approved` — the approved briefs, in list order. An empty queue is a no-op.
+2. **Run sequentially, one fresh automaton per mission.** For each brief: if it has no remaining todos, **skip** it (nothing to run); otherwise **spawn a fresh `sdd-automaton` on that brief** — a cold context that reads only its own brief + on-disk artifacts. Collect its verdict packet, then move to the next. **Never run two missions in parallel on the shared working tree.**
+3. **Relay, never guess.** On a `needs-input` verdict, relay it live (attended) or batch it up the relay (unattended); never auto-accept past it. On a `halt` verdict, **stop that mission** and relay the halt (do not continue it), then move to the next brief.
+
+The **fresh spawn per mission is deliberate** — each automaton's context dies with it, so nothing carries from one mission to the next and the dispatch session holds only the queue + small verdict packets (not compaction, which would bleed a prior mission's settled decisions into the next grill). Dispatch **spawns and relays only** — it writes no contract state; each mission's automaton self-asserts and writes its own ledger lines, and the `approved` flag is the human's (set via `pause-mission --approve`), never dispatch's.
+
 **Write-ownership.** The gateway writes **no** contract state. The internal spec / impl gates own the `status` write and the human ratification of `approval`; the conductor (the in-session user, or the automaton when headless) owns any provisional self-assertion. The gateway writes neither.
 
 ## Recognize the escape and the freeze
