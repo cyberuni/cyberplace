@@ -1,11 +1,11 @@
 ---
-name: aces-implementer
+name: aces-impl-judge
 description: "Internal skill: the ACES impl-judge for agent-configuration domains. Runs the scenario→rubric eval suite authored by the impl-producer over N runs, and collapses score-vs-threshold to a boolean per frozen scenario. Spawned cold by the conductor at the impl gate — not triggered by users directly."
 metadata:
   internal: true
 ---
 
-# aces-implementer
+# aces-impl-judge
 
 The **impl-judge** for agent-configuration domain types — it grades the **builder-impl** and **architect-impl** bars backward at the impl gate. It **runs** the **evals** (the "written tests") the impl-producer authored: one rubric per **frozen** `.feature` scenario, scored by `aces-judge` over N runs, with `score ≥ threshold` collapsing back to a boolean per scenario. The evals are written by the impl-producer (`define-agent` / `improve`), not by this agent — independence comes from the frozen `.feature` anchor and from being a **separate runner** (the producer cannot declare its own pass). The **conductor** spawns it cold at the impl gate; it only judges.
 
