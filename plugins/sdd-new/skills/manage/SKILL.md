@@ -1,13 +1,13 @@
 ---
 name: manage
-description: Use this skill when doing manage-level (non-mission) SDD work on the spec corpus — bootstrap, inspect, audit, or housekeeping — such as "set up the project spec", "backfill the spec", "list the SDD specs and statuses", "audit the corpus structure", "check for spec/suite drift", or "retire completed mission plans". Routes to the matching corpus engine; it does not change what the project specifies (that is start-mission).
+description: Use this skill when doing manage-level (non-mission) SDD work on the spec corpus — bootstrap, inspect, audit, or housekeeping — such as "set up the project spec", "backfill the spec", "list the SDD specs and statuses", "audit the corpus structure", "check for spec/suite drift", or "retire completed mission plans". Routes to the matching engine; it does not change what the project specifies (that is start-mission).
 ---
 
 # manage
 
 The **manage-level** front door to an SDD project — the user-facing handler for the gateway's **"Manage the corpus"** route, sibling to `start-mission`. Where `start-mission` **changes what the project specifies** (opens a CR, runs the mission loop), `manage` does **non-mission** work on the corpus: **bootstrap**, **inspect**, **audit**, **housekeeping**.
 
-`manage` is a **thin dispatcher**: it classifies a manage request and **loads the matching corpus engine in the current session**, holding **no production logic**, loading **no governance**, and writing **no contract state**. It **opens no CR**, **invokes no gate**, and **performs no behavior change** itself — a needed change to the project's specified behavior is **handed off to `start-mission`**.
+`manage` is a **thin dispatcher**: it classifies a manage request and **loads the matching engine in the current session**, holding **no production logic**, loading **no governance**, and writing **no contract state**. It **opens no CR**, **invokes no gate**, and **performs no behavior change** itself — a needed change to the project's specified behavior is **handed off to `start-mission`**.
 
 > **Manage picks no model.** Like the gateway, the model + effort a piece of work needs is set by the **engine you load** — the `.mts` engines are light; a `backfill` or `formation` grill wants a capable model. The loaded engine advises; the user switches manually. (Harness gap: `manage` cannot switch the session model itself.)
 

@@ -11,7 +11,7 @@ metadata:
 The **structure outer loop** of the SDD model. Owned by the **Architect** and run by its delegate,
 the **Warden** (`sdd-warden`), parallel to the conductor running the mission loop. It fires
 **post-mission**, **corpus-wide and continuous**, and asks one question and only one — **is what we
-have organized right?** Its standing subject is `corpus/` and the whole organization: it evolves how
+have organized right?** Its standing subject is `corpus/` + `project-spec/` and the whole organization: it evolves how
 the corpus is **arranged**, never what it says.
 
 Load `sdd:combat-log-governance` for any provenance it touches; the floor + gradient the Warden
@@ -37,7 +37,7 @@ loop **declines** and renders no per-spec gate verdict.
 ## Input — corpus structure + discovery, never the combat log
 
 The Warden reads what the corpus **is**, never what a mission **did**. Its **primary** input is
-structural: the corpus **structure** and **discovery** (`corpus/`). To stay efficient rather than
+structural: the corpus **structure** and **discovery** (`corpus/` + `project-spec/`). To stay efficient rather than
 cold-scanning the whole corpus every run, it may consult the durable **public trail** (CR-source
 conclusions + changesets + git history) **forward** via a cursor to learn what shipped recently and
 prioritize the structural pass there first. It reads **never** the combat log (the doctrine loop's
@@ -48,9 +48,9 @@ strictly post-mission.
 
 It acts on each spec's **structure**, not its content — one project is **one spec**, so structural
 maintenance is **intra-spec**. A station is **not** a dependency — formation depends on the corpus
-structure and discovery (`corpus/`), not on any given station skill.
+structure and discovery (`corpus/` + `project-spec/`), not on any given station skill.
 
-| Act | Trigger | Station (`corpus/`) | Output |
+| Act | Trigger | Station (`corpus/` + `project-spec/`) | Output |
 |---|---|---|---|
 | **Audit node-shape** | a formation pass fires post-mission | `check-spec-structure` | a finding set: untagged-node (blocking) + oversized-node (advisory), each naming the node |
 | **Split an oversized node** | a node's `.feature` trips the granularity heuristic | `check-spec-structure` | an oversized-node finding proposing a sub-node split |
