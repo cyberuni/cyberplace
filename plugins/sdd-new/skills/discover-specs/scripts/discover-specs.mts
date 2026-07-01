@@ -8,6 +8,9 @@
 //   1. <root>/.agents/spec/spec.md            — repo-root single-project
 //   2. <root>/.agents/specs/<project>/spec.md — repo-root multi-project
 //   3. <project-path>/.agents/spec/spec.md    — a nested project (** = project-path, any depth)
+//   4. any extra anchor declared in .agents/sdd/spec-anchors.toml (ADR-0019) — opt-in and additive;
+//      absent config ⇒ only 1–3 are scanned (today's behavior). A pattern may carry a <project>
+//      capture token that both globs a segment and names the spec from it.
 // A spec.md at one of these locations is a spec only if its frontmatter `status` is in the
 // lifecycle enum; a status-bearing spec.md elsewhere, or a stray spec.md at a spec location
 // with no lifecycle status, is NOT loaded (so the scan never grabs the wrong file by accident).
@@ -32,6 +35,10 @@ const ROOT_PROJECT_NAME = 'repo'
 
 // Dirs the scan never descends into (keep `.agents` — specs live under it).
 const SKIP_DIRS = new Set(['node_modules', '.git', 'dist', '.turbo', '.next', 'coverage'])
+
+// The opt-in extra-anchor registry (ADR-0019). Scanned IN ADDITION TO the three fixed conventions;
+// absent ⇒ only the fixed conventions are scanned (today's behavior, unchanged).
+const ANCHORS_CONFIG = '.agents/sdd/spec-anchors.toml'
 
 export type NameSource = 'declared' | 'derived' | 'guessed'
 
@@ -107,9 +114,16 @@ function unquote(v: string): string {
 // Classify a root-relative spec.md path to one of the three spec locations, returning the
 // pattern + the location dir it implies (the <project> folder for root-multi, the project-path
 // for nested, '' for root-single). Returns null for any other location.
-export function classifyLocation(
-	relPath: string,
-): { pattern: 'root-single' | 'root-multi' | 'nested'; locationDir: string } | null {
+export type LocationPattern = 'root-single' | 'root-multi' | 'nested' | 'extra'
+
+export interface Location {
+	pattern: LocationPattern
+	locationDir: string
+	/** For an extra anchor whose pattern carried a <project> token: the captured name segment. */
+	capturedName?: string
+}
+
+export function classifyLocation(relPath: string): Location | null {
 	const p = relPath.replace(/\\/g, '/')
 	if (p === '.agents/spec/spec.md') return { pattern: 'root-single', locationDir: '' }
 	const multi = /^\.agents\/specs\/([^/]+)\/spec\.md$/.exec(p)
@@ -123,13 +137,15 @@ export function classifyLocation(
 // otherwise the repo-root single-project is the assumable `repo`, a `.agents/specs/<project>` folder
 // names itself (derived), and a nested project falls back to its folder basename (guessed — it may
 // not be the name the user uses; a consumer should confirm).
-export function deriveName(
-	loc: { pattern: 'root-single' | 'root-multi' | 'nested'; locationDir: string },
-	fm: Frontmatter,
-): { name: string; nameSource: NameSource } {
+export function deriveName(loc: Location, fm: Frontmatter): { name: string; nameSource: NameSource } {
 	if (fm.name) return { name: fm.name, nameSource: 'declared' }
 	if (loc.pattern === 'root-single') return { name: ROOT_PROJECT_NAME, nameSource: 'derived' }
 	if (loc.pattern === 'root-multi') return { name: loc.locationDir, nameSource: 'derived' }
+	// An extra anchor with a <project> capture names the spec from the captured segment (derived);
+	// without a capture it falls back to the folder basename (guessed), like a nested project.
+	if (loc.pattern === 'extra' && loc.capturedName) {
+		return { name: loc.capturedName, nameSource: 'derived' }
+	}
 	return { name: loc.locationDir.split('/').pop() ?? loc.locationDir, nameSource: 'guessed' }
 }
 
@@ -182,32 +198,124 @@ function probeAgents(root: string, agentsRel: string, found: string[]): void {
 	}
 }
 
+// ── Extra anchors — the opt-in registry (ADR-0019) ──
+// A minimal TOML read: pull the string entries out of the `anchors = [ … ]` array. Paths carry no
+// `#`, so entries are the quoted strings inside the array literal (across newlines). Returns [] when
+// there is no anchors array (a config that commented them all out is a valid empty set).
+export function parseAnchorsToml(text: string): string[] {
+	const m = /(^|\n)\s*anchors\s*=\s*\[([\s\S]*?)\]/.exec(text)
+	if (!m) return []
+	const out: string[] = []
+	for (const q of m[2].matchAll(/"([^"]*)"|'([^']*)'/g)) out.push((q[1] ?? q[2]).trim())
+	return out.filter((s) => s !== '')
+}
+
+// Read the extra-anchor patterns, FAIL-SAFE: an absent config yields []; an unreadable/malformed one
+// warns and yields [] so the gateway's status scan never crashes on a hand-corrupted config.
+export function readAnchors(root: string): string[] {
+	const file = join(root, ANCHORS_CONFIG)
+	if (!existsSync(file)) return []
+	try {
+		return parseAnchorsToml(readFileSync(file, 'utf8'))
+	} catch {
+		process.stderr.write(`discover-specs: ignoring unreadable ${ANCHORS_CONFIG}\n`)
+		return []
+	}
+}
+
+// Expand one anchor pattern against the filesystem into the spec dirs it matches. A `*` segment
+// globs one directory level; a `<project>` segment globs AND captures the segment as the spec name.
+// A literal segment must exist. The matched dir is a spec dir iff it holds a spec.md.
+export function expandAnchor(
+	root: string,
+	pattern: string,
+): { rel: string; capturedName?: string }[] {
+	const segs = pattern.replace(/\\/g, '/').replace(/^\/+|\/+$/g, '').split('/').filter(Boolean)
+	let frontier: { dir: string; capturedName?: string }[] = [{ dir: '' }]
+	for (const seg of segs) {
+		const next: { dir: string; capturedName?: string }[] = []
+		const isGlob = seg === '*' || seg === '<project>'
+		for (const node of frontier) {
+			if (isGlob) {
+				let entries: import('node:fs').Dirent[]
+				try {
+					entries = readdirSync(join(root, node.dir), { withFileTypes: true })
+				} catch {
+					continue
+				}
+				for (const e of entries) {
+					if (!e.isDirectory() || SKIP_DIRS.has(e.name)) continue
+					next.push({
+						dir: node.dir ? `${node.dir}/${e.name}` : e.name,
+						capturedName: seg === '<project>' ? e.name : node.capturedName,
+					})
+				}
+			} else {
+				next.push({ dir: node.dir ? `${node.dir}/${seg}` : seg, capturedName: node.capturedName })
+			}
+		}
+		frontier = next
+	}
+	const out: { rel: string; capturedName?: string }[] = []
+	for (const node of frontier) {
+		const rel = node.dir ? `${node.dir}/spec.md` : 'spec.md'
+		if (existsSync(join(root, rel))) out.push({ rel, capturedName: node.capturedName })
+	}
+	return out
+}
+
 // ── Collect ──
-// The list of specs under root: every spec-location spec.md whose frontmatter status is in the
-// lifecycle enum, keyed by its folder slug, sorted by path for stable output.
+// Build a SpecRecord from a spec.md at `rel` under `loc`, or null when it fails the status shape
+// filter (or the file is unreadable). Shared by the fixed-convention and extra-anchor passes.
+function recordFor(root: string, rel: string, loc: Location): SpecRecord | null {
+	let fm: Frontmatter | null
+	try {
+		fm = parseFrontmatter(readFileSync(join(root, rel), 'utf8'))
+	} catch {
+		return null
+	}
+	if (!fm?.status || !LIFECYCLE_STATUSES.has(fm.status)) return null // shape filter
+	const { name, nameSource } = deriveName(loc, fm)
+	return {
+		path: rel.replace(/\/spec\.md$/, ''),
+		name,
+		nameSource,
+		status: fm.status,
+		projectPath: fm.projectPath ?? '',
+		approvals: Object.entries(fm.approval)
+			.map(([gate, verdict]) => `${gate}:${verdict}`)
+			.join(';'),
+	}
+}
+
+// The list of specs under root: every spec.md at one of the three fixed conventions PLUS every
+// spec.md at a declared extra anchor, whose frontmatter status is in the lifecycle enum, keyed by
+// its folder slug, sorted by path. Extra anchors are additive and deduped against the fixed set.
 export function collectSpecs(root: string): SpecRecord[] {
 	const out: SpecRecord[] = []
+	const seen = new Set<string>()
 	for (const rel of discoverSpecFiles(root)) {
 		const loc = classifyLocation(rel)
 		if (!loc) continue
-		let fm: Frontmatter | null
-		try {
-			fm = parseFrontmatter(readFileSync(join(root, rel), 'utf8'))
-		} catch {
-			continue
+		const rec = recordFor(root, rel, loc)
+		if (rec) {
+			out.push(rec)
+			seen.add(rel)
 		}
-		if (!fm?.status || !LIFECYCLE_STATUSES.has(fm.status)) continue // shape filter
-		const { name, nameSource } = deriveName(loc, fm)
-		out.push({
-			path: rel.replace(/\/spec\.md$/, ''),
-			name,
-			nameSource,
-			status: fm.status,
-			projectPath: fm.projectPath ?? '',
-			approvals: Object.entries(fm.approval)
-				.map(([gate, verdict]) => `${gate}:${verdict}`)
-				.join(';'),
-		})
+	}
+	for (const pattern of readAnchors(root)) {
+		for (const { rel, capturedName } of expandAnchor(root, pattern)) {
+			if (seen.has(rel)) continue // already found at a fixed convention
+			const rec = recordFor(root, rel, {
+				pattern: 'extra',
+				locationDir: rel.replace(/\/spec\.md$/, ''),
+				capturedName,
+			})
+			if (rec) {
+				out.push(rec)
+				seen.add(rel)
+			}
+		}
 	}
 	return out.sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0))
 }
