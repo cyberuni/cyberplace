@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { test } from 'node:test'
@@ -263,6 +263,39 @@ test('preview rejects a malformed candidate pattern', () => {
 	try {
 		assert.equal(previewPattern(dir, '../bad').ok, false)
 		assert.equal(previewPattern(dir, 'a/<bogus>').ok, false)
+	} finally {
+		rmSync(dir, { recursive: true, force: true })
+	}
+})
+
+// ── boundary: curation writes ONLY the config ──
+
+// Snapshot every file under dir (relative paths).
+function snapshot(dir: string): string[] {
+	const out: string[] = []
+	const walk = (rel: string): void => {
+		for (const e of readdirSync(join(dir, rel), { withFileTypes: true })) {
+			const child = rel ? `${rel}/${e.name}` : e.name
+			if (e.isDirectory()) walk(child)
+			else out.push(child)
+		}
+	}
+	walk('')
+	return out.sort()
+}
+
+test('curation writes only .agents/sdd/spec-anchors.toml — no other file is touched', () => {
+	const dir = tmp()
+	try {
+		seedSpec(dir, 'source/spec.md') // a pre-existing, unrelated file
+		const before = snapshot(dir).filter((f) => f !== '.agents/sdd/spec-anchors.toml')
+		addAnchor(dir, 'source')
+		editAnchor(dir, 'source', 'source2')
+		removeAnchor(dir, 'source2')
+		previewPattern(dir, 'source')
+		inducePatterns(dir, 'source')
+		const after = snapshot(dir).filter((f) => f !== '.agents/sdd/spec-anchors.toml')
+		assert.deepEqual(after, before) // every non-config file is untouched
 	} finally {
 		rmSync(dir, { recursive: true, force: true })
 	}
