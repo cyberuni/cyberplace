@@ -36,7 +36,7 @@ When `$sdd` is invoked with no work item, artifact, or action, do not guess. Con
 | # | Top-level option | Covers |
 |---|---|---|
 | 1 | **Make a change to the project** | open a CR against the project spec (add a capability, revise behavior, implement, land) → `start-mission` |
-| 2 | **Manage the corpus** | dedupe overlapping specs, split a large spec, reconcile a contradiction, inspect the corpus |
+| 2 | **Manage the corpus** | bootstrap, inspect, audit, or housekeeping (non-mission) → `manage` |
 | 3 | **Review pending strategy** | the doctrine loop's unratified `strategy` lines, when any are pending |
 | 4 | **Help me choose** | scan the spec + statuses, suggest the most-actionable few (≤ 4), let the user pick |
 
@@ -44,7 +44,7 @@ When a derived list would exceed four, present only the most-actionable few (≤
 
 ### Scan statuses with discover-specs
 
-For **Help me choose** — and whenever it needs to locate the project spec or rank the most-actionable few — the gateway runs the **`discover-specs`** skill, the frontmatter-only engine for `corpus/discovery`. It returns the TOON list of every project spec at the three SDD spec locations with its `status`, `project-path`, and gate `approvals`; the gateway ranks from that and never opens a spec body. This is a read, not production logic — the same category as counting `ledger.jsonl` lines for pending strategy — so the thin-classifier rule still holds.
+For **Help me choose** — and whenever it needs to locate the project spec or rank the most-actionable few — the gateway runs the **`discover-specs`** skill, the frontmatter-only engine for `corpus/discovery`. It returns the TOON list of every project spec at the SDD spec locations — the three fixed conventions plus any opt-in extra anchors a project declared (ADR-0019) — with its `status`, `project-path`, and gate `approvals`; the gateway ranks from that and never opens a spec body. This is a read, not production logic — the same category as counting `ledger.jsonl` lines for pending strategy — so the thin-classifier rule still holds.
 
 ## The routing table is the user-skill→capability index
 
@@ -53,7 +53,7 @@ Classification routes a request to the **skill** that handles it; the routing ta
 | User intent | Skill (handler) |
 |---|---|
 | Make any change to the project / spec (add, revise, implement, land) | **`start-mission`** — opens a CR against the project spec and runs the mission loop |
-| Dedupe, split, reconcile, or inspect the corpus | **corpus** tools |
+| Manage the corpus — bootstrap, inspect, audit, or housekeeping (non-mission) | **`manage`** — the manage dispatcher; loads the matching corpus engine in-session |
 | A task with no suite-relevant behavior (not a CR) | **escape** — proceeds outside the lifecycle, leaves no SDD record |
 | Product / structure / process retrospective, or field corrections | the **campaign / formation / doctrine / forge** loop — emits a new CR (→ `start-mission`) |
 

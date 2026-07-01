@@ -1,6 +1,6 @@
 ---
 name: gate-validation-governance
-description: "Internal skill: the SDD gate-legality contract — legal frontmatter-state tuples, per-node spec-type checks, derived sync (no aligned flag), approval attribution, and the no-resolvable-producer fail-closed rule. Loaded by validate-spec, the conductor, and the spec-judge. Not triggered by users directly."
+description: "Internal skill: the SDD gate-legality contract — legal frontmatter-state tuples, per-node spec-type checks, derived sync (no aligned flag), approval attribution, and the no-resolvable-producer fail-closed rule. Loaded by spec-gate, the conductor, and the spec-judge. Not triggered by users directly."
 user-invocable: false
 ---
 
@@ -8,12 +8,12 @@ user-invocable: false
 
 What makes a spec's state legal, and how a gate records its verdict. The field schema and transitions
 are in `sdd:lifecycle-governance`; this skill is the legality layer on top of them. It carries **no
-leash** — the self-clear-vs-escalate bar that derives how far an agent may self-assert lives in the
-autonomy rubric (`design/autonomy-rubric.md`), a hard floor + a three-dimension gradient.
+leash** — the self-clear-vs-escalate bar that derives how far an agent may self-assert is the
+conductor's autonomy bar (baked into `start-mission`), a hard floor + a three-dimension gradient.
 
 ## Legal-state tuples
 
-The mechanical authority is `validate-spec/scripts/check-spec-state.mts` — run it
+The mechanical authority is `spec-gate/scripts/check-spec-state.mts` — run it
 (`node <skill>/scripts/check-spec-state.mts`) to enforce; if `node` is unavailable, apply the same
 rules by reading frontmatter. The `(status, markers, .feature, approval)` tuple of the root
 `spec.md` — plus the durable gate lines in its sibling `ledger.jsonl` — is **illegal** when:

@@ -8,8 +8,8 @@ metadata:
 
 # SDD Plan Retirement
 
-The Doctrine loop's **last retro step** (`sdd:doctrine-loop`,
-`design/provenance-model.md` — *Plan retirement*). Because plans are **tracked** (committed with
+The Doctrine loop's **last retro step** (`sdd:doctrine-loop`; the provenance shape is
+`sdd:combat-log-governance`). Because plans are **tracked** (committed with
 the work, not gitignored), a retired plan leaves the tree by a deliberate **tracked deletion** —
 never a gitignore side effect. This skill carries a self-contained `.mts` sweep that, for each
 cleared `<cr-ref>`, deletes `<cr-ref>.plan.md` + `<cr-ref>.log.jsonl` from `.agents/plans`.

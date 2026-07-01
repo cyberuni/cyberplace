@@ -8,7 +8,7 @@ metadata:
 
 # Resolve Governances
 
-The concrete engine for **SDD governance resolution** (`design/governance-resolution.md`). For a
+The concrete engine for **SDD governance resolution**. For a
 touched file's **artifact-type** it names, per production-chain role, **which agent runs it** and
 **which resolved-actor bar candidates it loads** — matching governances across the caller-passed
 project anchors, the matched plugin squad (from the project registry

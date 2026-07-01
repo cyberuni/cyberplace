@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// concept-index — corpus/concept-index's concrete engine. Scans one spec corpus for every node's
+// concept-index — project-spec/concept-index's concrete engine. Scans one project-spec for every node's
 // `concept:` frontmatter and renders the by-concept view (concept → its nodes across every folder),
 // which re-unifies a cross-cutting concern the capability folder tree scatters
 // (.agents/specs/sdd/design/spec-structure.md, the concept axis).
@@ -12,7 +12,7 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-export const BEGIN_MARKER = '<!-- BEGIN generated: by-concept (corpus/concept-index) -->'
+export const BEGIN_MARKER = '<!-- BEGIN generated: by-concept (project-spec/concept-index) -->'
 export const END_MARKER = '<!-- END generated: by-concept -->'
 // Where the block is inserted when the markers are absent: just before this heading.
 const ANCHOR_HEADING = '## Invariants'
@@ -22,7 +22,7 @@ const SKIP_DIRS = new Set(['node_modules', '.git', 'dist', '.turbo', '.next', 'c
 export type FacetKind = 'rule' | 'e2e' | 'reference' | 'behavior' | 'index'
 
 export interface NodeRecord {
-	/** Path relative to the corpus dir (POSIX). */
+	/** Path relative to the spec directory (POSIX). */
 	relPath: string
 	/** Display form — a README.md node shows its folder, a design doc shows the file. */
 	display: string
@@ -103,23 +103,23 @@ function displayPath(relPath: string): string {
 	return p.endsWith('/README.md') ? p.slice(0, -'README.md'.length) : p
 }
 
-// ── Scan the corpus — every *.md node carrying a concept tag ──
-export function scanCorpus(corpusDir: string): NodeRecord[] {
+// ── Scan the project-spec — every *.md node carrying a concept tag ──
+export function scanProjectSpec(specDir: string): NodeRecord[] {
 	const records: NodeRecord[] = []
-	walk(corpusDir, corpusDir, records)
+	walk(specDir, specDir, records)
 	return records
 }
 
-function walk(dir: string, corpusDir: string, out: NodeRecord[]): void {
+function walk(dir: string, specDir: string, out: NodeRecord[]): void {
 	for (const entry of readdirSync(dir, { withFileTypes: true })) {
 		if (entry.name.startsWith('.') || SKIP_DIRS.has(entry.name)) continue
 		const full = join(dir, entry.name)
 		if (entry.isDirectory()) {
-			walk(full, corpusDir, out)
+			walk(full, specDir, out)
 		} else if (entry.name.endsWith('.md')) {
 			const fm = parseFrontmatter(readFileSync(full, 'utf8'))
 			if (!fm || fm.concepts.length === 0) continue
-			const relPath = full.slice(corpusDir.length + 1).replace(/\\/g, '/')
+			const relPath = full.slice(specDir.length + 1).replace(/\\/g, '/')
 			out.push({
 				relPath,
 				display: displayPath(relPath),
@@ -163,7 +163,7 @@ export function renderSection(grouped: Map<string, NodeRecord[]>): string {
 		'',
 		'## By concept',
 		'',
-		'> Generated from `concept:` frontmatter by `corpus/concept-index` — do not edit by hand.',
+		'> Generated from `concept:` frontmatter by `project-spec/concept-index` — do not edit by hand.',
 		'',
 		renderTable(grouped),
 		'',
@@ -212,7 +212,7 @@ function parseArgs(argv: string[]): { specDir: string; mode: 'print' | 'write' |
 
 export function main(argv: string[]): number {
 	const { specDir, mode } = parseArgs(argv)
-	const grouped = groupByConcept(scanCorpus(specDir))
+	const grouped = groupByConcept(scanProjectSpec(specDir))
 	const section = renderSection(grouped)
 	const specPath = join(specDir, 'spec.md')
 	if (mode === 'print') {

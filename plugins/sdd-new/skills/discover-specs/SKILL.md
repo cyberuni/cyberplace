@@ -1,6 +1,6 @@
 ---
 name: discover-specs
-description: "Internal skill: corpus/discovery's concrete frontmatter engine. A self-contained .mts script that scans the three SDD spec locations (.agents/spec, .agents/specs/<project>, <project-path>/.agents/spec), filters candidates by the lifecycle status shape, parses each spec.md's frontmatter ONLY, and emits a TOON list of the specs with their project name + name-source, status, project-path, and approvals; --resolve <name> filters to the exact name matches. Used by the sdd gateway to scan statuses and by start-mission to locate the project spec; not triggered by users directly."
+description: "Internal skill: corpus/discovery's concrete frontmatter engine. A self-contained .mts script that scans the three fixed SDD spec locations (.agents/spec, .agents/specs/<project>, <project-path>/.agents/spec) plus any opt-in extra anchors declared in .agents/sdd/spec-anchors.toml (ADR-0019), filters candidates by the lifecycle status shape, parses each spec.md's frontmatter ONLY, and emits a TOON list of the specs with their project name + name-source, status, project-path, and approvals; --resolve <name> filters to the exact name matches. Used by the sdd gateway to scan statuses and by start-mission to locate the project spec; not triggered by users directly."
 user-invocable: false
 metadata:
   internal: true
@@ -8,23 +8,30 @@ metadata:
 
 # Discover Specs
 
-The concrete engine for **corpus/discovery** (`.agents/specs/sdd/corpus/discovery/`). It locates the
+The concrete engine for SDD **spec discovery**. It locates the
 project specs in a repo and returns each one's frontmatter — **without reading any spec body** — so a
 consumer (the **gateway**, corpus tooling) can route on `status` / `project-path` / `approval`
 cheaply. It carries a self-contained `.mts` script (the repo's node-≥23.6 / no-deps convention).
 
 ## Recognition — location-bounded and shape-confirmed
 
-A `spec.md` is a spec only when **both** hold (ADR-0017, narrowed — `sdd:lifecycle-governance`):
+A `spec.md` is a spec only when **both** hold (ADR-0017, narrowed; extra anchors per ADR-0019 —
+`sdd:lifecycle-governance`):
 
-- **Location** — it sits at one of the three SDD spec locations:
+- **Location** — it sits at one of the three fixed SDD spec locations, **or** at an extra anchor the
+  project declared in `.agents/sdd/spec-anchors.toml`:
   1. `.agents/spec/spec.md` — repo-root single-project
   2. `.agents/specs/<project>/spec.md` — repo-root multi-project
   3. `<project-path>/.agents/spec/spec.md` — a nested project (the `**` is the project-path, any depth)
+  4. **extra anchors** — each config entry, a repo-relative pattern (`*` globs a segment,
+     `<project>` globs and captures a name); **opt-in and additive** (absent config ⇒ only 1–3, so
+     today's behavior is unchanged). Curated via the `manage-spec-anchors` skill.
 - **Shape** — its frontmatter `status` is in the lifecycle enum (`draft | approved | implemented |
-  deprecated`). A `spec.md` at a spec location with **no** lifecycle `status` is skipped (so the scan
-  never grabs a stray file by accident); a status-bearing `spec.md` **outside** the three locations
-  is not discovered.
+  deprecated`). A `spec.md` at any recognized location with **no** lifecycle `status` is skipped (so
+  the scan never grabs a stray file by accident); a status-bearing `spec.md` at neither a fixed
+  convention nor a declared extra anchor is not discovered. An **unreadable or malformed**
+  `spec-anchors.toml` is ignored (warn + fall back to the fixed conventions), so the scan never
+  crashes on a corrupt config.
 
 ## Run the scan
 

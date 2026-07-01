@@ -62,7 +62,7 @@ After a cycle completes, four **outer loops** may fire and emit *new* change-req
 nothing re-enters in place:
 
 - **campaign** — what the project should *be*: grow and prune capabilities.
-- **formation** — is the corpus organized right: dedupe, split, reconcile.
+- **formation** — is the corpus organized right: audit node-shape, align, reconcile.
 - **doctrine** — how we work: distill strategy from the trail, retire stale plans.
 - **forge** — improve SDD itself from opt-in field corrections.
 

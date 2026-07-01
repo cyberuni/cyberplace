@@ -12,5 +12,4 @@ project `ledger.jsonl`. The entry **shape** and the matchable `cause` enum are o
 `sdd:combat-log-governance` (deferred, never restated). The Council holds keep-or-cut; the `sdd`
 gateway surfaces the count of pending unratified strategy when the Council re-enters.
 
-Spec: `.agents/specs/sdd/doctrine/scanner/`. Plan retirement (doctrine's last retro step) is the
-sibling `sdd:plan-retirement` skill.
+Plan retirement (doctrine's last retro step) is the sibling `sdd:plan-retirement` skill.

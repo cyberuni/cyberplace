@@ -12,5 +12,4 @@ Scanner): it passes the cleared `<cr-ref>` set via `--retire`, and the sweep is 
 cleared, present cr-ref; anything not cleared, missing, or already gone is a no-op (idempotent,
 safe to re-run).
 
-Spec: `.agents/specs/sdd/doctrine/plan-retirement/`. Tests
-(`scripts/retire-plans.test.mts`) run under `pnpm verify:specs-new`.
+Tests (`scripts/retire-plans.test.mts`) run under `pnpm verify:specs-new`.
