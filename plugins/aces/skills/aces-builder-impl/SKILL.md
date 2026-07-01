@@ -31,4 +31,4 @@ which **authors** the eval suite) and the cold impl-judge (`aces-impl-judge`, ba
   scenario passes. The rubric (1–5) and threshold are evaluation detail — they live in the eval suite,
   never in the `.feature`.
 - **The runner is separate from the author.** Independence comes from the frozen `.feature` anchor and
-  from a runner (`aces-judge`) that is not the producer — the producer cannot declare its own pass.
+  from a runner (`aces-case-judge`) that is not the producer — the producer cannot declare its own pass.

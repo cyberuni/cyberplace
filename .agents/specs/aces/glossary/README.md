@@ -23,7 +23,7 @@ verified **through the consuming capabilities** (a term is "correct" when `run` 
 | **layer** | The dimension a case scores: **trigger** (does it fire when it should), **behavior** (does it do the right steps), or **quality** (is the output good). |
 | **rubric** | The scoring criteria for a case, applied by the judge to assign a 1–5 score; it is evaluation detail and never appears in a `.feature`. |
 | **threshold** | The minimum score at which a case counts as passing; the per-scenario boolean collapse `score ≥ threshold`. |
-| **judge** | The impartial evaluator (`aces-judge`) that simulates the agent against a case and returns a score plus a pass/fail verdict. |
+| **judge** | The impartial evaluator (`aces-case-judge`) that simulates the agent against a case and returns a score plus a pass/fail verdict. |
 | **regression** | A case that dropped from passing to failing, or to a lower score, between two versions of a configuration. |
 | **regression gate** | The rule that blocks committing a change whose comparison shows any regression. |
 | **eval suite** | A configuration's `eval.md` (target, judge model, threshold, layers) plus its `golden-set/` — what `run` executes. |

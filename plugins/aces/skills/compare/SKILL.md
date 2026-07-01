@@ -23,7 +23,7 @@ Read both versions in full before proceeding. **If the "before" version cannot b
 
 ## Run evals on both versions
 
-For each version, run every test case in `artifacts/specs/<feature-name>/golden-set/` through `aces-judge` (same process as `run`).
+For each version, run every test case in `artifacts/specs/<feature-name>/golden-set/` through `aces-case-judge` (same process as `run`).
 
 Label results as **before** and **after**.
 

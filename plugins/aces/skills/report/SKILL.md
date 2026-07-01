@@ -44,11 +44,11 @@ ACES Project Report
   ─────────────────────────────────────────────────────
   commit-discipline      healthy      95%     4.6   ↑ +5%
   create-skill           degraded     76%     3.7   → 0%
-  aces-judge             critical     58%     3.1   ↓ -12%
+  aces-case-judge             critical     58%     3.1   ↓ -12%
   subagents/researcher   no-data       —       —    —
 
 NEEDS ATTENTION:
-  ✗ aces-judge (critical, trending down) — run aces-improve
+  ✗ aces-case-judge (critical, trending down) — run aces-improve
   ⚠ create-skill (degraded) — run run for details
 
 Suites with no results: subagents/researcher — run run to initialize

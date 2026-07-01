@@ -11,7 +11,7 @@ Scaffold a scenario + expected-behaviors + must-not-do + rubric from a failure, 
 **Subject** — adding one new test case to a target configuration's golden set, drawn from a real
 failure, a production edge case, or a noticed coverage gap.
 **Non-goals** — fixing the configuration when cases fail (`improve`); scoring the suite (`run`);
-diffing two versions (`compare`); how a single case is scored (that is `aces-judge`).
+diffing two versions (`compare`); how a single case is scored (that is `aces-case-judge`).
 
 | Use case | Trigger / inputs | Outcome |
 |---|---|---|
