@@ -50,6 +50,21 @@ on the CR's delta; the tree-wide `--root` sweep stays the `verify:specs-new` CI 
 spec-judge grades form qualitatively; this engine catches it mechanically, so the judge only ever
 sees a well-formed suite.
 
+The same `check-spec-state.mts` also carries **referenced-artifact-exists** — a backtick-wrapped
+path the CR's touched `spec.md`/`README.md` names (a relative `./`/`../` reference or a
+repo-root-relative one under `.agents/`, `plugins/`, `packages/`, `apps/`, `docs/`, `.claude/`)
+must resolve to a real file or dir; a template placeholder (`<project>`) or glob (`*.plan.md`) is
+exempt. Run it **fail-closed, scoped to the CR's touched `spec.md`/`README.md` files** — never the
+`--root` sweep, since the existing corpus's accumulated prose legitimately names example/convention
+paths a blind tree-wide scan cannot distinguish from a real broken reference:
+
+```bash
+node "<skill>/scripts/check-spec-state.mts" --files <the CR's touched spec.md/README.md files>
+```
+
+Exit `0` = clean; exit `1` prints each `✗ <file>: references nonexistent artifact ...` — **advance
+nothing and do not spawn the judge; report for the producer to fix.**
+
 **Provenance structural checks** (`sdd:combat-log-governance`). Read the touched files'
 `produced-by` frontmatter and the root's `ledger/` shards (globbed; a legacy `ledger.jsonl` still counts):
 
