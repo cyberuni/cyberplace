@@ -9,11 +9,11 @@ todos:
     content: "Explore + spec gate — DONE. Authored gateway/manage/README.md + manage.feature (boolean, matches sibling gateway); ADDITIVE gateway.feature scenarios (self-clear, no unfreeze) + gateway README routing → manage; concept-index regen. Cold sdd-spec-judge oracle+builder PASS, architect blocker (nonexistent doctrine-surfacing engine) fixed per instruction, no scenario change. sdd ledger seq 30; manage.feature frozen."
     status: completed
   - id: deliver-impl
-    content: "Deliver: manage SKILL.md + README.md vs frozen manage.feature; rewire sdd/SKILL.md routing. Cold impl-judge; pnpm verify + audit."
-    status: pending
+    content: "Deliver + impl gate — DONE. manage SKILL.md + README.md (commit bcad796) vs frozen manage.feature; sdd/SKILL.md rewired option-2 -> manage. Cold sdd-implementer 14/14 manage + 2/2 gateway PASS, IMPLEMENTATION_PASS true; align-spec marked (planned). sdd ledger seq 31; pnpm verify green; audit clean."
+    status: completed
   - id: handoff
-    content: "Warden placement pass; commit by concern (spec / manage skill / gateway rewire); land."
-    status: pending
+    content: "Warden placement (manage stays gateway/manage — no relocation); commits f5eab4f (spec) / bcad796 (manage skill) / gateway rewire on next. Follow-up: implement align-spec engine; align aces-fit on thin dispatchers."
+    status: completed
 isProject: false
 ---
 
