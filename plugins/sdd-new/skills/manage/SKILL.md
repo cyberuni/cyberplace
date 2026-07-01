@@ -21,7 +21,7 @@ The **manage-level** front door to an SDD project — the user-facing handler fo
 | 1 | **Bootstrap** | scaffold a project's spec envelope for the first time → `backfill-project-spec` |
 | 2 | **Inspect** | list / navigate the corpus → `discover-specs`, `concept-index`, `place-node`, `discover-plans` |
 | 3 | **Audit & align** | audit node-shape, drift, structure → `check-spec-structure`, `formation-loop`, `align-spec` *(planned)* |
-| 4 | **Housekeeping** | retire completed mission plans → `plan-retirement` |
+| 4 | **Housekeeping** | retire completed mission plans → `plan-retirement`; curate discovery's extra spec anchors → `manage-spec-anchors` |
 
 When a group's engine list would exceed four at the second level, present only the most-relevant few (≤ 4) or ask the user to name the engine directly; never enumerate into an over-four question and never truncate silently.
 
@@ -40,12 +40,13 @@ Classification routes a manage request to the **engine** that handles it; every 
 | **Audit & align** | reconcile prose↔suite drift | **`align-spec`** *(planned — spec-only, no engine yet)* — a fix that edits behavior **hands off to `start-mission`** |
 | **Audit & align** | corpus-wide audit / split / reconcile | **`formation-loop`** — emits new CRs (→ `start-mission`) |
 | **Housekeeping** | retire completed mission plans | **`plan-retirement`** — gated, idempotent deletion of retired briefs |
+| **Housekeeping** | list / change discovery's extra spec anchors | **`manage-spec-anchors`** — list fixed + custom anchors, CRUD the custom ones, induce a pattern from a path, preview its match (writes only `.agents/sdd/spec-anchors.toml`) |
 
 Reviewing **pending strategy** is **not** a manage operation — it stays **gateway-owned** (the gateway's episodic pending-count, its option 3). `manage` does not surface or ratify strategy.
 
 ## Load the engine in-session
 
-When the route resolves, **load the matched engine in the current session** and run it directly — **spawn nothing**. Read-only engines (`discover-specs`, `discover-plans`, `check-spec-structure`, `place-node`, `concept-index --check`) run in place; **write-capable** operations stay **owned by their engine** — `backfill-project-spec` scaffolds the skeleton, `plan-retirement` performs its gated deletion, `concept-index --write` refreshes the generated block. `manage` only routes.
+When the route resolves, **load the matched engine in the current session** and run it directly — **spawn nothing**. Read-only engines (`discover-specs`, `discover-plans`, `check-spec-structure`, `place-node`, `concept-index --check`) run in place; **write-capable** operations stay **owned by their engine** — `backfill-project-spec` scaffolds the skeleton, `plan-retirement` performs its gated deletion, `concept-index --write` refreshes the generated block, `manage-spec-anchors` writes its `spec-anchors.toml` config. `manage` only routes.
 
 ## Non-mission — the boundary
 
