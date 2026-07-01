@@ -7,12 +7,12 @@ todos:
     status: completed
   - content: "Spec gate: aces-spec-validator ALIGNED, froze define-skill.feature, ledger seq 6-7, node approved"
     status: completed
-  - content: "Deliver: write plugins/aces/skills/define-skill SKILL.md + README; author aces-define-skill eval suite"
+  - content: "Deliver: wrote plugins/aces/skills/define-skill SKILL.md + README; reconciled aces-define-skill eval suite"
+    status: completed
+  - content: "Impl gate: aces-implementer static-inspection PASS all 29, ledger seq 8, node implemented"
+    status: completed
+  - content: "Handoff: changeset + pnpm verify green; PR (removal of old create-skill deferred to follow-up CR per user)"
     status: in_progress
-  - content: "Impl gate: aces-implementer runs golden set, every frozen scenario passes, node implemented"
-    status: pending
-  - content: "Handoff: delete 3 create-skill copies, repoint all refs, pnpm verify + aces:run, PR"
-    status: pending
 ---
 
 # CR: aces-define-skill — fold + enhance create-skill into ACES as `define-skill`
@@ -52,11 +52,10 @@ per-frozen-scenario pass. **Verify:** pnpm verify green; audit validate no CRITI
 
 ## NEXT
 
-Explore. Classify fit (strong, confirm). Author `.agents/specs/aces/config-authoring/define-skill/README.md`
-(spec-type behavioral, Use Cases w/ **Fit:** strong + Subject/Non-goals/table) + `define-skill.feature`
-(@frozen at gate, not yet). Sections: Triggering (should-fire + near-misses vs define-agent/-governance/
-skillify/improve-skill) / Placement+pattern / Drafting / Audit / ACES-eval test / Evidence+ship / edge+
-must-not. Then spawn cold aces-spec-validator; converge; spec gate.
+Handoff. Both gates passed (spec seq 7, impl seq 8); pnpm verify green; changeset added. Open PR from
+`worktree-aces-define-skill`. **Removal of the 3 old create-skill copies + ref repointing is a
+follow-up CR** (user chose "land aces addition only") — see the ref inventory below; file it as a
+GitHub issue at handoff.
 
 Link: no external source — local CR `aces-define-skill`.
 
