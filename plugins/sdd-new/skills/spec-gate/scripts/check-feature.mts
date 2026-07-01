@@ -5,7 +5,7 @@
 // the types.
 
 import { type Dirent, readdirSync, readFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { basename, dirname, join } from 'node:path'
 
 // ─── types ────────────────────────────────────────────────────────────────────
 
@@ -180,15 +180,55 @@ export function discoverFeatureDirs(root: string): { slug: string; files: string
 	return out
 }
 
+// The gate scopes to a CR's *touched* .feature files, not the whole tree. In
+// --files mode the caller passes an explicit path list and only those files are
+// checked (tree discovery is skipped). An unreadable path fails closed — the
+// gate must never silently pass a file it could not read.
+export function checkFilePaths(paths: string[]): string[] {
+	const violations: string[] = []
+	for (const p of paths) {
+		let text: string
+		try {
+			text = readFileSync(p, 'utf8')
+		} catch {
+			violations.push(`${p}: cannot read file`)
+			continue
+		}
+		violations.push(...checkFeature(dirname(p), basename(p), text))
+	}
+	return violations
+}
+
+// Collect the path list following --files, stopping at the next flag.
+export function parseFilesArg(argv: string[]): string[] {
+	const idx = argv.indexOf('--files')
+	if (idx === -1) return []
+	const paths: string[] = []
+	for (let i = idx + 1; i < argv.length; i++) {
+		if (argv[i].startsWith('--')) break
+		paths.push(argv[i])
+	}
+	return paths
+}
+
 export function main(argv: string[]): number {
-	const root = argv.includes('--root') ? argv[argv.indexOf('--root') + 1] : '.agents/specs'
 	let violations: string[] = []
 
-	for (const { slug, files } of discoverFeatureDirs(root)) {
-		const slugDir = join(root, slug)
-		for (const file of files) {
-			const text = readFileSync(join(slugDir, file), 'utf8')
-			violations = violations.concat(checkFeature(slug, file, text))
+	if (argv.includes('--files')) {
+		const paths = parseFilesArg(argv)
+		if (paths.length === 0) {
+			console.error('✗ --files requires at least one .feature path')
+			return 1
+		}
+		violations = checkFilePaths(paths)
+	} else {
+		const root = argv.includes('--root') ? argv[argv.indexOf('--root') + 1] : '.agents/specs'
+		for (const { slug, files } of discoverFeatureDirs(root)) {
+			const slugDir = join(root, slug)
+			for (const file of files) {
+				const text = readFileSync(join(slugDir, file), 'utf8')
+				violations = violations.concat(checkFeature(slug, file, text))
+			}
 		}
 	}
 

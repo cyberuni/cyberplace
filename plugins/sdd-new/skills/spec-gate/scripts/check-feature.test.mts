@@ -3,7 +3,32 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { test } from 'node:test'
-import { checkFeature, discoverFeatureDirs, parseFeature } from './check-feature.mts'
+import {
+	checkFeature,
+	checkFilePaths,
+	discoverFeatureDirs,
+	main,
+	parseFeature,
+	parseFilesArg,
+} from './check-feature.mts'
+
+const CLEAN_FEATURE = [
+	'Feature: clean',
+	'',
+	'  Scenario: happy path',
+	'    Given the service is running',
+	'    When the user acts',
+	'    Then the response is ok',
+].join('\n')
+
+const HEDGED_FEATURE = [
+	'Feature: hedged',
+	'',
+	'  Scenario: hedge check',
+	'    Given a condition',
+	'    When an event happens',
+	'    Then the system sometimes responds correctly',
+].join('\n')
 
 // ─── parseFeature ─────────────────────────────────────────────────────────────
 
@@ -332,6 +357,83 @@ test('discoverFeatureDirs skips node_modules and dot dirs', () => {
 		mkdirSync(join(root, '.cache'), { recursive: true })
 		writeFileSync(join(root, '.cache', 'x.feature'), 'Feature: x\n')
 		assert.deepEqual(discoverFeatureDirs(root), [])
+	} finally {
+		rmSync(root, { recursive: true, force: true })
+	}
+})
+
+// ─── --files mode — the gate scopes to a CR's touched features ────────────────
+
+test('parseFilesArg collects the paths after --files', () => {
+	assert.deepEqual(parseFilesArg(['--files', 'a.feature', 'b.feature']), ['a.feature', 'b.feature'])
+})
+
+test('parseFilesArg stops at the next flag', () => {
+	assert.deepEqual(parseFilesArg(['--files', 'a.feature', '--root', 'x']), ['a.feature'])
+})
+
+test('parseFilesArg returns empty without --files', () => {
+	assert.deepEqual(parseFilesArg(['--root', '.agents/specs']), [])
+})
+
+test('checkFilePaths checks only the named files, not siblings', () => {
+	const root = mkdtempSync(join(tmpdir(), 'sdd-files-'))
+	try {
+		const clean = join(root, 'clean.feature')
+		writeFileSync(clean, CLEAN_FEATURE)
+		// A hedged sibling in the same dir must NOT be picked up when only clean is named.
+		writeFileSync(join(root, 'hedged.feature'), HEDGED_FEATURE)
+		assert.deepEqual(checkFilePaths([clean]), [])
+	} finally {
+		rmSync(root, { recursive: true, force: true })
+	}
+})
+
+test('checkFilePaths flags a form violation in a named file', () => {
+	const root = mkdtempSync(join(tmpdir(), 'sdd-files-'))
+	try {
+		const hedged = join(root, 'hedged.feature')
+		writeFileSync(hedged, HEDGED_FEATURE)
+		const v = checkFilePaths([hedged])
+		assert.ok(v.some((m) => /non-boolean hedge/.test(m)))
+	} finally {
+		rmSync(root, { recursive: true, force: true })
+	}
+})
+
+test('checkFilePaths checks multiple named files', () => {
+	const root = mkdtempSync(join(tmpdir(), 'sdd-files-'))
+	try {
+		const clean = join(root, 'clean.feature')
+		const hedged = join(root, 'hedged.feature')
+		writeFileSync(clean, CLEAN_FEATURE)
+		writeFileSync(hedged, HEDGED_FEATURE)
+		const v = checkFilePaths([clean, hedged])
+		assert.ok(v.some((m) => /non-boolean hedge/.test(m)))
+		assert.equal(v.filter((m) => /non-boolean hedge/.test(m)).length, 1)
+	} finally {
+		rmSync(root, { recursive: true, force: true })
+	}
+})
+
+test('checkFilePaths fails closed on an unreadable path', () => {
+	const v = checkFilePaths([join(tmpdir(), 'sdd-does-not-exist-xyz.feature')])
+	assert.ok(v.some((m) => /cannot read file/.test(m)))
+})
+
+test('main --files returns 1 when no paths follow', () => {
+	assert.equal(main(['--files']), 1)
+})
+
+test('main --files returns 0 on a clean file and 1 on a violation', () => {
+	const root = mkdtempSync(join(tmpdir(), 'sdd-files-'))
+	try {
+		const clean = join(root, 'clean.feature')
+		const hedged = join(root, 'hedged.feature')
+		writeFileSync(clean, CLEAN_FEATURE)
+		writeFileSync(hedged, HEDGED_FEATURE)
+		assert.equal(main(['--files', clean]), 0)
+		assert.equal(main(['--files', hedged]), 1)
 	} finally {
 		rmSync(root, { recursive: true, force: true })
 	}
