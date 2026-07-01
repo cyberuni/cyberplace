@@ -43,8 +43,8 @@ count** maintained in the ledger.
   gateway), never synchronously.
 - **Sole writer of `strategy` lines; append-only; unratified.** You are the **only** writer of
   `strategy` lines in the durable `ledger.jsonl` (sibling of the root `spec.md`). The conductor
-  writes `report` / `correction` / `halt` to the combat log and self-asserted `gate` to the ledger;
-  producers and judges write nothing. The ledger is append-only (one JSON object per line, never in
+  writes `report` / `correction` / `halt` to the combat log and its run-start `kind: leash` block +
+  self-asserted `gate` to the ledger — never `strategy`; producers and judges write nothing. The ledger is append-only (one JSON object per line, never in
   `spec.md` frontmatter): you append a new line with the next `seq`, never editing or removing a
   prior one. Every strategy line carries your `handle` (`sdd-scanner`) and is **unratified**
   (`ratified: false`) until the Council rules; **unratified strategy never enters the corpus**.

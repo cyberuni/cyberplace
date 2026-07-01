@@ -63,15 +63,7 @@ const SPEC_TYPES = ['reference', 'behavioral']
 // Lifecycle frontmatter is root-spec.md-only (lifecycle-governance). A node README
 // carries `spec-type` and nothing else; any of these on a node fails closed —
 // including the retired schema fields, which must never reappear on a node.
-const NODE_FORBIDDEN_FIELDS = [
-	'status',
-	'project-path',
-	'approval',
-	'produced-by',
-	'aligned',
-	'spec-layout',
-	'strategy',
-]
+const NODE_FORBIDDEN_FIELDS = ['status', 'project-path', 'approval', 'produced-by', 'aligned', 'spec-layout', 'leash']
 
 function frontmatter(text: string): string[] {
 	const m = /^---\n([\s\S]*?)\n---/.exec(text)

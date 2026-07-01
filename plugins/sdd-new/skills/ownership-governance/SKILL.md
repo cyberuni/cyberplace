@@ -16,7 +16,7 @@ is in `sdd:gate-validation-governance`; the plan/ledger write split is in `sdd:c
 |---|---|---|
 | `status` | the gate skill (`spec-gate`) — on a human verdict, or to match a conductor self-assertion within leash | the conductor, any producer |
 | `project-path` | the **conductor** (at scaffold; `backfill-project-spec`) | producers, the gate skill |
-| run-level leash + approach (session-local; to `ledger.jsonl`, **not** spec.md frontmatter — the conductor's autonomy bar, `start-mission`) | the **conductor** (initial evaluation) | producers, the gate skill |
+| run-level leash + approach — the `kind: leash` ledger line (session-local; to `ledger.jsonl`, **not** spec.md frontmatter — the conductor's autonomy bar, `start-mission`) | the **conductor** (initial evaluation) | producers, the gate skill |
 | `approval` **self-assertion** (`verdict: approve`/`pause` + `by: agent`/none + `why`) | the **conductor** (synthesis only) | producers, the gate skill |
 | `approval` **human ratification** (`verdict: approve`/`reject` + `by: <name>`) | the gate skill (`spec-gate`), **in-session position only** | the conductor, any producer, any spawned delegate |
 | `<!-- open: -->` markers | the **conductor** | producers (they *emit gaps*, not markers) |
@@ -43,8 +43,8 @@ control frontmatter (`status`, `project-path`, `approval`, `produced-by`) or the
 resolution state. A required input it cannot supply or infer is returned as a `CONTENT_GAP` — the
 conductor turns it into an `<!-- open: -->` marker. Producers do not write markers directly.
 
-The **conductor** writes `<!-- open: -->` markers, the `produced-by` map, the run-level leash (to
-`ledger.jsonl`, session-local — there is no `aligned` or `strategy` spec.md field), and — when it
+The **conductor** writes `<!-- open: -->` markers, the `produced-by` map, the run-level leash (the
+`kind: leash` line to `ledger.jsonl`, session-local — not a spec.md frontmatter field), and — when it
 self-asserts a gate within the effective leash — the provisional `approval.<gate>` entry
 (`verdict: approve` + `by: agent` with the `why` derivation; a halt is `verdict: pause` with its
 `why` and no `by`). There is no `leash` field in the `approval` entry — the leash is the run-level

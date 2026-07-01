@@ -230,6 +230,15 @@ test('a retired schema field on a node fails closed', () => {
 	assert.ok(v.some((m) => /carries lifecycle field "spec-layout"/.test(m)))
 })
 
+test('a run-level leash frontmatter field on a node fails closed', () => {
+	// parseNode-level: proves `leash` is actually wired into NODE_FORBIDDEN_FIELDS via a real
+	// frontmatter scan (not just a hand-built fixture), then that checkNode flags it.
+	const n = parseNode('---\nspec-type: behavioral\nleash: auto-spec\n---\n\n## Use Cases\n')
+	assert.deepEqual(n.lifecycleFields, ['leash'])
+	const v = checkNode('mission/conductor', n, true)
+	assert.ok(v.some((m) => /carries lifecycle field "leash"/.test(m)))
+})
+
 // ── discovery ──
 
 test('discoverSpecDirs finds the project root; discoverNodeDirs finds README nodes', () => {

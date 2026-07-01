@@ -44,7 +44,7 @@ needs. `status` is the base schema;
 `project-path`, `approval`, and `produced-by` are the SDD-workflow additions. `project-path` records
 the repo-relative source dir the spec governs; the spec **location mode** (`colocated | hoisted |
 monorepo-member`) is *derived* from it (hoisted iff `project-path` is not the spec's own dir), never
-stored. There is **no `aligned`, `spec-layout`, or run-level `strategy` field** — sync is derived
+stored. There is **no `aligned`, `spec-layout`, or run-level `leash` field** — sync is derived
 (below), the organization strategy is declared in the body placement map, and the leash is
 session-local on the ledger/plan (the conductor's autonomy bar, `start-mission`).
 

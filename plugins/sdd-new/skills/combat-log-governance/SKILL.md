@@ -1,6 +1,6 @@
 ---
 name: combat-log-governance
-description: "Internal skill: the SDD combat-log contract — the two-face provenance record (current-state frontmatter plus the tracked combat log and the durable ledger), the report / correction / halt / gate / strategy entry shapes, per-entry handle + write-time ts under a safe-to-publish floor, the matchable cause enum, and write-ownership. Loaded by the conductor, spec-gate, and the doctrine-loop Scanner. Not triggered by users directly."
+description: "Internal skill: the SDD combat-log contract — the two-face provenance record (current-state frontmatter plus the tracked combat log and the durable ledger), the report / correction / halt / leash / gate / strategy entry shapes, per-entry handle + write-time ts under a safe-to-publish floor, the matchable cause enum, and write-ownership. Loaded by the conductor, spec-gate, and the doctrine-loop Scanner. Not triggered by users directly."
 user-invocable: false
 ---
 
@@ -18,7 +18,7 @@ The record has two complementary faces in two files: current-state in `spec.md` 
 | Face | Home | Shape | Mutability | Holds |
 |---|---|---|---|---|
 | **Current-state** | `spec.md` frontmatter | `produced-by` (map by role) + `approval` (map by gate) | **overwritten** — last write wins | the **standing** present: who produced each artifact, the latest CR's verdict per gate |
-| **Ledger** | `ledger.jsonl` (root sibling) | one JSON object per line, appended | **immutable** — appended, never edited | the durable **history**: every CR's `gate` verdict + `strategy`, in order |
+| **Ledger** | `ledger.jsonl` (root sibling) | one JSON object per line, appended | **immutable** — appended, never edited | the durable **history**: every CR's run-start `leash` block + `gate` verdict + `strategy`, in order |
 
 `approval` is **standing, not historical** — the one durable spec is flowed through by many CRs, and
 `spec.md` `approval` holds only the **latest** CR's verdict (overwritten each time). The durable
@@ -47,8 +47,8 @@ sibling. They are never the same file.
 
 One JSON object per line (JSON Lines). Every line carries a **CR-scoped `seq`** (append order
 *within its CR*, restarting per CR — never a global counter), a **write-time UTC `ts`**, an optional
-pseudonymous **`handle`**, and a `kind`. Five kinds, split by tier: `report` / `correction` / `halt`
-→ the combat log; `gate` / `strategy` → the ledger. Every line carries an optional `cr` (one ledger
+pseudonymous **`handle`**, and a `kind`. Six kinds, split by tier: `report` / `correction` / `halt`
+→ the combat log; `leash` / `gate` / `strategy` → the ledger. Every line carries an optional `cr` (one ledger
 now spans many CRs against the one durable spec; outer-loop `strategy` lines may omit it).
 
 **Safe-to-publish floor (committed-record rule).** The combat log is committed → every line is
@@ -140,6 +140,21 @@ doctrine loop reads only the committed log post-merge.
 - **`frozen`** — the suite files this verdict froze (spec-gate `approve` only), so the ledger answers
   *"what was frozen as of CR #34"* standalone — no git walk.
 
+### `leash` — the conductor's run-start autonomy block (ledger)
+
+The conductor's **initial strategy evaluation**, written once at run start: the run-level `leash`
+reach + the `approach[]` containment methods. It is the conductor's autonomy bar for the mission —
+**not** the Scanner's `strategy`, carries **no** `ratified` field, and is **never** counted as
+pending strategy. The write is owned by the **conductor** (`start-mission`).
+
+```jsonl
+{"seq": 49, "ts": "2026-07-01T08:31:12Z", "kind": "leash", "cr": "disambiguate-strategy-kind", "leash": "auto-spec", "by": "user", "blast": "medium", "approach": ["no-spike", "worktree"]}
+```
+
+`leash` — `auto-none | auto-spec | auto-all`; `by` — `derived | user`; `blast` — the assessed
+radius; `approach[]` — containment methods. The ceiling is not recorded (session-local). Pre-rename
+historical run-start blocks appear as `kind: strategy` and are grandfathered (append-only ledger).
+
 ### `strategy` — drafted strategy (ledger)
 
 The Scanner records drafted strategy; this contract defines the **shape**, the **write is owned by
@@ -159,6 +174,7 @@ Append-only; lines added with the next CR-scoped `seq`, never edited or deleted.
 | Writer | May append | To |
 |---|---|---|
 | **conductor** | `report`, `correction`, `halt` | the **combat log** (plan `*.log.jsonl`) |
+| **conductor** | run-start `leash` block (leash reach + `approach[]`) | the **ledger** |
 | **conductor** | self-asserted `gate` (`by: agent`) | the **ledger** |
 | **gate skill (`spec-gate`), in-session** | human-ratified `gate` (`by: <name>`) | the **ledger** |
 | **doctrine-loop Scanner** | `strategy` | the **ledger** |

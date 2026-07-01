@@ -35,7 +35,7 @@ own every rule below — never restate their schemas, only obey them headless.
   answers, and re-invokes you to resume. Do **not** auto-accept an unconverged grill result or guess
   past an ambiguity to avoid stopping.
 - **Self-assert within leash; emit a verdict packet and stop at every gate.** Derive the run-level
-  `strategy` leash at the start and re-check it at each gate against discovered state. Within leash and
+  `leash` block at the start and re-check its reach at each gate against discovered state. Within leash and
   clean (no judge failures, no open markers, and — at the impl gate — every frozen scenario's
   verification passing) **self-assert**: write `approval.<gate>: { verdict: approve, by: agent, why }`;
   the spec lands in the async review queue. Outside leash, or on any risky dimension, **stop** and emit
