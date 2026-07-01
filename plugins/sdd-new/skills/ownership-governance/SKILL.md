@@ -16,14 +16,14 @@ is in `sdd:gate-validation-governance`; the plan/ledger write split is in `sdd:c
 |---|---|---|
 | `status` | the gate skill (`spec-gate`) — on a human verdict, or to match a conductor self-assertion within leash | the conductor, any producer |
 | `project-path` | the **conductor** (at scaffold; `backfill-project-spec`) | producers, the gate skill |
-| run-level leash + approach — the `kind: leash` ledger line (session-local; to `ledger.jsonl`, **not** spec.md frontmatter — the conductor's autonomy bar, `start-mission`) | the **conductor** (initial evaluation) | producers, the gate skill |
+| run-level leash + approach — the `kind: leash` ledger line (session-local; to the conductor's own ledger shard, **not** spec.md frontmatter — the conductor's autonomy bar, `start-mission`) | the **conductor** (initial evaluation) | producers, the gate skill |
 | `approval` **self-assertion** (`verdict: approve`/`pause` + `by: agent`/none + `why`) | the **conductor** (synthesis only) | producers, the gate skill |
 | `approval` **human ratification** (`verdict: approve`/`reject` + `by: <name>`) | the gate skill (`spec-gate`), **in-session position only** | the conductor, any producer, any spawned delegate |
 | `<!-- open: -->` markers | the **conductor** | producers (they *emit gaps*, not markers) |
 | `produced-by` map | the **conductor** (records the resolved producer per role at production) | producers, judges, the gate skill |
 | contested-type → chosen-plugin state (`.agents/sdd/`) | the **conductor** (or `start-mission` for a contested artifact-type); **distinct from `produced-by`** | producers, judges, the gate skill |
 | combat-log `report` / `correction` / `halt` lines | the **conductor** (append-only, to the plan's `*.log.jsonl`) | producers, judges, the gate skill |
-| ledger `gate` line — self-asserted (`by: agent`) | the **conductor** (append-only, to `ledger.jsonl`) | producers, judges |
+| ledger `gate` line — self-asserted (`by: agent`) | the **conductor** (append-only, to its own ledger shard) | producers, judges |
 | ledger `gate` line — human-ratified (`by: <name>`) | the gate skill (`spec-gate`), **in-session position only** | the conductor, producers, judges |
 | ledger `strategy` lines | the doctrine-loop Scanner (append-only) | the conductor, producers, judges |
 | `spec.md` body + the `.feature` | the **spec-producer** | the conductor, judges, solution/impl producers |
@@ -31,10 +31,11 @@ is in `sdd:gate-validation-governance`; the plan/ledger write split is in `sdd:c
 | plan brief + `todos` | the **conductor** | producers, judges |
 | implementation + its verification | the **impl-producer** | the impl-judge (it *runs*, never authors) |
 
-Each appended `*.log.jsonl` / `ledger.jsonl` line is stamped with its writer's pseudonymous `handle`
+Each appended `*.log.jsonl` / ledger-shard line carries its writer's pseudonymous `handle`
 (`SDD_HANDLE` if set, else omitted — attribution falls back to the git commit author; **never**
-`user.email`, never a `git config` read) and a write-time UTC `ts`. The in-file `handle` / `by` is
-**advisory** — the git commit signature is the attestation (`sdd:combat-log-governance`).
+`user.email`, never a `git config` read); combat-log lines additionally carry a write-time UTC `ts`,
+while ledger lines carry none (`sdd:combat-log-governance`). The in-file `handle` / `by` is
+**advisory** — the git commit signature is the attestation.
 
 ## Producer write boundary
 
@@ -44,7 +45,7 @@ resolution state. A required input it cannot supply or infer is returned as a `C
 conductor turns it into an `<!-- open: -->` marker. Producers do not write markers directly.
 
 The **conductor** writes `<!-- open: -->` markers, the `produced-by` map, the run-level leash (the
-`kind: leash` line to `ledger.jsonl`, session-local — not a spec.md frontmatter field), and — when it
+`kind: leash` line to its own ledger shard, session-local — not a spec.md frontmatter field), and — when it
 self-asserts a gate within the effective leash — the provisional `approval.<gate>` entry
 (`verdict: approve` + `by: agent` with the `why` derivation; a halt is `verdict: pause` with its
 `why` and no `by`). There is no `leash` field in the `approval` entry — the leash is the run-level
@@ -74,9 +75,9 @@ its layer revert to `draft` — the gate/skill decides), never an in-place edit.
 rule (what freezing *means* as a state) is in `sdd:lifecycle-governance`.
 
 The freeze binds the **contract only** (`spec.md` + the `.feature`). The combat log (the plan's
-`*.log.jsonl`) and the durable `ledger.jsonl` are **exempt**: they are operational provenance, never
-frozen, and the conductor and Scanner keep appending within their boundaries above even while a file
-sits `@frozen`.
+`*.log.jsonl`) and the durable `ledger/` shards are **exempt**: they are operational provenance, never
+frozen, and the conductor and Scanner keep appending to their own shards within their boundaries above
+even while a file sits `@frozen`.
 
 A judge — spec-judge or impl-judge — must not modify `spec.md` or the `.feature`: it reports, it does
 not patch.

@@ -3,11 +3,11 @@ name: reshard-ledger
 status: active
 todos:
   - content: "Intake: scope (only durable ledger.jsonl; combat log already per-plan), scaffold brief"
-    status: in_progress
-  - content: "Explore/spec: re-open+revise scanner.feature strategy-append (own shard, drop global next-seq) + add anti-collision scenario; prose sync provenance-model/cr-concurrency/combat-log README+governance/ownership; ADR-0020; cold sdd-spec-judge"
-    status: pending
-  - content: "Spec gate: judge ALIGNED, re-freeze scanner.feature, ledger spec gate line (legacy file pre-migration)"
-    status: pending
+    status: completed
+  - content: "Explore/spec: re-open+revise scanner.feature strategy-append (own shard, drop global next-seq) + add anti-collision scenario; prose sync provenance-model/cr-concurrency/combat-log README+governance/ownership/gate-validation/scanner+gateway READMEs; ADR-0020; cold sdd-spec-judge ALIGNED 3/3"
+    status: completed
+  - content: "Spec gate: judge ALIGNED, re-froze scanner+spec-gate features, ledger spec gate line seq 55 (legacy file pre-migration)"
+    status: completed
   - content: "Deliver: check-spec-state.mts dir-glob read + tests; writer procedures in start-mission/doctrine-loop/sdd SKILLs (hash-per-session shard write); git mv ledgers into ledger/ dir; grep other ledger.jsonl refs"
     status: pending
   - content: "Impl gate: cold sdd-implementer per frozen scenario + concurrency smoke; pnpm verify + verify:specs-new green; impl gate line (new shard)"
@@ -60,9 +60,10 @@ inline (sdd:spec-producer), spec-judge cold `sdd:sdd-spec-judge`, impl-judge col
 two-branch merge smoke = no conflict; self-host check-spec-state exits clean over globbed shards.
 
 ## NEXT
-Explore/spec. Start by re-opening `doctrine/scanner/scanner.feature` (ratified in-session): revise the
-"strategy lands append-only in the one project ledger" scenario to append to the writer's own ledger
-**shard**, append-only, never edits prior — drop the global "next seq" phrasing. Add one anti-collision
-scenario (two concurrent writers → distinct shard files, no shared-file contention). Then prose-sync
-provenance-model.md (storage section + delete merge=union L164 + reconcile L179 ts→duration), write
-ADR-0020, spawn the cold sdd-spec-judge over the touched node.
+Deliver. Spec gate passed (seq 55, both features re-frozen). Now: (1) `check-spec-state.mts` — replace the
+single `ledger.jsonl` read (lines 296-297) with a glob of `ledger/*.jsonl` + legacy `ledger.jsonl`,
+concat, feed unchanged `parseLedgerGates`; add tests. (2) Writer-procedure SKILLs — start-mission,
+doctrine-loop, sdd (gateway), spec-gate: mint a 6-hex session hash once, write/glob the shard dir instead
+of `ledger.jsonl`. (3) Migration: `git mv` sdd + aces `ledger.jsonl` → `ledger/0000-legacy.jsonl`.
+(4) Grep for other `ledger.jsonl` path literals. Then cold sdd-implementer at the impl gate + concurrency
+smoke test; `pnpm verify` + `verify:specs-new` green; impl gate line to a NEW shard (no ts, dogfood).
