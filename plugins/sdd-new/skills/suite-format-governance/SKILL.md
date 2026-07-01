@@ -103,6 +103,9 @@ edit).
 
 - An **additive** scenario folds into a frozen file without unfreezing it — it widens the contract,
   cannot break existing impl, and **self-clears**.
+- A **pure move/rename** (`git mv`, zero content delta) **preserves the freeze** — a freeze protects
+  the scenario content, not the file's path, so relocating a frozen node is not a scenario edit and is
+  not gate-able (the freeze/unfreeze model lives in the SDD lifecycle bar).
 - A **narrowing or rewriting** edit **unfreezes** the file; at the gate that fires **Clearance**.
 
 Vocabulary is **freeze / unfreeze** — never lock/unlock (reserved for the concurrency layer). When

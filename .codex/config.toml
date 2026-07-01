@@ -1,0 +1,4 @@
+[mcp_servers.mcp_agent_mail]
+url = "http://127.0.0.1:8765/mcp/"
+startup_timeout_sec = 30
+bearer_token_env_var = "MCP_AGENT_MAIL_BEARER_TOKEN"
