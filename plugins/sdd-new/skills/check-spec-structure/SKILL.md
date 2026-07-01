@@ -8,7 +8,7 @@ metadata:
 
 # Check Spec Structure
 
-The concrete engine for **corpus/check-spec-structure** (`.agents/specs/sdd/corpus/check-spec-structure/`).
+The concrete engine for **spec-structure checking**.
 It audits the **internal node-shape** of one project spec and returns a finding set for the
 formation **Warden** — the **intra-spec** successor to the retired cross-spec `dedupe-specs`/`split-spec`
 tools, now that one project is **one spec**. It carries a self-contained `.mts` script (the repo's

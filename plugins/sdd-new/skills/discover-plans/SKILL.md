@@ -8,7 +8,7 @@ metadata:
 
 # Discover Plans
 
-The concrete engine for **intake/plan-discovery** (`.agents/specs/sdd/intake/plan-discovery/`). It
+The concrete engine for SDD **plan discovery**. It
 locates the **resumable missions** in a repo — the mission **plan briefs** under `.agents/plans` —
 and returns each one's CR ref, name, todo tally, and `## NEXT` resume lead, **without reading the
 rest of the body**, so a consumer (the **gateway**, on entry) can offer resume cheaply. It carries a

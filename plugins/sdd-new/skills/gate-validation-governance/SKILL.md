@@ -8,8 +8,8 @@ user-invocable: false
 
 What makes a spec's state legal, and how a gate records its verdict. The field schema and transitions
 are in `sdd:lifecycle-governance`; this skill is the legality layer on top of them. It carries **no
-leash** — the self-clear-vs-escalate bar that derives how far an agent may self-assert lives in the
-autonomy rubric (`.agents/specs/sdd/design/autonomy-rubric.md`), a hard floor + a three-dimension gradient.
+leash** — the self-clear-vs-escalate bar that derives how far an agent may self-assert is the
+conductor's autonomy bar (baked into `start-mission`), a hard floor + a three-dimension gradient.
 
 ## Legal-state tuples
 

@@ -8,11 +8,11 @@ metadata:
 
 # Concept Index
 
-The concrete engine for **corpus/concept-index** (`.agents/specs/sdd/corpus/concept-index/`). It scans
+The concrete engine for the **concept-index** step. It scans
 one spec corpus for every node's `concept:` frontmatter and renders the **by-concept view** —
 `concept → {its nodes across every folder}` — that re-unifies a cross-cutting concern the capability
-folder tree scatters (`.agents/specs/sdd/design/spec-structure.md`, the concept axis). It carries a
-self-contained `.mts` script (the repo's node-≥23.6 / no-deps convention).
+folder tree scatters (the concept axis: one concern enacted across several capability folders). It
+carries a self-contained `.mts` script (the repo's node-≥23.6 / no-deps convention).
 
 ## Run it
 
@@ -27,8 +27,8 @@ node "<skill>/scripts/concept-index.mts" --spec-dir <corpus> [--write | --check]
   no-drift guard for CI).
 
 The view is **pure derivation** from the `concept:` tags: rendering twice is byte-identical and a
-`--write` over a current block is a no-op. Each node is annotated by **facet kind** — `.agents/specs/sdd/design/` → rule,
-`acceptance/` → e2e, else `reference` / `behavior` / `index` from its `spec-type`.
+`--write` over a current block is a no-op. Each node is annotated by **facet kind** — a node under `design/` → rule,
+under `acceptance/` → e2e, else `reference` / `behavior` / `index` from its `spec-type`.
 
 ## Boundaries
 

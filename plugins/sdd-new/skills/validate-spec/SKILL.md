@@ -18,8 +18,8 @@ Load `sdd:lifecycle-governance` (status enum, transitions, the freeze state-tran
 `sdd:ownership-governance` (who may write `status` / `approval`),
 `sdd:gate-validation-governance` (legal-state tuples, per-node spec-type checks, derived sync —
 no stored flag, `approval` attribution). The `produced-by` and `ledger.jsonl` shapes the gate checks are in
-`.agents/specs/sdd/design/provenance-model.md`; the freeze model in `.agents/specs/sdd/design/lifecycle-model.md`; the
-self-clear-vs-escalate bar and the four-C floor in `.agents/specs/sdd/design/autonomy-rubric.md`.
+`sdd:combat-log-governance`; the freeze model in `sdd:lifecycle-governance`; the
+self-clear-vs-escalate bar and the four-C floor are the conductor's autonomy bar (`start-mission`).
 
 ## 1. Structural checks (deterministic, run first)
 
@@ -35,7 +35,7 @@ carrying a `.feature` or missing its `## Subject`, and a `behavioral` node missi
 **fail closed**; a descriptive node (no marker) raises no violation. If `node` is unavailable,
 perform the same checks by reading each README's frontmatter yourself.
 
-**Provenance structural checks** (`.agents/specs/sdd/design/provenance-model.md`). Read the touched files'
+**Provenance structural checks** (`sdd:combat-log-governance`). Read the touched files'
 `produced-by` frontmatter and the root's `ledger.jsonl`:
 
 - **Malformed `produced-by` entry** — a value that is not a well-formed plugin-qualified name
@@ -59,8 +59,8 @@ Resolve the **spec-judge** for each `artifact-types` (a plugin judge or the SDD 
 `sdd-spec-judge`) and **spawn it cold** over the touched node(s) — pass it `spec.md` + the
 `.feature` only (the solution stays out of its view). It grades against the spec-gate lens set
 **{oracle, builder, architect}**. Then take the judge's **contract-sync verdict** (derived at this
-gate, never stored) and **derive the leash** (the assessment in
-`.agents/specs/sdd/design/autonomy-rubric.md`) in-session. Collect the judge's `STATUS`,
+gate, never stored) and **derive the leash** (the conductor's autonomy bar,
+baked into `start-mission`) in-session. Collect the judge's `STATUS`,
 `ALIGNED`, failing scenarios, remaining `<!-- open: -->` markers, `OBSERVATIONS`, and the gate
 report. The judge is a **distinct cold actor** and never edits the artifact it grades.
 
@@ -79,7 +79,7 @@ node, never a marker grown into this spec).
   report so the human sees what they are deciding, then take the human verdict
   (`approve` / `change` / `reject`).
 
-**Hard-floor escalations at this gate** (`.agents/specs/sdd/design/autonomy-rubric.md`): **Clearance** — a
+**Hard-floor escalations at this gate** (the conductor's autonomy bar): **Clearance** — a
 narrowing (weakening or deleting an e2e scenario), escalated unless the CR pre-authorized it; and
 **Compatibility** — the change's semver class exceeds the authorized change-class ceiling.
 **Conflict resolution** cases (a contradiction inside the suite) are surfaced here but formally

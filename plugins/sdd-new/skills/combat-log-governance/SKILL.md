@@ -7,8 +7,8 @@ user-invocable: false
 # SDD Combat-Log Governance
 
 The durable, harness-agnostic record of a spec's missions — what was produced, what was judged, what
-was corrected, and the strategy distilled from it. This skill defines the **shape**; the model,
-three-tier rationale, and plan retirement live in `sdd:provenance-model` (`.agents/specs/sdd/design/provenance-model.md`).
+was corrected, and the strategy distilled from it. This skill defines the **shape**; the tracked
+deletion of a retired plan is the `plan-retirement` skill.
 
 ## Two faces, two homes
 

@@ -1,13 +1,12 @@
 # check-spec-structure
 
-Internal SDD skill — the concrete engine for the **corpus/check-spec-structure** spec node
-(`.agents/specs/sdd/corpus/check-spec-structure/`). Audits one project spec's internal node-shape
-and emits a finding set for the formation Warden: the intra-spec successor to the retired cross-spec
-`dedupe-specs`/`split-spec` tools, now that one project is one spec.
+Internal SDD skill — the concrete engine for **spec-structure checking**. Audits one project spec's
+internal node-shape and emits a finding set for the formation Warden: the intra-spec successor to the
+retired cross-spec `dedupe-specs`/`split-spec` tools, now that one project is one spec.
 
 ```bash
-node scripts/check-spec-structure.mts --spec-dir .agents/specs/sdd          # audit (TOON finding set)
-node scripts/check-spec-structure.mts --spec-dir .agents/specs/sdd --check  # CI guard (fails on blocking)
+node scripts/check-spec-structure.mts --spec-dir <corpus>          # audit (TOON finding set)
+node scripts/check-spec-structure.mts --spec-dir <corpus> --check  # CI guard (fails on blocking)
 ```
 
 Two deterministic checks — **untagged-node** (blocking: a spec-typed node with no `concept:`) and

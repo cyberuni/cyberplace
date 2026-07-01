@@ -8,7 +8,7 @@ metadata:
 
 # Discover Specs
 
-The concrete engine for **corpus/discovery** (`.agents/specs/sdd/corpus/discovery/`). It locates the
+The concrete engine for SDD **spec discovery**. It locates the
 project specs in a repo and returns each one's frontmatter — **without reading any spec body** — so a
 consumer (the **gateway**, corpus tooling) can route on `status` / `project-path` / `approval`
 cheaply. It carries a self-contained `.mts` script (the repo's node-≥23.6 / no-deps convention).

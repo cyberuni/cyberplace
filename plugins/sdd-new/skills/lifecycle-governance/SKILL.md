@@ -46,7 +46,7 @@ the repo-relative source dir the spec governs; the spec **location mode** (`colo
 monorepo-member`) is *derived* from it (hoisted iff `project-path` is not the spec's own dir), never
 stored. There is **no `aligned`, `spec-layout`, or run-level `strategy` field** — sync is derived
 (below), the organization strategy is declared in the body placement map, and the leash is
-session-local on the ledger/plan (`sdd:autonomy-rubric`).
+session-local on the ledger/plan (the conductor's autonomy bar, `start-mission`).
 
 **A file's artifact-type is resolved per file, never stored here.** Each file's artifact-type (the
 squad key) resolves its own squad against the project's registered plugins
@@ -131,8 +131,8 @@ excluded from the content the freeze protects; toggling it is not a scenario edi
 write constraint ("never write a frozen `.feature`") is in `sdd:ownership-governance`.
 
 - **The unfreeze trigger is risk, not phase.** *Narrowing or rewriting* a scenario unfreezes its
-  file (in explore or deliver alike) — at the gate that is **Clearance** (`sdd:autonomy-rubric` /
-  the autonomy bar), contract narrowed → escalate. An *additive* scenario never unfreezes its file:
+  file (in explore or deliver alike) — at the gate that is **Clearance** (the conductor's autonomy
+  bar, `start-mission`), contract narrowed → escalate. An *additive* scenario never unfreezes its file:
   it widens the contract, cannot break existing impl, and **self-clears** — folding into the frozen
   file under the conductor's authority, logged as a detail-adjustment.
 - **`spec.md` is kept in sync, never frozen** — the readable abstraction of the suite, free to be

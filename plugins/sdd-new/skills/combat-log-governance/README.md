@@ -7,6 +7,6 @@ the tracked combat log (in the plan) vs the durable ledger (root-spec sibling), 
 `ts`, the pseudonymous `handle`, the safe-to-publish floor, and the matchable `cause` enum.
 
 A fixed-universal SDD governance, invariant per role. Loaded by the conductor, validate-spec, and the
-doctrine-loop Scanner. The model + three-tier rationale + plan retirement live in
-`.agents/specs/sdd/design/provenance-model.md`; freeze/gating in `lifecycle-governance`; write-ownership in
-`ownership-governance`. Not triggered by users directly.
+doctrine-loop Scanner. The tracked deletion of a retired plan is the `plan-retirement` skill;
+freeze/gating in `lifecycle-governance`; write-ownership in `ownership-governance`. Not triggered by
+users directly.
