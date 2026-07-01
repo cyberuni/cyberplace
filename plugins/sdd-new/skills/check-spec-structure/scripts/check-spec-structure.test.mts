@@ -11,7 +11,7 @@ import {
 	hasBlocking,
 	main,
 	parseNodeFrontmatter,
-	scanCorpus,
+	scanProjectSpec,
 } from './check-spec-structure.mts'
 
 function mkCorpus(): string {
@@ -70,7 +70,7 @@ test('countScenarios counts Scenario lines only', () => {
 test('a spec-typed node missing a concept tag is flagged as an untagged orphan', () => {
 	const d = mkCorpus()
 	seedNode(d, 'corpus', 'lonely', { specType: 'behavioral', scenarios: 3 })
-	const findings = audit(scanCorpus(d), 40)
+	const findings = audit(scanProjectSpec(d), 40)
 	const untagged = findings.filter((f) => f.kind === 'untagged-node')
 	assert.equal(untagged.length, 1)
 	assert.match(untagged[0].node, /lonely/)
@@ -79,13 +79,13 @@ test('a spec-typed node missing a concept tag is flagged as an untagged orphan',
 test('a node carrying a concept tag raises no untagged finding', () => {
 	const d = mkCorpus()
 	seedNode(d, 'corpus', 'tagged', { specType: 'behavioral', concept: 'corpus-structure', scenarios: 3 })
-	assert.equal(checkUntagged(scanCorpus(d)).length, 0)
+	assert.equal(checkUntagged(scanProjectSpec(d)).length, 0)
 })
 
 test('a node whose suite exceeds the granularity threshold is flagged oversized', () => {
 	const d = mkCorpus()
 	seedNode(d, 'corpus', 'big', { specType: 'behavioral', concept: 'corpus-structure', scenarios: 12 })
-	const oversized = checkOversized(scanCorpus(d), 10)
+	const oversized = checkOversized(scanProjectSpec(d), 10)
 	assert.equal(oversized.length, 1)
 	assert.match(oversized[0].node, /big/)
 	assert.match(oversized[0].detail, /propose a sub-node split/)
@@ -94,14 +94,14 @@ test('a node whose suite exceeds the granularity threshold is flagged oversized'
 test('a node within the granularity threshold raises no oversized finding', () => {
 	const d = mkCorpus()
 	seedNode(d, 'corpus', 'small', { specType: 'behavioral', concept: 'corpus-structure', scenarios: 5 })
-	assert.equal(checkOversized(scanCorpus(d), 40).length, 0)
+	assert.equal(checkOversized(scanProjectSpec(d), 40).length, 0)
 })
 
-test('a structurally clean corpus produces no findings', () => {
+test('a structurally clean project-spec produces no findings', () => {
 	const d = mkCorpus()
 	seedNode(d, 'corpus', 'a', { specType: 'behavioral', concept: 'corpus-structure', scenarios: 3 })
 	seedNode(d, 'corpus', 'b', { specType: 'reference', concept: 'corpus-structure' })
-	assert.deepEqual(audit(scanCorpus(d), 40), [])
+	assert.deepEqual(audit(scanProjectSpec(d), 40), [])
 })
 
 // ── Severity ──
@@ -109,14 +109,14 @@ test('a structurally clean corpus produces no findings', () => {
 test('an untagged orphan is a blocking finding', () => {
 	const d = mkCorpus()
 	seedNode(d, 'corpus', 'lonely', { specType: 'behavioral', scenarios: 1 })
-	const f = checkUntagged(scanCorpus(d))[0]
+	const f = checkUntagged(scanProjectSpec(d))[0]
 	assert.equal(f.severity, 'blocking')
 })
 
 test('an oversized node is an advisory finding', () => {
 	const d = mkCorpus()
 	seedNode(d, 'corpus', 'big', { specType: 'behavioral', concept: 'corpus-structure', scenarios: 12 })
-	const f = checkOversized(scanCorpus(d), 10)[0]
+	const f = checkOversized(scanProjectSpec(d), 10)[0]
 	assert.equal(f.severity, 'advisory')
 })
 
@@ -137,7 +137,7 @@ test('check mode exits zero when only advisory findings exist', () => {
 	assert.equal(main(['--spec-dir', d, '--check', '--max-scenarios', '10']), 0)
 })
 
-test('check mode exits zero on a clean corpus', () => {
+test('check mode exits zero on a clean project-spec', () => {
 	const d = mkCorpus()
 	seedNode(d, 'corpus', 'a', { specType: 'behavioral', concept: 'corpus-structure', scenarios: 3 })
 	assert.equal(main(['--spec-dir', d, '--check']), 0)
@@ -168,5 +168,5 @@ test('frontmatter only — node body does not change the deterministic findings'
 		scenarios: 3,
 		body: 'OMEGA different body',
 	})
-	assert.deepEqual(audit(scanCorpus(d1), 40), audit(scanCorpus(d2), 40))
+	assert.deepEqual(audit(scanProjectSpec(d1), 40), audit(scanProjectSpec(d2), 40))
 })

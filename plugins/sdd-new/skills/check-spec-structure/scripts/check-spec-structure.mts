@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-// check-spec-structure — corpus/check-spec-structure's concrete engine. Audits the internal
+// check-spec-structure — project-spec/check-spec-structure's concrete engine. Audits the internal
 // node-shape of one project spec and emits a finding set for the formation Warden: the intra-spec
 // successor to the retired cross-spec dedupe/split tools, now that one project is one spec
-// (.agents/specs/sdd/corpus/check-spec-structure/README.md).
+// (.agents/specs/sdd/project-spec/check-spec-structure/README.md).
 //
 // Two deterministic checks, each with a severity:
 //   - untagged-node (blocking)  — a spec-typed node README with no `concept:` tag, so it never
@@ -25,7 +25,7 @@ export type FindingKind = 'untagged-node' | 'oversized-node'
 export type Severity = 'blocking' | 'advisory'
 
 export interface NodeRecord {
-	/** Path relative to the corpus dir (POSIX). */
+	/** Path relative to the spec directory (POSIX). */
 	relPath: string
 	/** The top-level folder — the capability. */
 	capability: string
@@ -110,27 +110,27 @@ function displayPath(relPath: string): string {
 	return p.endsWith('/README.md') ? p.slice(0, -'README.md'.length) : p
 }
 
-// ── Scan the corpus — every node carrying a spec-type or concept tag ──
-export function scanCorpus(corpusDir: string): NodeRecord[] {
+// ── Scan the project-spec — every node carrying a spec-type or concept tag ──
+export function scanProjectSpec(specDir: string): NodeRecord[] {
 	const records: NodeRecord[] = []
-	walk(corpusDir, corpusDir, records)
+	walk(specDir, specDir, records)
 	return records.sort((a, b) => a.display.localeCompare(b.display))
 }
 
-function walk(dir: string, corpusDir: string, out: NodeRecord[]): void {
+function walk(dir: string, specDir: string, out: NodeRecord[]): void {
 	const entries = readdirSync(dir, { withFileTypes: true })
 	for (const entry of entries) {
 		if (entry.name.startsWith('.') || SKIP_DIRS.has(entry.name)) continue
 		const full = join(dir, entry.name)
 		if (entry.isDirectory()) {
-			walk(full, corpusDir, out)
+			walk(full, specDir, out)
 		} else if (entry.name === 'README.md') {
 			const fm = parseNodeFrontmatter(readFileSync(full, 'utf8'))
 			if (fm.specType === undefined && fm.concepts.length === 0) continue
 			const features = entries.filter((e) => e.isFile() && e.name.endsWith('.feature'))
 			const hasFeature = features.length > 0
 			const scenarioCount = hasFeature ? countScenarios(readFileSync(join(dir, features[0].name), 'utf8')) : 0
-			const relPath = full.slice(corpusDir.length + 1).replace(/\\/g, '/')
+			const relPath = full.slice(specDir.length + 1).replace(/\\/g, '/')
 			out.push({
 				relPath,
 				capability: relPath.split('/')[0],
@@ -203,7 +203,7 @@ export function main(argv: string[]): number {
 		else if (a === '--max-scenarios') maxScenarios = Number(argv[++i] ?? DEFAULT_MAX_SCENARIOS)
 		else if (a === '--format') format = (argv[++i] as 'toon' | 'json') ?? 'toon'
 	}
-	const findings = audit(scanCorpus(specDir), maxScenarios)
+	const findings = audit(scanProjectSpec(specDir), maxScenarios)
 	if (mode === 'check') {
 		if (hasBlocking(findings)) {
 			process.stderr.write(

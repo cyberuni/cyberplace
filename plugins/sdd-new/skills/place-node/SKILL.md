@@ -1,6 +1,6 @@
 ---
 name: place-node
-description: "Internal skill: corpus/place-node's concrete engine. A self-contained .mts script that, given a new node's concept (and optional name), suggests a provisional capability home (derived from where that concept's facets already sit) and surfaces possible duplicates by name — so explore places a node in one lookup instead of holding the tree in its head. Read-only and advisory; placement is finalized at handoff. Not triggered by users directly."
+description: "Internal skill: project-spec/place-node's concrete engine. A self-contained .mts script that, given a new node's concept (and optional name), suggests a provisional capability home (derived from where that concept's facets already sit) and surfaces possible duplicates by name — so explore places a node in one lookup instead of holding the tree in its head. Read-only and advisory; placement is finalized at handoff. Not triggered by users directly."
 user-invocable: false
 metadata:
   internal: true
@@ -10,14 +10,14 @@ metadata:
 
 The concrete engine for the **place-node** step. Given a new
 node's `concept` (and optional name), it suggests a **provisional** capability home and catches possible
-duplicates, so explore places a node without holding the whole tree in its head (it reads the corpus's
+duplicates, so explore places a node without holding the whole tree in its head (it reads the project-spec's
 declared placement map + capability layout). Self-contained `.mts` (the repo's node-≥23.6 / no-deps
 convention).
 
 ## Run it
 
 ```bash
-node "<skill>/scripts/place-node.mts" --spec-dir <corpus> --concept <c> [--name <n>]
+node "<skill>/scripts/place-node.mts" --spec-dir <spec> --concept <c> [--name <n>]
 ```
 
 - `--concept` — suggests the capability folders where that concept's facets already sit, ranked by count
@@ -25,7 +25,7 @@ node "<skill>/scripts/place-node.mts" --spec-dir <corpus> --concept <c> [--name 
   capability, finalized at handoff.
 - `--name` — surfaces existing nodes whose path overlaps the name ("belongs near X" duplicate-catch).
 
-The home is **derived** from the corpus's own `concept:` tags, never a stored routing list (the
+The home is **derived** from the project-spec's own `concept:` tags, never a stored routing list (the
 `corpus/discovery` no-drift rule). For genuinely contested overlaps, the human tie-break rules live in
 the placement-map routing table (root `spec.md`), which this tool points to rather than re-deriving.
 

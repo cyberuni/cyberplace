@@ -14,7 +14,7 @@ import {
 	parseFrontmatter,
 	parseScalarOrFlow,
 	renderSection,
-	scanCorpus,
+	scanProjectSpec,
 } from './concept-index.mts'
 
 // Write a node md file (relative to dir) with the given frontmatter body.
@@ -74,14 +74,14 @@ test('facetKind derives from location then spec-type', () => {
 
 // ── scan + group ──
 
-test('scanCorpus collects only concept-tagged nodes and omits the rest', () => {
+test('scanProjectSpec collects only concept-tagged nodes and omits the rest', () => {
 	const dir = mkCorpus()
 	try {
 		seed(dir, 'mission/resolution/README.md', 'spec-type: behavioral\nconcept: resolution')
 		seed(dir, 'design/governance-resolution.md', 'concept: [governance, resolution]')
 		seed(dir, 'mission/README.md', '') // no frontmatter → omitted
 		seed(dir, 'spec.md', 'status: approved') // no concept → omitted
-		const records = scanCorpus(dir)
+		const records = scanProjectSpec(dir)
 		assert.equal(records.length, 2)
 		assert.ok(records.some((r) => r.relPath === 'mission/resolution/README.md'))
 		assert.ok(records.some((r) => r.relPath === 'design/governance-resolution.md'))
@@ -94,7 +94,7 @@ test('groupByConcept places a multi-tagged node under each concept', () => {
 	const dir = mkCorpus()
 	try {
 		seed(dir, 'design/governance-resolution.md', 'concept: [governance, resolution]')
-		const grouped = groupByConcept(scanCorpus(dir))
+		const grouped = groupByConcept(scanProjectSpec(dir))
 		assert.ok(grouped.has('governance'))
 		assert.ok(grouped.has('resolution'))
 	} finally {
@@ -108,7 +108,7 @@ test('group order is deterministic: concepts and nodes sorted', () => {
 		seed(dir, 'mission/resolution/README.md', 'spec-type: behavioral\nconcept: resolution')
 		seed(dir, 'design/autonomy-rubric.md', 'concept: autonomy')
 		seed(dir, 'acceptance/README.md', 'spec-type: behavioral\nconcept: resolution')
-		const grouped = groupByConcept(scanCorpus(dir))
+		const grouped = groupByConcept(scanProjectSpec(dir))
 		assert.deepEqual([...grouped.keys()], ['autonomy', 'resolution'])
 		// acceptance/ sorts before mission/resolution/ by display path
 		assert.deepEqual(
@@ -126,8 +126,8 @@ test('renderSection is byte-identical across two runs', () => {
 	const dir = mkCorpus()
 	try {
 		seed(dir, 'mission/resolution/README.md', 'spec-type: behavioral\nconcept: resolution', '# sentinel-BODY')
-		const a = renderSection(groupByConcept(scanCorpus(dir)))
-		const b = renderSection(groupByConcept(scanCorpus(dir)))
+		const a = renderSection(groupByConcept(scanProjectSpec(dir)))
+		const b = renderSection(groupByConcept(scanProjectSpec(dir)))
 		assert.equal(a, b)
 		assert.ok(!a.includes('sentinel-BODY'))
 	} finally {

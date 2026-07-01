@@ -1,6 +1,6 @@
 ---
 name: check-spec-structure
-description: "Internal skill: corpus/check-spec-structure's concrete engine. A self-contained .mts script that audits one project spec's internal node-shape — untagged-node orphans (blocking) and oversized nodes (advisory) — and emits a finding set for the formation Warden. The intra-spec successor to the retired cross-spec dedupe/split tools; read-only and advisory. Not triggered by users directly."
+description: "Internal skill: project-spec/check-spec-structure's concrete engine. A self-contained .mts script that audits one project spec's internal node-shape — untagged-node orphans (blocking) and oversized nodes (advisory) — and emits a finding set for the formation Warden. The intra-spec successor to the retired cross-spec dedupe/split tools; read-only and advisory. Not triggered by users directly."
 user-invocable: false
 metadata:
   internal: true
@@ -30,7 +30,7 @@ alignment) and `concept-index` (the by-concept view).
 ## Run the scan
 
 ```bash
-node "<skill>/scripts/check-spec-structure.mts" [--spec-dir <corpus>] [--check] [--max-scenarios <n>] [--format toon|json]
+node "<skill>/scripts/check-spec-structure.mts" [--spec-dir <spec>] [--check] [--max-scenarios <n>] [--format toon|json]
 ```
 
 - Default `--spec-dir` is the current directory; default `--format` is **TOON** (the token-efficient
@@ -39,7 +39,7 @@ node "<skill>/scripts/check-spec-structure.mts" [--spec-dir <corpus>] [--check] 
   each finding naming the node. `--format json` emits the same findings as a flat JSON array.
 - **`--check`** (CI guard) exits **non-zero** iff a **blocking** finding exists and **writes
   nothing**; advisory-only findings still exit zero. Wire it after `concept-index --check` in
-  `verify:specs-new` so the corpus stays structurally clean.
+  `verify:specs-new` so the project-spec stays structurally clean.
 
 When `node` is absent, an agent performs the same derivation by hand: for each `<cap>/<unit>/README.md`
 with a `spec-type`, flag it untagged if it carries no `concept:`; for each with a sibling `.feature`,
