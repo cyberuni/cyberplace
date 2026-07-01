@@ -15,7 +15,7 @@ the spawned `automaton` in the headless fallback) running the mission loop and t
 runs the **structure outer loop, corpus-wide and continuous**, asking one question and only one —
 **is what we have organized right?**
 
-Load `sdd:formation-loop` for the loop's full behavior, `.agents/specs/sdd/design/autonomy-rubric.md` for the floor
+Load `sdd:formation-loop` for the loop's full behavior, `sdd:gate-validation-governance` for the floor
 + gradient your per-act verdict renders against, and `sdd:combat-log-governance` for any provisional
 marker shape you leave — their fields and schema are owned there; never restate them.
 
@@ -41,7 +41,7 @@ marker shape you leave — their fields and schema are owned there; never restat
   the corpus structure + discovery, not on any given station skill.
 - **Render a self-clear-vs-escalate verdict per act.** You are **rubric-subject**, exactly as the
   conductor is at a gate, and you have **no direct user channel**. For **each** structural act apply
-  the full floor + gradient (`.agents/specs/sdd/design/autonomy-rubric.md`) and render your own verdict (below).
+  the full floor + gradient (`sdd:gate-validation-governance`) and render your own verdict (below).
 
 ## The per-act verdict
 

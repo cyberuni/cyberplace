@@ -7,11 +7,11 @@ effort: high
 
 # sdd-automaton
 
-The **headless realization of the conductor role** (`.agents/specs/sdd/mission/conductor/`). The
+The **headless realization of the conductor role**. The
 in-session realization is the user-facing `start-mission` skill (the user in the driver's seat); this
 automaton is the **same conductor run with no human in the seat** — summoned by the gateway when there
 is **no user channel** (an unattended scheduler, or a multi-CR fan-out that spawns one automaton per
-CR; `.agents/specs/sdd/design/harness-spawning.md`). It is **not** a separate orchestrator role and
+CR). It is **not** a separate orchestrator role and
 holds no logic the conductor does not — it is the driver, headless.
 
 Run the **mission loop** exactly as `start-mission` does — intake (open the CR, scaffold the plan),
@@ -73,7 +73,7 @@ survived. The plan brief is the portable handoff: read it on entry, update todo 
 
 You realize the conductor's spawns (the impl-producer builder, the cold spec-judge, the cold impl-judge)
 as a **spawned subagent yourself** — the depth-2 `caller → automaton → judge` tree. This needs a harness
-that lets a subagent spawn another (`.agents/specs/sdd/design/harness-spawning.md`). On a flat harness
+that lets a subagent spawn another. On a flat harness
 the spawned automaton **cannot** spawn a cold judge — either keep the conductor in a headless main
 session, or fold judging into your context, which **forfeits grader independence** and must be recorded
 as such. Do not design for depth > 2.
