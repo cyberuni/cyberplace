@@ -8,11 +8,11 @@ todos:
     status: completed
   - content: "Spec gate: judge ALIGNED, re-froze scanner+spec-gate features, ledger spec gate line seq 55 (legacy file pre-migration)"
     status: completed
-  - content: "Deliver: check-spec-state.mts dir-glob read + tests; writer procedures in start-mission/doctrine-loop/sdd SKILLs (hash-per-session shard write); git mv ledgers into ledger/ dir; grep other ledger.jsonl refs"
-    status: pending
-  - content: "Impl gate: cold sdd-implementer per frozen scenario + concurrency smoke; pnpm verify + verify:specs-new green; impl gate line (new shard)"
-    status: pending
-  - content: "Handoff: distill, follow-up CR for machine-invariant effort metric (stranded line 179)"
+  - content: "Deliver: check-spec-state.mts readLedgerText dir-glob + 3 tests (39/39); writer procedures in start-mission/spec-gate/doctrine-loop/sdd SKILLs + sdd-scanner/automaton agents (hash-per-session shard write, no ts); git mv sdd+aces ledgers into ledger/0000-legacy.jsonl; ADR-0020"
+    status: completed
+  - content: "Impl gate: cold sdd-implementer PASS 3/3 frozen scenarios, no blocker; real git-merge concurrency smoke = no conflict; pnpm verify 13/13 + verify:specs-new 264 green. AWAITING human ratification (impl gate beyond auto-spec leash)"
+    status: in_progress
+  - content: "Handoff: record impl gate line to new shard on ratify; distill; follow-up CR for machine-invariant effort metric (stranded line 179)"
     status: pending
 ---
 

@@ -66,11 +66,13 @@ the categorical class (the safe-to-publish floor, `sdd:combat-log-governance`).
 
 ## Where strategy lands
 
-Every `strategy` entry lands in the **one project ledger** (`ledger.jsonl`, sibling of the root
-`spec.md`) — there is no per-spec log to route to under the project-spec model. The Scanner's
-`handle` is `sdd-scanner`. Every entry is **unratified** (`ratified: false`) and carries its
-**driving evidence** (the distilled `cause` recurrence that drove it), per the shape in
-`sdd:combat-log-governance`. The ledger is append-only — the next `seq`, never an edit.
+Every `strategy` entry lands in the **one project ledger** — the `ledger/` directory sibling of the
+root `spec.md` — written to the **Scanner's own shard** (`strategy.<hash>.jsonl`; mint `<hash>` as 6
+random hex once per session), so two concurrent Scanner runs write distinct shards and never contend.
+There is no per-spec log to route to under the project-spec model. The Scanner's `handle` is
+`sdd-scanner`. Every entry is **unratified** (`ratified: false`) and carries its **driving evidence**
+(the distilled `cause` recurrence that drove it), per the shape in `sdd:combat-log-governance`. The
+shard is append-only — the next `seq` within it, never an edit; ledger lines carry **no `ts`**.
 
 ## Surfacing and ratification
 
