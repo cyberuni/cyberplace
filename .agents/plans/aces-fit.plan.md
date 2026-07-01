@@ -6,14 +6,14 @@ todos:
     content: "Open the CR, scaffold this plan, emit the run-level strategy (aces ledger seq 3). DONE."
     status: in_progress
   - id: explore-spec
-    content: "Explore + spec gate — add design/fit.md (the FIT model) + a decisions ADR + glossary 'fit' term; revise frozen spec-validator.feature (conditional near-miss: strong required / partial passes; missing-fit CONTENT_GAP; wrong-squad recused) + scenario-writer.feature (classify-first; strong-scoped near-miss; partial no fabricated near-miss; wrong-squad recuse) + READMEs; declare the **Fit:** Use Cases convention. Cold sdd:aces-spec-validator ALIGNED, re-freeze, ledger spec-gate line."
-    status: pending
+    content: "Explore + spec gate — DONE. Added design/fit.md + ADR 0001 + glossary fit term; made spec-validator.feature + scenario-writer.feature fit-aware (ratified re-open); READMEs + **Fit:** convention synced. Cold aces-spec-validator ALIGNED 3/3 on both units; aces ledger seq 4; commit 1e08a98."
+    status: completed
   - id: deliver-impl
-    content: "Deliver + impl gate — NEW skills/aces-fit/SKILL.md governance; make aces-builder-spec (conditional trigger-context/balance + load aces-fit) + aces-spec-validator (step-0 read tier, conditional, wrong-squad recuse) + aces-scenario-writer (Step 1.5 classify, gate trigger bullets, wrong-squad recuse, write Fit line) fit-aware; readme 'When ACES fits' section. Cold aces impl-judge; ledger impl-gate line; verify:specs-new green; audit."
-    status: pending
+    content: "Deliver + impl gate — DONE. New aces-fit governance; aces-builder-spec + aces-spec-validator + aces-scenario-writer made fit-aware; readme 'When ACES fits'. Cold sdd-implementer: all 9 frozen scenarios PASS, false-fail fully removed, IMPLEMENTATION_PASS true; aces ledger seq 5; commit 81ba2ba. verify:specs-new green 206/206; audit clean (1 expected internal-governance warning)."
+    status: completed
   - id: handoff
-    content: "Handoff — pnpm verify + verify:specs-new green; commits on next; the next→main PR (owner's call) carries CR-1 + CR-2 + the ACES rejudge work."
-    status: pending
+    content: "Handoff — DONE. commits 5980374→81ba2ba on next; the next→main PR (owner's call) carries CR-1 + CR-2 + the ACES rejudge work."
+    status: completed
 isProject: false
 ---
 
@@ -53,7 +53,10 @@ subject spec.md `## Use Cases`.
 
 ## NEXT — resume here
 
-**▶ NEXT ACTION — `explore-spec`.** Author `design/fit.md` (the model above) + a `design/decisions/`
-ADR + a glossary `fit` term. Revise the two frozen role features (spec-validator + scenario-writer)
-to make trigger-balance conditional and add the classify-first / recuse behaviors, syncing READMEs.
-Cold `sdd:aces-spec-validator` ALIGNED, re-freeze, aces-ledger spec-gate line. Then `deliver-impl`.
+**▶ MISSION COMPLETE (in-tree).** The ACES fit gate is specced (design/fit.md + ADR + fit-aware role
+contracts, cold aces-spec-validator ALIGNED, aces ledger 4) and implemented (aces-fit governance +
+tier-conditional bar + fit-aware validator/scenario-writer + readme, cold sdd-implementer all 9
+scenarios PASS, aces ledger 5). The **false-fail is fixed**: a partial subject with no near-miss now
+passes; wrong-squad subjects recuse via the CR-1 conductor seam. `verify:specs-new` green (206/206).
+Commits `5980374`→`81ba2ba` on `next`. **Both CRs done** — the `next → main` PR (owner's call)
+carries CR-1 + CR-2 + the earlier ACES rejudge + recuse-fallback work.
