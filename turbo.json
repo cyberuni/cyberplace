@@ -2,6 +2,18 @@
 	"$schema": "https://turbo.build/schema.json",
 	"ui": "tui",
 	"tasks": {
+		"//#check": {
+			"cache": false,
+			"outputs": []
+		},
+		"//#knip": {
+			"cache": false,
+			"outputs": []
+		},
+		"//#verify:specs": {
+			"cache": false,
+			"outputs": []
+		},
 		"build": {
 			"outputs": ["dist/**"],
 			"dependsOn": ["^build"]
@@ -18,7 +30,7 @@
 			"persistent": true
 		},
 		"verify": {
-			"dependsOn": ["build", "typecheck", "lint", "test"]
+			"dependsOn": ["//#check", "//#knip", "//#verify:specs", "build", "typecheck", "lint", "test"]
 		}
 	}
 }

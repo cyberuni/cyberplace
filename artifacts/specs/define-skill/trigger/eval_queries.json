@@ -1,0 +1,52 @@
+[
+	{
+		"id": "t001",
+		"query": "I want a skill that formats our changelog entries",
+		"should_trigger": true
+	},
+	{
+		"id": "t002",
+		"query": "We have a documented multi-step release process — turn it into a reusable skill",
+		"should_trigger": true
+	},
+	{
+		"id": "t003",
+		"query": "Here's a SKILL.md with a weak description and missing steps — help me fill out its definition",
+		"should_trigger": true
+	},
+	{
+		"id": "n001",
+		"query": "Create a delegated code-reviewer agent I can fan out to as a subagent",
+		"should_trigger": false
+	},
+	{
+		"id": "n002",
+		"query": "I want a skill that makes the model adopt a senior-security-reviewer stance",
+		"should_trigger": false
+	},
+	{
+		"id": "n003",
+		"query": "Write a skill that's just criteria other skills load on demand but never execute as steps",
+		"should_trigger": false
+	},
+	{
+		"id": "n004",
+		"query": "Turn what we just did in this session into a skill",
+		"should_trigger": false
+	},
+	{
+		"id": "n005",
+		"query": "Run the evals for a skill I already have",
+		"should_trigger": false
+	},
+	{
+		"id": "n006",
+		"query": "Capture a failure I just saw as a new eval case for my skill",
+		"should_trigger": false
+	},
+	{
+		"id": "n007",
+		"query": "Why are my skill's golden-set cases failing, and how do I fix them?",
+		"should_trigger": false
+	}
+]

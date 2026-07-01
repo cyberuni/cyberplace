@@ -1,0 +1,19 @@
+{
+	"$schema": "https://raw.githubusercontent.com/cyberuni/universal-plugin/refs/heads/main/schema/v1.json",
+	"name": "stripe",
+	"description": "Stripe payment integration development with best practices, API upgrade guidance, and test environment access.",
+	"author": { "name": "Stripe" },
+	"homepage": "https://stripe.com",
+	"keywords": ["payments", "stripe", "api"],
+	"skills": "./skills/",
+	"mcpServers": "./.mcp.json",
+	"rules": "./rules/",
+	"vendorExtensions": {
+		"cursor": {
+			"publisher": "stripe",
+			"logo": "./assets/logo.png",
+			"category": "productivity",
+			"tags": ["payments", "api", "fintech"]
+		}
+	}
+}

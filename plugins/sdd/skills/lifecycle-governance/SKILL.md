@@ -1,0 +1,119 @@
+---
+name: lifecycle-governance
+description: "Internal skill: the SDD spec lifecycle contract — frontmatter schema, status enum, status transitions, open-marker gating, and the freeze state-transition. Loaded by sdd, validate-spec, create-spec, sdd-operator, and sdd-spec-judge — not triggered by users directly."
+user-invocable: false
+---
+
+# SDD Lifecycle Governance
+
+The state machine a `spec.md` moves through, and the frontmatter that records it. This skill is the canonical home for the lifecycle; consumers load it instead of restating it. Write-ownership of these fields lives in `ownership-governance`; legality of field combinations and gate verdicts live in `gate-validation-governance`.
+
+## Frontmatter schema
+
+`spec.md` carries YAML frontmatter:
+
+```yaml
+---
+status: draft           # draft | approved | implemented | deprecated
+type: feature           # project | feature; omit for an untyped legacy spec
+domain-type: skill      # artifact-type axis for plugin resolution: e.g. skill | subagent | command | agents-section; omit for a plain-code domain
+aligned: false          # true once the current layer's artifacts are synced
+priority: 1             # optional integer; 1 = highest (relative within a set); omit = unprioritized
+blocked-by:             # list of spec slugs; omit or empty if none
+  - <spec-slug>
+subtasks:               # child feature slugs a project or feature owns (single-parent; features nest)
+  - <spec-slug>
+strategy:               # run-level initial evaluation (leash + approach); see sdd-stop-provenance
+  leash: auto-all       # first-evaluated reach: auto-none | auto-spec | auto-all
+  by: derived           # derived | user
+  approach: [no-spike, mocks, worktree]   # blast-radius-containment choices
+approval:               # per-gate verdict; see gate-validation-governance
+  spec:                 # verdict: approve | pause | reject
+    verdict: approve
+    by: agent           # by: agent (self-asserted, provisional) | <human name> (ratified); omitted on pause
+    why:                # four-dimension derivation (agent self-assertion or pause)
+      reversibility: <safe|risky — reason>
+      blast-radius:  <safe|risky — reason>
+      novelty:       <safe|risky — reason>
+      confidence:    <safe|risky — reason>
+  impl: { verdict: approve, by: <human name> }   # ratified — no why needed
+domain-plugin:          # map: domain -> owning plugin, when a domain is contested
+  <domain>: <plugin>
+---
+```
+
+Open input is recorded in the body as `<!-- open: ... -->` markers, not in frontmatter.
+
+`status` and `blocked-by` are the base schema; `priority` is an optional ranking hint (an integer, `1` = highest, relative within a set; omit to leave a spec unprioritized). `type`, `domain-type`, `subtasks`, `aligned`, `strategy`, `approval`, and `domain-plugin` are the SDD-workflow additions.
+
+**`domain-type` is the resolution axis, distinct from the folder name and from `type`.** The spec **folder slug** (`governance-composition`, `sdd-operator`) is the domain *instance* — free-form, one per spec. `type` is `project | feature` (composition shape). `domain-type` is the *kind of artifact* the spec produces, and it is the **only** field a plugin's `domains[]` is matched against during delegate resolution (see `plugin-contract-governance`). A spec whose `domain-type` is one of a registered plugin's `domains[]` resolves that plugin's production-chain roles; an absent or unmatched `domain-type` degenerates every role to the SDD default. Plain-code specs omit it. `domain-type` is set once at scaffold time and is not a free-for-all string — it draws from the artifact-type vocabulary the project's registered plugins cover (for agent-configuration work: `skill | subagent | command | agents-section`).
+
+An `approval.<gate>` with `verdict: approve` and `by: agent` is a **provisional self-assertion** carrying its four-dimension `why`; `by: <human name>` is a **ratification**. A `verdict: pause` records why the agent halted (its `why`, no `by`); a `verdict: reject` is a scope-kill or Oracle-revert. The set of specs with any `verdict: approve` + `by: agent` is the human review queue; specs with a `verdict: pause` form the awaiting-input queue. The leash is run-level (the `strategy` block), not per-gate; its derivation and who writes each are defined in `gate-validation-governance`.
+
+## Spec typing and composition
+
+A spec carries a `type` and projects own their features:
+
+| `type` | Meaning |
+|---|---|
+| `project` | A top-level spec: a plugin/project, or a standalone model. Has no parent. Owns features via `subtasks`. |
+| `feature` | A unit of work belonging to exactly one parent (a project or another feature). Owns its detailed behavior; may itself own child features via `subtasks` (features nest). |
+
+- **`subtasks` lists children, parent is derived.** A `project` **or** a `feature` declares `subtasks` — the child feature slugs it owns (features nest under features). A child does not name its parent; the parent is whichever spec lists it, mirroring how `blocks` is derived from `blocked-by`. This keeps one source of truth.
+- **Single parent (tree invariant).** A slug appears in **at most one** spec's `subtasks`. Each `feature` is owned by exactly one parent (a project or a feature); an unparented non-`deprecated` `feature` is an orphan. This keeps composition a tree, not a tangle.
+- **Composition is orthogonal to dependency.** `subtasks` is containment (parent → feature); `blocked-by` is execution-order dependency. A feature may be `blocked-by` specs outside its parent. The two graphs are maintained and rendered separately.
+- **A composition node advances by rollup.** A spec that declares `subtasks` and owns **no `.feature` of its own** carries no behavior contract to judge — it is **exempt from the `.feature` requirement** at the gates. Its spec gate judges the composition (children present and correctly wired); it may reach `implemented` only once **every non-`deprecated` child is `implemented`** (`approved` is **not** rolled up). Enforced by `gate-validation-governance` / `check-spec-state.mts`.
+
+## Spec discovery
+
+A spec is defined by its **shape, not its location**: an SDD spec is any git-tracked `spec.md` whose frontmatter `status` is one of the lifecycle enum values below. This is the single source of truth — there is no spec registry or enumerated index to keep in sync.
+
+To locate specs, glob `**/spec.md` repo-wide, filter to git-tracked files (e.g., cross-reference with `git ls-files`), and keep those whose `status` is in the enum. A `spec.md` without a lifecycle `status` is not an SDD spec and is excluded (for example, doc-only spec folders that live outside the workflow).
+
+To resolve a **domain name** to its spec folder, match the name against each discovered spec's folder slug — the root-relative path of the folder containing `spec.md`. A spec may be flat (`sdd-operator`) or nested (`sdd/spec-digest`); match the leaf segment or the full slug. If a name matches more than one folder, disambiguate with the user.
+
+Derived views (such as `graph.md`) are rendered from the discovered set and never hand-maintained — see `render-spec-graph`.
+
+**`aligned` and commit timing.** `aligned: false` means the current layer's artifacts are being updated or contain unresolved markers; `aligned: true` means the layer is synced (which layer depends on the gate — see `gate-validation-governance`). Do not commit SDD artifacts while their spec is `aligned: false`.
+
+## Status enum
+
+| Status | Meaning |
+|---|---|
+| `draft` | Contract can still evolve; not yet implementable as a fixed bar |
+| `approved` | Contract is frozen; ready to implement against |
+| `implemented` | Implementation passed the impl gate |
+| `deprecated` | Historical spec only; not implementable work |
+
+## Status transitions
+
+```mermaid
+stateDiagram-v2
+    [*] --> draft: create-spec (new or backfill)
+    draft --> approved: spec gate (validate-spec --target spec)
+    approved --> implemented: impl gate (validate-spec --target impl)
+    approved --> draft: behavior change (re-open)
+    implemented --> draft: behavior change (re-open)
+    draft --> deprecated: Oracle kill decision
+    approved --> deprecated
+    implemented --> deprecated
+```
+
+- **Draft → Approved** is the **spec gate**: judges `spec.md` + the `.feature`.
+- **Approved → Implemented** is the **impl gate**: judges the implementation against the frozen `.feature`.
+- A behavior change after approval is **not** a direct edit — revert to `draft` and re-pass the spec gate.
+- Deprecation retains the spec for graph history; never treat it as implementable.
+
+## Freeze (state transition)
+
+Reaching `approved` **freezes the `.feature`**. Adding, removing, or rewriting scenarios requires reverting the spec to `draft` and passing the spec gate again. The matching write constraint ("never write a frozen `.feature`") is in `ownership-governance`.
+
+**Freeze scope is the contract only.** The freeze and the gates govern `spec.md` + the `.feature` — the contract. The sibling **`combat-log.jsonl` ledger is operational provenance, not contract: it is never frozen and never gated**, and keeps appending across the whole lifecycle, including while the spec sits at `approved`. Its shape and write-ownership live in `combat-log-governance`.
+
+**Spec owns behavior.** If the implementation disagrees with `spec.md`, the implementation is wrong — fix it, or revert the spec to `draft` for a new review cycle.
+
+**Two modes.** Before `approved`, exploration may update `spec.md`, the `.feature`, `plan.md`, `tasks.md`, and spikes. After `approved`, implementation proceeds against the frozen `.feature`; every frozen scenario must pass before `implemented`.
+
+## Open-marker gating
+
+Missing contributor input is recorded as `<!-- open: ... -->` in the owning artifact. Open markers must be resolved (count = 0) before a spec may advance to `approved`. `gate-validation-governance` defines how markers interact with legal state; producers emit gaps that become markers, per `ownership-governance`.

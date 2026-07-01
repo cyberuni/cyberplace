@@ -1,0 +1,42 @@
+[
+	{
+		"id": "t003",
+		"query": "I need to define standards for commit messages across all our skills",
+		"should_trigger": true
+	},
+	{
+		"id": "t005",
+		"query": "Make a reference skill with a rubric for scoring PRs",
+		"should_trigger": true
+	},
+	{
+		"id": "t007",
+		"query": "I want to improve my existing governance file for skill design",
+		"should_trigger": true
+	},
+	{
+		"id": "t010",
+		"query": "Write a constraint set governance for what agents must never do with user data",
+		"should_trigger": true
+	},
+	{
+		"id": "n002",
+		"query": "Write a workflow for how to handle security pull requests",
+		"should_trigger": false
+	},
+	{
+		"id": "n004",
+		"query": "Generate test cases for my governance file",
+		"should_trigger": false
+	},
+	{
+		"id": "n006",
+		"query": "Create a step-by-step guide for reviewing pull requests",
+		"should_trigger": false
+	},
+	{
+		"id": "n008",
+		"query": "Write standards — I mean, a tutorial — explaining how to write good commits",
+		"should_trigger": false
+	}
+]

@@ -1,0 +1,100 @@
+---
+title: Scenarios
+description: The model in motion. Actor involvement runs from fully decoupled — roles spread across people — to fully compressed, one human spanning every role while delegates supply production. Two walk-throughs.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components'
+import Mermaid from '../../../components/Mermaid.astro'
+
+Who plays which actor, and when, runs along an axis:
+
+- **Fully decoupled** — roles spread across people, gated by asynchronous boundaries.
+- **Fully compressed** — one human spans every role while delegates supply the production.
+
+<Mermaid
+	caption="The scenario axis is the abundance dial: cheap generation compresses the team; expensive generation spreads it back out."
+	code={`flowchart LR
+    DEC["<b>Decoupled</b><br/>roles spread across people<br/>async boundaries<br/><i>generation expensive</i>"]
+    MID["real work<br/>sits between"]
+    COM["<b>Compressed</b><br/>one human spans every role<br/>delegates supply production<br/><i>generation cheap</i>"]
+    DEC --- MID --- COM`}
+/>
+
+Real work sits between. The axis *is* the abundance dial: where generation is cheap, the team compresses; where it stays expensive, it spreads back out. Here are the two ends.
+
+## Decoupled: a bug fix in an open-source project
+
+<Steps>
+
+1. **Framer** — the contributor decides this bug is worth their time, usually self-framed from their own pain; the issue thread is the brief. A maintainer framed it earlier by accepting and labeling it.
+
+2. **Explorer** (Builder, divergent) — the contributor reproduces it, reads unfamiliar code, tries a couple of approaches, discards the dead ends.
+
+3. **Builder** (producer) — writes the fix and a regression test; the test is the contract, co-delivered.
+
+4. **The gate** *(boundary: the pull request)* — the maintainer enters *only now*, turning expertise backward against the change: correctness (Builder face) against the bar, fit-to-structure (Architect face), and worth-merging (Framer face). The two-axis verdict applies — and a recurring-class concern may be `accept + deferred`, filed as a follow-up. Note the asymmetry: the contributor produced for days with no evaluation present; the gate is async and late.
+
+5. **Curator** — if the bug is one of a recurring class, the maintainer encodes a lint rule, a test pattern, or a `CONTRIBUTING` note so the next contributor avoids it. Frequently deferred or skipped — infrastructure neglect in the wild.
+
+</Steps>
+
+<Aside type="note" title="Reading">
+One human (contributor) plays Framer + Explorer + Builder forward; another (maintainer) judges at the gate — Builder, Architect, and Framer faces turned backward — and curates. Roles cluster by *position in the contribution flow*, not by job. The same maintainer who judges here is a Builder on their own commits — the verb, not the person.
+</Aside>
+
+## Compressed: a solo developer and their delegates ship a feature
+
+<Steps>
+
+1. **Framer** — the developer fixes the feature's *why* and what success looks like, sometimes as a written brief, sometimes only in their head.
+
+2. **Explorer** (Builder variant) — a delegate spikes three approaches in parallel; the developer, applying expertise *backward*, keeps one and kills two. That pick is the Builder's own backward face — evaluation inside the Builder phase.
+
+3. **Builder** (producer) — a delegate implements the chosen approach; the inner loop runs against tests.
+
+4. **The gate** *(boundary: the developer reads the diff)* — the same human, now turning their expertise backward on the delegate's output. `producer ≠ judge` still holds, because the *delegate* produced and the *human* judges.
+
+5. **Architect (conducting)** — the developer notices it should follow an existing convention and directs a refactor under green; if the convention needs a not-yet-built helper, they direct an orchestrator-delegate to build it in parallel rather than stalling the feature — the scheduling decision in miniature.
+
+6. **Curator** — at the end, the developer encodes the new convention so the next feature starts warmer — or, more often, a Curator-delegate flags "you've done this three times" and the human approves the entry.
+
+</Steps>
+
+<Aside type="tip" title="Reading">
+One human spans all four actors, forward and backward, in an afternoon — impossible before AI, when production consumed all their focus. Delegates supply the production capacity, freeing the human to move through the roles while holding motive and accountability throughout. This is the thesis in miniature: **abundance does not replace the human; it lets one human *be* the team.**
+</Aside>
+
+## The three loops underneath
+
+Both walk-throughs run the same three loops — they just fire at different cadences, on different objects, owned by different actors.
+
+<Mermaid
+	caption="Inner loop corrects actions within a task; the feedback edge changes this product; the outer loop changes the capacity to build any product."
+	code={`flowchart LR
+    B[Builder produces] --> BAR{bar fires}
+    BAR -->|correct · inner loop| B
+    BAR -->|accept + deferred| BL["backlog · this product<br/>re-prioritized"]
+    BL -.-> B
+    BAR -->|durable lesson| CUR["Curator distills → corpus<br/>outer loop · any product"]
+    CUR -.->|warmer start| B
+    class B,CUR actor
+    class BAR gate
+    class BL artifact
+    classDef actor stroke-width:2px
+    classDef gate stroke:#d97706,stroke-width:2px
+    classDef artifact stroke:#0d9488,stroke-width:1.75px`}
+/>
+
+- **Inner loop** — *within a task.* Builder produces, the bar fires, Builder corrects, Architect reshapes under green. Fast; every iteration. Correcting *actions* under fixed assumptions.
+- **Product feedback edge** — *across tasks, same product.* Work deferred at the gate re-enters as its owning actor's object, sequenced by a decision rule. New work, same product.
+- **Outer loop** — *across products.* The Curator distills durable lessons into the corpus so the next inner loop starts warmer. Revising the *assumptions* themselves.
+
+Firing the Curator every iteration is **premature codification** — you encode transient noise before you know which lessons are durable. So the human Curator is episodic; its delegate watches continuously (flagging candidates, drafting conventions), while the human holds the accept/prune decision.
+
+## What the two ends share
+
+Same four actors, same two faces, same gate, same surfaces. Only the **compression** changes. The decoupled team isn't running a different model — it's running the same model with production still scarce, so each person is confined closer to one contribution. That is the model being abundance-relative, not abundance-assuming.
+
+---
+
+*Next: [Recursion →](/motive-model/recursion/)*

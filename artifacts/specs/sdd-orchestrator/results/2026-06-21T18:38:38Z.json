@@ -1,0 +1,77 @@
+{
+	"suite": "sdd-orchestrator",
+	"subject": "plugins/sdd/agents/sdd-orchestrator.md",
+	"layer": "behavior",
+	"threshold": 4,
+	"cases": [
+		{
+			"name": "resolve-roles-from-registry-no-scan",
+			"score": 5,
+			"pass": true,
+			"note": "Config is unambiguous: 'Read only .agents/universal-plugin.json … Do not scan user-global, project-global, or project-local plugin directories.' Agent would follow exactly."
+		},
+		{
+			"name": "omitted-role-key-convention-fallback",
+			"score": 5,
+			"pass": true,
+			"note": "Config explicitly separates missing key (convention fallback '<plugin>-<role>') from null (degenerate). An agent would use aces-impl-producer for a missing impl-producer key."
+		},
+		{
+			"name": "null-role-degenerates-to-no-agent",
+			"score": 5,
+			"pass": true,
+			"note": "Config: 'null → the role degenerates (no agent)'. The SDD default for impl-producer is 'generic Builder (no agent)' — same outcome. For plan-producer null means no agent, not sdd-planner. Config is clear."
+		},
+		{
+			"name": "two-plugin-domain-needs-input-no-loop",
+			"score": 5,
+			"pass": true,
+			"note": "Config: 'read the domain-plugin map … if it names the owner … use it. Otherwise return STATUS: needs-input … on resume this read is decisive, so the suspend does not loop.' Every constraint is explicit."
+		},
+		{
+			"name": "mode-derived-from-freeze-state",
+			"score": 5,
+			"pass": true,
+			"note": "Config: 'Phase and MODE are derived, never passed.' Derivation table is explicit: unfrozen .feature → explore, frozen .feature → implement. Both invocations covered."
+		},
+		{
+			"name": "suspend-with-batched-questions",
+			"score": 5,
+			"pass": true,
+			"note": "Config: 'Never ask the user a question directly … return STATUS: needs-input with the questions batched.' Step 4 says aggregate into one batch each. Three questions → one needs-input with all three."
+		},
+		{
+			"name": "write-boundary-markers-and-aligned-only",
+			"score": 5,
+			"pass": true,
+			"note": "Config's Write boundary is explicit: only '<!-- open: --> markers and the aligned frontmatter field'. All prohibited writes are named. No ambiguity."
+		},
+		{
+			"name": "aligned-layer-scoped-spec-gate",
+			"score": 5,
+			"pass": true,
+			"note": "Config: 'At the spec gate, aligned: true means the contract layer (spec.md ↔ .feature) is in sync — impl is not required; exploratory spike code is excluded as scaffolding.' Spike-code exclusion is explicit."
+		},
+		{
+			"name": "aggregate-observations-no-spawn",
+			"score": 5,
+			"pass": true,
+			"note": "Config Step 4: 'Aggregate every child's QUESTIONS, CONTENT_GAPS, OBSERVATIONS into one batch each.' And: 'Never spawn specs or write outside the spec you own.' Both rules explicit."
+		},
+		{
+			"name": "no-plugin-fallback-to-sdd-defaults",
+			"score": 5,
+			"pass": true,
+			"note": "Config: 'Zero matches → every role degenerates to its SDD default (below).' All five defaults are listed. Workflow proceeds without suspension. No ambiguity."
+		},
+		{
+			"name": "aligned-impl-gate-all-judges-pass",
+			"score": 5,
+			"pass": true,
+			"note": "Config: 'At the impl gate, aligned: true … set it only when every impl-judge returns IMPLEMENTATION_PASS: true.' Timing constraint also explicit: 'only synthesis (Step 4) may set it back to true.'"
+		}
+	],
+	"pass_rate": 1.0,
+	"passing": 11,
+	"total": 11
+}

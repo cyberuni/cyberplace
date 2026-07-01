@@ -1,0 +1,14 @@
+{
+	"$schema": "https://raw.githubusercontent.com/cyberuni/universal-plugin/refs/heads/main/schema/v1.json",
+	"name": "dependabot",
+	"description": "Manages dependency updates across Docker images, Python packages, and other ecosystems. Automates versioning, security scanning, and CI/CD compatibility checks.",
+	"author": { "name": "GitHub" },
+	"keywords": ["dependencies", "security", "automation"],
+	"skills": "./skills/",
+	"vendorExtensions": {
+		"copilot-cli": {
+			"category": "security",
+			"tags": ["dependencies", "updates", "security"]
+		}
+	}
+}

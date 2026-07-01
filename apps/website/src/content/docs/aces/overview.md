@@ -1,0 +1,99 @@
+---
+title: ACES Overview
+description: Agent Config Examination & Specification — spec-driven evaluation for skills, AGENTS.md sections, subagent definitions, and commands.
+---
+
+**ACES** (Agent Config Examination & Specification) is a plugin that applies spec-driven evaluation to [agent configuration](/concepts/agent-configuration/) — the skills, `AGENTS.md` sections, subagent definitions, and commands that shape how AI agents behave.
+
+## The problem
+
+Agent configuration has the same failure modes as prompts, but none of the safety nets:
+
+- **Silent regression** — editing a skill's `description:` changes when the agent invokes it, with no signal that something broke.
+- **Trigger mismatch** — vague trigger language causes the agent to fire too broadly or too narrowly.
+- **Ambiguous rules** — inconsistent behavior that only surfaces in real sessions, after the damage is done.
+
+Code has a type-checker, a linter, and a test suite. Agent configuration has none of those built in. ACES fills that gap.
+
+## How it works
+
+ACES applies [spec-driven development](/plugins/sdd/overview/) to the agent configuration layer:
+
+1. Build a **golden set** of labeled test cases for one agent configuration artifact.
+2. **Score** the current artifact against each case using an LLM judge on a 1–5 rubric.
+3. **Compare** scores before and after an edit — block commits on regression.
+4. **Improve** the artifact by diagnosing failing cases and applying targeted edits.
+
+### Evaluation layers
+
+Evaluation runs in four independent layers:
+
+| Layer | What it checks |
+|---|---|
+| **Structural** | Required fields and format (via `cyber-skills audit`) |
+| **Trigger** | Does the agent invoke this artifact at the right times? |
+| **Behavior** | When invoked, does the agent follow the steps and rules? |
+| **Quality** | Is the output the agent produces actually good? |
+
+Each eval suite opts in to the layers relevant to its artifact type. A simple `AGENTS.md` section may skip trigger evaluation; a skill always needs trigger and behavior.
+
+## Skills
+
+| Skill | What it does |
+|---|---|
+| [`create-spec`](/aces/create-spec/) | Build a golden-set eval suite for an agent configuration |
+| [`add`](/aces/add/) | Add a test case from a real failure or edge case |
+| [`run`](/aces/run/) | Score the golden set against the current artifact |
+| [`compare`](/aces/compare/) | Diff scores before/after an edit — regression gate |
+| [`improve`](/aces/improve/) | Diagnose failing cases; propose and apply targeted edits |
+| [`report`](/aces/report/) | Project-wide health dashboard across all eval suites |
+
+## Typical workflow
+
+```
+create-spec → run → compare → improve → run
+                                 ↑
+                           add (new cases)
+                                 ↑
+                           report (project view)
+```
+
+Start with `create-spec` to build the first eval suite for an agent configuration. Run `run` to get a baseline. Edit the artifact, then use `compare` before committing. When cases fail, `improve` diagnoses the pattern and proposes edits.
+
+## Eval suite structure
+
+```
+artifacts/specs/<suite-name>/
+  eval.md               # target, judge model, threshold, enabled layers
+  golden-set/
+    001-<slug>.md       # one test case per file
+    002-<slug>.md
+  results/
+    <ISO8601>.json      # run output: pass rate, mean score, per-case results
+```
+
+Suites live in `artifacts/specs/` alongside SDD specs. Each suite has its own pass threshold — different artifacts warrant different bars.
+
+## Health classification
+
+`report` classifies each suite:
+
+| Status | Condition |
+|---|---|
+| `healthy` | Pass rate ≥ 90% |
+| `degraded` | Pass rate 70–89% |
+| `critical` | Pass rate < 70% |
+| `trending-down` | Pass rate dropped ≥ 10% vs. previous run |
+| `no-data` | No results yet |
+
+## Installation
+
+```bash
+npx skills add cyberuni/cyber-skills --plugin aces
+```
+
+## Related
+
+- [Agent Configuration](/concepts/agent-configuration/) — what agent configuration is and why it needs evaluation
+- [SDD Plugin](/plugins/sdd/overview/) — spec-driven development; ACES is SDD applied to the agent configuration layer
+- [Skill Design governance](/governances/skill-design/) — authoring rules for `SKILL.md` files
