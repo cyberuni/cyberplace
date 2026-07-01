@@ -43,7 +43,7 @@ already covers that. The classifier lives in `skills/aces-fit/` (model: the spec
 | `improve` | Diagnose failing cases and propose targeted edits |
 | `report` | Project-wide health dashboard across all eval suites |
 
-Spec creation is owned by the `sdd` plugin's `start-mission` / `validate-spec`: once ACES is registered, the conductor resolves the ACES production-chain roles automatically. The `run`/`compare`/`add`/`report` skills are thin reporting over the impl-judge's eval suite.
+Spec creation is owned by the `sdd` plugin's `start-mission` / `spec-gate`: once ACES is registered, the conductor resolves the ACES production-chain roles automatically. The `run`/`compare`/`add`/`report` skills are thin reporting over the impl-judge's eval suite.
 
 ## Agents (production-chain roles)
 
@@ -59,7 +59,7 @@ The impl-producer (writing the agent config **and its scenario→rubric eval sui
 ## Workflow
 
 ```
-sdd:start-mission → sdd:validate-spec (spec gate) → implement → run/compare → improve
+sdd:start-mission → sdd:spec-gate (spec gate) → implement → run/compare → improve
                                                                    ↑
                                                              add (new cases)
                                                                    ↑

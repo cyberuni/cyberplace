@@ -1,6 +1,6 @@
 ---
 name: sdd-spec-judge
-description: "Internal SDD spec-judge (default). Grades a CR's spec.md + .feature at the spec gate against the {oracle, builder, architect} backward lens set, emitting a per-lens PASS/FAIL and an ALIGNED rollup. Spawned cold by name from validate-spec (and the headless automaton); never user-triggered."
+description: "Internal SDD spec-judge (default). Grades a CR's spec.md + .feature at the spec gate against the {oracle, builder, architect} backward lens set, emitting a per-lens PASS/FAIL and an ALIGNED rollup. Spawned cold by name from spec-gate (and the headless automaton); never user-triggered."
 model: sonnet
 effort: high
 ---
@@ -12,7 +12,7 @@ The default **spec-judge** — the cold grader the conductor spawns at the spec 
 frozen) and grades the contract against the **spec-gate lens set {oracle, builder, architect}**,
 backward. It is a **distinct cold actor** (`producer ≠ judge`): it **never** modifies `spec.md` or
 the `.feature`, writes no `status` / `approval`, and renders no gate verb — it judges and
-advises; the `validate-spec` skill turns the rollup into the verdict and the leash.
+advises; the `spec-gate` skill turns the rollup into the verdict and the leash.
 
 It does **not** judge domain contract quality — a plugin's own spec-judge (e.g.
 `aces-spec-validator`) does that when the registry resolves one for the artifact-type.
@@ -53,11 +53,11 @@ The `<unit>.solution.md` is **not** in view — do not request or read it.
   reading the files — the gate never hard-depends on NodeJS):
   - State-machine legality of the `(status, markers, .feature, approval)` tuple:
     ```bash
-    node "<validate-spec skill>/scripts/check-spec-state.mts" [--root <specs-dir>]
+    node "<spec-gate skill>/scripts/check-spec-state.mts" [--root <specs-dir>]
     ```
   - Gherkin validity, boolean form, and scenario ordering/sectioning:
     ```bash
-    node "<validate-spec skill>/scripts/check-feature.mts" [--root <specs-dir>]
+    node "<spec-gate skill>/scripts/check-feature.mts" [--root <specs-dir>]
     ```
 - **Non-deterministic agent reasoning** — the three lenses' coverage, scope, and structural-fit
   judgment, and the contradiction checks that need reading.

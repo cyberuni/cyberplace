@@ -12,7 +12,7 @@ Judge an agent-config .feature against the agent-scenario criteria (trigger cont
 agent-config `.feature` against the agent-scenario criteria (trigger context, near-miss balance,
 rule coverage, edge coverage, boolean form) and reporting a per-scenario verdict.
 **Non-goals** — writing or fixing the `spec.md` or `.feature` (that is `scenario-writer`); running
-or scoring the eval suite (`implementer` / `judge`); the generic SDD `validate-spec` gate check.
+or scoring the eval suite (`implementer` / `judge`); the generic SDD `spec-gate` gate check.
 
 | Use case | Trigger / inputs | Outcome |
 |---|---|---|

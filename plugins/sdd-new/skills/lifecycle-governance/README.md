@@ -5,7 +5,7 @@ Internal SDD governance (`user-invocable: false`). The **lifecycle** contract â€
 transitions, open-marker gating, and the per-file freeze state-transition.
 
 A fixed-universal SDD governance, invariant per role (not face-split). Loaded by `sdd`,
-`validate-spec`, `start-mission`, the conductor, and the spec-judge. Write-ownership of these fields
+`spec-gate`, `start-mission`, the conductor, and the spec-judge. Write-ownership of these fields
 lives in `ownership-governance`; legality of field combinations and gate verdicts in
 `gate-validation-governance`; the ledger shape in `combat-log-governance`. Not triggered by users
 directly.

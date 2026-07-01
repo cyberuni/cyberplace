@@ -98,7 +98,7 @@ In the same act that writes root `spec.md`, record both so a later edit reads, n
   cross-cutting `concept → its nodes` view. Reserve the block; **leave it for `concept-index` to
   generate** from `concept:` frontmatter — pure derivation, never hand-maintained.
 
-Validate the result with the `validate-spec` skill's `check-spec-state` script (`check-spec-state.mts --root
+Validate the result with the `spec-gate` skill's `check-spec-state` script (`check-spec-state.mts --root
 <specs-dir>`): the root lifecycle tuple must be legal.
 
 ## 6 — Hand back
@@ -118,5 +118,5 @@ Either way, **propose** the node placement for the formation **Warden** to confi
 
 Write the skeleton, the root envelope (`project-path` frontmatter + placement map + the reserved by-concept
 index block), and the `design/decisions/` + glossary homes — nothing else. Do **not** author any node's `## Use Cases`/`.feature`, render a gate verdict,
-freeze, or write `status` / `approval` / `produced-by` (the conductor's and `validate-spec`'s; see
+freeze, or write `status` / `approval` / `produced-by` (the conductor's and `spec-gate`'s; see
 `ownership-governance`).
