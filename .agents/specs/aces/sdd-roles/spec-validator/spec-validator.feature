@@ -22,6 +22,24 @@ Feature: spec-validator — the spec-judge role
     When spec-validator grades the spec gate
     Then it does not run an eval or score a golden-set case
 
+  # ---- Fit (read, never decided) ----
+
+  Scenario: it reads the declared fit tier before grading
+    Given a subject whose spec.md declares a fit tier
+    When spec-validator begins grading
+    Then it reads the declared fit tier and applies only the criteria that tier carries
+
+  Scenario: a missing fit declaration returns a content gap
+    Given a subject whose spec.md declares no fit tier
+    When spec-validator grades the suite
+    Then it returns a content gap for the missing fit tier
+    And it does not default the subject to strong fit
+
+  Scenario: a wrong-squad subject is recused rather than graded
+    Given a subject determined wrong-squad for ACES
+    When spec-validator is asked to grade its suite
+    Then it reports the subject recused rather than a per-scenario verdict
+
   # ---- The criteria ----
 
   Scenario: a vague stand-in fails trigger-context
@@ -34,10 +52,15 @@ Feature: spec-validator — the spec-judge role
     When spec-validator checks rule-coverage
     Then it reports the suite failing on rule-coverage
 
-  Scenario: a missing near-miss fails trigger-balance
-    Given a suite with only obviously-irrelevant negative scenarios and no same-keyword near-miss
+  Scenario: a missing near-miss fails trigger-balance for a strong-fit subject
+    Given a strong-fit suite with only obviously-irrelevant negatives and no same-keyword near-miss
     When spec-validator checks trigger-balance
     Then it reports the suite failing on trigger-balance
+
+  Scenario: a partial-fit suite with no near-miss passes trigger-balance
+    Given a partial-fit suite whose subject makes no activation decision and carries no near-miss
+    When spec-validator checks trigger-balance
+    Then it does not report the suite failing on trigger-balance
 
   Scenario: too few guards fail edge-coverage
     Given a suite with only two edge-case or must-not-do guard scenarios

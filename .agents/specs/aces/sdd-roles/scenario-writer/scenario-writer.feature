@@ -27,6 +27,19 @@ Feature: scenario-writer — the spec-producer role
     When it produces the .feature
     Then it does not write an eval rubric or a golden-set case
 
+  # ---- Fit (classified first) ----
+
+  Scenario: the fit tier is classified and declared before scenarios are authored
+    Given the conductor dispatches scenario-writer for a subject
+    When it begins the spec-producer role
+    Then it classifies the subject's fit tier and declares it in the spec.md Use Cases before authoring scenarios
+
+  Scenario: a wrong-squad subject is recused with no feature
+    Given a subject that is a deterministic engine whose output is assertable rather than graded
+    When scenario-writer classifies its fit
+    Then it recuses and authors no .feature
+    And it recommends the SDD-default builder with a script harness
+
   # ---- Producing the spec.md ----
 
   Scenario: the spec carries a Use Cases section
@@ -41,10 +54,15 @@ Feature: scenario-writer — the spec-producer role
 
   # ---- Producing the .feature ----
 
-  Scenario: triggering is covered both ways
-    Given a skill that fires only when the user asks to stage and commit work
+  Scenario: a strong-fit subject covers triggering both ways
+    Given a strong-fit skill that fires only when the user asks to stage and commit work
     When scenario-writer writes the trigger scenarios
     Then the .feature contains a should-trigger scenario and a same-keyword near-miss should-not-trigger scenario
+
+  Scenario: a partial-fit subject gets no fabricated near-miss
+    Given a partial-fit subject that runs a mechanical procedure with graded behavior but no activation decision
+    When scenario-writer writes the .feature
+    Then it writes no fabricated should-not-trigger near-miss
 
   Scenario: every major rule gets a behavior scenario
     Given a subject whose body lists three distinct rules
