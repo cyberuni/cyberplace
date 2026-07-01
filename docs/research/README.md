@@ -26,6 +26,7 @@ Use `YYYY-MM-<topic>.md` (for example `2026-05-skill-ecosystem-landscape.md`). O
 | 2026-05 | [npm package structure for skills and plugin packages](2026-05-npm-package-structure-plugin-manifest.md) | `skill-repo-structure` governance, potential upstream proposal to `vercel-labs/open-plugin-spec` and `agentskills/agentskills` |
 | 2026-06 | [Agent plan / session-state persistence across harnesses](2026-06-agent-plan-persistence.md) | ADR-0015, SDD `provenance-model`, the plan/ledger/cursor design |
 | 2026-06 | [Impl-judge verification independence](2026-06-impl-judge-independence.md) | ADR-0016, SDD `mission/deliver/impl-judge` + `impl-producer` + conductor impl gate, `autonomy-rubric` |
+| 2026-07 | [Operator test migration coverage](2026-07-operator-test-migration-coverage.md) | Decision to skip a follow-up CR for `sdd-operator.test.mts` gaps; revisit at `plugins/sdd` → `plugins/sdd-new` cutover |
 
 ## Adding research
 

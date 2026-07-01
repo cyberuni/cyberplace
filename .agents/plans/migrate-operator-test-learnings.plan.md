@@ -4,22 +4,22 @@ overview: "Investigate-then-decide mission. The old plugins/sdd/agents/sdd-opera
 todos:
   - id: intake
     content: "Step 1 — open local CR `migrate-operator-test-learnings`, scaffold this brief. Source: user request (this session). This is an INVESTIGATION mission; whether a behavior-changing CR follows is decided by the `recommend` step."
-    status: pending
+    status: completed
   - id: inventory
     content: "Read plugins/sdd/agents/sdd-operator.test.mts in full. Enumerate all 73 scenarios grouped by area (resolution/dispatch/explore/deliver/freeze/segment) + the structural coexistence checks; for each, capture what it asserts and which old .feature title it anchored to."
-    status: pending
+    status: completed
   - id: map-coverage
-    content: "For each scenario, find the corresponding behavior in the NEW sdd-new corpus (.agents/specs/sdd — conductor, deliver/impl-judge, handoff, resolve-squad, gate-verdicts, freeze, escalation-floor, plugin) and its node:test. Mark each: COVERED / PARTIAL / GAP / OBSOLETE-under-new-design (e.g. operator-as-agent specifics that no longer exist now the conductor is in-session)."
-    status: pending
+    content: "For each scenario, find the corresponding behavior in the NEW sdd-new corpus (.agents/specs/sdd — conductor, deliver/impl-judge, handoff, resolve-squad, gate-verdicts, freeze, escalation-floor, plugin) and its node:test. Mark each: COVERED / PARTIAL / GAP / OBSOLETE-under-new-design (e.g. operator-as-agent specifics that no longer exist now the conductor is in-session). DONE: 46 COVERED, 18 PARTIAL, 9 GAP, 8 OBSOLETE (of 81 total, incl. 8 structural)."
+    status: completed
   - id: pattern-extract
-    content: "Identify reusable TEST PATTERNS worth keeping regardless of scenario: anchoring tests to frozen .feature titles, structural coexistence (retired-agents-gone, registry well-formedness), the inline-producer / cold-judge / conductor-writes invariants. Note where the new design should assert these (start-mission, sdd-automaton, plugin registry)."
-    status: pending
+    content: "Identify reusable TEST PATTERNS worth keeping regardless of scenario: anchoring tests to frozen .feature titles, structural coexistence (retired-agents-gone, registry well-formedness), the inline-producer / cold-judge / conductor-writes invariants. Note where the new design should assert these (start-mission, sdd-automaton, plugin registry). DONE: pattern 1 (anchor-to-frozen-title) already re-homed and stronger; patterns 2 (structural coexistence) and 3 (conductor-writes invariant) are GAPs, deferred to cutover time."
+    status: completed
   - id: recommend
-    content: "Produce the coverage-gap map + a per-scenario recommendation (migrate / fold / drop). Decide whether the GAPs warrant a follow-up CR adding conductor + automaton .feature suites (with node:tests), or whether spec-level coverage already suffices. Write the decision and rationale."
-    status: pending
+    content: "Produce the coverage-gap map + a per-scenario recommendation (migrate / fold / drop). Decide whether the GAPs warrant a follow-up CR adding conductor + automaton .feature suites (with node:tests), or whether spec-level coverage already suffices. Write the decision and rationale. DONE: no follow-up CR needed now; structural gaps deferred to plugins/sdd cutover; remaining gaps are prose-only conventions, additive-if-needed."
+    status: completed
   - id: handoff
-    content: "Handoff: write the gap map + recommendation to a durable doc (docs/research or an ADR if it changes test strategy); update this ## NEXT; update memory. Commit. If a follow-up CR is warranted, file it as its own mission brief."
-    status: pending
+    content: "Handoff: write the gap map + recommendation to a durable doc (docs/research or an ADR if it changes test strategy); update this ## NEXT; update memory. Commit. If a follow-up CR is warranted, file it as its own mission brief. DONE: docs/research/2026-07-operator-test-migration-coverage.md written + indexed; no follow-up CR filed (per recommendation)."
+    status: completed
 isProject: false
 ---
 
@@ -39,10 +39,18 @@ test patterns worth re-homing, then recommends migrate / fold / drop per scenari
 
 ## NEXT — resume here
 
-▶ NOT STARTED. Begin at `inventory`: read `plugins/sdd/agents/sdd-operator.test.mts` and list the
-73 scenarios by area, then map each against `.agents/specs/sdd` in `map-coverage`. Keep it an
-investigation — do not write conductor/automaton suites until `recommend` says a follow-up CR is
-warranted.
+▶ MISSION COMPLETE (2026-07-01). Full coverage-gap audit done: 46 COVERED / 18 PARTIAL / 9 GAP /
+8 OBSOLETE of 81 old scenario+structural checks. **Decision: no follow-up CR.** OBSOLETE entries
+are confirmed-intentional design reversals (impl-producer always spawns now, spec-producer never
+spawns, plan is flat `todos` not a DAG). GAPs cluster in two low-urgency places: (1) structural
+coexistence checks (old agent files retired, new agent files well-formed, live registry
+validated) — deferred until the `plugins/sdd` → `plugins/sdd-new` cutover is actually scheduled,
+since `plugins/sdd` is still the intentional untouched reference baseline; (2) a handful of
+prose-only conventions (scenario ordering, spec.md enrichment, validate-spec no-NodeJS fallback,
+procedural-vs-durable question persistence) not worth a dedicated CR — add scenarios additively
+if any surfaces as a real bug. Full gap map + rationale:
+`docs/research/2026-07-operator-test-migration-coverage.md`. Nothing left to resume; retire this
+plan on the next doctrine-loop pass.
 
 ## CR
 
