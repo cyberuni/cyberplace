@@ -102,8 +102,8 @@ todos:
     content: "Deliver — re-run spec gate through sdd-new to confirm bootstrap closes. DONE on gateway/: cold sdd:sdd-spec-judge (default bars) ran the real machinery end-to-end and CAUGHT DRIFT the hand-run gate (seq 1) missed — orphan status-scan scenario + missing zero-count strategy boundary. Reconciled additively (README sync + self-clearing scenario), re-judge ALIGNED 3/3, ledger seq 7 (commit fc1aae3). Machinery-closure PROVEN. FINDING for #38: resolver routes every skill-type unit to ACES (aces-spec-validator + aces:aces-builder-spec) — that fully-resolved path is #38's dogfood, not this default-loop proof."
     status: completed
   - id: handoff
-    content: "Handoff — land as branch -> PR. Keep combat log. Do NOT delete plan until done/merged AND doctrine-distilled."
-    status: pending
+    content: "Handoff — land as branch -> PR. Keep combat log. DONE: next -> main PR #46 merged; verified all key commits (fc1aae3, 261439d, b924051, 07954c1, 3b075b3) are ancestors of main; root spec.md status: approved. Do NOT delete plan until doctrine-distilled."
+    status: completed
 isProject: false
 ---
 
@@ -130,6 +130,12 @@ The work is organized in **two levels of grill**:
   time, vertically**, each as an individual sub-mission with the rhythm below.
 
 ## NEXT — resume here (read this first)
+
+> **▶ MISSION COMPLETE AND MERGED (verified 2026-07-01).** `handoff` confirmed done: the
+> `next → main` PR (#46) merged. Spot-checked commits `fc1aae3`, `261439d`, `b924051`, `07954c1`,
+> `3b075b3` are all ancestors of `main`; root `.agents/specs/sdd/spec.md` reads `status: approved`,
+> ratified by `unional`. Nothing left to resume — retire this plan on the next doctrine-loop pass
+> (once doctrine-distilled).
 
 > **⏸ PAUSED (2026-06-30) — at the handoff frontier; ACES (github-38) is already DONE.** github-34
 > is **one todo from done**: `handoff` (branch the session's commits off `next` → PR `next → main`,
