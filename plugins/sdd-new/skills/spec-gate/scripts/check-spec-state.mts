@@ -25,8 +25,8 @@
 //      state uncommittable.
 // `project-path` (the source dir a spec governs) is parsed for the router; its
 // presence is the producer's job, not a lifecycle-legality concern, so it is not
-// enforced here. See .agents/specs/sdd/design/lifecycle-model.md (legal-state tuples + per-node
-// spec-type checks) and .agents/specs/sdd/design/spec-structure.md (spec types). Pure functions are
+// enforced here. See sdd:lifecycle-governance (legal-state tuples + per-node
+// spec-type checks; spec types). Pure functions are
 // exported for node:test; running the file directly drives the CLI. No dependencies.
 
 import { type Dirent, existsSync, readdirSync, readFileSync } from 'node:fs'
