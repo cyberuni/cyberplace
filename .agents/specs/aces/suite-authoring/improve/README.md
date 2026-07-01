@@ -11,7 +11,7 @@ Group failing cases by pattern and propose before/after config diffs; auto-run c
 **Subject** — diagnosing a target configuration's failing evals, grouping them by failure pattern,
 proposing concrete before/after edits, and verifying the change with `compare`.
 **Non-goals** — authoring a brand-new case (`add`); scoring the suite (`run`); diffing two versions
-on demand (`compare`); how a single case is scored (that is `aces-judge`).
+on demand (`compare`); how a single case is scored (that is `aces-case-judge`).
 
 | Use case | Trigger / inputs | Outcome |
 |---|---|---|

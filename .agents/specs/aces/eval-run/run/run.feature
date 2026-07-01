@@ -1,7 +1,7 @@
 @frozen
 Feature: run — score the current config against its golden set
   Unit suite for the run skill: resolve a golden-set eval suite, judge every case, and report.
-  Scoring a single case is aces-judge's contract; diff and roll-up are compare/report. Cross-
+  Scoring a single case is aces-case-judge's contract; diff and roll-up are compare/report. Cross-
   capability e2e scenarios live in ../../acceptance/.
 
   # ---- Triggering ----

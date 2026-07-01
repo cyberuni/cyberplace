@@ -11,7 +11,7 @@ Run the golden set against before/after and classify each case (improved / regre
 **Subject** — scoring two versions of a target agent configuration against the same golden set and
 diffing the results to catch regressions before a change is committed.
 **Non-goals** — scoring a single version (`run`); the project-wide roll-up (`report`); authoring or
-fixing cases (`add` / `improve`); deciding a single case's pass/fail (that is `aces-judge`).
+fixing cases (`add` / `improve`); deciding a single case's pass/fail (that is `aces-case-judge`).
 
 | Use case | Trigger / inputs | Outcome |
 |---|---|---|

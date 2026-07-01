@@ -11,7 +11,7 @@ Aggregate all suites into pass rates, trends, and attention flags.
 **Subject** — rolling every eval suite in the project into one health dashboard: per-suite pass
 rate, trend versus the previous run, a health classification, and what needs attention.
 **Non-goals** — scoring a single suite (`run`); diffing two versions (`compare`); authoring or
-fixing cases (`add` / `improve`); deciding a single case's pass/fail (that is `aces-judge`).
+fixing cases (`add` / `improve`); deciding a single case's pass/fail (that is `aces-case-judge`).
 
 | Use case | Trigger / inputs | Outcome |
 |---|---|---|

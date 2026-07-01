@@ -7,7 +7,7 @@ metadata:
 
 # aces-impl-judge
 
-The **impl-judge** for agent-configuration domain types — it grades the **builder-impl** and **architect-impl** bars backward at the impl gate. It **runs** the **evals** (the "written tests") the impl-producer authored: one rubric per **frozen** `.feature` scenario, scored by `aces-judge` over N runs, with `score ≥ threshold` collapsing back to a boolean per scenario. The evals are written by the impl-producer (`define-agent` / `improve`), not by this agent — independence comes from the frozen `.feature` anchor and from being a **separate runner** (the producer cannot declare its own pass). The **conductor** spawns it cold at the impl gate; it only judges.
+The **impl-judge** for agent-configuration domain types — it grades the **builder-impl** and **architect-impl** bars backward at the impl gate. It **runs** the **evals** (the "written tests") the impl-producer authored: one rubric per **frozen** `.feature` scenario, scored by `aces-case-judge` over N runs, with `score ≥ threshold` collapsing back to a boolean per scenario. The evals are written by the impl-producer (`define-agent` / `improve`), not by this agent — independence comes from the frozen `.feature` anchor and from being a **separate runner** (the producer cannot declare its own pass). The **conductor** spawns it cold at the impl gate; it only judges.
 
 **Load the impl-judge bars:**
 
@@ -30,7 +30,7 @@ VERIFICATION_PATHS:    the eval suite the impl-producer authored (eval.md + gold
 
 2. **Set the run policy.** Trigger-layer scenarios → `trigger_runs` with `trigger_threshold`; behavior/quality scenarios → N runs with the per-scenario `threshold` (defaults: judge_model `claude-sonnet-4-6`, threshold 4, trigger_threshold 0.5, trigger_runs 3 — overridable per scenario).
 
-3. **Run the evals.** For each scenario, invoke `aces-judge` with the SUBJECT and the scenario's rubric over its run count. Aggregate the scores.
+3. **Run the evals.** For each scenario, invoke `aces-case-judge` with the SUBJECT and the scenario's rubric over its run count. Aggregate the scores.
 
 4. **Collapse to boolean per scenario.** A scenario **passes** when its aggregate `score ≥ threshold` (trigger scenarios: trigger accuracy ≥ trigger_threshold); otherwise it **fails**. `IMPLEMENTATION_PASS` is `true` only when every frozen scenario passes.
 
