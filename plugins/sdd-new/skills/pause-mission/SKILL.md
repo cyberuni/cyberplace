@@ -62,12 +62,12 @@ the mission for the gateway's headless dispatch queue (the go-signal `dispatch` 
 enum + the three-way `status` distinction live in the SDD `provenance-model`). Rules:
 
 - **Human act only.** Setting `approved` is a review decision — a person has read the brief (todos,
-  `## NEXT`, the strategy/leash) and cleared it. A **headless automaton never self-approves**: with
+  `## NEXT`, the run-level leash) and cleared it. A **headless automaton never self-approves**: with
   no user channel it may checkpoint progress but must **refuse `--approve`** and leave `status`
   unchanged (the same positional-authority rule that reserves a human-ratified gate verdict).
 - **Idempotent.** Approving an already-`approved` brief leaves it `approved`.
 - **Flag-only.** It writes the one frontmatter field; it does not dispatch the mission (that is the
-  gateway) and does not touch the strategy leash — `approved` says *run it*, the leash says *how far*.
+  gateway) and does not touch the run-level leash — `approved` says *run it*, the leash says *how far*.
 
 ## What a good pause is not
 
