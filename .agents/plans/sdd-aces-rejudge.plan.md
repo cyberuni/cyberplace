@@ -18,8 +18,8 @@ todos:
     content: "Spec gate — per re-frozen unit gate line recorded (ledger seq 11–20); root stays approved. check-spec-state + check-feature green. NOTE: concept-index --check reports a pre-existing, unrelated (rule→index) drift in design/* facets, NOT caused by this CR — left untouched."
     status: completed
   - id: handoff
-    content: "Handoff — commits landed on next (waves 1–3 + 2 bug fixes); update this ## NEXT; the next→main PR carries it alongside #34/#38 (owner's call). pnpm verify is the owner's pre-push step."
-    status: in_progress
+    content: "Handoff — commits landed on next (waves 1–3 + 2 bug fixes); the next→main PR (#46) merged this alongside other work. DONE."
+    status: completed
 isProject: false
 ---
 
@@ -130,13 +130,15 @@ Per-unit progress — **ALL 10 DONE**, each cold-judged ALIGNED 3/3, additive-on
 
 ## NEXT — resume here
 
-**▶ MISSION COMPLETE (in-tree) — handoff is the owner's call.** All 10 agent-behavior SDD suites
+**▶ MISSION COMPLETE AND MERGED (verified 2026-07-01).** All 10 agent-behavior SDD suites
 re-judged with the ACES squad and brought to ALIGNED 3/3 on the agent-config lens (the default bars
 that bootstrapped them couldn't enforce trigger realism); +43 additive scenarios, 2 stale bugs
-fixed, ledger seq 8–20 on `next`. `check-feature` + `check-spec-state` green; every touched
+fixed, ledger seq 8–20. `check-feature` + `check-spec-state` green; every touched
 `.feature` stayed `@frozen` (additive-only re-opens, ratified in-session). Engines were correctly
 excluded (ACES wrong-squad — proof-batch finding).
-**REMAINING (owner's call):** the `next → main` PR carrying this alongside #34/#38 (outward-facing).
+**Handoff confirmed:** `next → main` PR #46 merged; `5d36b71` (last aces-rejudge commit) and
+`b2300d1` (the standalone pre-existing-regression fix) are both ancestors of `main`. Nothing left
+to resume — retire this plan on the next doctrine-loop pass.
 **Verification done:** `pnpm verify` green (13/13) and `pnpm verify:specs-new` green (190/190, spec
 states + feature checks + governance registry OK, no concept-index drift). A **pre-existing
 regression** found during handoff (NOT the ACES add-tests) was fixed standalone in `b2300d1`:
