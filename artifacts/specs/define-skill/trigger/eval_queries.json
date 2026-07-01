@@ -1,102 +1,52 @@
 [
 	{
 		"id": "t001",
-		"query": "Create a new skill that helps agents write better commit messages",
+		"query": "I want a skill that formats our changelog entries",
 		"should_trigger": true
 	},
 	{
 		"id": "t002",
-		"query": "Write a skill for agents to use when reviewing pull requests",
+		"query": "We have a documented multi-step release process — turn it into a reusable skill",
 		"should_trigger": true
 	},
 	{
 		"id": "t003",
-		"query": "I need a skill that runs at session start to inject our commit discipline rules",
-		"should_trigger": true
-	},
-	{
-		"id": "t004",
-		"query": "Define a persona skill that acts as a senior security engineer",
-		"should_trigger": true
-	},
-	{
-		"id": "t005",
-		"query": "Build a process skill for our ticket estimation workflow",
-		"should_trigger": true
-	},
-	{
-		"id": "t006",
-		"query": "Add a project-private skill for our internal release checklist workflow",
-		"should_trigger": true
-	},
-	{
-		"id": "t007",
-		"query": "I want to improve my existing create-issue skill",
-		"should_trigger": true
-	},
-	{
-		"id": "t008",
-		"query": "Make a tool-based skill for interacting with our Asana board",
-		"should_trigger": true
-	},
-	{
-		"id": "t009",
-		"query": "Create a standard skill that enforces how agents format code comments",
-		"should_trigger": true
-	},
-	{
-		"id": "t010",
-		"query": "I need a skill for our CI triage workflow",
+		"query": "Here's a SKILL.md with a weak description and missing steps — help me fill out its definition",
 		"should_trigger": true
 	},
 	{
 		"id": "n001",
-		"query": "Create an agent that reviews code and posts inline PR comments",
+		"query": "Create a delegated code-reviewer agent I can fan out to as a subagent",
 		"should_trigger": false
 	},
 	{
 		"id": "n002",
-		"query": "Write governance rules for how agents handle user data",
+		"query": "I want a skill that makes the model adopt a senior-security-reviewer stance",
 		"should_trigger": false
 	},
 	{
 		"id": "n003",
-		"query": "Generate an eval spec for my commit-work skill",
+		"query": "Write a skill that's just criteria other skills load on demand but never execute as steps",
 		"should_trigger": false
 	},
 	{
 		"id": "n004",
-		"query": "Define a new AGENTS.md section for our commit discipline",
+		"query": "Turn what we just did in this session into a skill",
 		"should_trigger": false
 	},
 	{
 		"id": "n005",
-		"query": "Create a command that loads a code review persona",
+		"query": "Run the evals for a skill I already have",
 		"should_trigger": false
 	},
 	{
 		"id": "n006",
-		"query": "Audit my create-issue skill for quality issues",
+		"query": "Capture a failure I just saw as a new eval case for my skill",
 		"should_trigger": false
 	},
 	{
 		"id": "n007",
-		"query": "Write an ADR explaining why we chose this skill design pattern",
-		"should_trigger": false
-	},
-	{
-		"id": "n008",
-		"query": "Add a governance file for skill design principles",
-		"should_trigger": false
-	},
-	{
-		"id": "n009",
-		"query": "Create a subagent definition for autonomous code review",
-		"should_trigger": false
-	},
-	{
-		"id": "n010",
-		"query": "Set up evals for my existing define-governance skill",
+		"query": "Why are my skill's golden-set cases failing, and how do I fix them?",
 		"should_trigger": false
 	}
 ]
