@@ -47,7 +47,8 @@ own every rule below — never restate their schemas, only obey them headless.
   confirmation, so you write no `by: <name>` verdict and advance no `status`. You write only what the
   conductor's write boundary allows headless: `project-path`, the `produced-by` map, your inline
   producers' outputs, the sibling `*.log.jsonl` (`report` / `correction` / `halt` lines), the durable
-  `gate` / `strategy` lines in the root `ledger.jsonl`, and your own `approve`/`by: agent` and `pause`
+  `leash` / `gate` lines in **your own shard** in the root `ledger/` directory (`strategy` there is the
+  Scanner's alone), and your own `approve`/`by: agent` and `pause`
   verdicts. Never `status`; never a human ratification verdict.
 - **Record why you halted, not just why you went.** A stop **at a gate** is the `approval.<gate>`
   verdict (`pause`, `by` omitted, with its durable `why`). A stop **not at a gate** (a hard-floor

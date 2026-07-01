@@ -11,7 +11,7 @@ the async review queue when in leash, else showing the in-session digest and tak
 verdict directly (it holds the user channel).
 
 On **approve** it freezes each touched `.feature` per-file (`@frozen`), appends a per-CR `gate`
-line to `ledger.jsonl`, and writes `status: approved`; `spec.md`/READMEs stay aligned, never frozen.
+line to the mission's own `ledger/` shard, and writes `status: approved`; `spec.md`/READMEs stay aligned, never frozen.
 The **impl gate** is the mission's, not here. The gate is verdict-only — it writes no setup
 frontmatter and never fixes issues automatically.
 

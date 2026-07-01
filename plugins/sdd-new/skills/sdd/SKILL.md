@@ -17,7 +17,7 @@ Treat `$sdd`, "use SDD", and "use Spec-Driven Development" as explicit activatio
 
 ### Surface pending strategy
 
-When the Council re-enters, **surface the count of pending (unratified) strategy** — count the `strategy` lines with `"ratified": false` in the project's **root `ledger.jsonl`** (the durable sibling of the root `spec.md`) and state "N pending strategy" alongside the intake; if the Council picks it, route them to review those entries. Count only `kind: strategy` — the conductor's `kind: leash` run-start blocks are **not** strategy and never counted. The gateway only *surfaces* the count — it never **drafts** strategy (the Scanner's job) nor **ratifies** it (the Council's positional act). A zero count is not surfaced. (`strategy` lives in the durable `ledger.jsonl`, **never** in the per-mission `*.log.jsonl` combat log.)
+When the Council re-enters, **surface the count of pending (unratified) strategy** — count the `strategy` lines with `"ratified": false` globbed from the project's **root `ledger/` shards** (the durable sibling directory of the root `spec.md`; a legacy `ledger.jsonl` still counts) and state "N pending strategy" alongside the intake; if the Council picks it, route them to review those entries. Count only `kind: strategy` — the conductor's `kind: leash` run-start blocks are **not** strategy and never counted. The gateway only *surfaces* the count — it never **drafts** strategy (the Scanner's job) nor **ratifies** it (the Council's positional act). A zero count is not surfaced. (`strategy` lives in the durable `ledger/` shards, **never** in the per-mission `*.log.jsonl` combat log.)
 
 ### Surface in-progress missions
 
@@ -44,7 +44,7 @@ When a derived list would exceed four, present only the most-actionable few (≤
 
 ### Scan statuses with discover-specs
 
-For **Help me choose** — and whenever it needs to locate the project spec or rank the most-actionable few — the gateway runs the **`discover-specs`** skill, the frontmatter-only engine for `corpus/discovery`. It returns the TOON list of every project spec at the SDD spec locations — the three fixed conventions plus any opt-in extra anchors a project declared (ADR-0019) — with its `status`, `project-path`, and gate `approvals`; the gateway ranks from that and never opens a spec body. This is a read, not production logic — the same category as counting `ledger.jsonl` lines for pending strategy — so the thin-classifier rule still holds.
+For **Help me choose** — and whenever it needs to locate the project spec or rank the most-actionable few — the gateway runs the **`discover-specs`** skill, the frontmatter-only engine for `corpus/discovery`. It returns the TOON list of every project spec at the SDD spec locations — the three fixed conventions plus any opt-in extra anchors a project declared (ADR-0019) — with its `status`, `project-path`, and gate `approvals`; the gateway ranks from that and never opens a spec body. This is a read, not production logic — the same category as counting `ledger/` shard lines for pending strategy — so the thin-classifier rule still holds.
 
 ## The routing table is the user-skill→capability index
 

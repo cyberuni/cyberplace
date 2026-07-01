@@ -14,6 +14,7 @@ import {
 	parseLedgerGates,
 	parseNode,
 	parseSpecState,
+	readLedgerText,
 	type SpecState,
 } from './check-spec-state.mts'
 
@@ -290,6 +291,59 @@ test('parseLedgerGates reads gate lines and skips blank, malformed, and non-gate
 		{ gate: 'spec', verdict: 'approve' },
 		{ gate: 'impl', verdict: 'approve' },
 	])
+})
+
+test('readLedgerText: globs every ledger/ shard plus a legacy ledger.jsonl', () => {
+	const root = mkdtempSync(join(tmpdir(), 'ledger-'))
+	try {
+		const slug = 'proj'
+		mkdirSync(join(root, slug, 'ledger'), { recursive: true })
+		// legacy single file (pre-shard) — still counted
+		writeFileSync(join(root, slug, 'ledger.jsonl'), '{"seq":1,"kind":"gate","gate":"spec","verdict":"approve"}\n')
+		// two per-writer shards
+		writeFileSync(
+			join(root, slug, 'ledger', 'reshard-ledger.a3f9c1.jsonl'),
+			'{"seq":1,"kind":"gate","gate":"impl","verdict":"approve"}\n',
+		)
+		writeFileSync(join(root, slug, 'ledger', 'strategy.7b2e08.jsonl'), '{"seq":1,"kind":"strategy","ratified":false}\n')
+		// a non-jsonl file in the dir is ignored
+		writeFileSync(join(root, slug, 'ledger', 'README.md'), 'not a shard\n')
+
+		const gates = parseLedgerGates(readLedgerText(root, slug))
+		// the legacy spec-gate line and the shard impl-gate line are both seen; strategy is not a gate
+		assert.deepEqual(gates, [
+			{ gate: 'spec', verdict: 'approve' },
+			{ gate: 'impl', verdict: 'approve' },
+		])
+	} finally {
+		rmSync(root, { recursive: true, force: true })
+	}
+})
+
+test('readLedgerText: reads shards when no legacy file exists', () => {
+	const root = mkdtempSync(join(tmpdir(), 'ledger-'))
+	try {
+		const slug = 'proj'
+		mkdirSync(join(root, slug, 'ledger'), { recursive: true })
+		writeFileSync(
+			join(root, slug, 'ledger', 'cr.abc123.jsonl'),
+			'{"seq":1,"kind":"gate","gate":"spec","verdict":"approve"}\n',
+		)
+		assert.deepEqual(parseLedgerGates(readLedgerText(root, slug)), [{ gate: 'spec', verdict: 'approve' }])
+	} finally {
+		rmSync(root, { recursive: true, force: true })
+	}
+})
+
+test('readLedgerText: returns empty string when neither ledger/ nor ledger.jsonl exists', () => {
+	const root = mkdtempSync(join(tmpdir(), 'ledger-'))
+	try {
+		mkdirSync(join(root, 'proj'), { recursive: true })
+		assert.equal(readLedgerText(root, 'proj'), '')
+		assert.deepEqual(parseLedgerGates(readLedgerText(root, 'proj')), [])
+	} finally {
+		rmSync(root, { recursive: true, force: true })
+	}
 })
 
 test('checkGateFloor: a draft needs no ledger gate line', () => {

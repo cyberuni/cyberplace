@@ -17,7 +17,7 @@ is the mission's. This skill never collapses producing and judging into one voic
 Load `sdd:lifecycle-governance` (status enum, transitions, the freeze state-transition),
 `sdd:ownership-governance` (who may write `status` / `approval`),
 `sdd:gate-validation-governance` (legal-state tuples, per-node spec-type checks, derived sync —
-no stored flag, `approval` attribution). The `produced-by` and `ledger.jsonl` shapes the gate checks are in
+no stored flag, `approval` attribution). The `produced-by` and sharded-ledger shapes the gate checks are in
 `sdd:combat-log-governance`; the freeze model in `sdd:lifecycle-governance`; the
 self-clear-vs-escalate bar and the four-C floor are the conductor's autonomy bar (`start-mission`).
 
@@ -51,7 +51,7 @@ spec-judge grades form qualitatively; this engine catches it mechanically, so th
 sees a well-formed suite.
 
 **Provenance structural checks** (`sdd:combat-log-governance`). Read the touched files'
-`produced-by` frontmatter and the root's `ledger.jsonl`:
+`produced-by` frontmatter and the root's `ledger/` shards (globbed; a legacy `ledger.jsonl` still counts):
 
 - **Malformed `produced-by` entry** — a value that is not a well-formed plugin-qualified name
   (`<plugin>:<agent>`) → **flag and fail closed**.
@@ -105,7 +105,7 @@ self-clears.
 
 | Verb | Action |
 |---|---|
-| **approve** | land the diff; **freeze** each touched `.feature` (set its own `@frozen` tag); append a per-CR `gate` line to `ledger.jsonl` (`verdict: approve`, `frozen[]`, keyed by `cr`); write `status: approved` |
+| **approve** | land the diff; **freeze** each touched `.feature` (set its own `@frozen` tag); append a per-CR `gate` line to the mission's **own shard** in the root `ledger/` directory (`verdict: approve`, `frozen[]`, keyed by `cr`, no `ts`); write `status: approved` |
 | **change** | revise the diff; **nothing freezes**; stays `draft` |
 | **reject** | scope-kill — drop the delta; nothing freezes |
 

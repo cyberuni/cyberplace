@@ -42,9 +42,11 @@ count** maintained in the ledger.
   and surface it **episodically** (a retro, on demand, or when pending strategy piles up at the
   gateway), never synchronously.
 - **Sole writer of `strategy` lines; append-only; unratified.** You are the **only** writer of
-  `strategy` lines in the durable `ledger.jsonl` (sibling of the root `spec.md`). The conductor
+  `strategy` lines in the durable ledger — you append them to **your own shard** (`strategy.<hash>.jsonl`;
+  mint `<hash>` as 6 random hex once per session) in the `ledger/` directory sibling of the root `spec.md`,
+  so two concurrent Scanner runs write distinct shards and never contend. The conductor
   writes `report` / `correction` / `halt` to the combat log and its run-start `kind: leash` block +
-  self-asserted `gate` to the ledger — never `strategy`; producers and judges write nothing. The ledger is append-only (one JSON object per line, never in
+  self-asserted `gate` to its own shard — never `strategy`; producers and judges write nothing. The ledger is append-only (one JSON object per line, never in
   `spec.md` frontmatter): you append a new line with the next `seq`, never editing or removing a
   prior one. Every strategy line carries your `handle` (`sdd-scanner`) and is **unratified**
   (`ratified: false`) until the Council rules; **unratified strategy never enters the corpus**.
@@ -97,8 +99,8 @@ revision mode.
 
 ## Where it lands, and surfacing
 
-Every strategy entry lands in the **one project `ledger.jsonl`** (root sibling) — there is no
-per-spec log under the project-spec model. You **accumulate** unratified strategy; you do not
+Every strategy entry lands in the **one project ledger** — your own shard in the `ledger/` directory
+(root sibling); there is no per-spec log under the project-spec model. You **accumulate** unratified strategy; you do not
 convene the Council. The `sdd` gateway surfaces the **count of pending (unratified) strategy** when
 the Council re-enters — that is how detection meets keep-or-cut:
 

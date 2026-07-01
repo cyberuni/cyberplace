@@ -16,7 +16,7 @@
 //      (status / project-path / approval / produced-by / freeze) is root-spec.md-
 //      only (lifecycle-governance), so a stray lifecycle field on a node fails closed.
 //   3. the gate-line floor — a root spec.md at `approved`/`implemented` must have the
-//      DURABLE proof of the gate in its sibling `ledger.jsonl`: a `gate` line with the
+//      DURABLE proof of the gate in its sibling `ledger/` shards: a `gate` line with the
 //      matching `verdict: approve`. The spec.md `approval` map is the overwritten
 //      current-state twin (checked in 1); the ledger line is the immutable durable twin,
 //      and a status advance with no ledger gate line is an unenforced gate. `draft`
@@ -215,7 +215,7 @@ export function checkNode(slug: string, node: NodeSpec, hasFeature: boolean): st
 	return v
 }
 
-// The durable gate-line floor. Parse the sibling `ledger.jsonl` for its `gate` lines — the
+// The durable gate-line floor. Parse the sibling ledger (see readLedgerText) for its `gate` lines — the
 // immutable durable verdicts (one JSON object per line; a malformed or non-gate line is skipped,
 // integrity being a separate concern).
 export function parseLedgerGates(text: string): LedgerGate[] {
@@ -235,6 +235,23 @@ export function parseLedgerGates(text: string): LedgerGate[] {
 	return gates
 }
 
+// The durable ledger is a `ledger/` directory of per-CR-per-writer shard files (ADR-0020),
+// with a legacy single-file `ledger.jsonl` tolerated for pre-shard corpora. Concatenate every
+// `*.jsonl` shard plus the legacy file so the gate floor sees the whole durable history across
+// shards, regardless of storage generation. Returns "" when neither exists.
+export function readLedgerText(root: string, slug: string): string {
+	const parts: string[] = []
+	const legacy = join(root, slug, 'ledger.jsonl')
+	if (existsSync(legacy)) parts.push(readFileSync(legacy, 'utf8'))
+	const dir = join(root, slug, 'ledger')
+	if (existsSync(dir)) {
+		for (const e of readdirSync(dir, { withFileTypes: true })) {
+			if (e.isFile() && e.name.endsWith('.jsonl')) parts.push(readFileSync(join(dir, e.name), 'utf8'))
+		}
+	}
+	return parts.join('\n')
+}
+
 // A root spec.md at `approved`/`implemented` must carry the matching durable `gate` approve line
 // in its sibling ledger — the `approval` map (checked in checkSpec) is the overwritten current-state
 // twin; this is the immutable durable twin. A status advance with no ledger gate line is an
@@ -245,9 +262,9 @@ export function checkGateFloor(slug: string, status: string, gates: LedgerGate[]
 	const approved = (gate: string) => gates.some((g) => g.gate === gate && g.verdict === 'approve')
 
 	if ((status === 'approved' || status === 'implemented') && !approved('spec'))
-		tag(`status is ${status} but ledger.jsonl has no spec gate approve line — the durable gate floor is missing`)
+		tag(`status is ${status} but the ledger has no spec gate approve line — the durable gate floor is missing`)
 	if (status === 'implemented' && !approved('impl'))
-		tag('status is implemented but ledger.jsonl has no impl gate approve line — the durable gate floor is missing')
+		tag('status is implemented but the ledger has no impl gate approve line — the durable gate floor is missing')
 
 	return v
 }
@@ -293,8 +310,7 @@ export function main(argv: string[]): number {
 		if (!existsSync(specPath)) continue
 		const state = parseSpecState(readFileSync(specPath, 'utf8'))
 		violations = violations.concat(checkSpec(slug, state))
-		const ledgerPath = join(root, slug, 'ledger.jsonl')
-		const gates = existsSync(ledgerPath) ? parseLedgerGates(readFileSync(ledgerPath, 'utf8')) : []
+		const gates = parseLedgerGates(readLedgerText(root, slug))
 		violations = violations.concat(checkGateFloor(slug, state.status, gates))
 	}
 	for (const slug of discoverNodeDirs(root)) {
