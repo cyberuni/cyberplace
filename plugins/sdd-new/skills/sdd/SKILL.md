@@ -44,7 +44,7 @@ When a derived list would exceed four, present only the most-actionable few (≤
 
 ### Scan statuses with discover-specs
 
-For **Help me choose** — and whenever it needs to locate the project spec or rank the most-actionable few — the gateway runs the **`discover-specs`** skill, the frontmatter-only engine for `corpus/discovery`. It returns the TOON list of every project spec at the three SDD spec locations with its `status`, `project-path`, and gate `approvals`; the gateway ranks from that and never opens a spec body. This is a read, not production logic — the same category as counting `ledger.jsonl` lines for pending strategy — so the thin-classifier rule still holds.
+For **Help me choose** — and whenever it needs to locate the project spec or rank the most-actionable few — the gateway runs the **`discover-specs`** skill, the frontmatter-only engine for `corpus/discovery`. It returns the TOON list of every project spec at the SDD spec locations — the three fixed conventions plus any opt-in extra anchors a project declared (ADR-0019) — with its `status`, `project-path`, and gate `approvals`; the gateway ranks from that and never opens a spec body. This is a read, not production logic — the same category as counting `ledger.jsonl` lines for pending strategy — so the thin-classifier rule still holds.
 
 ## The routing table is the user-skill→capability index
 
