@@ -1,7 +1,7 @@
 ---
 name: pause-mission
-description: "Checkpoint an in-progress SDD mission INTO its plan brief so any later session can pick it up. Use this skill when asked to 'pause', 'wrap up for now', or 'stop here' mid-mission — update the plan's todo statuses and rewrite its ## NEXT anchor so a fresh session continues exactly where you left off."
-argument-hint: "[what the next session should focus on]"
+description: "Checkpoint an in-progress SDD mission INTO its plan brief so any later session can pick it up. Use this skill when asked to 'pause', 'wrap up for now', or 'stop here' mid-mission — update the plan's todo statuses and rewrite its ## NEXT anchor so a fresh session continues exactly where you left off. Pass --approve to also clear the mission for headless dispatch (sets the brief's status: approved)."
+argument-hint: "[what the next session should focus on] [--approve]"
 ---
 
 # Pause an SDD mission into its plan
@@ -49,6 +49,25 @@ the plan stands on its own). Capture *enough to continue, nothing to relitigate.
 
 7. **Commit the checkpoint.** Commit the plan update (`docs:`) so the pause is durable in git and
    the working tree is clean. Leave no uncommitted work behind.
+
+**Write scope.** A checkpoint writes **only the plan brief** — the `todos`, the `## NEXT` anchor,
+and (with `--approve`) the top-level `status`. It never touches `spec.md`'s `status` or `approval`:
+the mission's contract lifecycle is the gates', not the checkpoint's.
+
+## Clear for headless dispatch — `--approve`
+
+A plain pause never touches the brief's top-level `status`. When invoked with **`--approve`**, the
+checkpoint additionally sets the brief's **`status: approved`** — the human review act that clears
+the mission for the gateway's headless dispatch queue (the go-signal `dispatch` selects on; the
+enum + the three-way `status` distinction live in the SDD `provenance-model`). Rules:
+
+- **Human act only.** Setting `approved` is a review decision — a person has read the brief (todos,
+  `## NEXT`, the strategy/leash) and cleared it. A **headless automaton never self-approves**: with
+  no user channel it may checkpoint progress but must **refuse `--approve`** and leave `status`
+  unchanged (the same positional-authority rule that reserves a human-ratified gate verdict).
+- **Idempotent.** Approving an already-`approved` brief leaves it `approved`.
+- **Flag-only.** It writes the one frontmatter field; it does not dispatch the mission (that is the
+  gateway) and does not touch the strategy leash — `approved` says *run it*, the leash says *how far*.
 
 ## What a good pause is not
 

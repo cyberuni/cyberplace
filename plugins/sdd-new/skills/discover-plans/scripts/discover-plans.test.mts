@@ -3,7 +3,17 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { test } from 'node:test'
-import { collectPlans, main, nextLead, parsePlanFrontmatter, TODO_STATUSES, toToon } from './discover-plans.mts'
+import {
+	collectPlans,
+	DEFAULT_PLAN_STATUS,
+	filterByStatus,
+	main,
+	nextLead,
+	type PlanRecord,
+	parsePlanFrontmatter,
+	TODO_STATUSES,
+	toToon,
+} from './discover-plans.mts'
 
 // Write a <cr>.plan.md under <dir>/.agents/plans with the given contents.
 function seedPlan(dir: string, cr: string, contents: string): void {
@@ -12,10 +22,12 @@ function seedPlan(dir: string, cr: string, contents: string): void {
 	writeFileSync(join(plansDir, `${cr}.plan.md`), contents)
 }
 
-// A minimal plan brief: name + a todos list with the given statuses + a NEXT anchor.
-function brief(name: string, statuses: string[], next: string): string {
+// A minimal plan brief: name + an optional top-level status + a todos list with the given
+// statuses + a NEXT anchor. Omit `planStatus` to leave the top-level status unset.
+function brief(name: string, statuses: string[], next: string, planStatus?: string): string {
 	const todos = statuses.map((s, i) => `  - id: t${i}\n    content: "step ${i}"\n    status: ${s}`).join('\n')
-	return `---\nname: "${name}"\ntodos:\n${todos}\n---\n\n## NEXT\n\n${next}\n`
+	const statusLine = planStatus === undefined ? '' : `status: ${planStatus}\n`
+	return `---\nname: "${name}"\n${statusLine}todos:\n${todos}\n---\n\n## NEXT\n\n${next}\n`
 }
 
 // ── parsePlanFrontmatter ──
@@ -50,6 +62,29 @@ test('parsePlanFrontmatter handles an empty todos list', () => {
 	const fm = parsePlanFrontmatter('---\nname: empty\ntodos: []\n---\n')
 	assert.equal(fm?.name, 'empty')
 	assert.equal(fm?.total, 0)
+})
+
+test('parsePlanFrontmatter reads the top-level status flag', () => {
+	const fm = parsePlanFrontmatter(brief('demo', ['pending'], 'go', 'approved'))
+	assert.equal(fm?.status, 'approved')
+})
+
+test('parsePlanFrontmatter defaults status to active when the top-level key is absent', () => {
+	const fm = parsePlanFrontmatter(brief('demo', ['pending'], 'go'))
+	assert.equal(fm?.status, DEFAULT_PLAN_STATUS)
+	assert.equal(fm?.status, 'active')
+})
+
+test('parsePlanFrontmatter treats an empty status value as the default', () => {
+	const fm = parsePlanFrontmatter('---\nname: x\nstatus:\ntodos:\n  - id: a\n    status: pending\n---\n')
+	assert.equal(fm?.status, 'active')
+})
+
+test('parsePlanFrontmatter does not confuse a todo status with the plan status', () => {
+	// The only `status:` here is a todo's — the plan-level status must stay the default.
+	const fm = parsePlanFrontmatter(brief('demo', ['completed'], 'go'))
+	assert.equal(fm?.status, 'active')
+	assert.equal(fm?.completed, 1)
 })
 
 test('the todo status enum is exactly the three states', () => {
@@ -137,15 +172,64 @@ test('collectPlans returns empty when there is no plans dir', () => {
 	}
 })
 
+test('collectPlans carries each brief status, defaulting an unset one to active', () => {
+	const dir = mkdtempSync(join(tmpdir(), 'plans-'))
+	try {
+		seedPlan(dir, 'ready', brief('ready', ['pending'], 'go', 'approved'))
+		seedPlan(dir, 'wip', brief('wip', ['in_progress'], 'go'))
+		const plans = collectPlans(dir)
+		assert.equal(plans.find((p) => p.cr === 'ready')?.status, 'approved')
+		assert.equal(plans.find((p) => p.cr === 'wip')?.status, 'active')
+	} finally {
+		rmSync(dir, { recursive: true, force: true })
+	}
+})
+
+// ── filterByStatus ──
+
+const rec = (cr: string, status: string): PlanRecord => ({
+	cr,
+	name: cr,
+	total: 1,
+	completed: 0,
+	inProgress: 0,
+	status,
+	next: '',
+})
+
+test('filterByStatus narrows to the requested status', () => {
+	const plans = [rec('a', 'approved'), rec('b', 'active'), rec('c', 'approved')]
+	assert.deepEqual(
+		filterByStatus(plans, 'approved').map((p) => p.cr),
+		['a', 'c'],
+	)
+})
+
+test('filterByStatus to active includes the unset (defaulted) briefs', () => {
+	// collectPlans normalizes an unset status to `active`, so an active filter selects them.
+	const plans = [rec('a', 'active'), rec('b', 'approved')]
+	assert.deepEqual(
+		filterByStatus(plans, 'active').map((p) => p.cr),
+		['a'],
+	)
+})
+
+test('filterByStatus yields the empty set when no brief matches', () => {
+	const plans = [rec('a', 'active'), rec('b', 'approved')]
+	assert.deepEqual(filterByStatus(plans, 'nonesuch'), [])
+})
+
 // ── toToon ──
 
 test('toToon emits a TOON table keyed by the plan columns', () => {
-	const toon = toToon([{ cr: 'github-34', name: 'four', total: 2, completed: 1, inProgress: 0, next: 'do, it' }])
+	const toon = toToon([
+		{ cr: 'github-34', name: 'four', total: 2, completed: 1, inProgress: 0, status: 'approved', next: 'do, it' },
+	])
 	const lines = toon.split('\n')
-	assert.equal(lines[0], 'plans[1]{cr,name,total,completed,inProgress,next}:')
+	assert.equal(lines[0], 'plans[1]{cr,name,total,completed,inProgress,status,next}:')
 	// `next` carries a comma → it must be quoted.
 	assert.match(lines[1], /"do, it"$/)
-	assert.match(lines[1], /github-34,four,2,1,0,/)
+	assert.match(lines[1], /github-34,four,2,1,0,approved,/)
 })
 
 // ── main (CLI smoke) ──
@@ -163,6 +247,29 @@ test('main returns 0 and prints a TOON header', () => {
 		const code = main(['--root', dir])
 		assert.equal(code, 0)
 		assert.match(writes.join(''), /^plans\[1\]\{/)
+	} finally {
+		;(process.stdout as unknown as { write: typeof orig }).write = orig
+		rmSync(dir, { recursive: true, force: true })
+	}
+})
+
+test('main --status approved narrows the printed queue to approved briefs', () => {
+	const dir = mkdtempSync(join(tmpdir(), 'plans-'))
+	const writes: string[] = []
+	const orig = process.stdout.write.bind(process.stdout)
+	;(process.stdout as unknown as { write: (s: string) => boolean }).write = (s: string) => {
+		writes.push(s)
+		return true
+	}
+	try {
+		seedPlan(dir, 'ready', brief('ready', ['pending'], 'go', 'approved'))
+		seedPlan(dir, 'wip', brief('wip', ['in_progress'], 'go'))
+		const code = main(['--root', dir, '--status', 'approved'])
+		assert.equal(code, 0)
+		const out = writes.join('')
+		assert.match(out, /^plans\[1\]\{/) // only the one approved brief
+		assert.match(out, /ready,ready,/)
+		assert.doesNotMatch(out, /\bwip\b/)
 	} finally {
 		;(process.stdout as unknown as { write: typeof orig }).write = orig
 		rmSync(dir, { recursive: true, force: true })

@@ -27,31 +27,40 @@ A file is a mission brief only when **both** hold (`intake/plan-discovery`):
   stray and is skipped; a sibling that does not end `.plan.md` (a combat-log `*.log.jsonl`, a loose
   `*.md`) is never a brief.
 
-**Present means resumable.** There is no status filter — a present brief is already unretired (the
-doctrine loop's `plan-retirement` deletes a brief once its CR is done/merged and distilled), so every
-brief the scan finds is a resumable mission. The todo tally lets the caller tell a barely-started
-mission from one near handoff.
+**Present means resumable.** By default there is **no status filter** — a present brief is already
+unretired (the doctrine loop's `plan-retirement` deletes a brief once its CR is done/merged and
+distilled), so every brief the scan finds is a resumable mission. The todo tally lets the caller tell
+a barely-started mission from one near handoff.
+
+**The `status` dispatch flag.** Each brief may declare a top-level `status` (the mission dispatch
+flag — `active` by default, `approved` once a human clears it for headless dispatch). The scan
+**reports** it in every row (an unset value reads as `active`), and, **only when a caller passes
+`--status <value>`**, narrows the set to that status — the opt-in filter the gateway's dispatch loop
+uses to build the approved queue. A value no brief carries yields the empty set. The engine reports
+the flag; it never interprets or writes it.
 
 ## Run the scan
 
 ```bash
-node "<skill>/scripts/discover-plans.mts" [--root .] [--format toon|json]
+node "<skill>/scripts/discover-plans.mts" [--root .] [--format toon|json] [--status <value>]
 ```
 
 - Default `--root` is the current directory; default `--format` is **TOON** (the token-efficient
   tabular form the gateway scans).
 - Emits one row per brief, sorted by CR ref, with columns
-  `cr,name,total,completed,inProgress,next` — `cr` is the filename slug (`<cr-ref>`), the three
-  counts are the todo tally, and `next` is the lead line of the brief's `## NEXT` anchor (the resume
-  hint).
+  `cr,name,total,completed,inProgress,status,next` — `cr` is the filename slug (`<cr-ref>`), the
+  three counts are the todo tally, `status` is the dispatch flag (`active` when unset), and `next` is
+  the lead line of the brief's `## NEXT` anchor (the resume hint).
+- `--status <value>` narrows to the briefs at that dispatch status (e.g. `--status approved` for the
+  dispatch queue); absent, no status filter is applied.
 - `--format json` emits the same records as a flat JSON array for non-LLM consumers.
 
 Example (TOON):
 
 ```
-plans[2]{cr,name,total,completed,inProgress,next}:
-  github-34,github-34: ...,34,21,0,"sub-corpus — suites done, impls pending"
-  github-38,github-38: ...,11,1,0,"phase A — author custom ACES bars"
+plans[2]{cr,name,total,completed,inProgress,status,next}:
+  github-34,github-34: ...,34,21,0,active,"sub-corpus — suites done, impls pending"
+  add-auth,add-auth: ...,6,2,0,approved,"build the token exchange unit"
 ```
 
 When `node` is absent, an agent performs the same derivation by hand: list `.agents/plans/*.plan.md`,

@@ -23,6 +23,9 @@ import { join } from 'node:path'
 
 export const TODO_STATUSES = new Set(['pending', 'in_progress', 'completed'])
 
+/** The default mission dispatch status — the meaning of an absent top-level `status`. */
+export const DEFAULT_PLAN_STATUS = 'active'
+
 export interface PlanRecord {
 	/** The CR ref — the plan's filename without the `.plan.md` suffix. */
 	cr: string
@@ -34,12 +37,16 @@ export interface PlanRecord {
 	completed: number
 	/** Todos with status `in_progress`. */
 	inProgress: number
+	/** The mission dispatch flag — the top-level `status` (`active` when unset). */
+	status: string
 	/** The lead line of the `## NEXT` resume anchor, or '' when there is none. */
 	next: string
 }
 
 export interface PlanFrontmatter {
 	name: string
+	/** The mission dispatch flag — the top-level `status` (`active` when unset). */
+	status: string
 	total: number
 	completed: number
 	inProgress: number
@@ -52,7 +59,14 @@ export interface PlanFrontmatter {
 export function parsePlanFrontmatter(text: string): PlanFrontmatter | null {
 	const m = /^---\r?\n([\s\S]*?)\r?\n---\s*(?:\r?\n|$)/.exec(text)
 	if (!m) return null
-	const fm: PlanFrontmatter = { name: '', total: 0, completed: 0, inProgress: 0, pending: 0 }
+	const fm: PlanFrontmatter = {
+		name: '',
+		status: DEFAULT_PLAN_STATUS,
+		total: 0,
+		completed: 0,
+		inProgress: 0,
+		pending: 0,
+	}
 	let inTodos = false // currently inside the top-level `todos:` block
 	for (const raw of m[1].split('\n')) {
 		const line = raw.replace(/\r$/, '')
@@ -64,7 +78,12 @@ export function parsePlanFrontmatter(text: string): PlanFrontmatter | null {
 			const [key, ...rest] = trimmed.split(':')
 			const value = rest.join(':').trim()
 			if (key === 'name') fm.name = unquote(value)
-			else if (key === 'todos') inTodos = true // value is empty; the list follows, indented
+			// The top-level `status` is the plan's dispatch flag (distinct from a todo's
+			// `status`, which sits indented inside `todos:`). An empty value stays the default.
+			else if (key === 'status') {
+				const v = unquote(value)
+				if (v !== '') fm.status = v
+			} else if (key === 'todos') inTodos = true // value is empty; the list follows, indented
 			continue
 		}
 		// Inside the todos list — count each item's status. A list item's keys sit at
@@ -147,14 +166,24 @@ export function collectPlans(root: string): PlanRecord[] {
 			total: fm.total,
 			completed: fm.completed,
 			inProgress: fm.inProgress,
+			status: fm.status,
 			next: nextLead(text),
 		})
 	}
 	return out.sort((a, b) => (a.cr < b.cr ? -1 : a.cr > b.cr ? 1 : 0))
 }
 
+// ── Filter ──
+// Narrow a plan set to one dispatch status — the opt-in selector the gateway's dispatch loop
+// uses to build the approved queue. Records already carry a concrete `status` (unset → the
+// default `active`), so a filter to `active` includes the unset briefs and a value no brief
+// carries (an off-enum or simply-absent status) yields the empty set.
+export function filterByStatus(plans: PlanRecord[], status: string): PlanRecord[] {
+	return plans.filter((p) => p.status === status)
+}
+
 // ── Output ──
-const COLUMNS = ['cr', 'name', 'total', 'completed', 'inProgress', 'next'] as const
+const COLUMNS = ['cr', 'name', 'total', 'completed', 'inProgress', 'status', 'next'] as const
 
 // Quote a TOON field only when it carries the delimiter, a quote, or edge whitespace.
 function toonField(v: string): string {
@@ -171,7 +200,10 @@ export function toToon(plans: PlanRecord[]): string {
 export function main(argv: string[]): number {
 	const root = argv.includes('--root') ? (argv[argv.indexOf('--root') + 1] ?? '.') : '.'
 	const format = argv.includes('--format') ? argv[argv.indexOf('--format') + 1] : 'toon'
-	const plans = collectPlans(root)
+	const statusFilter = argv.includes('--status') ? argv[argv.indexOf('--status') + 1] : undefined
+	let plans = collectPlans(root)
+	// Opt-in: `--status <value>` narrows to the dispatch queue; absent, no status filter is applied.
+	if (statusFilter !== undefined) plans = filterByStatus(plans, statusFilter)
 	const out = format === 'json' ? JSON.stringify(plans, null, 2) : toToon(plans)
 	process.stdout.write(`${out}\n`)
 	return 0
