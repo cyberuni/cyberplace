@@ -1,0 +1,19 @@
+{
+	"$schema": "https://raw.githubusercontent.com/cyberuni/universal-plugin/refs/heads/main/schema/v1.json",
+	"name": "datadog",
+	"description": "Preconfigured access to Datadog monitoring, logging, and observability tools. Query logs, metrics, traces, and dashboards through natural conversation.",
+	"author": { "name": "Datadog" },
+	"homepage": "https://datadoghq.com",
+	"keywords": ["observability", "monitoring", "logs", "metrics"],
+	"skills": "./skills/",
+	"mcpServers": "./.mcp.json",
+	"rules": "./rules/",
+	"vendorExtensions": {
+		"cursor": {
+			"publisher": "datadog",
+			"logo": "./assets/logo.png",
+			"category": "devops",
+			"tags": ["monitoring", "observability", "logs", "apm"]
+		}
+	}
+}

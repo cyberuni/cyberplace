@@ -1,0 +1,42 @@
+[
+	{
+		"id": "t-007",
+		"query": "Can you create the eval spec for the `add-changeset` command?",
+		"should_trigger": true
+	},
+	{
+		"id": "t-008",
+		"query": "Run create-spec on everything under plugins/aces/skills/",
+		"should_trigger": true
+	},
+	{
+		"id": "t-009",
+		"query": "build me a test suite for the publish-universal-plugin skill",
+		"should_trigger": true
+	},
+	{
+		"id": "t-010",
+		"query": "Which agent config artifacts are missing their eval spec?",
+		"should_trigger": true
+	},
+	{
+		"id": "n-007",
+		"query": "What eval scores did the last run produce?",
+		"should_trigger": false
+	},
+	{
+		"id": "n-008",
+		"query": "Add a new scenario to the existing golden set for commit-work",
+		"should_trigger": false
+	},
+	{
+		"id": "n-009",
+		"query": "Validate my skill before I publish it",
+		"should_trigger": false
+	},
+	{
+		"id": "n-010",
+		"query": "Write unit tests for the audit validate command",
+		"should_trigger": false
+	}
+]

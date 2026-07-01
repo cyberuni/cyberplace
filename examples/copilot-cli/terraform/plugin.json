@@ -1,0 +1,16 @@
+{
+	"$schema": "https://raw.githubusercontent.com/cyberuni/universal-plugin/refs/heads/main/schema/v1.json",
+	"name": "terraform",
+	"description": "Infrastructure-as-code specialist agent. Generates compliant Terraform using the latest provider and module versions via registry integration and workspace management.",
+	"author": { "name": "GitHub" },
+	"keywords": ["terraform", "infrastructure", "iac", "devops"],
+	"agents": "./agents/",
+	"skills": "./skills/",
+	"mcpServers": "./.mcp.json",
+	"vendorExtensions": {
+		"copilot-cli": {
+			"category": "devops",
+			"tags": ["terraform", "infrastructure", "iac"]
+		}
+	}
+}

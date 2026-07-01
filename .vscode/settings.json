@@ -22,6 +22,7 @@
 		"Agentic",
 		"anthropics",
 		"criticals",
+		"evals",
 		"exfiltration",
 		"fdisk",
 		"Governances",
@@ -32,6 +33,8 @@
 		"subdirs",
 		"trailofbits"
 	],
+	"cucumber.features": ["artifacts/specs/**/*.feature"],
+	"cucumber.glue": ["**/.vscode/cucumber-glue.js"],
 	"editor.codeActionsOnSave": {
 		"source.fixAll.biome": "explicit"
 	}

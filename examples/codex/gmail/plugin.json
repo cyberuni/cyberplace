@@ -1,0 +1,22 @@
+{
+	"$schema": "https://raw.githubusercontent.com/cyberuni/universal-plugin/refs/heads/main/schema/v1.json",
+	"name": "gmail",
+	"version": "1.0.0",
+	"description": "Read and manage Gmail. Filter threads, summarize unread messages, compose drafts, and manage labels through natural language.",
+	"author": { "name": "Google" },
+	"homepage": "https://mail.google.com",
+	"keywords": ["google", "gmail", "email"],
+	"skills": "./skills/",
+	"mcpServers": "./.mcp.json",
+	"vendorExtensions": {
+		"codex": {
+			"apps": "./.app.json",
+			"interface": {
+				"displayName": "Gmail",
+				"shortDescription": "Connect Codex to your Gmail inbox for reading, filtering, and drafting emails.",
+				"category": "productivity",
+				"websiteURL": "https://mail.google.com"
+			}
+		}
+	}
+}

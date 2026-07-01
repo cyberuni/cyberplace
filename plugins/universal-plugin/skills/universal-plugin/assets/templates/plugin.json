@@ -1,0 +1,15 @@
+{
+	"$schema": "https://raw.githubusercontent.com/cyberuni/universal-plugin/refs/heads/main/schema/v1.json",
+	"name": "<plugin-name>",
+	"version": "1.0.0",
+	"description": "<description>",
+	"author": { "name": "<author>" },
+	"vendors": ["claude-code", "cursor", "codex", "copilot-cli"],
+	"skills": "./skills/",
+	"vendorExtensions": {
+		"claude-code": {},
+		"cursor": {},
+		"codex": {},
+		"copilot-cli": {}
+	}
+}

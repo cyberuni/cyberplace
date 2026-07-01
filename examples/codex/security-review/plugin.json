@@ -1,0 +1,20 @@
+{
+	"$schema": "https://raw.githubusercontent.com/cyberuni/universal-plugin/refs/heads/main/schema/v1.json",
+	"name": "security-review",
+	"version": "1.0.0",
+	"description": "Scans authorized code to detect and confirm plausible vulnerability findings. Supports codebase investigation, change set analysis, and minimal fix preparation.",
+	"author": { "name": "OpenAI" },
+	"keywords": ["security", "vulnerability", "code-review"],
+	"skills": "./skills/",
+	"vendorExtensions": {
+		"codex": {
+			"apps": "./.app.json",
+			"interface": {
+				"displayName": "Security Review",
+				"shortDescription": "Vulnerability detection and security analysis for authorized codebases.",
+				"category": "security",
+				"websiteURL": "https://developers.openai.com/codex/plugins"
+			}
+		}
+	}
+}

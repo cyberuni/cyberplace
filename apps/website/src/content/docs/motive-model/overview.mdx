@@ -1,0 +1,72 @@
+---
+title: The Motive Model
+description: A mental model for building with AI, organized around motive rather than job title — why building once meant assembling a team and waiting on the disciplines you lacked, and how AI lets one person carry a product far past their own expertise.
+---
+
+import { Card, CardGrid, LinkCard, Aside } from '@astrojs/starlight/components'
+import Mermaid from '../../../components/Mermaid.astro'
+
+Building a product takes more than one kind of expertise — someone to frame what's worth making, someone to build it, someone to keep it coherent, someone to test it. A person is good at one. So no one advanced a product alone: you formed a **team**, and the work waited on whoever held the discipline you lacked. That waiting — not the typing — was the real cost of building.
+
+AI changes who has to be present. A discipline can be **codified** — written down once — and run by an AI **delegate** that acts on your behalf, putting the engineer's, designer's, and tester's judgment within your reach on demand. One person can now carry a product far past their own expertise without stopping to wait for the rest of the team.
+
+With progress no longer gated by who's in the room, a **job title** stops being a boundary. What defines your place on a team is no longer the job you hold but the **direction** you set right now — a **motive** (what you want from the work) pursued from your **angle** of expertise; the angle is what tells you *which* want is worth holding and *how* to judge it. You fulfill that direction by wielding a delegate you direct to act on your behalf. That shift — from **title** to **motive** — is the move everything else here is built on.
+
+<Mermaid
+	caption="The whole model in one move: a human holds the motive and the accountability; the delegate is faithful capacity, with no motive of its own — a faithfulness the actor enforces by checking fidelity, not something assumed."
+	code={`flowchart LR
+    A["<b>Actor</b> — human<br/>motive · accountability"] -->|authors| S["<b>Delegation surface</b><br/>brief · contract · shape · corpus"]
+    S -->|configures| D["<b>Delegate</b> — agent<br/>capacity · no motive of its own"]
+    D -->|returns work| A
+    A -.->|checks fidelity| D
+    class A actor
+    class S artifact
+    class D delegate
+    classDef actor stroke-width:2px
+    classDef artifact stroke:#0d9488,stroke-width:1.75px
+    classDef delegate stroke-dasharray:6 4`}
+/>
+
+<Aside type="tip" title="Reading the diagrams">
+A shared visual language runs through every diagram on these pages: **actors** (humans) have a solid accent border, **delegates** (agents) a dashed border — *capacity, wielded* — a **gate** an amber border, and an **artifact** (a surface, product, or piece of work) a teal border.
+</Aside>
+
+That is the whole model in one move. The rest of these pages unpack it.
+
+## The shift in one table
+
+| | Production scarce (pre-AI) | Production abundant (with AI) |
+| --- | --- | --- |
+| Unit of a team | a **fixed contribution** — what a job title named | the **direction** — a motive, from your angle of expertise |
+| A person | does one kind of thing well | spans several, via delegates |
+| Producing the artifact | the scarce, defining act | cheap; no longer the bottleneck |
+| The scarce thing | making the thing | deciding *what* to make, and judging it |
+
+<Aside type="caution" title="Abundance is a dial, not a switch">
+The model is **abundance-relative**, not a claim that everything is now cheap. Where generation is cheap (common code, tests, boilerplate) one human spans many motives. Where it stays expensive (novel, research-grade work) the old `title = contribution` rule survives locally. The model degrades gracefully — same parts, less compression.
+</Aside>
+
+## What this model gives you
+
+A vocabulary for building anything with AI, organized so the pieces don't overlap. Read it as a path:
+
+<CardGrid>
+	<LinkCard title="Positions Are Not Roles" href="/motive-model/positions-are-not-roles/" description="Start here. How your familiar job title cracks open into several motives." />
+	<LinkCard title="The Four Actors" href="/motive-model/four-actors/" description="The four motives every build needs: intend, generate, structure, accumulate." />
+	<LinkCard title="Two Faces and the Gate" href="/motive-model/faces-and-the-gate/" description="Why everyone both produces and judges, and how ship/kill decisions actually work." />
+	<LinkCard title="Delegates and Surfaces" href="/motive-model/delegates-and-surfaces/" description="What a delegate is, how you hand it intent, and how you check it stayed faithful." />
+	<LinkCard title="Variants and How People Grow" href="/motive-model/variants/" description="Same motive, opposite training: where careers specialize." />
+	<LinkCard title="Scenarios" href="/motive-model/scenarios/" description="The model in motion, from a solo dev to an open-source team." />
+	<LinkCard title="Recursion" href="/motive-model/recursion/" description="The same four motives build the product, the process, and the toolchain." />
+	<LinkCard title="Glossary" href="/motive-model/glossary/" description="Every load-bearing term, defined once." />
+</CardGrid>
+
+## Why bother getting this right
+
+Get the motives right and everything downstream follows — what each person needs to do, how the work plays out, what surfaces they hand to their delegates. Get them wrong — by treating an AI as a teammate with its own goals, or by organizing the team on a timeline instead of by motive — and the work overlaps, the hand-offs blur, and the confusion compounds.
+
+The model has one load-bearing rule, stated up front so nothing later contradicts it: **an AI is never an actor.** A human holds the motive and the accountability; the AI is capacity the human wields. The next page shows where that line falls in work you already do.
+
+---
+
+*Next: [Positions are not roles →](/motive-model/positions-are-not-roles/)*

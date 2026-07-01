@@ -1,0 +1,50 @@
+{
+	"sdd-plugins": [
+		{
+			"name": "aces",
+			"version": "0.7.0",
+			"squads": [
+				{
+					"artifact-types": ["skill", "subagent", "command", "agents-section"],
+					"roles": {
+						"spec-producer": "aces-scenario-writer",
+						"solution-producer": null,
+						"spec-judge": "aces-spec-validator",
+						"impl-producer": null,
+						"impl-judge": "aces-implementer"
+					},
+					"governances": {
+						"oracle-spec": null,
+						"builder-spec": "aces-builder-spec",
+						"builder-impl": "aces-builder-impl",
+						"architect-spec": null,
+						"architect-impl": null
+					}
+				}
+			]
+		},
+		{
+			"name": "quill",
+			"version": "0.7.0",
+			"squads": [
+				{
+					"artifact-types": ["documentation", "guide", "tutorial", "article", "reference"],
+					"roles": {
+						"spec-producer": "quill-spec-writer",
+						"solution-producer": null,
+						"spec-judge": null,
+						"impl-producer": "quill-doc-writer",
+						"impl-judge": "quill-judge"
+					},
+					"governances": {
+						"oracle-spec": null,
+						"builder-spec": null,
+						"builder-impl": null,
+						"architect-spec": null,
+						"architect-impl": null
+					}
+				}
+			]
+		}
+	]
+}

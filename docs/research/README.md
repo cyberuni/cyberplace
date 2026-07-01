@@ -7,7 +7,7 @@ Durable reference material for architecture and governance decisions. Use this w
 | Artifact | Role | Loaded by agents via CLI? |
 | --- | --- | --- |
 | **`governances/*.md`** | Version-pinned **standards** (what is correct) | Yes — `governance show <name>` |
-| **`docs/adr/*.md`** | **Decisions** with rationale and consequences | No — read from repo |
+| **`artifacts/adr/*.md`** | **Decisions** with rationale and consequences | No — read from repo |
 | **`docs/research/*.md`** | **Background research** supporting ADRs and governances | No — read from repo |
 
 Governances, Discipline sections, and public Skills follow **agent-first** authoring: dense normative bodies, self-contained (no links to other repository files), references at end via `governance show` or external URLs. Research holds tables, repo surveys, issue links, and discussion summaries that must not be inlined into those bodies. ADRs record **why**; governances record **what**. See [ADR-0001](../adr/0001-governance-vs-discipline-taxonomy.md#governance-content-boundaries), [ADR-0003](../adr/0003-agent-first-authoring.md), and [ADR-0004](../adr/0004-cyber-skills-cli-output.md) (CLI output patterns split from `agent-tool-output` governance).
@@ -24,6 +24,8 @@ Use `YYYY-MM-<topic>.md` (for example `2026-05-skill-ecosystem-landscape.md`). O
 | 2026-05 | [cyber-skills supply chain threat model](2026-05-cyber-skills-supply-chain-threat-model.md) | README install guidance, `init` / `init-commit-discipline` skills, hook register |
 | 2026-05 | [CLI output format for agents](2026-05-cli-output-format-for-agents.md) | `agent-tool-output` governance, ADR-0004 |
 | 2026-05 | [npm package structure for skills and plugin packages](2026-05-npm-package-structure-plugin-manifest.md) | `skill-repo-structure` governance, potential upstream proposal to `vercel-labs/open-plugin-spec` and `agentskills/agentskills` |
+| 2026-06 | [Agent plan / session-state persistence across harnesses](2026-06-agent-plan-persistence.md) | ADR-0015, SDD `provenance-model`, the plan/ledger/cursor design |
+| 2026-06 | [Impl-judge verification independence](2026-06-impl-judge-independence.md) | ADR-0016, SDD `mission/deliver/impl-judge` + `impl-producer` + conductor impl gate, `autonomy-rubric` |
 
 ## Adding research
 
