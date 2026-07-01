@@ -89,7 +89,10 @@ export function isValidPattern(pattern: string): boolean {
 
 // True when a pattern names one of the three fixed conventions (which are implicit, not curated).
 export function isFixedConvention(pattern: string): boolean {
-	const p = pattern.trim().replace(/\\/g, '/').replace(/^\/+|\/+$/g, '')
+	const p = pattern
+		.trim()
+		.replace(/\\/g, '/')
+		.replace(/^\/+|\/+$/g, '')
 	return (
 		p === '.agents/spec' ||
 		p === '.agents/specs/<project>' ||
@@ -155,7 +158,10 @@ export type InduceResult = { ok: true; candidates: string[] } | { ok: false; rea
 // generalization (deepest segment replaced with the capture). Rejects a path that is not a directory
 // under the repo root.
 export function inducePatterns(root: string, samplePath: string): InduceResult {
-	const rel = samplePath.trim().replace(/\\/g, '/').replace(/^\/+|\/+$/g, '')
+	const rel = samplePath
+		.trim()
+		.replace(/\\/g, '/')
+		.replace(/^\/+|\/+$/g, '')
 	if (rel === '' || /(^|\/)\.\.(\/|$)/.test(rel)) return { ok: false, reason: 'path is not repo-relative' }
 	let ok = false
 	try {
@@ -172,7 +178,7 @@ export function inducePatterns(root: string, samplePath: string): InduceResult {
 
 // ── preview ──
 
-export interface PreviewMatch {
+interface PreviewMatch {
 	path: string
 	name: string
 }
@@ -185,7 +191,11 @@ export type PreviewResult = { ok: true; matches: PreviewMatch[] } | { ok: false;
 export function previewPattern(root: string, pattern: string): PreviewResult {
 	const p = pattern.trim()
 	if (!isValidPattern(p)) return { ok: false, reason: 'malformed candidate pattern' }
-	const segs = p.replace(/\\/g, '/').replace(/^\/+|\/+$/g, '').split('/').filter(Boolean)
+	const segs = p
+		.replace(/\\/g, '/')
+		.replace(/^\/+|\/+$/g, '')
+		.split('/')
+		.filter(Boolean)
 	let frontier: { dir: string; capturedName?: string }[] = [{ dir: '' }]
 	for (const seg of segs) {
 		const next: { dir: string; capturedName?: string }[] = []
@@ -221,7 +231,7 @@ export function previewPattern(root: string, pattern: string): PreviewResult {
 			continue
 		}
 		if (!status || !LIFECYCLE_STATUSES.has(status)) continue
-		matches.push({ path: node.dir, name: node.capturedName ?? (node.dir.split('/').pop() ?? node.dir) })
+		matches.push({ path: node.dir, name: node.capturedName ?? node.dir.split('/').pop() ?? node.dir })
 	}
 	matches.sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0))
 	return { ok: true, matches }
@@ -284,7 +294,9 @@ export function main(argv: string[]): number {
 		return 0
 	}
 
-	w('usage: manage-spec-anchors --list | --add <p> | --remove <p> | --edit <old> <new> | --induce <path> | --preview <p>')
+	w(
+		'usage: manage-spec-anchors --list | --add <p> | --remove <p> | --edit <old> <new> | --induce <path> | --preview <p>',
+	)
 	return 0
 }
 
