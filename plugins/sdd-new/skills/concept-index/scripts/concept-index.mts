@@ -2,7 +2,7 @@
 // concept-index — project-spec/concept-index's concrete engine. Scans one project-spec for every node's
 // `concept:` frontmatter and renders the by-concept view (concept → its nodes across every folder),
 // which re-unifies a cross-cutting concern the capability folder tree scatters
-// (.agents/specs/sdd/design/spec-structure.md, the concept axis).
+// (the concept axis).
 //
 // Pure derivation from the `concept:` tags: rendering twice is byte-identical, and the generated
 // block in the root spec.md is the only thing a --write touches. Frontmatter only — no node body

@@ -5,18 +5,18 @@ todos:
   - id: brief
     content: "Create this tracking brief with the full inventory + fix rules. DONE."
     status: completed
-  - id: dead-doc-redirect
-    content: "Commit 1 — redirect DEAD-DOC refs to shipped governances (+ fix malformed sdd:autonomy-rubric / sdd:provenance-model) across validate-spec, resolve-governances, gate-validation-governance, lifecycle-governance, plugin-contract-governance, ownership-governance, combat-log-governance, formation-loop, plan-retirement, resume-mission."
-    status: pending
-  - id: bake-inline
-    content: "Commit 2 — bake spec-layout/spec-structure rules inline (no shipped equivalent): place-node, concept-index, doctrine-loop (design/), resume-mission (design/)."
-    status: pending
-  - id: sibling-rewrite
-    content: "Commit 3 — rewrite SIBLING-PATH refs to shipped skill names / drop dead Spec: lines: discover-specs, discover-plans, place-node, concept-index, doctrine-loop, plan-retirement, formation-loop, start-mission."
-    status: pending
+  - id: skill-readme-sweep
+    content: "SKILL.md/README.md prose sweep (dead-doc-redirect + bake-inline + sibling-rewrite). DONE — landed fa0b091, tracked d0d737b (both on next). grep-zero holds."
+    status: completed
+  - id: subagent-defs
+    content: "Ext commit 1 — agents/*.md prose dead-links: sdd-warden (→gate-validation-governance), sdd-impl-judge (→start-mission), sdd-automaton (drop conductor/ + harness-spawning paths). Landed 6897a7e."
+    status: completed
+  - id: mts-comments
+    content: "Ext commit 2 — .mts engine comment dead-links: retire-plans/resolve-governances/check-spec-state redirected to shipped governances; concept-index/place-node/check-spec-structure dropped inline. Landed a32ca08."
+    status: completed
   - id: verify
-    content: "grep zero (.agents/specs/sdd/ + dead bare doc names + sdd:autonomy-rubric/provenance-model) in SKILL.md/README.md; audit validate all skills; pnpm verify."
-    status: pending
+    content: "grep-zero .agents/specs/sdd/ in agents/*.md + skills/*/scripts/*.mts (discover-specs test fixtures + SKILL:57 example excluded — legit paths); pnpm verify green."
+    status: completed
 isProject: false
 ---
 
@@ -95,9 +95,12 @@ pointing at the skill's own corpus spec → drop the dead path, keep the prose.
 
 ## NEXT
 
-Start `dead-doc-redirect` (commit 1). Read each file's context first; confirm the redirect target
-governance actually carries the rule (else bake the minimal rule inline there). Then bake-inline
-(commit 2), then sibling-rewrite (commit 3). Verify + `pnpm verify` green before each commit.
+▶ MISSION COMPLETE. The declared SKILL.md/README.md scope landed on `next` (fa0b091 + d0d737b).
+The reconcile-forward extension — the same-class dead links in the two surfaces the plugin also
+ships — landed on branch `sdd-self-contained-sweep-ext` off `next`: agents/*.md prose (6897a7e) and
+.mts engine comments (a32ca08). grep-zero holds across SKILL/README + agents + scripts (discovery
+test fixtures and the discover-specs SKILL:57 example TOON output are legit discovered paths, left
+in place). `pnpm verify` green. Retirable once the branch merges and doctrine-distills.
 
 ## Notes
 
