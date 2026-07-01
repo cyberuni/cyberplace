@@ -139,6 +139,12 @@ write constraint ("never write a frozen `.feature`") is in `sdd:ownership-govern
   bar, `start-mission`), contract narrowed → escalate. An *additive* scenario never unfreezes its file:
   it widens the contract, cannot break existing impl, and **self-clears** — folding into the frozen
   file under the conductor's authority, logged as a detail-adjustment.
+- **A pure move/rename preserves the freeze.** What a freeze protects is the scenario **content**,
+  not where the file sits. A *pure rename* — a `git mv` with **zero content delta** (a git `R100`) —
+  does **not** unfreeze the file and is **not** a gate-able edit; it stays `@frozen` at the same
+  baseline. This is what lets **placement be finalized at handoff** (`design/spec-layout.md`): a node
+  may be relocated to its blessed home in the same change without re-opening its contract. Only a
+  *content* change (the narrowing/rewriting trigger above) unfreezes.
 - **`spec.md` is kept in sync, never frozen** — the readable abstraction of the suite, free to be
   reworded/restructured as long as it does not contradict a frozen scenario. Enforced by the
   spec-judge applying the Builder (coverage) lens, not by freezing the prose.
