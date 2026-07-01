@@ -18,8 +18,8 @@ todos:
     content: "U4 — mission/checkpoint node DONE; pause-mission --approve section + README + description — DELIVER DONE"
     status: completed
   - id: handoff
-    content: "Handoff — finalize node placement, land as branch → PR (next → main)"
-    status: pending
+    content: "Handoff — landed on next (dee29f5 spec, b4f4cdd impl); nodes placed in blessed homes, no relocation. Push next at user discretion (next→main is a batched release, not per-CR). DONE"
+    status: completed
 ---
 
 # dispatch-queue — approved-plan dispatch queue for the automaton
@@ -55,14 +55,15 @@ Dogfood CR against the SDD project spec. Seed intent: the approved plan at
 
 ## NEXT — resume here
 
-> **▶ NEXT ACTION — `handoff`: branch → PR (next → main).** Both gates passed: spec gate self-asserted
-> (ledger seq 45), impl gate ratified by unional (seq 46). Commit the impl unit, then land as a branch
-> off `next` → PR. Keep the combat log; do NOT retire this plan until merged AND doctrine-distilled.
-> Root spec.md stays `approved` (per-unit verdict).
+> **▶ MISSION COMPLETE (in-tree).** Both gates passed — spec gate self-asserted (ledger seq 45), impl
+> gate ratified by unional (seq 46). Landed on `next`: `dee29f5` (spec) + `b4f4cdd` (impl), 2 commits
+> unpushed. Only outward step left: `git push origin next` (user discretion; `next → main` is a batched
+> release 847 commits deep, not per-CR). Do NOT retire this plan until pushed/merged AND
+> doctrine-distilled. Root spec.md stays `approved` (per-unit verdict).
 >
-> **Placement note:** the two new nodes (gateway/dispatch, mission/checkpoint) were placed directly in
-> their blessed homes (siblings of gateway/manage and the mission phases) — no relocation needed at
-> handoff. resume-mission remains un-noded (a standing formation observation, not this CR).
+> **Standing formation observation:** resume-mission remains un-noded (mission/checkpoint noded its
+> pause sibling this CR); a legacy brief (wire-check-feature-runtime) carries an off-enum
+> `status: in-progress` — harmless (never dispatched), could be normalized to `active`.
 > All 4 units' spec+suite authored. Mechanical checks green (check-feature / check-spec-structure /
 > check-spec-state OK; concept-index refreshed). Cold sdd-spec-judge dispatched over the diff.
 > On ALIGNED → freeze the touched/new `.feature`s (add `@frozen` to the two NEW features
