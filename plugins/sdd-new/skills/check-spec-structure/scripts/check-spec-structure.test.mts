@@ -50,9 +50,9 @@ function listFiles(dir: string): string[] {
 // ── parse / count helpers ──
 
 test('parseNodeFrontmatter reads spec-type and concept', () => {
-	const fm = parseNodeFrontmatter('---\nspec-type: behavioral\nconcept: corpus-structure\n---\n\n# x\n')
+	const fm = parseNodeFrontmatter('---\nspec-type: behavioral\nconcept: spec-structure\n---\n\n# x\n')
 	assert.equal(fm.specType, 'behavioral')
-	assert.deepEqual(fm.concepts, ['corpus-structure'])
+	assert.deepEqual(fm.concepts, ['spec-structure'])
 })
 
 test('parseNodeFrontmatter on a spec-typed node with no concept', () => {
@@ -78,13 +78,13 @@ test('a spec-typed node missing a concept tag is flagged as an untagged orphan',
 
 test('a node carrying a concept tag raises no untagged finding', () => {
 	const d = mkCorpus()
-	seedNode(d, 'corpus', 'tagged', { specType: 'behavioral', concept: 'corpus-structure', scenarios: 3 })
+	seedNode(d, 'corpus', 'tagged', { specType: 'behavioral', concept: 'spec-structure', scenarios: 3 })
 	assert.equal(checkUntagged(scanProjectSpec(d)).length, 0)
 })
 
 test('a node whose suite exceeds the granularity threshold is flagged oversized', () => {
 	const d = mkCorpus()
-	seedNode(d, 'corpus', 'big', { specType: 'behavioral', concept: 'corpus-structure', scenarios: 12 })
+	seedNode(d, 'corpus', 'big', { specType: 'behavioral', concept: 'spec-structure', scenarios: 12 })
 	const oversized = checkOversized(scanProjectSpec(d), 10)
 	assert.equal(oversized.length, 1)
 	assert.match(oversized[0].node, /big/)
@@ -93,14 +93,14 @@ test('a node whose suite exceeds the granularity threshold is flagged oversized'
 
 test('a node within the granularity threshold raises no oversized finding', () => {
 	const d = mkCorpus()
-	seedNode(d, 'corpus', 'small', { specType: 'behavioral', concept: 'corpus-structure', scenarios: 5 })
+	seedNode(d, 'corpus', 'small', { specType: 'behavioral', concept: 'spec-structure', scenarios: 5 })
 	assert.equal(checkOversized(scanProjectSpec(d), 40).length, 0)
 })
 
 test('a structurally clean project-spec produces no findings', () => {
 	const d = mkCorpus()
-	seedNode(d, 'corpus', 'a', { specType: 'behavioral', concept: 'corpus-structure', scenarios: 3 })
-	seedNode(d, 'corpus', 'b', { specType: 'reference', concept: 'corpus-structure' })
+	seedNode(d, 'corpus', 'a', { specType: 'behavioral', concept: 'spec-structure', scenarios: 3 })
+	seedNode(d, 'corpus', 'b', { specType: 'reference', concept: 'spec-structure' })
 	assert.deepEqual(audit(scanProjectSpec(d), 40), [])
 })
 
@@ -115,7 +115,7 @@ test('an untagged orphan is a blocking finding', () => {
 
 test('an oversized node is an advisory finding', () => {
 	const d = mkCorpus()
-	seedNode(d, 'corpus', 'big', { specType: 'behavioral', concept: 'corpus-structure', scenarios: 12 })
+	seedNode(d, 'corpus', 'big', { specType: 'behavioral', concept: 'spec-structure', scenarios: 12 })
 	const f = checkOversized(scanProjectSpec(d), 10)[0]
 	assert.equal(f.severity, 'advisory')
 })
@@ -133,13 +133,13 @@ test('check mode exits non-zero on a blocking finding and writes nothing', () =>
 
 test('check mode exits zero when only advisory findings exist', () => {
 	const d = mkCorpus()
-	seedNode(d, 'corpus', 'big', { specType: 'behavioral', concept: 'corpus-structure', scenarios: 12 })
+	seedNode(d, 'corpus', 'big', { specType: 'behavioral', concept: 'spec-structure', scenarios: 12 })
 	assert.equal(main(['--spec-dir', d, '--check', '--max-scenarios', '10']), 0)
 })
 
 test('check mode exits zero on a clean project-spec', () => {
 	const d = mkCorpus()
-	seedNode(d, 'corpus', 'a', { specType: 'behavioral', concept: 'corpus-structure', scenarios: 3 })
+	seedNode(d, 'corpus', 'a', { specType: 'behavioral', concept: 'spec-structure', scenarios: 3 })
 	assert.equal(main(['--spec-dir', d, '--check']), 0)
 })
 
@@ -161,10 +161,10 @@ test('the audit writes nothing in default mode', () => {
 test('frontmatter only — node body does not change the deterministic findings', () => {
 	const d1 = mkCorpus()
 	const d2 = mkCorpus()
-	seedNode(d1, 'corpus', 'n', { specType: 'behavioral', concept: 'corpus-structure', scenarios: 3, body: 'alpha' })
+	seedNode(d1, 'corpus', 'n', { specType: 'behavioral', concept: 'spec-structure', scenarios: 3, body: 'alpha' })
 	seedNode(d2, 'corpus', 'n', {
 		specType: 'behavioral',
-		concept: 'corpus-structure',
+		concept: 'spec-structure',
 		scenarios: 3,
 		body: 'OMEGA different body',
 	})
