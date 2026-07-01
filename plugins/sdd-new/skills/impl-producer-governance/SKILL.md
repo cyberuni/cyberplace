@@ -8,7 +8,7 @@ user-invocable: false
 
 The procedure the **spawned builder** follows when the conductor runs the **impl-producer** role from the SDD default — no plugin covers the domain and no model-tuned producer agent is named, so the conductor **spawns a generic builder** that **loads this governance and builds** (recorded `produced-by.impl-producer: sdd:automaton`). Unlike the spec / solution-producer (run inline by the conductor — the live grill), the impl-producer is **mechanical and spawned** on every surface (the D-G conductor model). This is the SDD-default builder made explicit as a loadable procedure — what the retired "generic Builder (no agent)" / fabricated `sdd:builder` was always groping for.
 
-Load alongside this governance: the resolved **builder** + **architect** actor bars — to self-align **and** to author the verification — and `sdd:ownership-governance` for the write-ownership matrix. The grader is separate: a **cold impl-judge** (`sdd:sdd-implementer` or the plugin's judge) runs the verification this role authored; this governance never declares its own pass verdict.
+Load alongside this governance: the resolved **builder** + **architect** actor bars — to self-align **and** to author the verification — and `sdd:ownership-governance` for the write-ownership matrix. The grader is separate: a **cold impl-judge** (`sdd:sdd-impl-judge` or the plugin's judge) runs the verification this role authored; this governance never declares its own pass verdict.
 
 ## Inputs (folded in by the conductor)
 
