@@ -18,8 +18,10 @@ authoring the eval rubric or golden set.
 | Use case | Trigger / inputs | Outcome |
 |---|---|---|
 | Produce a spec for an artifact | dispatched as the spec-producer with a subject (or null for a new one), trigger surface, and any user input | it writes the `spec.md` body and a sibling `.feature`, leaving control frontmatter and the eval suite untouched |
+| Classify fit first | any dispatched subject | it classifies the subject's fit tier and declares it as a `**Fit:**` line in `## Use Cases` **before** authoring scenarios (`design/fit.md`) |
+| Recuse a wrong-squad subject | a subject that is a deterministic engine with no activation decision | it recuses, authoring **no** `.feature`, and recommends the SDD-default builder + a script harness |
 | Frame the use cases | the subject's trigger surface and rules | the `spec.md` carries a `## Use Cases` section with Subject + Non-goals, enriched for the gate reader |
-| Cover triggering both ways | the subject's intended trigger surface | the `.feature` carries should-trigger scenarios and same-keyword near-miss should-not-trigger scenarios |
+| Cover triggering by tier | the subject's intended trigger surface | a **strong-fit** subject gets should-trigger + same-keyword near-miss scenarios; a **partial-fit** subject gets **no fabricated near-miss** |
 | Cover the rules and guards | each major rule/step and each prohibited behavior of the subject | each rule gets at least one behavior scenario and each prohibition a must-not-do guard, every `Then` a boolean |
 | Surface missing intent | intent that cannot be read from the subject or inferred | it returns a content gap instead of inventing the behavior |
 | Revise on judge feedback or unclear input | spec-judge failures from a prior pass, or ambiguous inputs | it revises the named scenarios, or returns batched questions when it cannot proceed |

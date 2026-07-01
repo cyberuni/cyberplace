@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Plan retirement — the Doctrine loop's last retro step (design/provenance-model.md,
+// Plan retirement — the Doctrine loop's last retro step (.agents/specs/sdd/design/provenance-model.md,
 // "Plan retirement"). A retired plan leaves the tree by a deliberate, gated TRACKED
 // DELETION, never a gitignore side effect: for each cleared <cr-ref>, the sweep deletes
 // <cr-ref>.plan.md AND <cr-ref>.log.jsonl from `.agents/plans`.

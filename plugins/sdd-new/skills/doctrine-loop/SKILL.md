@@ -13,8 +13,8 @@ The **outer loop** of the SDD model. Owned by the **Strategist** and run by its 
 fires at **lifecycle granularity, never per-gate**: it watches every **mission** reach a terminal
 state, drafts **strategy** (forward recommendations to revise governances, conventions, skills)
 from persisted artifacts post-hoc, and surfaces it to the human **Council** for keep-or-cut.
-Ratified, strategy re-enters as a CR that re-tunes the **doctrine** (`design/`) and grows the
-**corpus**.
+Ratified, strategy re-enters as a CR that re-tunes the **doctrine** (the SDD design rules and
+governances) and grows the **corpus**.
 
 Load `sdd:combat-log-governance` for the **shape** of a `strategy` ledger entry and the matchable
 `cause` enum — this skill defers the entry shape there and never restates it.

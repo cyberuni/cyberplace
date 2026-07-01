@@ -34,13 +34,13 @@ the conductor spawns, because a grader must not share the author's context. A pl
 model-tuned producer agent named for the slot — is always spawned.
 
 > The legacy role key was `plan-producer` (writing `plan.md` + `tasks.md`); it is renamed
-> **`solution-producer`** writing `<unit>.solution.md` (`sdd:provenance-model`). A live registry
+> **`solution-producer`** writing `<unit>.solution.md` (`sdd:combat-log-governance`). A live registry
 > still carrying `plan-producer` is migrated on encounter.
 
 ## Which governances each role loads
 
-Bars are the Model-B `(actor, gate)` governances (matched by `resolve-governances` per
-`design/governance-resolution.md`; the bars themselves live in `common-governances/`); a producer
+Bars are the Model-B `(actor, gate)` governances (matched by the `resolve-governances` skill; the
+actor bars are the shipped `sdd:{oracle,builder,architect}-{spec,impl}-governance` skills); a producer
 self-aligns to exactly the bars its judge grades. The lens sets are spec gate `{oracle, builder,
 architect}`, impl gate `{builder, architect}`, solution `{architect}` (ungated).
 
@@ -58,7 +58,7 @@ procedure it runs — which itself references the bars above; a plugin delegate 
 procedure and loads these bars directly.
 
 The `sdd` gateway loads **no** governance (it only classifies and routes). The gate skill
-`validate-spec` loads `lifecycle`, `ownership`, `gate-validation`, `combat-log` (+ `spec-format` /
+`spec-gate` loads `lifecycle`, `ownership`, `gate-validation`, `combat-log` (+ `spec-format` /
 `suite-format` at the spec gate). A plugin's agents inherit the universal loads — e.g. `aces`/`quill`
 spec-producers load `sdd:spec-format-governance` + `sdd:ownership-governance`, and their judges load
 `sdd:gate-validation-governance`.

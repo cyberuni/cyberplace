@@ -27,3 +27,4 @@ verified **through the consuming capabilities** (a term is "correct" when `run` 
 | **regression** | A case that dropped from passing to failing, or to a lower score, between two versions of a configuration. |
 | **regression gate** | The rule that blocks committing a change whose comparison shows any regression. |
 | **eval suite** | A configuration's `eval.md` (target, judge model, threshold, layers) plus its `golden-set/` — what `run` executes. |
+| **fit** | ACES's self-assessment of whether a subject benefits from evaluation — `strong` (all four layers signal; near-misses required), `partial` (mechanical; near-miss N/A), or `wrong-squad` (deterministic; ACES recuses). Decided in explore, declared as a `**Fit:**` line, enforced at the gate (`design/fit.md`). |

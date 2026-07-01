@@ -7,9 +7,12 @@ import {
 	classifyLocation,
 	collectSpecs,
 	deriveName,
+	expandAnchor,
 	LIFECYCLE_STATUSES,
 	main,
+	parseAnchorsToml,
 	parseFrontmatter,
+	readAnchors,
 	resolveByName,
 	type SpecRecord,
 	toToon,
@@ -155,8 +158,9 @@ test('collectSpecs only matches root-level .agents/specs (pattern 2 has no ** pr
 	}
 })
 
-// A spec is found at whatever spec location it currently sits — no path index to keep in sync.
-test('collectSpecs finds a moved spec at its new location (no path registry)', () => {
+// The fixed conventions need no registry: a spec is found at whatever FIXED location it sits, with
+// nothing to keep in sync (the opt-in extra-anchor registry is a separate, additive concern).
+test('collectSpecs finds a moved spec at its new fixed location without a path index', () => {
 	const dir = mkdtempSync(join(tmpdir(), 'discover-specs-'))
 	try {
 		seed(dir, '.agents/specs/proj/spec.md', 'status: draft') // original location
@@ -233,6 +237,178 @@ test('collectSpecs output never carries spec body content', () => {
 		)
 		const toon = toToon(collectSpecs(dir))
 		assert.doesNotMatch(toon, /SENTINEL_BODY_SECRET/)
+	} finally {
+		rmSync(dir, { recursive: true, force: true })
+	}
+})
+
+// ── extra anchors — the opt-in registry (ADR-0019) ──
+
+// Write the spec-anchors config with the given anchor patterns.
+function seedAnchors(dir: string, patterns: string[]): void {
+	const full = join(dir, '.agents/sdd/spec-anchors.toml')
+	mkdirSync(dirname(full), { recursive: true })
+	writeFileSync(full, `anchors = [\n${patterns.map((p) => `  "${p}",`).join('\n')}\n]\n`)
+}
+
+test('parseAnchorsToml pulls the string entries out of the anchors array', () => {
+	assert.deepEqual(parseAnchorsToml('anchors = [\n  "source",\n  "a/*/<project>",\n]\n'), ['source', 'a/*/<project>'])
+	assert.deepEqual(parseAnchorsToml('anchors = ["one", \'two\']'), ['one', 'two'])
+})
+
+test('parseAnchorsToml yields [] when there is no anchors array (all commented out)', () => {
+	assert.deepEqual(parseAnchorsToml('# anchors = ["x"]\n'), [])
+	assert.deepEqual(parseAnchorsToml('other = 1\n'), [])
+})
+
+test('readAnchors yields [] when there is no config file', () => {
+	const dir = mkdtempSync(join(tmpdir(), 'discover-specs-'))
+	try {
+		assert.deepEqual(readAnchors(dir), [])
+	} finally {
+		rmSync(dir, { recursive: true, force: true })
+	}
+})
+
+test('expandAnchor resolves a literal dir, a * glob, and a <project> capture', () => {
+	const dir = mkdtempSync(join(tmpdir(), 'discover-specs-'))
+	try {
+		seed(dir, 'source/spec.md', 'status: draft')
+		seed(dir, 'sessions/web/s1/spec.md', 'status: draft')
+		seed(dir, 'sessions/api/s2/spec.md', 'status: draft')
+		assert.deepEqual(expandAnchor(dir, 'source'), [{ rel: 'source/spec.md', capturedName: undefined }])
+		assert.deepEqual(
+			expandAnchor(dir, 'sessions/*/<project>').sort((a, b) => (a.rel < b.rel ? -1 : 1)),
+			[
+				{ rel: 'sessions/api/s2/spec.md', capturedName: 's2' },
+				{ rel: 'sessions/web/s1/spec.md', capturedName: 's1' },
+			],
+		)
+	} finally {
+		rmSync(dir, { recursive: true, force: true })
+	}
+})
+
+test('deriveName: an extra anchor with a <project> capture is derived, without one is guessed', () => {
+	assert.deepEqual(deriveName({ pattern: 'extra', locationDir: 'x/s1', capturedName: 's1' }, { approval: {} }), {
+		name: 's1',
+		nameSource: 'derived',
+	})
+	assert.deepEqual(deriveName({ pattern: 'extra', locationDir: 'source' }, { approval: {} }), {
+		name: 'source',
+		nameSource: 'guessed',
+	})
+})
+
+test('collectSpecs with no config scans only the fixed conventions (back-compat)', () => {
+	const dir = mkdtempSync(join(tmpdir(), 'discover-specs-'))
+	try {
+		seed(dir, '.agents/specs/sdd/spec.md', 'status: approved')
+		seed(dir, 'source/spec.md', 'status: draft') // off-convention, no config → excluded
+		assert.deepEqual(
+			collectSpecs(dir).map((s) => s.path),
+			['.agents/specs/sdd'],
+		)
+	} finally {
+		rmSync(dir, { recursive: true, force: true })
+	}
+})
+
+test('collectSpecs adds a spec at a declared extra anchor', () => {
+	const dir = mkdtempSync(join(tmpdir(), 'discover-specs-'))
+	try {
+		seed(dir, 'source/spec.md', 'status: draft')
+		seedAnchors(dir, ['source'])
+		const specs = collectSpecs(dir)
+		assert.deepEqual(
+			specs.map((s) => s.path),
+			['source'],
+		)
+		assert.deepEqual([specs[0].name, specs[0].nameSource], ['source', 'guessed'])
+	} finally {
+		rmSync(dir, { recursive: true, force: true })
+	}
+})
+
+test('collectSpecs still shape-filters a spec.md at an extra anchor with no status', () => {
+	const dir = mkdtempSync(join(tmpdir(), 'discover-specs-'))
+	try {
+		seed(dir, 'source/spec.md', 'title: not a spec') // no lifecycle status
+		seedAnchors(dir, ['source'])
+		assert.deepEqual(collectSpecs(dir), [])
+	} finally {
+		rmSync(dir, { recursive: true, force: true })
+	}
+})
+
+test('collectSpecs names an extra-anchor spec from its <project> capture (derived)', () => {
+	const dir = mkdtempSync(join(tmpdir(), 'discover-specs-'))
+	try {
+		seed(dir, 'curriculum/web/react/s-01/spec.md', 'status: draft')
+		seedAnchors(dir, ['curriculum/*/*/<project>'])
+		const specs = collectSpecs(dir)
+		assert.deepEqual(
+			specs.map((s) => [s.path, s.name, s.nameSource]),
+			[['curriculum/web/react/s-01', 's-01', 'derived']],
+		)
+	} finally {
+		rmSync(dir, { recursive: true, force: true })
+	}
+})
+
+test('collectSpecs: a declared frontmatter name wins for an extra-anchor spec too', () => {
+	const dir = mkdtempSync(join(tmpdir(), 'discover-specs-'))
+	try {
+		seed(dir, 'source/spec.md', 'status: draft\nname: MyProj')
+		seedAnchors(dir, ['source'])
+		const specs = collectSpecs(dir)
+		assert.deepEqual([specs[0].name, specs[0].nameSource], ['MyProj', 'declared'])
+	} finally {
+		rmSync(dir, { recursive: true, force: true })
+	}
+})
+
+test('collectSpecs dedupes a fixed-convention spec that an extra anchor also matches', () => {
+	const dir = mkdtempSync(join(tmpdir(), 'discover-specs-'))
+	try {
+		seed(dir, '.agents/specs/sdd/spec.md', 'status: approved')
+		seedAnchors(dir, ['.agents/specs/<project>']) // also matches the fixed pattern-2 dir
+		const specs = collectSpecs(dir)
+		assert.equal(specs.length, 1)
+		assert.equal(specs[0].path, '.agents/specs/sdd')
+	} finally {
+		rmSync(dir, { recursive: true, force: true })
+	}
+})
+
+test('collectSpecs is fail-safe: a malformed config falls back to the fixed conventions', () => {
+	const dir = mkdtempSync(join(tmpdir(), 'discover-specs-'))
+	try {
+		seed(dir, '.agents/specs/sdd/spec.md', 'status: approved')
+		seed(dir, 'source/spec.md', 'status: draft')
+		mkdirSync(join(dir, '.agents/sdd'), { recursive: true })
+		writeFileSync(join(dir, '.agents/sdd/spec-anchors.toml'), 'this is not valid = = [')
+		assert.deepEqual(
+			collectSpecs(dir).map((s) => s.path),
+			['.agents/specs/sdd'], // no crash; the off-convention spec stays excluded
+		)
+	} finally {
+		rmSync(dir, { recursive: true, force: true })
+	}
+})
+
+// An UNREADABLE config (here a directory in the config's place → EISDIR on read) exercises the
+// readAnchors try/catch, not just the non-throwing "no anchors array" path.
+test('collectSpecs is fail-safe: an unreadable config falls back to the fixed conventions', () => {
+	const dir = mkdtempSync(join(tmpdir(), 'discover-specs-'))
+	try {
+		seed(dir, '.agents/specs/sdd/spec.md', 'status: approved')
+		seed(dir, 'source/spec.md', 'status: draft')
+		mkdirSync(join(dir, '.agents/sdd/spec-anchors.toml'), { recursive: true }) // a dir → readFileSync throws
+		assert.deepEqual(
+			collectSpecs(dir).map((s) => s.path),
+			['.agents/specs/sdd'], // no crash; falls back to the fixed conventions
+		)
 	} finally {
 		rmSync(dir, { recursive: true, force: true })
 	}

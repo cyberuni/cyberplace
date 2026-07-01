@@ -1,6 +1,6 @@
 ---
 name: lifecycle-governance
-description: "Internal skill: the SDD spec lifecycle contract — the root spec.md frontmatter schema, status enum, status transitions, open-marker gating, and the per-file freeze state-transition. Loaded by sdd, validate-spec, start-mission, the conductor, and the spec-judge. Not triggered by users directly."
+description: "Internal skill: the SDD spec lifecycle contract — the root spec.md frontmatter schema, status enum, status transitions, open-marker gating, and the per-file freeze state-transition. Loaded by sdd, spec-gate, start-mission, the conductor, and the spec-judge. Not triggered by users directly."
 user-invocable: false
 ---
 
@@ -46,7 +46,7 @@ the repo-relative source dir the spec governs; the spec **location mode** (`colo
 monorepo-member`) is *derived* from it (hoisted iff `project-path` is not the spec's own dir), never
 stored. There is **no `aligned`, `spec-layout`, or run-level `strategy` field** — sync is derived
 (below), the organization strategy is declared in the body placement map, and the leash is
-session-local on the ledger/plan (`sdd:autonomy-rubric`).
+session-local on the ledger/plan (the conductor's autonomy bar, `start-mission`).
 
 **A file's artifact-type is resolved per file, never stored here.** Each file's artifact-type (the
 squad key) resolves its own squad against the project's registered plugins
@@ -63,18 +63,22 @@ root.
 ## Spec discovery
 
 A spec is **location-bounded and shape-confirmed** (ADR-0017): an SDD spec is a git-tracked
-`spec.md` that sits at one of the three SDD spec locations **and** whose frontmatter `status` is one
-of the enum values below:
+`spec.md` that sits at one of the three fixed SDD spec locations — **or** at an extra anchor the
+project declared (ADR-0019) — **and** whose frontmatter `status` is one of the enum values below:
 
 1. `.agents/spec/spec.md` — repo-root single-project
 2. `.agents/specs/<project>/spec.md` — repo-root multi-project
 3. `<project-path>/.agents/spec/spec.md` — a nested project (the `**` is the project-path, any depth)
+4. any extra anchor declared in `.agents/sdd/spec-anchors.toml` — **opt-in and additive**; absent
+   config ⇒ only 1–3 (today's behavior). The three fixed conventions need no registry; the extra
+   anchors are a declared, curated registry (`manage-spec-anchors`), not a derived hot path.
 
-There is no spec registry to keep in sync — the locations are fixed conventions, not a stored list.
-To locate specs, scan the three locations and keep git-tracked files whose `status` is in the enum.
-A `spec.md` at a spec location with no lifecycle `status` is **not** a spec (so a stray file is never
-grabbed by accident); a status-bearing `spec.md` **outside** the three locations is not a spec
-either. The concrete engine is the `discover-specs` skill (frontmatter only, TOON output).
+To locate specs, scan the fixed conventions (plus any declared extra anchors) and keep git-tracked
+files whose `status` is in the enum. A `spec.md` at a recognized location with no lifecycle `status`
+is **not** a spec (so a stray file is never grabbed by accident); a status-bearing `spec.md` at
+neither a fixed convention nor a declared extra anchor is not a spec either. An unreadable/malformed
+`spec-anchors.toml` is ignored (fall back to the fixed conventions). The concrete engine is the
+`discover-specs` skill (frontmatter only, TOON output).
 
 Each spec carries a **project name** so a consumer can resolve a name → spec. The name is `declared`
 (the optional frontmatter `name`, authoritative), else `derived` (the repo-root single-project →
@@ -104,8 +108,8 @@ todos are incomplete.
 ```mermaid
 stateDiagram-v2
     [*] --> draft: start-mission (new or backfill)
-    draft --> approved: spec gate (validate-spec --target spec)
-    approved --> implemented: impl gate (validate-spec --target impl)
+    draft --> approved: spec gate (spec-gate --target spec)
+    approved --> implemented: impl gate (spec-gate --target impl)
     approved --> draft: behavior change (re-open)
     implemented --> draft: behavior change (re-open)
     draft --> deprecated: Oracle-lens kill (scope)
@@ -131,8 +135,8 @@ excluded from the content the freeze protects; toggling it is not a scenario edi
 write constraint ("never write a frozen `.feature`") is in `sdd:ownership-governance`.
 
 - **The unfreeze trigger is risk, not phase.** *Narrowing or rewriting* a scenario unfreezes its
-  file (in explore or deliver alike) — at the gate that is **Clearance** (`sdd:autonomy-rubric` /
-  the autonomy bar), contract narrowed → escalate. An *additive* scenario never unfreezes its file:
+  file (in explore or deliver alike) — at the gate that is **Clearance** (the conductor's autonomy
+  bar, `start-mission`), contract narrowed → escalate. An *additive* scenario never unfreezes its file:
   it widens the contract, cannot break existing impl, and **self-clears** — folding into the frozen
   file under the conductor's authority, logged as a detail-adjustment.
 - **`spec.md` is kept in sync, never frozen** — the readable abstraction of the suite, free to be

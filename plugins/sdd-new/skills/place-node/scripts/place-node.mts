@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-// place-node — corpus/place-node's concrete engine. Given a new node's concept (and optional name),
+// place-node — project-spec/place-node's concrete engine. Given a new node's concept (and optional name),
 // suggests a provisional capability home and surfaces possible duplicates, so explore places a node in
 // one lookup instead of holding the tree in its head (.agents/specs/sdd/design/spec-layout.md).
 //
 // Derivation, not a registry: the home for a concept is where that concept's facets already sit — read
-// live from the corpus's `concept:` tags, never a stored routing list (the corpus/discovery no-drift
+// live from the project-spec's `concept:` tags, never a stored routing list (the corpus/discovery no-drift
 // rule). Read-only and advisory: it writes nothing, and placement is finalized at handoff.
 //
 // No dependencies (the repo's node-≥23.6 / no-deps convention). Pure functions are exported for
@@ -16,7 +16,7 @@ import { join } from 'node:path'
 const SKIP_DIRS = new Set(['node_modules', '.git', 'dist', '.turbo', '.next', 'coverage'])
 
 export interface NodeRecord {
-	/** Path relative to the corpus dir (POSIX). */
+	/** Path relative to the spec directory (POSIX). */
 	relPath: string
 	/** The top-level folder — the capability. */
 	capability: string
@@ -72,23 +72,23 @@ function displayPath(relPath: string): string {
 	return p.endsWith('/README.md') ? p.slice(0, -'README.md'.length) : p
 }
 
-// ── Scan the corpus — every concept-tagged node ──
-export function scanCorpus(corpusDir: string): NodeRecord[] {
+// ── Scan the project-spec — every concept-tagged node ──
+export function scanProjectSpec(specDir: string): NodeRecord[] {
 	const records: NodeRecord[] = []
-	walk(corpusDir, corpusDir, records)
+	walk(specDir, specDir, records)
 	return records
 }
 
-function walk(dir: string, corpusDir: string, out: NodeRecord[]): void {
+function walk(dir: string, specDir: string, out: NodeRecord[]): void {
 	for (const entry of readdirSync(dir, { withFileTypes: true })) {
 		if (entry.name.startsWith('.') || SKIP_DIRS.has(entry.name)) continue
 		const full = join(dir, entry.name)
 		if (entry.isDirectory()) {
-			walk(full, corpusDir, out)
+			walk(full, specDir, out)
 		} else if (entry.name.endsWith('.md')) {
 			const concepts = parseConcepts(readFileSync(full, 'utf8'))
 			if (concepts.length === 0) continue
-			const relPath = full.slice(corpusDir.length + 1).replace(/\\/g, '/')
+			const relPath = full.slice(specDir.length + 1).replace(/\\/g, '/')
 			out.push({ relPath, capability: relPath.split('/')[0], display: displayPath(relPath), concepts })
 		}
 	}
@@ -130,7 +130,7 @@ function render(homes: HomeSuggestion[], near: NodeRecord[], concept: string, na
 	} else {
 		lines.push('near[0]: (no name overlap)')
 	}
-	lines.push('note: placement is provisional — finalized at handoff (design/spec-layout.md)')
+	lines.push('note: placement is provisional — finalized at handoff (.agents/specs/sdd/design/spec-layout.md)')
 	return lines.join('\n')
 }
 
@@ -145,7 +145,7 @@ export function main(argv: string[]): number {
 		else if (a === '--concept') concept = argv[++i] ?? ''
 		else if (a === '--name') name = argv[++i] ?? ''
 	}
-	const records = scanCorpus(specDir)
+	const records = scanProjectSpec(specDir)
 	const homes = concept ? suggestHomes(records, concept) : []
 	const near = name ? findNear(records, name) : []
 	process.stdout.write(`${render(homes, near, concept, name)}\n`)

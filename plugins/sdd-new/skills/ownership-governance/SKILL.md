@@ -1,6 +1,6 @@
 ---
 name: ownership-governance
-description: "Internal skill: the SDD write-ownership contract — who may write each spec.md frontmatter field and artifact, plus the freeze write-constraint. Loaded by every SDD producer, judge, the conductor, and the start-mission/validate-spec skills. Not triggered by users directly."
+description: "Internal skill: the SDD write-ownership contract — who may write each spec.md frontmatter field and artifact, plus the freeze write-constraint. Loaded by every SDD producer, judge, the conductor, and the start-mission/spec-gate skills. Not triggered by users directly."
 user-invocable: false
 ---
 
@@ -14,17 +14,17 @@ is in `sdd:gate-validation-governance`; the plan/ledger write split is in `sdd:c
 
 | Field / artifact | Written by | Never written by |
 |---|---|---|
-| `status` | the gate skill (`validate-spec`) — on a human verdict, or to match a conductor self-assertion within leash | the conductor, any producer |
+| `status` | the gate skill (`spec-gate`) — on a human verdict, or to match a conductor self-assertion within leash | the conductor, any producer |
 | `project-path` | the **conductor** (at scaffold; `backfill-project-spec`) | producers, the gate skill |
-| run-level leash + approach (session-local; to `ledger.jsonl`, **not** spec.md frontmatter — `sdd:autonomy-rubric`) | the **conductor** (initial evaluation) | producers, the gate skill |
+| run-level leash + approach (session-local; to `ledger.jsonl`, **not** spec.md frontmatter — the conductor's autonomy bar, `start-mission`) | the **conductor** (initial evaluation) | producers, the gate skill |
 | `approval` **self-assertion** (`verdict: approve`/`pause` + `by: agent`/none + `why`) | the **conductor** (synthesis only) | producers, the gate skill |
-| `approval` **human ratification** (`verdict: approve`/`reject` + `by: <name>`) | the gate skill (`validate-spec`), **in-session position only** | the conductor, any producer, any spawned delegate |
+| `approval` **human ratification** (`verdict: approve`/`reject` + `by: <name>`) | the gate skill (`spec-gate`), **in-session position only** | the conductor, any producer, any spawned delegate |
 | `<!-- open: -->` markers | the **conductor** | producers (they *emit gaps*, not markers) |
 | `produced-by` map | the **conductor** (records the resolved producer per role at production) | producers, judges, the gate skill |
 | contested-type → chosen-plugin state (`.agents/sdd/`) | the **conductor** (or `start-mission` for a contested artifact-type); **distinct from `produced-by`** | producers, judges, the gate skill |
 | combat-log `report` / `correction` / `halt` lines | the **conductor** (append-only, to the plan's `*.log.jsonl`) | producers, judges, the gate skill |
 | ledger `gate` line — self-asserted (`by: agent`) | the **conductor** (append-only, to `ledger.jsonl`) | producers, judges |
-| ledger `gate` line — human-ratified (`by: <name>`) | the gate skill (`validate-spec`), **in-session position only** | the conductor, producers, judges |
+| ledger `gate` line — human-ratified (`by: <name>`) | the gate skill (`spec-gate`), **in-session position only** | the conductor, producers, judges |
 | ledger `strategy` lines | the doctrine-loop Scanner (append-only) | the conductor, producers, judges |
 | `spec.md` body + the `.feature` | the **spec-producer** | the conductor, judges, solution/impl producers |
 | `<unit>.solution.md` | the **solution-producer** | the spec-producer, judges |
