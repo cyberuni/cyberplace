@@ -397,6 +397,23 @@ test('collectSpecs is fail-safe: a malformed config falls back to the fixed conv
 	}
 })
 
+// An UNREADABLE config (here a directory in the config's place → EISDIR on read) exercises the
+// readAnchors try/catch, not just the non-throwing "no anchors array" path.
+test('collectSpecs is fail-safe: an unreadable config falls back to the fixed conventions', () => {
+	const dir = mkdtempSync(join(tmpdir(), 'discover-specs-'))
+	try {
+		seed(dir, '.agents/specs/sdd/spec.md', 'status: approved')
+		seed(dir, 'source/spec.md', 'status: draft')
+		mkdirSync(join(dir, '.agents/sdd/spec-anchors.toml'), { recursive: true }) // a dir → readFileSync throws
+		assert.deepEqual(
+			collectSpecs(dir).map((s) => s.path),
+			['.agents/specs/sdd'], // no crash; falls back to the fixed conventions
+		)
+	} finally {
+		rmSync(dir, { recursive: true, force: true })
+	}
+})
+
 // ── resolveByName (deterministic exact match; disambiguation stays agentic) ──
 
 test('resolveByName returns the single exact (case-insensitive) name match', () => {
