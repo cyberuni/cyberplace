@@ -36,10 +36,19 @@ carrying a `.feature` or missing its `## Subject`, and a `behavioral` node missi
 perform the same checks by reading each README's frontmatter yourself.
 
 The sibling `scripts/check-feature.mts` is the **`.feature`-form** authority — Gherkin validity,
-boolean-`Then` form (hedge-word detection), and scenario ordering/sectioning. It runs tree-wide in the
-`verify:specs-new` CI script, not from this skill body; run it here too when the CR touches a `.feature`
-(`node "<skill>/scripts/check-feature.mts" [--root <specs-dir>]`). The cold spec-judge grades form
-qualitatively; this engine catches it mechanically.
+boolean-`Then` form (hedge-word + leaked-rubric detection), and scenario ordering/sectioning. When
+the CR touches any `.feature`, run it here **fail-closed, before spawning the cold judge**, scoped to
+the CR's touched files:
+
+```bash
+node "<skill>/scripts/check-feature.mts" --files <the CR's touched .feature files>
+```
+
+Exit `0` = form clean; exit `1` prints each `✗ <file>: <reason>` — **advance nothing and do not
+spawn the judge; report the violations for the producer to fix.** Scoping to `--files` keeps the gate
+on the CR's delta; the tree-wide `--root` sweep stays the `verify:specs-new` CI backstop. The cold
+spec-judge grades form qualitatively; this engine catches it mechanically, so the judge only ever
+sees a well-formed suite.
 
 **Provenance structural checks** (`sdd:combat-log-governance`). Read the touched files'
 `produced-by` frontmatter and the root's `ledger.jsonl`:

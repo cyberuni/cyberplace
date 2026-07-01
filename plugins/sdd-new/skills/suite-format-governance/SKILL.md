@@ -72,6 +72,21 @@ rejects a malformed `@rubric` scenario (missing threshold or named dimensions) s
 scoring begins. A plugin may supply a more capable scoring judge (e.g. ACES for agent-config
 domains).
 
+## The executable form — `check-feature`
+
+The universal structural rules above (Gherkin validity, every untagged `Then` a boolean assertion,
+no hedge adverbs or leaked rubric lingo, scenario sectioning) have a deterministic executable form:
+the `check-feature` engine (`scripts/check-feature.mts` in the `spec-gate` skill). It runs at **two
+per-CR runtime touchpoints**, not only in CI:
+
+- The **spec-producer self-runs it** over the `.feature` it just authored (`--files <paths>`) and
+  fixes any violation before returning — a mechanical defect never costs a cold-judge round.
+- The **spec gate runs it fail-closed** over the CR's touched `.feature` files (`--files <paths>`),
+  **before the cold judge is spawned**, so the qualitative judge only ever sees well-formed suites.
+
+A tree-wide `--root` sweep stays the CI backstop. The mechanical check settles form deterministically;
+the resolved judge spends its rounds on the qualitative bars, never on catching a hedge word.
+
 ## Scenario ordering (step-down)
 
 Order scenarios to trace the workflow top-to-bottom:
