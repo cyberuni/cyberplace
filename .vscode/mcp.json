@@ -1,0 +1,9 @@
+{
+	"mcpServers": {
+		"mcp-agent-mail": {
+			"command": "/home/unional/.local/bin/mcp-agent-mail",
+			"args": [],
+			"envFile": "${workspaceFolder}/.env"
+		}
+	}
+}
