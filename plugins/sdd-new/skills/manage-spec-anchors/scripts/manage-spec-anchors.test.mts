@@ -11,6 +11,7 @@ import {
 	isFixedConvention,
 	isValidPattern,
 	listAnchors,
+	main,
 	parseAnchorsToml,
 	previewPattern,
 	readCustomAnchors,
@@ -69,7 +70,10 @@ test('list shows the custom anchors from the config alongside the fixed ones', (
 	try {
 		seedConfig(dir, ['source', 'x/<project>'])
 		const all = listAnchors(dir)
-		assert.deepEqual(all.filter((a) => a.kind === 'custom').map((a) => a.pattern), ['source', 'x/<project>'])
+		assert.deepEqual(
+			all.filter((a) => a.kind === 'custom').map((a) => a.pattern),
+			['source', 'x/<project>'],
+		)
 		assert.equal(all.filter((a) => a.kind === 'fixed').length, 3)
 	} finally {
 		rmSync(dir, { recursive: true, force: true })
@@ -259,6 +263,57 @@ test('preview rejects a malformed candidate pattern', () => {
 	try {
 		assert.equal(previewPattern(dir, '../bad').ok, false)
 		assert.equal(previewPattern(dir, 'a/<bogus>').ok, false)
+	} finally {
+		rmSync(dir, { recursive: true, force: true })
+	}
+})
+
+// ── main (CLI) ──
+
+function captureMain(argv: string[]): { code: number; out: string } {
+	const writes: string[] = []
+	const original = process.stdout.write
+	process.stdout.write = ((chunk: string) => {
+		writes.push(String(chunk))
+		return true
+	}) as typeof process.stdout.write
+	try {
+		return { code: main(argv), out: writes.join('') }
+	} finally {
+		process.stdout.write = original
+	}
+}
+
+test('main --list prints the fixed anchors and returns 0', () => {
+	const dir = tmp()
+	try {
+		const { code, out } = captureMain(['--root', dir, '--list'])
+		assert.equal(code, 0)
+		assert.match(out, /\[fixed\] \.agents\/spec\//)
+		assert.match(out, /\[fixed\] \.agents\/specs\/<project>\//)
+	} finally {
+		rmSync(dir, { recursive: true, force: true })
+	}
+})
+
+test('main --add persists a valid anchor (0) and refuses an invalid one (1)', () => {
+	const dir = tmp()
+	try {
+		assert.equal(captureMain(['--root', dir, '--add', 'source']).code, 0)
+		assert.deepEqual(readCustomAnchors(dir), ['source'])
+		assert.equal(captureMain(['--root', dir, '--add', '../escape']).code, 1)
+		assert.deepEqual(readCustomAnchors(dir), ['source']) // unchanged
+	} finally {
+		rmSync(dir, { recursive: true, force: true })
+	}
+})
+
+test('main --preview reports the empty match and returns 0', () => {
+	const dir = tmp()
+	try {
+		const { code, out } = captureMain(['--root', dir, '--preview', 'nowhere/<project>'])
+		assert.equal(code, 0)
+		assert.match(out, /matches no project/)
 	} finally {
 		rmSync(dir, { recursive: true, force: true })
 	}

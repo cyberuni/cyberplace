@@ -252,10 +252,7 @@ function seedAnchors(dir: string, patterns: string[]): void {
 }
 
 test('parseAnchorsToml pulls the string entries out of the anchors array', () => {
-	assert.deepEqual(parseAnchorsToml('anchors = [\n  "source",\n  "a/*/<project>",\n]\n'), [
-		'source',
-		'a/*/<project>',
-	])
+	assert.deepEqual(parseAnchorsToml('anchors = [\n  "source",\n  "a/*/<project>",\n]\n'), ['source', 'a/*/<project>'])
 	assert.deepEqual(parseAnchorsToml('anchors = ["one", \'two\']'), ['one', 'two'])
 })
 
@@ -323,7 +320,10 @@ test('collectSpecs adds a spec at a declared extra anchor', () => {
 		seed(dir, 'source/spec.md', 'status: draft')
 		seedAnchors(dir, ['source'])
 		const specs = collectSpecs(dir)
-		assert.deepEqual(specs.map((s) => s.path), ['source'])
+		assert.deepEqual(
+			specs.map((s) => s.path),
+			['source'],
+		)
 		assert.deepEqual([specs[0].name, specs[0].nameSource], ['source', 'guessed'])
 	} finally {
 		rmSync(dir, { recursive: true, force: true })
@@ -347,9 +347,10 @@ test('collectSpecs names an extra-anchor spec from its <project> capture (derive
 		seed(dir, 'curriculum/web/react/s-01/spec.md', 'status: draft')
 		seedAnchors(dir, ['curriculum/*/*/<project>'])
 		const specs = collectSpecs(dir)
-		assert.deepEqual(specs.map((s) => [s.path, s.name, s.nameSource]), [
-			['curriculum/web/react/s-01', 's-01', 'derived'],
-		])
+		assert.deepEqual(
+			specs.map((s) => [s.path, s.name, s.nameSource]),
+			[['curriculum/web/react/s-01', 's-01', 'derived']],
+		)
 	} finally {
 		rmSync(dir, { recursive: true, force: true })
 	}

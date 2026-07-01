@@ -114,7 +114,7 @@ function unquote(v: string): string {
 // Classify a root-relative spec.md path to one of the three spec locations, returning the
 // pattern + the location dir it implies (the <project> folder for root-multi, the project-path
 // for nested, '' for root-single). Returns null for any other location.
-export type LocationPattern = 'root-single' | 'root-multi' | 'nested' | 'extra'
+type LocationPattern = 'root-single' | 'root-multi' | 'nested' | 'extra'
 
 export interface Location {
 	pattern: LocationPattern
@@ -226,11 +226,12 @@ export function readAnchors(root: string): string[] {
 // Expand one anchor pattern against the filesystem into the spec dirs it matches. A `*` segment
 // globs one directory level; a `<project>` segment globs AND captures the segment as the spec name.
 // A literal segment must exist. The matched dir is a spec dir iff it holds a spec.md.
-export function expandAnchor(
-	root: string,
-	pattern: string,
-): { rel: string; capturedName?: string }[] {
-	const segs = pattern.replace(/\\/g, '/').replace(/^\/+|\/+$/g, '').split('/').filter(Boolean)
+export function expandAnchor(root: string, pattern: string): { rel: string; capturedName?: string }[] {
+	const segs = pattern
+		.replace(/\\/g, '/')
+		.replace(/^\/+|\/+$/g, '')
+		.split('/')
+		.filter(Boolean)
 	let frontier: { dir: string; capturedName?: string }[] = [{ dir: '' }]
 	for (const seg of segs) {
 		const next: { dir: string; capturedName?: string }[] = []
