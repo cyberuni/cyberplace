@@ -8,10 +8,10 @@ metadata:
 
 # Place Node
 
-The concrete engine for **corpus/place-node** (`.agents/specs/sdd/corpus/place-node/`). Given a new
+The concrete engine for the **place-node** step. Given a new
 node's `concept` (and optional name), it suggests a **provisional** capability home and catches possible
-duplicates, so explore places a node without holding the whole tree in its head
-(`.agents/specs/sdd/design/spec-layout.md`). Self-contained `.mts` (the repo's node-≥23.6 / no-deps
+duplicates, so explore places a node without holding the whole tree in its head (it reads the corpus's
+declared placement map + capability layout). Self-contained `.mts` (the repo's node-≥23.6 / no-deps
 convention).
 
 ## Run it
@@ -32,7 +32,7 @@ the placement-map routing table (root `spec.md`), which this tool points to rath
 ## Boundaries
 
 Read-only and advisory — it **writes nothing** (no scaffold, no relocation, no frontmatter); placement is
-provisional and finalized at handoff (`../start-mission/`, `.agents/specs/sdd/mission/handoff/`), so a
+provisional and finalized at handoff (the `start-mission` handoff step), so a
 suggestion never has to be correct — only useful. Frontmatter only — no node body is read. When `node` is
 absent, an agent does the same by hand: read the `concept:` tags, see where that concept already lives,
 and place near them.

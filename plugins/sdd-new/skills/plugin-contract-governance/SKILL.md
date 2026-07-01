@@ -34,13 +34,13 @@ the conductor spawns, because a grader must not share the author's context. A pl
 model-tuned producer agent named for the slot — is always spawned.
 
 > The legacy role key was `plan-producer` (writing `plan.md` + `tasks.md`); it is renamed
-> **`solution-producer`** writing `<unit>.solution.md` (`sdd:provenance-model`). A live registry
+> **`solution-producer`** writing `<unit>.solution.md` (`sdd:combat-log-governance`). A live registry
 > still carrying `plan-producer` is migrated on encounter.
 
 ## Which governances each role loads
 
-Bars are the Model-B `(actor, gate)` governances (matched by `resolve-governances` per
-`.agents/specs/sdd/design/governance-resolution.md`; the bars themselves live in `common-governances/`); a producer
+Bars are the Model-B `(actor, gate)` governances (matched by the `resolve-governances` skill; the
+actor bars are the shipped `sdd:{oracle,builder,architect}-{spec,impl}-governance` skills); a producer
 self-aligns to exactly the bars its judge grades. The lens sets are spec gate `{oracle, builder,
 architect}`, impl gate `{builder, architect}`, solution `{architect}` (ungated).
 

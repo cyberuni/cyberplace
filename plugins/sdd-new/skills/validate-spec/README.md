@@ -16,7 +16,7 @@ The **impl gate** is the mission's, not here. The gate is verdict-only — it wr
 frontmatter and never fixes issues automatically.
 
 References `sdd:lifecycle-governance`, `sdd:ownership-governance`, `sdd:gate-validation-governance`,
-and the design rules under `.agents/specs/sdd/design/` (provenance, lifecycle/freeze, autonomy).
+`sdd:combat-log-governance` (provenance/freeze shapes), and the conductor's autonomy bar.
 
 ## scripts/
 

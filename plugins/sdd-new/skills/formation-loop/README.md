@@ -4,7 +4,7 @@ Internal, non-user-invocable SDD skill holding the **structure outer loop** — 
 **formation loop**, run by its delegate the Warden (`sdd-warden`) parallel to the conductor's
 mission loop. It encodes the **intra-spec structural acts** (audit node-shape, split an oversized node, reconcile
 drift or a contradiction), the Warden's **self-clear-vs-escalate** verdict against the floor + gradient
-(`.agents/specs/sdd/design/autonomy-rubric.md`), the **frozen-contract guard** (keyed on contract impact, not the
+(the conductor's autonomy bar, `start-mission`), the **frozen-contract guard** (keyed on contract impact, not the
 bare freeze), and the **altitude routing** that keeps formation to corpus structure alone.
 
 The loop fires **post-mission, corpus-wide and continuous**, asking one question — is what we have
@@ -14,5 +14,4 @@ check. Its input is the corpus **structure** + **discovery** (`corpus/`), option
 by a cursor over the public trail — never the combat log, never live subagent context. The Warden
 runs stations in-session and **never** writes a spec's `status`.
 
-Spec: `.agents/specs/sdd/formation/`. The doctrine (process) sibling outer loop is
-`sdd:doctrine-loop`.
+The doctrine (process) sibling outer loop is `sdd:doctrine-loop`.
