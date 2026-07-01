@@ -9,14 +9,14 @@ todos:
     content: "U1 — status field on plan-brief schema (provenance-model.md) + 3-way distinction — SPEC DONE"
     status: completed
   - id: discover-plans-status
-    content: "U2 — discover-plans: spec+additive scenarios DONE; engine --status filter + status column + test = DELIVER"
-    status: in_progress
+    content: "U2 — discover-plans spec+scenarios DONE; engine --status/status column + 25 tests green; README+SKILL updated — DELIVER DONE"
+    status: completed
   - id: gateway-dispatch-node
-    content: "U3 — new gateway/dispatch node README+feature DONE + gateway wiring; SKILL.md prose = DELIVER"
-    status: in_progress
+    content: "U3 — gateway/dispatch node DONE; sdd SKILL.md dispatch loop prose added; automaton verdict-packet contract already covered — DELIVER DONE"
+    status: completed
   - id: checkpoint-node
-    content: "U4 — new mission/checkpoint node README+feature DONE; pause-mission --approve impl = DELIVER"
-    status: in_progress
+    content: "U4 — mission/checkpoint node DONE; pause-mission --approve section + README + description — DELIVER DONE"
+    status: completed
   - id: handoff
     content: "Handoff — finalize node placement, land as branch → PR (next → main)"
     status: pending
@@ -55,7 +55,14 @@ Dogfood CR against the SDD project spec. Seed intent: the approved plan at
 
 ## NEXT — resume here
 
-> **▶ NEXT ACTION — incorporate the cold spec-judge verdict, then self-assert the spec gate.**
+> **▶ NEXT ACTION — `handoff`: branch → PR (next → main).** Both gates passed: spec gate self-asserted
+> (ledger seq 45), impl gate ratified by unional (seq 46). Commit the impl unit, then land as a branch
+> off `next` → PR. Keep the combat log; do NOT retire this plan until merged AND doctrine-distilled.
+> Root spec.md stays `approved` (per-unit verdict).
+>
+> **Placement note:** the two new nodes (gateway/dispatch, mission/checkpoint) were placed directly in
+> their blessed homes (siblings of gateway/manage and the mission phases) — no relocation needed at
+> handoff. resume-mission remains un-noded (a standing formation observation, not this CR).
 > All 4 units' spec+suite authored. Mechanical checks green (check-feature / check-spec-structure /
 > check-spec-state OK; concept-index refreshed). Cold sdd-spec-judge dispatched over the diff.
 > On ALIGNED → freeze the touched/new `.feature`s (add `@frozen` to the two NEW features
