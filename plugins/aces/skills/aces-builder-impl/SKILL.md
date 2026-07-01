@@ -15,7 +15,7 @@ The **Builder** bar at the **impl gate**, specialized for agent-configuration ar
 derived from the frozen `.feature`, no green-by-tampering); this adds how an *agent-config* subject,
 which has no deterministic test runner, reaches a per-scenario boolean through a scored eval suite.
 One merged bar loaded by **both** faces — the ACES impl-producer (`define-agent` / `improve`, forward,
-which **authors** the eval suite) and the cold impl-judge (`aces-implementer`, backward, which
+which **authors** the eval suite) and the cold impl-judge (`aces-impl-judge`, backward, which
 **runs** it). `producer ≠ judge` holds at the agent level.
 
 ## The bar

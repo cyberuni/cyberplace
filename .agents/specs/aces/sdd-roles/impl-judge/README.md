@@ -2,7 +2,7 @@
 spec-type: behavioral
 ---
 
-# implementer — the impl-judge role
+# impl-judge — the impl-judge role
 
 Run the scenario→rubric eval suite over N runs and collapse score-vs-threshold to a boolean per frozen scenario.
 

@@ -8,7 +8,7 @@ behavior/quality), and a `score ≥ threshold` collapse, with the runner (`aces-
 from the author.
 
 One merged bar loaded by **both** faces — the ACES impl-producer (`define-agent` / `improve`, forward,
-which authors the eval suite) and the cold impl-judge (`aces-implementer`, backward, which runs it);
+which authors the eval suite) and the cold impl-judge (`aces-impl-judge`, backward, which runs it);
 `producer ≠ judge` holds at the agent level. Bound in `.agents/universal-plugin.json` as the ACES
 squad's `builder-impl` governance; the contract-quality side is the spec gate's `aces-builder-spec`.
 Not triggered by users directly.

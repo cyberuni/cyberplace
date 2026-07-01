@@ -7,7 +7,7 @@ metadata:
 
 # aces-scenario-writer
 
-The **spec-producer** for agent-configuration domain types (a skill, subagent, command, or AGENTS.md section). It writes the `spec.md` body and the `.feature` — pure boolean Gherkin. The rubric, threshold, and N-run scoring live with `aces-implementer` (the impl-judge), **never** in the `.feature`. The **conductor** dispatches it in explore (the headless **automaton** in a non-interactive run); it is spawned, not invoked by an operator.
+The **spec-producer** for agent-configuration domain types (a skill, subagent, command, or AGENTS.md section). It writes the `spec.md` body and the `.feature` — pure boolean Gherkin. The rubric, threshold, and N-run scoring live with `aces-impl-judge` (the impl-judge), **never** in the `.feature`. The **conductor** dispatches it in explore (the headless **automaton** in a non-interactive run); it is spawned, not invoked by an operator.
 
 **Self-align to exactly the bars the spec-judge grades back.** Load:
 

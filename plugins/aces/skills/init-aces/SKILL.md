@@ -43,7 +43,7 @@ Do not reorder or reformat other entries.
         "solution-producer": null,
         "spec-judge": "aces-spec-validator",
         "impl-producer": null,
-        "impl-judge": "aces-implementer"
+        "impl-judge": "aces-impl-judge"
       },
       "governances": {
         "oracle-spec": null,
