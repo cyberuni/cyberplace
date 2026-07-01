@@ -6,14 +6,14 @@ todos:
     content: "Open the CR, scaffold this plan, emit the run-level strategy (ledger seq 26). DONE."
     status: completed
   - id: explore-spec
-    content: "Explore + spec gate — revise frozen conductor.feature (+README) with the recuse→fallback scenario paired beside 'a required role with no delegate fails closed' (line ~78); add the recusal rule to design/lifecycle-model.md as a sibling of 'No-resolvable-producer fails closed' (line ~140); note per-unit re-resolution in mission/resolution if observable. Ratified re-open, cold sdd:sdd-spec-judge ALIGNED, re-freeze, ledger gate line."
-    status: in_progress
+    content: "Explore + spec gate — DONE. +1 additive scenario in conductor.feature (recuse→fallback) paired beside fail-closed; sibling rule in design/lifecycle-model.md; README synced. Cold sdd-spec-judge ALIGNED 3/3; ledger seq 27; commit 18b53c1."
+    status: completed
   - id: deliver-impl
-    content: "Deliver + impl gate — implement recusal handling in start-mission/SKILL.md + sdd-automaton.md (a recused unit re-runs the SDD-default producer + uses SDD-default bars/judges; recorded as a combat-log line, not a halt). Confirm impl-producer-governance already covers deterministic-subject verification. Impl gate green."
-    status: pending
+    content: "Deliver + impl gate — DONE. Recuse clause in start-mission Step 2; automaton inherits (no restatement). Cold sdd-implementer IMPLEMENTATION_PASS true; ledger seq 28; commit fe7e268."
+    status: completed
   - id: handoff
-    content: "Handoff — pnpm verify:specs-new green; commits on next; unblocks CR-2 (the ACES fit gate)."
-    status: pending
+    content: "Handoff — DONE. verify:specs-new green (206/206, no drift); commits 5ed66e7→fe7e268 on next; unblocks the ACES fit-gate CR (CR-2)."
+    status: completed
 isProject: false
 ---
 
@@ -58,8 +58,9 @@ subject without halting the mission.
 
 ## NEXT — resume here
 
-**▶ NEXT ACTION — `explore-spec`.** Revise the frozen `mission/conductor/conductor.feature`: add
-`a resolved producer that recuses from a subject falls back to the SDD default for that role`
-beside the existing fail-closed scenario. Add the recusal rule to `design/lifecycle-model.md`
-(sibling of No-resolvable-producer fails closed). Ratified re-open (this CR), cold `sdd:sdd-spec-judge`
-ALIGNED, re-freeze, ledger gate line. Then `deliver-impl`.
+**▶ MISSION COMPLETE (in-tree).** The recuse→fallback seam is specced (conductor.feature +
+lifecycle-model.md, cold sdd-spec-judge ALIGNED, ledger 27) and implemented (start-mission Step 2,
+automaton inherits, cold sdd-implementer PASS, ledger 28). `verify:specs-new` green (206/206).
+Commits `5ed66e7`→`fe7e268` on `next`. **Unblocks CR-2** (the ACES fit gate) — its wrong-squad path
+now has the conductor seam to fall back on. The `next → main` PR (owner's call) carries this with the
+rest.
