@@ -30,24 +30,22 @@ todos:
     status: completed
   - id: handoff
     content: Placement pass, land, file follow-up CRs (retire skill-authoring/create-skill; durability.toml resolver; promotion-path detector)
-    status: in_progress
+    status: completed
 isProject: false
 ---
 
 ## NEXT
 
-Commit and land (no placement move needed — both touched files already live at their
-established homes). Then file follow-up CRs:
+Mission complete, landed in `4183717`. Follow-ups spun out to their own plans:
 
-1. **Retire `plugins/skill-authoring/skills/create-skill`** in favor of `aces:define-skill`,
-   now that `define-skill` can check the durability signal at intake and take the escape path
-   (fast scaffold, no ACES) for non-durable requests instead of always handing off to the eval
-   loop.
-2. **Implement `.agents/sdd/durability.toml` resolution** — the code-artifact-type durability
-   convention is specified (intake/README.md) but no reader/writer exists yet.
-3. **Promotion-path detector** (still `<!-- open -->` in intake/README.md, Q5 was "not sure") —
-   decide whether formation's `shot-before-aim` flow covers a private→public placement change,
-   or whether placement changes must carry the backfill obligation themselves.
+1. **Retire `plugins/skill-authoring/skills/create-skill`** — in progress, see
+   `.agents/plans/local-retire-create-skill.plan.md`.
+2. **Implement `.agents/sdd/durability.toml` resolution** — done, `local-resolve-durability`
+   (`9e6d07f`).
+3. **Promotion-path detector** — still open, still `<!-- open -->` in `intake/README.md`; no plan
+   yet, pick it up as a fresh CR when ready.
+
+Retirement-ready once doctrine distills this milestone.
 
 ## Resolution reached
 

@@ -23,22 +23,22 @@ todos:
     status: completed
   - id: handoff
     content: Commit
-    status: in_progress
+    status: completed
 isProject: false
 ---
 
 ## NEXT
 
-Commit as one unit of work. Remaining open items from the durability line of work:
+Mission complete, landed in `cb62994`. Remaining open items from the durability line of work:
 
-1. **Retire `plugins/skill-authoring/skills/create-skill`** in favor of `aces:define-skill` —
-   the durability escape path is now real end-to-end, so this can finally happen.
-2. **Promotion-path detector** (private→public) — still an open marker.
-3. **Mixed-request carve-and-escape is untested** (spec-judge content gap): the "carve durable
-   artifacts into the CR, escape the non-durable ones" behavior described in both edited
-   SKILL.md files and gateway/README.md has no backing scenario in gateway.feature,
-   cr-lifecycle.feature, or resolve-durability.feature — a reasonable inference from the
-   per-artifact resolution model, but currently prose-only.
+1. **Retire `plugins/skill-authoring/skills/create-skill`** — in progress, see
+   `.agents/plans/local-retire-create-skill.plan.md`.
+2. **Promotion-path detector** (private→public) — still an open marker, no plan yet.
+3. **Mixed-request carve-and-escape is untested** (spec-judge content gap) — no backing scenario
+   in gateway.feature, cr-lifecycle.feature, or resolve-durability.feature; reasonable inference
+   from the per-artifact resolution model, currently prose-only. No plan yet.
+
+Retirement-ready once doctrine distills this milestone.
 
 ## Gate record
 
