@@ -404,19 +404,19 @@ test('checkReferencedArtifacts flags a relative reference that resolves to nothi
 test('checkReferencedArtifacts passes a relative reference that resolves to a real file', () => {
 	const v = checkReferencedArtifacts(
 		'sdd/spec-gate',
-		'plugins/sdd-new/skills/spec-gate',
+		'plugins/sdd/skills/spec-gate',
 		'See `./scripts/check-spec-state.mts`.',
 	)
 	assert.deepEqual(v, [])
 })
 
 test('checkReferencedArtifacts passes a repo-root-relative reference that resolves', () => {
-	const v = checkReferencedArtifacts('sdd', '.', 'See `plugins/sdd-new/skills/spec-gate/README.md`.')
+	const v = checkReferencedArtifacts('sdd', '.', 'See `plugins/sdd/skills/spec-gate/README.md`.')
 	assert.deepEqual(v, [])
 })
 
 test('checkReferencedArtifacts strips an anchor fragment before resolving', () => {
-	const v = checkReferencedArtifacts('sdd', '.', 'See `plugins/sdd-new/skills/spec-gate/README.md#gate`.')
+	const v = checkReferencedArtifacts('sdd', '.', 'See `plugins/sdd/skills/spec-gate/README.md#gate`.')
 	assert.deepEqual(v, [])
 })
 

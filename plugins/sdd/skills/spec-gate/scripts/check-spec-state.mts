@@ -176,7 +176,6 @@ export function extractPathRefs(text: string): string[] {
 	const out: string[] = []
 	const re = /`([^`\n]+)`/g
 	let m: RegExpExecArray | null
-	// biome-ignore lint/suspicious/noAssignInExpressions: standard regex-exec loop
 	while ((m = re.exec(text))) {
 		const token = m[1].trim()
 		// A template placeholder (`<project>`) or glob (`*.plan.md`) names a pattern,
