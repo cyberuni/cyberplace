@@ -1,8 +1,6 @@
 ---
 name: define-skill
 description: 'Use this skill when the user wants to create, scaffold, or formalize a workflow skill — a process, tool-based, or standard SKILL.md — from scratch or from an existing ad-hoc workflow. Trigger on "create a skill", "write a skill for X", "I want a skill that…", "turn this workflow into a skill", or "help me build this skill", even if they do not say "skill" explicitly. Not for agent definitions or personas (define-agent), reference-only rule sets (define-governance), or extracting the current session (skillify).'
-metadata:
-  internal: true
 ---
 
 # Define Skill
