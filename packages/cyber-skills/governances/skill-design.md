@@ -33,7 +33,7 @@ Encode what to decide and how. Do not repeat generic best practices, API docs, o
 
 One workflow per skill. User-facing skills match a situation; sub-skills are called explicitly by other skills.
 
-- Sub-skills have no situational trigger — prefix the `description` with `"Internal skill:"` and name the caller (e.g. `"Internal skill: called by audit-skill."`) to avoid accidental activation.
+- Sub-skills have no situational trigger — prefix the `description` with `"Internal skill:"` and name the caller (e.g. `"Internal skill: called by improve-skill."`) to avoid accidental activation.
 - Neither type should be loaded as ambient context.
 
 ### No baked-in opinions

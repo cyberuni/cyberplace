@@ -81,7 +81,7 @@ export function auditCommand(): Command {
 				}
 
 				console.info('✅ All checks passed (S1–S5, Q1–Q5, Q10–Q11, E1–E2, E6, E9).')
-				console.info('   Run the audit-skill agent skill for full quality review (Q6–Q12, E3–E5, E7).')
+				console.info('   Run the improve-skill agent skill for full quality review (Q6–Q16, E3–E5, E7–E8, P1–P3).')
 			})
 		})
 

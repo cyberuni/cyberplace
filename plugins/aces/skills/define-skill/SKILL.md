@@ -153,7 +153,7 @@ Run the structural audit and fix any CRITICAL or HIGH finding **before** present
 npx cyber-skills@<version> audit validate --path <placement-dir>/<name>
 ```
 
-For a fuller pass, invoke the `improve-skill` / `audit-skill` skills. Do not present a skill with an
+For a fuller pass, invoke the `improve-skill` skill. Do not present a skill with an
 open CRITICAL finding.
 
 ## Report and hand off to the ACES eval loop

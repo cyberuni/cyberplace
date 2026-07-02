@@ -110,11 +110,11 @@ Add a TODO comment in the skill body:
 
 ### 6. Validate
 
-Invoke `audit-skill` on the draft. Fix any CRITICAL findings before continuing.
+Invoke `improve-skill` on the draft. Fix any CRITICAL findings before continuing.
 
 Key checks to watch for:
 - **Q1:** Does the description contain "Use this skill when"?
-- **Q5:** Is the description ≤120 characters?
+- **Q5:** Is the description ≤1024 characters?
 - **Q6:** Are there baked-in stack assumptions that should be detected at runtime?
 
 ### 7. Place and link

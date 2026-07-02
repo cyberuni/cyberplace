@@ -6,13 +6,13 @@
 			"title": "Skill Discovery",
 			"description": "Find and evaluate skills before installing.",
 			"installScope": "global",
-			"skills": ["find-awesome-skill", "audit-skill"]
+			"skills": ["find-awesome-skill"]
 		},
 		{
 			"title": "Skill Authoring",
-			"description": "Generalize, patch, and audit agent skills.",
+			"description": "Generalize and patch agent skills.",
 			"installScope": "global",
-			"skills": ["skillify", "patch-skill", "audit-skill"]
+			"skills": ["skillify", "patch-skill"]
 		},
 		{
 			"title": "Agent Initialization",
@@ -27,7 +27,6 @@
 	],
 	"scopes": {
 		"find-awesome-skill": "global",
-		"audit-skill": "global",
 		"skillify": "global",
 		"patch-skill": "global",
 		"init": "global",

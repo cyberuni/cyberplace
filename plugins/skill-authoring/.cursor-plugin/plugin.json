@@ -4,10 +4,5 @@
 	"author": { "name": "unional" },
 	"homepage": "https://github.com/cyberuni/cyber-skills",
 	"repository": "https://github.com/cyberuni/cyber-skills",
-	"skills": [
-		"../skills/create-universal-plugin",
-		"../skills/skillify",
-		"../skills/patch-skill",
-		"../skills/audit-skill"
-	]
+	"skills": ["../skills/create-universal-plugin", "../skills/skillify", "../skills/patch-skill"]
 }

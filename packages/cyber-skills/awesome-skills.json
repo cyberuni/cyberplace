@@ -15,13 +15,6 @@
 					"summary": "Create or improve AGENTS.md and carry forward local skill augmentation guidance.",
 					"why_recommended": "Useful when a repo needs agent-facing documentation with minimal drift.",
 					"tags": ["documentation", "agent-config"]
-				},
-				{
-					"type": "skill",
-					"key": "audit-skill",
-					"summary": "Audit SKILL.md structure, quality, and security before installing or publishing.",
-					"why_recommended": "Strong review rubric before installing third-party skills or publishing your own.",
-					"tags": ["audit", "security", "publishing"]
 				}
 			]
 		}
