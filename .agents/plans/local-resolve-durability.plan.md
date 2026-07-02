@@ -23,21 +23,22 @@ todos:
     status: completed
   - id: handoff
     content: Commit
-    status: in_progress
+    status: completed
 isProject: false
 ---
 
 ## NEXT
 
-Commit as one unit of work. Remaining open items from the durability line of work:
+Mission complete, landed in `9e6d07f`. Wired into the gateway/mission loop by
+`local-wire-durability-into-gateway` (`cb62994`). Remaining open items from the durability line
+of work:
 
-1. **Retire `plugins/skill-authoring/skills/create-skill`** in favor of `aces:define-skill` —
-   still open, now that a real resolver exists to check the durability signal against.
-2. **Promotion-path detector** (private→public) — still an open marker in intake/README.md.
-3. resolve-durability is not yet **wired into any caller** (the conductor/intake doesn't invoke
-   it yet) — it exists as a standalone, tested engine, same bootstrapping stage `discover-specs`
-   and `resolve-governances` were at before the conductor started calling them. Wiring it into
-   the actual intake flow is a separate follow-up.
+1. **Retire `plugins/skill-authoring/skills/create-skill`** — in progress, see
+   `.agents/plans/local-retire-create-skill.plan.md`.
+2. **Promotion-path detector** (private→public) — still an open marker in intake/README.md, no
+   plan yet.
+
+Retirement-ready once doctrine distills this milestone.
 
 ## Gate record
 

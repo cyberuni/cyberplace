@@ -21,14 +21,14 @@ todos:
     status: completed
   - id: handoff
     content: Commit
-    status: in_progress
+    status: completed
 isProject: false
 ---
 
 ## NEXT
 
-Commit as one unit of work. No further follow-ups from this CR — durability.toml itself
-still has no reader/writer implementation (tracked as a follow-up on the prior CR's plan).
+Mission complete, landed in `7a5b826`. durability.toml's reader/writer is now built —
+`local-resolve-durability` (`9e6d07f`). Retirement-ready once doctrine distills this milestone.
 
 ## Gate record
 
