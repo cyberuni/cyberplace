@@ -17,7 +17,7 @@ Agent configuration is organized around distinct concepts, each with a different
 | **[Permissions](/concepts/permissions/)** | Tool capability boundaries — what the agent can and cannot invoke | Enforced by harness on every tool call |
 | **[Constraints](/concepts/constraints/)** | Hard behavioral limits — max turns, guardrails, escalation triggers | Structural: harness-enforced. Behavioral: via discipline |
 | **[Persona](/concepts/persona/)** | Agent identity — role, expertise, bundled permissions and constraints | Active whenever that subagent is spawned |
-| **Commands** | Named slash-command entries that trigger a specific workflow | Invoked explicitly by user |
+| **[Commands](/concepts/commands/)** | Named slash-command entries that trigger a specific workflow | Invoked explicitly by user |
 
 Together these concepts define the *behavior surface* of an agentic system. Skills, governances, and commands are loaded on demand. Disciplines, permissions, and constraints are always active. Persona bundles the last three into a named, distributable unit.
 
