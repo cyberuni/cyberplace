@@ -14,7 +14,8 @@ artifacts: the SKILL.md **and its verification** — the scenario→rubric eval 
 `golden-set/`, one eval per frozen scenario) that the impl-judge (`aces-impl-judge`) will run. As
 impl-producer it self-aligns to `sdd:ownership-governance` plus the resolved **builder-impl +
 architect-impl** bars (the ACES builder-impl is `aces:aces-builder-impl`). The judge never authors
-evals, so write any missing eval here.
+evals, so write any missing eval here. If the impl-judge reports scenario failures, load
+`aces-impl-producer` to run the diagnose-and-refine loop rather than re-deriving it here.
 
 There are two other entry points, both with **no frozen `.feature`** and **only the SKILL.md**
 produced:
