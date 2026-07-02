@@ -1,68 +1,66 @@
 ---
 name: improve
-description: Use this skill when ACES evals are failing and the user wants to diagnose why and get specific improvement proposals for the target agent configuration.
+description: Use this skill when the user wants to improve an existing agent configuration — a skill, subagent, command, or AGENTS.md section — whether by diagnosing failing ACES evals or by general review against fit and quality bars. Trigger on "improve this skill", "make this agent better", "why does this config keep failing", or "review this AGENTS.md section", even when no eval suite exists yet.
 ---
 
 # ACES Improve
 
-Diagnose failing eval cases and propose targeted edits to the target agent configuration.
+Improve an existing agent configuration of any kind. This is the general entry point — it routes
+to the right diagnostic path depending on whether the target is ACES-tracked.
 
-## Role: the ACES impl-producer
+## Route the request first
 
-When the conductor dispatches this skill (with `define-agent`) as a generic builder (`produced-by sdd:automaton`), it is the **impl-producer** for agent-config domains. The impl-producer co-produces **two** things from the frozen `.feature`: the agent configuration **and its verification** — the scenario→rubric eval suite (`eval.md` thresholds + `golden-set/` cases, one per scenario). Authoring or refreshing that eval suite is part of this act. As impl-producer it self-aligns to `sdd:ownership-governance` plus the resolved **builder-impl + architect-impl** bars (the ACES builder-impl is `aces:aces-builder-impl`). The **impl-judge** (`aces-impl-judge`) only **runs** the suite — it never authors it — so a missing or stale eval for a frozen scenario is the impl-producer's to write here, not the judge's to invent. Independence holds because the evals are anchored to the frozen `.feature` and executed by a separate runner.
+Defer when the intent is narrower than "improve this config":
 
-## Load context
-
-Find `artifacts/specs/<feature-name>/`:
-- Read `eval.md` for the target agent configuration path
-- Read the target agent configuration in full
-- Read the most recent result file from `results/` (sort by filename descending, take first)
-
-If no results exist, run `run` first.
-
-## Identify failing cases
-
-From the latest results, collect all cases where `pass: false`. Read each failing test case file from `golden-set/`.
-
-## Group failures by pattern
-
-Classify each failure into one or more of these patterns:
-
-| Pattern | Signs |
+| The request is really about… | Defer to |
 |---|---|
-| **Trigger false-positive** | Trigger layer case where agent fires when it shouldn't |
-| **Trigger false-negative** | Trigger layer case where agent doesn't fire when it should |
-| **Missing step** | Behavior case where a specific step was skipped |
-| **Ambiguous rule** | Multiple behavior cases fail on the same rule — inconsistent execution |
-| **Conflicting instruction** | Agent followed one rule but violated another in the same agent configuration |
-| **Scope creep** | Agent did more than the agent configuration specifies |
-| **Description mismatch** | Trigger failures suggest the `description:` field doesn't match the body |
+| scaffolding a **new** skill, agent, or governance from scratch | `define-skill` / `define-agent` / `define-governance` |
+| **scoring** a config against its existing golden set | `run` |
+| **adding** a new eval case | `add` |
+| **diffing** two versions before committing a change | `compare` |
+| auditing a `SKILL.md`'s structure/compliance specifically | `improve-skill` |
 
-Report the pattern groupings before proposing fixes.
+## Locate the target and its artifact type
 
-## Propose specific edits
+Identify the config being improved: skill, subagent, command, or AGENTS.md section. Read it in
+full. If the artifact type or path is not clear from context, ask.
 
-For each pattern, propose a concrete change to the agent configuration. Show exact before/after diffs — do not describe changes in prose.
+## Determine ACES-tracked status
 
-Examples of edit types:
+Check for `artifacts/specs/<feature-name>/eval.md` for this target.
 
-- **Trigger false-positive/negative** → rewrite the `description:` field; add explicit "when NOT to use" section
-- **Missing step** → make the step more prominent; add a concrete example; break it into sub-steps
-- **Ambiguous rule** → replace vague language ("prefer X") with decision rule ("use X when Y, use Z when W")
-- **Conflicting instruction** → add explicit precedence rule or split into separate instructions
-- **Description mismatch** → align `description:` to match what the body actually instructs
+- **ACES-tracked (eval suite exists):** ensure a recent result exists — run `run` first if the
+  latest `results/` file is stale or missing. Then load `aces-impl-producer` to identify failing
+  cases, classify them by pattern, and propose concrete before/after edits.
+- **Not yet tracked (no eval suite):** there is nothing to diagnose failures against. Do a general
+  review instead:
+  1. Load the fit classifier (`aces-fit`) to check whether this subject benefits from scenario→rubric
+     evals at all — some configs are the wrong squad for ACES.
+  2. Load the relevant bar for the artifact type (`aces-builder-spec` for a subject with no frozen
+     `.feature` yet, `aces-builder-impl` for one that has an existing implementation) and check the
+     config against it.
+  3. Propose edits for any gap found: weak trigger coverage, missing near-miss handling, ambiguous
+     steps, scope creep, structural issues.
 
 ## Confirm before applying
 
-Show all proposed edits to the user. Ask for approval before writing any changes.
+Show all proposed edits — exact before/after diffs, not prose descriptions. Ask for approval before
+writing any changes.
 
-After user approval, apply edits to the agent configuration. Then automatically run `compare` (before = previous git revision, after = current working tree) to verify the changes improved scores without introducing regressions.
+## Verify after applying
+
+- **ACES-tracked:** run `compare` (before = previous git revision, after = current working tree) to
+  confirm the edits improved scores without regressions.
+- **Not yet tracked:** offer to hand off to `sdd:start-mission` (the conductor resolves the ACES
+  roles for this artifact-type) to author a `.feature` and golden set, or `add` to start one
+  manually. Do not fabricate a pass/fail verdict without a suite to run.
 
 ## If no clear fix exists
 
-If failures are caused by inherent non-determinism (high score variance across similar cases), recommend:
-1. Adding more specific examples to the agent configuration
+If failures are caused by inherent non-determinism (high score variance across similar cases),
+recommend:
+1. Adding more specific examples to the config
 2. Lowering the threshold in `eval.md` for that layer if the bar was set too high
-3. Splitting the agent configuration into two narrower ones
+3. Splitting the config into two narrower ones
 
 Do not propose removing test cases to fix failing evals — that defeats the purpose.
