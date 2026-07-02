@@ -17,7 +17,7 @@ Code has a type-checker, a linter, and a test suite. Agent configuration has non
 
 ## How it works
 
-ACES applies [spec-driven development](/plugins/sdd/overview/) to the agent configuration layer:
+ACES applies [spec-driven development](/sdd/overview/) to the agent configuration layer:
 
 1. Build a **golden set** of labeled test cases for one agent configuration artifact.
 2. **Score** the current artifact against each case using an LLM judge on a 1–5 rubric.
@@ -95,5 +95,5 @@ npx skills add cyberuni/cyber-skills --plugin aces
 ## Related
 
 - [Agent Configuration](/concepts/agent-configuration/) — what agent configuration is and why it needs evaluation
-- [SDD Plugin](/plugins/sdd/overview/) — spec-driven development; ACES is SDD applied to the agent configuration layer
+- [SDD Plugin](/sdd/overview/) — spec-driven development; ACES is SDD applied to the agent configuration layer
 - [Skill Design governance](/governances/skill-design/) — authoring rules for `SKILL.md` files
