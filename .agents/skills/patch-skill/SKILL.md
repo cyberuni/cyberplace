@@ -39,7 +39,7 @@ Derive paths:
 | Input | Upstream path |
 | --- | --- |
 | Lock key / folder name `audit-skill` | `skills/<skill-name>/` |
-| `skillPath`: `.agents/skills/create-skill/SKILL.md` | `skills/<skill-name>/SKILL.md` |
+| `skillPath`: `.agents/skills/audit-skill/SKILL.md` | `skills/<skill-name>/SKILL.md` |
 | `skillPath`: `skills/fix-security-pr/SKILL.md` | `skills/fix-security-pr/SKILL.md` |
 
 ## Steps
