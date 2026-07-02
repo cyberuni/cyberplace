@@ -159,9 +159,9 @@ The spec has been reviewed and accepted as describing the intended behavior.
 - Spec has been reviewed — PR approval or a recorded acknowledgment
 - All required sections are present and non-empty
 - No placeholder text ("TBD", "TODO", empty sections)
-- `validate-spec` passes
+- the spec gate passes
 
-**Transition gate:** Run `validate-spec` and confirm all checks pass before marking Approved.
+**Transition gate:** Run the spec gate and confirm all checks pass before marking Approved.
 
 #### Implemented
 
