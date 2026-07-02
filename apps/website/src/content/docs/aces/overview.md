@@ -19,10 +19,11 @@ Code has a type-checker, a linter, and a test suite. Agent configuration has non
 
 ACES applies [spec-driven development](/sdd/overview/) to the agent configuration layer:
 
-1. Build a **golden set** of labeled test cases for one agent configuration artifact.
-2. **Score** the current artifact against each case using an LLM judge on a 1–5 rubric.
-3. **Compare** scores before and after an edit — block commits on regression.
-4. **Improve** the artifact by diagnosing failing cases and applying targeted edits.
+1. Register ACES with [`init-aces`](/aces/init-aces/), then author or improve the artifact itself with [`define-skill`](/aces/define-skill/), [`define-agent`](/aces/define-agent/), or [`define-governance`](/aces/define-governance/).
+2. Build a **golden set** of labeled test cases for the artifact via `sdd:start-mission` — the SDD conductor resolves ACES's spec-producer (`aces-scenario-writer`) to author the `.feature` and the impl-producer to author `eval.md` + `golden-set/`.
+3. **Score** the current artifact against each case using an LLM judge on a 1–5 rubric, via [`run`](/aces/run/).
+4. **Compare** scores before and after an edit with [`compare`](/aces/compare/) — block commits on regression.
+5. **Improve** the artifact by diagnosing failing cases and applying targeted edits with [`improve`](/aces/improve/).
 
 ### Evaluation layers
 
@@ -41,9 +42,12 @@ Each eval suite opts in to the layers relevant to its artifact type. A simple `A
 
 | Skill | What it does |
 |---|---|
-| [`create-spec`](/aces/create-spec/) | Build a golden-set eval suite for an agent configuration |
-| [`add`](/aces/add/) | Add a test case from a real failure or edge case |
+| [`init-aces`](/aces/init-aces/) | Register ACES as the SDD plugin for agent-configuration domains |
+| [`define-skill`](/aces/define-skill/) | Create or improve a workflow skill (`SKILL.md`) |
+| [`define-agent`](/aces/define-agent/) | Create or improve an agent definition (subagent, persona, or dual-mode) |
+| [`define-governance`](/aces/define-governance/) | Create or improve a reference-only governance file |
 | [`run`](/aces/run/) | Score the golden set against the current artifact |
+| [`add`](/aces/add/) | Add a test case from a real failure or edge case |
 | [`compare`](/aces/compare/) | Diff scores before/after an edit — regression gate |
 | [`improve`](/aces/improve/) | Diagnose failing cases; propose and apply targeted edits |
 | [`report`](/aces/report/) | Project-wide health dashboard across all eval suites |
@@ -51,14 +55,16 @@ Each eval suite opts in to the layers relevant to its artifact type. A simple `A
 ## Typical workflow
 
 ```
-create-spec → run → compare → improve → run
-                                 ↑
-                           add (new cases)
-                                 ↑
-                           report (project view)
+init-aces (once)
+     ↓
+define-skill / define-agent / define-governance → sdd:start-mission (spec + eval suite)
+                                                          ↓
+                                                         run → compare → improve → run
+                                                          ↑                  ↑
+                                                    add (new cases)   report (project view)
 ```
 
-Start with `create-spec` to build the first eval suite for an agent configuration. Run `run` to get a baseline. Edit the artifact, then use `compare` before committing. When cases fail, `improve` diagnoses the pattern and proposes edits.
+Run `init-aces` once per project to register the plugin. Author or improve the artifact with `define-skill`, `define-agent`, or `define-governance`, then use `sdd:start-mission` to author its `.feature` and eval suite. Run `run` to get a baseline. Edit the artifact, then use `compare` before committing. When cases fail, `improve` diagnoses the pattern and proposes edits.
 
 ## Eval suite structure
 
