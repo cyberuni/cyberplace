@@ -13,7 +13,7 @@ status: active
 todos:
   - id: check-define-skill-escaped-path
     content: Decide whether define-skill needs a lightweight scaffold-audit-done ending for already-escaped (non-durable) requests
-    status: pending
+    status: completed
   - id: reconcile-lock-files
     content: Fix skills-lock.json / .agents/cyber-skills-lock.json (both point at nonexistent skills/create-skill/SKILL.md — bundled skills/ dir was already removed)
     status: pending
@@ -31,28 +31,15 @@ isProject: false
 
 ## NEXT — resume here
 
-**First action:** open `plugins/aces/skills/define-skill/SKILL.md` and decide the
-`check-define-skill-escaped-path` todo — this is the actual blocker, not a formality:
+**Resolved:** Option 1 (user confirmed). `define-skill` (`plugins/aces/skills/define-skill/SKILL.md`)
+now documents three entry points — impl-producer (in-CR), standalone (user-invoked, offers the
+ACES loop), escaped (gateway/start-mission invoke it directly after a `non-durable` resolution,
+scaffold+audit+report and **stop**, no ACES hand-off). `plugins/sdd-new/skills/sdd/SKILL.md` and
+`start-mission/SKILL.md`'s escape bullets now say escaping doesn't mean stopping — invoke the
+matching producer (`define-skill` for `skill`) directly when one exists. `audit validate` passes
+on `define-skill`.
 
-Durability escape now happens **upstream** of `define-skill` (wired into
-`plugins/sdd-new/skills/sdd/SKILL.md` and `start-mission/SKILL.md`'s Step 1, `cb62994`). A
-request for a private/non-durable skill now **escapes the SDD lifecycle before any CR opens**
-— which means `define-skill` (dispatched as the ACES spec-producer *inside* a CR) is **never
-reached** for that request at all. So "define-skill now handles the fast case via the escape
-hatch" — the framing this whole line of work assumed — is not quite right: something still has
-to actually scaffold the skill file for escaped work, and right now nothing does. Two options:
-
-1. Give `define-skill` a second entry point / early branch for **already-escaped** requests
-   (no CR context) that does scaffold + audit + report, skipping the "hand off to the ACES eval
-   loop" ending entirely (there's no mission to hand off within). `define-skill` would then be
-   invoked directly by the conductor at the point of escape, not just as an ACES-role producer.
-2. Keep `create-skill` (or a trimmed version of it) as the literal "escaped path" handler —
-   i.e. don't retire it, repurpose it as what the escape hatch invokes for "ordinary means."
-
-Option 1 is likely right (one skill, no duplicate scaffold logic to keep in sync) but needs a
-decision, then a small `define-skill` edit, before `create-skill` can actually be deleted.
-
-**Once that's resolved**, the remaining todos are mechanical (same shape as the
+**First action:** the remaining todos are mechanical (same shape as the
 `create-persona-skill` retirement earlier this session, commit `5fd3840`): reconcile the two
 lock files (both already point at a nonexistent path — `skills/create-skill/SKILL.md` — from
 before the bundled-`skills/` removal, a pre-existing break, not something this CR causes),
