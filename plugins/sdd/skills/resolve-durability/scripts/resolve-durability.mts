@@ -160,15 +160,15 @@ export function main(argv: string[]): void {
 
 	if (!args.path) {
 		const result = validateDurabilityMap(root)
-		console.log(result.message)
+		process.stdout.write(`${result.message}\n`)
 		if (!result.ok) process.exitCode = 1
 		return
 	}
 
 	const explicit = args.explicit === 'durable' || args.explicit === 'non-durable' ? args.explicit : undefined
 	const result = resolveDurability({ root, path: args.path, artifactType: args['artifact-type'], explicit })
-	console.log(result.value)
-	console.log(`reason: ${result.reason}`)
+	process.stdout.write(`${result.value}\n`)
+	process.stdout.write(`reason: ${result.reason}\n`)
 }
 
 if (process.argv[1] && import.meta.url === `file://${process.argv[1]}`) {
