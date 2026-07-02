@@ -1,5 +1,5 @@
 ---
-"cyber-skills": minor
+"cyberplace": minor
 ---
 
 Remove `create-skill`. Its scope is fully covered by `aced:define-skill`, which also handles

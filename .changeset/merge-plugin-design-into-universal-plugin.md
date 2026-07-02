@@ -1,5 +1,5 @@
 ---
-"cyber-skills": minor
+"cyberplace": minor
 ---
 
 Merge `plugin-design` governance into `universal-plugin` with a comprehensive cross-vendor spec.

@@ -11,7 +11,7 @@ description: >
 
 ## Gotchas
 
-- **Never use `@latest`:** Resolve the pinned version first: `npm view cyber-skills version`, then use `npx cyber-skills@<version>`.
+- **Never use `@latest`:** Resolve the pinned version first: `npm view cyberplace version`, then use `npx cyberplace@<version>`.
 
 ## Lifecycle
 
@@ -66,7 +66,7 @@ If you cannot answer all five, stop and resolve them with the user before procee
 Run `improve-skill` before any testing:
 
 ```bash
-npx cyber-skills@<version> audit validate --path skills/<name>
+npx cyberplace@<version> audit validate --path skills/<name>
 ```
 
 - Resolve all CRITICAL and HIGH findings before proceeding.

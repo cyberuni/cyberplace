@@ -174,7 +174,7 @@ vitest, biome, tsdown, tsx, changeset, commitlint, husky, knip
 
 2. **`plugin.json` top-level `governances` field** — whether to add this to the canonical schema is a standards-track question. Not needed for the CLI; `universal-plugin governance` is the consumption-side solution. Propose to open-plugin-spec when the consumption pattern is proven.
 
-3. **Scope path conventions** — the user-scope path (`~/.agents/governances/`) assumes a shared agents config directory. Align with whatever path `cyber-skills` uses before shipping `governance show`. The managed scope path must be write-protected at the OS level to be a meaningful security boundary.
+3. **Scope path conventions** — the user-scope path (`~/.agents/governances/`) assumes a shared agents config directory. Align with whatever path `cyberplace` uses before shipping `governance show`. The managed scope path must be write-protected at the OS level to be a meaningful security boundary.
 
 ---
 

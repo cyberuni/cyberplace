@@ -28,17 +28,17 @@ Use `disabled_sources` to suppress an inherited source — there is no `enabled`
 ## Operations
 
 ```bash
-npx cyber-skills@<version> awesome sources list
-npx cyber-skills@<version> awesome sources add owner/name --layer repo --path awesome-skills.json
-npx cyber-skills@<version> awesome sources disable owner/name --layer repo --path awesome-skills.json
-npx cyber-skills@<version> awesome sources enable owner/name --layer repo --path awesome-skills.json
-npx cyber-skills@<version> awesome sources remove owner/name --layer repo --path awesome-skills.json
+npx cyberplace@<version> awesome sources list
+npx cyberplace@<version> awesome sources add owner/name --layer repo --path awesome-skills.json
+npx cyberplace@<version> awesome sources disable owner/name --layer repo --path awesome-skills.json
+npx cyberplace@<version> awesome sources enable owner/name --layer repo --path awesome-skills.json
+npx cyberplace@<version> awesome sources remove owner/name --layer repo --path awesome-skills.json
 ```
 
 ## Install
 
 ```bash
-npx skills add cyberuni/cyber-skills --skill configure-awesome-sources -g
+npx skills add cyberuni/cyberplace --skill configure-awesome-sources -g
 ```
 
 ## Related

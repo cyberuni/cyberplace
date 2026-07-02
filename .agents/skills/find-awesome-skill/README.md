@@ -19,7 +19,7 @@ The skill searches layered awesome-list sources (local, project, user, and repo 
 Primary CLI:
 
 ```bash
-npx cyber-skills@<version> awesome find "<query>" --format agent
+npx cyberplace@<version> awesome find "<query>" --format agent
 ```
 
 Configure sources with the `configure-awesome-sources` skill.
@@ -27,5 +27,5 @@ Configure sources with the `configure-awesome-sources` skill.
 ## Install
 
 ```bash
-npx skills add cyberuni/cyber-skills --skill find-awesome-skill
+npx skills add cyberuni/cyberplace --skill find-awesome-skill
 ```

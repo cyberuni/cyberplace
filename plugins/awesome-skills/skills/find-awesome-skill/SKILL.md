@@ -27,7 +27,7 @@ Use this section when the user asks which sources are searched, or when the CLI 
 Run the bundled finder with agent output (terse, LLM-readable):
 
 ```bash
-npx cyber-skills@<version> awesome find "<query>" --format agent
+npx cyberplace@<version> awesome find "<query>" --format agent
 ```
 
 Read the output directly and present concise results with install commands. Default CLI output (without `--format agent`) is human-readable prose formatted for terminals.
@@ -36,7 +36,7 @@ Read the output directly and present concise results with install commands. Defa
 
 Use manual reasoning from the source layers above when:
 
-- `cyber-skills` is unavailable or `awesome find` fails
+- `cyberplace` is unavailable or `awesome find` fails
 - the query returns **zero results** — inspect configured sources and suggest `configure-awesome-sources`
 - the user asks **which sources** are searched (see Source discovery)
 - you need to explain match rationale beyond JSON fields (corroboration across sources, tag vs summary nuance)

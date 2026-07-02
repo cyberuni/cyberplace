@@ -6,7 +6,7 @@ See [design.md](./design.md) for the problem statement, goals, key design decisi
 
 ## Scope
 
-These feature files define the behavior that **any** conformant tool must exhibit. They are the acceptance criteria for future `cyber-skills plugin` CLI commands and for third-party tools that want to claim compatibility with the universal plugin spec.
+These feature files define the behavior that **any** conformant tool must exhibit. They are the acceptance criteria for future `cyberplace plugin` CLI commands and for third-party tools that want to claim compatibility with the universal plugin spec.
 
 ## Feature files
 
@@ -31,7 +31,7 @@ Parse these feature files with any Gherkin parser (e.g., `gherkin-parser` from t
 Entry points once implemented:
 
 ```bash
-cyber-skills plugin validate <path>   # runs plugin-manifest + plugin-components + plugin-hooks + plugin-mcp
-cyber-skills plugin generate <path>   # runs plugin-transform
-cyber-skills plugin install <path>    # runs plugin-distribution
+cyberplace plugin validate <path>   # runs plugin-manifest + plugin-components + plugin-hooks + plugin-mcp
+cyberplace plugin generate <path>   # runs plugin-transform
+cyberplace plugin install <path>    # runs plugin-distribution
 ```

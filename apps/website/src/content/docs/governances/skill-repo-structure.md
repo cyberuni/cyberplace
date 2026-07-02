@@ -3,7 +3,7 @@ title: Skill Repo Structure
 description: Rules for organizing a repository that ships one or more agent skills.
 ---
 
-**Load:** `npx cyber-skills@<version> governance show skill-repo-structure`
+**Load:** `npx cyberplace@<version> governance show skill-repo-structure`
 
 Rules for organizing a **repository that ships one or more Agent Skills** — directories, manifests, contributor internals, and CI.
 
@@ -27,7 +27,7 @@ skills/
 Collection plus validation and install hygiene. Add:
 
 - `AGENTS.md` (and `CLAUDE.md` symlink for Claude Code)
-- CI that runs `npx cyber-skills@<version> audit validate` on PRs touching `skills/`
+- CI that runs `npx cyberplace@<version> audit validate` on PRs touching `skills/`
 - Documented install commands in README
 - Optional committed `skills-lock.json`
 

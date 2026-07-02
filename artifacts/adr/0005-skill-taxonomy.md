@@ -81,7 +81,7 @@ Do not use **type** for this axis in repo-facing docs.
 
 ### Activation values
 
-Store activation in frontmatter as **`metadata.activation`** (cyber-skills canon in **skill-design** governance). Values normalize **hook lifecycle events** across Claude Code, Cursor, and Codex (kebab-case → agent-specific hook config keys). Applies to all patterns — not persona-only.
+Store activation in frontmatter as **`metadata.activation`** (cyberplace canon in **skill-design** governance). Values normalize **hook lifecycle events** across Claude Code, Cursor, and Codex (kebab-case → agent-specific hook config keys). Applies to all patterns — not persona-only.
 
 | Activation | Meaning |
 | --- | --- |

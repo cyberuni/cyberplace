@@ -12,15 +12,15 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node packages/cyber-skills/bin/cyber-skills.mjs hook run --name commit-discipline --extract AGENTS.md --heading 'Commit Discipline'"
+            "command": "node packages/cyberplace/bin/cyberplace.mjs hook run --name commit-discipline --extract AGENTS.md --heading 'Commit Discipline'"
           }
         ]
       }
     ]
   },
   "enabledPlugins": {
-    "aced@cyber-skills-next": true,
-    "quill@cyber-skills-next": true,
-    "sdd@cyber-skills-next": true
+    "aced@cyberplace-next": true,
+    "quill@cyberplace-next": true,
+    "sdd@cyberplace-next": true
   }
 }

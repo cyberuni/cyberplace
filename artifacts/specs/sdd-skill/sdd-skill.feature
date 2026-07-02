@@ -48,7 +48,7 @@ Feature: SDD gateway skill
     When the agent invokes the sdd skill
     Then AGENTS.md is unchanged
     And no SessionStart hook is registered
-    And no cyber-skills CLI command is required
+    And no cyberplace CLI command is required
 
   # ── intake menu branches ───────────────────────────────────────────────
 

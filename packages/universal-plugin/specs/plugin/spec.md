@@ -8,7 +8,7 @@
 
 ## What
 
-The plugin domain manages installed plugins — adding, removing, updating, discovering, and migrating them. It is the consumption-side counterpart to the authoring commands (`build`, `validate`, `init`). It mirrors the structure of `cyber-skills`' registry domain, operating on plugins rather than skills.
+The plugin domain manages installed plugins — adding, removing, updating, discovering, and migrating them. It is the consumption-side counterpart to the authoring commands (`build`, `validate`, `init`). It mirrors the structure of `cyberplace`' registry domain, operating on plugins rather than skills.
 
 ---
 
@@ -44,7 +44,7 @@ All commands support `--global` (user scope, `~/.agents/`) and `--project` (proj
 
 ### Plugin spec format
 
-Plugin specs follow the same convention as `cyber-skills`:
+Plugin specs follow the same convention as `cyberplace`:
 
 - `org/repo` — GitHub repo (installs all plugins)
 - `org/repo:plugin-name` — specific plugin from a GitHub repo

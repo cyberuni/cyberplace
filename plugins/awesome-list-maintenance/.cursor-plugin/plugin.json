@@ -2,7 +2,7 @@
 	"name": "awesome-list-maintenance",
 	"description": "Manage curated awesome-list sources and entries.",
 	"author": { "name": "unional" },
-	"homepage": "https://github.com/cyberuni/cyber-skills",
-	"repository": "https://github.com/cyberuni/cyber-skills",
+	"homepage": "https://github.com/cyberuni/cyberplace",
+	"repository": "https://github.com/cyberuni/cyberplace",
 	"skills": ["../skills/configure-awesome-sources", "../skills/update-awesome-list"]
 }

@@ -21,5 +21,5 @@ The skill extracts trigger, decisions, steps, inputs, and outputs from session h
 ## Install
 
 ```bash
-npx skills add cyberuni/cyber-skills --skill skillify
+npx skills add cyberuni/cyberplace --skill skillify
 ```

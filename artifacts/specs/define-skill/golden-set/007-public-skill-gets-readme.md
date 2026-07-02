@@ -6,7 +6,7 @@ threshold: 4
 
 ## Scenario
 
-The user has selected the **project-public** scope. The skill `fix-flaky-test` is being scaffolded at `packages/cyber-skills/skills/fix-flaky-test/SKILL.md`. The agent now scaffolds the skill files.
+The user has selected the **project-public** scope. The skill `fix-flaky-test` is being scaffolded at `packages/cyberplace/skills/fix-flaky-test/SKILL.md`. The agent now scaffolds the skill files.
 
 ## Expected behaviors
 

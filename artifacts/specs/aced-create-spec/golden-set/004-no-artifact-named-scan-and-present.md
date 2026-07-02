@@ -9,8 +9,8 @@ threshold: 4
 User says: "Create eval specs." No artifact is named.
 
 The repo contains these artifacts with no existing eval spec under `artifacts/specs/`:
-- `packages/cyber-skills/skills/tdd/SKILL.md`
-- `packages/cyber-skills/skills/commit-work/SKILL.md`
+- `packages/cyberplace/skills/tdd/SKILL.md`
+- `packages/cyberplace/skills/commit-work/SKILL.md`
 - `.agents/skills/add-changeset/SKILL.md`
 
 ## Expected behaviors

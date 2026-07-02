@@ -3,7 +3,7 @@ title: CLI Resolution
 description: Rules for invoking a Node CLI that may be installed globally, repo-locally, or not at all.
 ---
 
-**Load:** `npx cyber-skills@<version> governance show cli-resolution`
+**Load:** `npx cyberplace@<version> governance show cli-resolution`
 
 Rules for invoking a Node CLI that may be installed globally, repo-locally, or not at all. Apply when authoring a skill that depends on a released npm binary.
 

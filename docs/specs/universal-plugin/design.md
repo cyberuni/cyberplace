@@ -45,7 +45,7 @@ A canonical format with automated vendor derivation eliminates drift by keeping 
 
 ### 4.1 Canonical manifest, vendor manifests derived
 
-The canonical manifest lives at `.plugin/plugin.json`. Vendor manifests (`.claude-plugin/plugin.json`, `.cursor-plugin/plugin.json`, `.codex-plugin/plugin.json`) are generated from it via `cyber-skills plugin generate` and committed alongside the canonical file.
+The canonical manifest lives at `.plugin/plugin.json`. Vendor manifests (`.claude-plugin/plugin.json`, `.cursor-plugin/plugin.json`, `.codex-plugin/plugin.json`) are generated from it via `cyberplace plugin generate` and committed alongside the canonical file.
 
 **Tradeoff:** Derivation requires a build step; the alternative (editing vendor manifests directly) is simpler but causes drift. Drift is the primary problem this spec exists to solve, so derivation is the correct choice.
 
@@ -97,7 +97,7 @@ Team scope is the default because it covers the widest practical case (project t
 
 | # | Question | Needed by |
 | --- | --- | --- |
-| OQ1 | Should `cyber-skills plugin generate` commit derived manifests, or leave that to CI? | G2, G5 |
+| OQ1 | Should `cyberplace plugin generate` commit derived manifests, or leave that to CI? | G2, G5 |
 | OQ2 | Should Amp be a first-class vendor (requires `skills/` → `.agents/skills/` mapping at install time)? | G4 |
 | OQ3 | Should the `.app.json` Codex connector format be specified here or deferred to a Codex-specific extension of this spec? | G3 |
 | OQ4 | Should the `lspServers` field be normalized in the canonical manifest or left as a pass-through? | G2 |

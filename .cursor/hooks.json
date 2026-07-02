@@ -3,7 +3,7 @@
 	"hooks": {
 		"sessionStart": [
 			{
-				"command": "npx cyber-skills@0.1.0 hook run --name commit-discipline --extract AGENTS.md --heading 'Commit Discipline'"
+				"command": "npx cyberplace@0.1.0 hook run --name commit-discipline --extract AGENTS.md --heading 'Commit Discipline'"
 			}
 		]
 	}

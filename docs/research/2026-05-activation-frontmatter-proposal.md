@@ -68,7 +68,7 @@ String values under `metadata` match the Agent Skills spec's key-value map.
 - **Default:** omit or `per-situation` — no hook; load via `description`.
 - **Hook-backed skills:** set `metadata.activation` to the normalized event; register hooks using host-specific keys from the mapping table.
 - Matchers (e.g. `Write|Edit` for `post-tool-use`) remain a **hook registration** concern — optional future `metadata.activation-matcher`.
-- Pair with `metadata.persona: "true"` when the skill pattern is persona (cyber-skills convention).
+- Pair with `metadata.persona: "true"` when the skill pattern is persona (cyberplace convention).
 
 ### Examples
 
@@ -130,7 +130,7 @@ metadata:
 
 **Phase 1:** Document `activation` as a recommended metadata key with the mapping table above (metadata conventions appendix or companion doc). Align with [agentskills#271](https://github.com/agentskills/agentskills/issues/271) extended frontmatter discussions.
 
-**Phase 2:** Hosts and tooling (e.g. cyber-skills `hook register`) read `metadata.activation` from skill frontmatter and map to native hook config.
+**Phase 2:** Hosts and tooling (e.g. cyberplace `hook register`) read `metadata.activation` from skill frontmatter and map to native hook config.
 
 ### Suggested spec text (metadata conventions)
 

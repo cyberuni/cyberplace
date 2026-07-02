@@ -8,7 +8,7 @@ threshold: 4
 
 User says: "Create eval specs for both the tdd skill and the commit-work skill."
 
-Both `packages/cyber-skills/skills/tdd/SKILL.md` and `packages/cyber-skills/skills/commit-work/SKILL.md` exist. Neither has an eval spec.
+Both `packages/cyberplace/skills/tdd/SKILL.md` and `packages/cyberplace/skills/commit-work/SKILL.md` exist. Neither has an eval spec.
 
 ## Expected behaviors
 

@@ -1,6 +1,6 @@
 # CLI output format for agents (May 2026)
 
-Background research informing how `cyber-skills` CLI should format output for agent consumers. Relevant to `agent-tool-output` governance and [ADR-0004](../adr/0004-cyber-skills-cli-output.md).
+Background research informing how `cyberplace` CLI should format output for agent consumers. Relevant to `agent-tool-output` governance and [ADR-0004](../adr/0004-cyberplace-cli-output.md).
 
 ## Question
 
@@ -75,7 +75,7 @@ Enterprise and framework authors (Nearform, aiquinta.ai, MCP spec authors) conve
 
 ## Decision
 
-`--format json` adopted as the machine-output flag for all dual-audience `cyber-skills` CLI commands. `--json` kept as a hidden backward-compat alias. See [ADR-0004](../adr/0004-cyber-skills-cli-output.md).
+`--format json` adopted as the machine-output flag for all dual-audience `cyberplace` CLI commands. `--json` kept as a hidden backward-compat alias. See [ADR-0004](../adr/0004-cyberplace-cli-output.md).
 
 ## Sources
 

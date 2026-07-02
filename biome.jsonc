@@ -16,8 +16,8 @@
 	"overrides": [
 		{
 			"includes": [
-				"packages/cyber-skills/src/**/*.ts",
-				"packages/cyber-skills/src/**/*.mts",
+				"packages/cyberplace/src/**/*.ts",
+				"packages/cyberplace/src/**/*.mts",
 				"packages/universal-plugin/src/**/*.ts",
 				"packages/universal-plugin/src/**/*.mts"
 			],

@@ -9,8 +9,8 @@ threshold: 4
 After scanning, the skill presents 5 artifacts. The user replies: "Just the first two."
 
 The first two artifacts on the presented list are:
-- `packages/cyber-skills/skills/tdd/SKILL.md`
-- `packages/cyber-skills/skills/commit-work/SKILL.md`
+- `packages/cyberplace/skills/tdd/SKILL.md`
+- `packages/cyberplace/skills/commit-work/SKILL.md`
 
 ## Expected behaviors
 

@@ -36,7 +36,7 @@ Examples: `feat: add auto-commit flag`, `fix: resolve package root for hook run`
 
 ```bash
 # Install project-scoped (recommended as bundled fallback)
-npx skills add cyberuni/cyber-skills --skill commit
+npx skills add cyberuni/cyberplace --skill commit
 ```
 
 ## Related

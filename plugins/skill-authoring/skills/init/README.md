@@ -26,5 +26,5 @@ It also symlinks `CLAUDE.md` → `AGENTS.md`, repairs repo-private skills under 
 ## Install
 
 ```bash
-npx skills add cyberuni/cyber-skills --skill init
+npx skills add cyberuni/cyberplace --skill init
 ```

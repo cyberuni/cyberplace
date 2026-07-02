@@ -8,7 +8,7 @@ threshold: 4
 
 User says: "Create an eval spec for the tdd skill."
 
-`packages/cyber-skills/skills/tdd/SKILL.md` exists. Alongside it, `packages/cyber-skills/skills/tdd/evals/evals.json` also exists with 5 eval entries.
+`packages/cyberplace/skills/tdd/SKILL.md` exists. Alongside it, `packages/cyberplace/skills/tdd/evals/evals.json` also exists with 5 eval entries.
 
 ## Expected behaviors
 

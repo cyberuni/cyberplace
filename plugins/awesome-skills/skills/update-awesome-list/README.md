@@ -23,5 +23,5 @@ pnpm render:awesome-list
 ## Install
 
 ```bash
-npx skills add cyberuni/cyber-skills --skill update-awesome-list
+npx skills add cyberuni/cyberplace --skill update-awesome-list
 ```

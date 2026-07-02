@@ -26,13 +26,13 @@ Use natural-language narrowing when the user wants help selecting standout skill
 Inspect the repo with the bundled helper:
 
 ```bash
-npx cyber-skills@<version> awesome inspect owner/name
+npx cyberplace@<version> awesome inspect owner/name
 ```
 
 Narrow by query when needed:
 
 ```bash
-npx cyber-skills@<version> awesome inspect owner/name --query "release"
+npx cyberplace@<version> awesome inspect owner/name --query "release"
 ```
 
 ## Editing rules
@@ -61,5 +61,5 @@ npx cyber-skills@<version> awesome inspect owner/name --query "release"
 After editing, regenerate the README bounded section so the human-facing list stays in sync with `awesome-skills.json`:
 
 ```bash
-npx cyber-skills@<version> awesome render
+npx cyberplace@<version> awesome render
 ```

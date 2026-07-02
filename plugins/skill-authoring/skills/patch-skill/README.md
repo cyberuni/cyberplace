@@ -21,5 +21,5 @@ The skill maps local changes to `skills/<skill-name>/` in the upstream repo, ope
 ## Install
 
 ```bash
-npx skills add cyberuni/cyber-skills --skill patch-skill
+npx skills add cyberuni/cyberplace --skill patch-skill
 ```

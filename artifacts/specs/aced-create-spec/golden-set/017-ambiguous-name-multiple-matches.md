@@ -9,7 +9,7 @@ threshold: 4
 User says: "Create an eval spec for the build skill."
 
 The repo contains both:
-- `packages/cyber-skills/skills/agent-skills/build/SKILL.md`
+- `packages/cyberplace/skills/agent-skills/build/SKILL.md`
 - `.agents/skills/build/SKILL.md`
 
 ## Expected behaviors

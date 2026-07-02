@@ -445,7 +445,7 @@ Lives at `apps/website/src/content/docs/motive-model/`. The trigger is a reader 
 
 ### Output 2 — Machine artifact: the agent-configuration governance
 
-Published under `artifacts/ai-era/motive-model/`, consumable via `cyber-skills governance show`. The trigger is an agent reading or applying the governance; inputs are the generated governance (and the change or situation it is reasoning over); the outcome is the rule the agent can now apply.
+Published under `artifacts/ai-era/motive-model/`, consumable via `cyberplace governance show`. The trigger is an agent reading or applying the governance; inputs are the generated governance (and the change or situation it is reasoning over); the outcome is the rule the agent can now apply.
 
 | Trigger | Inputs | Outcome | Scenarios |
 |---|---|---|---|
@@ -562,4 +562,4 @@ Published under `artifacts/ai-era/motive-model/`, consumable via `cyber-skills g
 | Spec | `artifacts/specs/motive-model/spec.md` |
 | Scenarios | `artifacts/specs/motive-model/motive-model.feature` |
 | Human artifact — documentation | `apps/website/src/content/docs/motive-model/` |
-| Machine artifact — governance | _planned — governance files consumable via `cyber-skills governance show`_ |
+| Machine artifact — governance | _planned — governance files consumable via `cyberplace governance show`_ |

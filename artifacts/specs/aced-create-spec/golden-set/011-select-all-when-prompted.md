@@ -9,8 +9,8 @@ threshold: 4
 After scanning, the skill presents 4 artifacts without eval specs and asks the user to select. The user replies: "All of them."
 
 The 4 artifacts are:
-- `packages/cyber-skills/skills/tdd/SKILL.md`
-- `packages/cyber-skills/skills/commit-work/SKILL.md`
+- `packages/cyberplace/skills/tdd/SKILL.md`
+- `packages/cyberplace/skills/commit-work/SKILL.md`
 - `.agents/skills/add-changeset/SKILL.md`
 - `plugins/aced/agents/aced-spec-designer.md`
 

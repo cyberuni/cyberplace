@@ -1,6 +1,6 @@
 ---
 title: Installation
-description: How to install cyber-skills skills and CLI.
+description: How to install cyberplace skills and CLI.
 ---
 
 ## Skills (primary interface)
@@ -9,32 +9,32 @@ Skills are agent workflows. Install them with the [Skills CLI](https://github.co
 
 ```bash
 # Install all public skills globally
-npx skills add cyberuni/cyber-skills --all -g
+npx skills add cyberuni/cyberplace --all -g
 
 # Install a specific skill
-npx skills add cyberuni/cyber-skills --skill init -g
+npx skills add cyberuni/cyberplace --skill init -g
 
 # Install for a specific agent
-npx skills add cyberuni/cyber-skills --skill init -a claude-code -g
+npx skills add cyberuni/cyberplace --skill init -a claude-code -g
 
 # Team: project-scoped (commit skills-lock.json after install)
-npx skills add cyberuni/cyber-skills --skill init --skill init-commit-discipline
+npx skills add cyberuni/cyberplace --skill init --skill init-commit-discipline
 ```
 
 ## CLI
 
-The `cyber-skills` CLI is used by skills under the hood and is available for direct scripting:
+The `cyberplace` CLI is used by skills under the hood and is available for direct scripting:
 
 ```bash
 # Exploration only — do not use @latest in hooks or CI
-npx cyber-skills@latest --help
+npx cyberplace@latest --help
 ```
 
 ### Pinning
 
 | Use case | Pinning |
 | -------- | ------- |
-| **Scripts / manual CLI** | `npx cyber-skills@$(npm view cyber-skills version) <subcommand>` |
+| **Scripts / manual CLI** | `npx cyberplace@$(npm view cyberplace version) <subcommand>` |
 | **`init` / `init-commit-discipline` skills** | The skill resolves semver on first use and pins it. Re-run `init-commit-discipline` to bump after upgrades. |
 | **Skill content (`SKILL.md`)** | Not pinned by the CLI — see [Supply Chain](/getting-started/supply-chain/). |
 
@@ -44,10 +44,10 @@ Install both skills, then run them from your agent chat:
 
 ```bash
 # Solo: globally
-npx skills add cyberuni/cyber-skills --skill init --skill init-commit-discipline -g
+npx skills add cyberuni/cyberplace --skill init --skill init-commit-discipline -g
 
 # Team: project-scoped
-npx skills add cyberuni/cyber-skills --skill init --skill init-commit-discipline
+npx skills add cyberuni/cyberplace --skill init --skill init-commit-discipline
 ```
 
 | Skill | When to run |
@@ -78,5 +78,5 @@ Run this **after `init`**. Ask your agent to **run the `init-commit-discipline` 
 If you choose the bundled fallback commit helper, install it project-scoped:
 
 ```bash
-npx skills add cyberuni/cyber-skills --skill commit
+npx skills add cyberuni/cyberplace --skill commit
 ```

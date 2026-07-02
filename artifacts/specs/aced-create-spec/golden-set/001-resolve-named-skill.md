@@ -8,11 +8,11 @@ threshold: 4
 
 User says: "Create an eval spec for the commit-work skill."
 
-The repo contains `packages/cyber-skills/skills/commit-work/SKILL.md`. No eval spec exists for it yet under `artifacts/specs/`. No `evals/evals.json` exists alongside the skill.
+The repo contains `packages/cyberplace/skills/commit-work/SKILL.md`. No eval spec exists for it yet under `artifacts/specs/`. No `evals/evals.json` exists alongside the skill.
 
 ## Expected behaviors
 
-- Resolves the subject path to `packages/cyber-skills/skills/commit-work/SKILL.md`
+- Resolves the subject path to `packages/cyberplace/skills/commit-work/SKILL.md`
 - Reads the full text of that file
 - Invokes `aced-spec-designer` with `SUBJECT`, `SUBJECT_PATH`, and `AGENTSKILLS_EVALS: null`
 - Does not ask the user to select from a list (subject was named explicitly)

@@ -67,9 +67,9 @@ To manage and consume universal plugins across runtimes, the following tooling i
 
 | Tool / Skill | Purpose |
 | --- | --- |
-| `cyber-skills plugin validate <path>` | Validates canonical manifest and all component files against this spec |
-| `cyber-skills plugin generate <path>` | Derives vendor manifests from `.plugin/plugin.json` |
-| `cyber-skills plugin install <path>` | Installs to local path for testing (symlinks) |
+| `cyberplace plugin validate <path>` | Validates canonical manifest and all component files against this spec |
+| `cyberplace plugin generate <path>` | Derives vendor manifests from `.plugin/plugin.json` |
+| `cyberplace plugin install <path>` | Installs to local path for testing (symlinks) |
 | `create-universal-plugin` skill | Scaffolds a new cross-vendor plugin from scratch |
 | `validate-plugin` sub-skill (internal) | Runs structural checks; called by `audit-skill` |
 

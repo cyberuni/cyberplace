@@ -1,9 +1,9 @@
 ---
 title: CLI Overview
-description: The cyber-skills CLI — commands, output formats, and pinning.
+description: The cyberplace CLI — commands, output formats, and pinning.
 ---
 
-The `cyber-skills` CLI is used by skills under the hood. You can also invoke it directly for scripting and advanced workflows.
+The `cyberplace` CLI is used by skills under the hood. You can also invoke it directly for scripting and advanced workflows.
 
 ## Invocation
 
@@ -11,10 +11,10 @@ Always pin to an exact version — never use `@latest` in hooks or CI:
 
 ```bash
 # Explore (OK for one-off investigation)
-npx cyber-skills@latest --help
+npx cyberplace@latest --help
 
 # Scripting (pin to current version)
-npx cyber-skills@$(npm view cyber-skills version) <command>
+npx cyberplace@$(npm view cyberplace version) <command>
 ```
 
 ## Commands
@@ -43,7 +43,7 @@ Skills should use `--format agent`. Non-LLM automation should use `--format json
 The `init-commit-discipline` skill resolves the current npm version and writes it into the SessionStart hook command. After upgrading, re-run `init-commit-discipline` to bump the pin:
 
 ```bash
-npx cyber-skills@0.3.0 hook register \
+npx cyberplace@0.3.0 hook register \
   --name commit-discipline \
   --event SessionStart \
   --extract AGENTS.md \

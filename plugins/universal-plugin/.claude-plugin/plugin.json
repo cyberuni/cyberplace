@@ -4,8 +4,8 @@
 	"author": {
 		"name": "unional"
 	},
-	"homepage": "https://github.com/cyberuni/cyber-skills",
-	"repository": "https://github.com/cyberuni/cyber-skills",
+	"homepage": "https://github.com/cyberuni/cyberplace",
+	"repository": "https://github.com/cyberuni/cyberplace",
 	"license": "MIT",
 	"keywords": ["universal", "plugin", "agent", "cross-vendor"],
 	"vendors": ["claude-code", "cursor", "codex", "copilot-cli"],

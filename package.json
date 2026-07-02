@@ -1,5 +1,5 @@
 {
-	"name": "cyber-skills-root",
+	"name": "cyberplace-root",
 	"private": true,
 	"type": "module",
 	"scripts": {
@@ -9,7 +9,7 @@
 		"knip": "knip",
 		"prepare": "node -e \"if(!(process.env.CI||process.env.GITHUB_ACTIONS))require('child_process').execSync('husky',{stdio:'inherit'})\"",
 		"release": "changeset publish",
-		"render:awesome-list": "pnpm --filter=cyber-skills render:awesome-list",
+		"render:awesome-list": "pnpm --filter=cyberplace render:awesome-list",
 		"test": "turbo test",
 		"typecheck": "turbo typecheck",
 		"typecheck:specs": "tsc -p tsconfig.specs.json",

@@ -24,11 +24,11 @@ The skill:
 ## Install
 
 ```bash
-npx skills add cyberuni/cyber-skills --skill init-commit-discipline
+npx skills add cyberuni/cyberplace --skill init-commit-discipline
 ```
 
 Run after installing `init`:
 
 ```bash
-npx skills add cyberuni/cyber-skills --skill init --skill init-commit-discipline
+npx skills add cyberuni/cyberplace --skill init --skill init-commit-discipline
 ```

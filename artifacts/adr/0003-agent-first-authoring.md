@@ -96,7 +96,7 @@ Option 3 separates the **why** (ADR) from the **what** (governances, init skills
 ## Implementation Notes
 
 - Refactor `governances/skill-design.md`, `governances/skill-repo-structure.md`, and `governances/agent-tool-output.md` as exemplars — remove all `## Why` sections and rationale prose; move glossary tables out of governance bodies.
-- Split cyber-skills CLI output patterns out of `governances/agent-tool-output.md` into [ADR-0004](0004-cyber-skills-cli-output.md).
+- Split cyberplace CLI output patterns out of `governances/agent-tool-output.md` into [ADR-0004](0004-cyberplace-cli-output.md).
 - Update `skills/init-commit-discipline/SKILL.md`, `skills/init/SKILL.md`, and `src/commit/content.ts` for Discipline section shape.
 - Align [ADR-0001](0001-governance-vs-discipline-taxonomy.md) governance content boundaries with this ADR (no ADR/research path links in governances).
 - Add governance load tests and audit-skill Q13 to catch rationale sections in shipped artifacts.
@@ -106,4 +106,4 @@ Option 3 separates the **why** (ADR) from the **what** (governances, init skills
 
 - [ADR-0001: Governance vs Discipline Taxonomy](0001-governance-vs-discipline-taxonomy.md) — load models and governance content boundaries
 - [ADR-0002: External Governance Federation](0002-external-governance-federation.md) — federation deferred; domain governances co-located until npm packages exist
-- [ADR-0004: cyber-skills CLI Output Architecture](0004-cyber-skills-cli-output.md) — three CLI output archetypes; package-specific patterns moved out of governance
+- [ADR-0004: cyberplace CLI Output Architecture](0004-cyberplace-cli-output.md) — three CLI output archetypes; package-specific patterns moved out of governance

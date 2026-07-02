@@ -5,13 +5,13 @@ This file provides guidance to AI coding assistants when working with code in th
 **Runtime hooks (this repo):** commit discipline is registered in `.claude/settings.json`. To re-register after changes, from the repo root:
 
 ```bash
-pnpm --filter=cyber-skills build
-node packages/cyber-skills/bin/cyber-skills.mjs hook register \
+pnpm --filter=cyberplace build
+node packages/cyberplace/bin/cyberplace.mjs hook register \
   --name commit-discipline --event SessionStart \
   --extract AGENTS.md --heading "Commit Discipline"
 ```
 
-Hooks run via `npx cyber-skills@<version> hook run --file|--glob|--extract`.
+Hooks run via `npx cyberplace@<version> hook run --file|--glob|--extract`.
 
 When writing or editing any `SKILL.md` under `.agents/skills/`, always include `metadata: internal: true` in the frontmatter.
 
@@ -61,16 +61,16 @@ pnpm check       # check and auto-fix
 Audit all skills (runs S1–S5, Q1–Q5, Q10–Q11, E1–E2, E6, E9 checks mechanically):
 
 ```bash
-pnpm --filter=cyber-skills test:audit
+pnpm --filter=cyberplace test:audit
 
 # Audit a single skill:
-node packages/cyber-skills/bin/cyber-skills.mjs audit validate --path packages/cyber-skills/skills/my-skill
+node packages/cyberplace/bin/cyberplace.mjs audit validate --path packages/cyberplace/skills/my-skill
 ```
 
 Repair repo-private skills after `npx skills update` or other drift:
 
 ```bash
-pnpm --filter=cyber-skills repair:private-skills
+pnpm --filter=cyberplace repair:private-skills
 ```
 
 Full quality review (Q6–Q16, E3–E5, E7–E8, P1–P3) requires running the `improve-skill` agent skill.
@@ -78,10 +78,10 @@ Full quality review (Q6–Q16, E3–E5, E7–E8, P1–P3) requires running the `
 Run a single test file:
 
 ```bash
-pnpm --filter=cyber-skills vitest run src/audit/validate.test.ts
+pnpm --filter=cyberplace vitest run src/audit/validate.test.ts
 ```
 
-Regenerate the README awesome-skills section after editing `packages/cyber-skills/awesome-skills.json`:
+Regenerate the README awesome-skills section after editing `packages/cyberplace/awesome-skills.json`:
 
 ```bash
 pnpm render:awesome-list
@@ -93,18 +93,18 @@ This repo is a skill library and CLI tool for AI agents (Claude Code, Cursor, Co
 
 **Key directories:**
 
-- `packages/cyber-skills/skills/` — public skills shipped with the package; users install via `npx skills add cyberuni/cyber-skills`
+- `packages/cyberplace/skills/` — public skills shipped with the package; users install via `npx skills add cyberuni/cyberplace`
 - `.agents/skills/` — repo-internal skills for contributor workflows (changesets, security PRs, repo renames); all must have `metadata: internal: true`
-- `packages/cyber-skills/src/` — TypeScript source; domain folders: `audit/`, `awesome/`, `commit/`, `governance/`, `hook/`, `skill/`
-- `packages/cyber-skills/governances/` — version-pinned agent-tool contracts shipped with the npm package; load via `cyber-skills governance show <name>`
+- `packages/cyberplace/src/` — TypeScript source; domain folders: `audit/`, `awesome/`, `commit/`, `governance/`, `hook/`, `skill/`
+- `packages/cyberplace/governances/` — version-pinned agent-tool contracts shipped with the npm package; load via `cyberplace governance show <name>`
 - `artifacts/adr/` — architecture decision records
 - `docs/research/` — distilled background surveys (`YYYY-MM-<topic>.md`) linked from ADRs and governances (not loaded via CLI); `.research/<topic>/` holds the working dossier (topic/evidence/conclusion) the surveys distill from
-- `packages/cyber-skills/bin/cyber-skills.mjs` — slim tracked shim; delegates to `dist/cli.mjs`
-- `packages/cyber-skills/dist/cli.mjs` — single bundled CLI (gitignored, built by tsdown); commands: `audit`, `awesome`, `commit`, `governance`, `hook`, `skill`
+- `packages/cyberplace/bin/cyberplace.mjs` — slim tracked shim; delegates to `dist/cli.mjs`
+- `packages/cyberplace/dist/cli.mjs` — single bundled CLI (gitignored, built by tsdown); commands: `audit`, `awesome`, `commit`, `governance`, `hook`, `skill`
 
-**Skill lifecycle:** Skills are authored in `packages/cyber-skills/skills/<name>/SKILL.md`, validated by `improve-skill`, and surfaced to agents via the `skills` CLI or `npx skills add`. Runtime behavior (commit discipline) is handled by instruction hooks registered in `.claude/settings.json` and `.cursor/hooks.json`.
+**Skill lifecycle:** Skills are authored in `packages/cyberplace/skills/<name>/SKILL.md`, validated by `improve-skill`, and surfaced to agents via the `skills` CLI or `npx skills add`. Runtime behavior (commit discipline) is handled by instruction hooks registered in `.claude/settings.json` and `.cursor/hooks.json`.
 
-**`cyber-skills` CLI:** Used to register agent hooks and run scripts without adding it as a devDependency. In other repos, invoke via pinned npx with an exact version from `npm view cyber-skills version`. In this repo, build first, then use the local bin. Idempotent.
+**`cyberplace` CLI:** Used to register agent hooks and run scripts without adding it as a devDependency. In other repos, invoke via pinned npx with an exact version from `npm view cyberplace version`. In this repo, build first, then use the local bin. Idempotent.
 
 ## Validation After Changes
 
@@ -114,7 +114,7 @@ This repo is a skill library and CLI tool for AI agents (Claude Code, Cursor, Co
 pnpm verify   # runs typecheck + lint + test + test:audit
 ```
 
-This is required — CI runs `pnpm verify` on every PR that touches `packages/cyber-skills/skills/`, `.agents/skills/`, `packages/cyber-skills/src/`, or package build config.
+This is required — CI runs `pnpm verify` on every PR that touches `packages/cyberplace/skills/`, `.agents/skills/`, `packages/cyberplace/src/`, or package build config.
 
 ## Adding a New Skill
 
@@ -129,7 +129,7 @@ Separate the two axes:
 |-----------|----------|----------|
 | **User** | `~/.agents/skills/<name>/` | Personal skills across all projects |
 | **Project private** | `.agents/skills/<name>/` | Contributor tooling scoped to this repo |
-| **Project public** | `packages/cyber-skills/skills/<name>/` | Shipped with the package; users install via `npx skills add` |
+| **Project public** | `packages/cyberplace/skills/<name>/` | Shipped with the package; users install via `npx skills add` |
 
 ### Skill patterns
 
@@ -139,7 +139,7 @@ Separate the two axes:
 | **Tool-based** | Workflows centered on consistent use of tools, systems, or connectors |
 | **Standard** | Skills that enforce tone, structure, formatting, or quality bars |
 
-Create `packages/cyber-skills/skills/<skill-name>/SKILL.md` with this structure:
+Create `packages/cyberplace/skills/<skill-name>/SKILL.md` with this structure:
 
 ```markdown
 ---
@@ -166,4 +166,4 @@ Write all content in en-US (American English spelling: "color", "organize", "beh
 - **Narrow and composable** — one workflow per skill; user-facing skills match situations, sub-skills are called explicitly by other skills
 - **No baked-in opinions** — detect the user's setup at runtime rather than assuming a specific stack
 
-Full authoring rules: `npx cyber-skills@<version> governance show skill-design` (after build in this repo).
+Full authoring rules: `npx cyberplace@<version> governance show skill-design` (after build in this repo).
