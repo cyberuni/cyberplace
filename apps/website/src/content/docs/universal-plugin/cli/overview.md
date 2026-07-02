@@ -21,7 +21,7 @@ npx universal-plugin@$(npm view universal-plugin version) <command>
 
 | Command | Purpose |
 |---|---|
-| [`build`](/cli/build/) | Generate vendor manifests from `.plugin/plugin.json` |
+| [`build`](/universal-plugin/cli/build/) | Generate vendor manifests from `.plugin/plugin.json` |
 
 ## Output formats
 

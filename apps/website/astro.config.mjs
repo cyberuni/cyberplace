@@ -83,6 +83,7 @@ export default defineConfig({
 						{ label: 'Agent Configuration', slug: 'concepts/agent-configuration' },
 						{ label: 'Commands', slug: 'concepts/commands' },
 						{ label: 'Gateway Skill', slug: 'concepts/gateway-skill' },
+						{ label: 'Skills', slug: 'concepts/skills' },
 						{ label: 'Spec-Driven Development', slug: 'concepts/spec-driven-development' },
 						{ label: 'Test-Driven Development', slug: 'concepts/test-driven-development' },
 						{ label: 'Use Case', slug: 'concepts/use-case' },
