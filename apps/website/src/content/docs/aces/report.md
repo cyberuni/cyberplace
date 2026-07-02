@@ -31,4 +31,4 @@ Generates a project-wide health dashboard across all eval suites.
 - `critical` / `trending-down` → run [`improve`](/aces/improve/)
 - `degraded` → run [`run`](/aces/run/) for details, then [`improve`](/aces/improve/)
 - `no-data` → run [`run`](/aces/run/)
-- `healthy` with no trend data → run [`add`](/aces/add/) to expand coverage
+- `healthy` with no trend data → run [`add-scenario`](/aces/add-scenario/) to expand coverage

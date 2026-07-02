@@ -47,7 +47,7 @@ Each eval suite opts in to the layers relevant to its artifact type. A simple `A
 | [`define-agent`](/aces/define-agent/) | Create or improve an agent definition (subagent, persona, or dual-mode) |
 | [`define-governance`](/aces/define-governance/) | Create or improve a reference-only governance file |
 | [`run`](/aces/run/) | Score the golden set against the current artifact |
-| [`add`](/aces/add/) | Add a test case from a real failure or edge case |
+| [`add-scenario`](/aces/add-scenario/) | Add a test case from a real failure or edge case |
 | [`compare`](/aces/compare/) | Diff scores before/after an edit — regression gate |
 | [`improve`](/aces/improve/) | Diagnose failing cases; propose and apply targeted edits |
 | [`report`](/aces/report/) | Project-wide health dashboard across all eval suites |

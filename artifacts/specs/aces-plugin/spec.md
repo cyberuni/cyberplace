@@ -144,7 +144,7 @@ The SDD `create-spec`/`validate-spec` skills (owned by the SDD plugin) drive con
 
 | Skill | Trigger situation | Core action |
 |---|---|---|
-| `add` | User has a new failure or edge case to capture | Scaffolds a test case file; writes to `golden-set/` |
+| `add-scenario` | User has a new failure or edge case to capture | Scaffolds a test case file; writes to `golden-set/` |
 | `run` | User wants to score the current artifact | Invokes `aces-judge` per case; writes `results/<timestamp>.json` |
 | `compare` | User edited an artifact and wants a regression check | Runs eval on two versions; diffs scores; warns on regression |
 | `improve` | Eval failures exist; user wants targeted fixes | Groups failures by pattern; proposes before/after diffs; runs `compare` after apply |

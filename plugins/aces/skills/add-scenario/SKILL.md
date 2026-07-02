@@ -1,9 +1,9 @@
 ---
-name: add
+name: add-scenario
 description: Use this skill when adding a new test case to an ACES golden set — from a real failure, a production edge case, or a gap the user noticed.
 ---
 
-# ACES Add
+# ACES Add Scenario
 
 Add one or more test cases to an existing golden set.
 

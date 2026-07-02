@@ -37,13 +37,13 @@ already covers that. The classifier lives in `skills/aces-fit/` (model: the spec
 | Skill | When to use |
 |---|---|
 | `init-aces` | Register ACES as the SDD plugin for agent-configuration domain types |
-| `add` | Add a new test case from a real failure or edge case |
+| `add-scenario` | Add a new test case from a real failure or edge case |
 | `run` | Score the golden set against the current agent configuration |
 | `compare` | Diff scores before/after an edit — regression gate |
 | `improve` | Diagnose failing cases and propose targeted edits |
 | `report` | Project-wide health dashboard across all eval suites |
 
-Spec creation is owned by the `sdd` plugin's `start-mission` / `spec-gate`: once ACES is registered, the conductor resolves the ACES production-chain roles automatically. The `run`/`compare`/`add`/`report` skills are thin reporting over the impl-judge's eval suite.
+Spec creation is owned by the `sdd` plugin's `start-mission` / `spec-gate`: once ACES is registered, the conductor resolves the ACES production-chain roles automatically. The `run`/`compare`/`add-scenario`/`report` skills are thin reporting over the impl-judge's eval suite.
 
 ## Agents (production-chain roles)
 
@@ -70,7 +70,7 @@ sdd:start-mission → sdd:spec-gate (spec gate) → implement → run/compare �
 2. **implement** — the impl-producer (`define-agent` / `improve`) authors the scenario→rubric eval suite alongside the agent config; `aces-impl-judge` (impl-judge) **runs** it, scoring each scenario via `aces-case-judge` and writing results to `artifacts/specs/<suite>/results/`.
 3. **`compare`** — before committing an edit, diff the before/after scores. Warns on regressions.
 4. **`improve`** — reads failing cases, groups by failure pattern, proposes before/after diffs to the agent configuration. Automatically runs `compare` after edits.
-5. **`add`** — adds test cases from production failures, edge cases, or gaps. Writes to the golden set.
+5. **`add-scenario`** — adds test cases from production failures, edge cases, or gaps. Writes to the golden set.
 6. **`report`** — scans all eval suites and prints a health dashboard (healthy / degraded / critical / trending-down).
 
 ## Eval suite structure

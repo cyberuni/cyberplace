@@ -12,7 +12,7 @@ Good triggers include:
 - "Score this agent config"
 - Checking whether a config still passes after an edit, before deciding whether to `improve` or `compare`
 
-Defer to a sibling when the request is about diagnosing failures (`improve`), diffing two versions (`compare`), adding a new case (`add`), or a project-wide summary (`report`).
+Defer to a sibling when the request is about diagnosing failures (`improve`), diffing two versions (`compare`), adding a new case (`add-scenario`), or a project-wide summary (`report`).
 
 ## What it does
 

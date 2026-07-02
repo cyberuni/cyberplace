@@ -11,7 +11,7 @@ Creates or improves a **workflow skill** — a process, tool-based, or standard 
 
 ## What it does
 
-1. Routes away requests that belong to a sibling skill: agents/personas → [`define-agent`](/aces/define-agent/), reference-only rule sets → [`define-governance`](/aces/define-governance/), extracting the current session → `skillify`, scoring/adding cases → [`run`](/aces/run/) / [`add`](/aces/add/), diagnosing failing evals → [`improve`](/aces/improve/).
+1. Routes away requests that belong to a sibling skill: agents/personas → [`define-agent`](/aces/define-agent/), reference-only rule sets → [`define-governance`](/aces/define-governance/), extracting the current session → `skillify`, scoring/adding cases → [`run`](/aces/run/) / [`add-scenario`](/aces/add-scenario/), diagnosing failing evals → [`improve`](/aces/improve/).
 2. Loads the `skill-design` governance for authoring rules.
 3. Settles scope, trigger condition, output contract, quality bar, and out-of-scope before writing — asks the user to resolve anything that can't be inferred.
 4. Chooses a pattern (process / tool-based / standard) and a placement (user-global / project-private / project-public), scaffolds the file, and creates a symlink per targeted runtime (Claude Code, Cursor, Codex).
@@ -25,4 +25,4 @@ Creates or improves a **workflow skill** — a process, tool-based, or standard 
 
 ## Next step
 
-Standalone or impl-producer entries: run [`sdd:start-mission`](/sdd/overview/) to author the skill's `.feature` and eval suite, or use [`add`](/aces/add/) / [`run`](/aces/run/) to grow and score a golden set.
+Standalone or impl-producer entries: run [`sdd:start-mission`](/sdd/overview/) to author the skill's `.feature` and eval suite, or use [`add-scenario`](/aces/add-scenario/) / [`run`](/aces/run/) to grow and score a golden set.

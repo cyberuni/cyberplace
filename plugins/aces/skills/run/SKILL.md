@@ -102,4 +102,4 @@ Run improve to address failing cases.
 Run compare after editing the agent configuration.
 ```
 
-If pass rate is 100%, say so and suggest running `add` to expand edge case coverage.
+If pass rate is 100%, say so and suggest running `add-scenario` to expand edge case coverage.

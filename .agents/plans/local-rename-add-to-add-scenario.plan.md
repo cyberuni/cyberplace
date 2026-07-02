@@ -21,16 +21,16 @@ todos:
     status: completed
   - id: impl-rename
     content: git mv plugins/aces/skills/add -> add-scenario; frontmatter name, heading, description, README install line
-    status: pending
+    status: completed
   - id: propagate-refs
     content: sweep all prose refs — sibling skills/READMEs, plugins/aces/readme.md, website docs (rename add.md, astro sidebar slug, [add](/aces/add/) links), design.md, aces-plugin spec.md, cross-spec README defer lines
-    status: pending
+    status: completed
   - id: impl-gate
     content: impl gate — pnpm verify + audit + website build + grep sweep green; self-assert; write gate line
-    status: pending
+    status: completed
   - id: handoff
     content: changeset (breaking install-path/doc-route change) + commit(s) per commit-discipline
-    status: pending
+    status: in_progress
 isProject: false
 ---
 

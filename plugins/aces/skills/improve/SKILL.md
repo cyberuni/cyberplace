@@ -16,7 +16,7 @@ Defer when the intent is narrower than "improve this config":
 |---|---|
 | scaffolding a **new** skill, agent, or governance from scratch | `define-skill` / `define-agent` / `define-governance` |
 | **scoring** a config against its existing golden set | `run` |
-| **adding** a new eval case | `add` |
+| **adding** a new eval case | `add-scenario` |
 | **diffing** two versions before committing a change | `compare` |
 | auditing a `SKILL.md`'s structure/compliance specifically | `improve-skill` |
 
@@ -52,7 +52,7 @@ writing any changes.
 - **ACES-tracked:** run `compare` (before = previous git revision, after = current working tree) to
   confirm the edits improved scores without regressions.
 - **Not yet tracked:** offer to hand off to `sdd:start-mission` (the conductor resolves the ACES
-  roles for this artifact-type) to author a `.feature` and golden set, or `add` to start one
+  roles for this artifact-type) to author a `.feature` and golden set, or `add-scenario` to start one
   manually. Do not fabricate a pass/fail verdict without a suite to run.
 
 ## If no clear fix exists
