@@ -1,10 +1,13 @@
 ---
-target: plugins/aced/skills/define-governance/SKILL.md
-judge_model: claude-sonnet-4-6
-threshold: 4
-trigger_threshold: 0.5
-trigger_runs: 3
-layers:
-  - trigger
-  - behavior
+subject: plugins/aced/skills/define-governance/SKILL.md
+eval:
+  layers:
+    - trigger
+    - behavior
+  judge:
+    model: claude-sonnet-4-6
+    default_threshold: 4
+  trigger:
+    activation_threshold: 0.5
+    runs: 3
 ---
