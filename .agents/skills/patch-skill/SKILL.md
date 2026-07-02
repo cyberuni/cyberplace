@@ -38,8 +38,8 @@ Derive paths:
 
 | Input | Upstream path |
 | --- | --- |
-| Lock key / folder name `audit-skill` | `skills/<skill-name>/` |
-| `skillPath`: `.agents/skills/audit-skill/SKILL.md` | `skills/<skill-name>/SKILL.md` |
+| Lock key / folder name `skillify` | `skills/<skill-name>/` |
+| `skillPath`: `.agents/skills/skillify/SKILL.md` | `skills/<skill-name>/SKILL.md` |
 | `skillPath`: `skills/fix-security-pr/SKILL.md` | `skills/fix-security-pr/SKILL.md` |
 
 ## Steps
@@ -220,7 +220,7 @@ gh pr create \
 
 ## Test plan
 
-- [ ] Run audit-skill / `audit validate` against the updated skill(s)
+- [ ] Run improve-skill / `audit validate` against the updated skill(s)
 - [ ] Confirm no files outside `skills/` were modified
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)

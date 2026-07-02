@@ -70,10 +70,10 @@ test('skill list lists init companion skills', () => {
 
 test('skill source returns JSON for a skill in repo lock', () => {
 	const root = path.resolve('../..')
-	const result = run('skill', 'source', 'audit-skill', '--json', '--root', root)
+	const result = run('skill', 'source', 'skillify', '--json', '--root', root)
 	expect(result.status).toBe(0)
 	const parsed = JSON.parse(result.stdout)
-	expect(parsed.name).toBe('audit-skill')
+	expect(parsed.name).toBe('skillify')
 	expect(parsed.source).toBe('cyberuni/cyber-skills')
 	expect(parsed.foundIn).toBe('repo')
 })

@@ -73,7 +73,7 @@ Repair repo-private skills after `npx skills update` or other drift:
 pnpm --filter=cyber-skills repair:private-skills
 ```
 
-Full quality review (Q6–Q16, E3–E5, E7–E8, P1–P3) requires running the `audit-skill` agent skill.
+Full quality review (Q6–Q16, E3–E5, E7–E8, P1–P3) requires running the `improve-skill` agent skill.
 
 Run a single test file:
 
@@ -102,7 +102,7 @@ This repo is a skill library and CLI tool for AI agents (Claude Code, Cursor, Co
 - `packages/cyber-skills/bin/cyber-skills.mjs` — slim tracked shim; delegates to `dist/cli.mjs`
 - `packages/cyber-skills/dist/cli.mjs` — single bundled CLI (gitignored, built by tsdown); commands: `audit`, `awesome`, `commit`, `governance`, `hook`, `skill`
 
-**Skill lifecycle:** Skills are authored in `packages/cyber-skills/skills/<name>/SKILL.md`, validated by `audit-skill`, and surfaced to agents via the `skills` CLI or `npx skills add`. Runtime behavior (commit discipline) is handled by instruction hooks registered in `.claude/settings.json` and `.cursor/hooks.json`.
+**Skill lifecycle:** Skills are authored in `packages/cyber-skills/skills/<name>/SKILL.md`, validated by `improve-skill`, and surfaced to agents via the `skills` CLI or `npx skills add`. Runtime behavior (commit discipline) is handled by instruction hooks registered in `.claude/settings.json` and `.cursor/hooks.json`.
 
 **`cyber-skills` CLI:** Used to register agent hooks and run scripts without adding it as a devDependency. In other repos, invoke via pinned npx with an exact version from `npm view cyber-skills version`. In this repo, build first, then use the local bin. Idempotent.
 

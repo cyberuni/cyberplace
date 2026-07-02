@@ -4,5 +4,5 @@
 	"author": { "name": "unional" },
 	"homepage": "https://github.com/cyberuni/cyber-skills",
 	"repository": "https://github.com/cyberuni/cyber-skills",
-	"skills": ["../skills/find-awesome-skill", "../skills/audit-skill"]
+	"skills": ["../skills/find-awesome-skill"]
 }

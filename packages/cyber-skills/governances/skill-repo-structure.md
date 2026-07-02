@@ -158,7 +158,7 @@ Use **`init-skill-repo`** (when shipped) to scaffold and wire disciplines for th
 | Maintained / tooling | `npx cyber-skills@<version> audit validate` in CI |
 | Tooling library | Full repo verify command documented in AGENTS.md |
 
-Full quality review (Q6–Q13, E3–E8): run the **audit-skill** agent skill after mechanical validation passes.
+Full quality review (Q6–Q13, E3–E8): run the **improve-skill** agent skill after mechanical validation passes.
 
 ## References
 

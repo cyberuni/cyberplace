@@ -7,12 +7,6 @@
       "skillPath": "skills/add-changeset/SKILL.md",
       "computedHash": "8a5266fe92b2f9f755238564e44b5b44e1b5ce0a469d5659c1b03d49dd590dd1"
     },
-    "audit-skill": {
-      "source": "cyberuni/cyber-skills",
-      "sourceType": "github",
-      "skillPath": "skills/audit-skill/SKILL.md",
-      "computedHash": "0597babb0ec4d31f4c7836802558438604fab66aeb4cc2a89512028ed82dbc01"
-    },
     "create-issue": {
       "source": "repobuddy/repobuddy",
       "sourceType": "github",
