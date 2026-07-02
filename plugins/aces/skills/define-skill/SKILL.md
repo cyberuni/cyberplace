@@ -16,8 +16,16 @@ artifacts: the SKILL.md **and its verification** — the scenario→rubric eval 
 `golden-set/`, one eval per frozen scenario) that the impl-judge (`aces-impl-judge`) will run. As
 impl-producer it self-aligns to `sdd:ownership-governance` plus the resolved **builder-impl +
 architect-impl** bars (the ACES builder-impl is `aces:aces-builder-impl`). The judge never authors
-evals, so write any missing eval here. (Invoked standalone — no frozen `.feature` — only the SKILL.md
-is produced.)
+evals, so write any missing eval here.
+
+There are two other entry points, both with **no frozen `.feature`** and **only the SKILL.md**
+produced:
+
+- **Standalone** — the user invokes this skill directly, outside any CR. Scaffold, then offer the
+  ACES eval loop (see "Report and hand off" below) rather than assuming it.
+- **Escaped** — the gateway or `start-mission` invokes this skill directly after resolving the
+  request `non-durable` (the escape hatch, before any CR opens). There is no mission to hand off
+  within: scaffold, audit, report, and **stop** — do not mention the ACES eval loop.
 
 ## Route the request first
 
@@ -157,7 +165,11 @@ Summarize:
 - Runtime symlinks created and verified
 - Audit outcome
 
-Then point the user at the **ACES eval loop** to spec and score the skill — run `sdd:start-mission`
-(the conductor resolves the ACES roles for the `skill` artifact-type) to author its `.feature` and
-eval suite, or `add` / `run` to grow and score a golden set. Do **not** embed a legacy
-trigger-query eval file as the test step — scoring is the ACES loop's job.
+**Escaped** entry: stop here — the artifact resolved `non-durable`, so there is no mission to hand
+off to.
+
+**Standalone or impl-producer** entry: point the user at the **ACES eval loop** to spec and score
+the skill — run `sdd:start-mission` (the conductor resolves the ACES roles for the `skill`
+artifact-type) to author its `.feature` and eval suite, or `add` / `run` to grow and score a golden
+set. Do **not** embed a legacy trigger-query eval file as the test step — scoring is the ACES
+loop's job.

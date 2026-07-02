@@ -80,7 +80,7 @@ The **fresh spawn per mission is deliberate** — each automaton's context dies 
 
 ## Recognize the escape and the freeze
 
-- **Escape.** A task that is **not a CR** escapes: state that the work is leaving the lifecycle, create no draft, invoke no gate, and **write no record** (a non-CR is not SDD's to track; a spec-prose-only change is already in git). Two independent triggers: **no suite-relevant behavior**, or a **non-durable** touched artifact. For durability, run the `resolve-durability` skill (`intake/resolve-durability`'s concrete engine) per touched artifact:
+- **Escape.** A task that is **not a CR** escapes: create no draft, invoke no gate, and **write no record** (a non-CR is not SDD's to track; a spec-prose-only change is already in git). Two independent triggers: **no suite-relevant behavior**, or a **non-durable** touched artifact. Escaping does not mean stopping — if the artifact-type has a producer with an escaped-request entry point (e.g. `define-skill` for `skill`), invoke it directly to do the actual work; only state "leaving the lifecycle" and stop when no such producer exists. For durability, run the `resolve-durability` skill (`intake/resolve-durability`'s concrete engine) per touched artifact:
 
   ```bash
   node "<resolve-durability skill>/scripts/resolve-durability.mts" --root . --path <repo-relative-path> [--artifact-type <type>] [--explicit durable|non-durable]
