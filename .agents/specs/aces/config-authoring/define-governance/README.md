@@ -12,12 +12,12 @@ Scaffold a reference-only governance (rubric / constraint-set / checklist / deci
 checklist, decision table, or mixed) that other skills and agents load on demand, scaffolding its
 canonical file and runtime symlinks while enforcing the non-auto-trigger contract.
 **Non-goals** — authoring a workflow agent definition that the user triggers (`define-agent`); scoring
-a config against its golden set (`run`); adding or fixing eval cases (`add` / `improve`); the
+a config against its golden set (`run`); adding or fixing eval cases (`add-scenario` / `improve`); the
 governance-quality rubric itself (that is the quality-check governance the skill loads).
 
 | Use case | Trigger / inputs | Outcome |
 |---|---|---|
-| Trigger on a governance request | a request to create/improve a reference-only rule or criteria file, vs. a sibling intent (a workflow agent definition, or an eval-run scoring / case-authoring request) carrying the same config vocabulary | `define-governance` fires for a governance request and defers when the intent belongs to `define-agent` / `run` / `add` |
+| Trigger on a governance request | a request to create/improve a reference-only rule or criteria file, vs. a sibling intent (a workflow agent definition, or an eval-run scoring / case-authoring request) carrying the same config vocabulary | `define-governance` fires for a governance request and defers when the intent belongs to `define-agent` / `run` / `add-scenario` |
 | Distinguish governance from a workflow skill | content that describes what to enforce (criteria/rules) vs. how to do something (steps) | the content is treated as a governance when it encodes criteria and is redirected to a workflow skill when it encodes action steps |
 | Resolve placement and runtimes | scope (user-global / project / plugin) and target runtimes are unclear from context | the canonical path is derived and one symlink is created per selected runtime |
 | Select the content type | the user names the primary shape: rubric, constraint set, checklist, decision table, or mixed | the drafted body's section structure matches the chosen content type |

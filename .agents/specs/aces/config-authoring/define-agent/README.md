@@ -12,12 +12,12 @@ Scaffold a delegated / dual-mode / in-context agent definition + companion comma
 invokable dual-mode, or in-context-only form, scaffolding its canonical file, runtime symlinks, and
 companion command.
 **Non-goals** — authoring a reference-only governance (`define-governance`); scoring a config against
-its golden set (`run`); adding or fixing eval cases (`add` / `improve`); the agent-definition quality
+its golden set (`run`); adding or fixing eval cases (`add-scenario` / `improve`); the agent-definition quality
 rubric itself (that is the quality-check governance the skill loads).
 
 | Use case | Trigger / inputs | Outcome |
 |---|---|---|
-| Trigger on an agent-definition request | a request to create/improve a named reusable role, vs. a sibling intent (a reference-only governance, or an eval-run scoring / case-authoring request) carrying the same config vocabulary | `define-agent` fires for an agent-definition request and defers when the intent belongs to `define-governance` / `run` / `add` |
+| Trigger on an agent-definition request | a request to create/improve a named reusable role, vs. a sibling intent (a reference-only governance, or an eval-run scoring / case-authoring request) carrying the same config vocabulary | `define-agent` fires for an agent-definition request and defers when the intent belongs to `define-governance` / `run` / `add-scenario` |
 | Choose the definition mode | the user wants a new agent; the role suits a delegated worker, an invokable dual-mode role, or an in-context-only persona | the three modes are presented and the chosen mode drives what gets scaffolded |
 | Resolve placement and runtimes | scope (user-global / project / plugin) and target runtimes are unclear from context | the canonical path is derived and one symlink is created and verified per selected runtime |
 | Scaffold the agent definition | a gathered name, role, responsibilities, output format, human-in-the-loop rules, and out-of-scope | a canonical agent file is written with the required frontmatter and the required body shape |

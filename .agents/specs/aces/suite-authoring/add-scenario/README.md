@@ -2,7 +2,7 @@
 spec-type: behavioral
 ---
 
-# add — add a test case to the golden set
+# add-scenario — add a test case to the golden set
 
 Scaffold a scenario + expected-behaviors + must-not-do + rubric from a failure, edge case, or gap.
 
@@ -15,7 +15,7 @@ diffing two versions (`compare`); how a single case is scored (that is `aces-cas
 
 | Use case | Trigger / inputs | Outcome |
 |---|---|---|
-| Trigger on a capture request | a request to capture a new case from a failure / edge / gap, vs. a sibling intent (fix the failing config, score, diff) carrying the same eval vocabulary | `add` fires for a capture request and defers when the intent belongs to `improve` / `run` / `compare` |
+| Trigger on a capture request | a request to capture a new case from a failure / edge / gap, vs. a sibling intent (fix the failing config, score, diff) carrying the same eval vocabulary | `add-scenario` fires for a capture request and defers when the intent belongs to `improve` / `run` / `compare` |
 | Locate the eval suite | the user names or implies a feature; its eval config may or may not exist | the suite's target and scoring bar are read, or the user is asked when no suite is found |
 | Capture the input | a pasted transcript, an edge-case description, a gap, or a must-not-do behavior | the input is decomposed into said / state / did / should, and a must-not-do becomes a guard |
 | Determine the layer | the captured input | the trigger / behavior / quality layer is inferred, the user is asked when ambiguous, and a layer absent from the suite config is flagged |
