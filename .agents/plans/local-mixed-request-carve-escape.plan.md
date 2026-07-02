@@ -21,13 +21,13 @@ todos:
     status: completed
   - id: handoff
     content: Self-assert spec gate (auto-all), append ledger/log, commit
-    status: in_progress
+    status: completed
 isProject: false
 ---
 
 ## NEXT
 
-Mission complete pending commit. Both additive @frozen scenarios landed; cold spec-judge
+Mission complete, landed in `76296e3`. Both additive @frozen scenarios landed; cold spec-judge
 (`sdd:sdd-spec-judge`) graded oracle/builder/architect all-pass, ALIGNED true, no blocker.
 Additive-only diff → self-cleared, files stay @frozen, no re-open. Retirement-ready once
 doctrine distills.
