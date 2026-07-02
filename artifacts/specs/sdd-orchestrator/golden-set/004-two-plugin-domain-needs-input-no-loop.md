@@ -6,7 +6,7 @@ threshold: 4
 
 ## Scenario
 
-The orchestrator is resolving delegates for the "guide" domain. The registry contains two matching entries: both the aces plugin and the quill plugin list "guide" in their `domains[]`. The `spec.md` frontmatter for this domain does NOT yet have a `domain-plugin` entry set.
+The orchestrator is resolving delegates for the "guide" domain. The registry contains two matching entries: both the aced plugin and the quill plugin list "guide" in their `domains[]`. The `spec.md` frontmatter for this domain does NOT yet have a `domain-plugin` entry set.
 
 ## Expected behaviors
 

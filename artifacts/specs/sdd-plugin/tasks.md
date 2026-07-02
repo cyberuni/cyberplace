@@ -53,8 +53,8 @@ Each task is an executable unit with an ID, dependency edges, and scenario trace
 
 - [x] `SDDP-601` Migrate Quill mapping from `quill-scenario-advisor` to `quill-writer` and `quill-doc-writer` role targets — deps: SDDP-401 — serves: Domain plugin init writes the resolved role map
 - [x] `SDDP-602` Preserve Quill impl-judge mapping to `quill-implementer` — deps: SDDP-601 — serves: Impl gate passes only when every frozen scenario passes
-- [x] `SDDP-603` Migrate ACES mapping from `aces-spec-designer` to `aces-scenario-writer` and keep `aces-spec-validator` as spec-judge — deps: SDDP-401 — serves: A plugin-written feature must pass the universal format bar
-- [x] `SDDP-604` Shift ACES eval authoring to impl-producer and eval execution to `aces-implementer` — deps: SDDP-603 — serves: Implementation runs against the frozen feature
+- [x] `SDDP-603` Migrate ACED mapping from `aced-spec-designer` to `aced-scenario-writer` and keep `aced-spec-validator` as spec-judge — deps: SDDP-401 — serves: A plugin-written feature must pass the universal format bar
+- [x] `SDDP-604` Shift ACED eval authoring to impl-producer and eval execution to `aced-implementer` — deps: SDDP-603 — serves: Implementation runs against the frozen feature
 
 ## Deferred
 

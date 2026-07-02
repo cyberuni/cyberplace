@@ -4,9 +4,9 @@
 	"owner": { "name": "unional" },
 	"plugins": [
 		{
-			"name": "aces",
+			"name": "aced",
 			"description": "Agent Config Evaluation System. Evaluate, test, and improve agent configurations: skills, AGENTS.md sections, subagent definitions, and commands.",
-			"source": "./plugins/aces"
+			"source": "./plugins/aced"
 		},
 		{
 			"name": "quill",

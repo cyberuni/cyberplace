@@ -35,7 +35,7 @@ superseded-by: sdd-operator
 
 ## What
 
-SDD owns the spec-driven workflow and runs the loop. Domain plugins (ACES for agent configurations, Quill for documentation) augment that loop by supplying **delegates** for the roles SDD does not hard-code — the producers along the chain and the judges at the gates (the production chain below).
+SDD owns the spec-driven workflow and runs the loop. Domain plugins (ACED for agent configurations, Quill for documentation) augment that loop by supplying **delegates** for the roles SDD does not hard-code — the producers along the chain and the judges at the gates (the production chain below).
 
 The architecture has four moving parts:
 
@@ -76,11 +76,11 @@ Every act on the chain is one of **five roles**. The dividing line is simple: **
 
 | Role | Verb — what it does | Produces / runs | Writes to | Default filler | Plugin examples |
 |---|---|---|---|---|---|
-| **spec-producer** | **writes the contract** | produces the intent prose + boolean Gherkin | `spec.md` body, `.feature` | `sdd-scenario-writer` | `aces-scenario-writer`, `quill-writer` |
-| **spec-judge** | **judges the contract** | runs the domain bar against the `.feature` (testability, coverage, criteria) | nothing — advises | static format gate (`validate-spec`) | `aces-spec-validator`, Quill static criteria |
-| **plan-producer** | **plans the solution** | produces the solution + its DAG breakdown | `plan.md`, `tasks.md` | `sdd-planner` | `aces-planner`, Quill default |
+| **spec-producer** | **writes the contract** | produces the intent prose + boolean Gherkin | `spec.md` body, `.feature` | `sdd-scenario-writer` | `aced-scenario-writer`, `quill-writer` |
+| **spec-judge** | **judges the contract** | runs the domain bar against the `.feature` (testability, coverage, criteria) | nothing — advises | static format gate (`validate-spec`) | `aced-spec-validator`, Quill static criteria |
+| **plan-producer** | **plans the solution** | produces the solution + its DAG breakdown | `plan.md`, `tasks.md` | `sdd-planner` | `aced-planner`, Quill default |
 | **impl-producer** | **builds the artifact + its verification** | produces the implementation **and** its tests/evals (one per frozen scenario) | code / docs / config **+** tests / evals / rubric | the generic Builder (no agent) | `define-agent` / `improve`, `quill-doc-writer` |
-| **impl-judge** | **runs the verification** | runs the producer's tests/evals + an orthogonal structural/scope read; reports pass/fail | nothing — advises | `sdd-implementer` | `aces-implementer`, `quill-implementer` |
+| **impl-judge** | **runs the verification** | runs the producer's tests/evals + an orthogonal structural/scope read; reports pass/fail | nothing — advises | `sdd-implementer` | `aced-implementer`, `quill-implementer` |
 
 Naming is **producer / judge** with one constraint: **`producer ≠ judge`**. Concrete agents keep readable names — only the five role keys are fixed vocabulary. A role is either **filled** (a plugin agent acts) or it **degenerates** to the SDD default; the `spec-producer` is always filled. The full filler matrix per plugin is in *The backward face is productive* below; the normative I/O contract is in *Vocabulary & wiring*.
 
@@ -168,7 +168,7 @@ The plug-in surface is not a 2×2 of one spec object and one impl object. The fo
 | `tasks.md` (breakdown, a DAG) | **plan-producer** | decompose → executable units; dependencies, parallelism, scenario traceability | — (transitive) |
 | implementation | **impl-producer** | heavy domain knowledge; **product + test split hidden** | **impl-judge** (impl gate) |
 
-Naming is **producer / judge** (the motive model's forward verb is *produce*; its named constraint is **`producer ≠ judge`** — the four-eyes echo). Concrete agents keep readable names (`aces-scenario-writer` *is* the spec-producer); only role keys are fixed vocabulary.
+Naming is **producer / judge** (the motive model's forward verb is *produce*; its named constraint is **`producer ≠ judge`** — the four-eyes echo). Concrete agents keep readable names (`aced-scenario-writer` *is* the spec-producer); only role keys are fixed vocabulary.
 
 **Plan and tasks get no judge.** The five artifacts **co-deliver**; the implementation's **test result** validates plan and tasks transitively — if the build passes, the plan was good enough. Only two objects are gated: the `.feature` (spec gate) and the implementation (impl gate).
 
@@ -198,7 +198,7 @@ This is why the exploratory loop is **more than the spec row**: it is the spec r
 
 ### The backward face is productive — but the producer writes the verification, the judge runs it
 
-A backward face does not just read the artifact — it **produces the verification** (the Builder-backward face *writes the tests*; for ACES, *writes the evals*) and **codifies the bar**. The correction: this productive backward face is carried by the **impl-producer**, not the judge. The impl-producer embodies **both faces of the Builder** — the forward face writes the implementation, the backward face writes its verification — so it co-produces **two artifacts** (implementation + test/eval), both derived from the frozen `.feature`. The **impl-judge reads that backward-face artifact and runs it** — it executes the producer's tests/evals and reports the result; it does not author them.
+A backward face does not just read the artifact — it **produces the verification** (the Builder-backward face *writes the tests*; for ACED, *writes the evals*) and **codifies the bar**. The correction: this productive backward face is carried by the **impl-producer**, not the judge. The impl-producer embodies **both faces of the Builder** — the forward face writes the implementation, the backward face writes its verification — so it co-produces **two artifacts** (implementation + test/eval), both derived from the frozen `.feature`. The **impl-judge reads that backward-face artifact and runs it** — it executes the producer's tests/evals and reports the result; it does not author them.
 
 The backward face yields two things:
 
@@ -211,15 +211,15 @@ This collapses the gate's three backward actors into **three actor governances +
 
 **A full domain plugin fills every producer; thin domains let roles degenerate:**
 
-| Role | ACES (agent config) | Quill (documentation) | Plain code (no plugin) |
+| Role | ACED (agent config) | Quill (documentation) | Plain code (no plugin) |
 |---|---|---|---|
-| spec-producer | `aces-scenario-writer` | `quill-writer` | `sdd-scenario-writer` (default) |
-| plan-producer | `aces-planner` | `quill-planner` or default | `sdd-planner` (default) |
-| spec-judge | `aces-spec-validator` | static doc criteria | format gate (`validate-spec`) |
+| spec-producer | `aced-scenario-writer` | `quill-writer` | `sdd-scenario-writer` (default) |
+| plan-producer | `aced-planner` | `quill-planner` or default | `sdd-planner` (default) |
+| spec-judge | `aced-spec-validator` | static doc criteria | format gate (`validate-spec`) |
 | impl-producer | `define-agent` / `improve` (writes the config **and its evals** — the "written tests") | **`quill-doc-writer`** (missing — to add) | the generic Builder (writes product **and tests**) |
-| impl-judge | `aces-implementer` (**runs** the evals over N runs → boolean) | `quill-implementer` | `sdd-implementer` (default) |
+| impl-judge | `aced-implementer` (**runs** the evals over N runs → boolean) | `quill-implementer` | `sdd-implementer` (default) |
 
-**ACES evals are produced by the impl-producer; the impl-judge runs them.** Evals are "written tests" — the Builder's backward-face artifact — so the impl-producer (`define-agent`/`improve`) writes the scenario→rubric map alongside the agent config, both derived from the frozen `.feature`. `aces-implementer` (impl-judge) **runs** that map over N runs and collapses score-vs-threshold to a boolean per scenario; it does not author it. Independence comes not from an authoring split but from the verification being anchored to the frozen `.feature` and executed by a **separate runner** — the producer cannot declare its own pass. Common degeneracies: **spec-judge** → static criteria; **impl-producer** → the generic Builder for ordinary code.
+**ACED evals are produced by the impl-producer; the impl-judge runs them.** Evals are "written tests" — the Builder's backward-face artifact — so the impl-producer (`define-agent`/`improve`) writes the scenario→rubric map alongside the agent config, both derived from the frozen `.feature`. `aced-implementer` (impl-judge) **runs** that map over N runs and collapses score-vs-threshold to a boolean per scenario; it does not author it. Independence comes not from an authoring split but from the verification being anchored to the frozen `.feature` and executed by a **separate runner** — the producer cannot declare its own pass. Common degeneracies: **spec-judge** → static criteria; **impl-producer** → the generic Builder for ordinary code.
 
 ### Default delegates are agent definitions, not skills
 
@@ -233,7 +233,7 @@ A scenario's outcome is **boolean**: the spec says the agent *does* X, not *does
 |---|---|---|
 | `sdd-implementer` (default) | a passing test exists | deterministic code |
 | `quill-implementer` | static doc inspection holds | deterministic doc |
-| `aces-implementer` | judge-score ≥ threshold over N runs | non-deterministic agent |
+| `aced-implementer` | judge-score ≥ threshold over N runs | non-deterministic agent |
 
 ### `aligned` is layer-scoped to the gate
 
@@ -265,7 +265,7 @@ Per the motive model, the **Conductor is the actor** (the human holding motive a
 Two kinds of governance, two fates (ADR-0013):
 
 - **Contract / interface** governances (the I/O between SDD and plugins) fold into the orchestrator + delegate definitions.
-- **Reference / criteria** governances (SDD principles, the universal `.feature` format bar, the scenario-ordering convention) become a **governance skill** — `sdd:spec-governance`, marked `user-invocable: false` with an `Internal skill:` description prefix, body = pure reference. It is loaded the harness-native way (Skill) by SDD's own agents (default spec-producer, validate-spec) **and** by plugin spec-producers (aces, quill), which assume `sdd-plugin` exists. No `governance show` (NodeJS), and **not** `AGENTS.md` — that is project-global and would tax non-SDD work; the governance skill loads only for SDD work.
+- **Reference / criteria** governances (SDD principles, the universal `.feature` format bar, the scenario-ordering convention) become a **governance skill** — `sdd:spec-governance`, marked `user-invocable: false` with an `Internal skill:` description prefix, body = pure reference. It is loaded the harness-native way (Skill) by SDD's own agents (default spec-producer, validate-spec) **and** by plugin spec-producers (aced, quill), which assume `sdd-plugin` exists. No `governance show` (NodeJS), and **not** `AGENTS.md` — that is project-global and would tax non-SDD work; the governance skill loads only for SDD work.
 
 Repo-wide governance retirement (`packages/cyber-skills/governances/`, the `define-governance` skill) is a separate, larger decision and out of scope here.
 
@@ -389,10 +389,10 @@ Different objects → different verdicts → they never collapse. The pivot make
 
 What looked like two interfaces are **Builder-backward at the two gates**:
 
-- **spec-judge** (e.g., `aces-spec-validator`) = Builder-backward at the **spec gate**: bar = domain criteria, object = the `.feature`.
-- **impl-judge** (e.g., `aces-implementer`) = Builder-backward at the **impl gate**: bar = the `.feature`, object = the code.
+- **spec-judge** (e.g., `aced-spec-validator`) = Builder-backward at the **spec gate**: bar = domain criteria, object = the `.feature`.
+- **impl-judge** (e.g., `aced-implementer`) = Builder-backward at the **impl gate**: bar = the `.feature`, object = the code.
 
-Same faculty, two gates (for ACES both use rubric → threshold → boolean, confirming one faculty). So `aces-spec-validator` is **retained** — it is the Builder's backward face at the spec gate, not absorbed by SDD; SDD's generic `validate-spec` cannot judge domain contract quality. When the domain bar is static (Quill), the spec-judge is declarative criteria `validate-spec` runs, and no judge agent is needed.
+Same faculty, two gates (for ACED both use rubric → threshold → boolean, confirming one faculty). So `aced-spec-validator` is **retained** — it is the Builder's backward face at the spec gate, not absorbed by SDD; SDD's generic `validate-spec` cannot judge domain contract quality. When the domain bar is static (Quill), the spec-judge is declarative criteria `validate-spec` runs, and no judge agent is needed.
 
 ---
 
@@ -400,7 +400,7 @@ Same faculty, two gates (for ACES both use rubric → threshold → boolean, con
 
 The model leans on a fixed vocabulary the rest of the spec only gestures at. This section is the single normative source.
 
-**Role keys (closed set):** `spec-producer`, `plan-producer`, `spec-judge`, `impl-producer`, `impl-judge`. These are the registry keys and the dispatch keys; concrete agent names are free (`aces-scenario-writer` *is* the spec-producer).
+**Role keys (closed set):** `spec-producer`, `plan-producer`, `spec-judge`, `impl-producer`, `impl-judge`. These are the registry keys and the dispatch keys; concrete agent names are free (`aced-scenario-writer` *is* the spec-producer).
 
 **Registry:** `.agents/universal-plugin.json`, top-level `sdd-plugins[]`, entry = `{ name, version, domains[], roles{<the five keys>}, governances{oracle, builder, architect} }`. Each role = agent name or `null`; each governance = actor-governance skill name or `null` (SDD default). `init-<plugin>` writes and rewrites it (rewrite-on-init migration). The orchestrator reads only this file.
 
@@ -522,12 +522,12 @@ Sequenced so the stable interface lands first, the cheap consumer proves it, the
 - Keep `quill-implementer` (impl-judge); confirm boolean-per-scenario output.
 - Update Quill spec + `.feature`.
 
-**3. ACES (act-override consumer, proves rubric-as-validation-detail).**
-- Split `aces-spec-designer` → `aces-scenario-writer` (writes boolean Gherkin: trigger near-misses + behavior cases); delete its spec.md-authoring half.
-- Add `aces-implementer` (Builder-backward at the impl gate) that **runs** the scenario→rubric map; the map itself is authored by the ACES impl-producer (`define-agent`/`improve`) alongside the agent config. `aces-judge` becomes `aces-implementer`'s internal.
-- **Retain `aces-spec-validator`** as the **spec-judge** (Builder-backward at the spec gate) — not absorbed by SDD. Delete `aces:create-spec` (absorbed by SDD); `run`/`compare`/`report` become thin reporting over impl-judge output.
-- Reframe `aces:skill-spec-schema` as agent-scenario criteria inside `aces-scenario-writer`. Retire `aces:define-governance` deferred to the repo-wide call.
-- Update ACES specs + `.feature` files.
+**3. ACED (act-override consumer, proves rubric-as-validation-detail).**
+- Split `aced-spec-designer` → `aced-scenario-writer` (writes boolean Gherkin: trigger near-misses + behavior cases); delete its spec.md-authoring half.
+- Add `aced-implementer` (Builder-backward at the impl gate) that **runs** the scenario→rubric map; the map itself is authored by the ACED impl-producer (`define-agent`/`improve`) alongside the agent config. `aced-judge` becomes `aced-implementer`'s internal.
+- **Retain `aced-spec-validator`** as the **spec-judge** (Builder-backward at the spec gate) — not absorbed by SDD. Delete `aced:create-spec` (absorbed by SDD); `run`/`compare`/`report` become thin reporting over impl-judge output.
+- Reframe `aced:skill-spec-schema` as agent-scenario criteria inside `aced-scenario-writer`. Retire `aced:define-governance` deferred to the repo-wide call.
+- Update ACED specs + `.feature` files.
 
 **4. NodeJS sweep.**
 - `init-sdd` drops `governance show`; SDD principles move to the `sdd:spec-governance` skill (harness-loaded), not AGENTS.md.
@@ -540,10 +540,10 @@ Sequenced so the stable interface lands first, the cheap consumer proves it, the
 
 - `artifacts/specs/sdd-plugin/spec.md` — the SDD practice this orchestrates
 - `artifacts/specs/motive-model/spec.md` — Conductor (actor) vs orchestrator (delegate pattern); the delegation-surface vocabulary
-- `artifacts/specs/aces-skill-spec-schema/spec.md` — agent-scenario criteria, to be reframed into `aces-scenario-writer`
+- `artifacts/specs/aced-skill-spec-schema/spec.md` — agent-scenario criteria, to be reframed into `aced-scenario-writer`
 - `artifacts/adr/0013-governance-skills.md` — governance skills (`user-invocable: false`) replace `governance show`
 - `plugins/sdd/governances/` — contract I/O folds into agents; reference content moves to `sdd:spec-governance`
-- `plugins/quill/` , `plugins/aces/` — the two consumer plugins to migrate
+- `plugins/quill/` , `plugins/aced/` — the two consumer plugins to migrate
 
 ---
 

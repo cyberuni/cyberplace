@@ -19,7 +19,7 @@ Skills are `SKILL.md` files that AI agents load on demand. Each encodes a workfl
 | [**configure-awesome-sources**](/skills/configure-awesome-sources/) | Add, remove, or inspect the awesome-list sources used for discovery. |
 | [**update-awesome-list**](/skills/update-awesome-list/) | Add or update a curated awesome-list entry, including README sync. |
 
-For scaffolding a **new** skill from scratch, see [`aces:define-skill`](https://github.com/cyberuni/cyber-skills/blob/main/plugins/aces/skills/define-skill/SKILL.md) — the ACES plugin's skill-authoring producer.
+For scaffolding a **new** skill from scratch, see [`aced:define-skill`](https://github.com/cyberuni/cyber-skills/blob/main/plugins/aced/skills/define-skill/SKILL.md) — the ACED plugin's skill-authoring producer.
 
 ## Skill placement
 

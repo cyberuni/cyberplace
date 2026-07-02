@@ -30,7 +30,7 @@ The spec gate's decision is always the human's, but a bare "approve this spec?" 
 
 ### The digest is structural and domain-agnostic
 
-The digest is derived mechanically from the artifacts every SDD spec shares: the What line, the `### ` headings under Design decisions, the `Scenario:` names in the `.feature`, the `<!-- open: ... -->` markers, and the `status` frontmatter. It does not interpret domain semantics. Domain-rich digests (for example an ACES- or Quill-flavored reading) are out of scope: the SDD plugin contract defines a closed five-role delegate set with no digest role, so the structural digest is the single default and plugins do not override it.
+The digest is derived mechanically from the artifacts every SDD spec shares: the What line, the `### ` headings under Design decisions, the `Scenario:` names in the `.feature`, the `<!-- open: ... -->` markers, and the `status` frontmatter. It does not interpret domain semantics. Domain-rich digests (for example an ACED- or Quill-flavored reading) are out of scope: the SDD plugin contract defines a closed five-role delegate set with no digest role, so the structural digest is the single default and plugins do not override it.
 
 ### The digest content is fixed
 

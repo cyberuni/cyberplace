@@ -9,7 +9,7 @@ threshold: 4
 The agent produces a governance file with this description field:
 
 ```yaml
-description: "Internal governance: Rubric for evaluating skill quality, loaded by audit-skill and aces-judge."
+description: "Internal governance: Rubric for evaluating skill quality, loaded by audit-skill and aced-judge."
 ```
 
 The prefix is `"Internal governance:"` instead of the required `"Internal skill:"`.

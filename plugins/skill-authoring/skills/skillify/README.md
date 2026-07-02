@@ -12,7 +12,7 @@ Good triggers include:
 - "Make this reusable"
 - "Turn what we just did into a skill"
 
-Different from `aces:define-skill`, which scaffolds from a blank template — this skill analyzes what actually happened in the session.
+Different from `aced:define-skill`, which scaffolds from a blank template — this skill analyzes what actually happened in the session.
 
 ## What it does
 

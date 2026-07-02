@@ -37,10 +37,10 @@ Feature: SDD Operator — Explore Phase (produce & judge the contract)
     And no separate spec-producer agent is spawned
 
   Scenario: A named spec-producer agent is spawned at its own model
-    Given the "skill" domain names aces-scenario-writer as its spec-producer
+    Given the "skill" domain names aced-scenario-writer as its spec-producer
     And no full domain plugin covers the domain
     When the operator runs the spec-producer in explore mode
-    Then the operator spawns aces-scenario-writer
+    Then the operator spawns aced-scenario-writer
     And the operator does not write the spec.md body
 
   Scenario: An explore-mode producer builds against the draft, not a frozen contract
@@ -86,7 +86,7 @@ Feature: SDD Operator — Explore Phase (produce & judge the contract)
     And the .feature stays plain boolean Gherkin
 
   Scenario: A plugin-written .feature must pass validate-spec
-    Given a plugin delegate aces-scenario-writer produced specs/skill/skill.feature
+    Given a plugin delegate aced-scenario-writer produced specs/skill/skill.feature
     When validate-spec runs against the spec
     Then the .feature is checked for valid boolean Gherkin
 
@@ -112,9 +112,9 @@ Feature: SDD Operator — Explore Phase (produce & judge the contract)
   # ── spec gate: judge the contract, Draft → Approved ───────────────────────
 
   Scenario: The spec-gate judge is a spawned domain delegate, not SDD
-    Given the "skill" domain declares aces-spec-validator
+    Given the "skill" domain declares aced-spec-validator
     When the spec gate evaluates skill.feature against domain criteria
-    Then the operator spawns aces-spec-validator cold to judge the contract
+    Then the operator spawns aced-spec-validator cold to judge the contract
     And SDD's generic validate-spec does not judge domain contract quality
 
   Scenario: A default-judge domain spawns the cold SDD spec-judge

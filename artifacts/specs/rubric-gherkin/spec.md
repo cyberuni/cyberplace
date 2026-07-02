@@ -36,7 +36,7 @@ A gradient judgment cannot be faithfully encoded in a single boolean: "spec.md f
 |---|----------|-----------|
 | 1 | **Rubric scenario syntax** — `@rubric` tag + docstring or table for dimensions/threshold + collapsing `Then` | Tag makes the rubric branch mechanically distinguishable without breaking Gherkin validity |
 | 2 | **Judge bar gains a rubric branch** — structural check (dimensions + threshold present) AND by-hand scoring | Structure check is automatic; scoring is irreducibly human judgment |
-| 3 | **ACES is not a prerequisite** — rubric Gherkin is self-contained, judged by-hand | ACES is the regression harness when automation is worth the cost; not required to use rubric form |
+| 3 | **ACED is not a prerequisite** — rubric Gherkin is self-contained, judged by-hand | ACED is the regression harness when automation is worth the cost; not required to use rubric form |
 | 4 | **Prohibition relaxed** — "no rubric in the `.feature`" becomes "no rubric in an untagged scenario" | The carve-out is the whole point; the tag is the guard |
 
 ## Rubric scenario syntax
@@ -99,7 +99,7 @@ A new sub-section **Rubric scenarios (`@rubric`)** is added immediately below, s
 
 ### 2. `sdd-spec-judge` — "Valid boolean Gherkin" bar (reference implementation)
 
-The domain's resolved spec-judge gains a rubric branch. The structural check is **universal** — every resolved judge enforces it identically. Scoring capability is **per-resolved-judge**: the default `sdd-spec-judge` does baseline by-hand scoring; a plugin can supply a more capable resolved judge (e.g. `aces-spec-validator` for ACES domains).
+The domain's resolved spec-judge gains a rubric branch. The structural check is **universal** — every resolved judge enforces it identically. Scoring capability is **per-resolved-judge**: the default `sdd-spec-judge` does baseline by-hand scoring; a plugin can supply a more capable resolved judge (e.g. `aced-spec-validator` for ACED domains).
 
 | Scenario type | Resolved judge validates |
 |---|---|

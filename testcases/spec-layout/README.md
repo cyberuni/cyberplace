@@ -12,7 +12,7 @@ strategy produces a clean, declared tree, and double as the `backfill-project-sp
 | `bounded-context/multi-context` | bounded-context | colocated | S3 contexts + glossary + context-map |
 | `layered/clean-app` | layered | colocated | S4 layers = descriptive; behavior nests inside |
 | `doc-envelope/docs-project` | doc-envelope | colocated | S5 arc42 sections; only runtime/quality are behavioral |
-| `location/agentic-plugin-hoist` | capability-first | hoisted | hoist out of a shippable plugin (ACES is the full example) |
+| `location/agentic-plugin-hoist` | capability-first | hoisted | hoist out of a shippable plugin (ACED is the full example) |
 | `location/monorepo` | capability-first | monorepo-member | multi-project backfill (one tree per package + outer) |
 
 Validate all: `node plugins/sdd-new/skills/validate-spec/scripts/check-spec-state.mts --root testcases/spec-layout`

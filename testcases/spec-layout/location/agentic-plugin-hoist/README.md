@@ -8,4 +8,4 @@ plugins/myplugin/
 **Detected:** an agentic plugin (`.plugin/` + `skills/` + `agents/`).
 **Choice:** location **hoisted** → `<repo>/.agents/specs/myplugin/` (the spec must not ship inside the
 distributable). Strategy `capability-first` (legibility over the fixed source layout).
-**Full real example:** `.agents/specs/aces/` (the ACES proof). This fixture is the minimal generic case.
+**Full real example:** `.agents/specs/aced/` (the ACED proof). This fixture is the minimal generic case.

@@ -46,7 +46,7 @@ Discipline compliance is verified by behavioral testing: give the agent a scenar
 
 This is the same mechanism used to verify governance compliance. The difference is content, not test method.
 
-[ACES](/aces/overview/) provides the evaluation framework for both.
+[ACED](/aced/overview/) provides the evaluation framework for both.
 
 ## Example: Commit Discipline
 

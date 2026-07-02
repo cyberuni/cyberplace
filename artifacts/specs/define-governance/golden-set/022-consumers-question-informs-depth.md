@@ -6,7 +6,7 @@ threshold: 4
 
 ## Scenario
 
-The user answers the consumers question (question 3) with: "This will be loaded by `audit-skill` which runs automated checks on SKILL.md files, and also by `aces-judge` which scores agent behavior."
+The user answers the consumers question (question 3) with: "This will be loaded by `audit-skill` which runs automated checks on SKILL.md files, and also by `aced-judge` which scores agent behavior."
 
 The governance file should have enough specificity for both an automated checker (needs precise, mechanical rules) and a judge agent (needs rubric rows with scoring).
 

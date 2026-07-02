@@ -19,7 +19,7 @@
     ]
   },
   "enabledPlugins": {
-    "aces@cyber-skills-next": true,
+    "aced@cyber-skills-next": true,
     "quill@cyber-skills-next": true,
     "sdd@cyber-skills-next": true
   }

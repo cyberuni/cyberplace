@@ -43,7 +43,7 @@ A model that records **which producer made each spec artifact**, in frontmatter,
 
 `produced-by` plays two roles that are deliberately kept separate:
 
-- a **historical record** — immutable provenance ("`aces-scenario-writer` wrote this `.feature`"), the data ACES needs to measure result quality and trace a bad artifact to its producer;
+- a **historical record** — immutable provenance ("`aced-scenario-writer` wrote this `.feature`"), the data ACED needs to measure result quality and trace a bad artifact to its producer;
 - a **resume cache** — on a later run the operator reuses the recorded producer if its plugin is still installed, so resume is decisive without re-asking.
 
 It never **blocks**: resolution is always live from the registry, so a recorded producer whose plugin was deleted degrades gracefully instead of stalling.
@@ -63,7 +63,7 @@ flowchart LR
 
 Today the operator records a plugin choice **only on conflict** — the `domain-plugin` disambiguation map, written when two plugins claim the same domain. Every other production leaves no trace of who produced what. So:
 
-- **Quality can't be attributed.** When a `.feature` is weak or an implementation drifts, there is no record of which producer made it — ACES cannot correlate outcomes to producers, which is the whole point of measuring agent-configuration quality.
+- **Quality can't be attributed.** When a `.feature` is weak or an implementation drifts, there is no record of which producer made it — ACED cannot correlate outcomes to producers, which is the whole point of measuring agent-configuration quality.
 - **`producer ≠ judge` is in the model but not in the data.** `approval` will capture the judge; nothing captures the producer. Recording both closes the loop.
 - **Resume re-asks more than it should.** Because the plugin choice is only persisted on conflict, a resume can re-disambiguate; an always-on producer record makes resume decisive in every case.
 
@@ -80,7 +80,7 @@ The cost is small and bounded: a few frontmatter lines per spec, written by the 
 | `produced-by` | who **made** each artifact | production role (`spec-producer`, `plan-producer`, `impl-producer`) | operator, at dispatch |
 | `approval` | who **judged** each gate (`verdict` + `by` + `why`) | gate (`spec`, `impl`) | operator (self-assert) / skill (ratify) |
 
-Each `produced-by` value is the **plugin-qualified agent name** (`aces:aces-scenario-writer`, `quill:quill-doc-writer`, `sdd:sdd-scenario-writer` for a default). It is recorded **always**, on every production, regardless of whether any disambiguation happened.
+Each `produced-by` value is the **plugin-qualified agent name** (`aced:aced-scenario-writer`, `quill:quill-doc-writer`, `sdd:sdd-scenario-writer` for a default). It is recorded **always**, on every production, regardless of whether any disambiguation happened.
 
 ### Provenance is historical; resolution is live
 
@@ -234,7 +234,7 @@ The `log` ledger is **not** a frontmatter field. It lives in the sibling `combat
 ```yaml
 status: approved
 produced-by:
-  spec-producer: aces:aces-scenario-writer
+  spec-producer: aced:aced-scenario-writer
   plan-producer: sdd:sdd-planner
   impl-producer: sdd:sdd-operator
 approval:
@@ -250,7 +250,7 @@ approval:
 # Entry shapes (report / correction / strategy), the correction-kind set,
 # and the matchable cause enum are owned by combat-log-governance —
 # see that governance for the field-by-field schema.
-{"seq":1,"kind":"report","role":"spec-producer","agent":"aces:aces-scenario-writer","outcome":"pass"}
+{"seq":1,"kind":"report","role":"spec-producer","agent":"aced:aced-scenario-writer","outcome":"pass"}
 {"seq":2,"kind":"correction","correction-kind":"gate-reject","cause":"coverage-gap"}
 ```
 
@@ -275,7 +275,7 @@ approval:
 - `combat-log-governance` (SDD plugin skill) — **the schema owner** for the two-face combat log: entry shapes, the `correction-kind` set, the matchable `cause` enum, the strategy slot, and log write-ownership. This spec references it; it does not duplicate it.
 - `artifacts/specs/sdd-orchestrator/spec.md` — the discovery/registry model and the `domain-plugin` map this generalizes and retires
 - `artifacts/specs/sdd-gate-autonomy/spec.md` — `approval`, the judging twin; the historical-vs-live split; the inline-producer gap this resolves by always resolving a real producer (plugin or SDD default) and hard-failing when none can be resolved
-- `artifacts/specs/aces-plugin/spec.md` — the consumer that measures quality by producer, the motivating use case
+- `artifacts/specs/aced-plugin/spec.md` — the consumer that measures quality by producer, the motivating use case
 - `artifacts/specs/motive-model/spec.md` — `producer ≠ judge`, here captured as data; the doctrine-loop Scanner that reads the log as its sole input
 
 ---

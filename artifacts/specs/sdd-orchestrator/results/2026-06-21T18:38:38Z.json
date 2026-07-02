@@ -14,7 +14,7 @@
 			"name": "omitted-role-key-convention-fallback",
 			"score": 5,
 			"pass": true,
-			"note": "Config explicitly separates missing key (convention fallback '<plugin>-<role>') from null (degenerate). An agent would use aces-impl-producer for a missing impl-producer key."
+			"note": "Config explicitly separates missing key (convention fallback '<plugin>-<role>') from null (degenerate). An agent would use aced-impl-producer for a missing impl-producer key."
 		},
 		{
 			"name": "null-role-degenerates-to-no-agent",

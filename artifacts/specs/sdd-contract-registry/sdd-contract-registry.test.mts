@@ -2,7 +2,7 @@
 // scenario (13). The implementation under test is agent-prose plus a JSON file
 // shape:
 //   - the init-* skills that WRITE/RECONCILE the registry entry
-//       plugins/aces/skills/init-aces/SKILL.md
+//       plugins/aced/skills/init-aced/SKILL.md
 //       plugins/quill/skills/init-quill/SKILL.md
 //   - the registry-shape contract
 //       plugins/sdd/skills/plugin-contract-governance/SKILL.md
@@ -38,7 +38,7 @@ const registry = JSON.parse(registryRaw) as {
 	}>
 }
 
-const aces = readFileSync(join(repoRoot, 'plugins', 'aces', 'skills', 'init-aces', 'SKILL.md'), 'utf8')
+const aced = readFileSync(join(repoRoot, 'plugins', 'aced', 'skills', 'init-aced', 'SKILL.md'), 'utf8')
 const quill = readFileSync(join(repoRoot, 'plugins', 'quill', 'skills', 'init-quill', 'SKILL.md'), 'utf8')
 const contract = readFileSync(
 	join(repoRoot, 'plugins', 'sdd', 'skills', 'plugin-contract-governance', 'SKILL.md'),
@@ -49,8 +49,8 @@ const contract = readFileSync(
 const has = (doc: string, ...needles: string[]) => needles.every((n) => doc.toLowerCase().includes(n.toLowerCase()))
 const hasAny = (doc: string, ...needles: string[]) => needles.some((n) => doc.toLowerCase().includes(n.toLowerCase()))
 // A property an init skill realizes must hold for BOTH init-* implementations.
-const bothInit = (...needles: string[]) => has(aces, ...needles) && has(quill, ...needles)
-const bothInitAny = (...needles: string[]) => hasAny(aces, ...needles) && hasAny(quill, ...needles)
+const bothInit = (...needles: string[]) => has(aced, ...needles) && has(quill, ...needles)
+const bothInitAny = (...needles: string[]) => hasAny(aced, ...needles) && hasAny(quill, ...needles)
 
 const FIVE_ROLES = ['spec-producer', 'plan-producer', 'spec-judge', 'impl-producer', 'impl-judge']
 const GOV_KEYS = ['director', 'builder', 'architect']
@@ -127,7 +127,7 @@ test('Scenario: Init registers the plugin entry', () => {
 	// The init skill instructs: find this plugin's entry by name; if not found,
 	// append the canonical entry. After running, the registry contains one entry.
 	assert.ok(bothInit('not found', 'append'))
-	assert.ok(registry['sdd-plugins'].some((e) => e.name === 'aces'))
+	assert.ok(registry['sdd-plugins'].some((e) => e.name === 'aced'))
 	assert.ok(registry['sdd-plugins'].some((e) => e.name === 'quill'))
 })
 
@@ -137,7 +137,7 @@ test('Scenario: Init is idempotent', () => {
 	assert.ok(bothInitAny('rewrite', 'replace'))
 	assert.ok(bothInit('do not reorder or reformat other entries'))
 	// Live registry has exactly one entry per plugin name (no duplicates).
-	for (const name of ['aces', 'quill']) {
+	for (const name of ['aced', 'quill']) {
 		const count = registry['sdd-plugins'].filter((e) => e.name === name).length
 		assert.equal(count, 1, `exactly one ${name} entry`)
 	}
@@ -183,7 +183,7 @@ test('Scenario: Init fails loudly on a malformed registry file', () => {
 		hasAny(doc, 'malformed', 'corrupt', 'invalid json') &&
 		hasAny(doc, 'fail with an error', 'fail loudly', 'fail closed') &&
 		hasAny(doc, 'do not overwrite', 'not overwritten', 'leave the file untouched', 'do not write')
-	assert.ok(failLoud(aces), 'init-aces instructs fail-loud-on-malformed (do not overwrite)')
+	assert.ok(failLoud(aced), 'init-aced instructs fail-loud-on-malformed (do not overwrite)')
 	assert.ok(failLoud(quill), 'init-quill instructs fail-loud-on-malformed (do not overwrite)')
 })
 
@@ -192,7 +192,7 @@ test('Scenario: Init rejects an entry with no governances block', () => {
 	// overwritten. Two facets: (a) the live canonical entries DO carry a full
 	// governances block (the invariant realized), and (b) the init-* prose must
 	// instruct the REJECTION of a payload lacking the block.
-	for (const name of ['aces', 'quill']) {
+	for (const name of ['aced', 'quill']) {
 		const e = registry['sdd-plugins'].find((x) => x.name === name)!
 		assert.ok(e.governances && Object.keys(e.governances).length === GOV_KEYS.length)
 	}
@@ -200,6 +200,6 @@ test('Scenario: Init rejects an entry with no governances block', () => {
 		hasAny(doc, 'block is required', 'governances` block is required', 'required.', 'must carry a `governances`') &&
 		hasAny(doc, 'reject a payload', 'no `governances` block', 'missing governances', 'without a governances') &&
 		hasAny(doc, 'fail with an error', 'do not write', 'not overwritten', 'reject')
-	assert.ok(rejectsNoGov(aces), 'init-aces instructs rejection of a no-governances payload')
+	assert.ok(rejectsNoGov(aced), 'init-aced instructs rejection of a no-governances payload')
 	assert.ok(rejectsNoGov(quill), 'init-quill instructs rejection of a no-governances payload')
 })

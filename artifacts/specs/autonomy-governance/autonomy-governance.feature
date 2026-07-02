@@ -256,8 +256,8 @@ Feature: Autonomy Governance — the risk-assessment rubric
     When the rubric assesses the decision
     Then the verdict does not assert which frontmatter state tuples are legal
 
-  Scenario: The contract names ACES as the intended future home
+  Scenario: The contract names ACED as the intended future home
     Given the autonomy-governance contract
     When the contract is inspected for its future home
-    Then the contract names ACES as the intended future home
+    Then the contract names ACED as the intended future home
     And the contract stays plugin-portable
