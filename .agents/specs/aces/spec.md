@@ -49,7 +49,7 @@ fixed source folders — the accepted spec↔source divergence (`../sdd/design/s
 |---|---|---|
 | [`eval-run/`](./eval-run/README.md) | descriptive index | score a config against its golden set — `run`, `compare`, `report` |
 | [`config-authoring/`](./config-authoring/README.md) | descriptive index | author agent config — `define-skill`, `define-agent`, `define-governance` |
-| [`suite-authoring/`](./suite-authoring/README.md) | descriptive index | grow + improve the golden set — `add`, `improve` |
+| [`suite-authoring/`](./suite-authoring/README.md) | descriptive index | grow + improve the golden set — `add-scenario`, `improve` |
 | [`sdd-roles/`](./sdd-roles/README.md) | descriptive index | the SDD production-chain delegates — `scenario-writer`, `spec-validator`, `impl-judge`, `judge` |
 | [`registry/`](./registry/README.md) | behavioral | register ACES as the agent-config SDD plugin — `init-aces` |
 | [`design/`](./design/README.md) | descriptive | the eval model + the `decisions/` ADR log |
