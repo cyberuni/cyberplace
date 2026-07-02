@@ -47,15 +47,27 @@ Full plan + decisions: `~/.claude/plans/aced-used-eval-enchanted-otter.md`.
 - `sdd-roles/judge/judge.feature` — scorer still scores a rubric; only the rubric *source* changes
   (from golden-set to the `.feature` `@rubric` docstring). Likely additive/clarifying, verify.
 
-## NEXT
+## NEXT — resume here
 
-Both gates passed, `pnpm verify` green. Handoff: open PR (commits `c4c3c61` SDD enablement,
-`6162748` spec gate, `4e22b9b` impl, `a19d4bd` eval.md + reference migration). Then file follow-up CRs:
+**Next action:** push `aced-suite-direct` and open the PR — `gh pr create`. **Decide the base first**
+(`main` vs `next`; repo has `main` ahead of a stale `next` — confirm with the user before pushing).
+Nothing else is blocking: both gates passed and `pnpm verify` is green (13 tasks). PR body = the five
+mission commits below; keep the ledger shard in the PR.
+
+Mission commits (all local, unpushed): `c4c3c61` SDD suite-format enablement · `6162748` ACED spec
+gate (contracts re-frozen) · `4e22b9b` ACED agents/skills read the suite · `a19d4bd` eval.md two-level
++ tmux-fork-right reference migration · `0662df6` impl gate + brief.
+
+**Follow-up CRs to file at handoff (not blocking the PR):**
 1. Migrate the remaining 6 golden-set suites (define-skill, define-governance, manage,
-   manage-model-runners, aced-create-spec, sdd-orchestrator) to frozen `.feature` — same shape as
-   tmux-fork-right. Until migrated, `aced run` on those needs the `.feature` authored first.
+   manage-model-runners, aced-create-spec, sdd-orchestrator) to a frozen `.feature` — same shape as
+   `tmux-fork-right`. Until migrated, `aced run` on those needs the `.feature` authored first (their
+   `eval.md` is already two-level).
 2. Live behavioral dogfood: `aced run` the tmux-fork-right `.feature` and `compare` vs a golden-set
-   baseline to confirm verdict parity.
-3. `benchmark` (model-matrix over the runner family) and `telemetry` measurement kinds as their own CRs
-   (eval.md shape already reserves them).
-Retire this plan once merged + doctrine-distilled.
+   baseline to confirm verdict parity (deferred at the impl gate — no stored baseline, spawns judges).
+3. `benchmark` (model-matrix over the runner family; see `manage-model-runners`) and `telemetry`
+   measurement kinds as their own CRs — `eval.md` already reserves them as siblings of `eval:`.
+
+**Do not relearn** the design/decisions — the mission body above and the full plan
+`~/.claude/plans/aced-used-eval-enchanted-otter.md` hold the settled rubric-ownership shift, the
+two-level eval.md shape, and the Clearance scope. Retire this plan once merged + doctrine-distilled.
