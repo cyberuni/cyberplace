@@ -1,4 +1,4 @@
-# add
+# add-scenario
 
 Add a new test case to an existing ACES golden set — from a real failure, a production edge case, or a gap you noticed.
 
@@ -21,5 +21,5 @@ Locates the target golden set, classifies the new case's layer (trigger / behavi
 ## Install
 
 ```bash
-npx skills add cyberuni/cyber-skills --skill aces/add
+npx skills add cyberuni/cyber-skills --skill aces/add-scenario
 ```

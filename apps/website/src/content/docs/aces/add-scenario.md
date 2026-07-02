@@ -1,5 +1,5 @@
 ---
-title: add
+title: add-scenario
 description: Add a new test case to an ACES golden set from a real failure, edge case, or gap.
 ---
 

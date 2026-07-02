@@ -20,4 +20,4 @@ Runs the eval suite for a target agent configuration and reports pass rate, mean
 
 ## Next step
 
-If cases fail, run [`improve`](/aces/improve/) to diagnose the pattern. If pass rate is 100%, run [`add`](/aces/add/) to expand edge-case coverage.
+If cases fail, run [`improve`](/aces/improve/) to diagnose the pattern. If pass rate is 100%, run [`add-scenario`](/aces/add-scenario/) to expand edge-case coverage.

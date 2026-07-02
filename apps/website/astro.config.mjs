@@ -99,7 +99,7 @@ export default defineConfig({
 						{ label: 'define-agent', slug: 'aces/define-agent' },
 						{ label: 'define-governance', slug: 'aces/define-governance' },
 						{ label: 'run', slug: 'aces/run' },
-						{ label: 'add', slug: 'aces/add' },
+						{ label: 'add-scenario', slug: 'aces/add-scenario' },
 						{ label: 'compare', slug: 'aces/compare' },
 						{ label: 'improve', slug: 'aces/improve' },
 						{ label: 'report', slug: 'aces/report' },

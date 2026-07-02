@@ -173,13 +173,13 @@ The forward path writes the spec before the agent configuration exists — full 
 1. **`create-spec`** for a not-yet-implemented agent configuration — generates behavioral spec from a description or requirements document.
 2. **Implement** the agent configuration (write `SKILL.md`, `AGENTS.md` section, etc.) to satisfy the golden set.
 3. **`run`** to verify the implementation passes its spec.
-4. **`add`** to extend coverage as new edge cases surface.
+4. **`add-scenario`** to extend coverage as new edge cases surface.
 
 ### 5.3 Ongoing maintenance
 
 After the initial spec is established:
 
-- **`add`** — add a case when a production failure or new edge case is discovered.
+- **`add-scenario`** — add a case when a production failure or new edge case is discovered.
 - **`run`** — re-run after any agent configuration edit to catch regressions.
 - **`compare`** — verify an agent configuration change didn't regress before committing.
 - **`report`** — project-wide health dashboard across all agent configuration specs.
@@ -466,7 +466,7 @@ Skills that already have an `evals/evals.json` file (the [agentskills.io](https:
 
 ---
 
-### 7.3 `add`
+### 7.3 `add-scenario`
 
 **Trigger:** User describes a new scenario, a production failure, or an edge case to cover.
 

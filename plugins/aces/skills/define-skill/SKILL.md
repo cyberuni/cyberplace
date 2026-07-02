@@ -36,7 +36,7 @@ same config vocabulary:
 | a named reusable **agent** / delegated worker / an in-context **persona** | `define-agent` |
 | a **reference-only rule set / governance** other skills load but never execute as steps | `define-governance` |
 | generalizing **the current session's** work into a skill | `skillify` |
-| **scoring** an existing config, or **adding** an eval case | `run` / `add` |
+| **scoring** an existing config, or **adding** an eval case | `run` / `add-scenario` |
 | **diagnosing** why an existing skill's evals fail | `improve` |
 
 A persona request that surfaces mid-authoring is handed to `define-agent` — do not scaffold a persona
@@ -169,6 +169,6 @@ off to.
 
 **Standalone or impl-producer** entry: point the user at the **ACES eval loop** to spec and score
 the skill — run `sdd:start-mission` (the conductor resolves the ACES roles for the `skill`
-artifact-type) to author its `.feature` and eval suite, or `add` / `run` to grow and score a golden
+artifact-type) to author its `.feature` and eval suite, or `add-scenario` / `run` to grow and score a golden
 set. Do **not** embed a legacy trigger-query eval file as the test step — scoring is the ACES
 loop's job.

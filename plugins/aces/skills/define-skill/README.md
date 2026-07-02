@@ -13,7 +13,7 @@ Good triggers include:
 - Filling out an incomplete or weakly-triggering existing SKILL.md
 - Scaffolding the SKILL.md + README + runtime symlinks in one pass
 
-Defer to a sibling when the request is really about an agent or persona (`define-agent`), a reference-only rule set (`define-governance`), extracting the current session (`skillify`), or scoring / diagnosing an existing config (`run` / `add` / `improve`).
+Defer to a sibling when the request is really about an agent or persona (`define-agent`), a reference-only rule set (`define-governance`), extracting the current session (`skillify`), or scoring / diagnosing an existing config (`run` / `add-scenario` / `improve`).
 
 ## What it does
 
@@ -24,7 +24,7 @@ The skill walks you through the shape before writing anything:
 3. **Pattern** — process, tool-based, or standard (personas go to `define-agent`)
 4. **Placement** — user-global, project-private, or project-public, plus which runtime symlinks to create
 
-It then drafts the SKILL.md (kebab-case name, a 150–400 char trigger-bearing description, a step body under the size bar), adds a README for a public skill, runs the structural audit and fixes CRITICAL/HIGH findings, and points you at the ACES eval loop (`start-mission` / `add` / `run`) to spec and score it.
+It then drafts the SKILL.md (kebab-case name, a 150–400 char trigger-bearing description, a step body under the size bar), adds a README for a public skill, runs the structural audit and fixes CRITICAL/HIGH findings, and points you at the ACES eval loop (`start-mission` / `add-scenario` / `run`) to spec and score it.
 
 ## Enhanced from create-skill
 
