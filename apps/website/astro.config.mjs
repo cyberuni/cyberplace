@@ -48,8 +48,12 @@ export default defineConfig({
 						{ label: 'init', slug: 'skills/init' },
 						{ label: 'init-commit-discipline', slug: 'skills/init-commit-discipline' },
 						{ label: 'commit', slug: 'skills/commit' },
-						{ label: 'create-skill', slug: 'skills/create-skill' },
 						{ label: 'audit-skill', slug: 'skills/audit-skill' },
+						{ label: 'skillify', slug: 'skills/skillify' },
+						{ label: 'patch-skill', slug: 'skills/patch-skill' },
+						{ label: 'find-awesome-skill', slug: 'skills/find-awesome-skill' },
+						{ label: 'configure-awesome-sources', slug: 'skills/configure-awesome-sources' },
+						{ label: 'update-awesome-list', slug: 'skills/update-awesome-list' },
 					],
 				},
 				{

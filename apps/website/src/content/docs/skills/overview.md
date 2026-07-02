@@ -12,8 +12,14 @@ Skills are `SKILL.md` files that AI agents load on demand. Each encodes a workfl
 | [**init**](/skills/init/) | Initialize or improve `AGENTS.md` with codebase documentation, then symlink `CLAUDE.md` to it. |
 | [**init-commit-discipline**](/skills/init-commit-discipline/) | Inject commit discipline into `AGENTS.md` and register SessionStart hooks where supported. |
 | [**commit**](/skills/commit/) | Minimal Conventional Commits helper — staging, messages, one concern per commit. |
-| [**create-skill**](/skills/create-skill/) | Create a new agent skill — scaffold, audit, and link into detected agents. |
 | [**audit-skill**](/skills/audit-skill/) | Full audit of a `SKILL.md` for structure, quality, and security. |
+| [**skillify**](/skills/skillify/) | Extract a repeatable workflow from the current session into a reusable `SKILL.md`. |
+| [**patch-skill**](/skills/patch-skill/) | Contribute a local improvement to an installed skill back to its source repo via PR. |
+| [**find-awesome-skill**](/skills/find-awesome-skill/) | Search configured awesome-list sources for curated skill recommendations. |
+| [**configure-awesome-sources**](/skills/configure-awesome-sources/) | Add, remove, or inspect the awesome-list sources used for discovery. |
+| [**update-awesome-list**](/skills/update-awesome-list/) | Add or update a curated awesome-list entry, including README sync. |
+
+For scaffolding a **new** skill from scratch, see [`aces:define-skill`](https://github.com/cyberuni/cyber-skills/blob/main/plugins/aces/skills/define-skill/SKILL.md) — the ACES plugin's skill-authoring producer.
 
 ## Skill placement
 

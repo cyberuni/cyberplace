@@ -32,5 +32,4 @@ npx skills add cyberuni/cyber-skills --skill init -g
 
 ## Related
 
-- [init-commit-discipline](/skills/init-commit-discipline/) — follow up to inject commit rules
-- [init-commit-discipline](/skills/init-commit-discipline/) — follow up to inject commit discipline
+- [init-commit-discipline](/skills/init-commit-discipline/) — follow up to inject commit discipline and register hooks
