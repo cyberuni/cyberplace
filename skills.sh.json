@@ -10,9 +10,9 @@
 		},
 		{
 			"title": "Skill Authoring",
-			"description": "Create, generalize, patch, and audit agent skills.",
+			"description": "Generalize, patch, and audit agent skills.",
 			"installScope": "global",
-			"skills": ["create-skill", "skillify", "patch-skill", "audit-skill"]
+			"skills": ["skillify", "patch-skill", "audit-skill"]
 		},
 		{
 			"title": "Agent Initialization",
@@ -28,7 +28,6 @@
 	"scopes": {
 		"find-awesome-skill": "global",
 		"audit-skill": "global",
-		"create-skill": "global",
 		"skillify": "global",
 		"patch-skill": "global",
 		"init": "global",
