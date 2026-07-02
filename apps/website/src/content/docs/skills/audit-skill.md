@@ -81,6 +81,6 @@ npx skills add cyberuni/cyber-skills --skill audit-skill -g
 
 ## Related
 
-- [create-skill](/skills/create-skill/) — use audit-skill after scaffolding
+- [skillify](/skills/skillify/) — use audit-skill after generalizing a session into a skill
 - [Skill Design governance](/governances/skill-design/) — the quality rules this skill enforces
 - [Agent Tool Output governance](/governances/agent-tool-output/) — the output rules for Q10–Q12
