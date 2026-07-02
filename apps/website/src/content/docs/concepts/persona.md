@@ -42,7 +42,7 @@ Personas travel in the `agents/` directory of a plugin. Installing a plugin that
 
 A plugin can both **provide** and **consume** personas:
 - **Provide** — `sdd` plugin ships `sdd-judge`, an agent that evaluates spec quality
-- **Consume** — `aces` plugin spawns `sdd-judge` as a subagent when evaluating SDD artifacts
+- **Consume** — `aced` plugin spawns `sdd-judge` as a subagent when evaluating SDD artifacts
 
 This is the primary cross-plugin integration pattern: one plugin's persona becomes a tool in another plugin's workflow.
 

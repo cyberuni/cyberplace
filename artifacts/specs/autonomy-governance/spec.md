@@ -124,13 +124,13 @@ The rubric is a **design/evaluation artifact** — like `skill-design` is for sk
 
 | Consumer | When | What it does with the rubric |
 |---|---|---|
-| **The eval tool / ACES** | **design time** | sets and verifies each agent config's escalation **posture** against the rubric as the bar |
+| **The eval tool / ACED** | **design time** | sets and verifies each agent config's escalation **posture** against the rubric as the bar |
 
 At **runtime** the self-clear-vs-escalate verdict is **made by** the most capable conductor agent — but from that agent's **own baked-in determination logic**, authored to conform to this rubric. The conductor does not *consume the rubric document* at runtime; no runtime actor does. An agent's baked-in logic carries only the rubric dimensions its own decisions actually touch (e.g. the operator's gates touch contract impact but never the hard floor).
 
 ### Who makes the runtime verdict — the capable conductor
 
-The runtime self-clear-vs-escalate verdict is a **gradient judgment**, not a lookup. A judgment verdict belongs to **the most capable conductor agent in the system** — in SDD, the opus `sdd-operator` — not to every actor. The contract is phrased portably as **"the most capable conductor agent in the system (in SDD, the opus operator)"** so it survives migration to ACES or any other agent-config system: it binds to the *role* (the capable conductor), never to the literal string `sdd-operator`.
+The runtime self-clear-vs-escalate verdict is a **gradient judgment**, not a lookup. A judgment verdict belongs to **the most capable conductor agent in the system** — in SDD, the opus `sdd-operator` — not to every actor. The contract is phrased portably as **"the most capable conductor agent in the system (in SDD, the opus operator)"** so it survives migration to ACED or any other agent-config system: it binds to the *role* (the capable conductor), never to the literal string `sdd-operator`.
 
 > **Load-bearing decision.** Only the capable conductor makes the verdict. A non-conductor runtime actor neither loads the rubric per decision nor needs a capable model for this purpose — its posture is already settled in its config at design time.
 
@@ -169,7 +169,7 @@ This governance is the **risk-assessment** side. It **cooperates with** — and 
 
 Ships as an **SDD fallback governance** at `plugins/sdd/skills/autonomy-governance/`, sibling to `architect-governance`, `oracle-governance`, and `gate-validation-governance`.
 
-The contract is **plugin-portable**. It is **designed to migrate or be enhanced into ACES** — the agent-configuration domain — when ACES is ready to own the agent-config autonomy concern. **ACES is the intended future home.** Nothing in the contract binds it to the SDD plugin; the rubric is a general agent-config-autonomy bar that SDD hosts until ACES adopts it.
+The contract is **plugin-portable**. It is **designed to migrate or be enhanced into ACED** — the agent-configuration domain — when ACED is ready to own the agent-config autonomy concern. **ACED is the intended future home.** Nothing in the contract binds it to the SDD plugin; the rubric is a general agent-config-autonomy bar that SDD hosts until ACED adopts it.
 
 ## Use Cases
 
@@ -181,13 +181,13 @@ The contract is **plugin-portable**. It is **designed to migrate or be enhanced 
 | A contract change is assessed for impact | the change classified semver-style + its `blocked-by` dependents | additive → low → self-clear; breaking → high → escalate, weighted by dependents |
 | A decision in a hard-floor class is assessed (bucket D) | the decision + (any) computed confidence | `escalate · hard floor`, regardless of score |
 | An intent decision is assessed (bucket C) | the decision + (any) computed score | `escalate` — intent stays human regardless of score |
-| The rubric is referenced for portability / future home | the governance contract | the contract names ACES as the intended future home and stays plugin-portable |
+| The rubric is referenced for portability / future home | the governance contract | the contract names ACED as the intended future home and stays plugin-portable |
 
 ## Related
 
 - [`sdd-gate-autonomy`](../sdd-gate-autonomy/spec.md) — the leash this rubric generalizes (four binary dimensions, `auto-none`/`auto-spec`/`auto-all`, ceiling, per-gate re-derivation).
 - [`gate-validation-governance`](../../../plugins/sdd/skills/gate-validation-governance/SKILL.md) — the gate-legality contract this rubric cooperates with (legal state tuples, approval attribution).
-- **ACES (agent-configuration domain)** — the intended future home for the agent-config autonomy concern; this contract is portable for that migration.
+- **ACED (agent-configuration domain)** — the intended future home for the agent-config autonomy concern; this contract is portable for that migration.
 
 ## Artifacts
 

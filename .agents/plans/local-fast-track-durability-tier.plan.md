@@ -2,7 +2,7 @@
 name: Fast-track tier for non-durable SDD work
 overview: >
   Add a fast-track lane so non-durable work (internal tooling, POCs, private
-  skills/agent definitions, ad hoc scripts) can skip the full spec-gate/ACES
+  skills/agent definitions, ad hoc scripts) can skip the full spec-gate/ACED
   eval loop, while durable/public-surface work still goes through full SDD.
   Resolve who decides fast-track-vs-full and when — upstream of
   spec-producer, generalized beyond skills/agents to any artifact type.
@@ -60,8 +60,8 @@ self-clear.
 
 ## Context
 
-Trigger: retiring `plugins/skill-authoring/skills/create-skill` in favor of `aces:define-skill`
-surfaced that `define-skill`'s mandatory ACES eval handoff is too heavy a default for quick,
+Trigger: retiring `plugins/skill-authoring/skills/create-skill` in favor of `aced:define-skill`
+surfaced that `define-skill`'s mandatory ACED eval handoff is too heavy a default for quick,
 non-durable scaffolds. User's added concern: the same problem generalizes past skills/agents to
 POC work and repo-internal tools/scripts, and deferring the decision to spec-producer is
 too late — the work is already inside mission machinery by then. Resolved by extending the

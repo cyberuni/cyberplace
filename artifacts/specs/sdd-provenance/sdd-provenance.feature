@@ -78,10 +78,10 @@ Feature: Production provenance
   # ── resume and availability ───────────────────────────────────────────
 
   Scenario: resume reuses the recorded producer when its plugin is installed
-    Given produced-by.spec-producer is "aces:aces-scenario-writer" in spec.md frontmatter
-    And the aces plugin is installed
+    Given produced-by.spec-producer is "aced:aced-scenario-writer" in spec.md frontmatter
+    And the aced plugin is installed
     When the operator resumes work on the spec
-    Then it reuses aces:aces-scenario-writer without re-asking
+    Then it reuses aced:aced-scenario-writer without re-asking
 
   Scenario: an unavailable recorded producer does not block
     Given produced-by.spec-producer names a plugin that is no longer installed

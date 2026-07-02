@@ -33,6 +33,6 @@ The skill body is organized around three rules:
 
 ## Out of scope
 
-- Domain-specific digest enrichment (ACES/Quill flavor) — no digest role exists in the plugin contract.
+- Domain-specific digest enrichment (ACED/Quill flavor) — no digest role exists in the plugin contract.
 - Any change to gate legality, status transitions, or `aligned` semantics.
 - Invocation from the `sdd` gateway — the gateway routes to the gate, it does not summarize.

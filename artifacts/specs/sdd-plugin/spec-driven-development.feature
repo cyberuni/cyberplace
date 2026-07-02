@@ -70,7 +70,7 @@ Feature: Spec-Driven Development Plugin
     And it ignores plan.md for plugin resolution
 
   Scenario: Ambiguous domain coverage is resolved by the skill
-    Given both aces and quill claim the "guide" domain
+    Given both aced and quill claim the "guide" domain
     And spec.md has no domain-plugin frontmatter choice
     When create-spec invokes the operator
     Then the operator returns STATUS needs-input with a batched domain choice question
@@ -158,7 +158,7 @@ Feature: Spec-Driven Development Plugin
     And auth.feature becomes frozen
 
   Scenario: A plugin-written feature must pass the universal format bar
-    Given aces-scenario-writer produced specs/skill/skill.feature
+    Given aced-scenario-writer produced specs/skill/skill.feature
     When validate-spec runs the spec gate
     Then sdd-spec-judge checks valid boolean Gherkin and scenario ordering
     And the check applies regardless of which spec-producer wrote the file

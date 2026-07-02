@@ -5,7 +5,7 @@ description: Use this skill when generalizing a workflow from the current sessio
 
 # Skillify
 
-Extracts a repeatable workflow from what was done in the current session and creates a reusable agent skill from it. Different from `aces:define-skill`, which scaffolds from a blank template — this skill analyzes what actually happened and generalizes it.
+Extracts a repeatable workflow from what was done in the current session and creates a reusable agent skill from it. Different from `aced:define-skill`, which scaffolds from a blank template — this skill analyzes what actually happened and generalizes it.
 
 ## When to use
 
@@ -117,7 +117,7 @@ Key checks to watch for:
 
 ### 7. Place and link
 
-Use `aces:define-skill` conventions:
+Use `aced:define-skill` conventions:
 
 ```bash
 # If npx skills is available:

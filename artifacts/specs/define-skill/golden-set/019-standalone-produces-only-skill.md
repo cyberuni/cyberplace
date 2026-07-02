@@ -12,7 +12,7 @@ define-skill is invoked directly by a user with **no** frozen `.feature` in play
 
 - Agent produces only the SKILL.md (plus its README/scripts as the scope dictates)
 - Agent does not author an eval suite (`eval.md` + `golden-set/`) when there is no frozen feature to key evals to
-- Agent hands off to the ACES eval loop for scoring rather than producing evals itself
+- Agent hands off to the ACED eval loop for scoring rather than producing evals itself
 
 ## Must NOT do
 
@@ -28,7 +28,7 @@ define-skill is invoked directly by a user with **no** frozen `.feature` in play
 ## Rubric
 
 Score 1–5:
-5 — Produces the SKILL.md and no eval suite; defers scoring to the ACES loop
+5 — Produces the SKILL.md and no eval suite; defers scoring to the ACED loop
 4 — Produces the SKILL.md and no eval suite; hand-off to the loop is brief
 3 — Produces the SKILL.md but ambiguously suggests it might also draft evals
 2 — Produces the SKILL.md and a stub eval file despite no frozen feature

@@ -48,7 +48,7 @@ When unsure, prefer a governance skill; embedding is the exception reserved for 
 
 ### Gateways carry no governance
 
-Embedding targets **worker** agents and skills — the ones that perform governed work (`create-spec`, `validate-spec`, the `sdd-operator` delegates, the ACES/Quill producers). **Gateway** skills (e.g. `sdd`) only classify and route; they hold no governance and must not declare `requires_governances`. Embedding a contract into a deliberately lean gateway is pure token cost with no benefit. The build does not infer governance for routed targets — a gateway never needs to know which governance a downstream skill requires.
+Embedding targets **worker** agents and skills — the ones that perform governed work (`create-spec`, `validate-spec`, the `sdd-operator` delegates, the ACED/Quill producers). **Gateway** skills (e.g. `sdd`) only classify and route; they hold no governance and must not declare `requires_governances`. Embedding a contract into a deliberately lean gateway is pure token cost with no benefit. The build does not infer governance for routed targets — a gateway never needs to know which governance a downstream skill requires.
 
 ### Reference syntax: `<plugin>/<name>`
 
@@ -121,8 +121,8 @@ The existing inspection CLI is unchanged: `universal-plugin governance show <plu
 
 - `artifacts/adr/0013-governance-skills.md` — the two-way split this feature's embedding half implements
 - `artifacts/specs/universal-plugin/spec.md` — owning project
-- `artifacts/specs/aces-spec-designer-composition/spec.md` — a consumer; uses the colon syntax and stale names, to be re-synced to `<plugin>/<name>`
-- `artifacts/specs/aces-skill-spec-schema/spec.md` — a governance consumed via this mechanism
+- `artifacts/specs/aced-spec-designer-composition/spec.md` — a consumer; uses the colon syntax and stale names, to be re-synced to `<plugin>/<name>`
+- `artifacts/specs/aced-skill-spec-schema/spec.md` — a governance consumed via this mechanism
 
 ---
 

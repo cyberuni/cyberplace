@@ -32,7 +32,7 @@ subtasks:
 
 ## What
 
-SDD owns the spec-driven workflow and runs the loop. The **Operator** is its lead delegate: it runs one autonomous **segment**, resolves which units to commit from the registry, dispatches the production chain, and synthesizes the result (sets `aligned`). Domain plugins (ACES for agent configurations, Quill for documentation) augment the loop by supplying **delegates** for the roles SDD does not hard-code.
+SDD owns the spec-driven workflow and runs the loop. The **Operator** is its lead delegate: it runs one autonomous **segment**, resolves which units to commit from the registry, dispatches the production chain, and synthesizes the result (sets `aligned`). Domain plugins (ACED for agent configurations, Quill for documentation) augment the loop by supplying **delegates** for the roles SDD does not hard-code.
 
 The architecture has five moving parts:
 

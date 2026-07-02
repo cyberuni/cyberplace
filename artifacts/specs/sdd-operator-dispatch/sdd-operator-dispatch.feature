@@ -101,16 +101,16 @@ Feature: SDD Operator — Production-Chain Dispatch
   # ── model invariants: the whole chain, producer ≠ judge by context ─────────
 
   Scenario: The operator resolves every production-chain role
-    Given the "skill" domain is fully handled by the ACES plugin
+    Given the "skill" domain is fully handled by the ACED plugin
     When sdd-operator runs the full loop
-    Then it resolves spec-producer, plan-producer, impl-producer, spec-judge, and impl-judge to ACES agents
+    Then it resolves spec-producer, plan-producer, impl-producer, spec-judge, and impl-judge to ACED agents
 
-  Scenario: ACES evals are authored by the impl-producer and run by the cold impl-judge
-    Given the "skill" domain uses ACES
+  Scenario: ACED evals are authored by the impl-producer and run by the cold impl-judge
+    Given the "skill" domain uses ACED
     When the operator resolves who authors the evals
     Then the evals are authored by the impl-producer that writes the agent config
-    And aces-implementer as the cold-spawned impl-judge runs the evals rather than authoring them
-    And the evals aces-implementer runs are the same artifacts the impl-producer wrote, not new evals authored by the runner
+    And aced-implementer as the cold-spawned impl-judge runs the evals rather than authoring them
+    And the evals aced-implementer runs are the same artifacts the impl-producer wrote, not new evals authored by the runner
 
   Scenario: A plugin author reads the interface from the operator and default delegates
     Given a plugin author wants to implement a new impl-judge delegate

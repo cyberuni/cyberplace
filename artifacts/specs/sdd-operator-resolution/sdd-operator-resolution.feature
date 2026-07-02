@@ -50,14 +50,14 @@ Feature: SDD Operator — Registry Resolution
   # ── governance resolution & domain disambiguation ─────────────────────────
 
   Scenario: An actor governance is resolved from the registry with an SDD default
-    Given the registry binds the aces plugin's builder governance to "aces-eval-bar"
+    Given the registry binds the aced plugin's builder governance to "aced-eval-bar"
     And it leaves the architect governance null
-    When the operator resolves governances for an aces domain
-    Then the builder governance resolves to aces-eval-bar
+    When the operator resolves governances for an aced domain
+    Then the builder governance resolves to aced-eval-bar
     And the architect governance falls back to the SDD default
 
   Scenario: A domain claimed by two plugins is disambiguated without looping
-    Given both the aces and quill plugins cover the "guide" domain in the registry
+    Given both the aced and quill plugins cover the "guide" domain in the registry
     When sdd-operator resolves the delegate for the "guide" domain
     Then it returns STATUS needs-input asking which plugin owns the domain
     And the relay writes the choice to the produced-by frontmatter map in spec.md

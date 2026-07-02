@@ -67,7 +67,7 @@ impl-producer built inline (now always spawned). **PARTIAL**: "deliver loop bloc
 impl-producer returns no artifacts" has no scenario titled around the producer-returns-nothing
 case directly — only the downstream "frozen scenario with no verification blocks the gate" is
 covered; the threshold-collapse scenarios (graded subject at/below threshold) are generic in
-`impl-judge.feature` but the explicit `≥ threshold` framing now lives in ACES-specific governance,
+`impl-judge.feature` but the explicit `≥ threshold` framing now lives in ACED-specific governance,
 not the SDD-default suite.
 
 ### Freeze (6) — 3 COVERED, 1 PARTIAL, 2 OBSOLETE (reversed)

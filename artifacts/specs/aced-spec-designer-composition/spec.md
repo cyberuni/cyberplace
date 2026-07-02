@@ -1,0 +1,111 @@
+---
+status: deprecated
+type: feature
+blocked-by:
+  - governance-composition
+  - aced-skill-spec-schema
+---
+
+# aced-spec-designer Governance-Aware Flow
+
+> **Deprecated (Oracle kill decision).** This spec is obsolete. Its core change —
+> renaming `aced-spec-designer` and loading SDD governance at construction — already
+> shipped (the agent is now `aced-scenario-writer`), and the design direction has
+> flipped: under the SDD operator/plugin-delegate model, ACED **provides the
+> spec-producer** (`aced-scenario-writer`) as a delegate the SDD operator invokes,
+> rather than a designer that loads SDD process governances to drive its own flow.
+> The governances referenced here (`sdd:sdd-principles`, `sdd:spec-template`) no longer
+> exist; current SDD governance lives in `sdd:lifecycle-governance`, `sdd:spec-governance`,
+> `sdd:ownership-governance`, and `sdd:gate-validation-governance`. Retained for history.
+
+---
+
+## What
+
+`aced-spec-designer` — the internal subagent that generates eval suites and skill specs — is updated to declare a governance manifest. When invoked, it automatically loads `sdd:sdd-principles`, `sdd:spec-template`, and `aced:skill-spec-schema` before beginning work.
+
+For skill spec creation specifically, the designer interleaves SDD process questions (What, Why, Design decisions) with ACED-specific questions (trigger conditions, behavioral contracts, failure modes) in a single pass, rather than doing SDD first and ACED second.
+
+---
+
+## Why
+
+Without governance composition, `aced-spec-designer` either:
+- Bakes SDD process knowledge inline (maintenance burden; diverges when SDD evolves), or
+- Relies on the invoking skill to tell it to run `governance show` (fragile; breaks if the instruction is missing)
+
+The designer must know both the SDD process and the ACED skill schema to produce a spec that satisfies both. With declarative governance loading, this knowledge is guaranteed at construction time with no runtime coordination required.
+
+The interleaved question order matters: trigger conditions must be gathered alongside the `What` section because they ARE part of what the skill does — separating them causes the designer to miss edge cases in the behavioral contract.
+
+---
+
+## Design decisions
+
+### Interleaved questions, not sequential phases
+
+The designer could run in two phases: complete the SDD spec sections, then add ACED sections. This was rejected because:
+- The `## Triggers` section informs the `## What` section — you cannot fully describe what a skill does without knowing which situations activate it.
+- The `## Failure modes` section is entangled with `## Design decisions` — failure handling is often a design decision.
+- Sequential phases produce specs where the ACED sections feel bolted on rather than integrated.
+
+Interleaved order: `Triggers → What → Why → Behavioral contract → Design decisions → Failure modes → Eval coverage`.
+
+### Designer asks for trigger examples, not the user
+
+`aced-spec-designer` elicits trigger examples through structured questions rather than asking the user to provide them freeform. This produces more representative examples (the designer prompts for near-misses explicitly) and ensures minimum coverage thresholds are met before the spec is considered complete.
+
+### `aced-spec-validator` unchanged
+
+The validator already checks completeness and diversity of the generated eval suite. It does not need changes — the governance composition ensures the designer produces the right structure, and the validator continues to enforce it.
+
+---
+
+## Agent definition (after this feature)
+
+```yaml
+name: aced-spec-designer
+description: "Internal subagent: generates trigger queries and golden-set cases for one agent configuration artifact."
+requires_governances:
+  - sdd:sdd-principles
+  - sdd:spec-template
+  - aced:skill-spec-schema
+```
+
+The skill that invokes it (`aced:create-spec`) does not change its invocation signature. Governance loading is transparent to callers.
+
+---
+
+## Flow: user creates a skill spec
+
+```
+User: "create an eval suite for the commit-work skill"
+  → aced:create-spec skill triggered
+  → resolves artifact: .agents/skills/commit-work/SKILL.md
+  → invokes aced-spec-designer with artifact content
+    → runtime loads sdd:sdd-principles into context
+    → runtime loads sdd:spec-template into context
+    → runtime loads aced:skill-spec-schema into context
+    → designer runs interleaved question flow
+    → produces spec.md + golden-set cases
+  → aced-spec-validator checks completeness (existing loop)
+  → writes artifacts/specs/<suite-name>/
+```
+
+---
+
+## Command surface / API
+
+No new user-facing commands. The change is internal to `aced-spec-designer`'s definition and invocation.
+
+Observable change: the generated `spec.md` for a skill artifact will always contain `Triggers`, `Behavioral contract`, `Failure modes`, and `Eval coverage` sections — previously these were produced inconsistently.
+
+**Gherkin scenarios:** _(pending spec approval)_
+
+---
+
+## Related
+
+- `artifacts/specs/governance-composition/spec.md` — the loading mechanism this depends on
+- `artifacts/specs/aced-skill-spec-schema/spec.md` — the schema loaded by this agent
+- `artifacts/specs/aced-plugin/spec.md` — overall ACED plugin spec

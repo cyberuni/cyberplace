@@ -47,7 +47,7 @@ Plugins are the distribution unit for agent configuration. A plugin can provide 
 | `mcpServers` | Tool contracts (typed tool schemas) |
 | *(no field — CLI)* | Governances — loaded out-of-band via `governance show` |
 
-**Cross-plugin patterns:** One plugin's persona can be consumed as a subagent by another plugin's skills. Example: the `sdd` plugin provides `sdd-judge`; the `aces` plugin spawns `sdd-judge` to evaluate spec quality. Neither plugin has a hard `dependency` on the other — the integration is a workflow convention, not a schema constraint.
+**Cross-plugin patterns:** One plugin's persona can be consumed as a subagent by another plugin's skills. Example: the `sdd` plugin provides `sdd-judge`; the `aced` plugin spawns `sdd-judge` to evaluate spec quality. Neither plugin has a hard `dependency` on the other — the integration is a workflow convention, not a schema constraint.
 
 **Open Plugin Spec** adds a `rules` field that directly maps to governances — the closest analog to `governance show` at the schema level. Claude Code does not have a native governance field; governances travel via CLI convention instead.
 
@@ -64,7 +64,7 @@ Unlike code, agent configuration has no type-checker, no linter, and no test run
 
 ## Evaluation
 
-[ACES (Agent Config Evaluation System)](/aces/overview/) provides layered evaluation for agent configuration:
+[ACED (Agent Config Evaluation System)](/aced/overview/) provides layered evaluation for agent configuration:
 
 1. **Structural** — does the artifact have the required fields and format?
 2. **Trigger** — does the agent correctly identify when to invoke this artifact?
@@ -73,7 +73,7 @@ Unlike code, agent configuration has no type-checker, no linter, and no test run
 
 ## Related
 
-- [ACES Overview](/aces/overview/) — eval system for agent configuration
+- [ACED Overview](/aced/overview/) — eval system for agent configuration
 - [Governances](/concepts/governances/) — normative domain standards
 - [Disciplines](/concepts/disciplines/) — always-on behavioral habits
 - [Permissions](/concepts/permissions/) — tool capability boundaries

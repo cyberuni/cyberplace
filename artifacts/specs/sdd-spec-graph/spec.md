@@ -76,7 +76,7 @@ Each `.feature` scenario is mapped to the use case(s) it verifies; every scenari
 
 ### Lives in SDD, not universal-plugin (for now)
 
-The spec DAG is an SDD concept and SDD is the only consumer today. Placing the renderer in SDD keeps it where it is used; ACES reuses it through its existing dependency on SDD, with no dependency cycle. A generic DAG kernel is extracted to `universal-plugin` (the lowest, dependency-free layer) only when a genuinely non-SDD caller appears — extraction is cheap, premature generality is not.
+The spec DAG is an SDD concept and SDD is the only consumer today. Placing the renderer in SDD keeps it where it is used; ACED reuses it through its existing dependency on SDD, with no dependency cycle. A generic DAG kernel is extracted to `universal-plugin` (the lowest, dependency-free layer) only when a genuinely non-SDD caller appears — extraction is cheap, premature generality is not.
 
 ### A skill with a script, not a CLI command
 

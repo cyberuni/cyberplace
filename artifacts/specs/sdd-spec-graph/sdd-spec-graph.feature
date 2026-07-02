@@ -14,10 +14,10 @@ Feature: Render the spec DAG to graph.md
     Then graph.md declares "motive-model" as a standalone node
 
   Scenario: multiple blockers produce one edge each
-    Given a spec "aces-spec-designer-composition" with blocked-by "governance-composition" and "aces-skill-spec-schema"
+    Given a spec "aced-spec-designer-composition" with blocked-by "governance-composition" and "aced-skill-spec-schema"
     When the renderer runs
-    Then graph.md contains the edge "governance-composition --> aces-spec-designer-composition"
-    And graph.md contains the edge "aces-skill-spec-schema --> aces-spec-designer-composition"
+    Then graph.md contains the edge "governance-composition --> aced-spec-designer-composition"
+    And graph.md contains the edge "aced-skill-spec-schema --> aced-spec-designer-composition"
 
   Scenario: the node table lists slug, blocked-by, and status
     Given a spec "universal-plugin" with status "draft" and blocked-by "sdd-plugin"

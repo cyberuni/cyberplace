@@ -257,9 +257,9 @@ Two asymmetries matter:
 - At the spec gate **change edits the contract**; at the impl gate **change edits the code** (the frozen contract is off-limits — that is the whole point of freezing).
 - The impl gate is the **only** place a frozen `.feature` can reopen, via the Oracle-revert. It is rare and deliberate: a scenario that passed every check but turns out fatal sends the whole spec back to Draft (per *Freeze is a strength* in sdd-operator).
 
-### Skill-domain implementation is ACES-delegated
+### Skill-domain implementation is ACED-delegated
 
-Where implementing this spec modifies SDD **skills** (e.g., `validate-spec`) or writes any skill/agent, that work is **agent-configuration domain** and belongs to the ACES production chain (spec-producer → plan-producer → impl-producer → impl-judge), per the operator model. This is **documented delegation**: until the operator-model ACES agents exist, the work is executed inline, but the owning roles are ACES's.
+Where implementing this spec modifies SDD **skills** (e.g., `validate-spec`) or writes any skill/agent, that work is **agent-configuration domain** and belongs to the ACED production chain (spec-producer → plan-producer → impl-producer → impl-judge), per the operator model. This is **documented delegation**: until the operator-model ACED agents exist, the work is executed inline, but the owning roles are ACED's.
 
 ---
 

@@ -64,10 +64,10 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
   # ── exploratory loop: shape the spec, and probe it by attempting the build ─
 
   Scenario: Orchestrator dispatches to the plugin that covers the domain
-    Given the registry maps the "skill" domain to the aces plugin
-    And aces declares "aces-scenario-writer" as its spec-producer
+    Given the registry maps the "skill" domain to the aced plugin
+    And aced declares "aced-scenario-writer" as its spec-producer
     When sdd-orchestrator runs the design phase for the "skill" domain
-    Then it invokes the aces-scenario-writer delegate
+    Then it invokes the aced-scenario-writer delegate
     And it does not invoke the sdd-scenario-writer default
 
   Scenario: Orchestrator falls back to the default spec-producer when no plugin covers the domain
@@ -77,7 +77,7 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     And the default spec-producer produces generic boolean Gherkin with no domain criteria
 
   Scenario: A domain claimed by two plugins is disambiguated without looping
-    Given both the aces and quill plugins cover the "guide" domain in the registry
+    Given both the aced and quill plugins cover the "guide" domain in the registry
     When sdd-orchestrator resolves the delegate for the "guide" domain
     Then it returns STATUS needs-input asking which plugin owns the domain
     And the skill writes the choice to the domain-plugin frontmatter map in spec.md
@@ -151,10 +151,10 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     And it shapes its output to meet those bars before the impl-judge runs
 
   Scenario: An actor governance is resolved from the registry with an SDD default
-    Given the registry binds the aces plugin's builder governance to "aces-eval-bar"
+    Given the registry binds the aced plugin's builder governance to "aced-eval-bar"
     And it leaves the architect governance null
-    When the orchestrator resolves governances for an aces domain
-    Then the builder governance resolves to aces-eval-bar
+    When the orchestrator resolves governances for an aced domain
+    Then the builder governance resolves to aced-eval-bar
     And the architect governance falls back to the SDD default
 
   Scenario: Scenarios are ordered to trace the workflow
@@ -245,7 +245,7 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
   # ── spec gate: Draft → Approved ──────────────────────────────────────────
 
   Scenario: A plugin-written .feature must pass validate-spec
-    Given aces-scenario-writer produced specs/skill/skill.feature
+    Given aced-scenario-writer produced specs/skill/skill.feature
     When validate-spec runs against the spec
     Then the .feature is checked for valid boolean Gherkin regardless of which delegate wrote it
 
@@ -269,9 +269,9 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     And the spec-producer may write only the spec.md body and the .feature
 
   Scenario: The spec-gate judge is a domain delegate, not SDD
-    Given the "skill" domain declares aces-spec-validator
+    Given the "skill" domain declares aced-spec-validator
     When the spec gate evaluates skill.feature against domain criteria
-    Then SDD delegates the domain judgment to aces-spec-validator
+    Then SDD delegates the domain judgment to aced-spec-validator
     And SDD's generic validate-spec does not judge domain contract quality
 
   Scenario: A static-bar domain needs no spec-gate judge agent
@@ -375,7 +375,7 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
     And no rubric, threshold, or score appears in the .feature
 
   Scenario: A graded subject still yields a boolean per scenario
-    Given aces-implementer runs a scenario's rubric and threshold over N runs
+    Given aced-implementer runs a scenario's rubric and threshold over N runs
     When the aggregate score meets or exceeds the threshold
     Then the impl-judge reports that scenario as passing
     And reports failing when the aggregate score is below the threshold
@@ -401,15 +401,15 @@ Feature: SDD Orchestrator & the Plugin-Delegate Model
   # ── model invariants: the production chain and producer ≠ judge ───────────
 
   Scenario: The orchestrator resolves every production-chain role
-    Given the "skill" domain is fully handled by the ACES plugin
+    Given the "skill" domain is fully handled by the ACED plugin
     When sdd-orchestrator runs the full loop
-    Then it resolves spec-producer, plan-producer, impl-producer, spec-judge, and impl-judge to ACES agents
+    Then it resolves spec-producer, plan-producer, impl-producer, spec-judge, and impl-judge to ACED agents
 
-  Scenario: ACES evals are authored by the impl-producer and run by the impl-judge
-    Given the "skill" domain uses ACES
+  Scenario: ACED evals are authored by the impl-producer and run by the impl-judge
+    Given the "skill" domain uses ACED
     When the orchestrator resolves who authors the evals
     Then the evals are authored by the impl-producer that writes the agent config
-    And aces-implementer as the impl-judge runs the evals rather than authoring them
+    And aced-implementer as the impl-judge runs the evals rather than authoring them
     And independence holds because the evals are anchored to the frozen .feature and run by a separate runner
 
   Scenario: Degenerate roles fall back without a plugin agent

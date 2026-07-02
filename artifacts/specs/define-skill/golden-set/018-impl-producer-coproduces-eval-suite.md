@@ -6,7 +6,7 @@ threshold: 4
 
 ## Scenario
 
-The conductor dispatches define-skill as the ACES **impl-producer** (`produced-by sdd:automaton`) against a **frozen** `.feature` for a skill. define-skill is in implement mode with a frozen suite in hand.
+The conductor dispatches define-skill as the ACED **impl-producer** (`produced-by sdd:automaton`) against a **frozen** `.feature` for a skill. define-skill is in implement mode with a frozen suite in hand.
 
 ## Expected behaviors
 
