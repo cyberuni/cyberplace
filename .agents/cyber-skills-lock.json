@@ -19,12 +19,6 @@
       "skillPath": "skills/create-issue/SKILL.md",
       "computedHash": "1641bee51a920e6f5d08605abc8b0631e073a8ab9cb3a1c758e58f123c357073"
     },
-    "create-skill": {
-      "source": "cyberuni/cyber-skills",
-      "sourceType": "github",
-      "skillPath": "skills/create-skill/SKILL.md",
-      "computedHash": "b2a108ae8bbd5f40b9970fe2d1b0ca7a0132337876a46c1f3d3972660fa18ec2"
-    },
     "find-awesome-skill": {
       "source": "cyberuni/cyber-skills",
       "sourceType": "github",
