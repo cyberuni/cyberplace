@@ -33,7 +33,7 @@ Feature: Spec-Driven Development Plugin
     When the user invokes the sdd skill
     Then AGENTS.md is unchanged
     And no SessionStart hook is registered
-    And no cyber-skills CLI command is required
+    And no cyberplace CLI command is required
 
   Scenario: sdd routes feature creation to create-spec
     Given the user wants to start a new feature under SDD

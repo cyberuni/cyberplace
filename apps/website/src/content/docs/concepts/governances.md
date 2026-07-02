@@ -21,8 +21,8 @@ A governance is a dense, self-contained document:
 Agents load governances via CLI, not by reading files directly:
 
 ```bash
-npx cyber-skills@<version> governance show skill-design
-npx cyber-skills@<version> governance show skill-design --format agent
+npx cyberplace@<version> governance show skill-design
+npx cyberplace@<version> governance show skill-design --format agent
 ```
 
 Pinning the version ensures agents always get rules that match the installed tooling.

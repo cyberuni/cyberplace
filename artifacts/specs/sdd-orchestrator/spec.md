@@ -267,7 +267,7 @@ Two kinds of governance, two fates (ADR-0013):
 - **Contract / interface** governances (the I/O between SDD and plugins) fold into the orchestrator + delegate definitions.
 - **Reference / criteria** governances (SDD principles, the universal `.feature` format bar, the scenario-ordering convention) become a **governance skill** — `sdd:spec-governance`, marked `user-invocable: false` with an `Internal skill:` description prefix, body = pure reference. It is loaded the harness-native way (Skill) by SDD's own agents (default spec-producer, validate-spec) **and** by plugin spec-producers (aced, quill), which assume `sdd-plugin` exists. No `governance show` (NodeJS), and **not** `AGENTS.md` — that is project-global and would tax non-SDD work; the governance skill loads only for SDD work.
 
-Repo-wide governance retirement (`packages/cyber-skills/governances/`, the `define-governance` skill) is a separate, larger decision and out of scope here.
+Repo-wide governance retirement (`packages/cyberplace/governances/`, the `define-governance` skill) is a separate, larger decision and out of scope here.
 
 ### Scenario ordering: a workflow step-down, in the governance skill
 
@@ -279,7 +279,7 @@ Repo-wide governance retirement (`packages/cyber-skills/governances/`, the `defi
 
 ### Discovery: the project registry is a resolved lockfile
 
-The orchestrator must **not** scan plugin directories (user-global, project-global, project-local) at runtime — that is slow, token-heavy, and repeats on every cold subagent start. Resolution happens at **setup**, the lockfile pattern (cf. `.agents/cyber-skills-lock.json`):
+The orchestrator must **not** scan plugin directories (user-global, project-global, project-local) at runtime — that is slow, token-heavy, and repeats on every cold subagent start. Resolution happens at **setup**, the lockfile pattern (cf. `.agents/cyberplace-lock.json`):
 
 - **Source of truth** — each plugin's `init-<plugin>` skill (ships with the plugin, knows its agents) writes a canonical entry to the project registry `.agents/universal-plugin.json`: domain coverage **plus** the resolved role→agent map **plus** the plugin version. On run it **rewrites** any old-shape entry (the pre-orchestrator `scenario-advisor`/`implementer` keys) to the role-map shape — the migration is rewrite-on-init, not a dual-reader in the orchestrator.
 - **Runtime** — the orchestrator reads **only** `.agents/universal-plugin.json` (one small project-local file). No scanning, no cross-scope lookup, no per-session cost; the file is the persistent cache.

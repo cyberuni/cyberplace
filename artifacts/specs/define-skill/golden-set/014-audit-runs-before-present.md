@@ -10,7 +10,7 @@ The agent has just finished drafting a fresh SKILL.md at `.agents/skills/triage-
 
 ## Expected behaviors
 
-- Agent runs the structural audit (`npx cyber-skills@<version> audit validate --path <dir>`) before presenting the skill
+- Agent runs the structural audit (`npx cyberplace@<version> audit validate --path <dir>`) before presenting the skill
 - The audit runs on the drafted file, not on a hypothetical one
 - Agent presents the audit outcome as part of handing the skill back
 

@@ -3,7 +3,7 @@ title: Agent Tool Output
 description: Rules for scripts, hooks, and CLIs that AI agents invoke.
 ---
 
-**Load:** `npx cyber-skills@<version> governance show agent-tool-output`
+**Load:** `npx cyberplace@<version> governance show agent-tool-output`
 
 Rules for scripts, hooks, and CLIs that AI agents invoke. Apply when authoring skill `scripts/` or documenting CLI commands in `SKILL.md`.
 

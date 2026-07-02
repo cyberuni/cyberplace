@@ -73,7 +73,7 @@ The minimum safe set of `package.json` fields for a skills/plugin package:
 
 ```json
 {
-  "name": "@cyberuni/cyber-skills",
+  "name": "@cyberuni/cyberplace",
   "version": "1.2.0",
   "license": "MIT",
   "files": ["skills/", ".plugin/", ".claude-plugin/", ".cursor-plugin/", "governances/"],
@@ -149,7 +149,7 @@ agentskills#213 proposes `skill.json` at the package root as a package-level com
 
 - Should `.plugin/plugin.json` include a `format_version` field so tools can handle schema evolution?
 - Should the spec explicitly require that the manifest is a pure *index* (no content duplication from SKILL.md) to prevent the drift problem?
-- Should `governances/` be proposed as a standard component type in open-plugin-spec, or kept as a cyber-skills extension?
+- Should `governances/` be proposed as a standard component type in open-plugin-spec, or kept as a cyberplace extension?
 - When a vendor-specific manifest (`.claude-plugin/plugin.json`) conflicts with the neutral manifest (`.plugin/plugin.json`), what is the merge semantics — override or extend?
 
 ---

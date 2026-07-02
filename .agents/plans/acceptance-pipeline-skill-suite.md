@@ -2,7 +2,7 @@
 
 ## Summary
 
-Build this as a **published public skill suite** in this repo, not as a new top-level `cyber-skills` product area. The suite should let an agent install Uncle Bob's Acceptance Pipeline into a target project by following a portable workflow, while using **TypeScript/Node reference assets** for the deterministic pieces in v1.
+Build this as a **published public skill suite** in this repo, not as a new top-level `cyberplace` product area. The suite should let an agent install Uncle Bob's Acceptance Pipeline into a target project by following a portable workflow, while using **TypeScript/Node reference assets** for the deterministic pieces in v1.
 
 The suite should have one user-facing skill plus three internal persona skills:
 
@@ -97,7 +97,7 @@ Implement in four increments:
 3. Ship the TypeScript/Node reference templates and helper scripts.
 4. Validate against a fixture repo and then document the install workflow in the package README.
 
-Do not add a new `cyber-skills acceptance ...` CLI surface in v1. If the helper scripts prove too heavy for skill-bundled assets, that can be a later extraction.
+Do not add a new `cyberplace acceptance ...` CLI surface in v1. If the helper scripts prove too heavy for skill-bundled assets, that can be a later extraction.
 
 ## Test Plan
 

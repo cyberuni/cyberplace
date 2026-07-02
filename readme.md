@@ -1,5 +1,5 @@
-# cyber-skills
+# cyberplace
 
-[![CI](https://github.com/cyberuni/cyber-skills/actions/workflows/release.yml/badge.svg)](https://github.com/cyberuni/cyber-skills/actions/workflows/release.yml)
+[![CI](https://github.com/cyberuni/cyberplace/actions/workflows/release.yml/badge.svg)](https://github.com/cyberuni/cyberplace/actions/workflows/release.yml)
 
 Universal toolbox in the Cyber Era.

@@ -28,5 +28,5 @@ The skill guides:
 Project-scoped (recommended when used with `init-commit-discipline`):
 
 ```bash
-npx skills add cyberuni/cyber-skills --skill commit
+npx skills add cyberuni/cyberplace --skill commit
 ```

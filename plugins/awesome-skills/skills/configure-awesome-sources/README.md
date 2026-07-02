@@ -25,5 +25,5 @@ Each file lists GitHub repos and paths to `awesome-skills.json` catalogs, with o
 ## Install
 
 ```bash
-npx skills add cyberuni/cyber-skills --skill configure-awesome-sources
+npx skills add cyberuni/cyberplace --skill configure-awesome-sources
 ```

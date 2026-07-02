@@ -3,7 +3,7 @@ title: governance
 description: List and display version-pinned governance documents.
 ---
 
-Load version-pinned agent-tool contracts that ship with the `cyber-skills` package.
+Load version-pinned agent-tool contracts that ship with the `cyberplace` package.
 
 ## Commands
 
@@ -12,9 +12,9 @@ Load version-pinned agent-tool contracts that ship with the `cyber-skills` packa
 List all available governances:
 
 ```bash
-npx cyber-skills@<version> governance list
-npx cyber-skills@<version> governance list --format agent
-npx cyber-skills@<version> governance list --format json
+npx cyberplace@<version> governance list
+npx cyberplace@<version> governance list --format agent
+npx cyberplace@<version> governance list --format json
 ```
 
 ### `governance show`
@@ -23,13 +23,13 @@ Display a governance document. **Agents read stdout** — do not parse it as dat
 
 ```bash
 # Show a governance (human-readable)
-npx cyber-skills@<version> governance show skill-design
+npx cyberplace@<version> governance show skill-design
 
 # For agents (terse, lower token cost)
-npx cyber-skills@<version> governance show skill-design --format agent
+npx cyberplace@<version> governance show skill-design --format agent
 
 # Structured (name, title, body)
-npx cyber-skills@<version> governance show skill-design --format json
+npx cyberplace@<version> governance show skill-design --format json
 ```
 
 **Options:**
@@ -52,4 +52,4 @@ See the [Governances section](/governances/overview/) for full details on each.
 
 ## Versioning
 
-Governance content is frozen to the installed `cyber-skills` version. Running `governance show` with a pinned version always returns the same document, making it safe to reference in hooks and CI.
+Governance content is frozen to the installed `cyberplace` version. Running `governance show` with a pinned version always returns the same document, making it safe to reference in hooks and CI.

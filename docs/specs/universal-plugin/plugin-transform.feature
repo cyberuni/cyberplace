@@ -3,7 +3,7 @@ Feature: Vendor manifest derivation
   A conformant generator derives .claude-plugin/plugin.json, .cursor-plugin/plugin.json,
   and .codex-plugin/plugin.json with exactly the fields each vendor requires or allows.
 
-  The system under test is any conformant plugin generator (e.g., `cyber-skills plugin generate`).
+  The system under test is any conformant plugin generator (e.g., `cyberplace plugin generate`).
 
   Background:
     Given a canonical manifest at ".plugin/plugin.json" containing:

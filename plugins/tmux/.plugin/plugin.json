@@ -3,7 +3,7 @@
 	"name": "tmux",
 	"description": "tmux workflow skills for Claude Code — fork conversations into panes, manage sessions.",
 	"author": { "name": "unional" },
-	"homepage": "https://github.com/cyberuni/cyber-skills",
-	"repository": "https://github.com/cyberuni/cyber-skills",
+	"homepage": "https://github.com/cyberuni/cyberplace",
+	"repository": "https://github.com/cyberuni/cyberplace",
 	"skills": "./skills"
 }

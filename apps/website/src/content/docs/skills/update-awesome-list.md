@@ -18,8 +18,8 @@ Inspect the target repo first — do not assume. Ask whether the user wants:
 For a broad-catalog repo (more than 12 public skills), recommend adding specific skills or highlights instead of the whole repo.
 
 ```bash
-npx cyber-skills@<version> awesome inspect owner/name
-npx cyber-skills@<version> awesome inspect owner/name --query "release"
+npx cyberplace@<version> awesome inspect owner/name
+npx cyberplace@<version> awesome inspect owner/name --query "release"
 ```
 
 ## Editing rules
@@ -33,7 +33,7 @@ npx cyber-skills@<version> awesome inspect owner/name --query "release"
 ## Finish
 
 ```bash
-npx cyber-skills@<version> awesome render
+npx cyberplace@<version> awesome render
 ```
 
 Regenerates the README's bounded awesome-list section from `awesome-skills.json` so it never drifts by hand.
@@ -41,7 +41,7 @@ Regenerates the README's bounded awesome-list section from `awesome-skills.json`
 ## Install
 
 ```bash
-npx skills add cyberuni/cyber-skills --skill update-awesome-list
+npx skills add cyberuni/cyberplace --skill update-awesome-list
 ```
 
 ## Related

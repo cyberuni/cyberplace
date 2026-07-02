@@ -3,7 +3,7 @@ title: Governances Overview
 description: What governances are, how to load them, and how they differ from disciplines.
 ---
 
-**Governances** are version-pinned, auditable agent-tool contracts shipped with the `cyber-skills` npm package. They are frozen to the installed version and loaded on demand via the CLI.
+**Governances** are version-pinned, auditable agent-tool contracts shipped with the `cyberplace` npm package. They are frozen to the installed version and loaded on demand via the CLI.
 
 **Disciplines** (e.g. commit discipline) are a separate layer — session-scoped rules injected by hooks. See [Commit Discipline](/disciplines/commit-discipline/).
 
@@ -13,16 +13,16 @@ Do not link to governance files directly from `SKILL.md`. Load them through the 
 
 ```bash
 # List available governances
-npx cyber-skills@<version> governance list
+npx cyberplace@<version> governance list
 
 # Show a governance (agents read stdout)
-npx cyber-skills@<version> governance show skill-design
+npx cyberplace@<version> governance show skill-design
 
 # Agent-optimized output (lower token cost)
-npx cyber-skills@<version> governance show skill-design --format agent
+npx cyberplace@<version> governance show skill-design --format agent
 ```
 
-Always pin an exact version: `npx cyber-skills@$(npm view cyber-skills version) …`
+Always pin an exact version: `npx cyberplace@$(npm view cyberplace version) …`
 
 ## Available governances
 

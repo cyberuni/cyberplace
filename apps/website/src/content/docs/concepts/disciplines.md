@@ -66,7 +66,7 @@ A discipline is a section in `AGENTS.md` (or a subagent definition), optionally 
 To register a SessionStart hook that injects a section:
 
 ```bash
-node packages/cyber-skills/bin/cyber-skills.mjs hook register \
+node packages/cyberplace/bin/cyberplace.mjs hook register \
   --name my-discipline --event SessionStart \
   --extract AGENTS.md --heading "My Discipline"
 ```

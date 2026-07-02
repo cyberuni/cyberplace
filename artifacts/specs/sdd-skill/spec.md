@@ -32,7 +32,7 @@ SDD work is optional and user-invoked, but once activated it needs a clear entry
 
 ### The skill is the SDD workflow gateway
 
-`sdd` owns the front door for opt-in SDD work. It activates SDD for the current request, conducts brief intake when the user invokes `$sdd` without enough detail, classifies the requested SDD action, and invokes the SDD system entrypoint. It must not edit `AGENTS.md`, register SessionStart hooks, install packages, or require the `cyber-skills` CLI.
+`sdd` owns the front door for opt-in SDD work. It activates SDD for the current request, conducts brief intake when the user invokes `$sdd` without enough detail, classifies the requested SDD action, and invokes the SDD system entrypoint. It must not edit `AGENTS.md`, register SessionStart hooks, install packages, or require the `cyberplace` CLI.
 
 ### Trigger language is explicit and workflow-oriented
 

@@ -44,10 +44,10 @@ Derive paths:
 
 ### 1. Identify the skill(s) to patch
 
-From context or ask the user. Look up origin using the `cyber-skills` CLI, which checks the repo-local lock, the global lock, and `npx skills find` in order:
+From context or ask the user. Look up origin using the `cyberplace` CLI, which checks the repo-local lock, the global lock, and `npx skills find` in order:
 
 ```bash
-npx cyber-skills@<version> skill source <skill-name>
+npx cyberplace@<version> skill source <skill-name>
 ```
 
 Output is JSON: `{ name, source, sourceUrl, skillPath, foundIn }`. Extract `source` (`owner/repo`).

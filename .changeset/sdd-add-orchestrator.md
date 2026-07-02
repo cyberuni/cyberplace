@@ -1,5 +1,5 @@
 ---
-"cyber-skills": minor
+"cyberplace": minor
 ---
 
 Add the `sdd-orchestrator` plugin-delegate model to the `sdd` plugin. The orchestrator is the lead delegate: it runs **one autonomous segment** — resolving the five production-chain roles (`spec-producer`, `plan-producer`, `spec-judge`, `impl-producer`, `impl-judge`) from the `.agents/universal-plugin.json` registry, deriving the workflow cursor and MODE from artifact state, dispatching each role through one uniform I/O surface, and synthesizing layer-scoped `aligned`. It has no user channel — it returns `needs-input` with batched questions for the skill to surface.

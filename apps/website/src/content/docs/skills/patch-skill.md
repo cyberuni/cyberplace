@@ -9,7 +9,7 @@ When you've improved a skill installed from another repo (global `~/.agents/skil
 
 ## Steps
 
-1. **Identify the skill and its source** — `npx cyber-skills@<version> skill source <skill-name>` resolves `{ name, source, sourceUrl, skillPath, foundIn }` from the repo-local lock, the global lock, or `npx skills find`, in that order.
+1. **Identify the skill and its source** — `npx cyberplace@<version> skill source <skill-name>` resolves `{ name, source, sourceUrl, skillPath, foundIn }` from the repo-local lock, the global lock, or `npx skills find`, in that order.
 2. **Diff against upstream** — map each local file to `skills/<skill-name>/<relative-path>` on the source repo's default branch and diff. No diffs across every mapped file → nothing to contribute.
 3. **Check write access** — push directly if you have it; otherwise fork.
 4. **Branch and push as one commit** — via the GitHub Git Data API (blobs → tree → commit → ref update), never one `PUT /contents` call per file, which would create a noisy multi-commit diff.
@@ -25,7 +25,7 @@ When you've improved a skill installed from another repo (global `~/.agents/skil
 ## Install
 
 ```bash
-npx skills add cyberuni/cyber-skills --skill patch-skill -g
+npx skills add cyberuni/cyberplace --skill patch-skill -g
 ```
 
 ## Related

@@ -3,7 +3,7 @@ title: Skill Design
 description: Rules for authoring SKILL.md files that agents load on demand.
 ---
 
-**Load:** `npx cyber-skills@<version> governance show skill-design`
+**Load:** `npx cyberplace@<version> governance show skill-design`
 
 Rules for authoring `SKILL.md` files that agents load on demand. Apply when creating, generalizing, or auditing a skill.
 
@@ -65,7 +65,7 @@ description: "Use this skill when <trigger>. <One-line summary.>"
 
 Default: omit or `per-situation` — no hook; activated via description match or explicit invoke.
 
-Register hook-backed skills with `npx cyber-skills@<version> hook register --event SessionStart`.
+Register hook-backed skills with `npx cyberplace@<version> hook register --event SessionStart`.
 
 ## Placement
 

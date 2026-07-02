@@ -1,6 +1,6 @@
 # Skill ecosystem landscape (May 2026)
 
-Background research for cyber-skills repo structure, external governance federation, and alignment with the Agent Skills open standard. **Normative rules live in governances and ADRs** — this document preserves evidence and links for future work.
+Background research for cyberplace repo structure, external governance federation, and alignment with the Agent Skills open standard. **Normative rules live in governances and ADRs** — this document preserves evidence and links for future work.
 
 **Related:**
 
@@ -13,7 +13,7 @@ Background research for cyber-skills repo structure, external governance federat
 
 ## Question
 
-What do existing standards and popular skill repos already say about **skill library repo layout**, **governance**, and **distribution** — and where is cyber-skills filling a gap?
+What do existing standards and popular skill repos already say about **skill library repo layout**, **governance**, and **distribution** — and where is cyberplace filling a gap?
 
 ---
 
@@ -48,7 +48,7 @@ Key constraints: `name` matches directory; progressive disclosure; validate with
 
 Client implementation guides mention cross-client paths such as `.agents/skills/` — convention, not core spec.
 
-The spec defines **`metadata`** for author/client extensions but does not standardize a **portable hook lifecycle vocabulary** — how skill authors declare which agent hook event should run a skill. Claude Code, Cursor, and Codex each use different hook config key names (`SessionStart` vs `sessionStart`, `PostToolUse` vs `postToolUse`, etc.). cyber-skills proposes **`metadata.activation`** as normalized kebab-case hook events, with `per-situation` for description-triggered skills — see [2026-05-activation-frontmatter-proposal.md](2026-05-activation-frontmatter-proposal.md) and `governance show skill-design`.
+The spec defines **`metadata`** for author/client extensions but does not standardize a **portable hook lifecycle vocabulary** — how skill authors declare which agent hook event should run a skill. Claude Code, Cursor, and Codex each use different hook config key names (`SessionStart` vs `sessionStart`, `PostToolUse` vs `postToolUse`, etc.). cyberplace proposes **`metadata.activation`** as normalized kebab-case hook events, with `per-situation` for description-triggered skills — see [2026-05-activation-frontmatter-proposal.md](2026-05-activation-frontmatter-proposal.md) and `governance show skill-design`.
 
 ---
 
@@ -63,7 +63,7 @@ The spec defines **`metadata`** for author/client extensions but does not standa
 | Shared files in multi-skill repos | [#271](https://github.com/agentskills/agentskills/issues/271) | Proposal | Possible `includes` frontmatter |
 | Frontmatter signing | [#247](https://github.com/agentskills/agentskills/issues/247) | RFC | Overlaps OWASP proposed metadata |
 
-**Implication for cyber-skills:** External governance federation should align with **manifest + digest + npm-style packages**, not reading files from `node_modules` or installed skill directories.
+**Implication for cyberplace:** External governance federation should align with **manifest + digest + npm-style packages**, not reading files from `node_modules` or installed skill directories.
 
 ---
 
@@ -71,7 +71,7 @@ The spec defines **`metadata`** for author/client extensions but does not standa
 
 **AST09 — No Governance** covers organizational controls: skill inventory, risk tiers, approval records, invocation audit logs, revocation, agent NHI identity — not `skills/` vs `.agents/` layout.
 
-OWASP proposes extended frontmatter (`signature`, `content_hash`, `scan_status`, `risk_tier`) as a cross-platform metadata superset. Maps to cyber-skills **`skill-security`** (content) and optional **provenance** checks (P1–P3 in audit-skill), not **`skill-repo-structure`**.
+OWASP proposes extended frontmatter (`signature`, `content_hash`, `scan_status`, `risk_tier`) as a cross-platform metadata superset. Maps to cyberplace **`skill-security`** (content) and optional **provenance** checks (P1–P3 in audit-skill), not **`skill-repo-structure`**.
 
 ---
 
@@ -88,7 +88,7 @@ Survey of public repos (GitHub top-level layout, May 2026):
 | [trailofbits/skills](https://github.com/trailofbits/skills) | `plugins/<bundle>/skills/<name>/` | Plugin-bundle layout |
 | [microsoft/skills](https://github.com/microsoft/skills/) | `.github/plugins/.../skills/` | Language symlinks, `AGENTS.md` template |
 | [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills) | `skills/<name>/` | [skill-anatomy.md](https://github.com/addyosmani/agent-skills/blob/HEAD/docs/skill-anatomy.md) |
-| **cyber-skills** | `skills/<name>/` | npm CLI, `governances/`, `.agents/skills/`, audit CI |
+| **cyberplace** | `skills/<name>/` | npm CLI, `governances/`, `.agents/skills/`, audit CI |
 | **repobuddy/agent-changesets** | `skills/<name>/` | Minimal skills-only; changeset skills |
 
 **Archetypes:**
@@ -106,12 +106,12 @@ Maps each archetype in `governance show skill-repo-structure` to public repos (M
 | --- | --- |
 | **Collection** | [anthropics/skills](https://github.com/anthropics/skills), [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills), [repobuddy/agent-changesets](https://github.com/repobuddy/agent-changesets) |
 | **Maintained library** | [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) (CI + `skills.sh.json`), [softaworks/agent-toolkit](https://github.com/softaworks/agent-toolkit) |
-| **Tooling library** | [cyberuni/cyber-skills](https://github.com/cyberuni/cyber-skills), [obra/superpowers](https://github.com/obra/superpowers) |
+| **Tooling library** | [cyberuni/cyberplace](https://github.com/cyberuni/cyberplace), [obra/superpowers](https://github.com/obra/superpowers) |
 | **Plugin bundle** | [trailofbits/skills](https://github.com/trailofbits/skills), [microsoft/skills](https://github.com/microsoft/skills/) (`.github/plugins/…`) |
 
 ---
 
-## cyber-skills decisions recorded from this research
+## cyberplace decisions recorded from this research
 
 ### Governances to add or extend
 
@@ -119,9 +119,9 @@ Maps each archetype in `governance show skill-repo-structure` to public repos (M
 | --- | --- |
 | `skill-security` | Yes — extract E1–E7 from audit-skill |
 | Placement rules | Extend **`skill-design`**, not a separate governance |
-| Pinned `npx cyber-skills@<exact>` | **ADR/repo doc**, not shipped governance |
+| Pinned `npx cyberplace@<exact>` | **ADR/repo doc**, not shipped governance |
 | `changeset-authoring` | **`repobuddy/agent-changesets`** PR; federation deferred |
-| `conventional-commits` | Yes — cyber-skills governance |
+| `conventional-commits` | Yes — cyberplace governance |
 | `skill-supply-chain` | Low priority; means P1–P3 **skill provenance**, not npm CVE audit; separate from `agent-tool-output` |
 | **`skill-repo-structure`** | Yes — library-repo layer above agentskills.io per-skill spec |
 
@@ -149,11 +149,11 @@ Blocked until skill repos publish **npm packages** (or agentskills distribution 
 | Action | Owner repo |
 | --- | --- |
 | PR: `governances/changeset-authoring.md` | `repobuddy/agent-changesets` |
-| Issue: external governance federation | `cyber-skills` (ADR-0002) |
-| Governance: `skill-repo-structure` | `cyber-skills` |
-| Governance: `skill-security`, `conventional-commits` | `cyber-skills` |
-| Skill: `init-skill-repo` | `cyber-skills` |
-| Acceptance pipeline init skill | `cyber-skills` (later) |
+| Issue: external governance federation | `cyberplace` (ADR-0002) |
+| Governance: `skill-repo-structure` | `cyberplace` |
+| Governance: `skill-security`, `conventional-commits` | `cyberplace` |
+| Skill: `init-skill-repo` | `cyberplace` |
+| Acceptance pipeline init skill | `cyberplace` (later) |
 
 ---
 

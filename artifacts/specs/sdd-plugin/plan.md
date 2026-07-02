@@ -41,7 +41,7 @@ The spec gate judges the contract end. The impl gate judges the implementation e
 
 ### `sdd`
 
-The user-invoked **gateway**. It activates SDD for the current request, conducts a two-level intake menu when invoked bare, classifies the requested SDD action against an inlined routing table, and delegates the routed work to a subagent. For routing it reads only `spec.md` frontmatter (and, conditionally, `tasks.md` and open markers) — never `plan.md`. It does not author documents, invoke `sdd-operator` itself, or load authoring governances; and it does not write `AGENTS.md`, register hooks, or require the `cyber-skills` CLI.
+The user-invoked **gateway**. It activates SDD for the current request, conducts a two-level intake menu when invoked bare, classifies the requested SDD action against an inlined routing table, and delegates the routed work to a subagent. For routing it reads only `spec.md` frontmatter (and, conditionally, `tasks.md` and open markers) — never `plan.md`. It does not author documents, invoke `sdd-operator` itself, or load authoring governances; and it does not write `AGENTS.md`, register hooks, or require the `cyberplace` CLI.
 
 The gateway's own contract is specified separately in `artifacts/specs/sdd/sdd-skill/spec.md`; this plan does not restate its behavior, to avoid drift. The reference bar that producers and judges load is `sdd:spec-governance` — loaded by those delegates through the harness, not by the `sdd` gateway and not via `governance show`.
 

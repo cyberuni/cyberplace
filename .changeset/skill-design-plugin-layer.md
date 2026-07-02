@@ -1,5 +1,5 @@
 ---
-"cyber-skills": minor
+"cyberplace": minor
 ---
 
 Add `plugin-design` governance and update `skill-design` governance.

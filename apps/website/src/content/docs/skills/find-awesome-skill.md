@@ -19,7 +19,7 @@ Sources are loaded in this order, deduped by `repo + path`:
 ## Search
 
 ```bash
-npx cyber-skills@<version> awesome find "<query>" --format agent
+npx cyberplace@<version> awesome find "<query>" --format agent
 ```
 
 Falls back to manual reasoning over the source layers when the CLI is unavailable, returns zero results, or the user asks which sources are searched — ranking by exact name match, then summary, then tag, then cross-source corroboration.
@@ -27,7 +27,7 @@ Falls back to manual reasoning over the source layers when the CLI is unavailabl
 ## Install
 
 ```bash
-npx skills add cyberuni/cyber-skills --skill find-awesome-skill -g
+npx skills add cyberuni/cyberplace --skill find-awesome-skill -g
 ```
 
 ## Related

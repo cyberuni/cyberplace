@@ -1,0 +1,58 @@
+{
+	"name": "cyberplace",
+	"version": "0.7.0",
+	"description": "Opinionated skills, hooks, and workflows for AI agents",
+	"keywords": [
+		"agent-skill",
+		"claude-code",
+		"cursor",
+		"codex"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/cyberuni/cyberplace.git",
+		"directory": "packages/cyberplace"
+	},
+	"license": "MIT",
+	"author": "unional <homawong@gmail.com>",
+	"type": "module",
+	"bin": {
+		"cyberplace": "./bin/cyberplace.mjs"
+	},
+	"exports": {
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"bin",
+		"dist",
+		"governances"
+	],
+	"scripts": {
+		"build": "tsdown",
+		"dev": "tsx src/cli.ts",
+		"prepack": "pnpm build",
+		"check:private-skills": "pnpm build && node bin/cyberplace.mjs skill validate-private --root ../..",
+		"repair:private-skills": "pnpm build && node bin/cyberplace.mjs skill repair-private --root ../..",
+		"render:awesome-list": "pnpm build && node bin/cyberplace.mjs awesome render",
+		"test": "pnpm build && vitest run src",
+		"test:watch": "vitest",
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"commander": "^14.0.3"
+	},
+	"devDependencies": {
+		"@types/node": "^24.10.1",
+		"tsdown": "^0.22.0",
+		"tsx": "^4.22.3",
+		"typescript": "^6.0.0",
+		"vitest": "^4.1.7"
+	},
+	"engines": {
+		"node": ">=22"
+	},
+	"publishConfig": {
+		"access": "public",
+		"provenance": true
+	}
+}

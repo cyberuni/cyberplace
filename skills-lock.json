@@ -14,7 +14,7 @@
       "computedHash": "a34e03da771bd2a55af2cc90bd63f64edf460aff3f7b8cbad01227db3555a593"
     },
     "find-awesome-skill": {
-      "source": "cyberuni/cyber-skills",
+      "source": "cyberuni/cyberplace",
       "sourceType": "github",
       "skillPath": "skills/find-awesome-skill/SKILL.md",
       "computedHash": "acbd0e80274bce1969efedec72c1e4dfb84239761e5023392167dd71dbd3b5ea"
@@ -32,13 +32,13 @@
       "computedHash": "e360aff8316401b610997b3ea5c6e057341608d565a13deb3a18ca83eaef4a98"
     },
     "patch-skill": {
-      "source": "cyberuni/cyber-skills",
+      "source": "cyberuni/cyberplace",
       "sourceType": "github",
       "skillPath": "skills/patch-skill/SKILL.md",
       "computedHash": "d26987ecc8b931867091b3e3a688c2c35f122d0309ee3dc74f73eaeb3367fb32"
     },
     "skillify": {
-      "source": "cyberuni/cyber-skills",
+      "source": "cyberuni/cyberplace",
       "sourceType": "github",
       "skillPath": "skills/skillify/SKILL.md",
       "computedHash": "cdbe90da74a6c3894c92bdf7abcca9ef01ef6d652857cb64b119d505b9cee19c"

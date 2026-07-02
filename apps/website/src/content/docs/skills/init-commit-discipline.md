@@ -22,7 +22,7 @@ Injects always-on commit discipline into the repo: an AGENTS.md section for ever
 | ------ | ------ |
 | **A — Recommended** | Install `softaworks/agent-toolkit@commit-work`: `npx skills add softaworks/agent-toolkit --skill commit-work -g` |
 | **B — User override** | Name another commit skill to install or reference |
-| **C — Bundled fallback** | Install cyber-skills' minimal `commit` skill: `npx skills add cyberuni/cyber-skills --skill commit` |
+| **C — Bundled fallback** | Install cyberplace' minimal `commit` skill: `npx skills add cyberuni/cyberplace --skill commit` |
 
 ## Injected AGENTS.md shape
 
@@ -46,7 +46,7 @@ Injects always-on commit discipline into the repo: an AGENTS.md section for ever
 ## Install
 
 ```bash
-npx skills add cyberuni/cyber-skills --skill init-commit-discipline -g
+npx skills add cyberuni/cyberplace --skill init-commit-discipline -g
 ```
 
 ## Related

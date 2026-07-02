@@ -5,7 +5,7 @@ description: Extract a repeatable workflow from the current session into a reusa
 
 **Trigger:** "skillify this", "make this reusable", "turn what we just did into a skill"
 
-Analyzes what actually happened in the session and generalizes it into a `SKILL.md`. Different from [`aced:define-skill`](https://github.com/cyberuni/cyber-skills), which scaffolds from a blank template.
+Analyzes what actually happened in the session and generalizes it into a `SKILL.md`. Different from [`aced:define-skill`](https://github.com/cyberuni/cyberplace), which scaffolds from a blank template.
 
 ## When to use
 
@@ -24,7 +24,7 @@ Analyzes what actually happened in the session and generalizes it into a `SKILL.
 ## Install
 
 ```bash
-npx skills add cyberuni/cyber-skills --skill skillify -g
+npx skills add cyberuni/cyberplace --skill skillify -g
 ```
 
 ## Related

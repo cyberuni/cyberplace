@@ -20,7 +20,7 @@ Extracts a repeatable workflow from what was done in the current session and cre
 Load the **skill-design** governance before drafting:
 
 ```bash
-npx cyber-skills@<version> governance show skill-design
+npx cyberplace@<version> governance show skill-design
 ```
 
 Read stdout as the authoritative rules for principles, progressive disclosure, and description structure.

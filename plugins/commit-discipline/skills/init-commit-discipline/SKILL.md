@@ -7,18 +7,18 @@ description: "Use this skill when initializing commit discipline — AGENTS.md r
 
 Inject always-on commit discipline into the repo: an AGENTS.md section for every agent, plus SessionStart hooks on agents that support them.
 
-This skill **requires** the cyber-skills CLI — see **Ensure cyber-skills CLI** below.
+This skill **requires** the cyberplace CLI — see **Ensure cyberplace CLI** below.
 
 ## Prerequisites
 
 - `AGENTS.md` should exist (run the `init` skill first if missing).
 
-## Ensure cyber-skills CLI
+## Ensure cyberplace CLI
 
 Before any subcommand:
 
-1. Resolve exact semver: `npm view cyber-skills version` (never `@latest`, never a literal `<version>` placeholder).
-2. Run `npx cyber-skills@<exact> <subcommand>`.
+1. Resolve exact semver: `npm view cyberplace version` (never `@latest`, never a literal `<version>` placeholder).
+2. Run `npx cyberplace@<exact> <subcommand>`.
 
 If step 2 fails (npx install prompt, `command not found`, or other non-zero exit), the `init` skill (a prerequisite) handles the install consent flow. Tell the user to run `init` first, then return here. Stop this skill until then.
 
@@ -27,7 +27,7 @@ If step 2 fails (npx install prompt, `command not found`, or other non-zero exit
 Commit discipline references a **commit helper skill** for staging, splitting, and message writing. Resolve one before injecting AGENTS.md.
 
 ```bash
-npx cyber-skills@<exact> commit resolve-skill --check
+npx cyberplace@<exact> commit resolve-skill --check
 ```
 
 If none are detected, ask the user to choose:
@@ -36,7 +36,7 @@ If none are detected, ask the user to choose:
 |--------|--------|
 | **A — Recommended** | Install [`softaworks/agent-toolkit@commit-work`](https://github.com/softaworks/agent-toolkit): `npx skills add softaworks/agent-toolkit --skill commit-work -g` |
 | **B — User override** | User names another commit skill to install or reference |
-| **C — Bundled fallback** | Install cyber-skills' minimal `commit` skill project-scoped: `npx skills add cyberuni/cyber-skills --skill commit` |
+| **C — Bundled fallback** | Install cyberplace' minimal `commit` skill project-scoped: `npx skills add cyberuni/cyberplace --skill commit` |
 
 Do not proceed until a commit helper skill name is chosen.
 
@@ -48,27 +48,27 @@ Do not proceed until a commit helper skill name is chosen.
 
 ```bash
 # With auto-commit (opt-in):
-npx cyber-skills@<exact> commit inject --commit-skill <name> --auto-commit
+npx cyberplace@<exact> commit inject --commit-skill <name> --auto-commit
 
 # Without auto-commit:
-npx cyber-skills@<exact> commit inject --commit-skill <name>
+npx cyberplace@<exact> commit inject --commit-skill <name>
 ```
 
 4. Register SessionStart hook:
 
 ```bash
-npx cyber-skills@<exact> hook register \
+npx cyberplace@<exact> hook register \
   --name commit-discipline \
   --event SessionStart \
   --extract AGENTS.md \
   --heading "Commit Discipline"
 ```
 
-If the user consented to npm install during the `init` skill (earlier in this session), edit the registered SessionStart command to use `npx --yes cyber-skills@<exact>` instead of `npx cyber-skills@<exact>` so SessionStart can run non-interactively.
+If the user consented to npm install during the `init` skill (earlier in this session), edit the registered SessionStart command to use `npx --yes cyberplace@<exact>` instead of `npx cyberplace@<exact>` so SessionStart can run non-interactively.
 
 Pass `--verbose` on inject or register for a human-readable summary. Pass `--dry-run` to preview without writing.
 
-> **Hook semver upgrade:** Re-running `hook register` replaces an existing hook when `--name` and hook flags match but the pinned `npx cyber-skills@<semver>` differs (for example after upgrading the CLI). Legacy shell-script hooks are replaced when register runs.
+> **Hook semver upgrade:** Re-running `hook register` replaces an existing hook when `--name` and hook flags match but the pinned `npx cyberplace@<semver>` differs (for example after upgrading the CLI). Legacy shell-script hooks are replaced when register runs.
 
 > **Stale hook caveat:** `hook register` skips hooks it considers fully equivalent. If the SessionStart command is wrong in other ways, edit agent settings manually or re-run register with the flags above.
 

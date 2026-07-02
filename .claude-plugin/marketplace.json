@@ -1,6 +1,6 @@
 {
 	"$schema": "https://raw.githubusercontent.com/cyberuni/marketplace/main/schema/claude/marketplace.json",
-	"name": "cyber-skills-next",
+	"name": "cyberplace",
 	"owner": { "name": "unional" },
 	"plugins": [
 		{

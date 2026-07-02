@@ -9,7 +9,7 @@ threshold: 4
 User asked for an eval spec for the `audit-skill` skill. `aced-spec-designer` completed (iteration 0), then `aced-spec-validator` returned `overall == "pass"`. The full output is:
 
 ```
-SUBJECT_PATH: packages/cyber-skills/skills/audit-skill/SKILL.md
+SUBJECT_PATH: packages/cyberplace/skills/audit-skill/SKILL.md
 TRIGGER_QUERIES: 20
 GOLDEN_SET_CASES: 18
 STRUCTURAL_ISSUES: Q5 — Description exceeds 120 characters

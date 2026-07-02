@@ -12,7 +12,7 @@
 
 Thanks for building this — the convergence of `.claude-plugin/` and `.cursor-plugin/` into a vendor-neutral `.plugin/plugin.json` feels like exactly the right structural move, and the fallback-to-convention model (auto-discover `skills/`, `commands/`, etc. when no manifest is present) handles the zero-config case nicely.
 
-I've been working through the packaging design for [cyberuni/cyber-skills](https://github.com/cyberuni/cyber-skills) and landed on a few positions I think could strengthen the spec and resolve some long-running questions in the agentskills community (#129, #213, #226, #338). Sharing them here in case they're useful.
+I've been working through the packaging design for [cyberuni/cyberplace](https://github.com/cyberuni/cyberplace) and landed on a few positions I think could strengthen the spec and resolve some long-running questions in the agentskills community (#129, #213, #226, #338). Sharing them here in case they're useful.
 
 ---
 
@@ -32,7 +32,7 @@ There's currently an implicit distinction between "skill packages" (a `skills/` 
 
 That's a complete `.plugin/plugin.json` for a skills-only package. Nothing more needed. The consumer (installer, agent harness) reads the manifest, finds what components are declared, and loads them — same code path as a full plugin.
 
-The component type becomes a manifest key, not a package category. A governance package is a plugin with `"governances": "./governances/"` (This is something I'm working on in [cyberuni/cyber-skills](https://github.com/cyberuni/cyber-skills) and not something concrete enough to talk about yet.). A rules-only package is a plugin with `"rules": "./rules/"`. One lookup, no special-casing.
+The component type becomes a manifest key, not a package category. A governance package is a plugin with `"governances": "./governances/"` (This is something I'm working on in [cyberuni/cyberplace](https://github.com/cyberuni/cyberplace) and not something concrete enough to talk about yet.). A rules-only package is a plugin with `"rules": "./rules/"`. One lookup, no special-casing.
 
 This would also address agentskills#129 (@xtfer's request for plugin-like packaging that bundles sub-agents, skills, hooks, and rules under one distribution unit) and largely make agentskills#213's `skill.json` proposal redundant — the package-level manifest is already here in `.plugin/plugin.json`.
 
@@ -93,7 +93,7 @@ Concretely, the things that would help most:
 - **agentskills#338** (maintainer): "the ecosystem must converge" on a solution; the spec will not dictate one. This spec is positioned to be that convergence point — not for installers, but for the *package format* that all installers can read.
 - **trailofbits/skills** — already uses `plugins/<bundle>/skills/<name>/` in production, treating the plugin as the outer container.
 - **oiap** (@fboldo) — TypeScript SDK implementing this spec for cross-harness plugin export, confirming the spec has traction beyond Vercel/Cursor/Claude.
-- **cyber-skills** — doing something similar in TypeScript, focused on the skills side: reading and resolving `.plugin/plugin.json` from installed npm packages, validating skill structure, and surfacing skills to agent runtimes. Happy to contribute any of this back into `skills`, `open-plugin-spec`, or a shared utility package if there's appetite for it.
+- **cyberplace** — doing something similar in TypeScript, focused on the skills side: reading and resolving `.plugin/plugin.json` from installed npm packages, validating skill structure, and surfacing skills to agent runtimes. Happy to contribute any of this back into `skills`, `open-plugin-spec`, or a shared utility package if there's appetite for it.
 
 ---
 

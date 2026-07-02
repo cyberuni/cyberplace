@@ -79,7 +79,7 @@ Feature: The Motive Model — two outputs
     And earlier terms ground later ones
 
   # ── Output 2: Machine artifact — Agent configuration system ─────────────────
-  # Governance files consumable by AI agents via cyber-skills governance show
+  # Governance files consumable by AI agents via cyberplace governance show
 
   Scenario: Machine artifact enumerates the four actors as typed definitions
     Given the spec is approved

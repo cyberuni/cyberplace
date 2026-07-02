@@ -5,10 +5,10 @@ import { defineConfig } from 'astro/config'
 export default defineConfig({
 	integrations: [
 		starlight({
-			title: 'cyber-skills',
+			title: 'cyberplace',
 			description: 'Opinionated skills, hooks, and workflows for AI agents — Claude Code, Cursor, Codex, and others.',
 			social: [
-				{ icon: 'github', label: 'GitHub', href: 'https://github.com/cyberuni/cyber-skills' },
+				{ icon: 'github', label: 'GitHub', href: 'https://github.com/cyberuni/cyberplace' },
 			],
 			sidebar: [
 				{

@@ -12,7 +12,7 @@ Manage instruction hooks — register them into agent settings files and run the
 Register a hook into agent settings (Claude Code, Cursor, Codex). Idempotent — re-running with the same flags updates the hook if the pinned version differs.
 
 ```bash
-npx cyber-skills@<version> hook register \
+npx cyberplace@<version> hook register \
   --name commit-discipline \
   --event SessionStart \
   --extract AGENTS.md \
@@ -40,7 +40,7 @@ npx cyber-skills@<version> hook register \
 Run a hook directly — injects the instruction content into the agent context. Called by the agent runtime at session start.
 
 ```bash
-npx cyber-skills@<version> hook run \
+npx cyberplace@<version> hook run \
   --extract AGENTS.md \
   --heading "Commit Discipline"
 ```
@@ -70,10 +70,10 @@ Always pin the CLI version in registered hooks — never use `@latest`:
 
 ```bash
 # Good — pinned
-npx cyber-skills@0.3.0 hook run --extract AGENTS.md --heading "Commit Discipline"
+npx cyberplace@0.3.0 hook run --extract AGENTS.md --heading "Commit Discipline"
 
 # Bad — resolves at runtime
-npx cyber-skills@latest hook run …
+npx cyberplace@latest hook run …
 ```
 
 Re-run `hook register` after upgrading the CLI to bump the stored version.

@@ -11,16 +11,16 @@ Validate skills against mechanical checks: structure (S1–S5), quality (Q1–Q5
 
 ```bash
 # Validate all skills in the project
-npx cyber-skills@<version> audit validate
+npx cyberplace@<version> audit validate
 
 # Validate a single skill
-npx cyber-skills@<version> audit validate --path skills/my-skill
+npx cyberplace@<version> audit validate --path skills/my-skill
 
 # Output for agents
-npx cyber-skills@<version> audit validate --format agent
+npx cyberplace@<version> audit validate --format agent
 
 # Output for scripts
-npx cyber-skills@<version> audit validate --format json
+npx cyberplace@<version> audit validate --format json
 ```
 
 **Options:**
@@ -44,7 +44,7 @@ Full review (Q6–Q13, E3–E8, P1–P3) requires the [`audit-skill`](/skills/au
 ## CI integration
 
 ```yaml
-- run: npx cyber-skills@$(npm view cyber-skills version) audit validate
+- run: npx cyberplace@$(npm view cyberplace version) audit validate
 ```
 
 The command exits non-zero on any CRITICAL or HIGH finding, making it safe to use as a blocking CI check.

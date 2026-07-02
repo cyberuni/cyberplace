@@ -6,7 +6,7 @@
 
 import { readFileSync } from 'node:fs'
 
-const ROOT = '/home/unional/code/cyberuni/cyber-skills'
+const ROOT = '/home/unional/code/cyberuni/cyberplace'
 const SKILL = readFileSync(`${ROOT}/plugins/sdd/skills/formation-loop/SKILL.md`, 'utf8')
 const WARDEN = readFileSync(`${ROOT}/plugins/sdd/agents/sdd-warden.md`, 'utf8')
 const DEDUPE = readFileSync(`${ROOT}/plugins/sdd/skills/dedupe-specs/SKILL.md`, 'utf8')

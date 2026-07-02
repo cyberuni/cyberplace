@@ -1,6 +1,6 @@
 ---
 title: Skills Overview
-description: All public skills shipped with cyber-skills.
+description: All public skills shipped with cyberplace.
 ---
 
 Skills are `SKILL.md` files that AI agents load on demand. Each encodes a workflow — steps, decisions, and tool use — so agents behave consistently across sessions and team members.
@@ -19,7 +19,7 @@ Skills are `SKILL.md` files that AI agents load on demand. Each encodes a workfl
 | [**configure-awesome-sources**](/skills/configure-awesome-sources/) | Add, remove, or inspect the awesome-list sources used for discovery. |
 | [**update-awesome-list**](/skills/update-awesome-list/) | Add or update a curated awesome-list entry, including README sync. |
 
-For scaffolding a **new** skill from scratch, see [`aced:define-skill`](https://github.com/cyberuni/cyber-skills/blob/main/plugins/aced/skills/define-skill/SKILL.md) — the ACED plugin's skill-authoring producer.
+For scaffolding a **new** skill from scratch, see [`aced:define-skill`](https://github.com/cyberuni/cyberplace/blob/main/plugins/aced/skills/define-skill/SKILL.md) — the ACED plugin's skill-authoring producer.
 
 ## Skill placement
 
@@ -43,10 +43,10 @@ Skills live in one of three locations:
 
 ```bash
 # Install all public skills globally
-npx skills add cyberuni/cyber-skills --all -g
+npx skills add cyberuni/cyberplace --all -g
 
 # Install a specific skill
-npx skills add cyberuni/cyber-skills --skill init -g
+npx skills add cyberuni/cyberplace --skill init -g
 ```
 
 See [Installation](/getting-started/installation/) for pinning and team setup.

@@ -51,7 +51,7 @@ Run `init-commit-discipline` to inject the rules and register the SessionStart h
 
 ```bash
 # Install the skill (solo, globally)
-npx skills add cyberuni/cyber-skills --skill init-commit-discipline -g
+npx skills add cyberuni/cyberplace --skill init-commit-discipline -g
 ```
 
 Then in your agent: **run the `init-commit-discipline` skill**.
@@ -67,7 +67,7 @@ The skill:
 On Claude Code, Cursor, and Codex, a SessionStart hook runs:
 
 ```bash
-npx cyber-skills@<version> hook run \
+npx cyberplace@<version> hook run \
   --extract AGENTS.md \
   --heading "Commit Discipline"
 ```
@@ -78,7 +78,7 @@ For agents without hook support, the `AGENTS.md` section alone carries the rules
 
 ## Upgrading
 
-After upgrading `cyber-skills`, re-run `init-commit-discipline` to bump the pinned version in the SessionStart hook command.
+After upgrading `cyberplace`, re-run `init-commit-discipline` to bump the pinned version in the SessionStart hook command.
 
 ## Related
 

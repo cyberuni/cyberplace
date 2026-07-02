@@ -3,7 +3,7 @@ Feature: Plugin manifest validation
   declares the paths to all component directories. A conformant plugin validator checks
   this file for structural correctness before any vendor derivation or installation occurs.
 
-  The system under test is any conformant plugin validator (e.g., `cyber-skills plugin validate`).
+  The system under test is any conformant plugin validator (e.g., `cyberplace plugin validate`).
 
   # --- Name validation ---
 

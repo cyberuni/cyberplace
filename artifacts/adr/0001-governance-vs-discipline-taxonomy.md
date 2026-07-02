@@ -6,9 +6,9 @@ Accepted
 
 ## Context
 
-cyber-skills ships two related but distinct kinds of agent guidance:
+cyberplace ships two related but distinct kinds of agent guidance:
 
-1. **Version-pinned standards** — markdown contracts in `governances/` (for example `skill-design`, `agent-tool-output`), loaded on demand via `cyber-skills governance show` and enforced mechanically by `audit-skill`.
+1. **Version-pinned standards** — markdown contracts in `governances/` (for example `skill-design`, `agent-tool-output`), loaded on demand via `cyberplace governance show` and enforced mechanically by `audit-skill`.
 2. **Session-injected behavior** — rules such as Commit Discipline, injected at SessionStart through the `commit-discipline` hook and documented in AGENTS.md.
 
 Both were initially labeled **discipline**, overloading one word for two different mechanisms:
@@ -142,8 +142,8 @@ Completed rename (breaking change):
 CLI:
 
 ```bash
-npx cyber-skills@<version> governance list
-npx cyber-skills@<version> governance show skill-design
+npx cyberplace@<version> governance list
+npx cyberplace@<version> governance show skill-design
 ```
 
 ## Related Decisions
