@@ -9,42 +9,42 @@ overview: >
   cb62994) built the fix, but define-skill itself was never touched to use it.
 cr: local-retire-create-skill
 cr-url:
-status: active
+status: completed
 todos:
   - id: check-define-skill-escaped-path
     content: Decide whether define-skill needs a lightweight scaffold-audit-done ending for already-escaped (non-durable) requests
     status: completed
   - id: reconcile-lock-files
     content: Fix skills-lock.json / .agents/cyber-skills-lock.json (both point at nonexistent skills/create-skill/SKILL.md — bundled skills/ dir was already removed)
-    status: pending
+    status: completed
   - id: update-refs
     content: Update plugin.json, skills.sh.json, packages/cyber-skills/awesome-skills.json self-reference
-    status: pending
+    status: completed
   - id: remove-skill
     content: Delete plugins/skill-authoring/skills/create-skill/
-    status: pending
+    status: completed
   - id: changeset
     content: Add changeset if this touches published package surface (skills-lock.json/cyber-skills-lock.json might)
-    status: pending
+    status: completed
 isProject: false
 ---
 
 ## NEXT — resume here
 
-**Resolved:** Option 1 (user confirmed). `define-skill` (`plugins/aces/skills/define-skill/SKILL.md`)
-now documents three entry points — impl-producer (in-CR), standalone (user-invoked, offers the
-ACES loop), escaped (gateway/start-mission invoke it directly after a `non-durable` resolution,
-scaffold+audit+report and **stop**, no ACES hand-off). `plugins/sdd-new/skills/sdd/SKILL.md` and
-`start-mission/SKILL.md`'s escape bullets now say escaping doesn't mean stopping — invoke the
-matching producer (`define-skill` for `skill`) directly when one exists. `audit validate` passes
-on `define-skill`.
+**Mission complete.** All todos done across 4 commits: `01c3217` (define-skill escaped entry
+point + gateway wiring), `8251594` (stale lock-file entries dropped), `af5c67c` (plugin.json /
+skills.sh.json / awesome-skills.json refs + changeset), `f6a6a40` (both create-skill copies
+deleted — public plus the project-private `.agents/skills/create-skill` mirror the plan didn't
+originally list, confirmed with the user — plus skillify/patch-skill sibling-reference fixes).
+`pnpm verify`'s pre-existing `resolve-durability.mts` lint failures are unrelated to this CR
+(confirmed against a clean stash); every touched file audits and lints clean individually.
 
-**First action:** the remaining todos are mechanical (same shape as the
-`create-persona-skill` retirement earlier this session, commit `5fd3840`): reconcile the two
-lock files (both already point at a nonexistent path — `skills/create-skill/SKILL.md` — from
-before the bundled-`skills/` removal, a pre-existing break, not something this CR causes),
-update `plugin.json` / `skills.sh.json` / the `awesome-skills.json` self-reference, delete the
-directory, changeset if needed.
+**Known follow-up, out of scope here:** `apps/website/src/content/docs/skills/create-skill.md`
+and `overview.md` still reference the retired skill — hand-authored docs pages, not covered by
+this plan's References and not regenerable (the `render:awesome-list` marker file is separately,
+pre-existingly broken). File a CR if this should be cleaned up.
+
+This plan can be retired (`sdd:plan-retirement`) once distilled.
 
 ## Context
 
