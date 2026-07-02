@@ -18,13 +18,6 @@
 				},
 				{
 					"type": "skill",
-					"key": "create-skill",
-					"summary": "Create a new skill and place it in the right user, project-private, or project-public location.",
-					"why_recommended": "Helps keep skill repositories scoped correctly instead of mixing private and public workflows.",
-					"tags": ["skill-authoring", "scaffolding"]
-				},
-				{
-					"type": "skill",
 					"key": "audit-skill",
 					"summary": "Audit SKILL.md structure, quality, and security before installing or publishing.",
 					"why_recommended": "Strong review rubric before installing third-party skills or publishing your own.",
