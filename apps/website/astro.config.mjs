@@ -93,6 +93,22 @@ export default defineConfig({
 					label: 'ACES',
 					items: [
 						{ label: 'Overview', slug: 'aces/overview' },
+						{ label: 'init-aces', slug: 'aces/init-aces' },
+						{ label: 'define-skill', slug: 'aces/define-skill' },
+						{ label: 'define-agent', slug: 'aces/define-agent' },
+						{ label: 'define-governance', slug: 'aces/define-governance' },
+						{ label: 'run', slug: 'aces/run' },
+						{ label: 'add', slug: 'aces/add' },
+						{ label: 'compare', slug: 'aces/compare' },
+						{ label: 'improve', slug: 'aces/improve' },
+						{ label: 'report', slug: 'aces/report' },
+					],
+				},
+				{
+					label: 'Quill',
+					items: [
+						{ label: 'Overview', slug: 'quill/overview' },
+						{ label: 'init-quill', slug: 'quill/init-quill' },
 					],
 				},
 				{
