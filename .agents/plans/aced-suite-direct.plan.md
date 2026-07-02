@@ -9,20 +9,20 @@ todos:
     status: done
     content: SDD suite-format — bless layer tags + Scenario Outline Examples; check-suite Examples validation + tests (committed c4c3c61)
   - id: clearance
-    status: in_progress
-    content: Clearance for re-opening ACED frozen scenarios that forbid @rubric (pre-authorized in approved plan; confirm scope before rewrite)
+    status: done
+    content: Clearance granted (full Part B) to re-open ACED frozen scenarios that forbid @rubric; recorded in ledger
   - id: explore-spec
-    status: pending
-    content: revise ACED spec nodes (scenario-writer, spec-validator, impl-judge, judge, eval-run/run, eval-run/add-scenario) to read .feature directly; re-freeze at spec gate
+    status: done
+    content: re-froze ACED contracts (scenario-writer, spec-validator, impl-judge, judge, eval-run/run) to read .feature directly; spec gate line in ledger (6162748)
   - id: deliver-impl
-    status: pending
-    content: update ACED agents + skills to author/consume @rubric + @trigger Scenario Outline; reorganize eval.md to two-level measurement policy; migrate one reference suite; retire golden-set duplication
+    status: done
+    content: ACED agents + skills + bars + docs read the suite directly (4e22b9b); all 7 eval.md reorganized two-level + tmux-fork-right migrated end-to-end as the reference proof (a19d4bd)
   - id: impl-gate
-    status: pending
-    content: cold impl-judge over frozen scenarios; dogfood regression via compare vs baseline; pnpm verify
+    status: done
+    content: audit green all edited skills, check-suite green all .feature, pnpm verify green (13 tasks); impl gate line in ledger. Live behavioral dogfood deferred (follow-up)
   - id: handoff
-    status: pending
-    content: commits per unit, PR; file benchmark + telemetry as follow-up CRs
+    status: in_progress
+    content: PR; file follow-up CRs (migrate remaining 6 suites; behavioral dogfood; benchmark + telemetry measurement kinds)
 ---
 
 # Mission: ACED reads the frozen .feature suite directly
@@ -49,6 +49,13 @@ Full plan + decisions: `~/.claude/plans/aced-used-eval-enchanted-otter.md`.
 
 ## NEXT
 
-Confirm the Clearance scope above with the user, then re-open + revise those frozen scenarios
-(explore-spec), re-freeze at the spec gate, and proceed to deliver. Ledger shard:
-`.agents/specs/aced/ledger/aced-suite-direct.7404fb.jsonl` (mint run-start leash there on resume).
+Both gates passed, `pnpm verify` green. Handoff: open PR (commits `c4c3c61` SDD enablement,
+`6162748` spec gate, `4e22b9b` impl, `a19d4bd` eval.md + reference migration). Then file follow-up CRs:
+1. Migrate the remaining 6 golden-set suites (define-skill, define-governance, manage,
+   manage-model-runners, aced-create-spec, sdd-orchestrator) to frozen `.feature` — same shape as
+   tmux-fork-right. Until migrated, `aced run` on those needs the `.feature` authored first.
+2. Live behavioral dogfood: `aced run` the tmux-fork-right `.feature` and `compare` vs a golden-set
+   baseline to confirm verdict parity.
+3. `benchmark` (model-matrix over the runner family) and `telemetry` measurement kinds as their own CRs
+   (eval.md shape already reserves them).
+Retire this plan once merged + doctrine-distilled.
