@@ -12,7 +12,7 @@ The agent has completed a skill and is writing the handoff. In an older workflow
 
 - Agent does not embed a legacy trigger-query eval file as the skill's test step
 - Agent defers scoring to the ACES eval loop rather than baking a trigger-query harness into the skill's deliverables
-- The handoff points at the ACES loop (`start-mission` / `run` / `add`) for scoring instead
+- The handoff points at the ACES loop (`start-mission` / `run` / `add-scenario`) for scoring instead
 
 ## Must NOT do
 

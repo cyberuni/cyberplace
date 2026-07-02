@@ -416,7 +416,7 @@ Skills that already have an `evals/evals.json` file (the [agentskills.io](https:
 | `evals[].files[]` | noted in `## Scenario` as input files |
 | `evals[].id` | zero-padded filename prefix |
 
-`aces-spec-designer` reads `evals/evals.json`, generates `golden-set/*.md` files from it, and leaves the original file in place. Subsequent `aces-add` calls append to the golden set, not to `evals.json`.
+`aces-spec-designer` reads `evals/evals.json`, generates `golden-set/*.md` files from it, and leaves the original file in place. Subsequent `add-scenario` calls append to the golden set, not to `evals.json`.
 
 ---
 
