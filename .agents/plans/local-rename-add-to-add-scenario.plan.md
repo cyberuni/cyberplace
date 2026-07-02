@@ -8,7 +8,7 @@ overview: >
   rename-aces-impl-judge CRs (leash auto-all, self-assert at gates, cause dimension).
 cr: local-rename-add-to-add-scenario
 cr-url:
-status: active
+status: done
 todos:
   - id: spec-rename
     content: git mv suite-authoring/add -> add-scenario + add.feature -> add-scenario.feature; rename Feature line + every `add` token in scenario steps to add-scenario (keep improve/run/compare)
@@ -30,15 +30,18 @@ todos:
     status: completed
   - id: handoff
     content: changeset (breaking install-path/doc-route change) + commit(s) per commit-discipline
-    status: in_progress
+    status: completed
 isProject: false
 ---
 
 ## NEXT
 
-Spec gate passed (freeze preserved, self-asserted). Next: `impl-rename` — git mv
-plugins/aces/skills/add -> add-scenario, then `propagate-refs` sweep (sibling skills/READMEs,
-plugins/aces/readme.md, website docs + astro sidebar, docs/specs/aces/design.md,
-artifacts/specs/aces-plugin/spec.md). Then impl gate (pnpm verify + audit + website build +
-grep sweep) and handoff (changeset + commit). Session ledger shard:
-`local-rename-add-to-add-scenario.cd2445.jsonl`.
+DONE — landed on main in two commits (spec gate + deliver). pnpm verify green 13/13,
+audit 0 critical, website built /aces/add-scenario. Both gates self-asserted within the
+auto-all leash (ledger shard `local-rename-add-to-add-scenario.cd2445.jsonl`).
+
+Out-of-scope residuals (left deliberately, per approved plan): the already-merged
+`.changeset/aces-add-define-skill-skill.md` prose `add` (historical); a golden case in
+the pre-consolidation `artifacts/specs/define-skill/golden-set/017-*.md`; the `aces-add`
+token in the legacy `docs/specs/aces/design.md` §7.x narrative. Sweep if that legacy
+suite/doc is confirmed live.
