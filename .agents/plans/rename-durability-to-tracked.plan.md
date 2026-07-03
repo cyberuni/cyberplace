@@ -29,10 +29,17 @@ frozen intake node `resolve-durability`. Source: local (naming-fit).
 
 ## NEXT
 
-Decided: **B — `.sddignore` gitignore format** (behavior change, not just rename) + add
-`manage-ignore` in the same mission. Grill to converge the semantics below, then ratify the
-frozen re-open (genuine — matcher behavior changes). Do NOT touch the permanence adjective
-("durable ledger", "durable project spec").
+DONE — committed on branch `rename-durability-to-tracked` (6f4e314). Both gates self-asserted
+(ledger seq 1-3), both node .features frozen, `pnpm verify` green (13/13). Awaiting: user
+decision to push + open PR (delivery shape = branch → PR).
+
+Follow-ups (file as new CRs, do NOT block this one):
+- Doc-link off-by-one: node README concrete-engine links use `../../../../` (4) but need
+  `../../../../../` (5) to reach repo-root `plugins/`. Pre-existing corpus-wide (plan-discovery
+  has it too); the two new nodes copy it. Warden/formation fix all at once.
+- Coverage edge: no scenario for a malformed `.sddignore` at *resolve* time (only validate);
+  non-blocking (resolve path fail-closes, never errors).
+- Historical ledger shards `local-*durability*.jsonl` keep their names (immutable provenance).
 
 ## Rename map (classification sense ONLY)
 
