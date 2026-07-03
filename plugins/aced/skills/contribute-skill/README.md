@@ -1,4 +1,4 @@
-# patch-skill
+# contribute-skill
 
 Contribute local improvements to an installed skill back to its source repository via pull request.
 
@@ -21,5 +21,5 @@ The skill maps local changes to `skills/<skill-name>/` in the upstream repo, ope
 ## Install
 
 ```bash
-npx skills add cyberuni/cyberplace --skill patch-skill
+npx skills add cyberuni/cyberplace --skill contribute-skill
 ```
