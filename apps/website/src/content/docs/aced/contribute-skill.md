@@ -1,7 +1,9 @@
 ---
-title: patch-skill
+title: contribute-skill
 description: Contribute a local improvement to an installed skill back to its source repo via PR.
 ---
+
+Part of the [ACED plugin](/aced/overview/) — see that page for install instructions.
 
 **Trigger:** "send this skill fix upstream", "contribute this back", "open a PR for my skill change"
 
@@ -25,10 +27,10 @@ When you've improved a skill installed from another repo (global `~/.agents/skil
 ## Install
 
 ```bash
-npx skills add cyberuni/cyberplace --skill patch-skill -g
+npx skills add cyberuni/cyberplace --skill contribute-skill -g
 ```
 
 ## Related
 
-- [skillify](/skills/skillify/) — generalizes a session workflow into a new skill (this skill improves an existing one)
+- [skillify](/aced/skillify/) — generalizes a session workflow into a new skill (this skill contributes an existing one upstream)
 - [audit-skill](/skills/audit-skill/) — validate before opening the PR

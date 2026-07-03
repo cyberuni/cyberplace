@@ -1,9 +1,9 @@
 ---
-name: patch-skill
+name: contribute-skill
 description: Use this skill when contributing local improvements to an installed skill back to its source repo via PR.
 ---
 
-# Patch Skill
+# Contribute Skill
 
 When you have improved a skill you installed from another repo, this skill guides you through contributing that improvement back to the source via a pull request.
 
