@@ -4,9 +4,9 @@ Feature: init — initialize harness-agnostic agent config
   every major agent harness — write or refresh AGENTS.md grounded in the repo, wire the per-harness config
   through the universal-plugin CLI (routing to the direct-write fallback skill on npx-decline), merge/symlink
   CLAUDE.md, repair repo-private skills, surface companion init-* skills, and suggest SDD then ACED (gated,
-  honoring prior declines via harness memory). Registering ACED as an SDD plugin is init-aced; authoring or
-  evaluating a skill is ACED (define-skill / improve / test-skill); publishing or upgrading a cross-vendor
-  plugin is publish-universal-plugin / upgrade-universal-plugin. Cross-capability e2e scenarios live in
+  honoring prior declines via harness memory). Registering ACED as an SDD plugin is the ACED registry skill;
+  authoring or evaluating agent config is ACED's domain; publishing or upgrading a cross-vendor plugin is
+  publish-universal-plugin / upgrade-universal-plugin. Cross-capability e2e scenarios live in
   ../../acceptance/.
 
   # ── Triggering ──
@@ -30,15 +30,15 @@ Feature: init — initialize harness-agnostic agent config
       | publish my plugin to the universal marketplace                                | no             |
       | bump the pinned universal-plugin version across the repo                      | no             |
 
-  Scenario: a registry-only request defers to init-aced
+  Scenario: a registry-only request defers to the ACED registry skill
     Given the user asks only to register ACED as an SDD plugin, with no repo onboarding
     When cyberspace routes the request
-    Then init does not handle it and init-aced does
+    Then init does not handle it and the ACED registry skill does
 
   Scenario: a skill-authoring request defers to ACED
     Given the user asks to scaffold or evaluate a skill
     When cyberspace routes the request
-    Then init does not handle it and ACED's define-skill / improve / test-skill does
+    Then init does not handle it and ACED does
 
   Scenario: a publish or upgrade request defers to its plugin-lifecycle sibling
     Given the user asks to publish or upgrade a cross-vendor plugin

@@ -13,7 +13,7 @@ as an SDD plugin unless the project has already declined.
 ## Use Cases
 
 **Fit:** strong — `init` makes a genuine activation decision (general harness-agnostic onboarding vs. the narrow
-`init-aced` registry write, vs. authoring/evaluating skills in ACED) and carries non-deterministic judgment
+ACED registry write, vs. authoring/evaluating agent config in ACED) and carries non-deterministic judgment
 (which `AGENTS.md` sections are grounded enough to write, when an existing section differs enough to ask before
 overwriting, how to phrase the SDD/ACED suggestions, and how to recall a prior decline), so all four eval
 layers carry signal.
@@ -37,8 +37,8 @@ layers carry signal.
   harness memory, and skip the matching suggestion on a later run; where the harness has no memory, ask again
   rather than assume.
 
-**Non-goals** — registering ACED as an SDD plugin is `aced/init-aced` (init only *suggests and chains* it, never
-writes the registry itself); authoring or evaluating a skill is ACED (`define-skill` / `improve` / `test-skill`);
+**Non-goals** — registering ACED as an SDD plugin is the ACED registry skill's job (init only *suggests and
+chains* it, never writes the registry itself); authoring or evaluating agent config is ACED's domain;
 publishing or upgrading a cross-vendor plugin is `publish-universal-plugin` / `upgrade-universal-plugin`;
 setting up SDD itself is SDD's own setup, which init only suggests. The direct-write cross-vendor wiring used
 when the user rejects `npx` is a separate fallback skill, not init's own step.
