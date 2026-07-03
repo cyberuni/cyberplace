@@ -10,7 +10,7 @@ overview: >
   impl; (2) relocate the impl into plugins/aced as aced:skillify and update packaging; (3) remove
   it from skill-authoring. ADD CR against the aced project (status: implemented).
 cr: migrate-skillify-to-aced
-cr-url:
+cr-url: https://github.com/cyberuni/cyberplace/pull/49
 status: active
 todos:
   - id: intake
@@ -29,8 +29,8 @@ todos:
     content: DONE — cold aced-impl-judge; first pass caught 003/004 gap, fixed SKILL.md (Defer-when table), re-grade 18/18 PASS; approval.impl -> this CR, impl ledger line, status implemented
     status: completed
   - id: handoff
-    content: Placement already blessed (sibling of define-skill); committed 3 units (c1d6ad7 relocate / 3f2ac8d spec+eval / cb134e5 docs); pnpm verify + verify:specs green; post-mission Warden spawned. REMAINING = git push + PR (held for user)
-    status: in_progress
+    content: DONE — committed 3 units + Warden formation (451ddc7); pnpm verify + verify:specs green; pushed, PR #49 opened (base main). Mission complete; retirement-eligible on merge.
+    status: completed
 isProject: false
 ---
 
