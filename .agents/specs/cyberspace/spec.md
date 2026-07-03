@@ -1,21 +1,14 @@
 ---
-status: implemented
+status: approved
 project-path: plugins/cyberspace
 approval:
   spec:
     verdict: approve
     by: agent
     why:
-      leash: within — auto-spec; additive first behavioral node bootstrap/init on the freshly backfilled cyberspace spec; no existing frozen scenario narrowed; reversible feature branch migrate-init-to-cyberspace, unpushed; self-asserted at the ratification question because the user stepped away — lands in the async review queue, re-openable
-      basis: cold aced-spec-validator graded the 3-lens {oracle,builder,architect} — all PASS, ALIGNED complete, no blocker; declared fit strong (confusable trigger vs init-aced registry write + ACED skill-authoring + publish/upgrade); @trigger 5-yes/5-near-miss balanced, @rubric well-formed (4 dims max 9, threshold 7), Use-Cases<->scenario mapped; two advisory edge gaps (CLAUDE.md absent/already-symlinked, ACED already-registered) closed additively before freeze; init.feature frozen
-      cr: migrate-init-to-cyberspace
-  impl:
-    verdict: approve
-    by: agent
-    why:
-      leash: within — user directed autonomous completion (deliver→impl→handoff→merge); agent-config impl of plugins/cyberspace/skills/init on a feature branch, reversible; self-asserted by:agent into the async review queue
-      basis: cold aced-impl-judge (ADR-0016, oracle re-derived per frozen scenario) over plugins/cyberspace/skills/init/SKILL.md — ALL 30 frozen scenario evaluations PASS on first pass (@trigger 10/10 rows accuracy 1.00; 3 sibling-deferrals; 16 @behavior incl. the declined-SDD-doesn't-suppress-ACED independence hinge; @rubric @quality 9/threshold 7); architect-impl strong fit, 6 body sections map 1:1 to the node's subject behaviors, chaining target aced/init-aced resolves; no .feature or spec.md modified. Out-of-node follow-ups (non-blocking): the npx-decline direct-write fallback skill does not yet exist; universal-plugin CLI sync/repair-private subcommands undocumented
-      cr: migrate-init-to-cyberspace
+      leash: within — auto-spec; additive new behavioral node bootstrap/write-vendor-config on the implemented cyberspace spec (no existing frozen scenario narrowed); closes init.feature's dangling reference to the direct-write fallback; reversible feature branch cyberspace-direct-write-fallback; user directed autonomous completion; self-asserted by:agent into the async review queue
+      basis: cold aced-spec-validator 3-lens {oracle,builder,architect} all PASS, ALIGNED complete, no blocker; fit strong (the by-hand path vs init's CLI-offload path); @trigger 4-yes/4-near-miss balanced (near-miss "sync via the CLI"→no, "initialize AGENTS.md"→no), @rubric well-formed (4 dims max 9, threshold 7), Use-Cases<->scenario mapped, sibling refs intent-not-slug (ADR-0021); parent-index misdescription fixed + advisory edge gaps (nothing-detectable, Cursor two-form) closed before freeze; write-vendor-config.feature frozen
+      cr: add-write-vendor-config
 ---
 
 # cyberspace — the harness-agnostic agent-config foundation
@@ -83,7 +76,7 @@ never as a top-level folder. A node is `<capability>/<unit>` and never three dee
 
 | Concept | Facets |
 |---|---|
-| `bootstrap` | `bootstrap/init/` (behavior) |
+| `bootstrap` | `bootstrap/init/` (behavior) · `bootstrap/write-vendor-config/` (behavior) |
 | `glossary` | `glossary/` (reference) |
 
 <!-- END generated: by-concept -->
