@@ -1,6 +1,8 @@
 ---
 name: create-web-doc
 description: Use this skill when creating a new Astro docs page for a topic.
+metadata:
+  internal: true
 ---
 
 # Create Web Doc
