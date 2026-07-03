@@ -26,11 +26,11 @@ todos:
     content: DONE — git mv skill into plugins/aced (aced:skillify), removed .agents/skills+.claude/skills surfacing + skill-authoring cursor ref, moved website doc to aced/ + sidebar, authored eval suite (eval.md + 17 goldens, audit PASS)
     status: completed
   - id: impl-gate
-    content: Spawn cold aced-impl-judge over frozen scenarios + eval suite; advance to implemented
-    status: in_progress
+    content: DONE — cold aced-impl-judge; first pass caught 003/004 gap, fixed SKILL.md (Defer-when table), re-grade 18/18 PASS; approval.impl -> this CR, impl ledger line, status implemented
+    status: completed
   - id: handoff
-    content: Warden placement pass, commit in units, land per PR-flow; spawn post-mission Warden
-    status: pending
+    content: Placement already blessed (sibling of define-skill); committed 3 units (c1d6ad7 relocate / 3f2ac8d spec+eval / cb134e5 docs); pnpm verify + verify:specs green; post-mission Warden spawned. REMAINING = git push + PR (held for user)
+    status: in_progress
 isProject: false
 ---
 
@@ -48,7 +48,17 @@ isProject: false
 - **Leash auto-spec** — self-assert the internal spec gate; HOLD deliver (the outward-facing
   cross-plugin move + marketplace edit) for user confirmation.
 
-## NEXT — PAUSED at deliver boundary, awaiting user confirmation
+## NEXT — mission complete locally; only outward push/PR remains (user-gated)
+
+All gates passed, committed in 3 units on branch `migrate-skillify-to-aced`, `pnpm verify` +
+`verify:specs` green, post-mission Warden spawned detached. REMAINING: `git push -u origin
+migrate-skillify-to-aced` + open a PR (base main) — held for the user (outward-facing). Once merged,
+this plan is retirement-eligible (doctrine loop). Advisory follow-ups (file as new CRs if desired):
+skillify Step 6 `improve-skill` ambiguous vs `aced:improve`; Step 1 `npx cyberplace` dependency baked
+into an aced plugin skill. Note: `.agents/plans/acceptance-pipeline-skill-suite.md` shows an
+unrelated unstaged deletion (not this CR) — left untouched.
+
+## ARCHIVE — earlier pause note (deliver boundary)
 
 Spec gate DONE and self-asserted (auto-spec leash). Working tree (UNCOMMITTED — todos incomplete):
 - NEW node `.agents/specs/aced/config-authoring/skillify/` (README.md + skillify.feature @frozen, 18 scenarios)
