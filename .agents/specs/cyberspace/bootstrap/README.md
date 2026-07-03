@@ -7,7 +7,7 @@ declined (SDD, registering ACED as an SDD plugin).
 
 Units:
 
-- **`init`** *(behavioral — to be authored in explore)* — the harness-agnostic agent-config initializer.
+- [**`init`**](./init/README.md) *(behavioral)* — the harness-agnostic agent-config initializer.
   Migrated from the retired `skill-authoring/init`, extended to suggest SDD + ACED-plugin registration
   (chaining `aced/init-aced`) unless the project has declined, remembering that decision via harness memory
   where available and degrading to asking where it is not.

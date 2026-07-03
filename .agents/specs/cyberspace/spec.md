@@ -1,6 +1,14 @@
 ---
-status: draft
+status: approved
 project-path: plugins/cyberspace
+approval:
+  spec:
+    verdict: approve
+    by: agent
+    why:
+      leash: within — auto-spec; additive first behavioral node bootstrap/init on the freshly backfilled cyberspace spec; no existing frozen scenario narrowed; reversible feature branch migrate-init-to-cyberspace, unpushed; self-asserted at the ratification question because the user stepped away — lands in the async review queue, re-openable
+      basis: cold aced-spec-validator graded the 3-lens {oracle,builder,architect} — all PASS, ALIGNED complete, no blocker; declared fit strong (confusable trigger vs init-aced registry write + ACED skill-authoring + publish/upgrade); @trigger 5-yes/5-near-miss balanced, @rubric well-formed (4 dims max 9, threshold 7), Use-Cases<->scenario mapped; two advisory edge gaps (CLAUDE.md absent/already-symlinked, ACED already-registered) closed additively before freeze; init.feature frozen
+      cr: migrate-init-to-cyberspace
 ---
 
 # cyberspace — the harness-agnostic agent-config foundation
@@ -68,6 +76,7 @@ never as a top-level folder. A node is `<capability>/<unit>` and never three dee
 
 | Concept | Facets |
 |---|---|
+| `bootstrap` | `bootstrap/init/` (behavior) |
 | `glossary` | `glossary/` (reference) |
 
 <!-- END generated: by-concept -->
