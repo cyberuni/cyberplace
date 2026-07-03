@@ -1,6 +1,6 @@
 {
 	"$schema": "https://raw.githubusercontent.com/cyberuni/universal-plugin/refs/heads/main/schema/v1.json",
-	"name": "universal-plugin",
+	"name": "cyberspace",
 	"description": "Research and design toolkit for building universal AI coding agent plugins that work across Claude Code, Cursor, Codex, and GitHub Copilot CLI.",
 	"author": {
 		"name": "unional"
