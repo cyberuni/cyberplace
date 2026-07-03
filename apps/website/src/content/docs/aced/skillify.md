@@ -3,9 +3,11 @@ title: skillify
 description: Extract a repeatable workflow from the current session into a reusable SKILL.md.
 ---
 
+Part of the [ACED plugin](/aced/overview/) — see that page for install instructions.
+
 **Trigger:** "skillify this", "make this reusable", "turn what we just did into a skill"
 
-Analyzes what actually happened in the session and generalizes it into a `SKILL.md`. Different from [`aced:define-skill`](https://github.com/cyberuni/cyberplace), which scaffolds from a blank template.
+Analyzes what actually happened in the session and generalizes it into a `SKILL.md`. Different from [`define-skill`](/aced/define-skill/), which scaffolds from a blank template.
 
 ## When to use
 
