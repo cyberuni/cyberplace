@@ -1,5 +1,5 @@
 ---
-status: approved
+status: implemented
 project-path: plugins/cyberspace
 approval:
   spec:
@@ -8,6 +8,13 @@ approval:
     why:
       leash: within — auto-spec; additive new behavioral node bootstrap/write-vendor-config on the implemented cyberspace spec (no existing frozen scenario narrowed); closes init.feature's dangling reference to the direct-write fallback; reversible feature branch cyberspace-direct-write-fallback; user directed autonomous completion; self-asserted by:agent into the async review queue
       basis: cold aced-spec-validator 3-lens {oracle,builder,architect} all PASS, ALIGNED complete, no blocker; fit strong (the by-hand path vs init's CLI-offload path); @trigger 4-yes/4-near-miss balanced (near-miss "sync via the CLI"→no, "initialize AGENTS.md"→no), @rubric well-formed (4 dims max 9, threshold 7), Use-Cases<->scenario mapped, sibling refs intent-not-slug (ADR-0021); parent-index misdescription fixed + advisory edge gaps (nothing-detectable, Cursor two-form) closed before freeze; write-vendor-config.feature frozen
+      cr: add-write-vendor-config
+  impl:
+    verdict: approve
+    by: agent
+    why:
+      leash: within — user directed autonomous completion (continue until merged); agent-config impl of plugins/cyberspace/skills/write-vendor-config on a feature branch, reversible; self-asserted by:agent into the async review queue
+      basis: cold aced-impl-judge (ADR-0016, oracle re-derived per frozen scenario) over plugins/cyberspace/skills/write-vendor-config/SKILL.md — ALL 10 frozen scenarios PASS first pass (@trigger 8/8 rows accuracy 1.00; sibling-deferral; 7 @behavior; @rubric @quality 9/9 threshold 7); architect-impl clean fit, 4 sections map 1:1 to subject bullets, no scope creep. Harmless observation: Codex vendor→file row softer than pinned Claude/Cursor/Copilot (frozen suite pins no Codex filename)
       cr: add-write-vendor-config
 ---
 
