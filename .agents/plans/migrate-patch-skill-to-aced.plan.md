@@ -27,14 +27,14 @@ todos:
     content: DONE — froze patch-skill.feature, gate ledger line, approval.spec -> this CR, concept-index refreshed (contribution concept). Self-asserted within auto-spec leash
     status: completed
   - id: deliver
-    content: HELD (auto-spec) — git mv skill into plugins/aced (aced:patch-skill), packaging (plugin.json + 2 marketplaces), .agents/skills surfacing, website doc under aced/, eval suite (partial-fit — no goldens for git-plumbing steps)
-    status: pending
+    content: DONE — user renamed patch-skill->contribute-skill; git mv skill into plugins/aced (aced:contribute-skill) + .agents/skills surfacing (repair-private already_internal), removed from skill-authoring cursor manifest, moved+rewrote website doc under aced/ + sidebar, authored eval suite (16 goldens 16:1 + @trigger layer; single-commit outcome-only; audit + pnpm verify green)
+    status: completed
   - id: impl-gate
-    content: HELD — cold aced-impl-judge over frozen scenarios + eval suite; approval.impl -> this CR, impl ledger line, status stays implemented
-    status: pending
+    content: DONE — cold aced-impl-judge all 17 frozen scenarios PASS first pass (trigger 9/9, rubric 7/7); approval.impl -> this CR, impl ledger line, status stays implemented. Advisory follow-ups: CLI/lockfile coupling, add When-NOT-to-use list
+    status: completed
   - id: handoff
-    content: HELD — Warden placement pass finalizes group, commit in units, PR (base main), spawn post-mission sdd-warden detached
-    status: pending
+    content: Placement finalized — blessed new contribute/ group (README index + root Capability/Placement maps). Remaining: commit units, push, PR (base main), spawn post-mission sdd-warden detached
+    status: in_progress
 isProject: false
 ---
 
