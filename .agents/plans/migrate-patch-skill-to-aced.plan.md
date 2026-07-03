@@ -14,7 +14,7 @@ overview: >
   into plugins/aced as aced:patch-skill + packaging; (3) remove it from skill-authoring. ADD CR against
   the aced project (status stays implemented).
 cr: migrate-patch-skill-to-aced
-cr-url:
+cr-url: https://github.com/cyberuni/cyberplace/pull/50
 status: active
 todos:
   - id: intake
@@ -33,8 +33,8 @@ todos:
     content: DONE — cold aced-impl-judge all 17 frozen scenarios PASS first pass (trigger 9/9, rubric 7/7); approval.impl -> this CR, impl ledger line, status stays implemented. Advisory follow-ups: CLI/lockfile coupling, add When-NOT-to-use list
     status: completed
   - id: handoff
-    content: Placement finalized — blessed new contribute/ group (README index + root Capability/Placement maps). Remaining: commit units, push, PR (base main), spawn post-mission sdd-warden detached
-    status: in_progress
+    content: DONE — placement finalized (new contribute/ group); committed 3 units (2ed8982 spec node / ae2633d move+package+impl-gate / 6592f47 eval suite); pushed, PR #50 (base main); post-mission sdd-warden spawned detached. Mission complete locally; retirement-eligible on merge
+    status: completed
 isProject: false
 ---
 
@@ -61,7 +61,14 @@ isProject: false
 - **Leash auto-spec** — self-assert the internal spec gate; HOLD deliver (outward-facing cross-plugin
   move + marketplace edits + PR) for user confirmation.
 
-## NEXT — spec gate DONE + committed; HELD at deliver for the user (outward-facing)
+## NEXT — MISSION COMPLETE locally; only merge + post-merge chores remain
+
+All gates passed and self-asserted (spec + impl), 3 units committed on `migrate-patch-skill-to-aced`,
+`pnpm verify` green, PR #50 open (base main), post-mission `sdd-warden` spawned detached. On merge this
+plan is retirement-eligible (doctrine loop). Post-merge chores (separate, not this CR): `npx skills
+update` + drop the stale `patch-skill` lock entry / add `contribute-skill` (mirrors chore 8251594).
+
+### Archived deliver plan (executed)
 
 Explore + spec gate complete and self-asserted (auto-spec leash). Spec-gate unit committed on branch
 `migrate-patch-skill-to-aced`. DELIVER IS HELD because it is outward-facing. When the user confirms,
