@@ -1,6 +1,6 @@
 ---
 name: skillify
-description: Use this skill when generalizing a workflow from the current session into a reusable SKILL.md.
+description: 'Use this skill when generalizing what the current session actually did into a reusable SKILL.md — "skillify this", "turn what we just did into a skill", "make this reusable". Not for scaffolding a skill from scratch (define-skill), extracting the session into an agent or persona (define-agent), a reference-only rule set (define-governance), or diagnosing failing evals (improve).'
 ---
 
 # Skillify
@@ -12,6 +12,19 @@ Extracts a repeatable workflow from what was done in the current session and cre
 - The user says "skillify this", "make this reusable", "turn what we just did into a skill", or similar
 - A multi-step workflow was completed manually and is worth encoding for future use
 - You want to capture decisions made in a session so an agent can repeat them without re-deriving
+
+## Defer when…
+
+`skillify` owns generalizing **the current session's** work. Defer when the intent belongs to a sibling that shares the same "skill" / "reusable" vocabulary:
+
+| Intent | Sibling |
+|---|---|
+| scaffolding a skill **from scratch** — not from this session's work | `define-skill` |
+| extracting the session into a named reusable **agent** / delegated worker / an in-context **persona** | `define-agent` |
+| capturing the session as a **reference-only rule set** other skills load but never execute as steps | `define-governance` |
+| **diagnosing** why an existing skill's golden-set evals fail | `improve` |
+
+The tell is the *target artifact*, not the "reuse this" framing: an agent/persona, a reference rule set, or an eval diagnosis is a sibling's job even when the request points at what the session just did.
 
 ## Steps
 
