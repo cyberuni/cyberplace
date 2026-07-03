@@ -8,11 +8,6 @@
 			"description": "Find and evaluate skills before installing. Prefer global install (-g)."
 		},
 		{
-			"name": "skill-authoring",
-			"source": "skill-authoring",
-			"description": "Create, generalize, patch, persona, and audit skills. Prefer global install (-g)."
-		},
-		{
 			"name": "agent-initialization",
 			"source": "agent-initialization",
 			"description": "One-time repo setup. init and init-commit-discipline: global (-g); commit: project."
