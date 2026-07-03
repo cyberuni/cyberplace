@@ -4,5 +4,5 @@
 	"author": { "name": "unional" },
 	"homepage": "https://github.com/cyberuni/cyberplace",
 	"repository": "https://github.com/cyberuni/cyberplace",
-	"skills": ["../skills/create-universal-plugin", "../skills/skillify", "../skills/patch-skill"]
+	"skills": ["../skills/create-universal-plugin", "../skills/patch-skill"]
 }
