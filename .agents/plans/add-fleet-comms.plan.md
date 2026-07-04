@@ -20,8 +20,10 @@ todos:
     status: completed
   - content: "Cold spec-judge pass over the draft; incorporate verdict (done, ALIGNED:false resolved)"
     status: completed
-  - content: "SPEC GATE (user-ratified): freeze the .feature suite, set gate line"
-    status: pending
+  - content: "Cold spec-judge RE-GRADE after fixes → ALIGNED:true, all 5 nodes PASS 3 lenses"
+    status: completed
+  - content: "SPEC GATE: verdict IN (ALIGNED:true); execute freeze+ledger+root-status (paused before recording)"
+    status: in_progress
   - content: "Build cyberfleet CLI package from frozen suite + verification per scenario"
     status: pending
   - content: "Ship fleet skill + plugin hooks/hooks.json + shared registerHooks; gitignore .cyberfleet/"
@@ -54,21 +56,41 @@ Approved design plan: `/home/user/.claude/plans/for-cyberspace-i-want-streamed-b
 MVP = pull via hooks, project-scoped `.cyberfleet/`, tmux spawn. Phase 2 (own CRs) = watcher,
 live send-nudge, threads, cross-repo root, Copilot.
 
-## NEXT
+## NEXT — resume here
 
-Spec draft complete + cold-spec-judge verdict incorporated (branch `add-fleet-comms`; commits
-`ad02930` draft, `732215e` judge fixes). All five nodes clean: `check-spec-structure` 0/0,
-`concept-index` no drift, `check-suite` OK, no residual slug-path refs. Judge went ALIGNED:false →
-all eight fixes applied (sibling refs→bare names, spawn Scenario Outline + errors, identity/messaging/
-surfacing negatives, cut --reply-to, sequence diagram). Features still **un-@frozen** (draft).
+**Next action — execute the spec gate (verdict already IN, nothing to re-decide).** The cold
+spec-judge re-grade returned **ALIGNED: true**, all 5 nodes PASS on {oracle, builder, architect}.
+Paused before recording, so it is a clean draft. To land the gate (all in one commit):
+1. Freeze the 5 `.feature`s — prepend a `@frozen` line:
+   `for f in .agents/specs/cyberspace/fleet/*/*.feature; do sed -i '1i @frozen' "$f"; done`
+2. Append a `gate` line to the ledger shard `.agents/specs/cyberspace/ledger/add-fleet-comms.f1e2d3.jsonl`:
+   `{kind:gate, cr:add-fleet-comms, gate:spec, verdict:approve, by:agent, cause:dimension, why:"…", frozen:[the 5 feature paths]}` (free-text why, matches the write-vendor-config precedent line in this same dir).
+3. Root `spec.md`: set `status: implemented → approved`; replace the `approval` map with `approval.spec`
+   for THIS cr (`verdict:approve, by:agent, cause:dimension, why:{floor,blast,novelty,confidence}` per
+   `lifecycle-governance`) — drop the stale `add-write-vendor-config` approval blocks. (Root has one
+   lifecycle; it rides `approved` until the impl gate returns it to `implemented`, per the
+   write-vendor-config precedent.)
+4. Validate: `node <sdd-skills>/spec-gate/scripts/check-spec-state.mts --root .agents/specs/cyberspace`
+   (+ re-run check-spec-structure / concept-index --check). Commit the gate as one unit.
 
-Resume here:
-1. **Run the grill / spec gate with the user.** The gate is a user-ratified step — do NOT
-   self-freeze five brand-new nodes. Present the draft + judge verdict, do a grill round if the
-   user wants, then at approve: add `@frozen` to each `.feature`, write the `gate` line to the
-   `add-fleet-comms.f1e2d3.jsonl` ledger shard, keep root `spec.md` in sync.
-3. **Then Step 3 (deliver):** build the `cyberfleet` CLI package + the `fleet` skill + hook wiring
-   from the frozen suite (see the design plan `/home/user/.claude/plans/for-cyberspace-i-want-streamed-beaver.md`
-   §"Files to create / modify"), one verification per frozen scenario; cold impl-judge; handoff PR.
+**Then Step 3 (deliver) — build from the frozen suite.** Design plan
+`/home/user/.claude/plans/for-cyberspace-i-want-streamed-beaver.md` §"Files to create/modify" is the
+impl reference. Scaffold **new `packages/cyberfleet/`** mirroring `packages/cyberplace` (already read:
+package.json → name `cyberfleet`, bin `cyberfleet`, dep commander, tsdown `entry: src/cli.ts`, bin shim
+`dist/cli.mjs`; copy `src/output.ts` helpers). Modules: `src/{cli,paths,identity,registry,message,spawn,
+output,runtime/inject-inbox}.ts` + co-located tests, one verification per frozen scenario. Register in
+`pnpm-workspace.yaml` (`packages/*` already globs it) + add `.cyberfleet/` to root `.gitignore`. For
+`cyberfleet install --agent`, reuse cyberplace's `registerHook(input, options)` (src/hook/register.ts,
+exported) + `buildHookDefinition` via a `workspace:*` dep on cyberplace — that's the one cross-package
+seam. Then spawn the cold impl-judge → `status: implemented` + `approval.impl` + ledger `gate:impl` line;
+handoff PR.
 
-Do not touch any existing frozen scenario (all-additive). Design plan is the impl reference.
+**Carry-forward follow-ups (from the judge; not gate blockers — file as their own CRs):**
+- `build-definition.ts` / `vendors.json` (the per-vendor hook mapping surfacing depends on) has no spec
+  node under cyberspace → Warden corpus gap.
+- No fleet e2e in `acceptance/` (consistent with bootstrap/plugin also empty) → follow-up.
+- `gateway` must-not/edge density at the floor (3) → no margin if the ACED impl-judge wants more.
+
+Constraints: all-additive — do not touch any existing frozen scenario. Session ledger hash `f1e2d3`
+(reuse for any further line this session). Both SDD gates run in-session by the conductor (default),
+self-asserted `by:agent` within the `auto-spec` leash.
