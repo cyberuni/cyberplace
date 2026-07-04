@@ -8,9 +8,11 @@ approval:
     by: agent
     cause: dimension
     why:
-      leash: within — all-additive backfill. A brand-new SDD project spec migrated from the legacy non-SDD `packages/universal-plugin/specs/` tree; no pre-existing frozen scenario is narrowed. The one breaking change (re-nesting `universal-plugin build` → `universal-plugin plugin build`) was authorized by the user when approving the mission plan, so Compatibility does not fire. Self-asserted (by agent) — ratify or kick back.
-      basis: cold sdd-spec-judge, 3-lens {oracle, builder, architect} all PASS, ALIGNED true (one Builder blocker fixed then re-graded — governance.feature merged from two `Feature:` blocks to one). check-spec-state OK, check-suite OK, check-spec-structure 0 blocking / 0 advisory, concept-index no drift, referenced-artifact checks OK. Four `.feature` frozen; `plugin/validate` + `plugin/init` are spec-first / impl-deferred by ADR-0001.
-      cr: backfill-universal-plugin-spec
+      floor: clearance — re-open of the four frozen behavioral `.feature` was ratified by the user in-session before any rewrite; the narrowing/rewrite clearance is pre-authorized. No Compatibility (no shipped semver bump this CR) or Conflict (no logical contradiction) floor fires.
+      blast: high — cross-cutting AXI adoption touches all four behavioral nodes + a new `axi/` reference node + root spec; but each edit is contract-crispening or additive, no domain behavior removed.
+      novelty: low — AXI is an external, well-specified contract; the change is applying it, not inventing.
+      confidence: high — cold sdd-spec-judge 3-lens {oracle, builder, architect} all PASS, ALIGNED true (Builder failed round 1 on two coverage gaps — managed-scope positive + #6 no-prompts uniformity — both fixed then re-graded PASS). check-suite / check-spec-state / check-spec-structure (0/0) clean, 0 open markers, concept-index no drift. AXI #7 deferred to a follow-up CR (ADR-0003). Self-asserted (by agent) — ratify or kick back.
+      cr: axi-conformance
 ---
 
 # universal-plugin — the cross-vendor plugin build/derivation engine (CLI)
@@ -37,6 +39,14 @@ Copilot CLI) expects, and resolves shared governance documents by name. Two conc
 
 Everything here is deterministic CLI behavior (SDD-default + a script harness — boolean scenarios,
 no rubric).
+
+Every command follows the **AXI** ([Agent Experience Interface](https://github.com/kunchenguid/axi))
+output contract — token-efficient [TOON](https://toonformat.dev/) output by default, minimal schemas,
+pre-computed aggregates, definitive empty states, structured/fail-loud errors, content-first group
+commands, next-step suggestions, and consistent help — stated once in [`axi/`](./axi/README.md) and
+exercised by each behavioral node (ADR-0003). AXI principle #7 (session-hook setup + installable
+skill) is deferred to a follow-up CR: it crosses the charter boundary (hooks → `cyberplace`, skills →
+`cyberspace`/`aced`).
 
 ## Why this is its own project
 
@@ -65,6 +75,7 @@ is a peer of the `cyberfleet` CLI.
 | [`plugin/validate/`](./plugin/validate/README.md) | behavioral | `universal-plugin plugin validate [--vendor] [--strict]` — check the canonical manifest against schema + vendor rules |
 | [`plugin/init/`](./plugin/init/README.md) | behavioral | `universal-plugin plugin init [--name] [--vendor] [--scaffold] [--force] [--yes]` — scaffold a new plugin project |
 | [`governance/`](./governance/README.md) | behavioral | `universal-plugin governance show <name>` / `list` — resolve governance documents by name across scopes |
+| [`axi/`](./axi/README.md) | reference | the **AXI** output contract — shared token-efficient CLI conventions (TOON default, aggregates, empty states, next-step, fail-loud, content-first, help) every command follows |
 
 ## Placement map
 
@@ -74,6 +85,9 @@ Where a new concept lives — slot here, do not invent placement (strategy = **c
   `plugin/<verb>/` (a new unit node under the `plugin` group).
 - **a new name→document resolution op** (resolve or list governance by name across scopes) →
   `governance/`.
+- **a new shared output / CLI convention** (TOON shape, aggregate, next-step, empty-state,
+  truncation, help, content-first) → `axi/` (the reference contract), plus concrete scenarios in each
+  behavioral node that exercises it. Never a per-command copy of the convention.
 - **a cross-capability CLI e2e** (spans ≥2 nodes) → `acceptance/`.
 - **marketplace / plugin-install / lifecycle-hook op** → **not here** — that is the `cyberplace`
   package.
@@ -95,6 +109,7 @@ scanned node).
 
 | Concept | Facets |
 |---|---|
+| `axi` | `axi/` (reference) · `governance/` (behavior) · `plugin/build/` (behavior) · `plugin/init/` (behavior) · `plugin/validate/` (behavior) |
 | `canonical-manifest` | `plugin/build/` (behavior) · `plugin/init/` (behavior) · `plugin/validate/` (behavior) |
 | `governance` | `governance/` (behavior) |
 

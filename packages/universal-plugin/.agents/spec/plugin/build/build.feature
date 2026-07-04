@@ -44,12 +44,13 @@ Feature: plugin build — derive per-vendor manifests
 
   # ── Warnings, not errors ──
 
-  Scenario: no vendorExtensions declared produces warning
+  Scenario: no vendorExtensions declared is a definitive empty state
     Given the manifest has no vendorExtensions field
     When I run "universal-plugin plugin build"
     Then the exit code is 0
     And no output files are written
-    And stdout or stderr contains "nothing to build"
+    And stdout is TOON with zero built rows and the aggregate "built 0"
+    And stderr contains "nothing to build"
 
   Scenario: unknown vendor in vendorExtensions is warned and skipped
     Given vendorExtensions contains an unknown vendor key "acme"
@@ -87,3 +88,48 @@ Feature: plugin build — derive per-vendor manifests
     When I run "universal-plugin plugin build --clean"
     Then ".claude-plugin/plugin.json" is removed and rewritten
     And the exit code is 0
+
+  # ── AXI output contract ──
+
+  Scenario: a successful build prints a TOON result with per-vendor status and aggregate
+    Given the manifest declares vendorExtensions for "claude-code" and "cursor"
+    When I run "universal-plugin plugin build"
+    Then stdout is TOON with one row per vendor carrying "vendor", "path", "status"
+    And each row's "status" is "built", "skipped", or "failed"
+    And stdout contains the aggregate summary "built 2, skipped 0, failed 0"
+    And the exit code is 0
+
+  Scenario: --format json returns a structured build result
+    Given the manifest declares vendorExtensions for "claude-code" and "cursor"
+    When I run "universal-plugin plugin build --format json"
+    Then stdout is JSON with a "built" array
+    And stdout contains the summary counts "built", "skipped", "failed"
+    And the exit code is 0
+
+  Scenario: --format toon names the default explicitly
+    Given the manifest declares vendorExtensions for "claude-code"
+    When I run "universal-plugin plugin build --format toon"
+    Then stdout is TOON with one row per vendor
+    And the exit code is 0
+
+  Scenario: a successful build ends with a next-step suggestion
+    Given the manifest declares vendorExtensions for "claude-code"
+    When I run "universal-plugin plugin build"
+    Then stderr ends with "→ universal-plugin plugin validate"
+
+  Scenario: build never prompts interactively
+    Given the manifest declares vendorExtensions for "claude-code"
+    When I run "universal-plugin plugin build"
+    Then no interactive prompts are shown
+    And the exit code is 0
+
+  Scenario: an unknown flag fails loud
+    Given the manifest declares vendorExtensions for "claude-code"
+    When I run "universal-plugin plugin build --frobnicate"
+    Then the exit code is 1
+    And stderr contains "--frobnicate"
+
+  Scenario: --help prints a concise reference
+    When I run "universal-plugin plugin build --help"
+    Then the exit code is 0
+    And stdout contains a synopsis, the flags, and one example

@@ -59,7 +59,25 @@ Feature: plugin init — scaffold a new plugin project
     Then the exit code is 0
     And ".plugin/plugin.json" is overwritten
 
-  # ── JSON output ──
+  # ── AXI output contract ──
+
+  Scenario: init is non-interactive by default, with no --yes and no --format
+    When I run "universal-plugin plugin init --root <root>"
+    Then no interactive prompts are shown
+    And ".plugin/plugin.json" is written
+    And the exit code is 0
+
+  Scenario: --yes is a compatibility no-op
+    When I run "universal-plugin plugin init --yes --root <root>"
+    Then no interactive prompts are shown
+    And ".plugin/plugin.json" is written
+    And the exit code is 0
+
+  Scenario: a successful init prints a TOON result with created files and aggregate
+    When I run "universal-plugin plugin init --root <root>"
+    Then stdout is TOON with one row per created file carrying "path"
+    And stdout contains the aggregate summary "created 1"
+    And the exit code is 0
 
   Scenario: --format json returns list of created files
     When I run "universal-plugin plugin init --yes --format json --root <root>"
@@ -72,3 +90,17 @@ Feature: plugin init — scaffold a new plugin project
     Then the exit code is 0
     And no interactive prompts are shown
     And stdout is valid JSON with a "created" array
+
+  Scenario: a successful init ends with a next-step suggestion
+    When I run "universal-plugin plugin init --root <root>"
+    Then stderr ends with "→ add skills to skills/, then run universal-plugin plugin build"
+
+  Scenario: an unknown flag fails loud
+    When I run "universal-plugin plugin init --frobnicate --root <root>"
+    Then the exit code is 1
+    And stderr contains "--frobnicate"
+
+  Scenario: --help prints a concise reference
+    When I run "universal-plugin plugin init --help"
+    Then the exit code is 0
+    And stdout contains a synopsis, the flags, and one example

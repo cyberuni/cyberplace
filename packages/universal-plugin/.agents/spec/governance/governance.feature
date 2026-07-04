@@ -3,12 +3,22 @@ Feature: governance — resolve documents by name
   universal-plugin governance show <name> resolves a governance document by name across a fixed scope
   precedence (managed → project → local → user → package for a plain name, plus a store scope for a
   namespaced <plugin>/<asset> lookup), and governance list enumerates the resolvable documents by
-  name and winning scope. Authoring, editing, and installing governance are out of scope.
+  name and winning scope. Output follows the AXI contract: TOON by default with pre-computed
+  aggregates, truncation with --full for large documents, definitive empty states, content-first
+  bare invocation, next-step suggestions, and fail-loud unknown flags. Authoring, editing, and
+  installing governance are out of scope.
 
   Background:
     Given the project root is a temporary directory
 
   # ── show: scope precedence (plain name) ──
+
+  Scenario: managed scope wins over every other scope
+    Given a governance file "plugin-design.md" exists at the managed scope
+    And a governance file "plugin-design.md" exists in "<root>/governances/"
+    When I run "universal-plugin governance show plugin-design --root <root>"
+    Then the exit code is 0
+    And stdout contains the managed-scope content
 
   Scenario: governance found at project scope
     Given a governance file "plugin-design.md" exists in "<root>/governances/"
@@ -87,15 +97,13 @@ Feature: governance — resolve documents by name
     Given no governance files exist at managed, project, local, or user scope
     When I run "universal-plugin governance list --root <root>"
     Then the exit code is 0
-    And stdout contains "plugin-design"
-    And stdout contains "package"
+    And stdout is TOON containing a row with name "plugin-design" and scope "package"
 
   Scenario: governance listed with name and scope
     Given a governance file "plugin-design.md" exists in "<root>/governances/"
     When I run "universal-plugin governance list --root <root>"
     Then the exit code is 0
-    And stdout contains "plugin-design"
-    And stdout contains "project"
+    And stdout is TOON containing a row with name "plugin-design" and scope "project"
 
   Scenario: de-duplicates by name, highest scope wins
     Given a governance file "shared.md" exists in "<root>/governances/"
@@ -118,3 +126,94 @@ Feature: governance — resolve documents by name
     When I run "universal-plugin governance list --format json --root <root>"
     Then the exit code is 0
     And stdout is a JSON array where each entry has "name" and "scope"
+
+  # ── AXI: list TOON default + aggregate (#1,#2,#4) ──
+
+  Scenario: list prints a TOON result with a pre-computed aggregate
+    Given a governance file "plugin-design.md" exists in "<root>/governances/"
+    And a governance file "shared.md" exists in "~/.agents/governances/"
+    When I run "universal-plugin governance list --root <root>"
+    Then stdout is TOON with rows carrying "name" and "scope"
+    And stdout contains the aggregate summary "2 governances across 2 scopes"
+    And the exit code is 0
+
+  # ── AXI: show truncation + --full (#3) ──
+
+  Scenario: show truncates a large document body with a size hint
+    Given a governance file "huge.md" with 400 lines of content exists in "<root>/governances/"
+    When I run "universal-plugin governance show huge --root <root>"
+    Then the exit code is 0
+    And stdout is truncated with a size hint matching "… +\d+ lines — rerun with --full"
+
+  Scenario: show --full prints the whole document body untruncated
+    Given a governance file "huge.md" with 400 lines of content exists in "<root>/governances/"
+    When I run "universal-plugin governance show huge --full --root <root>"
+    Then the exit code is 0
+    And stdout contains all 400 lines of "huge.md"
+
+  Scenario: a small document is never truncated
+    Given a governance file "plugin-design.md" exists in "<root>/governances/"
+    When I run "universal-plugin governance show plugin-design --root <root>"
+    Then the exit code is 0
+    And stdout contains the full content of "plugin-design.md"
+    And stdout does not contain "rerun with --full"
+
+  Scenario: show --format json is never truncated
+    Given a governance file "huge.md" with 400 lines of content exists in "<root>/governances/"
+    When I run "universal-plugin governance show huge --format json --root <root>"
+    Then the exit code is 0
+    And stdout is valid JSON containing all 400 lines of "huge.md" in "content"
+
+  # ── AXI: definitive empty state (#5) ──
+
+  Scenario: list is a definitive empty state when nothing resolves at any scope
+    Given no governance files exist at managed, project, local, user, or package scope
+    When I run "universal-plugin governance list --root <root>"
+    Then the exit code is 0
+    And stdout contains "0 governances found"
+
+  # ── AXI: content-first (#8) ──
+
+  Scenario: bare governance with no subcommand runs list
+    Given a governance file "plugin-design.md" exists in "<root>/governances/"
+    When I run "universal-plugin governance --root <root>"
+    Then the exit code is 0
+    And stdout is the same TOON result as "universal-plugin governance list --root <root>"
+
+  # ── AXI: next-step suggestions (#9) ──
+
+  Scenario: show ends with a next-step suggestion
+    Given a governance file "plugin-design.md" exists in "<root>/governances/"
+    When I run "universal-plugin governance show plugin-design --root <root>"
+    Then stderr ends with "→ universal-plugin governance list"
+
+  Scenario: list ends with a next-step suggestion
+    Given a governance file "plugin-design.md" exists in "<root>/governances/"
+    When I run "universal-plugin governance list --root <root>"
+    Then stderr ends with "→ universal-plugin governance show <name>"
+
+  # ── AXI: non-interactive, fail-loud (#6) ──
+
+  Scenario: governance commands never prompt interactively
+    Given a governance file "plugin-design.md" exists in "<root>/governances/"
+    When I run "universal-plugin governance list --root <root>"
+    Then no interactive prompts are shown
+    And the exit code is 0
+
+  Scenario: an unknown flag fails loud
+    Given a governance file "plugin-design.md" exists in "<root>/governances/"
+    When I run "universal-plugin governance show plugin-design --frobnicate --root <root>"
+    Then the exit code is 1
+    And stderr contains "--frobnicate"
+
+  # ── AXI: help (#10) ──
+
+  Scenario: governance --help prints a concise reference
+    When I run "universal-plugin governance --help"
+    Then the exit code is 0
+    And stdout contains a synopsis, the flags, and one example
+
+  Scenario: governance show --help prints a concise reference
+    When I run "universal-plugin governance show --help"
+    Then the exit code is 0
+    And stdout contains a synopsis, the flags, and one example
