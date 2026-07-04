@@ -13,7 +13,15 @@ const program = new Command()
 
 program.name('universal-plugin').description('Universal AI agent plugin build tool').version('0.0.0').helpCommand(false)
 
-program.addCommand(buildCommand())
+// The `plugin` command group: author the canonical .plugin/plugin.json.
+// build is implemented; validate and init are specced (impl-deferred).
+function pluginCommand(): Command {
+	const cmd = new Command('plugin').description('Author the canonical plugin manifest (build; validate, init planned)')
+	cmd.addCommand(buildCommand())
+	return cmd
+}
+
+program.addCommand(pluginCommand())
 program.addCommand(cleanCommand())
 program.addCommand(governanceCommand())
 program.addCommand(prepareCommand())

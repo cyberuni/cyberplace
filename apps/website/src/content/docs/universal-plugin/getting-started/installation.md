@@ -19,7 +19,7 @@ npx universal-plugin@$(npm view universal-plugin version) build
 
 ```bash
 npm install -g universal-plugin
-universal-plugin build
+universal-plugin plugin build
 ```
 
 ## Install as a dev dependency
@@ -35,8 +35,8 @@ Then use it from `package.json` scripts:
 ```json
 {
   "scripts": {
-    "build:plugin": "universal-plugin build",
-    "postinstall": "universal-plugin build"
+    "build:plugin": "universal-plugin plugin build",
+    "postinstall": "universal-plugin plugin build"
   }
 }
 ```
