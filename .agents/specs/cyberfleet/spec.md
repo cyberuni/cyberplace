@@ -1,5 +1,5 @@
 ---
-status: implemented
+status: approved
 project-path: packages/cyberfleet
 approval:
   spec:
@@ -7,17 +7,9 @@ approval:
     by: agent
     cause: dimension
     why:
-      leash: within — auto-spec; freeze-preserving relocation of an already-frozen, already-implemented capability (5 nodes gateway/identity/messaging/spawn/surfacing) off the cyberspace project onto its own project spec, no scenario content or frontmatter touched, only paths and cross-references; reversible feature branch
-      basis: pure `git mv` of the 5 node folders + their ledger shard, reconciliation of intra-fleet relative-path cross-references broken by the move depth change, and a new project root `spec.md` carrying forward the original add-fleet-comms approval provenance verbatim (see below) — no re-grade performed because no spec content changed
-      cr: relocate-fleet-spec
-  impl:
-    verdict: approve
-    by: agent
-    cause: dimension
-    why:
-      leash: within — same relocation; no implementation changed, `packages/cyberfleet` and `plugins/cyberfleet` sources untouched by this CR
-      basis: carried forward verbatim from the original `add-fleet-comms` impl gate on the cyberspace project (two cold impl-judges PASS — see the relocated ledger shard `ledger/add-fleet-comms.f1e2d3.jsonl` for the full historical record); no re-verification performed because no implementation changed
-      cr: relocate-fleet-spec
+      leash: within — auto-spec; additive — two new behavioral persona nodes (recruitment/Crimp, tuning/Tuner) on the implemented cyberfleet project, no existing frozen scenario touched, the 5 prior nodes stay @frozen; reversible feature branch fleet-crew-personas; user directed continuation into Mission A; self-asserted by:agent into the async review queue. Root cycles implemented->approved for this CR (new unbuilt behavior); returns to implemented at the impl gate. Prior relocate-fleet-spec/add-fleet-comms provenance is the overwritten current-state twin; its durable record stays in the ledger/ shards.
+      basis: two cold ACED spec-judges, both ALIGNED true, {oracle,builder,architect} all PASS — Crimp (Fit strong; @trigger balanced Examples, 3 @rubric, 7 @behavior; Tavern-by-intent per ADR-0021) and Tuner (Fit strong; @trigger balanced, 6 @rubric, 8 @behavior; thin-dispatcher routing to manage-model-runners / define-agent / autonomy-rubric). check-suite OK, check-spec-structure 0/0, concept-index regenerated (added the [crew] group). Both .feature frozen. Non-blocking follow-ups: a voice-rubric dimension across the three persona nodes; a concrete in-session handler for the leash route.
+      cr: fleet-crew-personas
 ---
 
 # cyberfleet — harness-agnostic agent sessions + messaging (MCP-free)
@@ -78,13 +70,19 @@ standalone rather than trust a carried-forward verdict), that policy isn't estab
 | [`messaging/`](./messaging/README.md) | behavioral | `cyberfleet send` / `inbox` / `read` — the per-recipient file queue |
 | [`spawn/`](./spawn/README.md) | behavioral | `cyberfleet spawn` — launch a new peer session in a git worktree |
 | [`surfacing/`](./surfacing/README.md) | behavioral | `cyberfleet inbox --hook` — inject unread mail into a session at start |
+| [`recruitment/`](./recruitment/README.md) | behavioral | the **Crimp** persona — recruit/discharge crew types from the Tavern (browse, install, register; uninstall, retire) |
+| [`tuning/`](./tuning/README.md) | behavioral | the **Tuner** persona — adjust an automaton's program (governance/model/effort/leash), re-chip its loadout, hot-swap the unit |
 
 ## Placement map
 
 Where a new concept lives — slot here, do not invent placement:
 
-- **a new user-facing fleet trigger or persona behavior** (when to spawn, message etiquette,
-  mode-switch) → `gateway/`.
+- **a new mode-switch persona behavior** (when to spawn, message etiquette, ship-vs-command-center
+  mode) → `gateway/` (the Pod/Operator personas).
+- **a new crew-acquisition persona behavior** (recruit/discharge a crew type — browse the Tavern,
+  install/register, uninstall/retire) → `recruitment/` (the Crimp persona).
+- **a new crew-tuning persona behavior** (adjust an automaton's program — governance/model/effort/
+  leash — re-chip its loadout, hot-swap the unit) → `tuning/` (the Tuner persona).
 - **a new identity/registry operation** (self-identify, peer discovery, liveness) → `identity/`.
 - **a new message-queue operation** (send, inbox, read, ack) → `messaging/`.
 - **a new peer-session-launch operation** (worktree creation, session backend, brief handoff) →
@@ -95,11 +93,10 @@ Where a new concept lives — slot here, do not invent placement:
   exists yet (see the `README.md` "Scope" note); do not invent one folder-deep node for this.
 
 The nesting rule: capabilities at the top; any layering nests *inside* a capability, never as a
-top-level folder. A node is `<capability>` and never nested — this project currently has no
-sub-grouping needing a `concept:`-tag index (all 5 nodes already carry `concept: [fleet]`, kept as
-an accurate historical trace of their shared origin capability; the by-concept index below is
-generated for consistency with the corpus convention even though there is only one project-local
-concept today).
+top-level folder. A node is `<capability>` and never nested. Two cross-cutting concerns run through
+the project (see the by-concept index below): `fleet` (the original session-coordination nodes —
+gateway/identity/messaging/spawn/surfacing) and `crew` (the crew-management personas — recruitment
+(Crimp) and tuning (Tuner)), the latter added with the `fleet-crew-personas` change.
 
 <!-- BEGIN generated: by-concept (project-spec/concept-index) -->
 
@@ -109,6 +106,7 @@ concept today).
 
 | Concept | Facets |
 |---|---|
+| `crew` | `recruitment/` (behavior) · `tuning/` (behavior) |
 | `fleet` | `gateway/` (behavior) · `identity/` (behavior) · `messaging/` (behavior) · `spawn/` (behavior) · `surfacing/` (behavior) |
 
 <!-- END generated: by-concept -->
