@@ -17,6 +17,12 @@ todos:
     status: completed
   - content: "handoff: branch cyberplace-backfill-tavern -> PR; file Mission A (Crimp+Tuner) follow-up"
     status: in_progress
+  - content: "FOLLOW-UP CR: de-dup deriveInstallCommand in awesome/render.ts onto the awesome/lib.ts export"
+    status: pending
+  - content: "FOLLOW-UP: awesome-list backfill (deferred stub -> full node) when demanded"
+    status: pending
+  - content: "FOLLOW-UP: Mission A — Crimp + Tuner personas in the cyberfleet spec"
+    status: pending
 ---
 
 # cyberplace-backfill-tavern
