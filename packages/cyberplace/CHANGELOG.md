@@ -1,5 +1,68 @@
 # cyberplace
 
+## 0.8.0
+
+### Minor Changes
+
+- e7dbcd9: Add `aced:define-agent` skill for creating and improving agent definitions. Guides users through three modes — **Delegated** (subagent only), **Invokable** (dual-mode: subagent + in-context persona via a companion command), and **In-context only** — and asks upfront about placement (user-global, project, or plugin). Scaffolds the canonical file under `.agents/agents/`, creates runtime symlinks, and for Invokable mode generates a thin companion command file.
+- e7dbcd9: Add `aced:define-governance` skill for creating and improving governance files — reference-only skills that encode criteria, standards, or workflow rules for other skills and agents to load on demand. Guides users through placement (user-global, project, or plugin), gathers topic, consumers, content type (rubric, constraint set, checklist, decision table), and rules, then drafts the file with the required `Internal skill:` description prefix and `user-invocable: false` frontmatter to suppress auto-triggering across all harnesses.
+- e7dbcd9: Add `aced:define-skill` skill for authoring and improving workflow skills — process, tool-based, or standard SKILL.md files — the ACED-native successor to the legacy `create-skill`. Routes the request (deferring agents/personas to `define-agent`, rule sets to `define-governance`, session extraction to `skillify`), settles scope via the five design questions, picks the pattern and placement, scaffolds the SKILL.md (plus a README for a project-public skill) with a trigger-bearing description, runs the structural audit, and hands off to the ACED eval loop (`start-mission` / `add-scenario` / `run`) to spec and score it instead of embedding a legacy trigger-query test. Ships with a frozen `.feature` (fit: strong) and a scenario→rubric eval suite.
+- e7dbcd9: The `aced-spec-designer` agent now owns its quality loop internally. After writing eval artifacts, the designer invokes `aced-spec-validator`, revises only the affected files on failure, and repeats up to three times — surfacing questions to the user only when genuinely needed. The `aced create-spec` skill is now a thin entry point that invokes the designer and relays its `QUALITY_GATE` and `ITERATIONS` summary.
+- 771b093: Add `sdd` plugin with `create-spec` and `validate-spec` skills for spec-driven development. Includes `sdd-spec-designer` and `sdd-spec-validator` agent definitions that back the skills with a quality-loop pattern.
+- 5e5a62b: The `sdd` plugin's `manage-spec-anchors` config now supports `**` in an anchor pattern, matching zero or more directory levels (any depth). This lets a custom anchor name a root whose specs sit at varying depth beneath it, e.g. `archive/**`.
+- e1e9e43: Auto-select the skill when a source repository exposes exactly one skill, skipping the selection prompt and proceeding directly to the install-scope prompt.
+- aaa01fc: Replace the `sdd` plugin's implementation with the conductor/`sdd-automaton` design (previously staged at `plugins/sdd-new`). The plugin still installs as `sdd`, but its skill set has changed: `start-mission`, `spec-gate`, `discover-specs`, `discover-plans`, `pause-mission`, `resume-mission`, `manage`, `manage-spec-anchors`, `concept-index`, `place-node`, `plan-retirement`, `resolve-governances`, and `resolve-tracking` replace the old `create-spec`, `validate-spec`, `revise-spec`, `split-spec`, `dedupe-specs`, `spec-digest`, `spec-governance`, `render-spec-graph`, and `plan-producer-governance` skills. Reinstall the plugin to pick up the new skill set.
+- 3e076f2: The `init` skill now checks for missing vendor skill symlinks after writing `AGENTS.md`. For each skill in `.agents/skills/`, it ensures a corresponding symlink exists in every vendor skill directory present in the repo (`.claude/skills/`, `.cursor/skills/`, `.opencode/skills/`), creating missing directories and symlinks as needed.
+- 4699d0e: SDD's `manage` skill regroups its top-level menu: `manage-spec-anchors` now lives under a new **Setup & discovery** group (alongside `backfill-project-spec`) instead of **Housekeeping**, since anchor config is a prerequisite for a project being discoverable at all. The `sdd` gateway also now offers `manage-spec-anchors` alongside `backfill-project-spec` when it finds no spec for a target project, rather than assuming the project was never scaffolded.
+- 5c33c04: Merge `plugin-design` governance into `universal-plugin` with a comprehensive cross-vendor spec.
+
+  `governance show universal-plugin` now includes the full plugin authoring spec: exact field definitions for the canonical `.plugin/plugin.json` source of truth, field-by-field vendor manifest derivation tables for Claude Code / Cursor / Codex, hook event name mapping (canonical kebab-case → PascalCase/camelCase per vendor), MCP symlink rules, component authoring rules, distribution scopes, and cross-platform portability constraints.
+
+  Adds `docs/specs/universal-plugin/*.feature` — Gherkin acceptance criteria for conformant plugin validators and generators, following the Uncle Bob Acceptance-Pipeline-Specification pattern.
+
+  **Migration:** Replace `governance show plugin-design` with `governance show universal-plugin`. All `plugin-design` content is now present in `universal-plugin`.
+
+- e51e038: Remove bundled skills from the npm package.
+
+  Skills previously shipped under `skills/` inside the `cyberplace` npm package are no longer included. They now live in plugin-specific directories in the source repository and must be installed via `npx cyberplace add` or the `skills` CLI.
+
+  Migration: replace any direct file references to the bundled skills with `npx cyberplace add cyberuni/cyberplace:<skill-name>`.
+
+- 5fd3840: Remove `create-persona-skill`. Its scope is fully covered by `aced:define-agent`, which handles personas as one of three agent-definition modes (Delegated, Invokable, In-context only) alongside subagents.
+
+  Migration: use `aced:define-agent` and pick the "In-context only" or "Invokable" mode for a persona.
+
+- af5c67c: Remove `create-skill`. Its scope is fully covered by `aced:define-skill`, which also handles
+  already-escaped (ignored) requests via a dedicated scaffold-and-stop entry point.
+
+  Migration: use `aced:define-skill`.
+
+- e7dbcd9: Rename the ACES plugin to **ACED** — Agent Config Evaluation & Development. The old expansion, "Agent Config Examination & Specification," undersold what the plugin does: it doesn't just examine and specify agent configs, it runs the full SDD production chain (spec-producer, spec-judge, impl-producer, impl-judge) that builds and evolves them.
+
+  This is a breaking rename for existing installs. All `aces:*` skill and agent references (`aces:run`, `aces:add-scenario`, `aces:define-agent`, `aces:define-skill`, `aces:define-governance`, `aces:improve`, `aces:improve-skill`, `aces:compare`, `aces:report`, `aces:init-aces`, `aces-scenario-writer`, `aces-spec-validator`, `aces-impl-judge`, `aces-case-judge`) no longer resolve — use their `aced:*` / `aced-*` equivalents (e.g. `aced:init-aced`). The plugin directory moves from `plugins/aces` to `plugins/aced`, and its `.agents/universal-plugin.json` registration key changes from `aces` to `aced`. Consumers with an existing local `.agents/universal-plugin.json` entry pointing at `aces` must update it to `aced`, and re-run `npx skills add cyberuni/cyberplace --skill aced/<skill>` for any pinned install paths.
+
+- b6e101d: Add the `sdd-orchestrator` plugin-delegate model to the `sdd` plugin. The orchestrator is the lead delegate: it runs **one autonomous segment** — resolving the five production-chain roles (`spec-producer`, `plan-producer`, `spec-judge`, `impl-producer`, `impl-judge`) from the `.agents/universal-plugin.json` registry, deriving the workflow cursor and MODE from artifact state, dispatching each role through one uniform I/O surface, and synthesizing layer-scoped `aligned`. It has no user channel — it returns `needs-input` with batched questions for the skill to surface.
+
+  The skills own the user loop and the gates: `create-spec` runs the grill and drives exploration with a session-local iteration cap; `validate-spec` runs both gates, confirming reviewers and writing `status` / `approved-by` on the human verdict.
+
+  Default delegates ship as agent definitions — `sdd-scenario-writer` (spec-producer), `sdd-planner` (plan-producer), `sdd-impl-judge` (impl-judge), and the dual-mode `sdd-spec-judge` (spec-judge). Reference content moves to harness-loaded `user-invocable: false` skills: `sdd:spec-governance` (the `.feature` format bar, scenario ordering, and `spec.md` enrichment) and the `framer` / `builder` / `architect` actor governances. The contract governances and the `governance show` call are retired (ADR-0013).
+
+- 65f7366: Add `plugin-design` governance and update `skill-design` governance.
+
+  Both are loadable via `governance show <name>`.
+  - **`plugin-design` (new)**: rules for authoring distributable agent plugins — `plugin.json` manifest schema (Open Plugin Spec), directory layout, component types (skills, MCP servers, commands, hooks, agents, rules, LSP), path/env variable rules (`${PLUGIN_ROOT}`, `${PLUGIN_DATA}`), namespacing, cross-platform portability table, and `plugin.json` vs `skill.json` disambiguation.
+  - **`skill-design` (updated)**: adds `compatibility` and `allowed-tools` optional frontmatter fields; adds reference to `plugin-design`.
+
+### Patch Changes
+
+- e7dbcd9: Rename the ACED `add` skill (and its spec unit) to `add-scenario`, so the name says what it adds — a golden-set scenario — rather than a bare, generic `add` that read awkwardly next to `npx skills add`. The skill folder `plugins/aced/skills/add` is now `plugins/aced/skills/add-scenario`, its spec node `.agents/specs/aced/suite-authoring/add` moves with it (the frozen `add.feature` → `add-scenario.feature`, a pure rename that preserves the freeze), and the docs route `/aced/add/` is now `/aced/add-scenario/`. Install with `npx skills add cyberuni/cyberplace --skill aced/add-scenario`; the old `aced/add` path no longer resolves.
+- ee16693: Fix `audit validate` Q5 check to enforce the correct 1024-character description limit instead of 120.
+- e7dbcd9: Retire the project-private `audit-skill` skill in favor of `improve-skill`, which already covered its full checklist plus fix-application (Q13–Q16 agentskills.io checks, `references/check-definitions.md`, apply-fixes step). `improve-skill` moves from `plugins/universal-plugin/skills/improve-skill` to `plugins/aced/skills/improve-skill`, installable as `npx skills add cyberuni/cyberplace --skill aced/improve-skill`. The CLI's `audit validate` follow-up message now points at `improve-skill`.
+- 07b3a4d: Rename quill's production-chain agents to reflect their roles: `quill-implementer` → `quill-judge` (the impl-judge) and `quill-writer` → `quill-spec-writer` (disambiguated from the impl-producer `quill-doc-writer`). Projects that registered quill via `init-quill` should re-run it to refresh the role-map entry.
+- 63eb1e6: Remove redundant `SKILL.local.md` augmentation step from `init-commit-discipline`. Auto-commit rules are already injected into `AGENTS.md` and the SessionStart hook — no secondary reinforcement file is needed.
+- 7d73840: Rename the SDD `validate-spec` skill (and its spec node) to `spec-gate`, reconciling the name with the "spec gate" concept the design already uses everywhere. The skill folder `plugins/sdd-new/skills/validate-spec` is now `plugins/sdd-new/skills/spec-gate`; its `check-spec-state.mts` / `check-feature.mts` engines move with it. The gate skill body now also documents `check-feature.mts` (the `.feature`-form authority run in `verify:specs-new`).
+- ef258a1: `start-mission` now names the plan brief `<cr-ref>-<what>.plan.md` so the file states what the CR does even from external sources, with the source prefix (`github`) optional. Todo `content` is a short summary (<120 chars) and the plan body stays agent-concise.
+
 ## 0.7.0
 
 ### Minor Changes
