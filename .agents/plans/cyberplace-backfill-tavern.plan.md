@@ -12,11 +12,11 @@ todos:
   - content: "spec gate: cold spec-judge (tavern), freeze tavern.feature, status:approved"
     status: completed
   - content: "deliver: `crew` tag + `cyberplace tavern` command (cli/lib) + Starlight tavern page"
-    status: pending
+    status: completed
   - content: "impl gate: cold impl-judge per frozen scenario"
-    status: pending
+    status: completed
   - content: "handoff: branch cyberplace-backfill-tavern -> PR; file Mission A (Crimp+Tuner) follow-up"
-    status: pending
+    status: in_progress
 ---
 
 # cyberplace-backfill-tavern

@@ -1,5 +1,5 @@
 ---
-status: approved
+status: implemented
 project-path: packages/cyberplace
 approval:
   spec:
@@ -9,6 +9,14 @@ approval:
     why:
       leash: within — auto-spec; additive new marketplace/tavern node on a freshly-backfilled draft cyberplace project, no existing frozen scenario touched, reversible feature branch cyberplace-backfill-tavern; user directed the Tavern design live in-grill; self-asserted by:agent into the async review queue
       basis: cold sdd-spec-judge 3-round re-grade, 3-lens {oracle,builder,architect} all PASS, ALIGNED true; 11 boolean scenarios verified against the real deriveInstallCommand + tags[] schema (crew as reserved tag — highlights only on RepoEntry, so a tag is the only marker a skill entry can carry); rounds 1-2 architect contradiction (siblings said `awesome find --crew`) reconciled across marketplace/awesome-list/glossary/decisions; check-spec-state + check-suite OK; tavern.feature frozen
+      cr: cyberplace-backfill-tavern
+  impl:
+    verdict: approve
+    by: agent
+    cause: dimension
+    why:
+      leash: within — tavern impl built to keep from the frozen suite on the reversible cyberplace-backfill-tavern branch, no frozen scenario edited; user directed the mission live; self-asserted by:agent into the async review queue
+      basis: two-round cold sdd-impl-judge → IMPLEMENTATION_PASS true, all 11 frozen scenarios verified (round 1 false → 2 code-only fixes: wire renderTavernPage via a real `tavern render` subcommand + website prebuild + turbo build-order so scenario 9 holds end-to-end; de-dup deriveInstallCommand onto the awesome/lib.ts export); judge ran an exercise backstop (CREW_TAG mutation) confirming scenario 9 is non-vacuous; 272 cyberplace tests green, typecheck + biome + knip clean, website builds with the prebuild regen; awesome-skills.json schema untouched. Advisory follow-up (non-blocking): pre-existing duplicate deriveInstallCommand in awesome/render.ts, out of scope
       cr: cyberplace-backfill-tavern
 ---
 

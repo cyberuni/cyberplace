@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "astro": "astro",
+    "prebuild": "node ../../packages/cyberplace/bin/cyberplace.mjs tavern render --root ../..",
     "build": "astro build",
     "dev": "astro dev",
     "preview": "astro preview",
@@ -17,6 +18,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
+    "cyberplace": "workspace:*",
     "typescript": "^6.0.3"
   },
   "engines": {

@@ -54,6 +54,9 @@ importers:
       '@astrojs/check':
         specifier: ^0.9.9
         version: 0.9.9(prettier@3.8.3)(typescript@6.0.3)
+      cyberplace:
+        specifier: workspace:*
+        version: link:../../packages/cyberplace
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
