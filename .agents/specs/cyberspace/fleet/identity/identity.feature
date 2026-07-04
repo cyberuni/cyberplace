@@ -1,3 +1,4 @@
+@frozen
 Feature: identity — self-identify and discover peers
   The cyberfleet CLI identity layer: register records an agent's identity under .cyberfleet/, the
   agent recovers its own id on later calls via a pane-keyed self file, the harness is auto-detected,

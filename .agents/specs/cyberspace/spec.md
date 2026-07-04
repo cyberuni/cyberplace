@@ -1,21 +1,15 @@
 ---
-status: implemented
+status: approved
 project-path: plugins/cyberspace
 approval:
   spec:
     verdict: approve
     by: agent
+    cause: dimension
     why:
-      leash: within — auto-spec; additive new behavioral node bootstrap/write-vendor-config on the implemented cyberspace spec (no existing frozen scenario narrowed); closes init.feature's dangling reference to the direct-write fallback; reversible feature branch cyberspace-direct-write-fallback; user directed autonomous completion; self-asserted by:agent into the async review queue
-      basis: cold aced-spec-validator 3-lens {oracle,builder,architect} all PASS, ALIGNED complete, no blocker; fit strong (the by-hand path vs init's CLI-offload path); @trigger 4-yes/4-near-miss balanced (near-miss "sync via the CLI"→no, "initialize AGENTS.md"→no), @rubric well-formed (4 dims max 9, threshold 7), Use-Cases<->scenario mapped, sibling refs intent-not-slug (ADR-0021); parent-index misdescription fixed + advisory edge gaps (nothing-detectable, Cursor two-form) closed before freeze; write-vendor-config.feature frozen
-      cr: add-write-vendor-config
-  impl:
-    verdict: approve
-    by: agent
-    why:
-      leash: within — user directed autonomous completion (continue until merged); agent-config impl of plugins/cyberspace/skills/write-vendor-config on a feature branch, reversible; self-asserted by:agent into the async review queue
-      basis: cold aced-impl-judge (ADR-0016, oracle re-derived per frozen scenario) over plugins/cyberspace/skills/write-vendor-config/SKILL.md — ALL 10 frozen scenarios PASS first pass (@trigger 8/8 rows accuracy 1.00; sibling-deferral; 7 @behavior; @rubric @quality 9/9 threshold 7); architect-impl clean fit, 4 sections map 1:1 to subject bullets, no scope creep. Harmless observation: Codex vendor→file row softer than pinned Claude/Cursor/Copilot (frozen suite pins no Codex filename)
-      cr: add-write-vendor-config
+      leash: within — auto-spec; all-additive new top-level fleet/ capability (5 new nodes gateway/identity/messaging/spawn/surfacing) on the implemented cyberspace spec, no existing frozen scenario touched; reversible feature branch add-fleet-comms; user directed continuation; self-asserted by:agent into the async review queue
+      basis: cold sdd-spec-judge re-grade 3-lens {oracle,builder,architect} all PASS on all 5 nodes, ALIGNED true, no blocker (prior ALIGNED:false → 8 fixes applied — sibling refs intent-not-slug ADR-0021, spawn Scenario Outline over claude/cursor/codex + error cases, identity/messaging/surfacing negatives, cut --reply-to, sequence diagram); gateway fit strong (ACED @trigger 4-yes/4-near-miss balanced, @rubric well-formed threshold 7), 4 engine nodes SDD-default boolean; check-spec-structure 0/0, concept-index no drift, check-suite OK; 5 fleet .feature frozen
+      cr: add-fleet-comms
 ---
 
 # cyberspace — the harness-agnostic agent-config foundation

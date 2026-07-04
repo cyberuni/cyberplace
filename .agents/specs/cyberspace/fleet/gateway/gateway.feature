@@ -1,3 +1,4 @@
+@frozen
 Feature: gateway — the fleet skill: spawn peers and message between sessions
   Unit suite for the fleet gateway skill: activate when the user wants to coordinate peer agent
   sessions that message each other, load the fleet etiquette, and route every mechanic to the

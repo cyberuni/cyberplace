@@ -1,3 +1,4 @@
+@frozen
 Feature: surfacing — inject unread mail into a session, across harnesses
   The cyberfleet CLI surfacing layer: inbox --hook emits the SessionStart additionalContext payload
   so a harness hook injects an agent's unread mail (and its spawn brief) into context, and the

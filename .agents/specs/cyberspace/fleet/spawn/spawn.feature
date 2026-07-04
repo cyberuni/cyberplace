@@ -1,3 +1,4 @@
+@frozen
 Feature: spawn — launch a new peer session and hand it its brief
   The cyberfleet CLI spawn layer: open a tmux split, pre-register the new peer under .cyberfleet/,
   write its brief to a file, launch the harness's own CLI in the pane, and let the peer pick up its

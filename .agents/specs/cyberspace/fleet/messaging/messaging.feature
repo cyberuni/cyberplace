@@ -1,3 +1,4 @@
+@frozen
 Feature: messaging — send, read, and acknowledge mail between agents
   The cyberfleet CLI message layer over a file queue under project-scoped .cyberfleet/: send drops
   one collision-free, time-ordered file into the recipient's inbox; inbox lists a caller's mail;
