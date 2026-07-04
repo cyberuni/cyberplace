@@ -15,7 +15,7 @@ Shared vocabulary for the cyberplace spec. Backfilled narrow — marketplace ter
   marker-delimited block).
 - **crew** — a marketplace entry that is an installable persona plugin/skill with a personated
   gateway skill (a recruitable spaceship crew). Surfaced by the crew facet.
-- **crew facet** — the catalog metadata that marks an entry a crew (a reserved `crew` tag or a
-  `highlights.type: crew`) so it can be filtered.
-- **Tavern** — the storefront surface (docs section + `awesome find --crew` filter) where a user
-  browses and installs crews.
+- **crew facet** — the reserved `crew` tag in an entry's `tags[]` that marks it a crew so it can be
+  filtered — no catalog schema change.
+- **Tavern** — the storefront surface (the `cyberplace tavern` command + a docs section) where a
+  user browses and installs crews.

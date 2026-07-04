@@ -1,6 +1,15 @@
 ---
-status: draft
+status: approved
 project-path: packages/cyberplace
+approval:
+  spec:
+    verdict: approve
+    by: agent
+    cause: dimension
+    why:
+      leash: within — auto-spec; additive new marketplace/tavern node on a freshly-backfilled draft cyberplace project, no existing frozen scenario touched, reversible feature branch cyberplace-backfill-tavern; user directed the Tavern design live in-grill; self-asserted by:agent into the async review queue
+      basis: cold sdd-spec-judge 3-round re-grade, 3-lens {oracle,builder,architect} all PASS, ALIGNED true; 11 boolean scenarios verified against the real deriveInstallCommand + tags[] schema (crew as reserved tag — highlights only on RepoEntry, so a tag is the only marker a skill entry can carry); rounds 1-2 architect contradiction (siblings said `awesome find --crew`) reconciled across marketplace/awesome-list/glossary/decisions; check-spec-state + check-suite OK; tavern.feature frozen
+      cr: cyberplace-backfill-tavern
 ---
 
 # cyberplace — the agent skill/plugin marketplace + authoring CLI
