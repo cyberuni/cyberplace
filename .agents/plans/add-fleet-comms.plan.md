@@ -5,21 +5,21 @@ todos:
   - content: "Intake: locate cyberspace spec, scaffold plan + leash shard"
     status: completed
   - content: "Author fleet/ capability index README (descriptive)"
-    status: pending
+    status: completed
   - content: "Author fleet/gateway node (the fleet skill — ACED squad: @trigger + @rubric)"
-    status: pending
+    status: completed
   - content: "Author fleet/identity node (cyberfleet register/who/self-recall/harness-detect — SDD-default boolean)"
-    status: pending
+    status: completed
   - content: "Author fleet/messaging node (send/inbox/read/ack, epochMs-hex ordering, collision-free — SDD-default)"
-    status: pending
+    status: completed
   - content: "Author fleet/spawn node (tmux split, pre-register, brief-via-hook — SDD-default)"
-    status: pending
+    status: completed
   - content: "Author fleet/surfacing node (inbox --hook emitter payload + per-vendor registration — SDD-default)"
-    status: pending
+    status: completed
   - content: "Update root spec.md Capability map + Placement map with the fleet capability"
-    status: pending
-  - content: "Cold spec-judge pass over the draft; incorporate verdict"
-    status: pending
+    status: completed
+  - content: "Cold spec-judge pass over the draft; incorporate verdict (done, ALIGNED:false resolved)"
+    status: completed
   - content: "SPEC GATE (user-ratified): freeze the .feature suite, set gate line"
     status: pending
   - content: "Build cyberfleet CLI package from frozen suite + verification per scenario"
@@ -56,7 +56,19 @@ live send-nudge, threads, cross-repo root, Copilot.
 
 ## NEXT
 
-Author the `fleet/` capability index + the five node drafts (README `## Use Cases` + `.feature`,
-features left **un-@frozen** = draft). Then run one cold spec-judge over the draft. Then STOP at
-`draft` for the user's spec-gate ratification — freezing five brand-new nodes should not be
-self-asserted without a live grill round. Do not touch any existing frozen scenario (all-additive).
+Spec draft complete + cold-spec-judge verdict incorporated (branch `add-fleet-comms`; commits
+`ad02930` draft, `732215e` judge fixes). All five nodes clean: `check-spec-structure` 0/0,
+`concept-index` no drift, `check-suite` OK, no residual slug-path refs. Judge went ALIGNED:false →
+all eight fixes applied (sibling refs→bare names, spawn Scenario Outline + errors, identity/messaging/
+surfacing negatives, cut --reply-to, sequence diagram). Features still **un-@frozen** (draft).
+
+Resume here:
+1. **Run the grill / spec gate with the user.** The gate is a user-ratified step — do NOT
+   self-freeze five brand-new nodes. Present the draft + judge verdict, do a grill round if the
+   user wants, then at approve: add `@frozen` to each `.feature`, write the `gate` line to the
+   `add-fleet-comms.f1e2d3.jsonl` ledger shard, keep root `spec.md` in sync.
+3. **Then Step 3 (deliver):** build the `cyberfleet` CLI package + the `fleet` skill + hook wiring
+   from the frozen suite (see the design plan `/home/user/.claude/plans/for-cyberspace-i-want-streamed-beaver.md`
+   §"Files to create / modify"), one verification per frozen scenario; cold impl-judge; handoff PR.
+
+Do not touch any existing frozen scenario (all-additive). Design plan is the impl reference.
