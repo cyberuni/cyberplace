@@ -22,14 +22,16 @@ todos:
     status: completed
   - content: "Cold spec-judge RE-GRADE after fixes → ALIGNED:true, all 5 nodes PASS 3 lenses"
     status: completed
-  - content: "SPEC GATE: verdict IN (ALIGNED:true); execute freeze+ledger+root-status (paused before recording)"
+  - content: "SPEC GATE passed — froze 5 .feature, gate:spec ledger line, root status→approved (commit 8bb2314)"
+    status: completed
+  - content: "Build cyberfleet CLI package from frozen suite + verification per scenario (7a5f2b7, 38 tests)"
+    status: completed
+  - content: "Ship fleet gateway skill (471d08e, audit clean); plugin hooks.json + shared registerHooks DEFERRED (not frozen-required)"
+    status: completed
+  - content: "Impl gate (cold impl-judges: sdd engine PASS + aced gateway PASS) → status implemented (d13344b)"
+    status: completed
+  - content: "Handoff: push branch + open PR (OUTWARD-FACING — awaiting user confirm); then follow-ups + Warden"
     status: in_progress
-  - content: "Build cyberfleet CLI package from frozen suite + verification per scenario"
-    status: pending
-  - content: "Ship fleet skill + plugin hooks/hooks.json + shared registerHooks; gitignore .cyberfleet/"
-    status: pending
-  - content: "Impl gate (cold impl-judge) → status implemented; handoff PR"
-    status: pending
 ---
 
 # add-fleet-comms — harness-agnostic agent sessions + messaging (MCP-free)
@@ -56,7 +58,28 @@ Approved design plan: `.agents/plans/add-fleet-comms.design.md`.
 MVP = pull via hooks, project-scoped `.cyberfleet/`, tmux spawn. Phase 2 (own CRs) = watcher,
 live send-nudge, threads, cross-repo root, Copilot.
 
-## NEXT — resume here
+## STATUS — mission implemented, awaiting push/PR
+
+Both SDD gates passed and self-asserted `by:agent`; root spec `status: implemented`. Commits on
+branch `add-fleet-comms`: `8bb2314` spec gate (froze 5 nodes) · `7a5f2b7` cyberfleet CLI engine
+(44 tests) · `471d08e` fleet skill · `fec1a2c` impl-gate blocker fixes · `d13344b` impl gate.
+Ledger shard `add-fleet-comms.f1e2d3.jsonl` has leash + gate:spec + gate:impl. Whole monorepo green.
+
+**Remaining (handoff):**
+1. **Push `add-fleet-comms` + open PR** — outward-facing; do only on user confirm.
+2. **Follow-up CRs** (all non-blocking, from the judges):
+   - plugin-level `hooks/hooks.json` auto-wire in the cyberspace plugin (needs manifest `hooks` +
+     per-vendor build) — the convenience layer over `cyberfleet install --agent`.
+   - dedupe `cyberfleet install`'s per-vendor writer vs cyberplace's hook engine (blocked: cyberplace
+     `buildHookDefinition` hardwires `cyberplace hook run`, no arbitrary-command reuse).
+   - `eval.md` run-policy under `.agents/specs/cyberspace/` (ACED judge fell back to defaults).
+   - test coverage: identity self-file fallback branch; broader cli.ts paths (register/read/spawn/install).
+   - Warden corpus gap: `build-definition.ts`/`vendors.json` per-vendor mapping has no spec node.
+   - fleet e2e in `acceptance/` (init → register → spawn → exchange).
+3. **Post-merge:** run the detached Warden formation pass (deferred to avoid a shared-tree clobber
+   on this branch); retire this plan once merged + doctrine-distilled.
+
+## NEXT — resume here (historical: spec gate; superseded by STATUS above)
 
 **Next action — execute the spec gate (verdict already IN, nothing to re-decide).** The cold
 spec-judge re-grade returned **ALIGNED: true**, all 5 nodes PASS on {oracle, builder, architect}.
