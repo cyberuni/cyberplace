@@ -32,10 +32,14 @@ sequenceDiagram
 
 Units:
 
-- [**`gateway`**](./gateway/README.md) *(behavioral)* — the `fleet` persona skills (Pod, Operator):
-  when to reach for the fleet, spawn a peer session, message etiquette (register on start, check
-  inbox, ack, address by handle), and ship-vs-command-center mode. Offloads all mechanics to the
-  `cyberfleet` CLI.
+- [**`pod`**](./pod/README.md) *(behavioral)* — the **Pod** persona (the `fleet` in-ship bridge):
+  greet on entry, clear the inbox, run the mission through SDD, hail specialist crew, fan out
+  worktree-ships, and speak the HAL tell when earned. Activates inside a ship; defers to Operator
+  outside. Offloads all mechanics to the `cyberfleet` CLI.
+- [**`operator`**](./operator/README.md) *(behavioral)* — the **Operator** persona (the `fleet`
+  out-of-ship dispatcher): commission the first ship, list the fleet, route messages between ships,
+  and prune dead ones. Activates outside any ship; defers to Pod inside. Offloads all mechanics to
+  the `cyberfleet` CLI.
 - [**`recruitment`**](./recruitment/README.md) *(behavioral)* — the **Crimp** persona: recruit or
   discharge a crew type from the Tavern (browse, install, register; uninstall, retire).
 - [**`tuning`**](./tuning/README.md) *(behavioral)* — the **Tuner** persona: adjust an automaton's
@@ -45,7 +49,7 @@ Scope: A voice-rubric dimension across the three persona nodes and a concrete in
 the leash route are deferred non-blocking follow-ups. This project has its own cross-capability
 persona e2e; a future `acceptance/` node may formalize it.
 
-Squad note: all three nodes are agent-behavior (ACED carries all four eval layers — activation and
+Squad note: all four nodes are agent-behavior (ACED carries all four eval layers — activation and
 judgment). The deterministic CLI behaviors (SDD-default + a script harness — boolean scenarios, no
 rubric) are the sibling `cyberfleet` CLI project.
 </content>

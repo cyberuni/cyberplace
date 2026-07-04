@@ -7,17 +7,17 @@ approval:
     by: agent
     cause: dimension
     why:
-      leash: within — freeze-preserving relocation. The three agent-behavior nodes — `gateway` (the fleet Pod/Operator personas) and the `crew` personas `recruitment` (Crimp) and `tuning` (Tuner) — were split out of the combined `cyberfleet` project into this narrowed `cyberfleet-plugin` project (`project-path: plugins/cyberfleet`) by the `split-cyberfleet-spec` change, so the spec project maps one-to-one onto the `cyberfleet` plugin distributed to the marketplace. The four deterministic CLI nodes (identity, messaging, spawn, surfacing) moved to the co-located `packages/cyberfleet/.agents/spec` root. No spec or implementation content changed — only the project boundary and location. All three `.feature` files stay `@frozen`.
-      basis: no new gate was run for the split (content unchanged, location only). Source-of-truth gates are the durable record in `ledger/`: `gateway` under `add-fleet-comms.f1e2d3.jsonl` (cold spec-judge {oracle,builder,architect} PASS, ACED impl-judge over the gateway skill PASS @trigger 9/9 @behavior 5/5 @rubric over threshold), and `recruitment` + `tuning` under `fleet-crew-personas.845da1.jsonl` (two cold ACED spec-judges ALIGNED true, two cold ACED impl-judges IMPLEMENTATION_PASS — Crimp 13/13, Tuner 15/15). This project keeps only the agent-behavior (ACED) nodes; it depends on the `cyberfleet` CLI by intent, never by its command slugs.
-      cr: split-cyberfleet-spec
+      leash: re-open — the former `gateway/` node (the two fleet personas bundled in one node) was split into two per-persona nodes, `pod/` (in-ship bridge) and `operator/` (out-of-ship dispatcher), by the `split-gateway-personas` change. Per ADR-0022 they were always two shipped skills; this gives each its own node, `.feature`, and design. The frozen `gateway.feature` was retired and re-authored as `pod.feature` and `operator.feature`, each scoped to one persona's real behavior (read faithfully from the built `plugins/cyberfleet/skills/{pod,operator}` SKILL.md) plus the shared etiquette and its half of the mode-switch. Both new `.feature` files are `@frozen`; `recruitment` and `tuning` are untouched. Prior project current-state (`split-cyberfleet-spec`) is the overwritten twin; its durable record stays in the ledger shards.
+      basis: this is a re-partition of already-gated, already-built behavior — no new capability. Self-asserted by:agent (done directly in main at the Council's direction); structural checks green — concept-index no drift, check-spec-structure 0/0, both persona SKILL.md pass `audit validate`. Source-of-truth gates for the underlying behavior remain in `ledger/`: the gateway personas under `add-fleet-comms.f1e2d3.jsonl`. Non-blocking follow-up: a cold ACED spec+impl judge pass over the two new per-persona nodes to re-grade @trigger balance and @rubric thresholds standalone.
+      cr: split-gateway-personas
   impl:
     verdict: approve
     by: agent
     cause: dimension
     why:
-      leash: within — no implementation touched by the split; the persona skills (`plugins/cyberfleet/skills/{pod,operator,crimp,tuner}`) already built and passing `audit validate`. Root stays `implemented`.
-      basis: the three nodes remain `@frozen` and their persona SKILL.md unchanged. See the `ledger/` shards.
-      cr: split-cyberfleet-spec
+      leash: within — no implementation changed by the split; the two persona skills (`plugins/cyberfleet/skills/{pod,operator}`) already built and passing `audit validate`, and the new nodes were authored to match them. Root stays `implemented`.
+      basis: `pod/` and `operator/` each map one-to-one onto the shipped skill; both remain `@frozen`. See the `ledger/` shards.
+      cr: split-gateway-personas
 ---
 
 # cyberfleet-plugin — the fleet & crew personas (agent behavior)
@@ -49,7 +49,7 @@ plugin ships to the marketplace, the CLI ships to npm — and the plugin carries
 behavior (spawn judgment, message etiquette, persona voice, crew recruitment/tuning) the CLI cannot.
 Three axes agree on the same cut: artifact-type (agent-behavior vs deterministic script), deploy
 target (marketplace vs npm), and package (`plugins/cyberfleet` vs `packages/cyberfleet`). This
-project holds the three agent-behavior nodes; the four deterministic CLI nodes are the sibling
+project holds the four agent-behavior nodes; the four deterministic CLI nodes are the sibling
 `cyberfleet` project. The plugin spec stays **central** (`.agents/specs/`) rather than co-located
 under `plugins/cyberfleet` so it is not carried inside the distributed marketplace artifact.
 
@@ -57,7 +57,8 @@ under `plugins/cyberfleet` so it is not carried inside the distributed marketpla
 
 | Folder | Type | What |
 |---|---|---|
-| [`gateway/`](./gateway/README.md) | behavioral | the `fleet` persona skills (Pod, Operator) — spawn a peer, message etiquette, ship-vs-command-center mode |
+| [`pod/`](./pod/README.md) | behavioral | the **Pod** persona — the in-ship bridge: greet, clear inbox, run the mission, hail crew, fan out worktree-ships, HAL tell |
+| [`operator/`](./operator/README.md) | behavioral | the **Operator** persona — the out-of-ship dispatcher: commission the first ship, list the fleet, route messages, prune dead ships |
 | [`recruitment/`](./recruitment/README.md) | behavioral | the **Crimp** persona — recruit/discharge crew types from the Tavern (browse, install, register; uninstall, retire) |
 | [`tuning/`](./tuning/README.md) | behavioral | the **Tuner** persona — adjust an automaton's program (governance/model/effort/leash), re-chip its loadout, hot-swap the unit |
 
@@ -65,8 +66,12 @@ under `plugins/cyberfleet` so it is not carried inside the distributed marketpla
 
 Where a new concept lives — slot here, do not invent placement:
 
-- **a new mode-switch persona behavior** (when to spawn, message etiquette, ship-vs-command-center
-  mode) → `gateway/` (the Pod/Operator personas).
+- **a new in-ship bridge behavior** (mission entry, inbox etiquette, hailing crew, worktree fan-out,
+  the HAL tell — anything Pod does from inside a ship) → `pod/` (the Pod persona).
+- **a new out-of-ship dispatch behavior** (commission a ship, list the fleet, route between ships,
+  prune — anything Operator does from outside any ship) → `operator/` (the Operator persona).
+- **a shared mode-switch concern** (how the two personas hand off on `cyberfleet mode`) belongs to
+  whichever persona's activation it governs; each node carries its own half.
 - **a new crew-acquisition persona behavior** (recruit/discharge a crew type — browse the Tavern,
   install/register, uninstall/retire) → `recruitment/` (the Crimp persona).
 - **a new crew-tuning persona behavior** (adjust an automaton's program — governance/model/effort/
@@ -78,8 +83,8 @@ Where a new concept lives — slot here, do not invent placement:
 
 The nesting rule: capabilities at the top; any layering nests *inside* a capability, never as a
 top-level folder. A node is `<capability>` and never nested. Two cross-cutting concerns run through
-this project (see the by-concept index below): `fleet` (the session-coordination personas — gateway)
-and `crew-ops` (the crew-operations personas that recruit and tune **crew** — recruitment (Crimp)
+this project (see the by-concept index below): `fleet` (the session-coordination personas — pod and
+operator) and `crew-ops` (the crew-operations personas that recruit and tune **crew** — recruitment (Crimp)
 and tuning (Tuner)). Note the distinction: a **crew** is a recruited specialist automaton (what
 Crimp signs on from the Tavern); `crew-ops` is the concern of *operating on* crew, not the crew
 itself.
@@ -93,7 +98,7 @@ itself.
 | Concept | Facets |
 |---|---|
 | `crew-ops` | `recruitment/` (behavior) · `tuning/` (behavior) |
-| `fleet` | `gateway/` (behavior) |
+| `fleet` | `operator/` (behavior) · `pod/` (behavior) |
 
 <!-- END generated: by-concept -->
 </content>
