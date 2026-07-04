@@ -1,6 +1,6 @@
 ---
 name: oracle-spec-producer-governance
-description: "Internal governance (not user-invokable): the Oracle bar for react-component, spec-producer face. Scope / kill-or-ship self-align, by discipline. Loaded while scoping the spec."
+description: "Internal governance (not user-invocable): the Oracle bar for react-component, spec-producer face. Scope / kill-or-ship self-align, by discipline. Loaded while scoping the spec."
 user-invocable: false
 metadata:
   artifact-type: react-component

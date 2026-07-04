@@ -1,6 +1,6 @@
 ---
 name: architect-impl-governance
-description: "Internal governance (not user-invokable): the Architect bar for react-component at the impl gate. Code-structure criteria by discipline, loaded by both the impl-producer (self-align) and impl-judge (grade)."
+description: "Internal governance (not user-invocable): the Architect bar for react-component at the impl gate. Code-structure criteria by discipline, loaded by both the impl-producer (self-align) and impl-judge (grade)."
 user-invocable: false
 metadata:
   artifact-type: react-component

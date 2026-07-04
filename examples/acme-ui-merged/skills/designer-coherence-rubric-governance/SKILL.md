@@ -1,6 +1,6 @@
 ---
 name: designer-coherence-rubric-governance
-description: "Internal governance (not user-invokable): the designer discipline's SUBJECTIVE visual-coherence rubric for react-component. Judge-only — the one slice a producer must not self-grade. Loaded by the impl-judge / acceptance review."
+description: "Internal governance (not user-invocable): the designer discipline's SUBJECTIVE visual-coherence rubric for react-component. Judge-only — the one slice a producer must not self-grade. Loaded by the impl-judge / acceptance review."
 user-invocable: false
 metadata:
   artifact-type: react-component

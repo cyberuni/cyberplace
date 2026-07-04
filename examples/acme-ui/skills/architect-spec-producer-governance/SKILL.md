@@ -1,6 +1,6 @@
 ---
 name: architect-spec-producer-governance
-description: "Internal governance (not user-invokable): the Architect bar for react-component, spec-producer face (the solution-producer). Structural decisions in the solution, by discipline. Loaded while writing the solution."
+description: "Internal governance (not user-invocable): the Architect bar for react-component, spec-producer face (the solution-producer). Structural decisions in the solution, by discipline. Loaded while writing the solution."
 user-invocable: false
 metadata:
   artifact-type: react-component

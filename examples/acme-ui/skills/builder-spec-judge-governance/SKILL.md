@@ -1,6 +1,6 @@
 ---
 name: builder-spec-judge-governance
-description: "Internal governance (not user-invokable): the Builder bar for react-component, spec-judge face. Grading whether the .feature COVERS each discipline's concern. Loaded at the spec gate."
+description: "Internal governance (not user-invocable): the Builder bar for react-component, spec-judge face. Grading whether the .feature COVERS each discipline's concern. Loaded at the spec gate."
 user-invocable: false
 metadata:
   artifact-type: react-component

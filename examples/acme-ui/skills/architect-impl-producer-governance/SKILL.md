@@ -1,6 +1,6 @@
 ---
 name: architect-impl-producer-governance
-description: "Internal governance (not user-invokable): the Architect bar for react-component, impl-producer face. Structural conventions the CODE must follow, by discipline. Loaded while building."
+description: "Internal governance (not user-invocable): the Architect bar for react-component, impl-producer face. Structural conventions the CODE must follow, by discipline. Loaded while building."
 user-invocable: false
 metadata:
   artifact-type: react-component

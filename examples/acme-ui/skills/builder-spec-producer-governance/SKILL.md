@@ -1,6 +1,6 @@
 ---
 name: builder-spec-producer-governance
-description: "Internal governance (not user-invokable): the Builder bar for react-component, spec-producer face. Ensuring the .feature COVERS each discipline's concern. Loaded while writing the spec + suite."
+description: "Internal governance (not user-invocable): the Builder bar for react-component, spec-producer face. Ensuring the .feature COVERS each discipline's concern. Loaded while writing the spec + suite."
 user-invocable: false
 metadata:
   artifact-type: react-component

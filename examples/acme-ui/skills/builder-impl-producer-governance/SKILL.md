@@ -1,6 +1,6 @@
 ---
 name: builder-impl-producer-governance
-description: "Internal governance (not user-invokable): the Builder bar for react-component, impl-producer face. The conventions a component's CODE must conform to, by discipline. Loaded when building to the frozen suite."
+description: "Internal governance (not user-invocable): the Builder bar for react-component, impl-producer face. The conventions a component's CODE must conform to, by discipline. Loaded when building to the frozen suite."
 user-invocable: false
 metadata:
   artifact-type: react-component

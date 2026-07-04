@@ -1,6 +1,6 @@
 ---
 name: oracle-spec-governance
-description: "Internal governance (not user-invokable): the Oracle bar for react-component at the spec gate. Scope / kill-or-ship criteria by discipline, loaded by both the spec-producer (self-align) and spec-judge (grade)."
+description: "Internal governance (not user-invocable): the Oracle bar for react-component at the spec gate. Scope / kill-or-ship criteria by discipline, loaded by both the spec-producer (self-align) and spec-judge (grade)."
 user-invocable: false
 metadata:
   artifact-type: react-component

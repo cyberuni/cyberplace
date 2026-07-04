@@ -1,6 +1,6 @@
 ---
 name: architect-spec-governance
-description: "Internal governance (not user-invokable): the Architect bar for react-component at the spec gate. Structural-fit criteria by discipline, loaded by the solution-producer (self-align) and spec-judge (grade)."
+description: "Internal governance (not user-invocable): the Architect bar for react-component at the spec gate. Structural-fit criteria by discipline, loaded by the solution-producer (self-align) and spec-judge (grade)."
 user-invocable: false
 metadata:
   artifact-type: react-component

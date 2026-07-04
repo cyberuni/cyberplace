@@ -1,6 +1,6 @@
 ---
 name: builder-impl-judge-governance
-description: "Internal governance (not user-invokable): the Builder bar for react-component, impl-judge face. How to verify the CODE conforms, by discipline, against the frozen suite. Loaded at the impl gate."
+description: "Internal governance (not user-invocable): the Builder bar for react-component, impl-judge face. How to verify the CODE conforms, by discipline, against the frozen suite. Loaded at the impl gate."
 user-invocable: false
 metadata:
   artifact-type: react-component

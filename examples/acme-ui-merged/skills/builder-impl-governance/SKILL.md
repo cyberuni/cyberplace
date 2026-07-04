@@ -1,6 +1,6 @@
 ---
 name: builder-impl-governance
-description: "Internal governance (not user-invokable): the Builder bar for react-component at the impl gate. Code-conformance criteria by discipline, loaded by both the impl-producer (self-align) and impl-judge (grade)."
+description: "Internal governance (not user-invocable): the Builder bar for react-component at the impl gate. Code-conformance criteria by discipline, loaded by both the impl-producer (self-align) and impl-judge (grade)."
 user-invocable: false
 metadata:
   artifact-type: react-component
