@@ -5,6 +5,12 @@ concept: [governance, axi]
 
 # governance — resolve governance documents by name
 
+> **Impl trails the AXI contract.** The shipped `governance show` / `list` predates the AXI adoption
+> (ADR-0003): resolution across the scope precedence is live and correct, but the output is
+> prose + `--format json`, not the frozen TOON default / aggregate / `show` truncation / content-first
+> / next-step behavior. The impl gate withholds certification until a follow-up mission re-implements
+> it against this frozen suite.
+
 `universal-plugin governance show <name>` and `governance list` let an agent reference a governance
 document by **name** rather than a fragile filesystem path. Names resolve across a fixed scope
 precedence, so the same reference works whether the document ships in the package, is installed at the

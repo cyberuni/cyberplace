@@ -8,14 +8,12 @@ todos:
     status: completed
   - content: "Content-first #8 = group subcommands (governance->list, plugin->validate); non-interactive #6 uniform; per-subcommand help #10"
     status: completed
-  - content: "Spec gate: cold judge round 1 -> ALIGNED false (2 Builder gaps: managed scope + #6 no-prompts); FIXED both; re-grading"
+  - content: "Spec gate: cold judge ALIGNED true (round 1 caught managed-scope + #6 no-prompts gaps; fixed, re-graded PASS); froze 4 .feature, root->approved, gate line in shard; committed cebb510"
+    status: completed
+  - content: "Deliver DECISION (user): spec-only, defer ALL impl. Root stays approved. build+governance impl now trails frozen AXI contract (banners added)."
+    status: completed
+  - content: "Handoff: placement final (axi/ top-level ok); PR open; spawn detached Warden; file 2 follow-up CRs (impl-axi-contract, axi-ambient-context-#7)"
     status: in_progress
-  - content: "On approve: freeze 4 .feature, root->approved, self-assert/ratify gate line to ledger shard"
-    status: pending
-  - content: "Deliver: build+governance implemented (re-impl+impl gate); validate+init spec-first per ADR-0001. Decide with user."
-    status: pending
-  - content: "Handoff PR; file #7 (session-hook setup + skill) follow-up CR"
-    status: pending
 ---
 
 # CR: axi-conformance — make universal-plugin follow AXI
@@ -34,4 +32,8 @@ Ledger shard: `axi-conformance.04835d.jsonl`.
 
 ## NEXT
 
-Start explore. Load resolution first (`resolve-governances` over `.agents/universal-plugin.json` for artifact-type of the touched CLI/spec files), then grill node-by-node beginning with the AXI-adoption ADR + `plugin/build`. Confirm with user whether impl builds now or stays spec-first before deliver.
+CR complete as **spec-only** (user decision). Spec + suite committed `cebb510`, root `universal-plugin` = `approved`, four `.feature` frozen to the AXI contract. Remaining handoff: open PR on branch `axi-conformance` → `main`, spawn detached Warden formation pass, file two follow-up CRs:
+1. **impl-axi-contract** — build the AXI output impl for all four commands (re-impl build+governance to satisfy the frozen suite; build validate+init). This is the deferred deliver.
+2. **axi-ambient-context** — AXI #7 (session-hook setup command + installable skill), routed to cyberplace (hooks) + cyberspace/aced (skill); likely a thin universal-plugin setup command that delegates.
+
+No further spec work on this CR. Doctrine-distill + retire this plan once the PR merges.
