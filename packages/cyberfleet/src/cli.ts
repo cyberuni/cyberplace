@@ -122,20 +122,30 @@ rootOpts(program.command('read'))
 	})
 
 rootOpts(program.command('spawn'))
-	.description('launch a new peer session in a tmux split')
+	.description('launch a new peer session in its own git worktree (tmux or herdr)')
 	.requiredOption('--harness <h>', 'claude | cursor | codex')
 	.option('--task <text>', 'brief text, or - for stdin')
 	.option('--brief-file <path>', 'read the brief from a file')
 	.option('--handle <name>', 'handle for the new peer')
+	.option('--branch <name>', 'branch for the new ship worktree (default cyberfleet/ship-<id>)')
+	.option('--worktree-path <path>', 'where to check out the new ship worktree')
 	.action(async (opts) => {
 		const { spawn } = await import('./spawn.ts')
 		const ctx = ctxOf(opts)
 		touch(ctx)
-		const res = spawn(ctx, { harness: opts.harness, task: opts.task, briefFile: opts.briefFile, handle: opts.handle })
+		const res = spawn(ctx, {
+			harness: opts.harness,
+			task: opts.task,
+			briefFile: opts.briefFile,
+			handle: opts.handle,
+			branch: opts.branch,
+			worktreePath: opts.worktreePath,
+		})
 		printFields({
 			spawned: res.agent.id,
 			handle: res.agent.handle,
 			harness: res.agent.harness,
+			worktree: res.agent.worktree?.root,
 			pane: res.pane,
 			launch: res.launch,
 		})

@@ -1,8 +1,9 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname } from 'node:path'
+import { selectSessionAdapter } from './console/index.ts'
+import { assertDistinctFromPrimary, gitWorktreeAdapter, resolvePrimaryRoot } from './console/worktree.ts'
 import {
 	type AgentRecord,
-	type Exec,
 	type Harness,
 	type IdContext,
 	randomId,
@@ -24,6 +25,10 @@ export interface SpawnInput {
 	task?: string
 	briefFile?: string
 	handle?: string
+	/** Branch to create the ship's worktree on; defaults to `cyberfleet/ship-<id>`. */
+	branch?: string
+	/** Where to check out the ship's worktree; defaults under `.cyberfleet/worktrees/<id>`. */
+	worktreePath?: string
 }
 
 export interface SpawnResult {
@@ -33,14 +38,16 @@ export interface SpawnResult {
 }
 
 /**
- * Launch a new peer session in a tmux split, pre-register it, and drop its brief
- * as a file the peer's own SessionStart hook reads — never typed into its prompt.
+ * Launch a new peer session as a genuine sibling ship (ADR-0022 decision 8): create a real git
+ * worktree distinct from the primary checkout (the flagship rule), open a session backend (tmux
+ * or herdr — decision 9) with its cwd set to that worktree, pre-register the peer, and drop its
+ * brief as a file the peer's own SessionStart hook reads — never typed into its prompt.
  */
 export function spawn(ctx: IdContext, input: SpawnInput): SpawnResult {
 	const env = ctx.env ?? process.env
-	if (!env.TMUX) {
-		throw new Error('spawn requires tmux — run inside a tmux session')
-	}
+	const exec = ctx.exec ?? realExec
+	const sessionAdapter = selectSessionAdapter(env)
+
 	const harness = input.harness as Harness | undefined
 	if (!harness || !(harness in LAUNCH_MAP)) {
 		throw new Error(`spawn needs a --harness in the launch map (${Object.keys(LAUNCH_MAP).join(' | ')})`)
@@ -49,19 +56,25 @@ export function spawn(ctx: IdContext, input: SpawnInput): SpawnResult {
 	if (brief == null) {
 		throw new Error('spawn needs a brief — pass --task <text>, --task - (stdin), or --brief-file <path>')
 	}
-	const exec = ctx.exec ?? realExec
-	const cwd = process.cwd()
-	const pane = exec('tmux', ['split-window', '-h', '-c', cwd, '-P', '-F', '#{pane_id}'])
-	if (!pane) throw new Error('tmux split-window failed')
 
 	const id = randomId()
+	const primaryRoot = resolvePrimaryRoot(exec)
+	const branch = input.branch ?? `cyberfleet/ship-${id}`
+	const worktreePath = input.worktreePath ?? paths.worktreeDir(ctx.root, id)
+	const worktree = gitWorktreeAdapter.add(exec, { primaryRoot, path: worktreePath, branch })
+	assertDistinctFromPrimary(worktree.root, primaryRoot)
+
+	const launch = LAUNCH_MAP[harness]
+	const target = sessionAdapter.open(exec, { cwd: worktree.root, launch })
+
 	const ts = new Date(ctx.now?.() ?? Date.now()).toISOString()
 	const rec: AgentRecord = {
 		id,
 		handle: input.handle ?? id.slice(0, 6),
 		harness,
-		cwd,
-		tmux: { pane },
+		cwd: worktree.root,
+		worktree,
+		tmux: sessionAdapter.name === 'tmux' ? { pane: target.id } : null,
 		status: 'spawning',
 		createdAt: ts,
 		lastSeen: ts,
@@ -69,12 +82,10 @@ export function spawn(ctx: IdContext, input: SpawnInput): SpawnResult {
 		...(resolveSelfId(ctx) ? { spawnedBy: resolveSelfId(ctx) } : {}),
 	}
 	saveAgent(ctx.root, rec)
-	writeText(paths.paneFile(ctx.root, pane), id)
+	writeText(paths.paneFile(ctx.root, target.id), id)
 	writeText(paths.briefFile(ctx.root, id), brief)
 
-	const launch = LAUNCH_MAP[harness]
-	launchPane(exec, pane, launch)
-	return { agent: rec, pane, launch }
+	return { agent: rec, pane: target.id, launch }
 }
 
 /** Resolve a spawn brief from --brief-file, --task -, or --task <text>; null if no source given. */
@@ -86,10 +97,6 @@ export function resolveBrief(
 	if (input.task === '-') return readStdin()
 	if (input.task != null && input.task !== '') return input.task
 	return null
-}
-
-function launchPane(exec: Exec, pane: string, launch: string): void {
-	exec('tmux', ['send-keys', '-t', pane, launch, 'Enter'])
 }
 
 function writeText(file: string, text: string): void {

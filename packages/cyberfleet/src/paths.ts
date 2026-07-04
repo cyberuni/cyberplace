@@ -40,6 +40,7 @@ export const paths = {
 	inboxReadDir: (root: string, id: string) => join(root, 'inbox', id, 'read'),
 	dataDir: (root: string, id: string) => join(root, 'data', id),
 	briefFile: (root: string, id: string) => join(root, 'data', id, 'brief.md'),
+	worktreeDir: (root: string, id: string) => join(root, 'worktrees', id),
 }
 
 /** tmux pane ids look like "%3"; make them filesystem-safe. */
