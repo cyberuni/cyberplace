@@ -5,8 +5,10 @@
 // Run: node verify-formation-loop.mts   (exits non-zero if any check fails)
 
 import { readFileSync } from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const ROOT = '/home/user/code/cyberuni/cyberplace'
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..')
 const SKILL = readFileSync(`${ROOT}/plugins/sdd/skills/formation-loop/SKILL.md`, 'utf8')
 const WARDEN = readFileSync(`${ROOT}/plugins/sdd/agents/sdd-warden.md`, 'utf8')
 const DEDUPE = readFileSync(`${ROOT}/plugins/sdd/skills/dedupe-specs/SKILL.md`, 'utf8')

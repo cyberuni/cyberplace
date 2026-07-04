@@ -1,7 +1,7 @@
 {
 	"mcpServers": {
 		"mcp-agent-mail": {
-			"command": "/home/user/.local/bin/mcp-agent-mail",
+			"command": "mcp-agent-mail",
 			"args": [],
 			"envFile": "${workspaceFolder}/.env"
 		}

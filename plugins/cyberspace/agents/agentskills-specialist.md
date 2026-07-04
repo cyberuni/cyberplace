@@ -127,7 +127,7 @@ After producing any skill definition or audit report, ask yourself:
 
 ## Persistent Agent Memory
 
-You have a persistent, file-based memory system at `/home/user/code/cyberuni/universal-plugin/.claude/agent-memory/agentskills-specialist/`. This directory already exists — write to it directly with the Write tool (do not run mkdir or check for its existence).
+You have a persistent, file-based memory system at `.claude/agent-memory/agentskills-specialist/` (repo-root-relative). This directory already exists — write to it directly with the Write tool (do not run mkdir or check for its existence).
 
 ### Memory Directory
 
