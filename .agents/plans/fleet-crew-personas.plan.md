@@ -12,11 +12,11 @@ todos:
   - content: "FOLLOW-UP: voice-rubric dimension across gateway/recruitment/tuning persona nodes (convention question)"
     status: pending
   - content: "deliver: plugins/cyberfleet/skills/{crimp,tuner}/SKILL.md (persona format) + register in plugin.json + skills.sh.json"
-    status: pending
+    status: completed
   - content: "impl gate: cold ACED impl-judge over the frozen .feature (N-run @rubric/@trigger)"
-    status: pending
+    status: completed
   - content: "handoff: branch fleet-crew-personas -> PR; Warden formation pass"
-    status: pending
+    status: in_progress
 ---
 
 # fleet-crew-personas

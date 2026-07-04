@@ -1,5 +1,5 @@
 ---
-status: approved
+status: implemented
 project-path: packages/cyberfleet
 approval:
   spec:
@@ -7,8 +7,16 @@ approval:
     by: agent
     cause: dimension
     why:
-      leash: within — auto-spec; additive — two new behavioral persona nodes (recruitment/Crimp, tuning/Tuner) on the implemented cyberfleet project, no existing frozen scenario touched, the 5 prior nodes stay @frozen; reversible feature branch fleet-crew-personas; user directed continuation into Mission A; self-asserted by:agent into the async review queue. Root cycles implemented->approved for this CR (new unbuilt behavior); returns to implemented at the impl gate. Prior relocate-fleet-spec/add-fleet-comms provenance is the overwritten current-state twin; its durable record stays in the ledger/ shards.
+      leash: within — auto-spec; additive — two new behavioral persona nodes (recruitment/Crimp, tuning/Tuner) on the implemented cyberfleet project, no existing frozen scenario touched, the 5 prior nodes stay @frozen; reversible feature branch fleet-crew-personas; user directed continuation into Mission A; self-asserted by:agent into the async review queue. Root cycled implemented->approved for this CR (new unbuilt behavior); returns to implemented at the impl gate. Prior relocate-fleet-spec/add-fleet-comms provenance is the overwritten current-state twin; its durable record stays in the ledger/ shards.
       basis: two cold ACED spec-judges, both ALIGNED true, {oracle,builder,architect} all PASS — Crimp (Fit strong; @trigger balanced Examples, 3 @rubric, 7 @behavior; Tavern-by-intent per ADR-0021) and Tuner (Fit strong; @trigger balanced, 6 @rubric, 8 @behavior; thin-dispatcher routing to manage-model-runners / define-agent / autonomy-rubric). check-suite OK, check-spec-structure 0/0, concept-index regenerated (added the [crew] group). Both .feature frozen. Non-blocking follow-ups: a voice-rubric dimension across the three persona nodes; a concrete in-session handler for the leash route.
+      cr: fleet-crew-personas
+  impl:
+    verdict: approve
+    by: agent
+    cause: dimension
+    why:
+      leash: within — two persona SKILL.md built to keep from the frozen suites on the reversible fleet-crew-personas branch, no frozen scenario edited; user directed Mission A; self-asserted by:agent into the async review queue. Root returns approved->implemented.
+      basis: two cold ACED impl-judges both IMPLEMENTATION_PASS true — Crimp 13/13 frozen scenarios (12/12 @trigger rows, 3 @rubric over threshold, clean Operator/Tuner separation incl. the "tune the navigator crew" near-miss not cross-firing) and Tuner 15/15 (10/10 @trigger rows, 6 @rubric over threshold, mirrors the aced:manage thin-dispatcher). Both persona SKILL.md pass `audit validate` clean (persona metadata correct), cloned the pod/operator format; plugin.json already dir-globs skills. Non-blocking: Tuner @trigger row 5 weakest-yes 2/3; voice-rubric follow-up across the persona nodes.
       cr: fleet-crew-personas
 ---
 
