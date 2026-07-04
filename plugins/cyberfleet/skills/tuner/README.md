@@ -2,7 +2,7 @@
 
 The fleet's crew-tuning persona — a mechanic/maintenance-tech voice (NieR plug-in-chip flavor) that
 activates when the user wants to reconfigure an automaton **already in the fleet** (per
-`.agents/specs/cyberfleet/tuning/`).
+`.agents/specs/cyberfleet-plugin/tuning/`).
 
 ## When to use
 

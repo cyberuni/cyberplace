@@ -16,7 +16,7 @@ todos:
 
 # pod-hal-flash — wire the HAL tell into the Pod gateway skill
 
-CR against `.agents/specs/cyberfleet/gateway/` (node stays `@frozen`; this is an ADDITIVE scenario,
+CR against `.agents/specs/cyberfleet-plugin/gateway/` (node stays `@frozen`; this is an ADDITIVE scenario,
 not a re-open). Per ADR-0022 decision 6, HAL is a rare, earned tell — never a mascot, never
 routine — shown when a Pod's own ship self-asserted a gate above its run-level leash (SDD's leash
 concept). Detection already exists and is committed: `cyberfleet missions --json` emits a per-ship
@@ -28,5 +28,5 @@ Pod `SKILL.md` decision step — no new cyberfleet code, detection already ships
 ## NEXT
 
 Verify step: run `audit validate` on `plugins/cyberfleet/skills/pod`, `check-spec-structure` +
-`concept-index --check` over `.agents/specs/cyberfleet`, and `pnpm --filter=cyberfleet test`. Then
+`concept-index --check` over `.agents/specs/cyberfleet-plugin`, and `pnpm --filter=cyberfleet test`. Then
 hand off for review — do not commit (reviewer commits).
