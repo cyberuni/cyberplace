@@ -1,17 +1,22 @@
 #!/usr/bin/env node
+import { execFileSync } from 'node:child_process'
 import { Command } from 'commander'
 import {
 	bumpLastSeen,
 	type Harness,
 	type IdContext,
 	listAgents,
+	pauseAgent,
 	prune,
+	realExec,
 	register,
 	resolveSelfId,
+	resolveShip,
 	touch,
 } from './identity.ts'
 import { install } from './install.ts'
 import { inbox, read, resolveBody, send } from './message.ts'
+import { buildMissions, resolveAgentsRoot } from './missions.ts'
 import { printFields, printTable } from './output.ts'
 import { detectMode, resolveRoot } from './paths.ts'
 import { injectInbox } from './runtime/inject-inbox.ts'
@@ -175,6 +180,103 @@ program
 	.action((opts) => {
 		const results = install(opts.agent as Harness, opts.dir)
 		for (const r of results) console.log(`${r.status}: ${r.harness} ${r.vendorEvent} → ${r.file}`)
+	})
+
+rootOpts(program.command('missions'))
+	.description("who needs the Council's hands — ships × mission × gate × leash, derived from SDD state")
+	.option('--json', 'emit the full structured array instead of the table')
+	.option('--agents-root <path>', 'override the root under which .agents/ is resolved (default: the primary checkout)')
+	.action((opts) => {
+		const ctx = ctxOf(opts)
+		touch(ctx)
+		const agentsRoot = opts.agentsRoot ?? resolveAgentsRoot(realExec)
+		const agents = listAgents(ctx.root).filter((a) => a.status !== 'exited')
+		const rows = buildMissions(agentsRoot, agents)
+		if (opts.json) {
+			console.log(JSON.stringify(rows, null, 2))
+			return
+		}
+		printTable(rows, [
+			{ label: 'handle', get: (r) => r.handle },
+			{ label: 'branch/cr', get: (r) => r.branch ?? '-' },
+			{ label: 'status', get: (r) => r.status },
+			{
+				label: 'mission',
+				get: (r) => (r.mission ? `${r.mission.status} ${r.mission.completed}/${r.mission.total}` : '-'),
+			},
+			{ label: 'spec', get: (r) => r.spec?.status ?? '-' },
+			{ label: 'gate:spec', get: (r) => (r.gate.spec ? `${r.gate.spec.verdict}(${r.gate.spec.by})` : '-') },
+			{ label: 'gate:impl', get: (r) => (r.gate.impl ? `${r.gate.impl.verdict}(${r.gate.impl.by})` : '-') },
+			{ label: 'leash', get: (r) => r.leash ?? '-' },
+			{ label: 'council', get: (r) => (r.needsCouncil ? 'yes' : '-') },
+			{ label: 'HAL', get: (r) => (r.hal ? '!' : '') },
+		])
+	})
+
+rootOpts(program.command('jump'))
+	.description("select/focus a ship's session (tmux pane), or print its worktree path to cd into")
+	.argument('<peer>', 'handle, id, or worktree branch/CR ref')
+	.action((peer, opts) => {
+		const ctx = ctxOf(opts)
+		touch(ctx)
+		const agent = resolveShip(ctx.root, peer)
+		if (agent.tmux?.pane) {
+			try {
+				execFileSync('tmux', ['select-pane', '-t', agent.tmux.pane], { stdio: 'ignore' })
+				printFields({ jumped: agent.handle, pane: agent.tmux.pane })
+				return
+			} catch {
+				// tmux unavailable or pane gone — fall through to printing a cd target
+			}
+		}
+		console.log(agent.worktree?.root ?? agent.cwd)
+	})
+
+rootOpts(program.command('ack'))
+	.description('acknowledge a message (thin alias of `read` — both print + move it to acked)')
+	.argument('<msg-id>', 'message id')
+	.action((msgId, opts) => {
+		const ctx = ctxOf(opts)
+		const meId = requireSelf(ctx)
+		const msg = read({ root: ctx.root }, meId, msgId)
+		printFields({ acked: msg.id, from: msg.fromHandle, subject: msg.subject })
+	})
+
+rootOpts(program.command('pause'))
+	.description("pause a ship's mission — a cyberfleet-level status marker only (see note)")
+	.argument('<peer>', 'handle, id, or worktree branch/CR ref')
+	.action((peer, opts) => {
+		const ctx = ctxOf(opts)
+		const agent = resolveShip(ctx.root, peer)
+		const rec = pauseAgent(ctx.root, agent.id)
+		printFields({ paused: rec.handle, status: rec.status })
+		process.stderr.write(
+			'note: this only flips the cyberfleet ship record to status:paused — it is NOT a bridge to ' +
+				"SDD's pause-mission checkpoint (which rewrites the plan brief's todos/## NEXT anchor). " +
+				'Run `sdd:pause-mission` in-session for the actual mission checkpoint (flagged gap).\n',
+		)
+	})
+
+const gateCmd = program.command('gate').description('SDD gate operations')
+rootOpts(gateCmd.command('approve'))
+	.description('Council ratification of a gate — STUBBED, not safely relayable through this CLI (see note)')
+	.argument('<cr>', 'CR ref')
+	.argument('<gateName>', 'spec | impl')
+	.action((cr, gateName, _opts) => {
+		if (gateName !== 'spec' && gateName !== 'impl') throw new Error('<gateName> must be spec | impl')
+		const by =
+			process.env.SDD_HANDLE ??
+			realExec('git', ['config', 'user.name']) ??
+			realExec('git', ['log', '-1', '--format=%an'])
+		const wouldWrite = { kind: 'gate', cr, gate: gateName, verdict: 'approve', by: by ?? '<unknown>' }
+		process.stderr.write(
+			'cyberfleet gate approve is NOT implemented — a human ratification into the SDD ledger cannot ' +
+				'be safely relayed through this CLI without running in-session with the SDD schema in force ' +
+				'(the relayed-ratification seam). It would have written:\n  ' +
+				`${JSON.stringify(wouldWrite)}\n` +
+				'Ratify this gate via the SDD spec-gate skill, in-session, instead. Flagging for the Council.\n',
+		)
+		process.exitCode = 1
 	})
 
 program.parseAsync(process.argv).catch((err: unknown) => {

@@ -5,7 +5,7 @@ import { dirname } from 'node:path'
 import { ensureFleetMarker, paths } from './paths.ts'
 
 export type Harness = 'claude' | 'cursor' | 'codex'
-export type AgentStatus = 'spawning' | 'active' | 'idle' | 'stale' | 'exited'
+export type AgentStatus = 'spawning' | 'active' | 'idle' | 'stale' | 'exited' | 'paused'
 
 export interface AgentRecord {
 	id: string
@@ -172,6 +172,37 @@ export function resolveRecipient(root: string, to: string): string {
 	const match = listAgents(root).find((a) => a.handle === to)
 	if (!match) throw new Error(`no agent addressable as "${to}"`)
 	return match.id
+}
+
+/**
+ * Resolve a ship reference by id, handle, or its worktree branch (the ship↔CR join key, ADR-0022
+ * decision 8 + the `add-fleet-comms` CR's convention: an `AgentRecord.worktree.branch` equals the
+ * SDD `<cr-ref>` it maps to). Used by verbs that address "the ship working on CR X" as well as
+ * "the ship named X".
+ */
+export function resolveShip(root: string, ref: string): AgentRecord {
+	const byId = loadAgent(root, ref)
+	if (byId) return byId
+	const agents = listAgents(root)
+	const byHandle = agents.find((a) => a.handle === ref)
+	if (byHandle) return byHandle
+	const byBranch = agents.find((a) => a.worktree?.branch === ref)
+	if (byBranch) return byBranch
+	throw new Error(`no ship addressable as "${ref}" (tried id, handle, and worktree branch/CR)`)
+}
+
+/**
+ * Pause a ship's mission — a cyberfleet-level marker on its `AgentRecord.status` only. This is
+ * NOT a bridge to SDD's `pause-mission` checkpoint (which rewrites the plan brief's todos/NEXT
+ * anchor) — that gap is flagged, not silently papered over: a caller who wants the actual mission
+ * checkpoint must run `sdd:pause-mission` in-session.
+ */
+export function pauseAgent(root: string, id: string): AgentRecord {
+	const rec = loadAgent(root, id)
+	if (!rec) throw new Error(`no agent "${id}"`)
+	rec.status = 'paused'
+	saveAgent(root, rec)
+	return rec
 }
 
 export function bumpLastSeen(ctx: IdContext, id: string): void {
