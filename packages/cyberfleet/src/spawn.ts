@@ -1,5 +1,5 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
-import { dirname } from 'node:path'
+import { dirname, join } from 'node:path'
 import { selectSessionAdapter } from './console/index.ts'
 import { assertDistinctFromPrimary, gitWorktreeAdapter, resolvePrimaryRoot } from './console/worktree.ts'
 import {
@@ -11,7 +11,7 @@ import {
 	resolveSelfId,
 	saveAgent,
 } from './identity.ts'
-import { paths } from './paths.ts'
+import { ensureFleetMarker, paths } from './paths.ts'
 
 /** How each harness's own CLI is launched in the new pane. */
 export const LAUNCH_MAP: Record<Harness, string> = {
@@ -44,6 +44,7 @@ export interface SpawnResult {
  * brief as a file the peer's own SessionStart hook reads — never typed into its prompt.
  */
 export function spawn(ctx: IdContext, input: SpawnInput): SpawnResult {
+	ensureFleetMarker(ctx.root)
 	const env = ctx.env ?? process.env
 	const exec = ctx.exec ?? realExec
 	const sessionAdapter = selectSessionAdapter(env)
@@ -63,6 +64,10 @@ export function spawn(ctx: IdContext, input: SpawnInput): SpawnResult {
 	const worktreePath = input.worktreePath ?? paths.worktreeDir(ctx.root, id)
 	const worktree = gitWorktreeAdapter.add(exec, { primaryRoot, path: worktreePath, branch })
 	assertDistinctFromPrimary(worktree.root, primaryRoot)
+	// Stamp the new worktree-ship with its own tracked marker immediately — its `.cyberfleet/`
+	// branch state hasn't been committed yet, so without this the freshly spawned ship wouldn't
+	// detect itself as a ship until that marker lands on the branch.
+	ensureFleetMarker(join(worktree.root, '.cyberfleet'))
 
 	const launch = LAUNCH_MAP[harness]
 	const target = sessionAdapter.open(exec, { cwd: worktree.root, launch })

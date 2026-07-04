@@ -2,7 +2,7 @@ import { execFileSync } from 'node:child_process'
 import { randomBytes } from 'node:crypto'
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname } from 'node:path'
-import { paths } from './paths.ts'
+import { ensureFleetMarker, paths } from './paths.ts'
 
 export type Harness = 'claude' | 'cursor' | 'codex'
 export type AgentStatus = 'spawning' | 'active' | 'idle' | 'stale' | 'exited'
@@ -115,6 +115,7 @@ export interface RegisterInput {
 
 /** Register (or idempotently refresh) this session's identity. */
 export function register(ctx: IdContext, input: RegisterInput): AgentRecord {
+	ensureFleetMarker(ctx.root)
 	const env = ctx.env ?? process.env
 	const harness = detectHarness(input.harness, ctx)
 	if (!harness) {

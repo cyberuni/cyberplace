@@ -1,4 +1,4 @@
-import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { beforeEach, describe, expect, it } from 'vitest'
@@ -124,6 +124,12 @@ describe('spawn creates a real worktree-ship (ADR-0022 decision 8)', () => {
 		expect(res.agent.worktree).toEqual({ root: resolve(custom), branch: 'my-branch' })
 		const addCall = worktreeAddCalls[0]!
 		expect(addCall).toEqual(['-C', primaryRoot, 'worktree', 'add', '-b', 'my-branch', custom])
+	})
+
+	it('stamps the new worktree-ship with its own tracked marker so it self-detects as a ship', () => {
+		const res = spawn(ctx(), { harness: 'claude', task: 't' })
+		const shipMarker = join(res.agent.worktree!.root, '.cyberfleet', 'config.json')
+		expect(existsSync(shipMarker)).toBe(true)
 	})
 })
 

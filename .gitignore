@@ -1,7 +1,8 @@
 .agents/*.local.*
 .github/setup-state.json
 .local/
-.cyberfleet/
+.cyberfleet/*
+!.cyberfleet/config.json
 .turbo/
 node_modules/
 dist

@@ -13,7 +13,7 @@ import {
 import { install } from './install.ts'
 import { inbox, read, resolveBody, send } from './message.ts'
 import { printFields, printTable } from './output.ts'
-import { resolveRoot } from './paths.ts'
+import { detectMode, resolveRoot } from './paths.ts'
 import { injectInbox } from './runtime/inject-inbox.ts'
 
 interface RootOpts {
@@ -64,6 +64,13 @@ rootOpts(program.command('who'))
 			{ label: 'last-seen', get: (a) => a.lastSeen },
 			{ label: 'id', get: (a) => a.id },
 		])
+	})
+
+rootOpts(program.command('mode'))
+	.description('report ship (a .cyberfleet/ dir here) vs command-center, and the shared fleet root')
+	.action((opts) => {
+		const info = detectMode({ root: opts.root, space: opts.space })
+		printFields({ mode: info.mode, cwdRoot: info.cwdRoot, fleetRoot: info.fleetRoot })
 	})
 
 rootOpts(program.command('send'))

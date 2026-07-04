@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { beforeEach, describe, expect, it } from 'vitest'
@@ -37,6 +37,11 @@ describe('register records who and where', () => {
 		expect(loadAgent(root, rec.id)?.handle).toBe('alice')
 		expect(loadAgent(root, rec.id)?.harness).toBe('claude')
 		expect(readFileSync(paths.paneFile(root, '%3'), 'utf8')).toBe(rec.id)
+	})
+
+	it('stamps this project root with the tracked .cyberfleet/config.json marker, making it a ship', () => {
+		register(ctx({ TMUX: '/tmp/x,1,0', TMUX_PANE: '%3' }), { handle: 'alice', harness: 'claude' })
+		expect(existsSync(join(root, 'config.json'))).toBe(true)
 	})
 
 	it('is idempotent for the same pane — keeps the same id', () => {

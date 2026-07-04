@@ -5,7 +5,38 @@ Feature: gateway — the fleet skill: spawn peers and message between sessions
   cyberfleet CLI. It defers plain single-session work and in-harness subagent nesting. The file
   store, ordering, spawn, and hook mechanics live in messaging, identity, spawn, and
   surfacing; authoring agent config or plugins is bootstrap and plugin. Cross-capability e2e
-  lives in acceptance.
+  lives in acceptance. Per ADR-0022 the gateway ships as two persona skills — Pod (ship, whether
+  the primary checkout or a spawned worktree) and Operator (outside any ship) — that mode-switch on
+  the tracked `.cyberfleet/config.json` marker's presence; the scenarios below cover the shared
+  etiquette both personas follow plus the mode-switch itself.
+
+  # ── Mode-switch (ADR-0022) ──
+
+  @behavior
+  Scenario: the ship persona (Pod) activates when this project root carries a .cyberfleet/ marker
+    Given a working directory whose project root has a .cyberfleet/ directory
+    When cyberfleet mode is checked
+    Then it reports ship and the Pod skill activates, not Operator
+
+  @behavior
+  Scenario: the command-center persona (Operator) activates when there is no ship marker here
+    Given a working directory whose project root has no .cyberfleet/ directory
+    When cyberfleet mode is checked
+    Then it reports command-center and the Operator skill activates, not Pod
+
+  @behavior
+  Scenario: each persona defers to the other out of mode
+    Given a session running the wrong persona for the detected mode
+    When it checks cyberfleet mode
+    Then Pod defers to Operator outside a ship, and Operator defers to Pod inside a ship
+
+  @behavior
+  Scenario: the primary checkout and a spawned worktree are both ships
+    Given the tracked .cyberfleet/config.json marker is present at a project root, whether that
+      root is the primary checkout or a worktree spawned from it
+    When cyberfleet mode is checked at that root
+    Then it reports ship and the Pod skill activates there — there is no separate
+      flagship/command-center persona reserved for the primary checkout itself
 
   # ── Triggering ──
 
@@ -60,6 +91,13 @@ Feature: gateway — the fleet skill: spawn peers and message between sessions
     Given work that should run in parallel with the current session
     When the fleet skill delegates it
     Then it spawns a peer with cyberfleet spawn and a brief that stands on its own, addressing peers by handle
+
+  @behavior
+  Scenario: Pod spawns a worktree-ship for parallel work from inside an existing ship
+    Given Pod is running inside a ship and the Council wants concurrent work on this project
+    When Pod delegates the parallel work
+    Then it runs cyberfleet spawn, which creates a new worktree-ship and stamps its own
+      .cyberfleet/config.json marker so it self-detects as a ship immediately
 
   # ── Harness-agnostic + MCP-free ──
 
