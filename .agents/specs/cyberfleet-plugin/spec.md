@@ -78,8 +78,11 @@ Where a new concept lives — slot here, do not invent placement:
 
 The nesting rule: capabilities at the top; any layering nests *inside* a capability, never as a
 top-level folder. A node is `<capability>` and never nested. Two cross-cutting concerns run through
-this project (see the by-concept index below): `fleet` (the session-coordination persona — gateway)
-and `crew` (the crew-management personas — recruitment (Crimp) and tuning (Tuner)).
+this project (see the by-concept index below): `fleet` (the session-coordination personas — gateway)
+and `crew-ops` (the crew-operations personas that recruit and tune **crew** — recruitment (Crimp)
+and tuning (Tuner)). Note the distinction: a **crew** is a recruited specialist automaton (what
+Crimp signs on from the Tavern); `crew-ops` is the concern of *operating on* crew, not the crew
+itself.
 
 <!-- BEGIN generated: by-concept (project-spec/concept-index) -->
 
@@ -89,7 +92,7 @@ and `crew` (the crew-management personas — recruitment (Crimp) and tuning (Tun
 
 | Concept | Facets |
 |---|---|
-| `crew` | `recruitment/` (behavior) · `tuning/` (behavior) |
+| `crew-ops` | `recruitment/` (behavior) · `tuning/` (behavior) |
 | `fleet` | `gateway/` (behavior) |
 
 <!-- END generated: by-concept -->

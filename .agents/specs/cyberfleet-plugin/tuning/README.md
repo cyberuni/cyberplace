@@ -1,6 +1,6 @@
 ---
 spec-type: behavioral
-concept: [crew]
+concept: [crew-ops]
 ---
 
 # tuning — the crew-tuning persona: the Tuner

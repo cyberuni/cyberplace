@@ -1,6 +1,6 @@
 ---
 spec-type: behavioral
-concept: [crew]
+concept: [crew-ops]
 ---
 
 # recruitment — the fleet persona: Crimp (crew recruiter)
