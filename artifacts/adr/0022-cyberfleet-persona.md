@@ -62,16 +62,17 @@ what the persona is called.
 ### Option 2: Single fleet persona regardless of location (one face everywhere)
 
 - **Pros**: simplest mental model — one name to teach.
-- **Cons**: collapses two genuinely different postures (bridge crew running one ship vs. command
+- **Cons**: collapses two genuinely different postures (bridge crew running a ship vs. command
   center routing across many ships) into one voice; loses the Pod/Bunker distinction that maps
-  naturally onto ship vs. flagship.
+  naturally onto ship vs. outside-any-ship.
 
-### Option 3: Split persona by location — Pod (in a ship) vs. Operator (at the flagship), CLI stays cold *(chosen)*
+### Option 3: Split persona by mode — Pod (inside a ship) vs. Operator (outside any ship), CLI stays cold *(chosen)*
 
-- **Pros**: matches the git-worktree-per-ship model exactly (one Pod per pane, one Operator at the
-  primary checkout); reuses NieR's Pod/Bunker-operator split, which is already a natural bridge/
-  command-center pair; keeps the CLI and its state store cold and testable; composes with SDD's
-  existing Council and retired-Operator history without contradiction.
+- **Pros**: matches the git-worktree-per-ship model exactly (one Pod per pane, in the primary
+  checkout or any worktree — both are ships once each carries the tracked marker — and one Operator
+  for whatever is outside any ship); reuses NieR's Pod/Bunker-operator split, which is already a
+  natural bridge/command-center pair; keeps the CLI and its state store cold and testable; composes
+  with SDD's existing Council and retired-Operator history without contradiction.
 - **Cons**: two gateway skills instead of one; mode detection (ship vs. not-a-ship) becomes a real
   mechanism that must be simple and reliable.
 
@@ -89,12 +90,12 @@ Adopt **Option 3**.
    One Pod per ship.
 
 3. **Operator** is the command-center automaton (NieR Bunker's 6O/21O). A gateway skill that
-   activates when the working directory is **not** a ship — i.e., at the flagship (decision 8): it
-   lists and spawns ships, and routes messages between them. SDD previously retired a role also
-   named "Operator" (a spawned mission-runner with no channel to command, per
-   `apps/website/src/content/docs/sdd/metaphor.md`). That word is free to reuse here because the
-   new Operator is the opposite shape — always attended, always has the channel, never spawned
-   headless — but the historical ghost is worth flagging so nobody conflates the two.
+   activates when the working directory is **not** a ship — i.e., outside any ship (decision 8): it
+   oversees the fleet, inits or spawns a first ship, and routes messages across ships from outside.
+   SDD previously retired a role also named "Operator" (a spawned mission-runner with no channel to
+   command, per `apps/website/src/content/docs/sdd/metaphor.md`). That word is free to reuse here
+   because the new Operator is the opposite shape — always attended, always has the channel, never
+   spawned headless — but the historical ghost is worth flagging so nobody conflates the two.
 
 4. Specialist crew already have faces and keep them: `aced` (eval officer), `quill` (scribe),
    Warden, Scanner. Pod hails them by name when their concern surfaces; the handoff between Pod
@@ -119,15 +120,25 @@ Adopt **Option 3**.
    is a specific unattended-conductor role, not a persona. Do **not** reuse "Commander" for anything
    in this layer — SDD's Oracle actor already owns that fleet-role name.
 
-8. **Model: a ship is a git worktree.** One Pod maps to one pane/tab/window — the isolation
-   boundary (a worktree) equals the presentation boundary (a terminal surface), matching how
-   tmux, herdr, and orca already frame a running session. The **flagship** is the primary checkout
-   — the Operator's seat. A mission is never run in the primary checkout; running a mission means
-   spinning up a worktree-ship first. Mode is detected by **the presence of a `.cyberfleet/` dir
-   alone** — no check against `.agents/specs` or any SDD state. Parallelism is one mechanism
-   throughout: spawning another ship *is* spawning another worktree (extending `cyberfleet spawn`,
-   `.agents/specs/cyberspace/fleet/spawn/README.md`, from "new peer session" to "new worktree +
-   new peer session").
+8. **Model: a ship is a git worktree carrying a tracked `.cyberfleet/` marker.** One Pod maps to
+   one pane/tab/window — the isolation boundary (a worktree) equals the presentation boundary (a
+   terminal surface), matching how tmux, herdr, and orca already frame a running session. The
+   marker (`.cyberfleet/config.json`) is **tracked in git**, while the rest of `.cyberfleet/`
+   (agents, inbox, panes, worktrees, self) stays gitignored volatile state
+   (`.gitignore`: `.cyberfleet/*` + `!.cyberfleet/config.json`). Because the marker is tracked, it
+   travels to every worktree cut from a branch that has it — **the primary checkout and every
+   worktree it spawns are both ships**; there is no flagship/command-center split by checkout
+   identity. Mode is detected by **the tracked marker's presence alone at this project root** — no
+   check against `.agents/specs` or any SDD state, and no distinction between "the primary" and "a
+   worktree." **Pod** is the persona for being inside a ship (primary or worktree) and may spawn
+   further worktree-ships for parallel work — spawning is a ship capability, not something reserved
+   for outside a ship. **Operator** is the persona for being **outside any ship** — an
+   uninitialized or neutral folder with no marker yet — where its job is to oversee the fleet, init
+   or spawn a first ship, and route across ships from outside. Spawning a new ship still means
+   spawning a new worktree, and `spawn` immediately stamps it with its own `.cyberfleet/config.json`
+   so the freshly spawned ship self-detects as a ship before that marker is ever committed on its
+   branch (extending `cyberfleet spawn`, `.agents/specs/cyberspace/fleet/spawn/README.md`, from
+   "new peer session" to "new worktree + new peer session").
 
 9. **Console = two adapters**, following firstmate's four-verb spine (worktree add/remove; session
    open/send/read/teardown). Ship **tmux** (`$TMUX`) and **herdr** (`HERDR_ENV`, which carries real
@@ -139,17 +150,22 @@ Adopt **Option 3**.
     tracking a mutable view; the field that matters most is "who needs the Council's hands." The
     view stays thin (an fzf picker, a status-bar segment, a pane title) while the actions remain
     plain CLI verbs (`gate approve`, `jump`, `pause`, `ack`). A real TUI is deferred to a future
-    GitHub issue, not built now. State wrinkle: `.cyberfleet/` is per-git-root, so a shared
-    `CYBERFLEET_ROOT` is pinned at the primary checkout so the Operator's query sees the whole
-    fleet, not just the flagship's own worktree.
+    GitHub issue, not built now. State wrinkle: the tracked ship marker travels per-worktree (that's
+    what makes each one a ship), but the mutable **runtime state** (agents/inbox/panes) does not —
+    it stays gitignored and pinned to the primary checkout's `.cyberfleet/`, shared fleet-wide via
+    `CYBERFLEET_ROOT`, so any ship's query sees the whole fleet rather than forking a view per
+    worktree. This is a runtime-state-sharing convenience, not a command-center seat — the primary
+    is a ship like any other; it just happens to also host the shared inbox/agents/panes state.
 
 ## Rationale
 
-Splitting the persona by location rather than inventing one voice does real work: it lets the
-persona mirror the actual isolation model (worktree = ship = pane) instead of layering a second,
-independent taxonomy on top of it. Reusing NieR's Pod/Bunker-operator pair costs nothing new to
-teach — the pairing already encodes "in the field" vs. "at command central" — and it slots exactly
-onto the ship/flagship split this ADR needed anyway. Keeping the CLI cold and putting warmth only
+Splitting the persona by mode rather than inventing one voice does real work: it lets the persona
+mirror the actual isolation model (worktree = ship = pane, and every ship — primary or worktree —
+carries the same tracked marker) instead of layering a second, independent taxonomy on top of it.
+Reusing NieR's Pod/Bunker-operator pair costs nothing new to teach — the pairing already encodes
+"in the field" vs. "at command central" — and it slots exactly onto the ship / outside-any-ship
+split this ADR needed anyway, without requiring a privileged "flagship" checkout. Keeping the CLI
+cold and putting warmth only
 in the plugin's gateway skills preserves the CLI's testability and scriptability while still
 giving the user something to talk to. The HAL easter egg is deliberately not the entry point:
 naming the persona after a rogue AI would undercut the very trust the persona economy depends on,
@@ -161,8 +177,8 @@ an honest signal instead of a liability.
 ### Positive
 
 - The persona model requires no new mental furniture beyond what SDD's fleet metaphor and the
-  existing `fleet/` capability already ship — Council is unchanged, Pod/Operator slot onto ship/
-  flagship, and Warden/Scanner/aced/quill keep their existing faces.
+  existing `fleet/` capability already ship — Council is unchanged, Pod/Operator slot onto
+  ship / outside-any-ship, and Warden/Scanner/aced/quill keep their existing faces.
 - The cold-CLI / warm-plugin split keeps the deterministic surface (`cyberfleet`) testable and
   keeps scope creep out of the state store — voice and judgment live only in gateway skills.
 - Query-first + no-TUI avoids building a bespoke terminal UI before the query shape is proven; the
@@ -171,8 +187,10 @@ an honest signal instead of a liability.
 ### Negative
 
 - Two gateway skills (Pod, Operator) to build and keep in sync, instead of one.
-- Mode detection by `.cyberfleet/`-dir-presence alone is a hard boundary; a directory copied or
-  created in the wrong place silently flips a session's persona.
+- Mode detection by the tracked `.cyberfleet/config.json` marker's presence alone is a hard
+  boundary; a marker copied, committed, or created in the wrong place silently flips a session's
+  persona — and because the marker is tracked, it now also flips for every worktree cut from that
+  branch, which is intended (primary and worktrees are both ships) but worth stating plainly.
 - The HAL tell adds a small amount of leash-crossing-detection plumbing purely for a UX signal,
   not for control flow.
 
@@ -196,9 +214,10 @@ This lands spec-first, as change requests against `.agents/specs/cyberspace/flee
 - **Adapter split + worktree creation** — extend `spawn` (and a new `worktree` verb pair) to add/
   remove a git worktree per ship, and implement the tmux and herdr session adapters behind the
   existing four-verb spine.
-- **Mode-switch + the two gateway skills** — a `.cyberfleet/`-presence check, the `Pod` gateway
-  skill (ship-scoped) and the `Operator` gateway skill (flagship-scoped), plus the shared
-  `CYBERFLEET_ROOT` pin so the Operator's queries span the whole fleet.
+- **Mode-switch + the two gateway skills** — a tracked `.cyberfleet/config.json`-marker-presence
+  check, the `Pod` gateway skill (ship-scoped, primary or worktree) and the `Operator` gateway
+  skill (outside-any-ship-scoped), plus the shared `CYBERFLEET_ROOT` pin (at the primary's runtime
+  state) so queries from any ship span the whole fleet.
 - **The query + verbs + HAL tell** — `cyberfleet missions --json`, the `gate approve` / `jump` /
   `pause` / `ack` verb set, and the leash-crossing HAL flash wired to the existing SDD leash
   derivation.
