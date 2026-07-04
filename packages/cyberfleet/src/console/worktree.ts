@@ -3,7 +3,7 @@ import type { Exec } from '../identity.ts'
 
 /** Generic multiplexer seam — no cyberfleet-specific concepts, so this can be extracted later. */
 
-export interface WorktreeAddOptions {
+interface WorktreeAddOptions {
 	/** The primary checkout's root — the repo `git worktree add` runs against. */
 	primaryRoot: string
 	/** Where the new worktree should be checked out. */
@@ -12,16 +12,16 @@ export interface WorktreeAddOptions {
 	branch: string
 }
 
-export interface Worktree {
+interface Worktree {
 	root: string
 	branch: string
 }
 
-export interface WorktreeRemoveOptions {
+interface WorktreeRemoveOptions {
 	primaryRoot: string
 }
 
-export interface WorktreeAdapter {
+interface WorktreeAdapter {
 	add(exec: Exec, opts: WorktreeAddOptions): Worktree
 	remove(exec: Exec, path: string, opts: WorktreeRemoveOptions): void
 }

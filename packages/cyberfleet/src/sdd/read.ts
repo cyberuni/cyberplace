@@ -11,7 +11,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 /** A durable `gate` ledger line for one CR — see sdd:combat-log-governance. */
-export interface GateLine {
+interface GateLine {
 	gate: 'spec' | 'impl'
 	verdict: string
 	/** A human name (ratified) or the literal `"agent"` (self-asserted, provisional). */
@@ -19,7 +19,7 @@ export interface GateLine {
 }
 
 /** The conductor's run-start `leash` ledger line for one CR — see sdd:combat-log-governance. */
-export interface LeashLine {
+interface LeashLine {
 	leash: string
 	by: string
 }

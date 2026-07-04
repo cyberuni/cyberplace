@@ -8,18 +8,3 @@ export function selectSessionAdapter(env: NodeJS.ProcessEnv): SessionAdapter {
 	if (env.HERDR_ENV) return herdrSessionAdapter
 	throw new Error('spawn requires a session backend — run inside tmux ($TMUX) or herdr ($HERDR_ENV=1)')
 }
-
-export { herdrSessionAdapter } from './session.herdr.ts'
-export { tmuxSessionAdapter } from './session.tmux.ts'
-export type {
-	SessionAdapter,
-	SessionOpenOptions,
-	SessionReadOptions,
-	SessionTarget,
-} from './session.ts'
-export type { Worktree, WorktreeAdapter, WorktreeAddOptions, WorktreeRemoveOptions } from './worktree.ts'
-export {
-	assertDistinctFromPrimary,
-	gitWorktreeAdapter,
-	resolvePrimaryRoot,
-} from './worktree.ts'

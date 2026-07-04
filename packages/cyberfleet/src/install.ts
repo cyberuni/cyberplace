@@ -4,7 +4,7 @@ import type { Harness } from './identity.ts'
 import type { HookEvent } from './runtime/inject-inbox.ts'
 
 // The command a harness hook runs to surface unread fleet mail.
-export const hookCommand = (event: HookEvent): string => `cyberfleet inbox --hook --event ${event}`
+const hookCommand = (event: HookEvent): string => `cyberfleet inbox --hook --event ${event}`
 
 interface VendorSpec {
 	file: string
@@ -15,7 +15,7 @@ interface VendorSpec {
 
 // SessionStart → all three; PostToolUse → Claude + Codex only (Cursor has none) — the same
 // asymmetry cyberplace's build-definition / vendors.json encodes.
-export const VENDORS: Record<Harness, VendorSpec> = {
+const VENDORS: Record<Harness, VendorSpec> = {
 	claude: {
 		file: '.claude/settings.json',
 		shape: 'claude',
@@ -29,7 +29,7 @@ export const VENDORS: Record<Harness, VendorSpec> = {
 	},
 }
 
-export type InstallStatus = 'registered' | 'already present'
+type InstallStatus = 'registered' | 'already present'
 export interface InstallResult {
 	harness: Harness
 	event: HookEvent

@@ -14,7 +14,7 @@ import {
 import { ensureFleetMarker, paths } from './paths.ts'
 
 /** How each harness's own CLI is launched in the new pane. */
-export const LAUNCH_MAP: Record<Harness, string> = {
+const LAUNCH_MAP: Record<Harness, string> = {
 	claude: 'claude',
 	cursor: 'cursor-agent',
 	codex: 'codex',

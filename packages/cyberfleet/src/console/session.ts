@@ -2,7 +2,7 @@ import type { Exec } from '../identity.ts'
 
 /** Generic multiplexer seam — no cyberfleet-specific concepts, so this can be extracted later. */
 
-export interface SessionOpenOptions {
+interface SessionOpenOptions {
 	/** Working directory the new pane/window/session should start in. */
 	cwd: string
 	/** Command line to launch inside the new pane once it is open. */

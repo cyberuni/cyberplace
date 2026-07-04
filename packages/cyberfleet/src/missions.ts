@@ -20,19 +20,19 @@ export function resolveAgentsRoot(exec: Exec, cwd?: string): string {
 	}
 }
 
-export interface MissionGate {
+interface MissionGate {
 	verdict: string
 	by: string
 }
 
-export interface MissionInfo {
+interface MissionInfo {
 	status: string
 	completed: number
 	total: number
 	next: string
 }
 
-export interface SpecInfo {
+interface SpecInfo {
 	status: string
 }
 
