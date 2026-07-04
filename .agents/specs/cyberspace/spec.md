@@ -1,5 +1,5 @@
 ---
-status: approved
+status: implemented
 project-path: plugins/cyberspace
 approval:
   spec:
@@ -9,6 +9,14 @@ approval:
     why:
       leash: within — auto-spec; all-additive new top-level fleet/ capability (5 new nodes gateway/identity/messaging/spawn/surfacing) on the implemented cyberspace spec, no existing frozen scenario touched; reversible feature branch add-fleet-comms; user directed continuation; self-asserted by:agent into the async review queue
       basis: cold sdd-spec-judge re-grade 3-lens {oracle,builder,architect} all PASS on all 5 nodes, ALIGNED true, no blocker (prior ALIGNED:false → 8 fixes applied — sibling refs intent-not-slug ADR-0021, spawn Scenario Outline over claude/cursor/codex + error cases, identity/messaging/surfacing negatives, cut --reply-to, sequence diagram); gateway fit strong (ACED @trigger 4-yes/4-near-miss balanced, @rubric well-formed threshold 7), 4 engine nodes SDD-default boolean; check-spec-structure 0/0, concept-index no drift, check-suite OK; 5 fleet .feature frozen
+      cr: add-fleet-comms
+  impl:
+    verdict: approve
+    by: agent
+    cause: dimension
+    why:
+      leash: within — user directed continuation through merge (repeated "continue"); impl built to keep from the frozen suite on the reversible add-fleet-comms branch; self-asserted by:agent into the async review queue
+      basis: two cold impl-judges both PASS. sdd-impl-judge over the 4 engine nodes (identity/messaging/spawn/surfacing) → IMPLEMENTATION_PASS true, all frozen scenarios verified — 5 first-pass blockers fixed in fec1a2c (who cwd column, touch last-seen on every registry command, resolveBody flag/file/stdin, resolveBrief stdin, surfacing brief-no-mail isolation) + new cli.test.ts e2e; 44 cyberfleet tests green, typecheck+biome clean. aced-impl-judge over the gateway skill → PASS, @trigger 9/9, @behavior 5/5, @rubric 9/threshold 7. Advisory carry-forwards (non-blocking): self-file fallback branch coverage, partial cli.ts coverage, no eval.md run-policy, plugin-level hooks.json auto-wire deferred (cyberfleet install --agent covers registration)
       cr: add-fleet-comms
 ---
 
