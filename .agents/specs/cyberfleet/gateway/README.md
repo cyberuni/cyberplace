@@ -59,8 +59,10 @@ layers carry signal.
 **Non-goals** — nesting a subagent inside the current session (use the harness's own subagent
 tooling, not the fleet); the file-store, ordering, and hook mechanics (those are `messaging`,
 `identity`, `spawn`, `surfacing`); authoring agent config or plugins (that is `bootstrap` and
-`plugin`); the HAL above-leash tell and the `cyberfleet missions --json` query view (ADR-0022
-decisions 6 and 10 — a later change request).
+`plugin`); the `cyberfleet missions --json` query view itself, i.e. the fleet-wide dashboard/picker
+(ADR-0022 decision 10 — a later change request) and detecting the above-leash condition (that lives
+in `cyberfleet`'s `sdd/hal.ts`, not this skill). Pod's own one-line HAL surfacing (decision 6) is in
+scope — see the table below.
 
 Every scenario in [`gateway.feature`](./gateway.feature) maps to one of these behaviors:
 
@@ -72,3 +74,4 @@ Every scenario in [`gateway.feature`](./gateway.feature) maps to one of these be
 | **register + check inbox + ack** | identity on entry, read unread before acting, ack what it handles |
 | **spawn with a self-contained brief** | parallel work goes to a peer with a standalone brief, addressed by handle |
 | **harness-agnostic + MCP-free** | no same-harness assumption, no MCP messaging server |
+| **HAL tell, once, on Pod's own above-leash self-assertion** | Pod reads its own ship's `hal` field from `cyberfleet missions --json` and, when true, speaks the tell once as a rare earned signal; never repeated, never shown when false |

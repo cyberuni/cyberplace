@@ -107,6 +107,16 @@ Feature: gateway — the fleet skill: spawn peers and message between sessions
     When the fleet skill coordinates with it
     Then it addresses the peer through the shared files and cyberfleet, not an MCP messaging server, and makes no same-harness assumption
 
+  # ── HAL tell (ADR-0022 decision 6) ──
+
+  @behavior
+  Scenario: Pod surfaces the HAL tell once when its own ship self-asserted above its leash
+    Given Pod is running inside a ship and cyberfleet missions --json reports this ship's own row
+      with hal true
+    When Pod checks its own row
+    Then it speaks the HAL tell once as a rare, earned signal and continues its work, never
+      repeating it for the same self-assertion and never surfacing it when hal is false
+
   @quality @rubric
   Scenario: fleet coordination is offloaded, etiquette-complete, and harness-agnostic
     Given a session coordinating peers over the fleet

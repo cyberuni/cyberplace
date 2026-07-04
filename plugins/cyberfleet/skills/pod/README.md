@@ -19,6 +19,9 @@ outside any ship. (Spawning a worktree-ship for parallel work IS Pod's job — s
 - Spawns a worktree-ship with `cyberfleet spawn` when the Council wants concurrent work — the
   primary checkout and every worktree it spawns are all ships (the tracked `.cyberfleet/` marker
   travels with each).
+- Checks `cyberfleet missions --json` for its own ship's `hal` field and, when true, speaks the HAL
+  tell once — a rare, earned "I acted above my own leash on my own" wink, never routine (ADR-0022
+  decision 6).
 - Defers to `operator` when this working directory has no `.cyberfleet/` marker.
 
 Every mechanic is a `cyberfleet` CLI call — harness-agnostic, MCP-free.
