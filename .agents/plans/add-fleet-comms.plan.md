@@ -39,7 +39,7 @@ capability**: create agent sessions + message between them, harness-agnostic (Cl
 Codex), MCP-free. Engine = new `cyberfleet` CLI (offloaded, like universal-plugin); interface =
 `fleet` gateway skill in the cyberspace plugin; surfacing = SessionStart/PostToolUse hooks.
 
-Approved design plan: `/home/user/.claude/plans/for-cyberspace-i-want-streamed-beaver.md`.
+Approved design plan: `.agents/plans/add-fleet-comms.design.md`.
 
 ## Node breakdown (fleet/<unit>, never 3 deep)
 
@@ -74,7 +74,7 @@ Paused before recording, so it is a clean draft. To land the gate (all in one co
    (+ re-run check-spec-structure / concept-index --check). Commit the gate as one unit.
 
 **Then Step 3 (deliver) — build from the frozen suite.** Design plan
-`/home/user/.claude/plans/for-cyberspace-i-want-streamed-beaver.md` §"Files to create/modify" is the
+`.agents/plans/add-fleet-comms.design.md` §"Files to create/modify" is the
 impl reference. Scaffold **new `packages/cyberfleet/`** mirroring `packages/cyberplace` (already read:
 package.json → name `cyberfleet`, bin `cyberfleet`, dep commander, tsdown `entry: src/cli.ts`, bin shim
 `dist/cli.mjs`; copy `src/output.ts` helpers). Modules: `src/{cli,paths,identity,registry,message,spawn,
