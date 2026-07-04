@@ -1,91 +1,23 @@
 # AGENTS.md
 
-This file provides guidance to AI coding assistants when working with code in this repository.
-
-**Runtime hooks (this repo):** commit discipline is registered in `.claude/settings.json`. To re-register after changes, from the repo root:
-
-```bash
-pnpm --filter=cyberplace build
-node packages/cyberplace/bin/cyberplace.mjs hook register \
-  --name commit-discipline --event SessionStart \
-  --extract AGENTS.md --heading "Commit Discipline"
-```
-
-Hooks run via `npx cyberplace@<version> hook run --file|--glob|--extract`.
-
-When writing or editing any `SKILL.md` under `.agents/skills/`, always include `metadata: internal: true` in the frontmatter.
+- **scripts:** repository scripts are in `package.json` such as `test` and `verify`
 
 ## Commit Discipline
 
-**Auto-commit rule:** When a unit of work is complete and verified, commit it immediately — do not wait for the user to ask. Batching multiple units into one commit, or finishing all work before committing, are both violations of this rule.
+- **Unit of work:** one complete, reviewed, coherent, independently revertable change
+- **Auto-commit rule:** commit a unit of work automatically
 
-**Unit of work:** one coherent, independently revertable change — one domain's refactor, one feature, one bugfix, one test suite expansion for one concern, one config change. Never two unrelated concerns in the same commit. A TDD red-green-refactor cycle alone is not a commit boundary; commit when the full intended change is complete and tests pass. If the working tree has unrelated changes, leave them unstaged — commit the current unit first, then continue.
 
-- Conventional Commits: `feat:`, `fix:`, `refactor:`, `test:`, `docs:`, `chore:`
-- One concern per commit; never batch unrelated changes
-- Stage only files for this unit: `git add <files>`, then verify with `git diff --cached`
-- Never use `git add .`, `git add -A`, or `git add -p` (interactive commands agents cannot run)
-- Never commit with red tests; run validation commands first
+## Delegation
 
-### References
+The higher your tier, the more you delegate. Push the work down, keep your own context for judgment. Brief every child: the context, the why, what done looks like. It starts blank and inherits nothing.
 
-- **`commit-work` skill** — staging, splitting, and message writing when committing
-
-## Commands
-
-Run everything (typecheck + lint + tests + audit) before pushing:
-
-```bash
-pnpm verify
-```
-
-Run all tests:
-
-```bash
-pnpm test
-```
-
-Type-check only:
-
-```bash
-pnpm typecheck
-```
-
-Lint (and auto-fix) with Biome:
-
-```bash
-pnpm lint        # check only
-pnpm check       # check and auto-fix
-```
-
-Audit all skills (runs S1–S5, Q1–Q5, Q10–Q11, E1–E2, E6, E9 checks mechanically):
-
-```bash
-pnpm --filter=cyberplace test:audit
-
-# Audit a single skill:
-node packages/cyberplace/bin/cyberplace.mjs audit validate --path packages/cyberplace/skills/my-skill
-```
-
-Repair repo-private skills after `npx skills update` or other drift:
-
-```bash
-pnpm --filter=cyberplace repair:private-skills
-```
-
-Full quality review (Q6–Q16, E3–E5, E7–E8, P1–P3) requires running the `improve-skill` agent skill.
-
-Run a single test file:
-
-```bash
-pnpm --filter=cyberplace vitest run src/audit/validate.test.ts
-```
-
-Regenerate the README awesome-skills section after editing `packages/cyberplace/awesome-skills.json`:
-
-```bash
-pnpm render:awesome-list
-```
+| Model    | Best for             | Delegate?        | Effort |
+| -------- | -------------------- | ---------------- | ------ |
+| Haiku    | bulk mechanical      | never            | low    |
+| Sonnet   | scoped research      | when it helps    | medium |
+| Opus 4.8 | multi-step reasoning | on clear benefit | xhigh  |
+| Fable 5  | judgment, taste      | by default       | medium |
 
 ## Architecture
 
@@ -125,19 +57,19 @@ Separate the two axes:
 
 ### Skill placement
 
-| Placement | Location | Use case |
-|-----------|----------|----------|
-| **User** | `~/.agents/skills/<name>/` | Personal skills across all projects |
-| **Project private** | `.agents/skills/<name>/` | Contributor tooling scoped to this repo |
-| **Project public** | `packages/cyberplace/skills/<name>/` | Shipped with the package; users install via `npx skills add` |
+| Placement           | Location                             | Use case                                                     |
+| ------------------- | ------------------------------------ | ------------------------------------------------------------ |
+| **User**            | `~/.agents/skills/<name>/`           | Personal skills across all projects                          |
+| **Project private** | `.agents/skills/<name>/`             | Contributor tooling scoped to this repo                      |
+| **Project public**  | `packages/cyberplace/skills/<name>/` | Shipped with the package; users install via `npx skills add` |
 
 ### Skill patterns
 
-| Pattern | Use case |
-|---------|----------|
-| **Process** | Multi-step workflows where sequence and decisions matter |
+| Pattern        | Use case                                                              |
+| -------------- | --------------------------------------------------------------------- |
+| **Process**    | Multi-step workflows where sequence and decisions matter              |
 | **Tool-based** | Workflows centered on consistent use of tools, systems, or connectors |
-| **Standard** | Skills that enforce tone, structure, formatting, or quality bars |
+| **Standard**   | Skills that enforce tone, structure, formatting, or quality bars      |
 
 Create `packages/cyberplace/skills/<skill-name>/SKILL.md` with this structure:
 
