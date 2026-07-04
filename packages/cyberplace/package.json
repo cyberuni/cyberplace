@@ -1,6 +1,6 @@
 {
 	"name": "cyberplace",
-	"version": "0.7.0",
+	"version": "0.0.0",
 	"description": "Opinionated skills, hooks, and workflows for AI agents",
 	"keywords": [
 		"agent-skill",
@@ -17,7 +17,7 @@
 	"author": "unional <homawong@gmail.com>",
 	"type": "module",
 	"bin": {
-		"cyberplace": "./bin/cyberplace.mjs"
+		"cyberplace": "bin/cyberplace.mjs"
 	},
 	"exports": {
 		"./package.json": "./package.json"
