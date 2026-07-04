@@ -7,17 +7,17 @@ approval:
     by: agent
     cause: dimension
     why:
-      leash: within — auto-spec; all-additive new top-level fleet/ capability (5 new nodes gateway/identity/messaging/spawn/surfacing) on the implemented cyberspace spec, no existing frozen scenario touched; reversible feature branch add-fleet-comms; user directed continuation; self-asserted by:agent into the async review queue
-      basis: cold sdd-spec-judge re-grade 3-lens {oracle,builder,architect} all PASS on all 5 nodes, ALIGNED true, no blocker (prior ALIGNED:false → 8 fixes applied — sibling refs intent-not-slug ADR-0021, spawn Scenario Outline over claude/cursor/codex + error cases, identity/messaging/surfacing negatives, cut --reply-to, sequence diagram); gateway fit strong (ACED @trigger 4-yes/4-near-miss balanced, @rubric well-formed threshold 7), 4 engine nodes SDD-default boolean; check-spec-structure 0/0, concept-index no drift, check-suite OK; 5 fleet .feature frozen
-      cr: add-fleet-comms
+      leash: within — auto-spec; freeze-preserving structural change removing the fleet/ capability (5 nodes gateway/identity/messaging/spawn/surfacing) from the cyberspace spec, relocated to ../cyberfleet to align the spec project with the cyberfleet plugin/CLI; no retained scenario content touched; reversible feature branch add-fleet-comms; self-asserted by:agent into the async review queue
+      basis: pure git mv of the 5 fleet node folders + their add-fleet-comms ledger shard off cyberspace onto a new ../cyberfleet project root; capability + placement maps updated to drop fleet (placement rule now points to ../cyberfleet/spec.md); by-concept index regenerated (concept-index --write, cyberspace now bootstrap+glossary only); check-spec-structure 0 blocking / 0 advisory on cyberspace; no re-grade — no retained cyberspace content changed. Historical add-write-vendor-config / add-fleet-comms gate detail remains in the ledger shards
+      cr: relocate-fleet-spec
   impl:
     verdict: approve
     by: agent
     cause: dimension
     why:
-      leash: within — user directed continuation through merge (repeated "continue"); impl built to keep from the frozen suite on the reversible add-fleet-comms branch; self-asserted by:agent into the async review queue
-      basis: two cold impl-judges both PASS. sdd-impl-judge over the 4 engine nodes (identity/messaging/spawn/surfacing) → IMPLEMENTATION_PASS true, all frozen scenarios verified — 5 first-pass blockers fixed in fec1a2c (who cwd column, touch last-seen on every registry command, resolveBody flag/file/stdin, resolveBrief stdin, surfacing brief-no-mail isolation) + new cli.test.ts e2e; 44 cyberfleet tests green, typecheck+biome clean. aced-impl-judge over the gateway skill → PASS, @trigger 9/9, @behavior 5/5, @rubric 9/threshold 7. Advisory carry-forwards (non-blocking): self-file fallback branch coverage, partial cli.ts coverage, no eval.md run-policy, plugin-level hooks.json auto-wire deferred (cyberfleet install --agent covers registration)
-      cr: add-fleet-comms
+      leash: within — same relocation; no cyberspace implementation changed, plugins/cyberspace sources untouched by this CR; self-asserted by:agent
+      basis: structural spec move only (git mv of spec node folders + ledger shard); no frozen .feature edited, no plugins/cyberspace code touched, no re-verification because no implementation changed
+      cr: relocate-fleet-spec
 ---
 
 # cyberspace — the harness-agnostic agent-config foundation
@@ -55,7 +55,6 @@ spans several fixed source folders — the accepted spec↔source divergence (`.
 |---|---|---|
 | [`bootstrap/`](./bootstrap/README.md) | descriptive index | initialize harness-agnostic agent config for a project — `init` |
 | [`plugin/`](./plugin/README.md) | descriptive index | author, publish, and upgrade a cross-vendor plugin via the `universal-plugin` CLI — `universal-plugin`, `publish-universal-plugin`, `upgrade-universal-plugin` |
-| [`fleet/`](./fleet/README.md) | descriptive index | create agent sessions and message between them, harness-agnostic and MCP-free, via the `cyberfleet` CLI — `gateway`, `identity`, `messaging`, `spawn`, `surfacing` |
 | [`design/`](./design/README.md) | descriptive | the foundation model + the `decisions/` ADR log |
 | [`acceptance/`](./acceptance/README.md) | descriptive | the e2e behavior suite (init → author → publish → upgrade) |
 | [`glossary/`](./glossary/README.md) | reference | the harness-agnostic agent-config vocabulary |
@@ -69,7 +68,8 @@ Where a new concept lives — slot here, do not invent placement (`../sdd/design
 - **a new *cross-vendor plugin* authoring or lifecycle operation** (scaffold/build, publish, upgrade pinned
   versions — anything backed by the `universal-plugin` CLI) → `plugin/`.
 - **a new *inter-session runtime* operation** (create a peer agent session, message between sessions, surface
-  mail — anything backed by the `cyberfleet` CLI) → `fleet/`.
+  mail — anything backed by the `cyberfleet` CLI) → the separate `../cyberfleet/` project spec, not here (this
+  capability relocated out of cyberspace; see `../cyberfleet/spec.md`).
 - **a rule or model** (the harness-agnostic mapping, a baseline-config convention) → `design/` (descriptive); a
   **decision + its rationale** → `design/decisions/` (ADR); a **unit's design fork** → that unit's
   `<unit>.solution.md`.
@@ -89,7 +89,6 @@ never as a top-level folder. A node is `<capability>/<unit>` and never three dee
 | Concept | Facets |
 |---|---|
 | `bootstrap` | `bootstrap/init/` (behavior) · `bootstrap/write-vendor-config/` (behavior) |
-| `fleet` | `fleet/gateway/` (behavior) · `fleet/identity/` (behavior) · `fleet/messaging/` (behavior) · `fleet/spawn/` (behavior) · `fleet/surfacing/` (behavior) |
 | `glossary` | `glossary/` (reference) |
 
 <!-- END generated: by-concept -->

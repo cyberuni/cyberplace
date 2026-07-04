@@ -7,7 +7,7 @@ Proposed
 ## Context
 
 The `cyberfleet` CLI and its fleet skills (`gateway`, `identity`, `messaging`, `spawn`,
-`surfacing` — see `.agents/specs/cyberspace/fleet/`) give agent sessions a filesystem-only,
+`surfacing` — see `.agents/specs/cyberfleet/`) give agent sessions a filesystem-only,
 MCP-free way to spawn peers and message across harnesses. The naming question started narrowly:
 "warm up the CLI like [firstmate](https://github.com/kunchenguid/firstmate)" — give the console
 itself a friendly voice. That framing inverted during design: warmth belongs on the **persona**
@@ -137,7 +137,7 @@ Adopt **Option 3**.
    or spawn a first ship, and route across ships from outside. Spawning a new ship still means
    spawning a new worktree, and `spawn` immediately stamps it with its own `.cyberfleet/config.json`
    so the freshly spawned ship self-detects as a ship before that marker is ever committed on its
-   branch (extending `cyberfleet spawn`, `.agents/specs/cyberspace/fleet/spawn/README.md`, from
+   branch (extending `cyberfleet spawn`, `.agents/specs/cyberfleet/spawn/README.md`, from
    "new peer session" to "new worktree + new peer session").
 
 9. **Console = two adapters**, following firstmate's four-verb spine (worktree add/remove; session
@@ -208,7 +208,7 @@ an honest signal instead of a liability.
 
 ## Implementation Notes
 
-This lands spec-first, as change requests against `.agents/specs/cyberspace/fleet/`, built via
+This lands spec-first, as change requests against `.agents/specs/cyberfleet/`, built via
 `start-mission` — no direct implementation ahead of a frozen `.feature`:
 
 - **Adapter split + worktree creation** — extend `spawn` (and a new `worktree` verb pair) to add/

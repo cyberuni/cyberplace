@@ -46,8 +46,12 @@ Units:
 
 Scope: MVP is pull-via-hooks, project-scoped `.cyberfleet/`, tmux spawn. A live `send` nudge, a
 zero-token watcher, message threads, a cross-repo root, and Copilot CLI are deferred to their own
-change requests. Cross-capability e2e (init → register → spawn → exchange) belongs in
-[`../acceptance/`](../acceptance/README.md), not here.
+change requests. Cross-capability e2e (init → register → spawn → exchange) previously pointed at
+cyberspace's `../acceptance/` folder; that folder's own README scopes it to `bootstrap/` and
+`plugin/` only (no fleet content ever landed there), and it stays with cyberspace since it wasn't
+part of this move. `cyberfleet` has no `acceptance/` node of its own yet — flagged as a gap this
+relocation surfaces rather than fabricated here; a future change request should add one if a
+fleet-scoped cross-capability e2e is wanted.
 
 Squad note: `gateway` is agent-behavior (ACED carries all four eval layers — activation and
 judgment); `identity`, `messaging`, `spawn`, and `surfacing` are deterministic `cyberfleet` CLI

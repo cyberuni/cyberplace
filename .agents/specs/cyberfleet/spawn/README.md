@@ -8,7 +8,7 @@ concept: [fleet]
 The `cyberfleet` CLI's spawn layer: launch a new top-level agent session as a peer (not a nested
 subagent) in its own git worktree, register it before it starts, and deliver its task brief through
 its own SessionStart hook rather than by typing into its prompt. This is the harness-agnostic
-peer-session escape hatch (`../../../sdd/design/harness-spawning.md`) generalized into a
+peer-session escape hatch (`../../sdd/design/harness-spawning.md`) generalized into a
 first-class command. Per ADR-0022 (decisions 8–9): a ship is a git worktree, and the session pane
 is opened through one of two swappable backend adapters — tmux or herdr.
 

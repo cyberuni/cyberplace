@@ -21,9 +21,13 @@ harness-agnostic + MCP-free) apply to both personas; the scenarios in `gateway.f
 shared etiquette plus the mode-switch itself. They are the only fleet units an agent triggers from
 a user situation; the other units are `cyberfleet` commands these skills invoke.
 
-> Follow-up: this node still lives under `.agents/specs/cyberspace/fleet/`, but the skill it
-> describes now ships from a separate `cyberfleet` plugin. That spec-dir/plugin mismatch is not
-> resolved in this change — flagged for a future spec-relocation CR.
+> Resolved: this node previously lived under `.agents/specs/cyberspace/fleet/` while the skill it
+> describes ships from a separate `cyberfleet` plugin. A spec-relocation change moved the whole
+> `fleet/` capability to its own `.agents/specs/cyberfleet/` project (`project-path:
+> packages/cyberfleet`), aligning the spec-dir with the plugin/CLI family. That project-path still
+> spans two source dirs — the `cyberfleet` CLI (`packages/cyberfleet`) and the `cyberfleet` plugin's
+> Pod/Operator skills (`plugins/cyberfleet/skills/`) — see the new project's root `spec.md` for why
+> `packages/cyberfleet` was chosen as the single declared value.
 
 ## Use Cases
 
