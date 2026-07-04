@@ -35,6 +35,19 @@ describe('readManifest', () => {
 	})
 })
 
+describe('buildPlugin', () => {
+	it('throws the friendly error when .plugin/plugin.json is missing', () => {
+		const empty = fs.mkdtempSync(path.join(os.tmpdir(), 'universal-plugin-empty-'))
+		try {
+			// Guards the CLI code path (buildPlugin), not just readManifest — the raw indent
+			// read must not shadow the friendly "No .plugin/plugin.json found" message.
+			expect(() => buildPlugin(empty)).toThrow('No .plugin/plugin.json found')
+		} finally {
+			fs.rmSync(empty, { recursive: true, force: true })
+		}
+	})
+})
+
 describe('validateManifest', () => {
 	it('returns error when name is missing', () => {
 		const errors = validateManifest({ name: '' })

@@ -24,6 +24,7 @@ export function governanceCommand(): Command {
 	cmd
 		.command('show <name>')
 		.description('Show a governance by name')
+		.option('--format <format>', 'Output format: json or text (default: text)')
 		.addOption(ROOT_OPTION)
 		.addOption(new Option('--json').hideHelp())
 		.action((name: string, opts: { root?: string }) => {
@@ -43,6 +44,7 @@ export function governanceCommand(): Command {
 	cmd
 		.command('list')
 		.description('List available governances')
+		.option('--format <format>', 'Output format: json or text (default: text)')
 		.addOption(ROOT_OPTION)
 		.addOption(new Option('--json').hideHelp())
 		.action((opts: { root?: string }) => {

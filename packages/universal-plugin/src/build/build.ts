@@ -61,7 +61,11 @@ export function validateManifest(manifest: PluginManifest): string[] {
 }
 
 export function buildPlugin(root: string, opts: BuildOptions = {}): BuildResult {
-	const manifestRaw = fs.readFileSync(path.join(root, '.plugin', 'plugin.json'), 'utf8')
+	const manifestPath = path.join(root, '.plugin', 'plugin.json')
+	if (!fs.existsSync(manifestPath)) {
+		throw new Error(`No .plugin/plugin.json found at ${root}`)
+	}
+	const manifestRaw = fs.readFileSync(manifestPath, 'utf8')
 	const indent = detectIndent(manifestRaw)
 	const manifest = readManifest(root)
 	const errors = validateManifest(manifest)
