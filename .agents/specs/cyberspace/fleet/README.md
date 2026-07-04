@@ -11,6 +11,23 @@ The runtime engine lives in a new **`cyberfleet` CLI** — a peer of the `univer
 offloaded to the same way the rest of cyberspace offloads to a tool instead of spending tokens by
 hand. The user-facing entry is the **`fleet` gateway skill** shipped in the cyberspace plugin.
 
+The end-to-end path — register, spawn a peer, message, surface — with the filesystem as the only
+shared state and no process between the two sessions:
+
+```mermaid
+sequenceDiagram
+    participant A as Session A (claude)
+    participant FS as .cyberfleet/ (files)
+    participant B as Session B (cursor, peer)
+    A->>FS: cyberfleet register (agents/, panes/)
+    A->>FS: cyberfleet spawn (pre-register B, write brief.md)
+    A-->>B: tmux split + launch cursor-agent
+    B->>FS: SessionStart hook: inbox --hook → read brief.md
+    B->>FS: cyberfleet send --to A (inbox/<A>/<epochMs-hex>.json)
+    A->>FS: SessionStart / PostToolUse hook: inbox --hook → sees mail
+    A->>FS: cyberfleet read <id> (move to inbox/<A>/read/)
+```
+
 Units:
 
 - [**`gateway`**](./gateway/README.md) *(behavioral)* — the `fleet` skill: when to reach for the

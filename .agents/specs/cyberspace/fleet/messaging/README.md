@@ -32,9 +32,8 @@ working tree never clobber each other (ADR-0020) and delivery order is preserved
 
 **Non-goals** — waking an idle peer the instant mail lands (a live `send` nudge and a watcher are
 deferred phase-2 CRs); surfacing unread mail into a session's context at start (that is
-[`../surfacing/`](../surfacing/README.md)); who an agent is and how it is discovered (that is
-[`../identity/`](../identity/README.md)); message threads and replies beyond a flat `--reply-to`
-reference (deferred).
+`surfacing`); who an agent is and how it is discovered (that is `identity`); message threads and
+replies (deferred — MVP `send` has no `--reply-to`).
 
 Every scenario in [`messaging.feature`](./messaging.feature) maps to one of these behaviors:
 

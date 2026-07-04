@@ -1,8 +1,8 @@
 Feature: spawn — launch a new peer session and hand it its brief
   The cyberfleet CLI spawn layer: open a tmux split, pre-register the new peer under .cyberfleet/,
   write its brief to a file, launch the harness's own CLI in the pane, and let the peer pick up its
-  brief through its own SessionStart hook. Identity fields live in ../identity/; the hook that
-  injects the brief and inbox lives in ../surfacing/. Cross-capability e2e lives in ../../acceptance/.
+  brief through its own SessionStart hook. Identity fields live in identity; the hook that
+  injects the brief and inbox lives in surfacing. Cross-capability e2e lives in acceptance.
 
   # ── Open pane + pre-register ──
 
@@ -27,17 +27,33 @@ Feature: spawn — launch a new peer session and hand it its brief
 
   # ── Per-harness launch ──
 
-  Scenario: the pane is started with the harness's own CLI
-    Given a spawn with --harness cursor
+  Scenario Outline: the pane is started with the harness's own CLI
+    Given a spawn with --harness "<harness>"
     When the new pane is launched
-    Then the pane runs the cursor launch command from the per-harness launch map
+    Then the pane runs "<launch>" from the per-harness launch map
+
+    Examples:
+      | harness | launch       |
+      | claude  | claude       |
+      | cursor  | cursor-agent |
+      | codex   | codex        |
+
+  Scenario: a spawn with an unmapped harness errors rather than launching
+    Given a spawn with a --harness value that has no entry in the launch map
+    When the spawn runs
+    Then the command errors and no pane is launched
+
+  Scenario: a spawn with no brief source errors
+    Given a spawn with neither --task, --task -, nor --brief-file supplied
+    When the spawn runs
+    Then the command errors rather than creating a peer with an empty brief
 
   # ── Peer picks up brief at start ──
 
-  Scenario: the spawnee reads its own brief at start rather than being typed to
-    Given a peer launched with a pre-written brief
-    When its SessionStart hook runs
-    Then it resolves its own id by pane, finds brief.md, and has the brief injected into its context
+  Scenario: the spawnee's brief is delivered by file and its hook is wired, not typed
+    Given a peer launched with a pre-written brief.md and the fleet SessionStart hook registered
+    When the peer starts
+    Then it resolves its own id by pane and its SessionStart hook reads brief.md
     And the spawner never types the task into the peer's prompt
 
   # ── Requires tmux ──

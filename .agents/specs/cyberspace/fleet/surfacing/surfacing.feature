@@ -2,8 +2,8 @@ Feature: surfacing — inject unread mail into a session, across harnesses
   The cyberfleet CLI surfacing layer: inbox --hook emits the SessionStart additionalContext payload
   so a harness hook injects an agent's unread mail (and its spawn brief) into context, and the
   emitter is registered across harnesses reusing the existing per-vendor event mapping. The message
-  store and acks live in ../messaging/; when to check or send mail is the ../gateway/ skill.
-  Cross-capability e2e lives in ../../acceptance/.
+  store and acks live in messaging; when to check or send mail is the gateway skill.
+  Cross-capability e2e lives in acceptance.
 
   # ── inbox --hook emits the SessionStart payload ──
 
@@ -43,6 +43,16 @@ Feature: surfacing — inject unread mail into a session, across harnesses
     Given the calling agent has no unread mail and no pending brief
     When it runs cyberfleet inbox --hook --event SessionStart
     Then it injects no additionalContext rather than empty noise
+
+  Scenario: an unregistered caller injects nothing rather than erroring the hook
+    Given the calling session has no resolvable fleet identity
+    When its hook runs cyberfleet inbox --hook --event SessionStart
+    Then it injects no additionalContext and does not fail the harness hook
+
+  Scenario: an unsupported --event value is rejected
+    Given a hook invocation passing an --event the emitter does not support
+    When it runs cyberfleet inbox --hook
+    Then the command errors rather than emitting a payload for an unknown event
 
   # ── Idempotent registration ──
 

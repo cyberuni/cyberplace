@@ -34,9 +34,9 @@ layers carry signal.
   reach for an MCP messaging server; the fleet is files plus one CLI.
 
 **Non-goals** — nesting a subagent inside the current session (use the harness's own subagent
-tooling, not the fleet); the file-store, ordering, and hook mechanics (those are `../messaging/`,
-`../identity/`, `../spawn/`, `../surfacing/`); authoring agent config or plugins (that is
-`bootstrap/` and `plugin/`).
+tooling, not the fleet); the file-store, ordering, and hook mechanics (those are `messaging`,
+`identity`, `spawn`, `surfacing`); authoring agent config or plugins (that is `bootstrap` and
+`plugin`).
 
 Every scenario in [`gateway.feature`](./gateway.feature) maps to one of these behaviors:
 

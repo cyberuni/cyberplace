@@ -30,8 +30,8 @@ harness it runs in, appears in one registry keyed the same way.
 - **Every call refreshes liveness** — each CLI invocation bumps the agent's `lastSeen`, so the
   registry reflects which agents are active.
 
-**Non-goals** — sending or reading messages ([`../messaging/`](../messaging/README.md)); launching
-a new session ([`../spawn/`](../spawn/README.md)); reaping dead agents on a schedule (`prune` is
+**Non-goals** — sending or reading messages (`messaging`); launching a new session (`spawn`);
+reaping dead agents on a schedule (`prune` is
 covered here only as the liveness read; automatic GC and a cross-repo registry root are deferred).
 
 Every scenario in [`identity.feature`](./identity.feature) maps to one of these behaviors:

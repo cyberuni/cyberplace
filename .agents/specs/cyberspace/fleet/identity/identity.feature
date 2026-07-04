@@ -2,8 +2,8 @@ Feature: identity — self-identify and discover peers
   The cyberfleet CLI identity layer: register records an agent's identity under .cyberfleet/, the
   agent recovers its own id on later calls via a pane-keyed self file, the harness is auto-detected,
   who lists addressable peers, and every call refreshes liveness. Sending and reading mail live in
-  ../messaging/; launching a session lives in ../spawn/. Cross-capability e2e lives in
-  ../../acceptance/.
+  messaging; launching a session lives in spawn. Cross-capability e2e lives in
+  acceptance.
 
   # ── Register records who and where ──
 
@@ -18,6 +18,11 @@ Feature: identity — self-identify and discover peers
     When it runs cyberfleet register again
     Then it keeps the same id and refreshes the record rather than creating a second identity
 
+  Scenario: register fails cleanly when it cannot write the registry
+    Given a .cyberfleet root that cannot be created or written
+    When an agent runs cyberfleet register
+    Then the command errors and writes no partial agent record
+
   # ── Pane-keyed self-recall ──
 
   Scenario: a later call recovers the agent's own id from its pane
@@ -29,6 +34,11 @@ Feature: identity — self-identify and discover peers
     Given an agent running with no $TMUX_PANE
     When it needs its own identity
     Then it resolves from $CYBERFLEET_AGENT_ID or .cyberfleet/self
+
+  Scenario: $CYBERFLEET_AGENT_ID wins over .cyberfleet/self when both are present
+    Given an agent with no $TMUX_PANE where both $CYBERFLEET_AGENT_ID and .cyberfleet/self are set
+    When it resolves its own identity
+    Then it uses $CYBERFLEET_AGENT_ID
 
   # ── Harness auto-detect ──
 
@@ -53,6 +63,11 @@ Feature: identity — self-identify and discover peers
     Given three agents are registered
     When an agent runs cyberfleet who
     Then all three are listed with handle, harness, cwd, pane, status, and last-seen
+
+  Scenario: who on an empty registry reports no agents rather than erroring
+    Given no agents are registered
+    When an agent runs cyberfleet who
+    Then it reports that there are no agents rather than failing
 
   # ── Liveness on every call ──
 

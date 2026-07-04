@@ -31,8 +31,8 @@ escape hatch (`../../../sdd/design/harness-spawning.md`) generalized into a firs
 
 **Non-goals** — nesting a subagent inside the current session (that is the harness's own subagent
 tooling, not fleet); a live nudge to a peer's prompt (deferred); surfacing the brief or inbox
-itself, which is [`../surfacing/`](../surfacing/README.md); tearing down a finished peer and
-reaping its state (deferred with `prune`).
+itself, which is `surfacing`; tearing down a finished peer and reaping its state (deferred with
+`prune`).
 
 Every scenario in [`spawn.feature`](./spawn.feature) maps to one of these behaviors:
 

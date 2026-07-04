@@ -2,9 +2,9 @@ Feature: gateway — the fleet skill: spawn peers and message between sessions
   Unit suite for the fleet gateway skill: activate when the user wants to coordinate peer agent
   sessions that message each other, load the fleet etiquette, and route every mechanic to the
   cyberfleet CLI. It defers plain single-session work and in-harness subagent nesting. The file
-  store, ordering, spawn, and hook mechanics live in ../messaging/, ../identity/, ../spawn/, and
-  ../surfacing/; authoring agent config or plugins is bootstrap/ and plugin/. Cross-capability e2e
-  lives in ../../acceptance/.
+  store, ordering, spawn, and hook mechanics live in messaging, identity, spawn, and
+  surfacing; authoring agent config or plugins is bootstrap and plugin. Cross-capability e2e
+  lives in acceptance.
 
   # ── Triggering ──
 

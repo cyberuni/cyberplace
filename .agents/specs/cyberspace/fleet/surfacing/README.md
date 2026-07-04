@@ -30,9 +30,9 @@ already ships — this is the MCP-free replacement for a message-push server.
 - **Registration is idempotent** — re-registering the surfacing hook leaves a correct existing
   registration unchanged rather than duplicating it.
 
-**Non-goals** — the message store and acks themselves ([`../messaging/`](../messaging/README.md));
-a live nudge or a background watcher for instant delivery (deferred phase-2 CRs); teaching an agent
-*when* to check or send mail (that is the [`../gateway/`](../gateway/README.md) skill).
+**Non-goals** — the message store and acks themselves (`messaging`); a live nudge or a background
+watcher for instant delivery (deferred phase-2 CRs); teaching an agent *when* to check or send mail
+(that is the `gateway` skill).
 
 Every scenario in [`surfacing.feature`](./surfacing.feature) maps to one of these behaviors:
 

@@ -3,8 +3,8 @@ Feature: messaging — send, read, and acknowledge mail between agents
   one collision-free, time-ordered file into the recipient's inbox; inbox lists a caller's mail;
   read prints a message and acks it by moving it out of the unread set. The file queue is the
   source of truth and does not depend on any running process. Identity and peer discovery live in
-  ../identity/; surfacing unread mail at session start lives in ../surfacing/; the live send-nudge
-  and watcher are deferred. Cross-capability e2e lives in ../../acceptance/.
+  identity; surfacing unread mail at session start lives in surfacing; the live send-nudge
+  and watcher are deferred. Cross-capability e2e lives in acceptance.
 
   # ── Send drops one addressable file ──
 
@@ -58,6 +58,11 @@ Feature: messaging — send, read, and acknowledge mail between agents
     When it runs cyberfleet inbox --from alice
     Then only alice's messages are listed
 
+  Scenario: an empty inbox reports no mail rather than erroring
+    Given the calling agent has no messages
+    When it runs cyberfleet inbox
+    Then it reports an empty inbox rather than failing
+
   # ── Read prints and acks by move ──
 
   Scenario: read prints the body and moves the message to read/
@@ -70,6 +75,11 @@ Feature: messaging — send, read, and acknowledge mail between agents
     Given the calling agent has acked a message
     When it runs cyberfleet inbox --unread
     Then that message is not listed
+
+  Scenario: read on an unknown or already-acked message errors rather than acking nothing
+    Given a message id that is not in the calling agent's unread set
+    When it runs cyberfleet read <msg-id>
+    Then the command reports the message is not an unread message rather than silently succeeding
 
   # ── File queue is the source of truth ──
 
