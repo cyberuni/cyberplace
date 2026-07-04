@@ -15,8 +15,8 @@ todos:
     status: completed
   - content: "impl gate: cold ACED impl-judge over the frozen .feature (N-run @rubric/@trigger)"
     status: completed
-  - content: "handoff: branch fleet-crew-personas -> PR; Warden formation pass"
-    status: in_progress
+  - content: "handoff: branch fleet-crew-personas -> PR #65; Warden formation pass"
+    status: completed
 ---
 
 # fleet-crew-personas
