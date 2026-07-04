@@ -16,6 +16,7 @@ import {
 	updateCommand,
 } from './registry/cli.js'
 import { skillCommand } from './skill/cli.js'
+import { tavernCommand } from './tavern/cli.js'
 
 const program = new Command()
 
@@ -27,6 +28,7 @@ program.addCommand(commitCommand())
 program.addCommand(governanceCommand())
 program.addCommand(hookCommand())
 program.addCommand(skillCommand())
+program.addCommand(tavernCommand())
 
 // Registry commands (top-level for ergonomics)
 program.addCommand(addCommand())

@@ -55,6 +55,10 @@ export default defineConfig({
 					],
 				},
 				{
+					label: 'Tavern',
+					items: [{ label: 'Browse Crews', slug: 'tavern' }],
+				},
+				{
 					label: 'CLI Reference',
 					items: [
 						{ label: 'Overview', slug: 'cli/overview' },

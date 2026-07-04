@@ -5,6 +5,9 @@
 	"workspaces": {
 		"plugins/sdd": {
 			"entry": ["skills/*/scripts/*.mts"]
+		},
+		"apps/website": {
+			"ignoreDependencies": ["cyberplace"]
 		}
 	}
 }
