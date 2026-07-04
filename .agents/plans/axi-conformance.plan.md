@@ -12,8 +12,8 @@ todos:
     status: completed
   - content: "Deliver DECISION (user): spec-only, defer ALL impl. Root stays approved. build+governance impl now trails frozen AXI contract (banners added)."
     status: completed
-  - content: "Handoff: placement final (axi/ top-level ok); PR open; spawn detached Warden; file 2 follow-up CRs (impl-axi-contract, axi-ambient-context-#7)"
-    status: in_progress
+  - content: "Handoff DONE: placement final (axi/ top-level); banners committed b20e69c; detached Warden spawned; leak-clean. OUTSTANDING (user): push+open PR axi-conformance->main; 2 follow-up CRs documented in NEXT (impl-axi-contract, axi-ambient-context-#7)"
+    status: completed
 ---
 
 # CR: axi-conformance — make universal-plugin follow AXI
