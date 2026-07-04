@@ -7,7 +7,8 @@ declined (SDD, registering ACED as an SDD plugin).
 
 Units:
 
-- [**`init`**](./init/README.md) *(behavioral)* — the harness-agnostic agent-config initializer.
-  Migrated from the retired `skill-authoring/init`, extended to suggest SDD + ACED-plugin registration
-  (chaining `aced/init-aced`) unless the project has declined, remembering that decision via harness memory
-  where available and degrading to asking where it is not.
+- [**`init`**](./init/README.md) *(behavioral)* — the harness-agnostic agent-config initializer: write
+  `AGENTS.md`, wire the per-harness config via the `universal-plugin` CLI, and suggest SDD then ACED
+  registration, honoring prior declines.
+- [**`write-vendor-config`**](./write-vendor-config/README.md) *(behavioral)* — the by-hand per-harness config
+  writer; the manual fallback `init` routes to when the user declines the `universal-plugin` CLI.
