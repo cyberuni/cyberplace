@@ -53,6 +53,7 @@ spans several fixed source folders — the accepted spec↔source divergence (`.
 |---|---|---|
 | [`bootstrap/`](./bootstrap/README.md) | descriptive index | initialize harness-agnostic agent config for a project — `init` |
 | [`plugin/`](./plugin/README.md) | descriptive index | author, publish, and upgrade a cross-vendor plugin via the `universal-plugin` CLI — `universal-plugin`, `publish-universal-plugin`, `upgrade-universal-plugin` |
+| [`fleet/`](./fleet/README.md) | descriptive index | create agent sessions and message between them, harness-agnostic and MCP-free, via the `cyberfleet` CLI — `gateway`, `identity`, `messaging`, `spawn`, `surfacing` |
 | [`design/`](./design/README.md) | descriptive | the foundation model + the `decisions/` ADR log |
 | [`acceptance/`](./acceptance/README.md) | descriptive | the e2e behavior suite (init → author → publish → upgrade) |
 | [`glossary/`](./glossary/README.md) | reference | the harness-agnostic agent-config vocabulary |
@@ -65,6 +66,8 @@ Where a new concept lives — slot here, do not invent placement (`../sdd/design
   suggest companion setup) → `bootstrap/`.
 - **a new *cross-vendor plugin* authoring or lifecycle operation** (scaffold/build, publish, upgrade pinned
   versions — anything backed by the `universal-plugin` CLI) → `plugin/`.
+- **a new *inter-session runtime* operation** (create a peer agent session, message between sessions, surface
+  mail — anything backed by the `cyberfleet` CLI) → `fleet/`.
 - **a rule or model** (the harness-agnostic mapping, a baseline-config convention) → `design/` (descriptive); a
   **decision + its rationale** → `design/decisions/` (ADR); a **unit's design fork** → that unit's
   `<unit>.solution.md`.
@@ -84,6 +87,7 @@ never as a top-level folder. A node is `<capability>/<unit>` and never three dee
 | Concept | Facets |
 |---|---|
 | `bootstrap` | `bootstrap/init/` (behavior) · `bootstrap/write-vendor-config/` (behavior) |
+| `fleet` | `fleet/gateway/` (behavior) · `fleet/identity/` (behavior) · `fleet/messaging/` (behavior) · `fleet/spawn/` (behavior) · `fleet/surfacing/` (behavior) |
 | `glossary` | `glossary/` (reference) |
 
 <!-- END generated: by-concept -->
