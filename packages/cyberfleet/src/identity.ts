@@ -180,6 +180,12 @@ export function bumpLastSeen(ctx: IdContext, id: string): void {
 	saveAgent(ctx.root, rec)
 }
 
+/** Refresh this session's own last-seen if it is registered — best-effort, never throws. */
+export function touch(ctx: IdContext): void {
+	const id = resolveSelfId(ctx)
+	if (id) bumpLastSeen(ctx, id)
+}
+
 const STALE_MS = 15 * 60 * 1000
 
 /** Mark agents whose pane is gone or whose last-seen is stale as exited. */

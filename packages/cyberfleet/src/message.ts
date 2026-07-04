@@ -55,6 +55,17 @@ export function send(ctx: MsgContext, input: SendInput): Message {
 	return msg
 }
 
+/** Resolve a message body from the --body flag, a --body-file path, or stdin (--body-file -). */
+export function resolveBody(
+	body: string | undefined,
+	bodyFile: string | undefined,
+	readStdin: () => string = () => readFileSync(0, 'utf8'),
+): string {
+	if (body != null) return body
+	if (bodyFile) return bodyFile === '-' ? readStdin() : readFileSync(bodyFile, 'utf8')
+	throw new Error('provide --body <text> or --body-file <path|->')
+}
+
 function readDir(dir: string): Message[] {
 	if (!existsSync(dir)) return []
 	return readdirSync(dir)

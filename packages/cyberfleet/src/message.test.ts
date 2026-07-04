@@ -1,9 +1,9 @@
-import { existsSync, mkdtempSync, readdirSync } from 'node:fs'
+import { existsSync, mkdtempSync, readdirSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { type AgentRecord, register } from './identity.ts'
-import { inbox, read, send } from './message.ts'
+import { inbox, read, resolveBody, send } from './message.ts'
 import { paths } from './paths.ts'
 
 let root: string
@@ -20,6 +20,17 @@ beforeEach(() => {
 })
 
 const at = (t: number) => ({ root, now: () => t })
+
+describe('resolveBody — flag, file, or stdin', () => {
+	it('takes the body from --body, --body-file <path>, or --body-file - (stdin)', () => {
+		expect(resolveBody('flag body', undefined)).toBe('flag body')
+		const f = join(root, '..', 'body.txt')
+		writeFileSync(f, 'file body')
+		expect(resolveBody(undefined, f)).toBe('file body')
+		expect(resolveBody(undefined, '-', () => 'stdin body')).toBe('stdin body')
+		expect(() => resolveBody(undefined, undefined)).toThrow(/--body/)
+	})
+})
 
 describe('send', () => {
 	it('writes exactly one message file into the recipient inbox', () => {

@@ -1,9 +1,17 @@
 #!/usr/bin/env node
-import { readFileSync } from 'node:fs'
 import { Command } from 'commander'
-import { bumpLastSeen, type Harness, type IdContext, listAgents, prune, register, resolveSelfId } from './identity.ts'
+import {
+	bumpLastSeen,
+	type Harness,
+	type IdContext,
+	listAgents,
+	prune,
+	register,
+	resolveSelfId,
+	touch,
+} from './identity.ts'
 import { install } from './install.ts'
-import { inbox, read, send } from './message.ts'
+import { inbox, read, resolveBody, send } from './message.ts'
 import { printFields, printTable } from './output.ts'
 import { resolveRoot } from './paths.ts'
 import { injectInbox } from './runtime/inject-inbox.ts'
@@ -45,10 +53,12 @@ rootOpts(program.command('who'))
 	.option('--all', 'include exited agents')
 	.action((opts) => {
 		const ctx = ctxOf(opts)
+		touch(ctx)
 		const agents = listAgents(ctx.root).filter((a) => opts.all || a.status !== 'exited')
 		printTable(agents, [
 			{ label: 'handle', get: (a) => a.handle },
 			{ label: 'harness', get: (a) => a.harness },
+			{ label: 'cwd', get: (a) => a.cwd },
 			{ label: 'status', get: (a) => a.status },
 			{ label: 'pane', get: (a) => a.tmux?.pane ?? '-' },
 			{ label: 'last-seen', get: (a) => a.lastSeen },
@@ -67,8 +77,7 @@ rootOpts(program.command('send'))
 	.action((opts) => {
 		const ctx = ctxOf(opts)
 		const fromId = requireSelf(ctx)
-		const body = opts.body ?? readBody(opts.bodyFile)
-		if (body == null) throw new Error('provide --body <text> or --body-file <path|->')
+		const body = resolveBody(opts.body, opts.bodyFile)
 		const msg = send(
 			{ root: ctx.root },
 			{ fromId, to: opts.to, subject: opts.subject, body, thread: opts.thread, replyTo: opts.replyTo },
@@ -85,6 +94,7 @@ rootOpts(program.command('inbox'))
 	.action((opts) => {
 		const ctx = ctxOf(opts)
 		if (opts.hook) {
+			touch(ctx)
 			const payload = injectInbox(ctx, opts.event)
 			if (payload) console.log(JSON.stringify(payload))
 			return
@@ -120,6 +130,7 @@ rootOpts(program.command('spawn'))
 	.action(async (opts) => {
 		const { spawn } = await import('./spawn.ts')
 		const ctx = ctxOf(opts)
+		touch(ctx)
 		const res = spawn(ctx, { harness: opts.harness, task: opts.task, briefFile: opts.briefFile, handle: opts.handle })
 		printFields({
 			spawned: res.agent.id,
@@ -134,6 +145,7 @@ rootOpts(program.command('prune'))
 	.description('mark dead agents exited and sweep')
 	.action((opts) => {
 		const ctx = ctxOf(opts)
+		touch(ctx)
 		const changed = prune(ctx)
 		console.log(changed.length ? `pruned ${changed.length} agent(s)` : 'nothing to prune')
 	})
@@ -147,11 +159,6 @@ program
 		const results = install(opts.agent as Harness, opts.dir)
 		for (const r of results) console.log(`${r.status}: ${r.harness} ${r.vendorEvent} → ${r.file}`)
 	})
-
-function readBody(bodyFile?: string): string | null {
-	if (!bodyFile) return null
-	return bodyFile === '-' ? readFileSync(0, 'utf8') : readFileSync(bodyFile, 'utf8')
-}
 
 program.parseAsync(process.argv).catch((err: unknown) => {
 	process.stderr.write(`${err instanceof Error ? err.message : String(err)}\n`)

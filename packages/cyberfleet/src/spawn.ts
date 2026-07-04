@@ -77,9 +77,13 @@ export function spawn(ctx: IdContext, input: SpawnInput): SpawnResult {
 	return { agent: rec, pane, launch }
 }
 
-function resolveBrief(input: SpawnInput): string | null {
+/** Resolve a spawn brief from --brief-file, --task -, or --task <text>; null if no source given. */
+export function resolveBrief(
+	input: SpawnInput,
+	readStdin: () => string = () => readFileSync(0, 'utf8'),
+): string | null {
 	if (input.briefFile) return readFileSync(input.briefFile, 'utf8')
-	if (input.task === '-') return readFileSync(0, 'utf8') // stdin
+	if (input.task === '-') return readStdin()
 	if (input.task != null && input.task !== '') return input.task
 	return null
 }

@@ -4,7 +4,7 @@ import { join } from 'node:path'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { type Exec, type IdContext, loadAgent } from './identity.ts'
 import { paths } from './paths.ts'
-import { spawn } from './spawn.ts'
+import { resolveBrief, spawn } from './spawn.ts'
 
 let root: string
 let sent: string[][]
@@ -39,6 +39,15 @@ describe('spawn opens a pane + pre-registers the peer', () => {
 		writeFileSync(bf, 'from file')
 		const res = spawn(ctx(), { harness: 'codex', briefFile: bf })
 		expect(readFileSync(paths.briefFile(root, res.agent.id), 'utf8')).toBe('from file')
+	})
+
+	it('resolveBrief reads --task - from stdin, and --task text / --brief-file too', () => {
+		const bf = join(root, '..', 'b2.txt')
+		writeFileSync(bf, 'file brief')
+		expect(resolveBrief({ task: '-' }, () => 'stdin brief')).toBe('stdin brief')
+		expect(resolveBrief({ task: 'inline' })).toBe('inline')
+		expect(resolveBrief({ briefFile: bf })).toBe('file brief')
+		expect(resolveBrief({})).toBeNull()
 	})
 })
 

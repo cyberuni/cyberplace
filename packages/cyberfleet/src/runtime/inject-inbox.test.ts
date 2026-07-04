@@ -28,12 +28,18 @@ describe('inbox --hook emits the SessionStart payload', () => {
 		expect(payload?.hookSpecificOutput.additionalContext).toContain('ping')
 	})
 
-	it('surfaces a spawned peer brief alongside the inbox', () => {
-		saveAgent(root, { ...bob, status: 'spawning' })
-		mkdirSync(paths.dataDir(root, bob.id), { recursive: true })
-		writeFileSync(paths.briefFile(root, bob.id), 'do the migration')
-		const payload = injectInbox(bobCtx(), 'SessionStart')
+	it('surfaces a spawned peer brief with no mail present', () => {
+		// A fresh peer with a pending brief and an empty inbox — isolates the "and no mail" precondition.
+		const peer = register(
+			{ root, env: { TMUX: 't', TMUX_PANE: '%9' }, exec: () => null },
+			{ handle: 'peer', harness: 'claude' },
+		)
+		saveAgent(root, { ...peer, status: 'spawning' })
+		mkdirSync(paths.dataDir(root, peer.id), { recursive: true })
+		writeFileSync(paths.briefFile(root, peer.id), 'do the migration')
+		const payload = injectInbox({ root, env: { CYBERFLEET_AGENT_ID: peer.id } }, 'SessionStart')
 		expect(payload?.hookSpecificOutput.additionalContext).toContain('do the migration')
+		expect(payload?.hookSpecificOutput.additionalContext).not.toContain('Unread')
 	})
 })
 

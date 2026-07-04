@@ -12,6 +12,7 @@ import {
 	register,
 	resolveRecipient,
 	resolveSelfId,
+	touch,
 } from './identity.ts'
 import { paths } from './paths.ts'
 
@@ -85,6 +86,17 @@ describe('who + liveness', () => {
 		register(ctx({ CYBERFLEET_AGENT_ID: 'x' }), { handle: 'a', harness: 'claude' })
 		// a very old lastSeen would be pruned; a fresh one survives
 		expect(prune({ root, exec: nullExec, now: () => 1_700_000_000_000 })).toEqual([])
+	})
+
+	it('touch() refreshes the caller last-seen and is a no-op when unregistered', () => {
+		const env = { CYBERFLEET_AGENT_ID: 'x' }
+		const rec = register(
+			{ root, env, exec: nullExec, now: () => 1_700_000_000_000 },
+			{ handle: 'a', harness: 'claude' },
+		)
+		touch({ root, env, exec: nullExec, now: () => 1_700_000_060_000 })
+		expect(loadAgent(root, rec.id)?.lastSeen).toBe(new Date(1_700_000_060_000).toISOString())
+		expect(() => touch({ root, env: {}, exec: nullExec })).not.toThrow()
 	})
 })
 
