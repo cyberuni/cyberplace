@@ -1,21 +1,32 @@
 {
+	"$schema": "https://raw.githubusercontent.com/cyberuni/marketplace/main/schema/cursor/marketplace.json",
 	"name": "cyberplace",
 	"owner": { "name": "unional" },
 	"plugins": [
 		{
-			"name": "skill-discovery",
-			"source": "skill-discovery",
-			"description": "Find and evaluate skills before installing. Prefer global install (-g)."
+			"name": "aced",
+			"description": "Agent Config Evaluation System. Evaluate, test, and improve agent configurations: skills, AGENTS.md sections, subagent definitions, and commands.",
+			"source": "./plugins/aced"
 		},
 		{
-			"name": "agent-initialization",
-			"source": "agent-initialization",
-			"description": "One-time repo setup. init and init-commit-discipline: global (-g); commit: project."
+			"name": "cyberfleet",
+			"description": "Fleet persona layer for the cyberfleet CLI. Pod (ship's bridge) and Operator (command center) gateway skills — harness-agnostic, MCP-free.",
+			"source": "./plugins/cyberfleet"
 		},
 		{
-			"name": "awesome-list-maintenance",
-			"source": "awesome-list-maintenance",
-			"description": "Manage curated awesome-list sources and entries."
+			"name": "quill",
+			"description": "Documentation SDD plugin. Verifies guides, tutorials, articles, and reference docs against specs — existence, required headings, completeness, and reader-path continuity.",
+			"source": "./plugins/quill"
+		},
+		{
+			"name": "sdd",
+			"description": "Spec-Driven Development. Scaffold, validate, and maintain behavioral specs (spec.md + .feature files) for software features.",
+			"source": "./plugins/sdd"
+		},
+		{
+			"name": "tmux",
+			"description": "tmux workflow skills for Claude Code — fork conversations into panes, manage sessions.",
+			"source": "./plugins/tmux"
 		}
 	]
 }
