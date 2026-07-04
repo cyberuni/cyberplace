@@ -64,8 +64,9 @@ skill (the manual fallback that writes each vendor's files itself).
 
 Repair repo-private skills through the CLI — do not read each `SKILL.md` under `.agents/skills/` by hand.
 
-Run `npx universal-plugin@<exact> skill repair-private` (use `skill validate-private` to check without writing).
-This sets `metadata: internal: true` on repo-private skills and removes erroneous symlinks into `skills/`.
+Run `npx cyberplace@<exact> skill repair-private` (use `skill validate-private` to check without writing) — this
+is the `cyberplace` CLI, not `universal-plugin`. It sets `metadata: internal: true` on repo-private skills and
+removes erroneous symlinks into `skills/`.
 
 ## 5. Surface companion init skills
 
