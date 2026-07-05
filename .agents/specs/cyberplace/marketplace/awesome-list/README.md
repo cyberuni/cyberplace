@@ -22,8 +22,8 @@ The suite follows the AXI output contract (see [`../../axi/README.md`](../../axi
 The `cyberplace awesome` command group over the curated catalog:
 
 - **find** — free-text search across repos/skills with scoring (name exact/contains, summary, tags,
-  highlights) plus corroboration and source-class bonuses; output text / json / agent
-  (`findAwesomeSkills` in `lib.ts`).
+  highlights) plus corroboration and source-class bonuses; TOON by default (the AXI surface),
+  `--format json` the structured escape hatch (`findAwesomeSkills` in `lib.ts`).
 - **inspect `<repo>`** — read a local or remote repo's `skills/*/SKILL.md` frontmatter, optional
   `--query` substring filter (`inspect.ts`).
 - **render** — render the catalog into the marker-delimited markdown block

@@ -36,8 +36,8 @@ specified here.
 
 The governed capability is **`marketplace/`** — discover, acquire, source, and the crew storefront —
 plus the shared **`axi/`** output contract every marketplace command follows. Everything else in
-`packages/cyberplace/src/` is tenant code (next section). `status: draft` — the touched `.feature`
-suites re-open for the AXI retrofit and re-freeze at the spec gate; **impl is deferred** (the shipped
+`packages/cyberplace/src/` is tenant code (next section). The touched `.feature` suites re-opened for
+the AXI retrofit and re-froze at the spec gate (`status: approved`); **impl is deferred** (the shipped
 bin still emits prose + `--format json` and prompts interactively — the impl gate is withheld until a
 follow-up mission, per the `axi/` node's "impl trails the contract").
 
@@ -93,6 +93,16 @@ here; do not invent placement:
 The nesting rule: capabilities at the top; any layering nests *inside* a capability, never as a
 top-level folder. A node is `<capability>/<unit>` and **never three deep** — a sub-grouping inside a
 capability is a `concept:` tag recovered by the by-concept index, not a third folder level.
+
+> **Formation note (oversized `marketplace/registry/`).** `check-spec-structure` flags
+> `marketplace/registry/` advisory at 52 scenarios (> the 40-scenario granularity heuristic). A
+> coverage-preserving carve is available — `marketplace/registry/` narrowed to install/remove/update/
+> list (**acquire**), plus a new flat `marketplace/sources/` for find/config-provider/migrate
+> (**source**), each AXI-conformance scenario relocating by the command it already names — and would
+> restore both nodes under the two-level cap. **Deferred, not executed**: the user scoped registry as
+> one acquire+source unit explicitly, and re-carving the capability boundary is a scope call, not a
+> pure structural fix Formation makes unilaterally. Revisit if the node grows further or the user
+> re-scopes; until then the node legitimately stays whole.
 
 <!-- BEGIN generated: by-concept (project-spec/concept-index) -->
 

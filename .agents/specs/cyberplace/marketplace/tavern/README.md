@@ -36,9 +36,9 @@ this CR (author-asserted, a possible later hardening).
   are excluded.
 - **Filter the roster (`cyberplace tavern <query>`).** Narrows the crew roster by free-text match
   (reuses the `awesome` search scoring, scoped to crews).
-- **Output formats.** `--format text | json`, consistent with the `awesome` command group: `text`
-  (default) a human roster, `json` structured crew records. (`agent` is accepted as an alias of
-  `text` — the two render identically for a read-only listing today.)
+- **Output formats.** TOON by default (the AXI surface — repo/summary/install rows plus a
+  pre-computed crew-count aggregate), consistent with the `awesome` command group; `--format json`
+  is the structured escape hatch. (`agent` is accepted as an alias of the TOON default.)
 - **Empty tavern.** When the catalog has no `crew`-tagged entries, `cyberplace tavern` reports an
   empty roster gracefully (exit 0, an explicit "no crews" line) — never an error.
 - **The website storefront.** `apps/website/src/content/docs/tavern/` renders the crew roster (each
