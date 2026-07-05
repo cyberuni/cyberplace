@@ -78,6 +78,8 @@ export function pickTarget(
 ): string {
 	if (!isValidSemver(current)) return available.latest
 
+	// Always resolve to a bare version — styleRange re-applies any ~/^ prefix.
+	const currentBare = current.replace(/^[~^]/, '')
 	const currentMajor = majorOf(current)
 	const candidates = available.versions.filter((v) => {
 		if (!isValidSemver(v)) return false
@@ -85,12 +87,15 @@ export function pickTarget(
 		return majorOf(v) === currentMajor
 	})
 
-	if (candidates.length === 0) return current
+	if (candidates.length === 0) return currentBare
 
 	let best = candidates[0]!
 	for (const candidate of candidates.slice(1)) {
 		if (compareSemver(candidate, best) > 0) best = candidate
 	}
+	// Never downgrade: if every published version is older than the current pin
+	// (e.g. the local pin is ahead of the registry), keep the current pin.
+	if (compareSemver(best, currentBare) < 0) return currentBare
 	return best
 }
 

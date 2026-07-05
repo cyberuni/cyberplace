@@ -90,6 +90,16 @@ describe('pickTarget', () => {
 		expect(target).toBe('1.4.0')
 	})
 
+	it('never downgrades when the current pin is ahead of every published version in its major', () => {
+		expect(pickTarget('1.5.0', { latest: '2.0.0', versions: ['1.2.0', '1.4.2', '2.0.0'] }, { allowMajor: false })).toBe(
+			'1.5.0',
+		)
+	})
+
+	it('returns a bare version (no double prefix) when a range-prefixed pin has no in-major candidate', () => {
+		expect(pickTarget('^1.5.0', { latest: '2.0.0', versions: ['2.0.0'] }, { allowMajor: false })).toBe('1.5.0')
+	})
+
 	it('treats a range-prefixed current as semver — stays in major, never jumps to latest', () => {
 		// A pin already written by a prior `--range caret` build must not be mistaken for a
 		// placeholder and resolved to absolute latest (which would silently cross the major).
