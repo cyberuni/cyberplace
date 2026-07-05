@@ -6,26 +6,31 @@
 		{
 			"name": "aced",
 			"description": "Agent Config Evaluation System. Evaluate, test, and improve agent configurations: skills, AGENTS.md sections, subagent definitions, and commands.",
+			"tags": ["eval", "agent-config"],
 			"source": "./plugins/aced"
 		},
 		{
 			"name": "cyberfleet",
 			"description": "Fleet persona layer for the cyberfleet CLI. Pod (ship's bridge) and Operator (command center) gateway skills — harness-agnostic, MCP-free.",
+			"tags": ["fleet", "persona", "crew"],
 			"source": "./plugins/cyberfleet"
 		},
 		{
 			"name": "quill",
 			"description": "Documentation SDD plugin. Verifies guides, tutorials, articles, and reference docs against specs — existence, required headings, completeness, and reader-path continuity.",
+			"tags": ["docs", "sdd"],
 			"source": "./plugins/quill"
 		},
 		{
 			"name": "sdd",
 			"description": "Spec-Driven Development. Scaffold, validate, and maintain behavioral specs (spec.md + .feature files) for software features.",
+			"tags": ["spec-driven", "workflow"],
 			"source": "./plugins/sdd"
 		},
 		{
 			"name": "tmux",
 			"description": "tmux workflow skills for Claude Code — fork conversations into panes, manage sessions.",
+			"tags": ["tmux", "terminal"],
 			"source": "./plugins/tmux"
 		}
 	]

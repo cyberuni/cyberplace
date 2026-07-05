@@ -5,15 +5,22 @@ Append-only, descriptive, ungated project-scope decisions. The project sibling o
 
 Decisions (marketplace / Tavern grill):
 
-- **crew facet shape** — DECIDED: a reserved `crew` tag in an entry's `tags[]`; **no** catalog
-  schema change. Chosen over a `highlights.type: crew` because only `RepoEntry` carries `highlights`
-  — a `tags[]` marker is the only one that lets a *skill* entry also be a crew.
+- **crew facet shape** — DECIDED: a reserved `crew` tag in a **marketplace-manifest**
+  (`.claude-plugin/marketplace.json`) plugin entry's `tags[]`; **no** marketplace-manifest schema
+  change. Superseded-in-place by CR `tavern-plugin-storefront`: the original grill chose this shape
+  over a `highlights.type: crew` on the *awesome catalog* (only `RepoEntry` carried `highlights`);
+  the roster source has since moved from the awesome catalog to the marketplace manifest, but the
+  `tags[]`-marker shape carries over unchanged.
 - **Tavern interface** — DECIDED: a dedicated top-level `cyberplace tavern` command (not an
   `awesome find --crew` flag), plus a Starlight storefront page shipped in the same CR.
-- **crew qualification** — DECIDED: an entry is a crew iff it ships an installable persona gateway
-  skill (`metadata.persona`); the `crew` tag is author-asserted (no deep validation this CR).
-- **Tavern surface** — the storefront as a Starlight docs projection of the crew-tagged catalog,
-  not a second governed source.
+- **crew qualification** — DECIDED: a marketplace-manifest plugin entry is a crew iff it ships an
+  installable persona gateway skill (`metadata.persona`); the `crew` tag is author-asserted (no deep
+  validation this CR). Superseded-in-place by CR `tavern-plugin-storefront`: qualification now reads
+  against marketplace-manifest plugin entries, not awesome-catalog entries.
+- **Tavern surface** — DECIDED: a Starlight top-nav storefront projecting the crew-tagged
+  **marketplace manifest**, not a second governed source. Superseded-in-place by CR
+  `tavern-plugin-storefront`: the roster projected is now the marketplace manifest, replacing the
+  earlier crew-tagged-catalog framing.
 
 Decisions (marketplace charter + AXI grill — CR `cyberplace-marketplace-axi`):
 
