@@ -5,7 +5,7 @@ export interface Pin {
 	file: string
 }
 
-export type PinStatus = 'updated' | 'unchanged' | 'skipped'
+type PinStatus = 'updated' | 'unchanged' | 'skipped'
 
 /** The outcome of resolving one distinct in-scope package's pin. */
 export interface PinResolution {

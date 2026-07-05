@@ -38,10 +38,10 @@ re-open** (no scenario narrowed).
 `pickTarget`, `styleRange`), `registry.ts` (native-`fetch` adapter), `fs.ts` (glob/read/write skills);
 wired into `src/build/build.ts` + `src/build/cli.ts`. No new dep (fetch native; hand-rolled semver).
 
-**Isolation:** worktree `/home/unional/code/cyberuni/cyberplace-build-resolve-pins`, branch
+**Isolation:** a dedicated git worktree (`../cyberplace-build-resolve-pins`) on branch
 `build-resolve-pins` off `main`.
 
-Ledger shard: `build-resolve-pins.dbc99c.jsonl`. Design: `/home/unional/.claude/plans/our-skill-will-use-abstract-simon.md`.
+Ledger shard: `build-resolve-pins.dbc99c.jsonl`. Design: `~/.claude/plans/our-skill-will-use-abstract-simon.md`.
 
 ## NEXT
 
