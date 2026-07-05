@@ -4,13 +4,15 @@ status: active
 todos:
   - content: "Intake: CR opened vs universal-plugin spec (revise plugin/build, additive); plan + ledger shard dbc99c"
     status: completed
-  - content: "Explore: author pin-resolution Use Cases in plugin/build/README + additive build.feature scenarios; cold spec-judge; build-to-learn spike of src/pin"
-    status: pending
-  - content: "Spec gate: judge extended build.feature; re-freeze @frozen (additive self-clears); gate line to shard; root stays approved"
-    status: pending
-  - content: "Deliver: build src/pin (pure pin.ts + registry.ts fetch adapter + fs.ts) + wire into build.ts/build/cli.ts; verification per frozen scenario"
-    status: pending
-  - content: "Impl gate + handoff: cold impl-judge; pnpm verify; commit by unit; PR from worktree; detached Warden"
+  - content: "Explore: authored pin-resolution Use Cases in plugin/build/README + additive build.feature scenarios; cold spec-judge round 1 caught 3 builder + 1 architect gap, fixed, re-graded ALIGNED true"
+    status: completed
+  - content: "Spec gate: judged extended build.feature; re-froze @frozen (additive self-clears); gate line to shard dbc99c; root stays approved (8eb5224)"
+    status: completed
+  - content: "Deliver: built src/pin (pure pin.ts + registry.ts fetch adapter + fs.ts) + wired into build.ts/build/cli.ts; 171 unit tests + real e2e (c63c557, fix 72128c4)"
+    status: completed
+  - content: "Impl gate: cold impl-judge IN_SCOPE_IMPLEMENTATION_PASS true (26/26 logic scenarios); TOON pins deferred to impl-axi-contract; node stays approved"
+    status: completed
+  - content: "Handoff: push branch + open PR build-resolve-pins->main (awaiting user); note impl-axi-contract now also covers pins TOON; optional Warden formation pass"
     status: pending
 ---
 
@@ -43,7 +45,18 @@ Ledger shard: `build-resolve-pins.dbc99c.jsonl`. Design: `/home/unional/.claude/
 
 ## NEXT
 
-Explore: author the additive pin-resolution behavior into `plugin/build/README.md` (Use Cases + a
-non-goal boundary vs `self-update` / hook-file rewriting) and `build.feature` (new scenarios), spawn
-the cold spec-judge, and run a build-to-learn spike of `src/pin/`. Then spec gate (re-freeze),
-deliver, impl gate, handoff.
+Mission delivered on branch `build-resolve-pins` (off `main`), 3 commits: spec gate `8eb5224`,
+impl `c63c557`, downgrade-floor fix `72128c4`. Spec gate + impl gate both self-asserted at the
+autonomy bar (ALIGNED true / IN_SCOPE_IMPLEMENTATION_PASS true); root `universal-plugin` stays
+`approved` (not `implemented`) because the AXI **TOON pins rendering** is deferred to the
+`impl-axi-contract` follow-up alongside build's own deferred TOON output.
+
+Remaining (user-gated):
+1. **Push + open PR** `build-resolve-pins` → `main` (outward-facing — awaiting user go-ahead; sequence
+   against the still-open `axi-conformance` PR).
+2. **Fold pins TOON into `impl-axi-contract`** — that already-documented follow-up (from the
+   `axi-conformance` NEXT) must now also render the pins section (TOON rows `package/current/resolved/
+   status`, `pinned N` aggregate, truncation + `--full`, `pinned 0` empty state). The data is already
+   computed on the build result.
+3. **Optional Warden formation pass** — single additive node, `check-spec-structure` 0/0; low risk.
+4. Retire this plan once the PR merges + doctrine-distills.
