@@ -1,0 +1,1 @@
+{"kind": "correction", "cr": "axi-conformance", "ts": "2026-07-04T23:38:13Z", "note": "re-open ratified by user in-session: root universal-plugin spec approved -> draft; the four behavioral .feature (build/validate/init/governance) unfreeze for rewrite to explicitly assert the AXI output contract; re-frozen + re-approved at the spec gate. AXI #7 deferred to a follow-up CR."}

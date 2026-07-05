@@ -1,35 +1,78 @@
-# cyberfleet — the fleet persona layer
+# cyberfleet
 
-Two gateway skills that give the `cyberfleet` CLI a face, split by where you are (ADR-0022):
-**Pod** (the ship's bridge) when you're inside an initialized ship, **Operator** (the command
-center) when you're not. The CLI itself stays cold and mechanical — every mechanic either persona
-speaks through is a `cyberfleet` call; the warmth lives only in these skills.
+A harness-agnostic, MCP-free way to direct a fleet of AI-agents across your projects.
 
-## Naming collision, intentional
+You're the **Council** — the human. You give directions and make decisions; the fleet is
+autonomous and carries them out.
 
-`cyberfleet` names two different artifacts on purpose: the **CLI** (`packages/cyberfleet`, the
-cold console — identity, messaging, spawn, worktrees) and this **plugin** (the warm layer — Pod
-and Operator). Mirrors `universal-plugin` (npm package) vs. the skills that ride on it.
+## Pod
 
-## Skills
+The **Pod** is the bridge-companion automaton of a ship. A ship is a workspace: a folder, a
+repository, or a worktree; your fleet is all the ships you've enlisted, across one project or many.
+Pod greets you, clears the inbox, and runs the mission. When the work should fan out, it launches a
+sister ship to run a mission in parallel.
 
-| Skill | When it activates |
-|---|---|
-| `pod` | Working directory is a **ship** (a project root carrying `.cyberfleet/`) — runs the mission, checks the inbox, hails specialist crew. |
-| `operator` | Working directory is **not** a ship — spawns/lists ships, routes messages across the fleet. |
+## Operator
 
-Mode is decided by `.cyberfleet/`-dir presence alone (`cyberfleet mode`), never by any SDD state.
-Each skill defers to the other when the mode doesn't match.
+The **Operator** is the dispatcher automaton of the **fleet** — it commissions your first ship,
+lists who's out there, routes messages between ships, and sweeps away the dead ones.
+It's where you survey the fleet and decide what sails next.
 
-## What's not here
+## Crimp
 
-HAL (the above-leash self-assertion tell) and the `cyberfleet missions --json` query view are a
-later change request (see `artifacts/adr/0022-cyberfleet-persona.md`, decisions 6 and 10).
+Crew don't come bundled — the **Crimp** recruits them from the **Tavern**, the storefront of
+installable **crews**, each a specialist you command through its own persona. Browse the roster,
+pick the hands you need, and the Crimp signs them on.
+
+## Tuner _(coming soon)_
+
+Once a crew is aboard, the **Tuner** adjusts how it runs — the guidance it follows, the model it
+uses, how hard it thinks, and how much leash it has before it checks back with you.
+
+## The console
+
+Under the automatons sits the `cyberfleet` **console** — the CLI. It's cold and deterministic:
+identity, messaging, spawning sessions, worktrees, and nothing more. The plugin (this one) adds the
+**automaton** layer on top — Pod, Operator, and the crew are the agents that reason about the
+situation and reach for the right `cyberfleet` command underneath. Two artifacts, one name: the
+console is the mechanics, the automatons are the agency that drives them.
+
+## The control panel
+
+Each ship runs live in its own terminal pane, and cyberfleet drives your multiplexer to manage them
+— opening a pane per ship, reading what's happening inside, and closing it when the work is done. The
+whole fleet lays out as panes you can see and jump between, like a control panel of running ships.
+Two multiplexers work today: **tmux**, and **herdr** — an agent-aware one that also reports whether
+each ship is working, idle, or blocked. cyberfleet detects which you're running and drives it.
+
+## Why no MCP
+
+The usual way to wire agents together is MCP — which means running a server: a process to start, a
+port to hold open, config to add to every harness. cyberfleet needs none of it.
+
+- **Nothing to run.** No server, no port, no daemon to keep alive or secure — coordination lives in
+  the project itself and rides each harness's own session-start hook.
+- **Harness-agnostic by construction.** No vendor-specific protocol, so Claude Code, Cursor, and
+  Codex all join the same fleet with no per-harness glue.
+- **Portable and inspectable.** It's one `cyberfleet` command end to end — easy to script, log, and
+  debug, with nothing extra to stand up per project.
 
 ## Installation
 
+Install the plugin:
+
 ```bash
-npx skills add cyberuni/cyberplace --plugin cyberfleet
+npx skills add cyberuni/cyberplace --plugin cyberfleet --global
 ```
 
-Requires the `cyberfleet` CLI on PATH (or invoked via pinned `npx cyberfleet@<version>`).
+Optionally, install the `cyberfleet` CLI globally if you want to run it from the command line:
+
+```bash
+npm install -g cyberfleet
+
+pnpm add -g cyberfleet
+
+bun add -g cyberfleet
+
+yarn add -g cyberfleet
+```

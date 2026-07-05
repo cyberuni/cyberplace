@@ -24,21 +24,21 @@ test('prints error for unknown command', () => {
 	expect(result.stderr).toMatch(/unknown command/)
 })
 
-test('build fails when .plugin/plugin.json is missing', () => {
+test('plugin build fails when .plugin/plugin.json is missing', () => {
 	const empty = fs.mkdtempSync(path.join(os.tmpdir(), 'universal-plugin-smoke-'))
 	try {
-		const result = spawnSync('node', [bin, 'build', '--root', empty], {
+		const result = spawnSync('node', [bin, 'plugin', 'build', '--root', empty], {
 			encoding: 'utf8',
 			env: { ...process.env, NODE_NO_WARNINGS: '1' },
 		})
 		expect(result.status).toBe(1)
-		expect(result.stderr).toMatch(/plugin\.json/)
+		expect(result.stderr).toMatch(/No \.plugin\/plugin\.json found/)
 	} finally {
 		fs.rmSync(empty, { recursive: true, force: true })
 	}
 })
 
-test('build --dry-run lists vendors without writing', () => {
+test('plugin build --dry-run lists vendors without writing', () => {
 	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'universal-plugin-dryrun-'))
 	try {
 		fs.mkdirSync(path.join(root, '.plugin'))
@@ -46,7 +46,7 @@ test('build --dry-run lists vendors without writing', () => {
 			path.join(root, '.plugin', 'plugin.json'),
 			JSON.stringify({ name: 'test-plugin', vendorExtensions: { 'claude-code': {} } }),
 		)
-		const result = spawnSync('node', [bin, 'build', '--dry-run', '--root', root], {
+		const result = spawnSync('node', [bin, 'plugin', 'build', '--dry-run', '--root', root], {
 			encoding: 'utf8',
 			env: { ...process.env, NODE_NO_WARNINGS: '1' },
 		})
@@ -131,6 +131,42 @@ test('governance show --json returns structured output', () => {
 		const parsed = JSON.parse(result.stdout)
 		expect(parsed.scope).toBe('project')
 		expect(parsed.content).toBe('content')
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
+})
+
+test('governance show --format json returns structured output (frozen invocation)', () => {
+	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'universal-plugin-gov-'))
+	try {
+		fs.mkdirSync(path.join(root, 'governances'))
+		fs.writeFileSync(path.join(root, 'governances', 'test-gov.md'), 'content')
+		const result = spawnSync('node', [bin, 'governance', 'show', 'test-gov', '--format', 'json', '--root', root], {
+			encoding: 'utf8',
+			env: { ...process.env, NODE_NO_WARNINGS: '1' },
+		})
+		expect(result.status).toBe(0)
+		const parsed = JSON.parse(result.stdout)
+		expect(parsed.scope).toBe('project')
+		expect(parsed.content).toBe('content')
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
+})
+
+test('governance list --format json returns array of entries (frozen invocation)', () => {
+	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'universal-plugin-gov-'))
+	try {
+		fs.mkdirSync(path.join(root, 'governances'))
+		fs.writeFileSync(path.join(root, 'governances', 'plugin-design.md'), '# Plugin Design')
+		const result = spawnSync('node', [bin, 'governance', 'list', '--format', 'json', '--root', root], {
+			encoding: 'utf8',
+			env: { ...process.env, NODE_NO_WARNINGS: '1' },
+		})
+		expect(result.status).toBe(0)
+		const parsed = JSON.parse(result.stdout)
+		expect(Array.isArray(parsed)).toBe(true)
+		expect(parsed.every((e: { name: string; scope: string }) => 'name' in e && 'scope' in e)).toBe(true)
 	} finally {
 		fs.rmSync(root, { recursive: true, force: true })
 	}
