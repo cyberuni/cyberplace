@@ -31,8 +31,9 @@ harness it runs in, appears in one registry keyed the same way.
   registry reflects which agents are active.
 
 **Non-goals** — sending or reading messages (`messaging`); launching a new session (`spawn`);
-reaping dead agents on a schedule (`prune` is
-covered here only as the liveness read; automatic GC and a cross-repo registry root are deferred).
+the hard per-ship teardown that removes a worktree, session, and record (`decommission`); reaping
+dead agents on a schedule (`prune` is covered here only as the *soft* liveness sweep — marking dead
+agents `exited`, deleting nothing; automatic GC and a cross-repo registry root are deferred).
 
 Every scenario in [`identity.feature`](./identity.feature) maps to one of these behaviors:
 

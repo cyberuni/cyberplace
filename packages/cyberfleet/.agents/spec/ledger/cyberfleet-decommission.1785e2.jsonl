@@ -1,0 +1,2 @@
+{"seq":1,"kind":"leash","cr":"cyberfleet-decommission","leash":"auto-all","by":"derived","blast":"low","approach":["worktree","no-spike"]}
+{"seq":2,"kind":"gate","cr":"cyberfleet-decommission","gate":"spec","verdict":"approve","by":"agent","cause":"dimension","frozen":["decommission/decommission.feature"],"why":{"floor":"none","blast":"low","novelty":"low","confidence":"high"}}
