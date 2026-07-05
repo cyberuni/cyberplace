@@ -13,9 +13,9 @@ todos:
   - content: "Impl gate: cold impl-judge; on pass advance status to implemented"
     status: completed
   - content: "Handoff: pnpm verify, commit by unit of work, open PR; fold sdd cr-concurrency.md note reconcile"
-    status: in_progress
+    status: completed
   - content: "Post: spawn sdd-warden (detached, background) for corpus formation pass"
-    status: pending
+    status: completed
 ---
 
 # CR: cyberfleet-decommission — the cold teardown primitive (inverse of spawn)
@@ -42,7 +42,16 @@ Primitives already present: `console/worktree.ts` `remove()`, `console/session.t
 
 ## NEXT
 
-Spec gate is next: the 3rd spec-judge round confirms Architect passes now the `prune` verb collision
-is resolved. On ALIGNED true, freeze `decommission.feature` (`@frozen`), append the `gate` line to
-this CR's ledger shard, and set the root spec `status`. Then deliver: spawn the impl-producer to
-build `cyberfleet decommission` + one verification per frozen scenario.
+**This CR is done and landed — PR #77 (branch `cyberfleet-decommission`), root spec `implemented`,
+both gate ledger lines durable.** Keep this plan until the PR merges and the doctrine loop distills
+it (then retire).
+
+**Sitting 2 (separate CR, blocked-by this one):** `cyberfleet-plugin` — the warm layer that consumes
+`decommission`. Add the **Tender** persona (station-side, one per open PR: watch → rebase → wait for
+GitHub merge → `cyberfleet decommission`) and the **Operator** parallel-commission flow (one ship per
+approved brief, concurrent). Merge authority stays on GitHub; the Tender only watches/rebases/reaps.
+Start with `sdd:start-mission` against `.agents/specs/cyberfleet-plugin/` once #77 is merged.
+
+**Known follow-up (surfaced by the impl-judge, routed to the Warden):** `identity/README.md`'s
+`prune` Non-goals wording is awkward and `identity.feature` has no scenario exercising the `prune`
+soft-sweep — candidate identity-node CR.
