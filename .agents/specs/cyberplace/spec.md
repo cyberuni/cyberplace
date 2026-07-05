@@ -1,5 +1,5 @@
 ---
-status: implemented
+status: approved
 project-path: packages/cyberplace
 approval:
   spec:
@@ -7,78 +7,88 @@ approval:
     by: agent
     cause: dimension
     why:
-      leash: within — auto-spec; additive new marketplace/tavern node on a freshly-backfilled draft cyberplace project, no existing frozen scenario touched, reversible feature branch cyberplace-backfill-tavern; user directed the Tavern design live in-grill; self-asserted by:agent into the async review queue
-      basis: cold sdd-spec-judge 3-round re-grade, 3-lens {oracle,builder,architect} all PASS, ALIGNED true; 11 boolean scenarios verified against the real deriveInstallCommand + tags[] schema (crew as reserved tag — highlights only on RepoEntry, so a tag is the only marker a skill entry can carry); rounds 1-2 architect contradiction (siblings said `awesome find --crew`) reconciled across marketplace/awesome-list/glossary/decisions; check-spec-state + check-suite OK; tavern.feature frozen
-      cr: cyberplace-backfill-tavern
-  impl:
-    verdict: approve
-    by: agent
-    cause: dimension
-    why:
-      leash: within — tavern impl built to keep from the frozen suite on the reversible cyberplace-backfill-tavern branch, no frozen scenario edited; user directed the mission live; self-asserted by:agent into the async review queue
-      basis: two-round cold sdd-impl-judge → IMPLEMENTATION_PASS true, all 11 frozen scenarios verified (round 1 false → 2 code-only fixes: wire renderTavernPage via a real `tavern render` subcommand + website prebuild + turbo build-order so scenario 9 holds end-to-end; de-dup deriveInstallCommand onto the awesome/lib.ts export); judge ran an exercise backstop (CREW_TAG mutation) confirming scenario 9 is non-vacuous; 272 cyberplace tests green, typecheck + biome + knip clean, website builds with the prebuild regen; awesome-skills.json schema untouched. Advisory follow-up (non-blocking): pre-existing duplicate deriveInstallCommand in awesome/render.ts, out of scope
-      cr: cyberplace-backfill-tavern
+      floor: none
+      blast: low — spec-only, additive nodes + a purely-additive frozen-suite retrofit (tavern freeze preserved); impl gate withheld; reversible feature branch cyberplace-marketplace-axi
+      novelty: low — mirrors the verified universal-plugin AXI adoption (ADR-0003 + governance.feature); charter reframe records tenants rather than deleting behavior
+      confidence: high — two-round cold sdd-spec-judge, 3-lens {oracle,builder,architect} all PASS, ALIGNED true; check-suite / check-spec-state / check-spec-structure (0 blocking) / concept-index all green
 ---
 
-# cyberplace — the agent skill/plugin marketplace + authoring CLI
+# cyberplace — the client for the agentic plugin/skill marketplace
 
-> Root project spec — the **descriptive** top index for cyberplace. Behaviors live in the
-> capability folders below. Backfilled **capability-first** and **narrow** (the `marketplace`
-> capability only); the other cyberplace domains are named in the placement map as planned homes,
-> not yet backfilled.
+> Root project spec — the **descriptive** top index for cyberplace. Behaviors live in the capability
+> folders below. Re-opened by CR `cyberplace-marketplace-axi` to reframe the charter around a single
+> concern — **interacting with the cyberplace marketplace** — and to adopt the AXI output contract.
 
 ## What cyberplace is
 
-cyberplace is the CLI and curated catalog behind the cyberuni skill/plugin marketplace: agents
-**discover, install, and share** skills and plugins across harnesses (Claude Code, Cursor, Codex).
-The same `npx cyberplace` binary also carries the authoring/quality tooling the library depends on —
-skill audit, commit discipline, version-pinned governance contracts, agent hooks, and the skill
-lifecycle. One published package (`packages/cyberplace`, `bin: cyberplace`) ships all of it.
+cyberplace is the CLI client for the **cyberuni universal agentic plugin/skill marketplace**: agents
+**discover, acquire, source, and share** skills, plugins, and crews across harnesses (Claude Code,
+Cursor, Codex). One published package (`packages/cyberplace`, `bin: cyberplace`) ships the client;
+`awesome-skills.json` is the curated catalog it reads.
 
-## Backfill scope note (flagged)
+That is the **whole** charter. The package still *contains* authoring/quality code it inherited from
+two prior projects — **cyber-skills** (skill audit, commit discipline, agent hooks, skill authoring)
+and **universal-plugin** (agent-tool governance contracts) — but that code is **not cyberplace's
+concern**. It is recorded below as out-of-charter tenant code, flagged for relocation, and is **not**
+specified here.
 
-This project had no consolidated spec. It is backfilled **narrow**: only the **`marketplace`**
-capability — the curated awesome-list discovery plus the new **Tavern** crew storefront — is
-scaffolded now, because that is where the requested change lands. The remaining source domains
-(`packages/cyberplace/src/`: `audit/`, `commit/`, `governance/`, `hook/`, `registry/`, `skill/`,
-plus the CLI shell) are listed in the placement map as **planned** capabilities to backfill by
-demand. `status: draft` — no node's `.feature` is authored here; the per-unit explore grill fills
-them.
+## Charter scope (marketplace interaction only)
+
+The governed capability is **`marketplace/`** — discover, acquire, source, and the crew storefront —
+plus the shared **`axi/`** output contract every marketplace command follows. Everything else in
+`packages/cyberplace/src/` is tenant code (next section). `status: draft` — the touched `.feature`
+suites re-open for the AXI retrofit and re-freeze at the spec gate; **impl is deferred** (the shipped
+bin still emits prose + `--format json` and prompts interactively — the impl gate is withheld until a
+follow-up mission, per the `axi/` node's "impl trails the contract").
+
+## Out-of-charter tenants
+
+These `src/` domains ship in the package today but fall **outside** the marketplace charter. They are
+inherited code awaiting relocation; no behavior is specified for them here. A future migration mission
+moves each to its rightful home:
+
+| Tenant (`src/`) | What it does | Origin | Relocation target |
+|---|---|---|---|
+| `audit/` | skill S/Q/E structural audit (`audit validate`) | cyber-skills | cyberspace / aced |
+| `commit/` | commit-discipline injection + resolve (`commit inject`) | cyber-skills | cyberspace |
+| `governance/` | version-pinned agent-tool contracts (`governance show/list`) | universal-plugin | universal-plugin |
+| `hook/` | agent session/tool hooks (`hook register/run`) | cyber-skills | cyberplace via **AXI #7** ambient context (deferred CR) |
+| `skill/` | skill scaffold / lifecycle (`skill list/validate/repair/source`) | cyber-skills | cyberspace |
+
+> `hook/` is the one tenant with a plausible cyberplace future: AXI **#7** (ambient context) wants a
+> session-hook that installs cyberplace into an agent's loop. That is a deferred CR, not this one, so
+> `hook/` stays a tenant for now.
 
 ## Project-path note
 
 `project-path: packages/cyberplace` — the published CLI package and its catalog
 (`awesome-skills.json`). The **Tavern** capability additionally surfaces on the docs site
-(`apps/website/src/content/docs/tavern/`); that website page is a rendered projection of the same
-catalog, not a second governed source dir. Flag for the user if the website should instead be its
-own backfilled project.
+(`apps/website/src/content/docs/tavern/`); that page is a rendered projection of the same catalog, not
+a second governed source dir.
 
 ## Capability map
 
 | Folder | Type | What |
 |---|---|---|
-| [`marketplace/`](./marketplace/README.md) | descriptive | skill/plugin discovery, the curated awesome-list, and the Tavern crew storefront |
-
-**Planned (not yet backfilled)** — named here so a later mission slots them without re-deriving:
-`audit/` (skill S/Q/E audit), `commit-discipline/` (Conventional-Commits staging + messages),
-`governance/` (version-pinned agent-tool contracts, `governance show`), `hooks/` (hook register /
-run), `registry/` (skill registry ops), `skill-authoring/` (scaffold + lifecycle), and a CLI/tooling
-home (the `cyberplace` bin shell, build, packaging).
+| [`marketplace/`](./marketplace/README.md) | descriptive | discover (awesome-list), acquire + source (registry), and the crew storefront (tavern) |
+| [`axi/`](./axi/README.md) | reference | the shared AXI output contract every marketplace command follows (#1–#6, #8–#10; #7 deferred) |
 
 ## Placement map
 
 **Strategy: capability-first** — top-level folders by what cyberplace *does*. Slot a new concept
 here; do not invent placement:
 
-- a new **discovery / catalog / storefront** behavior (find, inspect, render, source config, the
-  crew filter, the Tavern) → **`marketplace/`**.
-- a new **skill-audit** behavior (S/Q/E checks) → future `audit/`.
-- a new **commit-discipline** behavior (staging, message shape) → future `commit-discipline/`.
-- a new **governance-contract** behavior (`governance show`, version pinning) → future `governance/`.
-- a new **hook** behavior (register, run, extract) → future `hooks/`.
-- a new **registry** behavior → future `registry/`.
-- a new **skill-authoring** behavior (scaffold, validate, lifecycle) → future `skill-authoring/`.
-- a **cross-capability e2e outcome** (spans ≥2 capabilities) → `acceptance/`.
+- a new **discovery** behavior (curated-list find / inspect / render / source config) →
+  **`marketplace/awesome-list/`**.
+- a new **acquire / source** behavior (install, remove, update, list installed, marketplace find,
+  provider config, lock migration) → **`marketplace/registry/`**.
+- a new **crew storefront** behavior (the reserved `crew` tag, `cyberplace tavern`, the roster page) →
+  **`marketplace/tavern/`**.
+- a new **shared output-shape** convention (a cross-command AXI rule) → the **`axi/`** reference node
+  (state it once; the behavioral node carries the scenario).
+- a **cross-capability e2e outcome** (spans ≥2 units) → `acceptance/`.
+- a behavior for one of the **out-of-charter tenants** (audit / commit / governance / hook / skill) →
+  it does **not** belong in this spec; it rides the tenant's relocation mission.
 
 The nesting rule: capabilities at the top; any layering nests *inside* a capability, never as a
 top-level folder. A node is `<capability>/<unit>` and **never three deep** — a sub-grouping inside a
@@ -92,6 +102,8 @@ capability is a `concept:` tag recovered by the by-concept index, not a third fo
 
 | Concept | Facets |
 |---|---|
+| `acquire` | `marketplace/registry/` (behavior) |
+| `axi` | `axi/` (reference) · `marketplace/awesome-list/` (behavior) · `marketplace/registry/` (behavior) · `marketplace/tavern/` (behavior) |
 | `discovery` | `glossary/` (reference) · `marketplace/awesome-list/` (behavior) · `marketplace/tavern/` (behavior) |
 
 <!-- END generated: by-concept -->

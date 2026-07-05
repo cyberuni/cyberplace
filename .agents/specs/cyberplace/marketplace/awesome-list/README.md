@@ -1,16 +1,23 @@
 ---
 spec-type: behavioral
-concept: [discovery]
+concept: [discovery, axi]
 ---
 
 # awesome-list — curated skill/plugin discovery
 
-**Backfill stub** — reverse-engineered from `packages/cyberplace/src/awesome/`
-(`lib.ts`, `cli.ts`, `render.ts`, `sources.ts`, `inspect.ts`) + `awesome-skills.json`. The
-`.feature` is authored later in the per-unit explore grill (read source/tests/history; do not
-re-grill for intent). No `.feature` yet.
+> Output follows the shared [AXI output contract](../../axi/README.md) (TOON default, aggregate,
+> truncation + `--full`, definitive empty state, next-step on stderr, fail-loud). **Impl trails the
+> contract** — the shipped `cyberplace awesome` commands still emit prose + `--format json`; the impl
+> gate is withheld until a follow-up mission builds the AXI surface.
+
+Reverse-engineered from `packages/cyberplace/src/awesome/` (`lib.ts`, `cli.ts`, `render.ts`,
+`sources.ts`, `inspect.ts`) + `awesome-skills.json`. The behavior suite
+[`awesome-list.feature`](./awesome-list.feature) now exists — it covers find / inspect / render /
+sources and asserts conformance to the AXI output contract.
 
 ## Use Cases
+
+The suite follows the AXI output contract (see [`../../axi/README.md`](../../axi/README.md)).
 
 The `cyberplace awesome` command group over the curated catalog:
 

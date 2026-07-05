@@ -14,3 +14,28 @@ Decisions (marketplace / Tavern grill):
   skill (`metadata.persona`); the `crew` tag is author-asserted (no deep validation this CR).
 - **Tavern surface** — the storefront as a Starlight docs projection of the crew-tagged catalog,
   not a second governed source.
+
+Decisions (marketplace charter + AXI grill — CR `cyberplace-marketplace-axi`):
+
+- **charter = marketplace interaction only** — DECIDED: cyberplace's charter is *interacting with the
+  cyberplace universal agentic plugin/skill marketplace* (discover, acquire, source, share). The
+  authoring/quality code it inherited from `cyber-skills` (`audit/`, `commit/`, `hook/`, `skill/`) and
+  `universal-plugin` (`governance/`) is **out-of-charter tenant code** — present in the package but not
+  cyberplace's concern — flagged for later relocation, not backfilled here. See root `spec.md` →
+  **Out-of-charter tenants**.
+- **adopt the AXI output contract** — DECIDED: adopt [AXI](https://github.com/kunchenguid/axi)
+  principles **#1–#6 and #8–#10** as a shared output contract across every marketplace command, stated
+  once in a new [`axi/`](../../axi/README.md) reference node and referenced by each behavioral node
+  (which carries the concrete conformance scenarios). This is the **same** contract
+  `packages/universal-plugin` adopted (its ADR-0003) — cyberplace shares the shape rather than
+  re-deriving it. A new cross-cutting `concept: axi` groups the contract node and every marketplace
+  node in the by-concept index. TOON becomes the default output; `--format json` stays the explicit
+  escape hatch (nothing narrowed away).
+- **defer AXI #7 (ambient context)** — DECIDED: #7 (a session-hook setup command + an installable Agent
+  Skill) is out of scope here. It is entangled with cyberplace's own surfaces — `cyberplace add` *is*
+  the skill-installer #7 describes, and session-hook wiring is the out-of-charter `hook/` tenant —
+  routed to a follow-up CR.
+- **spec-only delivery; impl trails** — DECIDED: this CR delivers the spec + a frozen AXI-asserting
+  suite and **withholds the impl gate**; the shipped bin still emits prose + `--format json` and prompts
+  interactively. Making the CLI emit AXI output (TOON default, aggregates, next-step, non-interactive
+  `registry`) is a follow-up impl mission. Mirrors the universal-plugin precedent (`b20e69c`).

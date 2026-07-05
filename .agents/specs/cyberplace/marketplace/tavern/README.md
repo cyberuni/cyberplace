@@ -1,9 +1,14 @@
 ---
 spec-type: behavioral
-concept: [discovery]
+concept: [discovery, axi]
 ---
 
 # tavern — the crew storefront
+
+> Output follows the shared [AXI output contract](../../axi/README.md) (TOON default, aggregate,
+> definitive empty state, next-step on stderr, fail-loud). **Impl trails the contract** — the shipped
+> `cyberplace tavern` still emits prose + `--format json`; the impl gate is withheld until a follow-up
+> mission builds the AXI surface.
 
 The **Tavern** is the dedicated place to browse and install **crews** — catalog entries that ship an
 installable **persona gateway skill** (`metadata.persona`), i.e. recruitable spaceship crews you
