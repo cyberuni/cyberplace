@@ -143,7 +143,7 @@ export function sourceKey(source: SourceRef): string {
 	return `${normalizeRepo(source.repo)}::${normalizePath(source.path)}`
 }
 
-export function deriveInstallCommand(entry: AwesomeEntry): string {
+function deriveInstallCommand(entry: AwesomeEntry): string {
 	return entry.type === 'repo' ? `npx skills add ${entry.repo}` : `npx skills add ${entry.repo} --skill ${entry.skill}`
 }
 

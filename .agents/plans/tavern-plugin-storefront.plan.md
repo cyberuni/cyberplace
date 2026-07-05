@@ -8,12 +8,14 @@ todos:
     status: in_progress
   - content: "Spec gate: cold sdd-spec-judge 3-lens, re-freeze tavern.feature, root->approved"
     status: pending
-  - content: "Impl website: SiteTitle top-nav override (Docs/SDD/Tavern) + crew card component (reads marketplace.json crew-tagged) + tavern index.md->mdx + adjust prebuild"
-    status: pending
-  - content: "Impl CLI+tests: repoint cyberplace tavern roster source to marketplace.json crew-tag; rewrite tavern.test.ts"
-    status: pending
-  - content: "Impl gate (cold judge vs frozen scenarios) -> root->implemented; root pnpm verify; build+eyeball website; handoff"
-    status: pending
+  - content: "DONE spec gate: cold judge ALIGNED true (round 1 architect caught leftover awesome-catalog framing; fixed); froze tavern.feature, root->approved; committed eead5b5"
+    status: completed
+  - content: "DONE impl: website SiteTitle top-nav + TavernStorefront crew cards + index.mdx; CLI readCrewPlugins over marketplace.json; deleted render.ts/lib.ts; 10 tests green"
+    status: completed
+  - content: "DONE impl gate: cold sdd-impl-judge PASS (11 targeted scenarios; AXI deferred per banner); root->implemented; root pnpm verify green (16/16)"
+    status: completed
+  - content: "Handoff: commit impl unit; spawn detached Warden; PR is user's (repo pattern)"
+    status: in_progress
 ---
 
 # CR: tavern-plugin-storefront — Tavern becomes the cyberplace plugin storefront
@@ -30,4 +32,6 @@ Ledger shard: `tavern-plugin-storefront.a75a36.jsonl`.
 
 ## NEXT
 
-Start explore. Re-open root spec (implemented->draft), unfreeze tavern.feature, rewrite spec.md + tavern.feature for the plugin-storefront behavior. Then spawn cold spec-judge, spec gate. Impl (website + CLI + tests) can build in parallel against the rewritten frozen suite.
+CR essentially complete. cyberplace = `implemented` (spec:approve;impl:approve). Both gates passed, root pnpm verify green. Commits: `eead5b5` (spec+seed) + the impl unit. Only cyberfleet is a crew today (1 card, grows as plugins are `crew`-tagged in marketplace.json).
+
+Remaining handoff: commit impl unit; spawn detached Warden formation pass; PR is the user's to open (repo pattern: `git push -u origin tavern-plugin-storefront` → PR). Follow-ups (noted, not filed): (1) build the tavern AXI CLI surface (TOON/aggregate/etc — still deferred per banner); (2) add a malformed-manifest fail-loud scenario; (3) export a cyberplace `tavern` lib module so TavernStorefront reuses `readCrewPlugins` instead of re-deriving the crew filter.

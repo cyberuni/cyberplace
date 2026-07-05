@@ -1,0 +1,89 @@
+---
+import starlightConfig from 'virtual:starlight/user-config'
+
+const title = starlightConfig?.title ?? 'cyberplace'
+
+const navItems = [
+	{ label: 'Docs', href: '/getting-started/introduction' },
+	{ label: 'SDD', href: '/sdd/overview' },
+	{ label: 'Tavern', href: '/tavern' },
+]
+
+const pathname = Astro.url.pathname
+
+function isActive(href: string): boolean {
+	// prefix match, but don't let "/" swallow every route
+	const normalized = href.endsWith('/') ? href : `${href}/`
+	const currentNormalized = pathname.endsWith('/') ? pathname : `${pathname}/`
+	return currentNormalized === normalized || currentNormalized.startsWith(normalized)
+}
+---
+
+<div class="site-title">
+	<a href="/" class="site-title-link">
+		<span>{title}</span>
+	</a>
+	<nav class="top-nav" aria-label="Top navigation">
+		{
+			navItems.map((item) => {
+				const active = isActive(item.href)
+				return (
+					<a
+						href={item.href}
+						class={active ? 'top-nav-link active' : 'top-nav-link'}
+						aria-current={active ? 'page' : undefined}
+					>
+						{item.label}
+					</a>
+				)
+			})
+		}
+	</nav>
+</div>
+
+<style>
+	.site-title {
+		display: flex;
+		align-items: center;
+		gap: 1.5rem;
+		min-width: 0;
+	}
+	.site-title-link {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: var(--sl-text-h4);
+		font-weight: 700;
+		color: var(--sl-color-text-accent, var(--sl-color-white));
+		text-decoration: none;
+		white-space: nowrap;
+	}
+	.top-nav {
+		display: flex;
+		align-items: center;
+		gap: 1.25rem;
+	}
+	.top-nav-link {
+		font-size: var(--sl-text-sm);
+		font-weight: 600;
+		color: var(--sl-color-gray-3);
+		text-decoration: none;
+		padding: 0.25rem 0;
+		border-bottom: 2px solid transparent;
+		white-space: nowrap;
+	}
+	.top-nav-link:hover {
+		color: var(--sl-color-white);
+	}
+	.top-nav-link.active {
+		color: var(--sl-color-white);
+		border-bottom-color: var(--sl-color-accent);
+	}
+
+	/* The sidebar hamburger covers navigation on narrow viewports. */
+	@media (max-width: 50rem) {
+		.top-nav {
+			display: none;
+		}
+	}
+</style>

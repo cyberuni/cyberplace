@@ -4,18 +4,29 @@ import * as os from 'node:os'
 import * as path from 'node:path'
 import { expect, test } from 'vitest'
 
-import { findCrews } from './lib.js'
-import { renderTavernRosterMarkdown } from './render.js'
+import { readCrewPlugins } from './plugins.js'
 
 const bin = path.resolve('bin/cyberplace.mjs')
 
-function makeCatalog(awesomeList: Record<string, unknown>): string {
-	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'tavern-catalog-'))
+interface MarketplacePluginFixture {
+	name: string
+	description: string
+	source: string
+	tags: string[]
+}
+
+function makeMarketplace(plugins: MarketplacePluginFixture[]): string {
+	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'tavern-marketplace-'))
+	const pluginDir = path.join(root, '.claude-plugin')
+	fs.mkdirSync(pluginDir, { recursive: true })
 	fs.writeFileSync(
-		path.join(root, 'package.json'),
-		JSON.stringify({ repository: { url: 'https://github.com/test/tavern-fixture.git' } }),
+		path.join(pluginDir, 'marketplace.json'),
+		JSON.stringify(
+			{ $schema: 'https://example.com/schema.json', name: 'test', owner: { name: 'test' }, plugins },
+			null,
+			2,
+		),
 	)
-	fs.writeFileSync(path.join(root, 'awesome-skills.json'), JSON.stringify(awesomeList, null, 2))
 	return root
 }
 
@@ -26,157 +37,74 @@ function runCli(...args: string[]) {
 	})
 }
 
-// Scenario: an entry tagged crew appears in the tavern roster
-test('an entry tagged crew appears in the tavern roster', async () => {
-	const root = makeCatalog({
-		version: 1,
-		repos: {
-			'acme/navigator': {
-				repo: 'acme/navigator',
-				kind: 'targeted',
-				trust: 'authored',
-				summary: 'Navigator crew',
-				why_recommended: 'Ships a persona gateway skill',
-				tags: ['crew'],
-			},
-		},
-		skills: {},
-	})
+// Scenario: a marketplace plugin tagged crew appears in the tavern roster
+test('a marketplace plugin tagged crew appears in the tavern roster', () => {
+	const root = makeMarketplace([
+		{ name: 'navigator', description: 'Navigator crew', source: './plugins/navigator', tags: ['crew'] },
+	])
 	try {
-		const crews = await findCrews(root, '')
-		expect(crews.some((c) => c.repo === 'acme/navigator')).toBe(true)
+		const crews = readCrewPlugins(root)
+		expect(crews.some((c) => c.name === 'navigator')).toBe(true)
 	} finally {
 		fs.rmSync(root, { recursive: true, force: true })
 	}
 })
 
-// Scenario: an entry not tagged crew is excluded from the roster
-test('an entry not tagged crew is excluded from the roster', async () => {
-	const root = makeCatalog({
-		version: 1,
-		repos: {
-			'acme/plain': {
-				repo: 'acme/plain',
-				kind: 'targeted',
-				trust: 'authored',
-				summary: 'Not a crew',
-				why_recommended: 'Just a regular skill repo',
-				tags: ['validation'],
-			},
-		},
-		skills: {},
-	})
+// Scenario: a marketplace plugin not tagged crew is excluded from the roster
+test('a marketplace plugin not tagged crew is excluded from the roster', () => {
+	const root = makeMarketplace([
+		{ name: 'plain', description: 'Not a crew', source: './plugins/plain', tags: ['docs'] },
+	])
 	try {
-		const crews = await findCrews(root, '')
-		expect(crews.some((c) => c.repo === 'acme/plain')).toBe(false)
+		const crews = readCrewPlugins(root)
+		expect(crews.some((c) => c.name === 'plain')).toBe(false)
 	} finally {
 		fs.rmSync(root, { recursive: true, force: true })
 	}
 })
 
-// Scenario: the roster shows each crew's install command
-test("the roster shows a crew-tagged repo's install command", async () => {
-	const root = makeCatalog({
-		version: 1,
-		repos: {
-			'acme/navigator': {
-				repo: 'acme/navigator',
-				kind: 'targeted',
-				trust: 'authored',
-				summary: 'Navigator crew',
-				why_recommended: 'Ships a persona gateway skill',
-				tags: ['crew'],
-			},
-		},
-		skills: {},
-	})
+// Scenario: the roster shows each crew's recruit command
+test("the roster shows each crew's recruit command", () => {
+	const root = makeMarketplace([
+		{ name: 'navigator', description: 'Navigator crew', source: './plugins/navigator', tags: ['crew'] },
+	])
 	try {
-		const crews = await findCrews(root, '')
-		const navigator = crews.find((c) => c.repo === 'acme/navigator')
-		expect(navigator?.installCommand).toBe('npx skills add acme/navigator')
-	} finally {
-		fs.rmSync(root, { recursive: true, force: true })
-	}
-})
-
-// Scenario: a crew-tagged skill entry derives a --skill install command
-test('a crew-tagged skill entry derives a --skill install command', async () => {
-	const root = makeCatalog({
-		version: 1,
-		repos: {},
-		skills: {
-			'acme/navigator::helm': {
-				repo: 'acme/navigator',
-				skill: 'helm',
-				kind: 'targeted',
-				trust: 'authored',
-				summary: 'Helm crew skill',
-				why_recommended: 'Ships a persona gateway skill',
-				tags: ['crew'],
-			},
-		},
-	})
-	try {
-		const crews = await findCrews(root, '')
-		const helm = crews.find((c) => c.repo === 'acme/navigator' && c.skill === 'helm')
-		expect(helm?.installCommand).toBe('npx skills add acme/navigator --skill helm')
+		const crews = readCrewPlugins(root)
+		const navigator = crews.find((c) => c.name === 'navigator')
+		expect(navigator?.recruit).toBe('cyberplace add navigator')
 	} finally {
 		fs.rmSync(root, { recursive: true, force: true })
 	}
 })
 
 // Scenario: cyberplace tavern <query> filters the crew roster by text
-test('cyberplace tavern <query> filters the crew roster by text', async () => {
-	const root = makeCatalog({
-		version: 1,
-		repos: {
-			'acme/navigator': {
-				repo: 'acme/navigator',
-				kind: 'targeted',
-				trust: 'authored',
-				summary: 'Navigator crew',
-				why_recommended: 'Ships a persona gateway skill',
-				tags: ['crew'],
-			},
-			'acme/gunner': {
-				repo: 'acme/gunner',
-				kind: 'targeted',
-				trust: 'authored',
-				summary: 'Gunner crew',
-				why_recommended: 'Ships a persona gateway skill',
-				tags: ['crew'],
-			},
-		},
-		skills: {},
-	})
+test('cyberplace tavern <query> filters the crew roster by text', () => {
+	const root = makeMarketplace([
+		{ name: 'navigator', description: 'Navigator crew', source: './plugins/navigator', tags: ['crew'] },
+		{ name: 'gunner', description: 'Gunner crew', source: './plugins/gunner', tags: ['crew'] },
+	])
 	try {
-		const crews = await findCrews(root, 'navigator')
-		expect(crews.some((c) => c.repo === 'acme/navigator')).toBe(true)
-		expect(crews.some((c) => c.repo === 'acme/gunner')).toBe(false)
+		const crews = readCrewPlugins(root, 'navigator')
+		expect(crews.some((c) => c.name === 'navigator')).toBe(true)
+		expect(crews.some((c) => c.name === 'gunner')).toBe(false)
 	} finally {
 		fs.rmSync(root, { recursive: true, force: true })
 	}
 })
 
-// Scenario: a query never surfaces a non-crew entry
-test('a query never surfaces a non-crew entry', async () => {
-	const root = makeCatalog({
-		version: 1,
-		repos: {
-			'acme/navigator': {
-				repo: 'acme/navigator',
-				kind: 'targeted',
-				trust: 'authored',
-				summary: 'Navigator plain repo, not a crew',
-				why_recommended: 'Matches the query text but ships no persona',
-				tags: ['validation'],
-			},
+// Scenario: a query never surfaces a non-crew plugin
+test('a query never surfaces a non-crew plugin', () => {
+	const root = makeMarketplace([
+		{
+			name: 'navigator',
+			description: 'Navigator plain plugin, matches the query text but ships no persona',
+			source: './plugins/navigator',
+			tags: ['docs'],
 		},
-		skills: {},
-	})
+	])
 	try {
-		const crews = await findCrews(root, 'navigator')
-		expect(crews.some((c) => c.repo === 'acme/navigator')).toBe(false)
+		const crews = readCrewPlugins(root, 'navigator')
+		expect(crews.some((c) => c.name === 'navigator')).toBe(false)
 	} finally {
 		fs.rmSync(root, { recursive: true, force: true })
 	}
@@ -184,35 +112,22 @@ test('a query never surfaces a non-crew entry', async () => {
 
 // Scenario: json output emits structured crew records
 test('json output emits structured crew records', () => {
-	const root = makeCatalog({
-		version: 1,
-		repos: {
-			'acme/navigator': {
-				repo: 'acme/navigator',
-				kind: 'targeted',
-				trust: 'authored',
-				summary: 'Navigator crew',
-				why_recommended: 'Ships a persona gateway skill',
-				tags: ['crew'],
-			},
-		},
-		skills: {},
-	})
+	const root = makeMarketplace([
+		{ name: 'navigator', description: 'Navigator crew', source: './plugins/navigator', tags: ['crew'] },
+	])
 	try {
 		const result = runCli('--format', 'json', '--root', root)
 		expect(result.status).toBe(0)
-		const parsed = JSON.parse(result.stdout) as { repo: string; installCommand: string }[]
-		expect(
-			parsed.some((c) => c.repo === 'acme/navigator' && c.installCommand === 'npx skills add acme/navigator'),
-		).toBe(true)
+		const parsed = JSON.parse(result.stdout) as { name: string; recruit: string }[]
+		expect(parsed.some((c) => c.name === 'navigator' && c.recruit === 'cyberplace add navigator')).toBe(true)
 	} finally {
 		fs.rmSync(root, { recursive: true, force: true })
 	}
 })
 
-// Scenario: an empty catalog yields an empty roster, not an error
-test('an empty catalog yields an empty roster, not an error', () => {
-	const root = makeCatalog({ version: 1, repos: {}, skills: {} })
+// Scenario: a marketplace with no crew-tagged plugins yields an empty roster, not an error
+test('a marketplace with no crew-tagged plugins yields an empty roster, not an error', () => {
+	const root = makeMarketplace([])
 	try {
 		const result = runCli('--root', root)
 		expect(result.status).toBe(0)
@@ -222,127 +137,32 @@ test('an empty catalog yields an empty roster, not an error', () => {
 	}
 })
 
-// Scenario: the Tavern lists a crew but performs no install or deployment
-test('the tavern lists a crew but performs no install or deployment', () => {
-	const root = makeCatalog({
-		version: 1,
-		repos: {
-			'acme/navigator': {
-				repo: 'acme/navigator',
-				kind: 'targeted',
-				trust: 'authored',
-				summary: 'Navigator crew',
-				why_recommended: 'Ships a persona gateway skill',
-				tags: ['crew'],
-			},
-		},
-		skills: {},
-	})
+// Scenario: the Tavern lists a crew but performs no recruit, install, or deployment
+test('the tavern lists a crew but performs no recruit, install, or deployment', () => {
+	const root = makeMarketplace([
+		{ name: 'navigator', description: 'Navigator crew', source: './plugins/navigator', tags: ['crew'] },
+	])
 	try {
-		const before = fs.readdirSync(root).sort()
+		const before = fs.readdirSync(root, { recursive: true }).sort()
 		const result = runCli('--root', root)
 		expect(result.status).toBe(0)
-		expect(result.stdout).toMatch(/Install: npx skills add acme\/navigator/)
-		// only prints the roster; no files created, nothing installed/deployed
-		const after = fs.readdirSync(root).sort()
+		expect(result.stdout).toMatch(/Recruit: cyberplace add navigator/)
+		// only prints the roster; no files created, nothing recruited/installed/deployed
+		const after = fs.readdirSync(root, { recursive: true }).sort()
 		expect(after).toEqual(before)
 	} finally {
 		fs.rmSync(root, { recursive: true, force: true })
 	}
 })
 
-// Scenario: the Tavern website page lists the cataloged crews
-test('the Tavern website page lists the cataloged crews', () => {
-	const markdown = renderTavernRosterMarkdown([
-		{
-			type: 'repo',
-			repo: 'acme/navigator',
-			kind: 'targeted',
-			trust: 'authored',
-			summary: 'Navigator crew',
-			why_recommended: 'Ships a persona gateway skill',
-			tags: ['crew'],
-			highlights: [],
-		},
-	])
-	expect(markdown).toContain('acme/navigator')
-	expect(markdown).toContain('Install: `npx skills add acme/navigator`')
-})
-
-// Build a monorepo-layout fixture: catalog at packages/cyberplace/awesome-skills.json,
-// Tavern page (with markers) at apps/website/src/content/docs/tavern/index.md.
-function makeMonorepo(awesomeList: Record<string, unknown>): string {
-	const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'tavern-monorepo-'))
-	const catalogDir = path.join(repoRoot, 'packages', 'cyberplace')
-	fs.mkdirSync(catalogDir, { recursive: true })
-	fs.writeFileSync(path.join(catalogDir, 'awesome-skills.json'), JSON.stringify(awesomeList, null, 2))
-	const pageDir = path.join(repoRoot, 'apps', 'website', 'src', 'content', 'docs', 'tavern')
-	fs.mkdirSync(pageDir, { recursive: true })
-	fs.writeFileSync(
-		path.join(pageDir, 'index.md'),
-		'---\ntitle: Tavern\n---\n\n<!-- TAVERN-ROSTER:START -->\nplaceholder\n<!-- TAVERN-ROSTER:END -->\n',
-	)
-	return repoRoot
-}
-
-// Scenario: the Tavern website page lists the cataloged crews (When the website is built)
-// Exercised through the REAL `cyberplace tavern render` wiring the website prebuild invokes.
-test('tavern render regenerates the Tavern page from the catalog', () => {
-	const repoRoot = makeMonorepo({
-		version: 1,
-		repos: {
-			'acme/navigator': {
-				repo: 'acme/navigator',
-				kind: 'targeted',
-				trust: 'authored',
-				summary: 'Navigator crew',
-				why_recommended: 'Ships a persona gateway skill',
-				tags: ['crew'],
-			},
-		},
-		skills: {},
-	})
-	try {
-		const result = spawnSync('node', [bin, 'tavern', 'render', '--root', repoRoot], {
-			encoding: 'utf8',
-			env: { ...process.env, NODE_NO_WARNINGS: '1' },
-		})
-		expect(result.status).toBe(0)
-		const pagePath = path.join(repoRoot, 'apps', 'website', 'src', 'content', 'docs', 'tavern', 'index.md')
-		const content = fs.readFileSync(pagePath, 'utf8')
-		expect(content).toContain('acme/navigator')
-		expect(content).toContain('Install: `npx skills add acme/navigator`')
-	} finally {
-		fs.rmSync(repoRoot, { recursive: true, force: true })
-	}
-})
-
-test('tavern render writes a no-crews page when the catalog has no crews', () => {
-	const repoRoot = makeMonorepo({ version: 1, repos: {}, skills: {} })
-	try {
-		const result = spawnSync('node', [bin, 'tavern', 'render', '--root', repoRoot], {
-			encoding: 'utf8',
-			env: { ...process.env, NODE_NO_WARNINGS: '1' },
-		})
-		expect(result.status).toBe(0)
-		const pagePath = path.join(repoRoot, 'apps', 'website', 'src', 'content', 'docs', 'tavern', 'index.md')
-		const content = fs.readFileSync(pagePath, 'utf8')
-		expect(content).toMatch(/No crews are cataloged yet\./)
-	} finally {
-		fs.rmSync(repoRoot, { recursive: true, force: true })
-	}
-})
-
-// Scenario: the Tavern page is reachable from the site navigation
-test('the Tavern section is registered in the sidebar navigation', () => {
+// Scenario: the Tavern page is reachable from the site top navigation
+test('the Tavern is registered in the site top navigation and sidebar', () => {
 	const astroConfig = fs.readFileSync(path.resolve('../../apps/website/astro.config.mjs'), 'utf8')
-	expect(astroConfig).toMatch(/label:\s*'Tavern'/)
-	expect(astroConfig).toMatch(/slug:\s*'tavern'/)
+	expect(astroConfig).toContain('SiteTitle')
+	expect(astroConfig).toContain('Tavern')
 })
 
 test('the Tavern docs page exists', () => {
-	const pagePath = path.resolve('../../apps/website/src/content/docs/tavern/index.md')
+	const pagePath = path.resolve('../../apps/website/src/content/docs/tavern/index.mdx')
 	expect(fs.existsSync(pagePath)).toBe(true)
-	const content = fs.readFileSync(pagePath, 'utf8')
-	expect(content).toMatch(/TAVERN-ROSTER:START/)
 })

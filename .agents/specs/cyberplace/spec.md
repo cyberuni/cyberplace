@@ -1,5 +1,5 @@
 ---
-status: approved
+status: implemented
 project-path: packages/cyberplace
 approval:
   spec:
@@ -11,6 +11,16 @@ approval:
       blast: medium — one node (tavern) rewritten + crew-source neighbors reconciled (glossary/marketplace/awesome-list/design). Other cyberplace nodes untouched and stay frozen.
       novelty: low — keeps the crew concept + AXI surface; changes the roster SOURCE (awesome catalog -> marketplace manifest crew-tag) and adds website cards + top nav.
       confidence: high — cold sdd-spec-judge 3-lens {oracle,builder,architect} all PASS, ALIGNED true (round 1 architect FAIL on a leftover root-spec awesome-catalog framing + a stale source line + a tags-in-CLI mismatch; all fixed then re-graded PASS). check-suite / check-spec-state / check-spec-structure (0/0) clean, 0 open markers. Noted follow-up: malformed-manifest fail-loud scenario (repo-maintained input). Self-asserted (by agent) — ratify or kick back.
+      cr: tavern-plugin-storefront
+  impl:
+    verdict: approve
+    by: agent
+    cause: dimension
+    why:
+      floor: none — no frozen scenario narrowed at impl; the AXI surface stays impl-deferred (standing tavern README banner), unchanged by this CR.
+      blast: medium — repointed the tavern CLI roster source to the marketplace manifest crew-tag (deleted render.ts/lib.ts codegen) + new website top nav (SiteTitle override) + crew-card storefront component; awesome-list + other nodes untouched.
+      novelty: low — behavior-preserving source change + presentation; recruit command `cyberplace add <name>`.
+      confidence: high — cold sdd-impl-judge IMPLEMENTATION_PASS true; all 11 targeted behavioral scenarios verified against the real bin + built website HTML (cyberfleet crew card, top-nav active state, sidebar, boundary no-write); AXI scenarios recorded impl-deferred (not failures), consistent with the banner. Root pnpm verify green (typecheck/lint/test/knip/check-plan-safety/website build/verify:specs). Judge-flagged cleanup applied (removed the orphaned render:tavern package script). Non-blocking OBSERVATION: website TavernStorefront re-derives the crew filter (cyberplace exports no lib surface) — future CR. Self-asserted (by agent) — ratify or kick back.
       cr: tavern-plugin-storefront
 ---
 

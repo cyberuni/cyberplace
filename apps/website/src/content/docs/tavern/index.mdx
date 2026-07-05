@@ -1,0 +1,33 @@
+---
+title: Tavern
+description: Browse and recruit crews — persona-gateway catalog entries tagged "crew".
+---
+
+import TavernStorefront from '../../../components/TavernStorefront.astro'
+
+The **Tavern** is the crew-recruitment storefront. A crew is a plugin in the cyberplace marketplace
+tagged `crew` — it ships an installable persona gateway skill. The Tavern lists and points to
+recruit only; recruiting through the persona, deploying, and tuning a crew are driven by
+cyberfleet's Crimp, Operator, and Tuner.
+
+Browse the same roster from the CLI:
+
+```bash
+npx cyberplace@$(npm view cyberplace version) tavern
+```
+
+Filter by free text:
+
+```bash
+npx cyberplace@$(npm view cyberplace version) tavern <query>
+```
+
+Recruit a crew with:
+
+```bash
+cyberplace add <name>
+```
+
+## Crew roster
+
+<TavernStorefront />
