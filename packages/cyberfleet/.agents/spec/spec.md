@@ -7,17 +7,19 @@ approval:
     by: agent
     cause: dimension
     why:
-      leash: within — freeze-preserving relocation. The four CLI nodes (identity, messaging, spawn, surfacing) were split out of the combined `cyberfleet` project (formerly `.agents/specs/cyberfleet`, now the narrowed `.agents/specs/cyberfleet-plugin`) into this co-located `packages/cyberfleet/.agents/spec` root by the `split-cyberfleet-spec` change, so the spec project maps one-to-one onto the `cyberfleet` npm package. No spec or implementation content changed — only the project boundary and location. All four `.feature` files stay `@frozen`; their building gates are the durable record in `ledger/add-fleet-comms.f1e2d3.jsonl` (carried with the nodes, a shared ancestor of both split projects).
-      basis: no new gate was run for the split (content unchanged, location only). Source-of-truth gates for these four nodes were the `add-fleet-comms` spec gate (cold sdd-spec-judge, {oracle,builder,architect} all PASS ALIGNED true) and impl gate (cold sdd-impl-judge, IMPLEMENTATION_PASS true over identity/messaging/spawn/surfacing, 44 tests green) — see the ledger shard. The `gateway` persona node and the `crew` personas (recruitment/tuning) went to the sibling `cyberfleet-plugin` project (`plugins/cyberfleet`, distributed to the marketplace); this project keeps only the deterministic CLI behaviors.
-      cr: split-cyberfleet-spec
+      floor: none
+      blast: low — additive new CLI verb (decommission) in its own node; no existing behavior changed; unshipped package
+      novelty: low — deterministic inverse of the existing spawn node, wiring primitives already present (worktree.remove, session.teardown, reverse pane index)
+      confidence: high — three cold spec-judge rounds, ALIGNED true, deterministic check-suite/check-spec-state green
   impl:
     verdict: approve
     by: agent
     cause: dimension
     why:
-      leash: within — no implementation touched by the split; the `cyberfleet` CLI already built and green under `add-fleet-comms`. Root stays `implemented`.
-      basis: the four CLI nodes remain `@frozen` and their implementation unchanged. See `ledger/add-fleet-comms.f1e2d3.jsonl`.
-      cr: split-cyberfleet-spec
+      floor: none
+      blast: low — one new command module + wiring; reuses existing worktree/session/identity primitives; prune sweep untouched
+      novelty: low — deterministic teardown mirroring spawn
+      confidence: high — cold sdd-impl-judge IMPLEMENTATION_PASS true, all 14 frozen scenarios satisfied under re-derived oracles, 139/139 tests + build + typecheck green
 ---
 
 # cyberfleet — the CLI: harness-agnostic agent sessions + messaging (MCP-free)
@@ -60,6 +62,7 @@ project.
 | [`identity/`](./identity/README.md) | behavioral | `cyberfleet register` / `who` — self-identify and discover peers |
 | [`messaging/`](./messaging/README.md) | behavioral | `cyberfleet send` / `inbox` / `read` — the per-recipient file queue |
 | [`spawn/`](./spawn/README.md) | behavioral | `cyberfleet spawn` — launch a new peer session in a git worktree |
+| [`decommission/`](./decommission/README.md) | behavioral | `cyberfleet decommission` — tear a ship down (worktree + session) and reap its state |
 | [`surfacing/`](./surfacing/README.md) | behavioral | `cyberfleet inbox --hook` — inject unread mail into a session at start |
 
 ## Placement map
@@ -70,6 +73,9 @@ Where a new concept lives — slot here, do not invent placement:
 - **a new message-queue operation** (send, inbox, read, ack) → `messaging/`.
 - **a new peer-session-launch operation** (worktree creation, session backend, brief handoff) →
   `spawn/`.
+- **a new peer-session-teardown operation** (hard per-ship worktree removal, session teardown,
+  reaping id-keyed state) → `decommission/`. The *soft* liveness sweep (mark dead agents exited) is
+  `prune`, which lives under `identity/`.
 - **a new hook/injection operation** (surfacing unread mail or a brief into a session's context) →
   `surfacing/`.
 - **a new persona / mode-switch / crew behavior** (when to spawn, message etiquette, recruit or
@@ -89,7 +95,7 @@ this project (see the by-concept index below): `fleet` (session coordination).
 
 | Concept | Facets |
 |---|---|
-| `fleet` | `identity/` (behavior) · `messaging/` (behavior) · `spawn/` (behavior) · `surfacing/` (behavior) |
+| `fleet` | `decommission/` (behavior) · `identity/` (behavior) · `messaging/` (behavior) · `spawn/` (behavior) · `surfacing/` (behavior) |
 
 <!-- END generated: by-concept -->
 </content>

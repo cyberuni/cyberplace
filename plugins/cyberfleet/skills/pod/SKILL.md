@@ -67,5 +67,5 @@ it isn't a party to — that broader oversight is the **Operator**'s job from ou
 ## References
 
 ```bash
-npx cyberfleet@<version> --help
+npx cyberfleet@0.0.0 --help
 ```

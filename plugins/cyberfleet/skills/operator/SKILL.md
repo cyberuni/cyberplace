@@ -54,5 +54,5 @@ never runs a mission or hails specialist crew inside a ship.
 ## References
 
 ```bash
-npx cyberfleet@<version> --help
+npx cyberfleet@0.0.0 --help
 ```

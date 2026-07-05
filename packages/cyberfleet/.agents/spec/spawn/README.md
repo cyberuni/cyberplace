@@ -43,7 +43,7 @@ is opened through one of two swappable backend adapters — tmux or herdr.
 **Non-goals** — nesting a subagent inside the current session (that is the harness's own subagent
 tooling, not fleet); a live nudge to a peer's prompt (deferred); surfacing the brief or inbox
 itself, which is `surfacing`; tearing down a finished peer, its worktree, and reaping its state
-(deferred with `prune`); zellij/orca backends (deferred).
+(that is `decommission`); zellij/orca backends (deferred).
 
 Every scenario in [`spawn.feature`](./spawn.feature) maps to one of these behaviors:
 

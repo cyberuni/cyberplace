@@ -172,6 +172,18 @@ rootOpts(program.command('prune'))
 		console.log(changed.length ? `pruned ${changed.length} agent(s)` : 'nothing to prune')
 	})
 
+rootOpts(program.command('decommission'))
+	.description("tear down a ship's worktree + session and reap its state (the deterministic inverse of spawn)")
+	.argument('<id>', 'ship id')
+	.option('--force', 'discard uncommitted changes in the worktree (never overrides the flagship rule)')
+	.action(async (id, opts) => {
+		const { decommission } = await import('./decommission.ts')
+		const ctx = ctxOf(opts)
+		touch(ctx)
+		const res = decommission(ctx, { id, force: opts.force })
+		printFields({ decommissioned: id, worktree: res.worktreeRoot ?? '-', pane: res.pane ?? '-' })
+	})
+
 program
 	.command('install')
 	.description('wire the fleet surfacing hook into a harness config')

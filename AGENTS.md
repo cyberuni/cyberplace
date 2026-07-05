@@ -16,7 +16,7 @@ The higher your tier, the more you delegate. Push the work down, keep your own c
 | -------- | -------------------- | ---------------- | ------ |
 | Haiku    | bulk mechanical      | never            | low    |
 | Sonnet   | scoped research      | when it helps    | medium |
-| Opus 4.8 | multi-step reasoning | on clear benefit | xhigh  |
+| Opus 4.8 | multi-step reasoning | on clear benefit | high   |
 | Fable 5  | judgment, taste      | by default       | medium |
 
 ## Architecture
