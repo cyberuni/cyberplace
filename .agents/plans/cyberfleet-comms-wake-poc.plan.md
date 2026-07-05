@@ -8,16 +8,16 @@ todos:
     status: completed
   - content: "MODEL done: waking a session = 3 paths — (A) receiver blocks on a wait [mux-free, must park] | (B) multiplexer injects keystrokes | (C) own the PTY; a SessionStart-hook listener is a CHILD and cannot write its parent's stdin"
     status: completed
-  - content: "PoC Stage 0+A: inbox/identity as plain cmds + FIFO self-block wait proves mux-free SOLICITED wake (kernel wakes blocked read); + nudge-not-body variant"
+  - content: "PoC Stage 0+A DONE (PASS): inbox/identity as plain cmds + FIFO self-block proved mux-free SOLICITED wake — receiver parked in process-state S (zero CPU), kernel woke the blocked read; nudge-not-body variant also PASS"
+    status: completed
+  - content: "PoC Stage B DONE (PASS): herdr pane send-text + verified/retried Enter injected into a foreign un-parked shell — UNSOLICITED inject works but needs the multiplexer (firstmate worker path)"
+    status: completed
+  - content: "PoC Stage C DONE (PASS): script(1) owned-PTY + stdin-from-FIFO proved mux-free UNSOLICITED inject — writing our held-open FIFO drives bash via the PTY we own, no herdr"
+    status: completed
+  - content: "PoC Stage D (opt-in, NOT run): real claude receiver would confirm a real new user turn + composer/Enter fragility; skipped (costs tokens), architecture already answered by A/B/C"
     status: pending
-  - content: "PoC Stage B: herdr pane send-text + verified Enter proves UNSOLICITED inject works but needs the multiplexer (firstmate worker path)"
-    status: pending
-  - content: "PoC Stage C: script(1) owned-PTY + stdin-from-FIFO proves mux-free UNSOLICITED inject iff you own the process's PTY"
-    status: pending
-  - content: "PoC Stage D (opt-in): real claude receiver confirms a real new user turn + composer/Enter fragility"
-    status: pending
-  - content: "DECIDE: transport (inbox/files/FIFO) stays multiplexer-agnostic; fleet layer owns the PTY-wrapper/multiplexer only for unsolicited wakes — feeds the transport-decouple restructure"
-    status: pending
+  - content: "DECIDE (empirically confirmed): transport (inbox/files/FIFO) stays multiplexer-agnostic; fleet layer owns the PTY-wrapper/multiplexer only for unsolicited wakes into un-parked foreign sessions — feeds the transport-decouple restructure"
+    status: completed
 ---
 
 # PoC: waking an interactive agent session with an inbox message — multiplexer-free vs multiplexer
@@ -101,10 +101,30 @@ unsolicited wakes.
 
 No repo code, no cyberfleet integration, no ACP/Cursor implementation, no ADR/spec changes.
 
+## Verdict (PoC ran — all three paths PASS)
+
+The scratchpad `poc-wake.sh` ran Stages 0/A/B/C live under herdr 0.7.1. Empirical result:
+
+- **A — mux-free solicited: PASS.** Receiver parked on `cat <fifo>`, observed in process-state `S`
+  (interruptible sleep, zero CPU). Sender's write to the FIFO returned the blocked read; body
+  delivered. Nudge-not-body variant also PASS (empty nudge wakes; receiver reads the mail file).
+- **B — multiplexer unsolicited: PASS.** `herdr pane split` → a default interactive shell (NOT
+  parked); `herdr pane send-text` + retried/verified `Enter` landed the command. Confirms unsolicited
+  push into a foreign live session needs the multiplexer.
+- **C — owned-PTY unsolicited: PASS.** `script -qec 'bash -i' /dev/null` with stdin from a held-open
+  FIFO; writing the FIFO drove bash through the PTY we own — mux-free, no herdr.
+
+All four receiver markers verified in the shared receiver log. `socat`/`expect` absent (unused);
+`script`, `nc`, `claude`, `herdr` present. Nothing written to the repo.
+
+**Decision (confirmed):** the messaging **transport** (inbox/files/FIFO) is fully multiplexer-agnostic
+and can be extracted as-is; the **fleet layer** owns the PTY-wrapper/multiplexer ONLY for unsolicited
+wakes into un-parked foreign sessions. Solicited wake maps to an `await --thread` verb; owned-PTY is
+the mux-free unsolicited path when we launch the session.
+
 ## NEXT
 
-PoC not yet run (user chose to save this as a plan first). First actionable step: build
-`poc-wake.sh` in the scratchpad and run **Stage 0 + Stage A** to prove the multiplexer-free solicited
-wake (FIFO self-block), then **Stage C** (owned-PTY) for the multiplexer-free unsolicited wake, with
-**Stage B** (herdr inject) as the contrast. Keep **Stage D** (real claude) opt-in. Feed the verdict
-back into the transport-decouple decision and the sibling `cyberfleet-stations` initiative.
+Architecture question is answered — this PoC can be retired once the verdict is carried forward.
+Optional remaining: **Stage D** (real `claude` receiver) to observe composer/Enter fragility on a real
+agent turn — opt-in, costs tokens, not required for the decision. Feed the verdict into the
+transport-decouple restructure and the sibling `cyberfleet-stations.plan.md`.
