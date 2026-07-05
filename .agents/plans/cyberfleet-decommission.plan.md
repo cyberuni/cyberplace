@@ -7,13 +7,13 @@ todos:
   - content: "Author decommission/ spec node (README + decommission.feature) via spec-producer grill"
     status: completed
   - content: "Spec gate: cold spec-judge ALIGNED; freeze decommission.feature + ledger gate line + status"
-    status: in_progress
+    status: completed
   - content: "Deliver: spawn impl-producer to build cyberfleet decommission + one verification per frozen scenario"
-    status: pending
+    status: completed
   - content: "Impl gate: cold impl-judge; on pass advance status to implemented"
-    status: pending
+    status: completed
   - content: "Handoff: pnpm verify, commit by unit of work, open PR; fold sdd cr-concurrency.md note reconcile"
-    status: pending
+    status: in_progress
   - content: "Post: spawn sdd-warden (detached, background) for corpus formation pass"
     status: pending
 ---

@@ -1,5 +1,5 @@
 ---
-status: approved
+status: implemented
 project-path: packages/cyberfleet
 approval:
   spec:
@@ -11,6 +11,15 @@ approval:
       blast: low — additive new CLI verb (decommission) in its own node; no existing behavior changed; unshipped package
       novelty: low — deterministic inverse of the existing spawn node, wiring primitives already present (worktree.remove, session.teardown, reverse pane index)
       confidence: high — three cold spec-judge rounds, ALIGNED true, deterministic check-suite/check-spec-state green
+  impl:
+    verdict: approve
+    by: agent
+    cause: dimension
+    why:
+      floor: none
+      blast: low — one new command module + wiring; reuses existing worktree/session/identity primitives; prune sweep untouched
+      novelty: low — deterministic teardown mirroring spawn
+      confidence: high — cold sdd-impl-judge IMPLEMENTATION_PASS true, all 14 frozen scenarios satisfied under re-derived oracles, 139/139 tests + build + typecheck green
 ---
 
 # cyberfleet — the CLI: harness-agnostic agent sessions + messaging (MCP-free)
