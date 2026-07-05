@@ -57,6 +57,59 @@ test('plugin build --dry-run lists vendors without writing', () => {
 	}
 })
 
+test('plugin build --skip-pins leaves pins untouched but still builds manifests', () => {
+	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'universal-plugin-skippins-'))
+	try {
+		fs.mkdirSync(path.join(root, '.plugin'))
+		fs.mkdirSync(path.join(root, 'skills', 'x'), { recursive: true })
+		fs.writeFileSync(
+			path.join(root, '.plugin', 'plugin.json'),
+			JSON.stringify({ name: 'test-plugin', vendorExtensions: { 'claude-code': {} } }),
+		)
+		fs.writeFileSync(path.join(root, 'skills', 'x', 'SKILL.md'), 'npx cyberplace@1.2.0')
+		const result = spawnSync('node', [bin, 'plugin', 'build', '--skip-pins', '--root', root], {
+			encoding: 'utf8',
+			env: { ...process.env, NODE_NO_WARNINGS: '1' },
+		})
+		expect(result.status).toBe(0)
+		expect(fs.existsSync(path.join(root, '.claude-plugin', 'plugin.json'))).toBe(true)
+		expect(fs.readFileSync(path.join(root, 'skills', 'x', 'SKILL.md'), 'utf8')).toBe('npx cyberplace@1.2.0')
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
+})
+
+test('plugin build --format json includes a pins array even when empty (--skip-pins)', () => {
+	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'universal-plugin-pinsjson-'))
+	try {
+		fs.mkdirSync(path.join(root, '.plugin'))
+		fs.writeFileSync(
+			path.join(root, '.plugin', 'plugin.json'),
+			JSON.stringify({ name: 'test-plugin', vendorExtensions: { 'claude-code': {} } }),
+		)
+		const result = spawnSync('node', [bin, 'plugin', 'build', '--skip-pins', '--format', 'json', '--root', root], {
+			encoding: 'utf8',
+			env: { ...process.env, NODE_NO_WARNINGS: '1' },
+		})
+		expect(result.status).toBe(0)
+		const parsed = JSON.parse(result.stdout)
+		expect(Array.isArray(parsed.pins)).toBe(true)
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
+})
+
+test('plugin build --help documents the pin-resolution flags', () => {
+	const result = spawnSync('node', [bin, 'plugin', 'build', '--help'], {
+		encoding: 'utf8',
+		env: { ...process.env, NODE_NO_WARNINGS: '1' },
+	})
+	expect(result.status).toBe(0)
+	expect(result.stdout).toMatch(/--registry/)
+	expect(result.stdout).toMatch(/--range/)
+	expect(result.stdout).toMatch(/--skip-pins/)
+})
+
 test('governance list includes packaged defaults when project root has no governances', () => {
 	const empty = fs.mkdtempSync(path.join(os.tmpdir(), 'universal-plugin-gov-'))
 	try {
