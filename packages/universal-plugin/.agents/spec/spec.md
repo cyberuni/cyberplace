@@ -8,11 +8,11 @@ approval:
     by: agent
     cause: dimension
     why:
-      floor: clearance — re-open of the four frozen behavioral `.feature` was ratified by the user in-session before any rewrite; the narrowing/rewrite clearance is pre-authorized. No Compatibility (no shipped semver bump this CR) or Conflict (no logical contradiction) floor fires.
-      blast: high — cross-cutting AXI adoption touches all four behavioral nodes + a new `axi/` reference node + root spec; but each edit is contract-crispening or additive, no domain behavior removed.
-      novelty: low — AXI is an external, well-specified contract; the change is applying it, not inventing.
-      confidence: high — cold sdd-spec-judge 3-lens {oracle, builder, architect} all PASS, ALIGNED true (Builder failed round 1 on two coverage gaps — managed-scope positive + #6 no-prompts uniformity — both fixed then re-graded PASS). check-suite / check-spec-state / check-spec-structure (0/0) clean, 0 open markers, concept-index no drift. AXI #7 deferred to a follow-up CR (ADR-0003). Self-asserted (by agent) — ratify or kick back.
-      cr: axi-conformance
+      floor: none — all-additive extension of the frozen `plugin/build/` node (new pin-resolution scenarios, no existing scenario narrowed or rewritten) → self-clears, `build.feature` stays `@frozen`, no re-open. No Clearance (no narrowing), Compatibility (no shipped semver bump this CR), or Conflict (no logical contradiction) floor fires.
+      blast: moderate — single behavioral node (`plugin/build/`), but the added behavior introduces a build-time network dependency and rewrites the plugin's source SKILL.md pins.
+      novelty: low — folds an existing idiom (resolve `npx <cli>@<version>` pins, same-major bound — cf. `self-update` / the upgrade-universal-plugin skill) into the build derivation step; the contract is well-understood.
+      confidence: high — cold sdd-spec-judge 3-lens {oracle, builder, architect} ALIGNED true (round 1 Builder FAIL on three coverage gaps — unresolvable-package vs unreachable-registry, `--range` ~/^ aliases, `--package` compose — plus Architect FAIL on the placement/capability-map disagreement; all fixed then re-graded ALIGNED true). check-suite / check-spec-state / check-spec-structure (0/0) / concept-index (no drift) clean, 0 open markers. Self-asserted (by agent) — ratify or kick back.
+      cr: build-resolve-pins
 ---
 
 # universal-plugin — the cross-vendor plugin build/derivation engine (CLI)
@@ -71,7 +71,7 @@ is a peer of the `cyberfleet` CLI.
 | Folder | Type | What |
 |---|---|---|
 | [`plugin/`](./plugin/README.md) | group | the `plugin` command group — build / validate / init |
-| [`plugin/build/`](./plugin/build/README.md) | behavioral | `universal-plugin plugin build [--vendor] [--dry-run] [--clean]` — derive per-vendor manifests from the canonical `.plugin/plugin.json` |
+| [`plugin/build/`](./plugin/build/README.md) | behavioral | `universal-plugin plugin build [--vendor] [--dry-run] [--clean] [--registry] [--range] [--package] [--allow-major] [--skip-pins]` — derive per-vendor manifests from the canonical `.plugin/plugin.json`, and resolve + pin the `npx <cli>@<version>` references in the plugin's skills |
 | [`plugin/validate/`](./plugin/validate/README.md) | behavioral | `universal-plugin plugin validate [--vendor] [--strict]` — check the canonical manifest against schema + vendor rules |
 | [`plugin/init/`](./plugin/init/README.md) | behavioral | `universal-plugin plugin init [--name] [--vendor] [--scaffold] [--force] [--yes]` — scaffold a new plugin project |
 | [`governance/`](./governance/README.md) | behavioral | `universal-plugin governance show <name>` / `list` — resolve governance documents by name across scopes |
@@ -83,6 +83,11 @@ Where a new concept lives — slot here, do not invent placement (strategy = **c
 
 - **a new canonical-manifest op** (derive / check / scaffold the `.plugin/plugin.json`) →
   `plugin/<verb>/` (a new unit node under the `plugin` group).
+- **a new op resolving/refreshing the version pins in the plugin's own skills** (the
+  `npx <cli>@<version>` references a plugin's skills carry) → **folded into `plugin/build/`** — it
+  shares build's derive-from-source-of-truth idiom and runs as a build step, not a separate verb. It is
+  **not** the `self-update` hook-file concern (updating `universal-plugin`'s own pin across a project's
+  hook files departs with the sync engine — see the non-goals below).
 - **a new name→document resolution op** (resolve or list governance by name across scopes) →
   `governance/`.
 - **a new shared output / CLI convention** (TOON shape, aggregate, next-step, empty-state,

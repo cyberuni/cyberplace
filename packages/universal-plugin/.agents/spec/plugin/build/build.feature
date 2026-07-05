@@ -133,3 +133,172 @@ Feature: plugin build — derive per-vendor manifests
     When I run "universal-plugin plugin build --help"
     Then the exit code is 0
     And stdout contains a synopsis, the flags, and one example
+
+  # ── Pin resolution ──
+
+  Scenario: build resolves and pins the CLIs a skill references
+    Given the manifest declares vendorExtensions for "claude-code"
+    And a skill "skills/x/SKILL.md" contains "npx cyberplace@1.2.0"
+    And the registry's latest "cyberplace" within major 1 is "1.4.2"
+    When I run "universal-plugin plugin build"
+    Then "skills/x/SKILL.md" contains "npx cyberplace@1.4.2"
+    And ".claude-plugin/plugin.json" is written
+    And the exit code is 0
+
+  Scenario: a newer major is not crossed by default
+    Given a skill "skills/x/SKILL.md" contains "npx cyberplace@1.2.0"
+    And the registry has "cyberplace" versions "1.4.2" and "2.0.0"
+    When I run "universal-plugin plugin build"
+    Then "skills/x/SKILL.md" contains "npx cyberplace@1.4.2"
+    And "skills/x/SKILL.md" does not contain "npx cyberplace@2.0.0"
+
+  Scenario: --allow-major crosses the major boundary
+    Given a skill "skills/x/SKILL.md" contains "npx cyberplace@1.2.0"
+    And the registry has "cyberplace" versions "1.4.2" and "2.0.0"
+    When I run "universal-plugin plugin build --allow-major"
+    Then "skills/x/SKILL.md" contains "npx cyberplace@2.0.0"
+    And the exit code is 0
+
+  Scenario: a placeholder pin resolves to the absolute latest
+    Given a skill "skills/x/SKILL.md" contains "npx cyberplace@<version>"
+    And the registry's latest "cyberplace" is "2.0.0"
+    When I run "universal-plugin plugin build"
+    Then "skills/x/SKILL.md" contains "npx cyberplace@2.0.0"
+    And the exit code is 0
+
+  Scenario Outline: --range styles the written pin
+    Given a skill "skills/x/SKILL.md" contains "npx cyberplace@1.2.0"
+    And the registry's latest "cyberplace" within major 1 is "1.4.2"
+    When I run "universal-plugin plugin build --range <style>"
+    Then "skills/x/SKILL.md" contains "npx cyberplace@<written>"
+    And the exit code is 0
+
+    Examples:
+      | style | written |
+      | exact | 1.4.2   |
+      | tilde | ~1.4.2  |
+      | caret | ^1.4.2  |
+      | ~     | ~1.4.2  |
+      | ^     | ^1.4.2  |
+
+  Scenario: --registry overrides the registry queried
+    Given a skill "skills/x/SKILL.md" contains "npx cyberplace@1.2.0"
+    And a custom registry at "https://npm.example.com" serves "cyberplace" latest "1.9.0" within major 1
+    When I run "universal-plugin plugin build --registry https://npm.example.com"
+    Then "skills/x/SKILL.md" contains "npx cyberplace@1.9.0"
+    And the exit code is 0
+
+  Scenario: --package limits resolution to the named CLIs
+    Given a skill "skills/x/SKILL.md" contains "npx cyberplace@1.2.0" and "npx cyberfleet@1.0.0"
+    And the registry's latest within major 1 is "cyberplace" "1.4.2" and "cyberfleet" "1.3.0"
+    When I run "universal-plugin plugin build --package cyberplace"
+    Then "skills/x/SKILL.md" contains "npx cyberplace@1.4.2"
+    And "skills/x/SKILL.md" contains "npx cyberfleet@1.0.0"
+
+  Scenario: --package composes across repeated flags
+    Given a skill "skills/x/SKILL.md" contains "npx cyberplace@1.2.0", "npx cyberfleet@1.0.0", and "npx universal-plugin@0.1.0"
+    And the registry's latest within major is "cyberplace" "1.4.2", "cyberfleet" "1.3.0", and "universal-plugin" "0.2.0"
+    When I run "universal-plugin plugin build --package cyberplace --package cyberfleet"
+    Then "skills/x/SKILL.md" contains "npx cyberplace@1.4.2"
+    And "skills/x/SKILL.md" contains "npx cyberfleet@1.3.0"
+    And "skills/x/SKILL.md" contains "npx universal-plugin@0.1.0"
+    And the exit code is 0
+
+  Scenario: --skip-pins leaves pins untouched but still builds manifests
+    Given the manifest declares vendorExtensions for "claude-code"
+    And a skill "skills/x/SKILL.md" contains "npx cyberplace@1.2.0"
+    When I run "universal-plugin plugin build --skip-pins"
+    Then "skills/x/SKILL.md" contains "npx cyberplace@1.2.0"
+    And ".claude-plugin/plugin.json" is written
+    And the exit code is 0
+
+  Scenario: pin rewriting is idempotent
+    Given a skill "skills/x/SKILL.md" contains "npx cyberplace@1.4.2"
+    And the registry's latest "cyberplace" within major 1 is "1.4.2"
+    When I run "universal-plugin plugin build"
+    Then "skills/x/SKILL.md" contains "npx cyberplace@1.4.2"
+    And stdout is TOON with a pins row for "cyberplace" whose "status" is "unchanged"
+    And the exit code is 0
+
+  Scenario: a registry failure warns and skips that package, build still succeeds
+    Given the manifest declares vendorExtensions for "claude-code"
+    And a skill "skills/x/SKILL.md" contains "npx cyberplace@1.2.0"
+    And the registry is unreachable
+    When I run "universal-plugin plugin build"
+    Then the exit code is 0
+    And ".claude-plugin/plugin.json" is written
+    And "skills/x/SKILL.md" contains "npx cyberplace@1.2.0"
+    And stderr contains "cyberplace"
+    And stdout is TOON with a pins row for "cyberplace" whose "status" is "skipped"
+
+  Scenario: an unresolvable package warns and skips, build still succeeds
+    Given the manifest declares vendorExtensions for "claude-code"
+    And a skill "skills/x/SKILL.md" contains "npx no-such-pkg@1.0.0"
+    And the registry returns not-found for "no-such-pkg"
+    When I run "universal-plugin plugin build"
+    Then the exit code is 0
+    And ".claude-plugin/plugin.json" is written
+    And "skills/x/SKILL.md" contains "npx no-such-pkg@1.0.0"
+    And stderr contains "no-such-pkg"
+    And stdout is TOON with a pins row for "no-such-pkg" whose "status" is "skipped"
+
+  Scenario: a package with no newer version in the current major is left unchanged
+    Given a skill "skills/x/SKILL.md" contains "npx cyberplace@1.2.0"
+    And the registry has "cyberplace" versions "1.2.0" and "2.0.0"
+    When I run "universal-plugin plugin build"
+    Then "skills/x/SKILL.md" contains "npx cyberplace@1.2.0"
+    And stdout is TOON with a pins row for "cyberplace" whose "status" is "unchanged"
+    And the exit code is 0
+
+  # ── Pin resolution: AXI output ──
+
+  Scenario: --dry-run reports resolved pins without writing them
+    Given a skill "skills/x/SKILL.md" contains "npx cyberplace@1.2.0"
+    And the registry's latest "cyberplace" within major 1 is "1.4.2"
+    When I run "universal-plugin plugin build --dry-run"
+    Then "skills/x/SKILL.md" contains "npx cyberplace@1.2.0"
+    And stdout is TOON with a pins row carrying "package" "cyberplace", "current" "1.2.0", "resolved" "1.4.2"
+    And the exit code is 0
+
+  Scenario: a build with pins prints TOON pins rows and a pre-computed aggregate
+    Given the manifest declares vendorExtensions for "claude-code"
+    And a skill "skills/x/SKILL.md" contains "npx cyberplace@1.2.0" and "npx cyberfleet@1.0.0"
+    And the registry's latest within major 1 is "cyberplace" "1.4.2" and "cyberfleet" "1.3.0"
+    When I run "universal-plugin plugin build"
+    Then stdout is TOON with one pins row per package carrying "package", "current", "resolved", "status"
+    And each pins row's "status" is "updated", "unchanged", or "skipped"
+    And stdout contains the aggregate summary "pinned 2, unchanged 0, skipped 0"
+    And the exit code is 0
+
+  Scenario: --format json includes a pins array
+    Given a skill "skills/x/SKILL.md" contains "npx cyberplace@1.2.0"
+    And the registry's latest "cyberplace" within major 1 is "1.4.2"
+    When I run "universal-plugin plugin build --format json"
+    Then stdout is JSON with a "pins" array
+    And a pins entry has "package" "cyberplace" and "resolved" "1.4.2"
+    And the exit code is 0
+
+  Scenario: a large pins list truncates with a size hint
+    Given the skills reference 40 distinct pinned CLIs the registry resolves
+    When I run "universal-plugin plugin build --dry-run"
+    Then stdout lists a truncated set of pins rows
+    And stdout ends with a truncation hint matching "… +\d+ more — rerun with --full"
+    And the exit code is 0
+
+  Scenario: --full suppresses pins truncation
+    Given the skills reference 40 distinct pinned CLIs the registry resolves
+    When I run "universal-plugin plugin build --dry-run --full"
+    Then stdout lists all 40 pins rows
+    And the exit code is 0
+
+  Scenario: no pins to resolve is a definitive empty state
+    Given the manifest declares vendorExtensions for "claude-code"
+    And no skill references an "npx <pkg>@<pin>" reference
+    When I run "universal-plugin plugin build"
+    Then the exit code is 0
+    And stdout contains the aggregate summary "pinned 0"
+
+  Scenario: --help documents the pin-resolution flags
+    When I run "universal-plugin plugin build --help"
+    Then the exit code is 0
+    And stdout mentions "--registry", "--range", and "--skip-pins"
