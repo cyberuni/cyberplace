@@ -13,7 +13,13 @@ export function tavernCommand(): Command {
 		.addOption(new Option('--json').hideHelp())
 		.action((queryWords: string[], opts: { root?: string }) => {
 			const query = queryWords.join(' ')
-			const crews = readCrewPlugins(resolveRoot(opts.root), query || undefined)
+			const crews = readCrewPlugins(resolveRoot(opts.root), query || undefined).map((crew) => ({
+				name: crew.name,
+				description: crew.description,
+				source: crew.source,
+				tags: crew.tags,
+				recruit: crew.recruit,
+			}))
 
 			output(crews, () => {
 				if (crews.length === 0) {

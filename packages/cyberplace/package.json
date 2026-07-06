@@ -20,6 +20,7 @@
 		"cyberplace": "bin/cyberplace.mjs"
 	},
 	"exports": {
+		"./tavern": "./src/tavern/plugins.ts",
 		"./package.json": "./package.json"
 	},
 	"files": [

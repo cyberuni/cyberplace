@@ -4,7 +4,7 @@ import * as os from 'node:os'
 import * as path from 'node:path'
 import { expect, test } from 'vitest'
 
-import { readCrewPlugins } from './plugins.js'
+import { readCrewPlugins, readMarketplacePlugins } from './plugins.js'
 
 const bin = path.resolve('bin/cyberplace.mjs')
 
@@ -155,11 +155,66 @@ test('the tavern lists a crew but performs no recruit, install, or deployment', 
 	}
 })
 
+// Scenario: readMarketplacePlugins returns every plugin, crew or not, with an isCrew flag
+test('readMarketplacePlugins returns every plugin, crew or not, with an isCrew flag', () => {
+	const root = makeMarketplace([
+		{ name: 'navigator', description: 'Navigator crew', source: './plugins/navigator', tags: ['crew'] },
+		{ name: 'plain', description: 'Not a crew', source: './plugins/plain', tags: ['docs'] },
+	])
+	try {
+		const plugins = readMarketplacePlugins(root)
+		expect(plugins).toHaveLength(2)
+		expect(plugins.find((p) => p.name === 'navigator')?.isCrew).toBe(true)
+		expect(plugins.find((p) => p.name === 'plain')?.isCrew).toBe(false)
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
+})
+
+// Scenario: readMarketplacePlugins filters by free-text query over name, description, and tags
+test('readMarketplacePlugins filters by free-text query over name, description, and tags', () => {
+	const root = makeMarketplace([
+		{ name: 'navigator', description: 'Navigator crew', source: './plugins/navigator', tags: ['crew'] },
+		{ name: 'plain', description: 'Not a crew', source: './plugins/plain', tags: ['docs'] },
+	])
+	try {
+		const plugins = readMarketplacePlugins(root, 'navigator')
+		expect(plugins.some((p) => p.name === 'navigator')).toBe(true)
+		expect(plugins.some((p) => p.name === 'plain')).toBe(false)
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
+})
+
+// Scenario: readCrewPlugins enriches each crew with counts, sourceUrl, and version derived from its own manifest
+test('readCrewPlugins enriches each crew with counts, sourceUrl, and version derived from its own manifest', () => {
+	const root = makeMarketplace([
+		{ name: 'navigator', description: 'Navigator crew', source: './plugins/navigator', tags: ['crew'] },
+	])
+	const pluginRoot = path.join(root, 'plugins', 'navigator')
+	fs.mkdirSync(path.join(pluginRoot, 'skills', 'chart'), { recursive: true })
+	fs.mkdirSync(path.join(pluginRoot, '.claude-plugin'), { recursive: true })
+	fs.writeFileSync(path.join(pluginRoot, '.claude-plugin', 'plugin.json'), JSON.stringify({ version: '1.2.3' }))
+	try {
+		const crews = readCrewPlugins(root)
+		const navigator = crews.find((c) => c.name === 'navigator')
+		expect(navigator?.version).toBe('1.2.3')
+		expect(navigator?.skillCount).toBe(1)
+		expect(navigator?.sourceUrl).toBe('https://github.com/cyberuni/cyberplace/tree/main/plugins/navigator')
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
+})
+
 // Scenario: the Tavern page is reachable from the site top navigation
-test('the Tavern is registered in the site top navigation and sidebar', () => {
+test('the Tavern is reachable from the site top navigation', () => {
+	// The top nav is a custom SiteTitle component registered as a Starlight override;
+	// the Tavern link lives there, not in the sidebar.
 	const astroConfig = fs.readFileSync(path.resolve('../../apps/website/astro.config.mjs'), 'utf8')
 	expect(astroConfig).toContain('SiteTitle')
-	expect(astroConfig).toContain('Tavern')
+	const siteTitle = fs.readFileSync(path.resolve('../../apps/website/src/components/SiteTitle.astro'), 'utf8')
+	expect(siteTitle).toContain('Tavern')
+	expect(siteTitle).toContain('tavern')
 })
 
 test('the Tavern docs page exists', () => {

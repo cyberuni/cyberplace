@@ -1,19 +1,5 @@
 ---
-import { existsSync, readFileSync } from 'node:fs'
-import { dirname, join } from 'node:path'
-
-interface MarketplacePlugin {
-	name: string
-	description?: string
-	source: string
-	tags?: string[]
-}
-
-interface MarketplaceManifest {
-	name: string
-	owner: { name: string }
-	plugins: MarketplacePlugin[]
-}
+import { readMarketplacePlugins } from 'cyberplace/tavern'
 
 interface Listing {
 	name: string
@@ -24,55 +10,14 @@ interface Listing {
 	install: string
 }
 
-// import.meta.url resolves to a bundled build-time chunk path (not the source
-// file location) once Astro prerenders, so it cannot be used to derive the
-// repo root by relative distance. Instead, walk upward from the current
-// working directory (stable: pnpm build/dev always runs with cwd set to
-// apps/website) looking for the marketplace manifest's containing directory.
-function findRepoRoot(): string {
-	let dir = process.cwd()
-	for (let i = 0; i < 8; i++) {
-		if (existsSync(join(dir, '.claude-plugin', 'marketplace.json'))) return dir
-		const parent = dirname(dir)
-		if (parent === dir) break
-		dir = parent
-	}
-	// Fallback: apps/website/../.. is the repo root in this monorepo layout.
-	return join(process.cwd(), '..', '..')
-}
-
-const repoRoot = findRepoRoot()
-
-function loadListings(): Listing[] {
-	const manifestPath = join(repoRoot, '.claude-plugin', 'marketplace.json')
-	if (!existsSync(manifestPath)) return []
-
-	let manifest: MarketplaceManifest
-	try {
-		manifest = JSON.parse(readFileSync(manifestPath, 'utf-8')) as MarketplaceManifest
-	} catch {
-		return []
-	}
-
-	const owner = 'cyberuni'
-	const repo = 'cyberplace'
-
-	return (manifest.plugins ?? [])
-		.map((plugin): Listing => {
-			const tags = plugin.tags ?? []
-			return {
-				name: plugin.name,
-				description: plugin.description ?? '',
-				tags,
-				isCrew: tags.includes('crew'),
-				sourceUrl: `https://github.com/${owner}/${repo}/tree/main/plugins/${plugin.name}`,
-				install: `cyberplace add ${plugin.name}`,
-			}
-		})
-		.sort((a, b) => a.name.localeCompare(b.name))
-}
-
-const listings = loadListings()
+const listings: Listing[] = readMarketplacePlugins().map((plugin) => ({
+	name: plugin.name,
+	description: plugin.description,
+	tags: plugin.tags,
+	isCrew: plugin.isCrew,
+	sourceUrl: plugin.sourceUrl,
+	install: plugin.recruit,
+}))
 const allTags = [...new Set(listings.flatMap((l) => l.tags))].sort((a, b) => a.localeCompare(b))
 ---
 
