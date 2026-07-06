@@ -22,6 +22,7 @@ This directory contains Architecture Decision Records (ADRs) for cyberplace — 
 | [0016](0016-impl-judge-verification-independence.md) | Impl-judge verification independence — re-derive from the frozen contract, objective backstop, judge≠producer model | Accepted | 2026-06-28 |
 | [0017](0017-frontmatter-is-the-router-index.md) | Spec frontmatter is the router's upfront index — minimal `status` + `project-path` | Accepted | 2026-06-28 |
 | [0022](0022-cyberfleet-persona.md) | The cyberfleet persona — naming, mode-switch, and query-first fleet view | Proposed | 2026-07-04 |
+| [0023](0023-dispatch-seam.md) | The `subagent \| channel` dispatch seam | Proposed | 2026-07-05 |
 
 ## Creating a new ADR
 

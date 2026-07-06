@@ -6,6 +6,7 @@
 		"build": "turbo build",
 		"cf": "pnpm run --filter=cyberfleet",
 		"check": "biome check --write",
+		"cl": "pnpm run --filter=cyberlegion",
 		"cp": "pnpm run --filter=cyberplace",
 		"cs": "changeset",
 		"knip": "knip",

@@ -30,17 +30,17 @@ enough to prune). All four eval layers carry signal.
 - **Activate outside any ship** — Operator runs when `cyberfleet mode` reports `command-center` (no
   `.cyberfleet/` at this project root); it defers entirely to Pod when the mode is `ship`.
 - **Commission the first ship or a peer from outside** — when the Council wants to stand up the
-  fleet's first ship or a new peer session from outside any ship, `cyberfleet spawn` with a brief
+  fleet's first ship or a new peer session from outside any ship, `cyberlegion session spawn` with a brief
   that stands on its own (the new Pod starts cold and reads it through its own SessionStart hook);
   spawning further worktree-ships once inside a ship is Pod's job, not Operator's.
-- **List the fleet** — when the Council asks what's out there, `cyberfleet who`; add `--all` to
+- **List the fleet** — when the Council asks what's out there, `cyberlegion identity who`; add `--all` to
   include exited ships.
-- **Route messages between ships** — when a message must cross ships, `cyberfleet send --to
-  <handle>`, `cyberfleet inbox --unread`, `cyberfleet read <msg-id>`, always addressed by handle,
+- **Route messages between ships** — when a message must cross ships, `cyberlegion mail send --to
+  <handle>`, `cyberlegion mail inbox --unread`, `cyberlegion mail read <msg-id>`, always addressed by handle,
   never a raw id.
-- **Sweep dead ships** — when asked to clear out dead ships, `cyberfleet prune`.
+- **Sweep dead ships** — when asked to clear out dead ships, `cyberlegion identity prune`.
 - **Offload every mechanic, stay harness-agnostic and MCP-free** — spawn, who, send, inbox, read,
-  prune are all `cyberfleet` calls; Operator never re-implements the file store, types into a ship's
+  prune are all `cyberlegion` calls; Operator never re-implements the file store, types into a ship's
   pane, reaches for an MCP messaging server, or assumes every ship runs the same harness.
 
 **Non-goals** — running a mission or hailing specialist crew inside one specific ship (that is
@@ -55,9 +55,9 @@ Every scenario in [`operator.feature`](./operator.feature) maps to one of these 
 | Behavior | What it covers |
 |---|---|
 | **activate outside a ship, defer inside** | Operator runs when `cyberfleet mode` is `command-center`; defers to Pod when `ship` |
-| **commission the first ship or a peer** | `cyberfleet spawn` from outside with a self-contained brief; worktree fan-out is Pod's, not Operator's |
-| **list the fleet** | `cyberfleet who` (`--all` includes exited ships) |
-| **route messages between ships** | `cyberfleet send` / `inbox` / `read`, always by handle |
-| **sweep dead ships** | `cyberfleet prune` |
+| **commission the first ship or a peer** | `cyberlegion session spawn` from outside with a self-contained brief; worktree fan-out is Pod's, not Operator's |
+| **list the fleet** | `cyberlegion identity who` (`--all` includes exited ships) |
+| **route messages between ships** | `cyberlegion mail send` / `inbox` / `read`, always by handle |
+| **sweep dead ships** | `cyberlegion identity prune` |
 | **offload + harness-agnostic + MCP-free** | every mechanic is a `cyberfleet` call; no MCP, no same-harness assumption |
 </content>

@@ -12,7 +12,7 @@ marketplace entry that ships an installable persona gateway skill (a recruitable
 browses the **Tavern** (the marketplace query that lists recruitable crews — it delegates to that
 query by INTENT, not by its exact command slug, per ADR-0021), helps the Council pick a crew,
 installs it (`npx skills add …` / plugin install), and **registers** it into the fleet
-(`cyberfleet register`) so the fleet knows the crew exists. It also runs the reverse — **discharging**
+(`cyberlegion identity register`) so the fleet knows the crew exists. It also runs the reverse — **discharging**
 a crew: confirm first, then uninstall and retire it.
 
 Crimp is a persona (activation is per-situation, decided by the Council's request), not a command.
@@ -41,7 +41,7 @@ eval layers carry signal.
 - **Browse the Tavern by intent** — surface recruitable crews through the marketplace query (the
   Tavern), depending on that query by intent, never re-implementing marketplace browsing itself.
 - **Recruit: pick → install → register** — help the Council choose a crew, install it
-  (`npx skills add …` / plugin install), then register it into the fleet (`cyberfleet register`) so
+  (`npx skills add …` / plugin install), then register it into the fleet (`cyberlegion identity register`) so
   the acquisition is complete; a crew installed but not registered is an unfinished recruit.
 - **Discharge: confirm → uninstall → retire** — before removing a crew, confirm with the Council
   (uninstall is destructive); only then uninstall and retire it from the fleet.

@@ -3,7 +3,7 @@ Feature: operator — the command-center persona
   Unit suite for the Operator persona skill: the dispatcher automaton that activates outside any one
   ship (a folder whose project root has no `.cyberfleet/` marker), commissioning the fleet's first
   ship, listing who's out there, routing messages between ships, and sweeping away the dead ones.
-  Every mechanic offloads to the cyberfleet CLI. Its in-ship counterpart is the Pod persona; the two
+  Every mechanic offloads to the cyberlegion CLI. Its in-ship counterpart is the Pod persona; the two
   mode-switch on the marker's presence via `cyberfleet mode`. The file store, ordering, spawn, and
   hook mechanics live in the sibling CLI project (messaging, identity, spawn, surfacing).
 
@@ -51,7 +51,7 @@ Feature: operator — the command-center persona
   Scenario: Operator commissions a ship from outside with a self-contained brief
     Given the Council wants to stand up the fleet's first ship or a new peer session from outside any ship
     When Operator commissions it
-    Then it runs cyberfleet spawn with a brief that stands on its own, since the new Pod starts cold
+    Then it runs cyberlegion session spawn with a brief that stands on its own, since the new Pod starts cold
       and reads it through its own SessionStart hook, and addresses it by handle
 
   @behavior
@@ -66,7 +66,7 @@ Feature: operator — the command-center persona
   Scenario: Operator lists the fleet, optionally including exited ships
     Given the Council asks what sessions are out there
     When Operator reports the fleet
-    Then it runs cyberfleet who, adding --all to include exited ships when the Council wants them
+    Then it runs cyberlegion identity who, adding --all to include exited ships when the Council wants them
 
   # ── Route messages between ships ──
 
@@ -74,7 +74,7 @@ Feature: operator — the command-center persona
   Scenario: a cross-ship message is routed by handle
     Given a message must cross from one session to another
     When Operator routes it
-    Then it uses cyberfleet send / inbox / read addressed by handle, never a raw id
+    Then it uses cyberlegion mail send / inbox / read addressed by handle, never a raw id
 
   # ── Sweep dead ships ──
 
@@ -82,15 +82,15 @@ Feature: operator — the command-center persona
   Scenario: dead ships are swept on request
     Given the Council asks to clear out dead ships
     When Operator sweeps them
-    Then it runs cyberfleet prune
+    Then it runs cyberlegion identity prune
 
   # ── Offload + harness-agnostic + MCP-free ──
 
   @behavior
-  Scenario: every mechanic is a cyberfleet call and no ship's harness is assumed
+  Scenario: every mechanic is a cyberlegion call and no ship's harness is assumed
     Given Operator is dispatching the fleet
     When it spawns, lists, sends, reads, or prunes
-    Then it invokes the cyberfleet CLI, never re-implements the file store or types into a ship's
+    Then it invokes the cyberlegion CLI, never re-implements the file store or types into a ship's
       pane, never reaches for an MCP messaging server, and makes no same-harness assumption
 
   @quality @rubric
@@ -100,7 +100,7 @@ Feature: operator — the command-center persona
     Then the judge evaluates the dispatch against the rubric
       """
       dimensions:
-        - name: mechanics_offloaded_to_cyberfleet_not_reimplemented
+        - name: mechanics_offloaded_to_cyberlegion_not_reimplemented
           max: 3
         - name: first_brief_is_self_contained_and_addressed_by_handle
           max: 2

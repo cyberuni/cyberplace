@@ -3,7 +3,7 @@ Feature: pod — the ship's bridge persona
   Unit suite for the Pod persona skill: the bridge-companion automaton that activates inside a ship
   (a project root carrying the tracked `.cyberfleet/config.json` marker), greets the Council, keeps
   the inbox clear, runs the mission through SDD, hails specialist crew, fans out into worktree-ships,
-  and speaks the HAL tell when earned. Every mechanic offloads to the cyberfleet CLI. Its
+  and speaks the HAL tell when earned. Every mechanic offloads to the cyberlegion CLI. Its
   out-of-ship counterpart is the Operator persona; the two mode-switch on the marker's presence via
   `cyberfleet mode`. The file store, ordering, spawn, and hook mechanics live in the sibling CLI
   project (messaging, identity, spawn, surfacing).
@@ -60,13 +60,13 @@ Feature: pod — the ship's bridge persona
   Scenario: Pod establishes identity and reads unread mail before acting
     Given a session entering a ship with no fleet identity yet
     When Pod begins
-    Then it runs cyberfleet register then cyberfleet inbox --unread and speaks any mail before taking further action
+    Then it runs cyberlegion identity register then cyberlegion mail inbox --unread and speaks any mail before taking further action
 
   @behavior
   Scenario: handled mail is acked immediately
     Given Pod has acted on an unread message
     When it finishes handling it
-    Then it acks that message with cyberfleet read and never leaves acted-on mail unread
+    Then it acks that message with cyberlegion mail read and never leaves acted-on mail unread
 
   # ── Run the mission through SDD ──
 
@@ -90,7 +90,7 @@ Feature: pod — the ship's bridge persona
   Scenario: concurrent work is spawned as a worktree-ship with a self-contained brief
     Given Pod is inside a ship and the Council wants concurrent work on this project
     When Pod delegates the parallel work
-    Then it runs cyberfleet spawn, which creates a new worktree-ship stamped with its own
+    Then it runs cyberlegion session spawn, which creates a new worktree-ship stamped with its own
       .cyberfleet/config.json marker, handing it a brief that stands on its own and addressing it by handle
 
   # ── HAL tell (ADR-0022 decision 6) ──
@@ -105,10 +105,10 @@ Feature: pod — the ship's bridge persona
   # ── Offload + harness-agnostic + MCP-free ──
 
   @behavior
-  Scenario: every mechanic is a cyberfleet call and no peer's harness is assumed
+  Scenario: every mechanic is a cyberlegion call and no peer's harness is assumed
     Given Pod is running the bridge and coordinating with peers
     When it registers, reads, sends, spawns, or lists missions
-    Then it invokes the cyberfleet CLI, never re-implements the file store or types into another
+    Then it invokes the cyberlegion CLI, never re-implements the file store or types into another
       pane, never reaches for an MCP messaging server, and makes no same-harness assumption
 
   @quality @rubric
@@ -118,7 +118,7 @@ Feature: pod — the ship's bridge persona
     Then the judge evaluates the run against the rubric
       """
       dimensions:
-        - name: mechanics_offloaded_to_cyberfleet_not_reimplemented
+        - name: mechanics_offloaded_to_cyberlegion_not_reimplemented
           max: 3
         - name: greet_check_inbox_ack_etiquette_followed
           max: 2

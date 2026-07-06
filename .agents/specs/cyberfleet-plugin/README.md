@@ -21,13 +21,13 @@ sequenceDiagram
     participant A as Session A (claude)
     participant FS as .cyberfleet/ (files)
     participant B as Session B (cursor, peer)
-    A->>FS: cyberfleet register (agents/, panes/)
-    A->>FS: cyberfleet spawn (pre-register B, write brief.md)
+    A->>FS: cyberlegion identity register (agents/, panes/)
+    A->>FS: cyberlegion session spawn (pre-register B, write brief.md)
     A-->>B: worktree + launch cursor-agent
     B->>FS: SessionStart hook: inbox --hook → read brief.md
-    B->>FS: cyberfleet send --to A (inbox/<A>/<epochMs-hex>.json)
+    B->>FS: cyberlegion mail send --to A (inbox/<A>/<epochMs-hex>.json)
     A->>FS: SessionStart / PostToolUse hook: inbox --hook → sees mail
-    A->>FS: cyberfleet read <id> (move to inbox/<A>/read/)
+    A->>FS: cyberlegion mail read <id> (move to inbox/<A>/read/)
 ```
 
 Units:

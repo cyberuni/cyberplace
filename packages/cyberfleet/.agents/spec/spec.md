@@ -1,102 +1,69 @@
 ---
 status: implemented
 project-path: packages/cyberfleet
-approval:
-  spec:
-    verdict: approve
-    by: agent
-    cause: dimension
-    why:
-      floor: none
-      blast: low — additive new CLI verb (decommission) in its own node; no existing behavior changed; unshipped package
-      novelty: low — deterministic inverse of the existing spawn node, wiring primitives already present (worktree.remove, session.teardown, reverse pane index)
-      confidence: high — three cold spec-judge rounds, ALIGNED true, deterministic check-suite/check-spec-state green
-  impl:
-    verdict: approve
-    by: agent
-    cause: dimension
-    why:
-      floor: none
-      blast: low — one new command module + wiring; reuses existing worktree/session/identity primitives; prune sweep untouched
-      novelty: low — deterministic teardown mirroring spawn
-      confidence: high — cold sdd-impl-judge IMPLEMENTATION_PASS true, all 14 frozen scenarios satisfied under re-derived oracles, 139/139 tests + build + typecheck green
 ---
 
-# cyberfleet — the CLI: harness-agnostic agent sessions + messaging (MCP-free)
+# cyberfleet — the fleet layer over cyberlegion
 
 > Root project spec — the **descriptive** top index for the `cyberfleet` **CLI** (the npm package
-> at `packages/cyberfleet`). Behaviors live in the capability folders below. This project was split
-> out of the combined `cyberfleet` project (now the sibling `.agents/specs/cyberfleet-plugin`) by the `split-cyberfleet-spec`
-> change, so the spec maps one-to-one onto the CLI package. The agent-behavior half — the `fleet`
-> persona gateway and the `crew` personas — lives in the sibling `cyberfleet-plugin` project
-> (`../../.agents/specs/cyberfleet-plugin`, source `plugins/cyberfleet`).
+> at `packages/cyberfleet`). This project is a thin **fleet layer** built on top of the
+> `cyberlegion` mechanism package. It carries only the fleet-specific verbs; the agent-behavior half
+> — the `fleet` persona gateway and the `crew` personas — lives in the sibling `cyberfleet-plugin`
+> project (`../../.agents/specs/cyberfleet-plugin`, source `plugins/cyberfleet`).
 
 ## What this is
 
-The `cyberfleet` CLI is the engine that creates new agent sessions and lets them talk to each other
-across harnesses (a Claude Code session ↔ a Cursor session ↔ a Codex session) and **without MCP** —
-no server, no port, no daemon. The transport is the filesystem (a project-scoped `.cyberfleet/`
-directory), the interface is one shell command (`cyberfleet`), and delivery is surfaced through the
-same per-harness hooks `cyberspace` already wires. Nobody speaks a vendor-specific protocol — peers
-share files and one CLI, so the mechanism ports to every harness by construction.
+The `cyberfleet` CLI turns the metaphor-free `cyberlegion` mechanism (spawn a session, carry mail,
+identify peers) into a **fleet** view: ships, missions, and the Council. It **depends up** on
+`cyberlegion` — the harness-agnostic, MCP-free primitive that owns session lifecycle, the file
+mailbox, identity/registry, and hook surfacing. cyberfleet adds nothing to that mechanism; it wraps
+it in the fleet's own operations.
 
-Everything here is deterministic CLI behavior (SDD-default + a script harness — boolean scenarios,
-no rubric). The persona layer that decides *when* and *how* an agent reaches for the fleet is not
-in this package — it is the `cyberfleet-plugin` project, which depends on this CLI by **intent**
-(register / send / spawn / inbox), never by its command slugs.
+The dependency is **by intent** (ADR-0021): cyberfleet imports `cyberlegion` as a workspace library
+for its own verbs, and a fleet persona runs the mechanism verbs against the `cyberlegion` CLI
+directly (`cyberlegion identity register`, `cyberlegion mail send`, `cyberlegion session spawn`, …).
+cyberfleet does **not** re-expose those mechanism verbs — that duplication is exactly what the
+extraction removed.
 
-## Why this is its own project
+## What cyberfleet owns (fleet verbs)
 
-The `cyberfleet` CLI and the `cyberfleet` plugin are **two packages that deploy differently** — the
-CLI ships to npm, the plugin ships to the marketplace — and the plugin carries genuine agentic
-behavior (spawn judgment, message etiquette, persona voice) the CLI cannot. Three axes agree on the
-same cut: artifact-type (deterministic script vs agent-behavior), deploy target (npm vs
-marketplace), and package (`packages/cyberfleet` vs `plugins/cyberfleet`). This project holds the
-four deterministic CLI nodes; the three agent-behavior nodes are the sibling `cyberfleet-plugin`
-project.
+Only the verbs with genuine fleet logic live here — everything else is `cyberlegion`'s:
 
-## Capability map
+| Verb | What |
+|---|---|
+| `cyberfleet mode` | report **ship** (a spawned unit worktree) vs **command-center**, and the shared fleet root |
+| `cyberfleet missions` | the Council view — ships × mission × gate × leash, **derived from SDD state** (the one place cyberfleet reads SDD) |
+| `cyberfleet jump <peer>` | select/focus a ship's session (tmux pane), or print its worktree path to `cd` into |
+| `cyberfleet pause <peer>` | flip a ship record to `status: paused` — a marker only (**not** a bridge to SDD's `pause-mission` checkpoint; that gap is flagged, never papered over) |
+| `cyberfleet gate approve` | **stubbed** — a human ratification cannot be safely relayed through this CLI (the relayed-ratification seam); it prints what it would write and exits non-zero |
 
-| Folder | Type | What |
-|---|---|---|
-| [`identity/`](./identity/README.md) | behavioral | `cyberfleet register` / `who` — self-identify and discover peers |
-| [`messaging/`](./messaging/README.md) | behavioral | `cyberfleet send` / `inbox` / `read` — the per-recipient file queue |
-| [`spawn/`](./spawn/README.md) | behavioral | `cyberfleet spawn` — launch a new peer session in a git worktree |
-| [`decommission/`](./decommission/README.md) | behavioral | `cyberfleet decommission` — tear a ship down (worktree + session) and reap its state |
-| [`surfacing/`](./surfacing/README.md) | behavioral | `cyberfleet inbox --hook` — inject unread mail into a session at start |
+## Where the mechanism went
+
+The identity / messaging / session-spawn / decommission / surfacing behaviors were **extracted into
+`cyberlegion`** (`packages/cyberlegion/.agents/spec/` — nodes `identity`/`mail`/`session`/
+`surfacing`, plus `dispatch`/`wake`/`agent`). Those are the canonical, frozen behavioral scenarios
+now; cyberfleet no longer owns or re-describes them.
 
 ## Placement map
 
 Where a new concept lives — slot here, do not invent placement:
 
-- **a new identity/registry operation** (self-identify, peer discovery, liveness) → `identity/`.
-- **a new message-queue operation** (send, inbox, read, ack) → `messaging/`.
-- **a new peer-session-launch operation** (worktree creation, session backend, brief handoff) →
-  `spawn/`.
-- **a new peer-session-teardown operation** (hard per-ship worktree removal, session teardown,
-  reaping id-keyed state) → `decommission/`. The *soft* liveness sweep (mark dead agents exited) is
-  `prune`, which lives under `identity/`.
-- **a new hook/injection operation** (surfacing unread mail or a brief into a session's context) →
-  `surfacing/`.
-- **a new persona / mode-switch / crew behavior** (when to spawn, message etiquette, recruit or
-  tune a crew) → **not here** — that is the `cyberfleet-plugin` project (`plugins/cyberfleet`).
-- **a cross-capability CLI e2e** (spans ≥2 CLI nodes — register → spawn → send → inbox → read) →
-  this project's own e2e; a future `acceptance/` node may formalize it.
+- **a new fleet-status / mode operation** (ship vs command-center, the shared root) → the `mode`
+  surface.
+- **a new Council/mission-view operation** (joining ships to SDD mission/gate/leash state) → the
+  `missions` surface — the only place cyberfleet reads SDD.
+- **a new ship-navigation operation** (focus a pane, resolve a worktree path) → the `jump` surface.
+- **a new mechanism operation** (identity, mail, session spawn/teardown, surfacing, dispatch, wake)
+  → **not here** — that is `cyberlegion` (`packages/cyberlegion`). cyberfleet depends up on it.
+- **a new persona / mode-switch / crew behavior** (when to spawn, message etiquette, recruit or tune
+  a crew) → **not here** — that is the `cyberfleet-plugin` project (`plugins/cyberfleet`).
 
-The nesting rule: capabilities at the top; any layering nests *inside* a capability, never as a
-top-level folder. A node is `<capability>` and never nested. One cross-cutting concern runs through
-this project (see the by-concept index below): `fleet` (session coordination).
+## Backfill gap (known)
 
-<!-- BEGIN generated: by-concept (project-spec/concept-index) -->
-
-## By concept
-
-> Generated from `concept:` frontmatter by `project-spec/concept-index` — do not edit by hand.
-
-| Concept | Facets |
-|---|---|
-| `fleet` | `decommission/` (behavior) · `identity/` (behavior) · `messaging/` (behavior) · `spawn/` (behavior) · `surfacing/` (behavior) |
-
-<!-- END generated: by-concept -->
+The fleet verbs above are **implemented** (in `src/cli.ts`, `src/missions.ts`, `src/mode.ts`, with
+smoke coverage in `src/cli.test.ts`) but are **not yet captured as behavioral spec nodes** — this
+root index is descriptive only. Backfilling `mode` / `missions` / `jump` / `pause` as behavioral
+nodes (with `.feature` suites) is a future change request; it was out of scope for the reconciliation
+that removed the extracted mechanism nodes.
 </content>
 </invoke>
