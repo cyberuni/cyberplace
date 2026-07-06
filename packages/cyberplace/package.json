@@ -34,7 +34,6 @@
 		"check:private-skills": "pnpm build && node bin/cyberplace.mjs skill validate-private --root ../..",
 		"repair:private-skills": "pnpm build && node bin/cyberplace.mjs skill repair-private --root ../..",
 		"render:awesome-list": "pnpm build && node bin/cyberplace.mjs awesome render",
-		"render:tavern": "pnpm build && node bin/cyberplace.mjs tavern render --root ../..",
 		"test": "pnpm build && vitest run src",
 		"test:watch": "vitest",
 		"typecheck": "tsc --noEmit"

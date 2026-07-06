@@ -1,0 +1,248 @@
+---
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
+import { dirname, join } from 'node:path'
+
+interface MarketplacePlugin {
+	name: string
+	description?: string
+	source: string
+	tags?: string[]
+}
+
+interface MarketplaceManifest {
+	name: string
+	owner: { name: string }
+	plugins: MarketplacePlugin[]
+}
+
+interface PluginManifest {
+	version?: string
+	description?: string
+	homepage?: string
+	repository?: string
+}
+
+interface Crew {
+	name: string
+	description: string
+	tags: string[]
+	version?: string
+	skillCount: number
+	agentCount: number
+	commandCount: number
+	sourceUrl: string
+}
+
+// import.meta.url resolves to a bundled build-time chunk path (not the source
+// file location) once Astro prerenders, so it cannot be used to derive the
+// repo root by relative distance. Instead, walk upward from the current
+// working directory (stable: pnpm build/dev always runs with cwd set to
+// apps/website) looking for the marketplace manifest's containing directory.
+function findRepoRoot(): string {
+	let dir = process.cwd()
+	for (let i = 0; i < 8; i++) {
+		if (existsSync(join(dir, '.claude-plugin', 'marketplace.json'))) return dir
+		const parent = dirname(dir)
+		if (parent === dir) break
+		dir = parent
+	}
+	// Fallback: apps/website/../.. is the repo root in this monorepo layout.
+	return join(process.cwd(), '..', '..')
+}
+
+const repoRoot = findRepoRoot()
+
+function countEntries(dir: string): number {
+	if (!existsSync(dir)) return 0
+	try {
+		return readdirSync(dir, { withFileTypes: true }).filter((entry) => entry.isDirectory() || entry.isFile()).length
+	} catch {
+		return 0
+	}
+}
+
+function readPluginManifest(pluginRoot: string): PluginManifest | null {
+	const candidates = [
+		join(pluginRoot, '.claude-plugin', 'plugin.json'),
+		join(pluginRoot, '.plugin', 'plugin.json'),
+	]
+	for (const candidate of candidates) {
+		if (existsSync(candidate)) {
+			try {
+				return JSON.parse(readFileSync(candidate, 'utf-8')) as PluginManifest
+			} catch {
+				return null
+			}
+		}
+	}
+	return null
+}
+
+function loadCrews(): Crew[] {
+	const manifestPath = join(repoRoot, '.claude-plugin', 'marketplace.json')
+	if (!existsSync(manifestPath)) return []
+
+	let manifest: MarketplaceManifest
+	try {
+		manifest = JSON.parse(readFileSync(manifestPath, 'utf-8')) as MarketplaceManifest
+	} catch {
+		return []
+	}
+
+	const owner = 'cyberuni'
+	const repo = 'cyberplace'
+
+	return (manifest.plugins ?? [])
+		.filter((plugin) => plugin.tags?.includes('crew'))
+		.map((plugin): Crew => {
+			const pluginRoot = join(repoRoot, plugin.source.replace(/^\.\//, ''))
+			const pluginManifest = readPluginManifest(pluginRoot)
+
+			return {
+				name: plugin.name,
+				description: plugin.description ?? pluginManifest?.description ?? '',
+				tags: plugin.tags ?? [],
+				version: pluginManifest?.version,
+				skillCount: countEntries(join(pluginRoot, 'skills')),
+				agentCount: countEntries(join(pluginRoot, 'agents')),
+				commandCount: countEntries(join(pluginRoot, 'commands')),
+				sourceUrl: `https://github.com/${owner}/${repo}/tree/main/plugins/${plugin.name}`,
+			}
+		})
+}
+
+const crews = loadCrews()
+
+function countChips(crew: Crew): string[] {
+	const chips: string[] = []
+	if (crew.skillCount > 0) chips.push(`${crew.skillCount} skill${crew.skillCount === 1 ? '' : 's'}`)
+	if (crew.agentCount > 0) chips.push(`${crew.agentCount} agent${crew.agentCount === 1 ? '' : 's'}`)
+	if (crew.commandCount > 0) chips.push(`${crew.commandCount} command${crew.commandCount === 1 ? '' : 's'}`)
+	return chips
+}
+---
+
+{
+	crews.length === 0 ? (
+		<p class="tavern-empty">No crews are cataloged yet.</p>
+	) : (
+		<div class="tavern-storefront">
+			{crews.map((crew) => (
+				<article class="crew-card">
+					<header class="crew-card-header">
+						<h3 class="crew-name">{crew.name}</h3>
+						<span class="crew-badge">crew</span>
+						{countChips(crew).length > 0 && (
+							<span class="crew-counts">{countChips(crew).join(' · ')}</span>
+						)}
+					</header>
+					<p class="crew-description">{crew.description}</p>
+					{crew.tags.length > 0 && (
+						<div class="crew-tags">
+							{crew.tags.map((tag) => (
+								<span class="crew-tag">{tag}</span>
+							))}
+						</div>
+					)}
+					<footer class="crew-card-footer">
+						<code class="crew-recruit">cyberplace add {crew.name}</code>
+						<a class="crew-source-link" href={crew.sourceUrl} target="_blank" rel="noopener noreferrer">
+							Source ↗
+						</a>
+					</footer>
+				</article>
+			))}
+		</div>
+	)
+}
+
+<style>
+	.tavern-empty {
+		color: var(--sl-color-gray-3);
+		font-style: italic;
+	}
+	.tavern-storefront {
+		display: flex;
+		flex-direction: column;
+		gap: 1.25rem;
+		margin: 1.5rem 0;
+	}
+	.crew-card {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		max-width: 42rem;
+		padding: 1.25rem 1.5rem;
+		border: 1px solid var(--sl-color-gray-5);
+		border-radius: 0.75rem;
+		background: var(--sl-color-gray-6);
+	}
+	.crew-card-header {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.6rem;
+	}
+	.crew-name {
+		margin: 0;
+		font-size: var(--sl-text-lg);
+		color: var(--sl-color-text);
+	}
+	.crew-badge {
+		font-size: var(--sl-text-xs);
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+		color: var(--sl-color-accent);
+		background: var(--sl-color-accent-low);
+		border-radius: 999px;
+		padding: 0.15rem 0.6rem;
+	}
+	.crew-counts {
+		font-size: var(--sl-text-xs);
+		color: var(--sl-color-gray-3);
+		margin-left: auto;
+	}
+	.crew-description {
+		margin: 0;
+		color: var(--sl-color-gray-3);
+		line-height: 1.5;
+	}
+	.crew-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem;
+	}
+	.crew-tag {
+		font-size: var(--sl-text-xs);
+		color: var(--sl-color-gray-3);
+		border: 1px solid var(--sl-color-gray-5);
+		border-radius: 999px;
+		padding: 0.1rem 0.55rem;
+	}
+	.crew-card-footer {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.75rem;
+		margin-top: 0.25rem;
+		padding-top: 0.75rem;
+		border-top: 1px solid var(--sl-color-gray-5);
+	}
+	.crew-recruit {
+		font-size: var(--sl-text-sm);
+		color: var(--sl-color-text);
+		background: var(--sl-color-gray-5);
+		border-radius: 0.4rem;
+		padding: 0.2rem 0.5rem;
+	}
+	.crew-source-link {
+		font-size: var(--sl-text-sm);
+		color: var(--sl-color-accent);
+		text-decoration: none;
+	}
+	.crew-source-link:hover {
+		text-decoration: underline;
+	}
+</style>

@@ -12,6 +12,9 @@ export default defineConfig({
 			social: [
 				{ icon: 'github', label: 'GitHub', href: 'https://github.com/cyberuni/cyberplace' },
 			],
+			components: {
+				SiteTitle: './src/components/SiteTitle.astro',
+			},
 			sidebar: [
 				{
 					label: 'Getting Started',
