@@ -108,9 +108,23 @@ dependency is established by intent. cyberfleet is **untouched**.
   dropped/changed (`detectMode` ship-vs-command-center; `output` markdown→TOON; `.cyberfleet`→the global
   hub), and cyberlegion is **bin-only** (no lib exports) so cyberfleet must either shell out to the CLI
   or cyberlegion must add a lib surface. cyberfleet's own persona program is **in-flight/unlanded**
-  (another branch), so rewiring its landed CLI now risks a merge collision. **Needs a decision**
-  (lib-export vs CLI-shell-out; keep-or-drop `mode`) + coordination with cyberfleet's direction. The
-  duplication is harmless meanwhile (cyberfleet is unpublished `0.0.0`).
+  (another branch), so rewiring its landed CLI now risks a merge collision. The duplication is harmless
+  meanwhile (cyberfleet is unpublished `0.0.0`).
+
+  **Storage design (settled):** cyberfleet persists NO runtime — identity/mail/dispatch/panes/data all
+  live in cyberlegion's global hub. **Mode/ship** (Pod vs Operator) is derived by reusing cyberlegion's
+  `.agents/cyberlegion/config.json` worktree marker (present in a spawned unit's worktree = ship; absent
+  on the primary = command-center) — no separate cyberfleet marker. **Fleet policy** (declarative,
+  tracked, team-shared — categorically distinct from the per-machine gitignored hub) lives in a NEW
+  tracked **`.agents/cyberfleet/config.json`** with sections: `layout` (predefined pane/tab arrangements,
+  in cyberlegion's placement vocab) and `crews` (the fleet's enlisted crew roster; the available catalog
+  stays in the Tavern/`marketplace.json`). `.gitignore`: drop `.cyberfleet/*`/`!.cyberfleet/config.json`;
+  track `.agents/cyberfleet/config.json`. (An SDD-outer-loop *schedule* was considered and dropped — not
+  needed now; if added later, SDD owns the loop cadence, not the fleet.)
+
+  **Remaining open decision:** lib-export (cyberlegion exposes a lib entry cyberfleet imports) vs
+  CLI-shell-out (cyberfleet's fleet verbs delegate to `npx cyberlegion`); `missions` reads hub JSON
+  directly either way. Plus coordination with cyberfleet's in-flight persona branch.
 - **CR-8 `legion-publish`** — add a changeset + let the plugin build resolve `npx cyberlegion@<version>`
   pins. **Premature until the feature is complete + reviewed + merged**: per repo precedent, in-flight
   `0.0.0` packages (cyberfleet) carry no changeset; adding one now would publish an incomplete feature
