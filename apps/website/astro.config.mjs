@@ -120,6 +120,22 @@ export default defineConfig({
 					],
 				},
 				{
+					label: 'cyberlegion',
+					items: [
+						{ label: 'Overview', slug: 'cyberlegion/overview' },
+					],
+				},
+				{
+					label: 'cyberfleet',
+					items: [
+						{ label: 'Overview', slug: 'cyberfleet/overview' },
+						{ label: 'Pod', slug: 'cyberfleet/pod' },
+						{ label: 'Operator', slug: 'cyberfleet/operator' },
+						{ label: 'Crimp', slug: 'cyberfleet/crimp' },
+						{ label: 'Tuner', slug: 'cyberfleet/tuner' },
+					],
+				},
+				{
 					label: 'Disciplines',
 					items: [
 						{ label: 'Commit Discipline', slug: 'disciplines/commit-discipline' },
