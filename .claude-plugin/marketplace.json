@@ -14,6 +14,16 @@
 			"source": "./plugins/cyberfleet"
 		},
 		{
+			"name": "cyberlegion",
+			"description": "Agent session spawning, messaging, and dispatch — the Legion and its Legate.",
+			"source": "./plugins/cyberlegion"
+		},
+		{
+			"name": "cyberspace",
+			"description": "Research and design toolkit for building universal AI coding agent plugins that work across Claude Code, Cursor, Codex, and GitHub Copilot CLI.",
+			"source": "./plugins/cyberspace"
+		},
+		{
 			"name": "quill",
 			"description": "Documentation SDD plugin. Verifies guides, tutorials, articles, and reference docs against specs — existence, required headings, completeness, and reader-path continuity.",
 			"source": "./plugins/quill"
