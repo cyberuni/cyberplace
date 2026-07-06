@@ -2,19 +2,19 @@
 name: suite-token-opt
 status: active
 todos:
-  - content: "resolve-governances --compose mode (mission/resolution) — emit ordered, replace-applied load-list"
+  - content: "Mechanize additive-self-clear via gherkin-cli diff --addOnly (skip judge round on pure adds) — the lead behavioral win"
     status: pending
-  - content: "Wire conductor + spec-gate to consume gherkin-cli parse manifest instead of raw .feature (mission/conductor, authoring/spec-gate)"
+  - content: "Wire conductor + spec-gate + judges to consume gherkin-cli parse manifest instead of raw .feature (prose guidance)"
     status: pending
-  - content: "Mechanize additive-self-clear via gherkin-cli diff --addOnly (skip judge round on pure adds)"
-    status: pending
-  - content: "Judge defs (sdd-spec-judge, sdd-impl-judge): lazy-load bar bodies + consume composed set/manifest"
+  - content: "Judge defs (sdd-spec-judge, sdd-impl-judge): lazy-load bar bodies (propagate the conductor's digest discipline)"
     status: pending
   - content: "Pin gherkin-cli via build-resolve-pins + a reference note on the dependency"
     status: pending
   - content: "Spec gate (freeze touched .feature) → deliver → impl gate → handoff"
     status: pending
 ---
+<!-- DROPPED: resolve-governances --compose — fights the frozen 'matcher not composer' resolution node + smallest win (removes precedence reasoning, not the dominant body-read). -->
+
 
 # CR-B — SDD suite token reduction
 
