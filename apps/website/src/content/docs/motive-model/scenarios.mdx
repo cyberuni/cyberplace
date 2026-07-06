@@ -26,27 +26,27 @@ Real work sits between. The axis *is* the abundance dial: where generation is ch
 
 <Steps>
 
-1. **Framer** — the contributor decides this bug is worth their time, usually self-framed from their own pain; the issue thread is the brief. A maintainer framed it earlier by accepting and labeling it.
+1. **Oracle** — the contributor decides this bug is worth their time, usually self-framed from their own pain; the issue thread is the brief. A maintainer framed it earlier by accepting and labeling it.
 
 2. **Explorer** (Builder, divergent) — the contributor reproduces it, reads unfamiliar code, tries a couple of approaches, discards the dead ends.
 
 3. **Builder** (producer) — writes the fix and a regression test; the test is the contract, co-delivered.
 
-4. **The gate** *(boundary: the pull request)* — the maintainer enters *only now*, turning expertise backward against the change: correctness (Builder face) against the bar, fit-to-structure (Architect face), and worth-merging (Framer face). The two-axis verdict applies — and a recurring-class concern may be `accept + deferred`, filed as a follow-up. Note the asymmetry: the contributor produced for days with no evaluation present; the gate is async and late.
+4. **The gate** *(boundary: the pull request)* — the maintainer enters *only now*, turning expertise backward against the change: correctness (Builder face) against the bar, fit-to-structure (Architect face), and worth-merging (Oracle face). The two-axis verdict applies — and a recurring-class concern may be `accept + deferred`, filed as a follow-up. Note the asymmetry: the contributor produced for days with no evaluation present; the gate is async and late.
 
-5. **Curator** — if the bug is one of a recurring class, the maintainer encodes a lint rule, a test pattern, or a `CONTRIBUTING` note so the next contributor avoids it. Frequently deferred or skipped — infrastructure neglect in the wild.
+5. **Strategist** — if the bug is one of a recurring class, the maintainer encodes a lint rule, a test pattern, or a `CONTRIBUTING` note so the next contributor avoids it. Frequently deferred or skipped — infrastructure neglect in the wild.
 
 </Steps>
 
 <Aside type="note" title="Reading">
-One human (contributor) plays Framer + Explorer + Builder forward; another (maintainer) judges at the gate — Builder, Architect, and Framer faces turned backward — and curates. Roles cluster by *position in the contribution flow*, not by job. The same maintainer who judges here is a Builder on their own commits — the verb, not the person.
+One human (contributor) plays Oracle + Explorer + Builder forward; another (maintainer) judges at the gate — Builder, Architect, and Oracle faces turned backward — and curates. Roles cluster by *position in the contribution flow*, not by job. The same maintainer who judges here is a Builder on their own commits — the verb, not the person.
 </Aside>
 
 ## Compressed: a solo developer and their delegates ship a feature
 
 <Steps>
 
-1. **Framer** — the developer fixes the feature's *why* and what success looks like, sometimes as a written brief, sometimes only in their head.
+1. **Oracle** — the developer fixes the feature's *why* and what success looks like, sometimes as a written brief, sometimes only in their head.
 
 2. **Explorer** (Builder variant) — a delegate spikes three approaches in parallel; the developer, applying expertise *backward*, keeps one and kills two. That pick is the Builder's own backward face — evaluation inside the Builder phase.
 
@@ -56,7 +56,7 @@ One human (contributor) plays Framer + Explorer + Builder forward; another (main
 
 5. **Architect (conducting)** — the developer notices it should follow an existing convention and directs a refactor under green; if the convention needs a not-yet-built helper, they direct an orchestrator-delegate to build it in parallel rather than stalling the feature — the scheduling decision in miniature.
 
-6. **Curator** — at the end, the developer encodes the new convention so the next feature starts warmer — or, more often, a Curator-delegate flags "you've done this three times" and the human approves the entry.
+6. **Strategist** — at the end, the developer encodes the new convention so the next feature starts warmer — or, more often, a Strategist-delegate flags "you've done this three times" and the human approves the entry.
 
 </Steps>
 
@@ -75,7 +75,7 @@ Both walk-throughs run the same three loops — they just fire at different cade
     BAR -->|correct · inner loop| B
     BAR -->|accept + deferred| BL["backlog · this product<br/>re-prioritized"]
     BL -.-> B
-    BAR -->|durable lesson| CUR["Curator distills → corpus<br/>outer loop · any product"]
+    BAR -->|durable lesson| CUR["Strategist distills → corpus<br/>outer loop · any product"]
     CUR -.->|warmer start| B
     class B,CUR actor
     class BAR gate
@@ -87,9 +87,9 @@ Both walk-throughs run the same three loops — they just fire at different cade
 
 - **Inner loop** — *within a task.* Builder produces, the bar fires, Builder corrects, Architect reshapes under green. Fast; every iteration. Correcting *actions* under fixed assumptions.
 - **Product feedback edge** — *across tasks, same product.* Work deferred at the gate re-enters as its owning actor's object, sequenced by a decision rule. New work, same product.
-- **Outer loop** — *across products.* The Curator distills durable lessons into the corpus so the next inner loop starts warmer. Revising the *assumptions* themselves.
+- **Outer loop** — *across products.* The Strategist distills durable lessons into the corpus so the next inner loop starts warmer. Revising the *assumptions* themselves.
 
-Firing the Curator every iteration is **premature codification** — you encode transient noise before you know which lessons are durable. So the human Curator is episodic; its delegate watches continuously (flagging candidates, drafting conventions), while the human holds the accept/prune decision.
+Firing the Strategist every iteration is **premature codification** — you encode transient noise before you know which lessons are durable. So the human Strategist is episodic; its delegate watches continuously (flagging candidates, drafting conventions), while the human holds the accept/prune decision.
 
 ## What the two ends share
 

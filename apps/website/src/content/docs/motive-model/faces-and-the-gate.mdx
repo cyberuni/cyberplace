@@ -8,8 +8,8 @@ import Mermaid from '../../../components/Mermaid.astro'
 
 The same expertise points two ways. This is "verbs, not titles" at its sharpest.
 
-- Applied **forward**, it produces — a Builder writes code, an Architect draws structure, a Framer frames a problem.
-- Applied **backward**, the same expertise *judges* — the Builder validates the code, the Architect runs a fit-to-structure review, the Framer makes a kill-or-ship call.
+- Applied **forward**, it produces — a Builder writes code, an Architect draws structure, an Oracle frames a problem.
+- Applied **backward**, the same expertise *judges* — the Builder validates the code, the Architect runs a fit-to-structure review, the Oracle makes a kill-or-ship call.
 
 Nothing about the person or their knowledge changes between the two — the **motive** is the same want in both directions. Only the **orientation** does. So there is **no standalone Gatekeeper actor** — "gatekeeping" is just any actor's expertise turned backward. A thing with no domain of its own is an orientation, not a role. The word survives as the name of an *activity*, not a party.
 
@@ -28,12 +28,12 @@ When a delegate produces and a human judges, `producer ≠ judge` still holds ev
 
 ## The gate
 
-**The gate** is the boundary — a pull request, a release — where the backward faces converge on one change: correctness (Builder, backward), fit-to-structure (Architect, backward), and worth-shipping (Framer, backward) are judged together.
+**The gate** is the boundary — a pull request, a release — where the backward faces converge on one change: correctness (Builder, backward), fit-to-structure (Architect, backward), and worth-shipping (Oracle, backward) are judged together.
 
 <Mermaid
 	caption="Forward production flows left to right; the backward faces converge at the gate; deferred work re-enters the loop as its owning actor's object."
 	code={`flowchart LR
-    F["Framer<br/>intend"] -->|brief| B["Builder<br/>generate"]
+    F["Oracle<br/>intend"] -->|brief| B["Builder<br/>generate"]
     B -->|artifact| AR["Architect<br/>structure"]
     AR -->|shape| B
     F -.->|backward face| G{{the gate}}
@@ -42,7 +42,7 @@ When a delegate produces and a human judges, `producer ≠ judge` still holds ev
     G -->|ship| OUT([product])
     G -.->|deferred work| BL["backlog<br/>re-prioritized"]
     BL -.->|re-enters as owning actor's work| F
-    C["Curator<br/>foundation · corpus"] -.-> F
+    C["Strategist<br/>foundation · corpus"] -.-> F
     C -.-> B
     C -.-> AR
     class F,B,AR,C actor
@@ -65,7 +65,7 @@ What comes out is **not a single bit.** It is two decisions on two axes:
 
 Two corners earn names:
 
-- **`block + none` is a kill** — no incremental fix saves this attempt. *What* dies depends on the rejecting face: a **Framer** kill abandons the goal (*this should not exist*); an **Architect** or **Builder** kill rejects the approach or artifact (*not like this*) with the goal still standing.
+- **`block + none` is a kill** — no incremental fix saves this attempt. *What* dies depends on the rejecting face: a **Oracle** kill abandons the goal (*this should not exist*); an **Architect** or **Builder** kill rejects the approach or artifact (*not like this*) with the goal still standing.
 - **`accept + deferred` is the feedback edge** — merge now, spin off work that re-enters the loop later.
 
 <Mermaid
@@ -90,13 +90,13 @@ Two corners earn names:
 
 ## Who combines the faces into one verdict
 
-The verdict axis is governed by a **decision rule** — how the backward faces combine, anywhere from an all-pass unanimous veto to a single senior decider (in practice, often a senior engineer weighting the Architect face, or a domain expert weighting the Framer face). The rule is **governance** — a policy choice, not an actor.
+The verdict axis is governed by a **decision rule** — how the backward faces combine, anywhere from an all-pass unanimous veto to a single senior decider (in practice, often a senior engineer weighting the Architect face, or a domain expert weighting the Oracle face). The rule is **governance** — a policy choice, not an actor.
 
 The second axis — the change request — is *generated output*, not a combination rule. So the two stay distinct.
 
 ## The deferred branch is a scheduling decision
 
-`accept + deferred` is richer than "file a ticket." It emits **new work that re-enters as its owning actor's object** — a deferred *feature* is a Framer concern, a deferred *refactor* an Architect concern. Sequencing it against everything else is again a **decision rule**, weighing product priority against structural urgency.
+`accept + deferred` is richer than "file a ticket." It emits **new work that re-enters as its owning actor's object** — a deferred *feature* is an Oracle concern, a deferred *refactor* an Architect concern. Sequencing it against everything else is again a **decision rule**, weighing product priority against structural urgency.
 
 The choice runs over two trees that can diverge:
 

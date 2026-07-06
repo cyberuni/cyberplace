@@ -1,6 +1,6 @@
 ---
 title: The Four Actors
-description: Around abundant generation sit four actors — Framer, Builder, Architect, Curator — each defined by a distinct motive. The generalize ladder keeps the three product roles apart.
+description: Around abundant generation sit four actors — Oracle, Builder, Architect, Strategist — each defined by a distinct motive. The generalize ladder keeps the three product roles apart.
 ---
 
 import { Card, CardGrid, Aside } from '@astrojs/starlight/components'
@@ -9,7 +9,7 @@ import Mermaid from '../../../components/Mermaid.astro'
 An **actor** is a human holding one of four base motives. The four are chosen to be **MECE** — mutually exclusive (the motives don't overlap) and collectively exhaustive (nothing essential falls outside). Around abundant generation they form a control loop: someone decides what's worth making, someone makes candidates, someone keeps the whole coherent, someone makes the learning compound.
 
 <CardGrid>
-	<Card title="Framer" icon="seti:default">
+	<Card title="Oracle" icon="seti:default">
 		**Intend** — what's worth doing.
 		Owns the problem worth solving and what success means, including the authority to decide *not* to build.
 		Signature output: a **kill decision**.
@@ -24,7 +24,7 @@ An **actor** is a human holding one of four base motives. The four are chosen to
 		Owns the boundaries and conventions that keep the product comprehensible as it grows.
 		Signature output: a **boundary or convention**.
 	</Card>
-	<Card title="Curator" icon="seti:db">
+	<Card title="Strategist" icon="seti:db">
 		**Accumulate** — make knowledge compound.
 		Owns the durable, reusable knowledge every other role draws on.
 		Signature output: **reuse**.
@@ -42,7 +42,7 @@ Three of the actors are most often confused, so state the difference up front. *
 	code={`flowchart TB
     B["<b>Builder</b> · design<br/>generalize within a feature<br/><i>lives in: the feature</i>"]
     AR["<b>Architect</b> · architecture<br/>generalize across features<br/><i>lives in: the product</i>"]
-    C["<b>Curator</b> · curation<br/>generalize across products<br/><i>lives in: the corpus — outlives the product</i>"]
+    C["<b>Strategist</b> · curation<br/>generalize across products<br/><i>lives in: the corpus — outlives the product</i>"]
     B -->|scope of reuse widens| AR -->|scope of reuse widens| C
     class B,AR,C actor
     classDef actor stroke-width:2px`}
@@ -52,7 +52,7 @@ Three of the actors are most often confused, so state the difference up front. *
 | --- | --- | --- | --- |
 | parts **within one feature** | the feature | **Builder** | *design* — how it works |
 | **features within one product** | the product (a shared abstraction) | **Architect** | *architecture* — how it's organized |
-| **products, over time** | the corpus (template, skill, plugin) | **Curator** | *curation* — knowledge that outlives the product |
+| **products, over time** | the corpus (template, skill, plugin) | **Strategist** | *curation* — knowledge that outlives the product |
 
 What keeps the rungs apart is the *mechanism* each uses to add value:
 
@@ -62,14 +62,14 @@ What keeps the rungs apart is the *mechanism* each uses to add value:
 
 An app crammed into a single file *works* — design is satisfied — yet is unmaintainable, because the behavior was bought directly, without the structural leverage that lets the rest of the system inherit the quality. That gap is the Architect's reason to exist.
 
-## Framer — intend
+## Oracle — intend
 
 - **Motive:** decide what is worth doing, and what success means.
 - **Owns:** the problem and its definition of done — including the authority to decide *not* to build.
 - **Signature output:** a **kill decision** — the cheapest, highest-leverage thing a team can produce.
 
 <Aside type="note" title="Boundary vs Builder">
-The Framer owns *whether and why*; the Builder owns *how*. A Builder who redefines the goal has stepped into the Framer role.
+The Oracle owns *whether and why*; the Builder owns *how*. A Builder who redefines the goal has stepped into the Oracle role.
 </Aside>
 
 ## Builder — generate
@@ -90,11 +90,11 @@ The Builder makes a part; the moment the work is about the *relations between* p
 - **Pays a behavioral dividend.** Noticing three features each roll their own auth and extracting one shared path is Architect work — and every feature now authenticates consistently. That dividend is the *fruit of organizing*, not a separate design act.
 - **Signature output:** a boundary or convention.
 
-## Curator — accumulate
+## Strategist — accumulate
 
-The three roles above operate on the *product*. The Curator does not — its object is **knowledge designed to outlive any single product**. That raises the question that recurs every time: isn't keeping the corpus organized just *architecture at another tier*?
+The three roles above operate on the *product*. The Strategist does not — its object is **knowledge designed to outlive any single product**. That raises the question that recurs every time: isn't keeping the corpus organized just *architecture at another tier*?
 
-Partly — and worth saying plainly. Organizing the corpus *is* architecture-of-the-corpus, and a Curator does it constantly. But the role is named for the part architecture does **not** contain. Three acts are Curator-only, and none is "organize":
+Partly — and worth saying plainly. Organizing the corpus *is* architecture-of-the-corpus, and a Strategist does it constantly. But the role is named for the part architecture does **not** contain. Three acts are Strategist-only, and none is "organize":
 
 - **Selection for durability** — deciding which lessons are *durable enough to encode* versus transient noise. Architecture organizes the parts that exist; it never judges which *experiences* earn a permanent place.
 - **Generalization across products and time** — lifting a specific solution into a transferable form for problems that *don't exist yet* (a template, a convention, a skill, a plugin). In-product DRY stops at the product boundary; this crosses it.
@@ -104,25 +104,25 @@ These are *accumulate* — grow a compounding, reusable asset — not *structure
 
 ### Two tiers
 
-The Curator's output *feels* like a layer because every other actor's delegate reads from it — exactly the position of a platform team, whose product is a layer made available for others to consume. So the model has two tiers:
+The Strategist's output *feels* like a layer because every other actor's delegate reads from it — exactly the position of a platform team, whose product is a layer made available for others to consume. So the model has two tiers:
 
 <Mermaid
 	caption="Three delivery actors operate on the product; one foundation actor operates on the capacity to deliver it."
 	code={`flowchart TB
     subgraph delivery [Delivery actors — operate on the product]
         direction LR
-        F[Framer] ~~~ B[Builder] ~~~ A[Architect]
+        F[Oracle] ~~~ B[Builder] ~~~ A[Architect]
     end
     subgraph foundation [Foundation actor — operates on capacity to deliver]
-        CU[Curator · the corpus]
+        CU[Strategist · the corpus]
     end
     CU -. "every delegate reads from the corpus" .-> delivery
     class F,B,A,CU actor
     classDef actor stroke-width:2px`}
 />
 
-- **Delivery actors** — Framer, Builder, Architect — operate on the *product*.
-- **Foundation actor** — Curator — operates on the team's *capacity to deliver*: the corpus the other three's delegates draw from.
+- **Delivery actors** — Oracle, Builder, Architect — operate on the *product*.
+- **Foundation actor** — Strategist — operates on the team's *capacity to deliver*: the corpus the other three's delegates draw from.
 
 <Aside type="tip" title="A prediction falls out of the tiering">
 Infrastructure is the first thing a team neglects, and a decaying corpus forces every delegate, in every role, to start cold.

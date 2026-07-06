@@ -10,7 +10,7 @@ Everything in the rest of the model describes building *a product*. But the four
 
 Three objects matter:
 
-| Object | What it is | Framer decides | Builder makes | Architect structures | Curator distills |
+| Object | What it is | Oracle decides | Builder makes | Architect structures | Strategist distills |
 | --- | --- | --- | --- | --- | --- |
 | **Product** | the concrete, substantive outcome | which product | a feature | the codebase | product & domain knowledge |
 | **Process** | the way of working | which practices | a workflow or runbook | how the practices fit | process lessons |
@@ -29,23 +29,23 @@ Process and toolchain interpenetrate — a commit discipline encoded as a hook i
     TOOL["<b>TOOLCHAIN</b><br/>tools and agent configuration"]
     PROD["<b>PRODUCT</b><br/>the concrete outcome that ships"]
     PROC <-->|overlap & co-evolve| TOOL
-    PROD -->|experience distilled · Curator| PROC
-    PROD -->|experience distilled · Curator| TOOL
+    PROD -->|experience distilled · Strategist| PROC
+    PROD -->|experience distilled · Strategist| TOOL
     PROC -->|capability supplied| PROD
     TOOL -->|capability supplied| PROD
     class PROD artifact
     classDef artifact stroke:#0d9488,stroke-width:1.75px`}
 />
 
-The one asymmetry: **product is the concrete, substantive outcome — the thing that ships.** Process and toolchain are *means* that serve it and are refined by it. Influence runs every way at once: building the product teaches process and tooling (the Curator distills), while better process and tooling make the next product cheaper.
+The one asymmetry: **product is the concrete, substantive outcome — the thing that ships.** Process and toolchain are *means* that serve it and are refined by it. Influence runs every way at once: building the product teaches process and tooling (the Strategist distills), while better process and tooling make the next product cheaper.
 
 ## Three things this clears up
 
 **An outsized "Architect" definition resolves.** "Own codebase health, *and* the process governing AI contributions, *and* the AI workflow/harness" was never one giant role — it is the **Architect motive worked across all three sets.** One motive, three objects.
 
-**Codification is how knowledge crosses between the sets** — not an elevator up a ladder. The Curator distills a product lesson into a process convention or a toolchain artifact — *agent configuration* — which lands in process, toolchain, or their overlap, and is *wielded* back in product-building.
+**Codification is how knowledge crosses between the sets** — not an elevator up a ladder. The Strategist distills a product lesson into a process convention or a toolchain artifact — *agent configuration* — which lands in process, toolchain, or their overlap, and is *wielded* back in product-building.
 
-**The Curator unifies the model.** "Accumulate" *is* lifting product experience into a reusable process or toolchain asset. So the **Curator foundation tier**, the **codification law**, **agent configuration**, and this **self-application** are one pattern: knowledge made reusable and carried across a seam — the seam between *actors* (Curator → the other three, within one build) and the seams between *sets* (product ↔ process ↔ toolchain). Same motive, two kinds of seam.
+**The Strategist unifies the model.** "Accumulate" *is* lifting product experience into a reusable process or toolchain asset. So the **Strategist foundation tier**, the **codification law**, **agent configuration**, and this **self-application** are one pattern: knowledge made reusable and carried across a seam — the seam between *actors* (Strategist → the other three, within one build) and the seams between *sets* (product ↔ process ↔ toolchain). Same motive, two kinds of seam.
 
 <Aside type="caution" title="Term guard">
 *Tier* is the delivery-vs-foundation split among the four actors, *within* one build. Product / process / toolchain are a different thing — three **overlapping sets** the model is applied to, not a stack and not a tier.
