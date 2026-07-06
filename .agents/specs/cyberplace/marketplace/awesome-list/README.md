@@ -33,6 +33,7 @@ The `cyberplace awesome` command group over the curated catalog:
 - Catalog validation + multi-source merge/dedupe with corroboration counting; derives install
   commands (`npx skills add <repo>`).
 
-**Non-goals / edges:** the reserved `crew` tag + the dedicated `cyberplace tavern` command belong to
-[`../tavern/`](../tavern/README.md) (decided — see `design/decisions/`), not here; this unit stays
-the general discovery surface.
+**Non-goals / edges:** the crew facet keys on the marketplace manifest
+(`.claude-plugin/marketplace.json`), not this catalog; the reserved `crew` tag + the dedicated
+`cyberplace tavern` command belong to [`../tavern/`](../tavern/README.md) (decided — see
+`design/decisions/`), not here; this unit stays the general discovery surface.
