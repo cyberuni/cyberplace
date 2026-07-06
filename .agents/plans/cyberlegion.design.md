@@ -101,6 +101,16 @@ consumers of cyberlegion.
 - CR-6b `legion/cr-6b-cyberfleet-repoint` — cyberfleet imports the façade (`workspace:*`); its duplicate
   mechanism deleted; `mode` reuses cyberlegion's worktree marker; personas + `.gitignore` repointed;
   `turbo.json` `test` gains `^build`. cyberfleet now = a fleet layer (cli/missions/mode/sdd), 47 tests.
+- CR-6c `legion/cr-6c-cyberfleet-cut-passthrough` — cut the 10 passthrough mechanism verbs from the
+  cyberfleet CLI (they were pure `args → cyberlegion fn → TOON`, resurrecting the duplication on the
+  CLI surface and drifting from cyberlegion's flags). cyberfleet keeps only its own fleet verbs
+  (`mode`/`missions`/`jump`/`pause`/`gate`) and depends up on cyberlegion; a persona runs mechanism
+  directly (`cyberlegion identity register`, `cyberlegion mail send`, `cyberlegion session spawn`, …).
+  Deleted the 5 moved frozen spec nodes (identity/messaging/spawn/decommission/surfacing — now
+  cyberlegion's canonical frozen scenarios); rewrote cyberfleet `spec.md`/`README.md` as a fleet-layer
+  index. Repointed the pod/operator/crimp personas and ADR-0021 **reference-renamed** the
+  `cyberfleet-plugin` frozen `.feature`/README scenarios (behavior unchanged, only the moved slug —
+  freeze preserved, no re-open).
 
 The cyberlegion **package** (215 tests) and **plugin** are complete; cyberfleet is repointed onto it
 (no more duplication); SDD depends by intent. Full root `pnpm verify` green.
@@ -110,9 +120,15 @@ The cyberlegion **package** (215 tests) and **plugin** are complete; cyberfleet 
 - **CR-8 `legion-publish`** (deferred — premature). Add a changeset + let the plugin build resolve the
   `npx cyberlegion@<version>` pins. Do only when the feature is complete + reviewed + merged; per repo
   precedent, in-flight `0.0.0` packages carry no changeset.
-- **cyberfleet spec reconciliation** (follow-up). `packages/cyberfleet/.agents/spec/` still has the
-  migrated mechanism nodes (identity/messaging/spawn/decommission/surfacing) describing now-deleted code
-  — a Warden/spec-CR removes them (they moved to `packages/cyberlegion/.agents/spec/`).
+- ~~**cyberfleet spec reconciliation**~~ — DONE in CR-6c (nodes removed, spec rewritten as a
+  fleet-layer index).
+- **cyberfleet fleet-verb backfill** (follow-up). The fleet verbs (`mode`/`missions`/`jump`/`pause`/
+  `gate`) are implemented + smoke-tested but not yet captured as behavioral spec nodes with `.feature`
+  suites — a flagged gap in cyberfleet `spec.md`. A future CR backfills them.
+- **de-slug the cyberfleet-plugin scenarios** (doctrine follow-up). The persona `.feature`s still name
+  a concrete CLI slug (`cyberlegion mail send`) rather than the intent ("checks its inbox"). CR-6c
+  reference-renamed the slug freeze-preservingly, but the deeper ADR-0021 fix is to depend on intent,
+  not any slug — a separate CR (a scenario rewrite = a re-open needing ratification).
 - **Merge coordination.** cyberfleet's persona program is in-flight on another branch; reconcile at merge.
 
 <details><summary>CR-6 storage design (as-built)</summary>
