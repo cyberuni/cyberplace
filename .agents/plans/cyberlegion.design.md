@@ -84,3 +84,37 @@ AXI, cyberfleet imports cyberlegion, breaking) → CR-3 `legion-dispatch-primiti
 Consolidates `add-fleet-comms` (source), `cyberfleet-comms-wake-poc` (informs wake), and
 `cyberfleet-verdict-roundtrip` (folds into CR-4). `cyberfleet-stations` and the Tender become downstream
 consumers of cyberlegion.
+
+## Status (branch `cyberlegion`; per-CR git tags mark progress)
+
+**Delivered (7 CRs + hygiene, all tagged `legion/*`; full root `pnpm verify` green):**
+
+- CR-1 `legion/cr-1-scaffold` — package + spec skeleton.
+- CR-2 `legion/cr-2-extract-core` — mechanism behind the `Store` seam, global hub, grouped CLI + AXI/TOON.
+- CR-4 `legion/cr-4-wake` — threads + `mail await`/`watch`/`delete` + two-mode ancestry mux-probe + `selectWakePath`.
+- CR-4b `legion/cr-4b-agentdef` — agent-def resolve/realize + `agent` group.
+- CR-3 `legion/cr-3-dispatch-primitives` — `dispatch prep`/`channel`/`collect` + verdict validator.
+- `legion/spec-backfill` — all 7 nodes' `.feature`s authored; knip clean.
+- CR-5 `legion/cr-5-gateway-legate` — the plugin: gateway + `dispatch-governance` routing brain + `legate`.
+- CR-7 `legion/cr-7-sdd-depend` — ADR-0023 dispatch seam + SDD depends on cyberlegion by intent (additive).
+
+The cyberlegion **package** (215 tests) and **plugin** are complete and self-contained; SDD's
+dependency is established by intent. cyberfleet is **untouched**.
+
+**Deferred (both need conditions not yet met — do NOT do unsupervised):**
+
+- **CR-6 `cyberfleet-repoint`** — re-point cyberfleet onto cyberlegion and delete its duplicate
+  mechanism. Not a mechanical import-swap: cyberfleet's fleet layer couples to concepts cyberlegion
+  dropped/changed (`detectMode` ship-vs-command-center; `output` markdown→TOON; `.cyberfleet`→the global
+  hub), and cyberlegion is **bin-only** (no lib exports) so cyberfleet must either shell out to the CLI
+  or cyberlegion must add a lib surface. cyberfleet's own persona program is **in-flight/unlanded**
+  (another branch), so rewiring its landed CLI now risks a merge collision. **Needs a decision**
+  (lib-export vs CLI-shell-out; keep-or-drop `mode`) + coordination with cyberfleet's direction. The
+  duplication is harmless meanwhile (cyberfleet is unpublished `0.0.0`).
+- **CR-8 `legion-publish`** — add a changeset + let the plugin build resolve `npx cyberlegion@<version>`
+  pins. **Premature until the feature is complete + reviewed + merged**: per repo precedent, in-flight
+  `0.0.0` packages (cyberfleet) carry no changeset; adding one now would publish an incomplete feature
+  on the next release. The plugin skills' `npx cyberlegion@<version>` pins stay placeholders until then.
+
+**When resuming:** decide CR-6's consumption model, land it (keeping cyberfleet's remaining fleet tests
+green), then CR-8 (changeset + pins) as the last step before the single feature PR.
