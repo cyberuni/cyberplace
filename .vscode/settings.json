@@ -19,6 +19,8 @@
 		"editor.formatOnSave": true
 	},
 	"cSpell.words": [
+		"acked",
+		"acks",
 		"Agentic",
 		"anthropics",
 		"criticals",
@@ -29,11 +31,13 @@
 		"exfiltration",
 		"fdisk",
 		"Governances",
+		"herdr",
 		"hookify",
 		"repobuddy",
 		"SCIM",
 		"skillify",
 		"subdirs",
+		"toon",
 		"trailofbits"
 	],
 	"cucumber.features": ["artifacts/specs/**/*.feature"],
