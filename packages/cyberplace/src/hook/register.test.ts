@@ -148,7 +148,7 @@ test('upgrades pinned semver in Cursor sessionStart hook', () => {
 						sessionStart: [
 							{
 								command:
-									"npx cyberplace@0.1.0 hook run --name commit-discipline --extract AGENTS.md --heading 'Commit Discipline'",
+									"npx cyberplace@0.0.0-legacy hook run --name commit-discipline --extract AGENTS.md --heading 'Commit Discipline'",
 							},
 						],
 					},
@@ -172,7 +172,7 @@ test('upgrades pinned semver in Cursor sessionStart hook', () => {
 			}
 			const command = settings.hooks.sessionStart[0]?.command ?? ''
 			expect(command).toContain('npx cyberplace@')
-			expect(command).not.toContain('@0.1.0')
+			expect(command).not.toContain('@0.0.0-legacy')
 			expect(settings.hooks.sessionStart.length).toBe(1)
 		},
 	)
