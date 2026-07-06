@@ -80,5 +80,5 @@ Unlike code, agent configuration has no type-checker, no linter, and no test run
 - [Constraints](/concepts/constraints/) — hard behavioral limits and guardrails
 - [Persona](/concepts/persona/) — bundled agent identity + permissions + constraints
 - [Commit Discipline](/disciplines/commit-discipline/) — example of an always-on discipline
-- [init skill](/skills/init/) — sets up `AGENTS.md` for a repo
+- the `init` skill (`cyberspace` plugin) — sets up `AGENTS.md` for a repo
 - [Spec Dependencies](/concepts/spec-dependencies/) — why `AGENTS.md` is the composition root for cross-references

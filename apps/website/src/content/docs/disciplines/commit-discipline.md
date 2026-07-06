@@ -30,7 +30,7 @@ When opted in, the auto-commit rule adds:
 
 > When a unit of work is complete and verified, commit it immediately — do not wait for the user to ask. Batching multiple units into one commit, or finishing all work before committing, are both violations of this rule.
 
-Auto-commit is opt-in — the [`init-commit-discipline`](/skills/init-commit-discipline/) skill asks before injecting this rule.
+Auto-commit is opt-in — the `init-commit-discipline` skill (`commit-discipline` plugin) asks before injecting this rule.
 
 ## Conventional Commits reference
 
@@ -82,6 +82,6 @@ After upgrading `cyberplace`, re-run `init-commit-discipline` to bump the pinned
 
 ## Related
 
-- [init-commit-discipline skill](/skills/init-commit-discipline/) — sets up commit discipline in a repo
-- [commit skill](/skills/commit/) — minimal commit helper
+- the `init-commit-discipline` skill (`commit-discipline` plugin) — sets up commit discipline in a repo
+- the `commit` skill (`commit-discipline` plugin) — minimal commit helper
 - [hook CLI](/cli/hook/) — `hook register` and `hook run` commands

@@ -70,4 +70,4 @@ description: Use this skill when <trigger>. <One-line capability summary.>
 - [Persona](/concepts/persona/) — bundled agent identity a skill can invoke as a subagent
 - [Governances](/concepts/governances/) — normative rules a skill loads to stay aligned
 - [Agent Configuration](/concepts/agent-configuration/) — full picture of what shapes agent behavior
-- [Skills Overview](/skills/overview/) — the skills shipped with this repo
+- [Marketplace](/marketplace/) — the plugins and skills shipped with this repo

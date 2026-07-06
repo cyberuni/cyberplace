@@ -52,19 +52,6 @@ export default defineConfig({
 					],
 				},
 				{
-					label: 'Skills',
-					items: [
-						{ label: 'Overview', slug: 'skills/overview' },
-						{ label: 'init', slug: 'skills/init' },
-						{ label: 'init-commit-discipline', slug: 'skills/init-commit-discipline' },
-						{ label: 'commit', slug: 'skills/commit' },
-						{ label: 'audit-skill', slug: 'skills/audit-skill' },
-						{ label: 'find-awesome-skill', slug: 'skills/find-awesome-skill' },
-						{ label: 'configure-awesome-sources', slug: 'skills/configure-awesome-sources' },
-						{ label: 'update-awesome-list', slug: 'skills/update-awesome-list' },
-					],
-				},
-				{
 					label: 'CLI Reference',
 					items: [
 						{ label: 'Overview', slug: 'cli/overview' },

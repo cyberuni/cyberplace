@@ -49,7 +49,7 @@ A shell command registered to fire when a specific agent event occurs — sessio
 
 ## Skill
 
-A reusable, on-demand workflow the agent loads when it matches a situation. Defined in a `SKILL.md` file. Auto-invoked by the model when the description matches, or explicitly invoked by the user via `/name`. See [Skills overview](/skills/overview/).
+A reusable, on-demand workflow the agent loads when it matches a situation. Defined in a `SKILL.md` file. Auto-invoked by the model when the description matches, or explicitly invoked by the user via `/name`. See [Skills](/concepts/skills/).
 
 ## Discipline
 

@@ -39,7 +39,7 @@ npx cyberplace@<version> audit validate --format json
 | Q1–Q5, Q10–Q11 | Quality | HIGH–MEDIUM |
 | E1–E2, E6, E9 | Security | CRITICAL–HIGH |
 
-Full review (Q6–Q13, E3–E8, P1–P3) requires the [`audit-skill`](/skills/audit-skill/) agent skill.
+Full review (Q6–Q13, E3–E8, P1–P3) requires the `improve-skill` agent skill (`aced` plugin).
 
 ## CI integration
 

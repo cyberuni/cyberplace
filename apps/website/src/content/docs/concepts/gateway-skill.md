@@ -55,7 +55,7 @@ The agent should ask what SDD work the user wants to do: create a new feature, b
 
 ## Related
 
-- [Skills overview](/skills/overview/) — on-demand workflows
+- [Skills](/concepts/skills/) — on-demand workflows
 - [Governances](/concepts/governances/) — domain rules loaded on demand
 - [Disciplines](/concepts/disciplines/) — always-on behavioral habits
 - [Spec-Driven Development](/concepts/spec-driven-development/) — the workflow `$sdd` activates
