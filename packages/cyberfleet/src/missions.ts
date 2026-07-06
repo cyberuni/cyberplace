@@ -1,9 +1,8 @@
 // The query-first fleet view (ADR-0022 decision 10): derive, per ship, its mission/gate/leash/HAL
 // state from SDD's durable filesystem state — nothing here is tracked as mutable view state.
 
-import { resolvePrimaryRoot } from './console/worktree.ts'
-import type { AgentRecord, AgentStatus, Exec } from './identity.ts'
-import { projectRoot } from './paths.ts'
+import type { AgentRecord, Exec } from 'cyberlegion'
+import { projectRoot, resolvePrimaryRoot } from 'cyberlegion'
 import { computeNeedsCouncil, inferHal } from './sdd/hal.ts'
 import { hasHalt, readLedgerState, readPlanBrief, readSpecStatus } from './sdd/read.ts'
 
@@ -42,7 +41,7 @@ export interface MissionRow {
 	worktreeRoot: string | null
 	/** The ship's worktree branch — the join key to its SDD `<cr-ref>` (see resolveShip). */
 	branch: string | null
-	status: AgentStatus
+	status: AgentRecord['status']
 	/** The resolved CR ref (== `branch` by this repo's convention); null when the ship carries no
 	 * worktree/branch to join on. */
 	cr: string | null
