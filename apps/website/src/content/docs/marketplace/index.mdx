@@ -1,0 +1,19 @@
+---
+title: Marketplace
+description: Search and browse the cyberplace plugin marketplace — plugins and crews for AI agents.
+template: splash
+---
+
+import MarketplaceSearch from '../../../components/MarketplaceSearch.astro'
+
+Search the cyberplace marketplace — every plugin published in `.claude-plugin/marketplace.json`,
+across harnesses (Claude Code, Cursor, Codex). Crews are marked with a **crew** badge; browse just
+the crews in the [Tavern](/tavern).
+
+Install any plugin from the CLI:
+
+```bash
+npx cyberplace@$(npm view cyberplace version) find <query>
+```
+
+<MarketplaceSearch />

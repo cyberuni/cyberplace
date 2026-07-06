@@ -1,0 +1,349 @@
+---
+import { existsSync, readFileSync } from 'node:fs'
+import { dirname, join } from 'node:path'
+
+interface MarketplacePlugin {
+	name: string
+	description?: string
+	source: string
+	tags?: string[]
+}
+
+interface MarketplaceManifest {
+	name: string
+	owner: { name: string }
+	plugins: MarketplacePlugin[]
+}
+
+interface Listing {
+	name: string
+	description: string
+	tags: string[]
+	isCrew: boolean
+	sourceUrl: string
+	install: string
+}
+
+// import.meta.url resolves to a bundled build-time chunk path (not the source
+// file location) once Astro prerenders, so it cannot be used to derive the
+// repo root by relative distance. Instead, walk upward from the current
+// working directory (stable: pnpm build/dev always runs with cwd set to
+// apps/website) looking for the marketplace manifest's containing directory.
+function findRepoRoot(): string {
+	let dir = process.cwd()
+	for (let i = 0; i < 8; i++) {
+		if (existsSync(join(dir, '.claude-plugin', 'marketplace.json'))) return dir
+		const parent = dirname(dir)
+		if (parent === dir) break
+		dir = parent
+	}
+	// Fallback: apps/website/../.. is the repo root in this monorepo layout.
+	return join(process.cwd(), '..', '..')
+}
+
+const repoRoot = findRepoRoot()
+
+function loadListings(): Listing[] {
+	const manifestPath = join(repoRoot, '.claude-plugin', 'marketplace.json')
+	if (!existsSync(manifestPath)) return []
+
+	let manifest: MarketplaceManifest
+	try {
+		manifest = JSON.parse(readFileSync(manifestPath, 'utf-8')) as MarketplaceManifest
+	} catch {
+		return []
+	}
+
+	const owner = 'cyberuni'
+	const repo = 'cyberplace'
+
+	return (manifest.plugins ?? [])
+		.map((plugin): Listing => {
+			const tags = plugin.tags ?? []
+			return {
+				name: plugin.name,
+				description: plugin.description ?? '',
+				tags,
+				isCrew: tags.includes('crew'),
+				sourceUrl: `https://github.com/${owner}/${repo}/tree/main/plugins/${plugin.name}`,
+				install: `cyberplace add ${plugin.name}`,
+			}
+		})
+		.sort((a, b) => a.name.localeCompare(b.name))
+}
+
+const listings = loadListings()
+const allTags = [...new Set(listings.flatMap((l) => l.tags))].sort((a, b) => a.localeCompare(b))
+---
+
+<div class="marketplace" data-marketplace>
+	{
+		listings.length === 0 ? (
+			<p class="marketplace-empty">No plugins are cataloged yet.</p>
+		) : (
+			<>
+				<div class="marketplace-controls">
+					<input
+						type="search"
+						class="marketplace-search"
+						placeholder="Search plugins by name, description, or tag…"
+						aria-label="Search the marketplace"
+						data-marketplace-search
+					/>
+					{allTags.length > 0 && (
+						<div class="marketplace-tags" role="group" aria-label="Filter by tag">
+							{allTags.map((tag) => (
+								<button type="button" class="marketplace-tag-filter" data-tag={tag}>
+									{tag}
+								</button>
+							))}
+						</div>
+					)}
+				</div>
+				<p class="marketplace-count" data-marketplace-count aria-live="polite">
+					{listings.length} plugin{listings.length === 1 ? '' : 's'}
+				</p>
+				<div class="marketplace-grid">
+					{listings.map((listing) => (
+						<article
+							class="listing-card"
+							data-listing
+							data-name={listing.name.toLowerCase()}
+							data-description={listing.description.toLowerCase()}
+							data-tags={listing.tags.join(' ').toLowerCase()}
+						>
+							<header class="listing-card-header">
+								<h3 class="listing-name">{listing.name}</h3>
+								{listing.isCrew && <span class="listing-badge">crew</span>}
+							</header>
+							<p class="listing-description">{listing.description}</p>
+							{listing.tags.length > 0 && (
+								<div class="listing-tags">
+									{listing.tags.map((tag) => (
+										<span class="listing-tag">{tag}</span>
+									))}
+								</div>
+							)}
+							<footer class="listing-card-footer">
+								<code class="listing-install">{listing.install}</code>
+								<a
+									class="listing-source-link"
+									href={listing.sourceUrl}
+									target="_blank"
+									rel="noopener noreferrer"
+								>
+									Source ↗
+								</a>
+							</footer>
+						</article>
+					))}
+				</div>
+				<p class="marketplace-noresults" data-marketplace-noresults hidden>
+					No plugins match your search.
+				</p>
+			</>
+		)
+	}
+</div>
+
+<script>
+	function initMarketplace(root: HTMLElement) {
+		const search = root.querySelector<HTMLInputElement>('[data-marketplace-search]')
+		const cards = Array.from(root.querySelectorAll<HTMLElement>('[data-listing]'))
+		const tagButtons = Array.from(root.querySelectorAll<HTMLButtonElement>('.marketplace-tag-filter'))
+		const count = root.querySelector<HTMLElement>('[data-marketplace-count]')
+		const noResults = root.querySelector<HTMLElement>('[data-marketplace-noresults]')
+
+		const activeTags = new Set<string>()
+
+		function apply() {
+			const query = (search?.value ?? '').trim().toLowerCase()
+			let visible = 0
+
+			for (const card of cards) {
+				const name = card.dataset.name ?? ''
+				const description = card.dataset.description ?? ''
+				const tags = (card.dataset.tags ?? '').split(' ').filter(Boolean)
+
+				const matchesQuery =
+					query === '' ||
+					name.includes(query) ||
+					description.includes(query) ||
+					tags.some((tag) => tag.includes(query))
+
+				const matchesTags = activeTags.size === 0 || [...activeTags].every((tag) => tags.includes(tag))
+
+				const show = matchesQuery && matchesTags
+				card.hidden = !show
+				if (show) visible++
+			}
+
+			if (count) count.textContent = `${visible} plugin${visible === 1 ? '' : 's'}`
+			if (noResults) noResults.hidden = visible !== 0
+		}
+
+		search?.addEventListener('input', apply)
+
+		for (const button of tagButtons) {
+			button.addEventListener('click', () => {
+				const tag = button.dataset.tag ?? ''
+				if (activeTags.has(tag)) {
+					activeTags.delete(tag)
+					button.classList.remove('active')
+					button.setAttribute('aria-pressed', 'false')
+				} else {
+					activeTags.add(tag)
+					button.classList.add('active')
+					button.setAttribute('aria-pressed', 'true')
+				}
+				apply()
+			})
+			button.setAttribute('aria-pressed', 'false')
+		}
+	}
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-marketplace]')) {
+		initMarketplace(root)
+	}
+</script>
+
+<style>
+	.marketplace-empty {
+		color: var(--sl-color-gray-3);
+		font-style: italic;
+	}
+	.marketplace-controls {
+		display: flex;
+		flex-direction: column;
+		gap: 0.85rem;
+		margin: 1.5rem 0 1rem;
+	}
+	.marketplace-search {
+		width: 100%;
+		max-width: 40rem;
+		font-size: var(--sl-text-base);
+		color: var(--sl-color-text);
+		background: var(--sl-color-black);
+		border: 1px solid var(--sl-color-gray-5);
+		border-radius: 0.6rem;
+		padding: 0.6rem 0.9rem;
+	}
+	.marketplace-search:focus {
+		outline: 2px solid var(--sl-color-accent);
+		outline-offset: 1px;
+	}
+	.marketplace-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem;
+	}
+	.marketplace-tag-filter {
+		font-size: var(--sl-text-xs);
+		font-weight: 600;
+		color: var(--sl-color-gray-2);
+		background: transparent;
+		border: 1px solid var(--sl-color-gray-5);
+		border-radius: 999px;
+		padding: 0.15rem 0.7rem;
+		cursor: pointer;
+	}
+	.marketplace-tag-filter:hover {
+		color: var(--sl-color-white);
+		border-color: var(--sl-color-gray-4);
+	}
+	.marketplace-tag-filter.active {
+		color: var(--sl-color-accent);
+		background: var(--sl-color-accent-low);
+		border-color: var(--sl-color-accent);
+	}
+	.marketplace-count {
+		font-size: var(--sl-text-sm);
+		color: var(--sl-color-gray-3);
+		margin: 0 0 1rem;
+	}
+	.marketplace-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+		gap: 1.25rem;
+	}
+	.listing-card {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		padding: 1.25rem 1.5rem;
+		border: 1px solid var(--sl-color-gray-5);
+		border-radius: 0.75rem;
+		background: var(--sl-color-gray-6);
+	}
+	.listing-card[hidden] {
+		display: none;
+	}
+	.listing-card-header {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.6rem;
+	}
+	.listing-name {
+		margin: 0;
+		font-size: var(--sl-text-lg);
+		color: var(--sl-color-text);
+	}
+	.listing-badge {
+		font-size: var(--sl-text-xs);
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+		color: var(--sl-color-accent);
+		background: var(--sl-color-accent-low);
+		border-radius: 999px;
+		padding: 0.15rem 0.6rem;
+	}
+	.listing-description {
+		margin: 0;
+		color: var(--sl-color-gray-3);
+		line-height: 1.5;
+		flex: 1;
+	}
+	.listing-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem;
+	}
+	.listing-tag {
+		font-size: var(--sl-text-xs);
+		color: var(--sl-color-gray-3);
+		border: 1px solid var(--sl-color-gray-5);
+		border-radius: 999px;
+		padding: 0.1rem 0.55rem;
+	}
+	.listing-card-footer {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.75rem;
+		margin-top: 0.25rem;
+		padding-top: 0.75rem;
+		border-top: 1px solid var(--sl-color-gray-5);
+	}
+	.listing-install {
+		font-size: var(--sl-text-sm);
+		color: var(--sl-color-text);
+		background: var(--sl-color-gray-5);
+		border-radius: 0.4rem;
+		padding: 0.2rem 0.5rem;
+	}
+	.listing-source-link {
+		font-size: var(--sl-text-sm);
+		color: var(--sl-color-accent);
+		text-decoration: none;
+	}
+	.listing-source-link:hover {
+		text-decoration: underline;
+	}
+	.marketplace-noresults {
+		color: var(--sl-color-gray-3);
+		font-style: italic;
+	}
+</style>
