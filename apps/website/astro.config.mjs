@@ -1,10 +1,14 @@
 // @ts-check
 import starlight from '@astrojs/starlight'
+import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'astro/config'
 
 export default defineConfig({
 	site: 'https://cyberuni.github.io',
 	base: '/cyberplace/',
+	vite: {
+		plugins: [tailwindcss()],
+	},
 	integrations: [
 		starlight({
 			title: 'cyberplace',
@@ -12,6 +16,7 @@ export default defineConfig({
 			social: [
 				{ icon: 'github', label: 'GitHub', href: 'https://github.com/cyberuni/cyberplace' },
 			],
+			customCss: ['./src/styles/global.css'],
 			components: {
 				SiteTitle: './src/components/SiteTitle.astro',
 			},

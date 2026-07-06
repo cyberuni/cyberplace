@@ -7,7 +7,8 @@
 			"entry": ["skills/*/scripts/*.mts"]
 		},
 		"apps/website": {
-			"ignoreDependencies": ["cyberplace"]
+			"ignore": ["src/styles/global.css"],
+			"ignoreDependencies": ["tailwindcss", "@astrojs/starlight-tailwind", "@fontsource-variable/inter"]
 		}
 	}
 }

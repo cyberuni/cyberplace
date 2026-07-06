@@ -168,14 +168,22 @@ const allTags = [...new Set(listings.flatMap((l) => l.tags))].sort((a, b) => a.l
 		max-width: 40rem;
 		font-size: var(--sl-text-base);
 		color: var(--sl-color-text);
-		background: var(--sl-color-black);
-		border: 1px solid var(--sl-color-gray-5);
-		border-radius: 0.6rem;
+		background: rgba(255, 255, 255, 0.03);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 12px;
 		padding: 0.6rem 0.9rem;
+		transition:
+			border-color 0.15s ease,
+			box-shadow 0.15s ease;
+	}
+	:root[data-theme='light'] .marketplace-search {
+		background: rgba(16, 17, 26, 0.03);
+		border-color: rgba(16, 17, 26, 0.1);
 	}
 	.marketplace-search:focus {
-		outline: 2px solid var(--sl-color-accent);
-		outline-offset: 1px;
+		outline: none;
+		border-color: var(--sl-color-accent);
+		box-shadow: 0 0 0 3px var(--linear-accent-low);
 	}
 	.marketplace-tags {
 		display: flex;
@@ -187,18 +195,22 @@ const allTags = [...new Set(listings.flatMap((l) => l.tags))].sort((a, b) => a.l
 		font-weight: 600;
 		color: var(--sl-color-gray-2);
 		background: transparent;
-		border: 1px solid var(--sl-color-gray-5);
+		border: 1px solid var(--linear-border);
 		border-radius: 999px;
 		padding: 0.15rem 0.7rem;
 		cursor: pointer;
+		transition:
+			color 0.15s ease,
+			border-color 0.15s ease,
+			background-color 0.15s ease;
 	}
 	.marketplace-tag-filter:hover {
 		color: var(--sl-color-white);
-		border-color: var(--sl-color-gray-4);
+		border-color: var(--linear-border-strong);
 	}
 	.marketplace-tag-filter.active {
-		color: var(--sl-color-accent);
-		background: var(--sl-color-accent-low);
+		color: var(--linear-accent-hover);
+		background: var(--linear-accent-low);
 		border-color: var(--sl-color-accent);
 	}
 	.marketplace-count {
@@ -216,9 +228,14 @@ const allTags = [...new Set(listings.flatMap((l) => l.tags))].sort((a, b) => a.l
 		flex-direction: column;
 		gap: 0.75rem;
 		padding: 1.25rem 1.5rem;
-		border: 1px solid var(--sl-color-gray-5);
-		border-radius: 0.75rem;
-		background: var(--sl-color-gray-6);
+		border: 1px solid var(--linear-border);
+		border-radius: 16px;
+		background: var(--linear-panel-bg);
+		box-shadow: var(--linear-shadow-card);
+		transition: border-color 0.15s ease;
+	}
+	.listing-card:hover {
+		border-color: var(--sl-color-accent);
 	}
 	.listing-card[hidden] {
 		display: none;
@@ -239,8 +256,9 @@ const allTags = [...new Set(listings.flatMap((l) => l.tags))].sort((a, b) => a.l
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.03em;
-		color: var(--sl-color-accent);
-		background: var(--sl-color-accent-low);
+		color: var(--linear-accent-hover);
+		background: var(--linear-accent-low);
+		border: 1px solid var(--linear-accent-hover);
 		border-radius: 999px;
 		padding: 0.15rem 0.6rem;
 	}
@@ -258,7 +276,7 @@ const allTags = [...new Set(listings.flatMap((l) => l.tags))].sort((a, b) => a.l
 	.listing-tag {
 		font-size: var(--sl-text-xs);
 		color: var(--sl-color-gray-3);
-		border: 1px solid var(--sl-color-gray-5);
+		border: 1px solid var(--linear-border);
 		border-radius: 999px;
 		padding: 0.1rem 0.55rem;
 	}
@@ -270,18 +288,18 @@ const allTags = [...new Set(listings.flatMap((l) => l.tags))].sort((a, b) => a.l
 		gap: 0.75rem;
 		margin-top: 0.25rem;
 		padding-top: 0.75rem;
-		border-top: 1px solid var(--sl-color-gray-5);
+		border-top: 1px solid var(--linear-border);
 	}
 	.listing-install {
 		font-size: var(--sl-text-sm);
 		color: var(--sl-color-text);
-		background: var(--sl-color-gray-5);
-		border-radius: 0.4rem;
+		background: var(--linear-panel-bg-elevated);
+		border-radius: 6px;
 		padding: 0.2rem 0.5rem;
 	}
 	.listing-source-link {
 		font-size: var(--sl-text-sm);
-		color: var(--sl-color-accent);
+		color: var(--linear-accent-link);
 		text-decoration: none;
 	}
 	.listing-source-link:hover {

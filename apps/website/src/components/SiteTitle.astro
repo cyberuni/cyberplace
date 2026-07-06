@@ -62,31 +62,36 @@ function isActive(href: string): boolean {
 		align-items: center;
 		gap: 0.5rem;
 		font-size: var(--sl-text-h4);
-		font-weight: 700;
-		color: var(--sl-color-text-accent, var(--sl-color-white));
+		font-weight: 600;
+		letter-spacing: -0.01em;
+		color: var(--sl-color-white);
 		text-decoration: none;
 		white-space: nowrap;
 	}
 	.top-nav {
 		display: flex;
 		align-items: center;
-		gap: 1.25rem;
+		gap: 0.25rem;
 	}
 	.top-nav-link {
 		font-size: var(--sl-text-sm);
-		font-weight: 600;
+		font-weight: 500;
 		color: var(--sl-color-gray-3);
 		text-decoration: none;
-		padding: 0.25rem 0;
-		border-bottom: 2px solid transparent;
+		padding: 0.35rem 0.75rem;
+		border-radius: 9999px;
 		white-space: nowrap;
+		transition:
+			color 0.15s ease,
+			background-color 0.15s ease;
 	}
 	.top-nav-link:hover {
 		color: var(--sl-color-white);
+		background: rgba(255, 255, 255, 0.05);
 	}
 	.top-nav-link.active {
 		color: var(--sl-color-white);
-		border-bottom-color: var(--sl-color-accent);
+		background: var(--sl-color-accent-low);
 	}
 
 	/* The sidebar hamburger covers navigation on narrow viewports. */

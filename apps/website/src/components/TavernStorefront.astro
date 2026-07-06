@@ -63,9 +63,14 @@ function countChips(crew: CrewPlugin): string[] {
 		gap: 0.75rem;
 		max-width: 42rem;
 		padding: 1.25rem 1.5rem;
-		border: 1px solid var(--sl-color-gray-5);
-		border-radius: 0.75rem;
-		background: var(--sl-color-gray-6);
+		border: 1px solid var(--linear-border);
+		border-radius: 16px;
+		background: var(--linear-panel-bg);
+		box-shadow: var(--linear-shadow-card);
+		transition: border-color 0.15s ease;
+	}
+	.crew-card:hover {
+		border-color: var(--sl-color-accent);
 	}
 	.crew-card-header {
 		display: flex;
@@ -83,8 +88,9 @@ function countChips(crew: CrewPlugin): string[] {
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.03em;
-		color: var(--sl-color-accent);
-		background: var(--sl-color-accent-low);
+		color: var(--linear-accent-hover);
+		background: var(--linear-accent-low);
+		border: 1px solid var(--linear-accent-hover);
 		border-radius: 999px;
 		padding: 0.15rem 0.6rem;
 	}
@@ -106,7 +112,7 @@ function countChips(crew: CrewPlugin): string[] {
 	.crew-tag {
 		font-size: var(--sl-text-xs);
 		color: var(--sl-color-gray-3);
-		border: 1px solid var(--sl-color-gray-5);
+		border: 1px solid var(--linear-border);
 		border-radius: 999px;
 		padding: 0.1rem 0.55rem;
 	}
@@ -118,18 +124,18 @@ function countChips(crew: CrewPlugin): string[] {
 		gap: 0.75rem;
 		margin-top: 0.25rem;
 		padding-top: 0.75rem;
-		border-top: 1px solid var(--sl-color-gray-5);
+		border-top: 1px solid var(--linear-border);
 	}
 	.crew-recruit {
 		font-size: var(--sl-text-sm);
 		color: var(--sl-color-text);
-		background: var(--sl-color-gray-5);
-		border-radius: 0.4rem;
+		background: var(--linear-panel-bg-elevated);
+		border-radius: 6px;
 		padding: 0.2rem 0.5rem;
 	}
 	.crew-source-link {
 		font-size: var(--sl-text-sm);
-		color: var(--sl-color-accent);
+		color: var(--linear-accent-link);
 		text-decoration: none;
 	}
 	.crew-source-link:hover {
