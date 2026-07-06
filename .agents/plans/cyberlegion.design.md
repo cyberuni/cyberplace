@@ -87,7 +87,7 @@ consumers of cyberlegion.
 
 ## Status (branch `cyberlegion`; per-CR git tags mark progress)
 
-**Delivered (7 CRs + hygiene, all tagged `legion/*`; full root `pnpm verify` green):**
+**Delivered (9 of 9 CRs except publish, all tagged `legion/*`; full root `pnpm verify` green):**
 
 - CR-1 `legion/cr-1-scaffold` — package + spec skeleton.
 - CR-2 `legion/cr-2-extract-core` — mechanism behind the `Store` seam, global hub, grouped CLI + AXI/TOON.
@@ -97,24 +97,30 @@ consumers of cyberlegion.
 - `legion/spec-backfill` — all 7 nodes' `.feature`s authored; knip clean.
 - CR-5 `legion/cr-5-gateway-legate` — the plugin: gateway + `dispatch-governance` routing brain + `legate`.
 - CR-7 `legion/cr-7-sdd-depend` — ADR-0023 dispatch seam + SDD depends on cyberlegion by intent (additive).
+- CR-6a `legion/cr-6a-lib-facade` — cyberlegion exposes a narrow lib façade (`src/index.ts` + `exports` + dts).
+- CR-6b `legion/cr-6b-cyberfleet-repoint` — cyberfleet imports the façade (`workspace:*`); its duplicate
+  mechanism deleted; `mode` reuses cyberlegion's worktree marker; personas + `.gitignore` repointed;
+  `turbo.json` `test` gains `^build`. cyberfleet now = a fleet layer (cli/missions/mode/sdd), 47 tests.
 
-The cyberlegion **package** (215 tests) and **plugin** are complete and self-contained; SDD's
-dependency is established by intent. cyberfleet is **untouched**.
+The cyberlegion **package** (215 tests) and **plugin** are complete; cyberfleet is repointed onto it
+(no more duplication); SDD depends by intent. Full root `pnpm verify` green.
 
-**Deferred (both need conditions not yet met — do NOT do unsupervised):**
+**Remaining:**
 
-- **CR-6 `cyberfleet-repoint`** — re-point cyberfleet onto cyberlegion and delete its duplicate
-  mechanism. Not a mechanical import-swap: cyberfleet's fleet layer couples to concepts cyberlegion
-  dropped/changed (`detectMode` ship-vs-command-center; `output` markdown→TOON; `.cyberfleet`→the global
-  hub), and cyberlegion is **bin-only** (no lib exports) so cyberfleet must either shell out to the CLI
-  or cyberlegion must add a lib surface. cyberfleet's own persona program is **in-flight/unlanded**
-  (another branch), so rewiring its landed CLI now risks a merge collision. The duplication is harmless
-  meanwhile (cyberfleet is unpublished `0.0.0`).
+- **CR-8 `legion-publish`** (deferred — premature). Add a changeset + let the plugin build resolve the
+  `npx cyberlegion@<version>` pins. Do only when the feature is complete + reviewed + merged; per repo
+  precedent, in-flight `0.0.0` packages carry no changeset.
+- **cyberfleet spec reconciliation** (follow-up). `packages/cyberfleet/.agents/spec/` still has the
+  migrated mechanism nodes (identity/messaging/spawn/decommission/surfacing) describing now-deleted code
+  — a Warden/spec-CR removes them (they moved to `packages/cyberlegion/.agents/spec/`).
+- **Merge coordination.** cyberfleet's persona program is in-flight on another branch; reconcile at merge.
 
-  **Storage design (settled):** cyberfleet persists NO runtime — identity/mail/dispatch/panes/data all
-  live in cyberlegion's global hub. **Mode/ship** (Pod vs Operator) is derived by reusing cyberlegion's
-  `.agents/cyberlegion/config.json` worktree marker (present in a spawned unit's worktree = ship; absent
-  on the primary = command-center) — no separate cyberfleet marker. **Fleet policy** (declarative,
+<details><summary>CR-6 storage design (as-built)</summary>
+
+  cyberfleet persists NO runtime — identity/mail/dispatch/panes/data all live in cyberlegion's global
+  hub. **Mode/ship** (Pod vs Operator) reuses cyberlegion's `.agents/cyberlegion/config.json` worktree
+  marker (present in a spawned unit's worktree = ship; absent on the primary = command-center). **Fleet
+  policy** (declarative,
   tracked, team-shared — categorically distinct from the per-machine gitignored hub) lives in a NEW
   tracked **`.agents/cyberfleet/config.json`** with sections: `layout` (predefined pane/tab arrangements,
   in cyberlegion's placement vocab) and `crews` (the fleet's enlisted crew roster; the available catalog
@@ -122,22 +128,15 @@ dependency is established by intent. cyberfleet is **untouched**.
   track `.agents/cyberfleet/config.json`. (An SDD-outer-loop *schedule* was considered and dropped — not
   needed now; if added later, SDD owns the loop cadence, not the fleet.)
 
-  **Consumption model (settled): a narrow lib façade.** cyberlegion exposes a curated `src/index.ts`
-  (a package `exports` entry) — `Store`, the domain types (`Message`, `AgentRecord`, `Harness`), and the
-  handful of read/action functions cyberfleet needs — NOT the whole internals. cyberfleet depends via
-  `workspace:*` and imports from it (type-safe, in-process, no subprocess). Rationale: cyberfleet is TS
-  code (unlike SDD's markdown skills, which must use the CLI), so a function call is the idiomatic and
-  cheaper mechanism; the perf cost of a per-call Node-process spawn is real and avoidable. The **CLI
-  stays the sole contract for SDD, agents, and any external consumer** — only cyberfleet (the workspace
-  sibling) imports the lib. Versioning stays contained: the façade is small + semver'd, in-monorepo it's
-  `workspace:*` (changesets co-bumps both, always matched), and breakage surfaces at the shared
-  typecheck/CI. Split into **CR-6a** (add the lib façade to cyberlegion — safe/additive) → **CR-6b**
-  (gut cyberfleet's duplicate mechanism, import the façade, apply the storage design, keep its remaining
-  fleet tests green). Still needs coordination with cyberfleet's in-flight persona branch at merge time.
-- **CR-8 `legion-publish`** — add a changeset + let the plugin build resolve `npx cyberlegion@<version>`
-  pins. **Premature until the feature is complete + reviewed + merged**: per repo precedent, in-flight
-  `0.0.0` packages (cyberfleet) carry no changeset; adding one now would publish an incomplete feature
-  on the next release. The plugin skills' `npx cyberlegion@<version>` pins stay placeholders until then.
+  tracked, team-shared) will live in a NEW tracked **`.agents/cyberfleet/config.json`** with sections
+  `layout` (predefined pane/tab arrangements) and `crews` (the enlisted crew roster) — aspirational,
+  authored when those features land (CR-6b only removed `.cyberfleet` and reused cyberlegion's marker).
 
-**When resuming:** decide CR-6's consumption model, land it (keeping cyberfleet's remaining fleet tests
-green), then CR-8 (changeset + pins) as the last step before the single feature PR.
+  **Consumption model (as-built): a narrow lib façade.** cyberlegion exposes a curated `src/index.ts`
+  (a package `exports` entry) — the domain types + `Store` + reusable operations + AXI helpers, not the
+  internals. cyberfleet depends `workspace:*` and imports it (type-safe, in-process). The CLI stays the
+  sole contract for SDD, agents, and any external consumer.
+</details>
+
+**When resuming:** CR-8 (changeset + pins) is the last step before the single feature PR; do the
+cyberfleet spec reconciliation and coordinate cyberfleet's in-flight persona branch at merge.
