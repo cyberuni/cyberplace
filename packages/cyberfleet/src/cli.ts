@@ -1,47 +1,90 @@
 #!/usr/bin/env node
-import { execFileSync } from 'node:child_process'
-import { Command } from 'commander'
+import { Command, Option } from 'commander'
 import {
+	type AgentRecord,
+	ack,
 	bumpLastSeen,
+	decommission,
+	emit,
+	FileStore,
+	type Format,
+	fail,
 	type Harness,
 	type IdContext,
+	inbox,
+	install,
 	listAgents,
-	pauseAgent,
+	nextStep,
 	prune,
 	realExec,
 	register,
+	resolveAgent,
+	resolveBody,
+	resolveRoot,
 	resolveSelfId,
-	resolveShip,
+	selectSessionAdapter,
+	send,
+	spawn,
+	toonList,
+	toonObject,
 	touch,
-} from './identity.ts'
-import { install } from './install.ts'
-import { inbox, read, resolveBody, send } from './message.ts'
+} from 'cyberlegion'
 import { buildMissions, resolveAgentsRoot } from './missions.ts'
-import { printFields, printTable } from './output.ts'
-import { detectMode, resolveRoot } from './paths.ts'
-import { injectInbox } from './runtime/inject-inbox.ts'
+import { detectMode } from './mode.ts'
+
+// cyberfleet — the fleet layer on top of cyberlegion's mechanism. Identity/mail/session/install
+// verbs below are thin wiring onto cyberlegion's functions; `missions`/`jump`/`pause`/`gate approve`
+// are cyberfleet's own fleet-specific logic (SDD-derived mission view, session focus, a status-only
+// pause marker, and the gate-approve stub).
 
 interface RootOpts {
 	root?: string
 	space?: string
+	format?: string
 }
 
 function ctxOf(opts: RootOpts): IdContext {
-	return { root: resolveRoot({ root: opts.root, space: opts.space }), env: process.env }
+	const store = new FileStore(resolveRoot({ root: opts.root, space: opts.space }))
+	return { store, env: process.env }
+}
+
+function formatOf(opts: RootOpts): Format {
+	return opts.format === 'json' ? 'json' : 'toon'
 }
 
 function requireSelf(ctx: IdContext): string {
 	const id = resolveSelfId(ctx)
-	if (!id) throw new Error('no fleet identity in this session — run `cyberfleet register` first')
+	if (!id) fail('no fleet identity in this session — run `cyberfleet register` first')
 	bumpLastSeen(ctx, id)
 	return id
 }
 
+/**
+ * Pause a unit's mission — a cyberfleet-level marker on its `AgentRecord.status` only. Not
+ * exported by cyberlegion (fleet-specific concept), so it stays here — a thin write through the
+ * shared `Store` seam. This is NOT a bridge to SDD's `pause-mission` checkpoint (which rewrites the
+ * plan brief's todos/## NEXT anchor) — that gap is flagged, not silently papered over: a caller who
+ * wants the actual mission checkpoint must run `sdd:pause-mission` in-session.
+ */
+function pauseAgent(ctx: IdContext, id: string): AgentRecord {
+	const rec = ctx.store.getAgent(id)
+	if (!rec) throw new Error(`no agent "${id}"`)
+	rec.status = 'paused'
+	ctx.store.putAgent(rec)
+	return rec
+}
+
 const rootOpts = (cmd: Command) =>
-	cmd.option('--root <path>', 'transport root (.cyberfleet dir)').option('--space <path>', 'alias for --root')
+	cmd
+		.option('--root <path>', 'cyberlegion hub root (overrides the global hub / $CYBERLEGION_ROOT)')
+		.option('--space <path>', 'alias for --root')
+		.addOption(new Option('--format <format>', 'output format').choices(['toon', 'json']).default('toon'))
 
 const program = new Command()
-program.name('cyberfleet').description('Harness-agnostic, MCP-free inter-agent sessions and messaging').version('0.0.0')
+program
+	.name('cyberfleet')
+	.description('Fleet layer over cyberlegion — ships, missions, and the Council view')
+	.version('0.0.0')
 
 rootOpts(program.command('register'))
 	.description('register or refresh this session identity')
@@ -50,7 +93,10 @@ rootOpts(program.command('register'))
 	.action((opts) => {
 		const ctx = ctxOf(opts)
 		const rec = register(ctx, { handle: opts.handle, harness: opts.harness })
-		printFields({ id: rec.id, handle: rec.handle, harness: rec.harness, status: rec.status })
+		emit(formatOf(opts), {
+			toon: toonObject({ id: rec.id, handle: rec.handle, harness: rec.harness, status: rec.status }),
+			json: rec,
+		})
 	})
 
 rootOpts(program.command('who'))
@@ -59,23 +105,34 @@ rootOpts(program.command('who'))
 	.action((opts) => {
 		const ctx = ctxOf(opts)
 		touch(ctx)
-		const agents = listAgents(ctx.root).filter((a) => opts.all || a.status !== 'exited')
-		printTable(agents, [
-			{ label: 'handle', get: (a) => a.handle },
-			{ label: 'harness', get: (a) => a.harness },
-			{ label: 'cwd', get: (a) => a.cwd },
-			{ label: 'status', get: (a) => a.status },
-			{ label: 'pane', get: (a) => a.tmux?.pane ?? '-' },
-			{ label: 'last-seen', get: (a) => a.lastSeen },
-			{ label: 'id', get: (a) => a.id },
-		])
+		const agents = listAgents(ctx.store).filter((a) => opts.all || a.status !== 'exited')
+		emit(formatOf(opts), {
+			toon: toonList(
+				'agents',
+				agents,
+				[
+					{ key: 'handle', get: (a: AgentRecord) => a.handle },
+					{ key: 'harness', get: (a: AgentRecord) => a.harness },
+					{ key: 'cwd', get: (a: AgentRecord) => a.cwd },
+					{ key: 'status', get: (a: AgentRecord) => a.status },
+					{ key: 'pane', get: (a: AgentRecord) => a.tmux?.pane ?? '-' },
+					{ key: 'last-seen', get: (a: AgentRecord) => a.lastSeen },
+					{ key: 'id', get: (a: AgentRecord) => a.id },
+				],
+				`${agents.length} agents`,
+			),
+			json: agents,
+		})
 	})
 
 rootOpts(program.command('mode'))
-	.description('report ship (a .cyberfleet/ dir here) vs command-center, and the shared fleet root')
+	.description('report ship (a spawned unit worktree) vs command-center, and the shared fleet root')
 	.action((opts) => {
 		const info = detectMode({ root: opts.root, space: opts.space })
-		printFields({ mode: info.mode, cwdRoot: info.cwdRoot, fleetRoot: info.fleetRoot })
+		emit(formatOf(opts), {
+			toon: toonObject({ mode: info.mode, cwdRoot: info.cwdRoot, fleetRoot: info.fleetRoot }),
+			json: info,
+		})
 	})
 
 rootOpts(program.command('send'))
@@ -91,47 +148,62 @@ rootOpts(program.command('send'))
 		const fromId = requireSelf(ctx)
 		const body = resolveBody(opts.body, opts.bodyFile)
 		const msg = send(
-			{ root: ctx.root },
+			{ store: ctx.store },
 			{ fromId, to: opts.to, subject: opts.subject, body, thread: opts.thread, replyTo: opts.replyTo },
 		)
-		printFields({ sent: msg.id, to: opts.to, subject: msg.subject })
+		emit(formatOf(opts), { toon: toonObject({ sent: msg.id, to: opts.to, subject: msg.subject }), json: msg })
 	})
 
 rootOpts(program.command('inbox'))
-	.description('list your mail, or emit the SessionStart hook payload')
+	.description('list your mail')
 	.option('--unread', 'only un-acked mail')
 	.option('--from <id>', 'filter by sender')
-	.option('--hook', 'emit the harness hook injection payload instead')
-	.option('--event <event>', 'SessionStart | PostToolUse (with --hook)', 'SessionStart')
 	.action((opts) => {
 		const ctx = ctxOf(opts)
-		if (opts.hook) {
-			touch(ctx)
-			const payload = injectInbox(ctx, opts.event)
-			if (payload) console.log(JSON.stringify(payload))
-			return
-		}
+		touch(ctx)
 		const meId = requireSelf(ctx)
-		const items = inbox({ root: ctx.root }, { meId, unread: opts.unread, from: opts.from })
-		if (items.length === 0) {
-			console.log(opts.unread ? '(no unread mail)' : '(inbox empty)')
-			return
-		}
-		for (const m of items) {
-			console.log(`${m.read ? ' ' : '*'} ${m.id}  ${m.fromHandle}${m.subject ? ` — ${m.subject}` : ''}: ${m.body}`)
-		}
+		const items = inbox({ store: ctx.store }, { meId, unread: opts.unread, from: opts.from })
+		const unreadCount = items.filter((i) => !i.read).length
+		emit(formatOf(opts), {
+			toon: toonList(
+				'messages',
+				items,
+				[
+					{ key: 'id', get: (m) => m.id },
+					{ key: 'from', get: (m) => m.fromHandle },
+					{ key: 'subject', get: (m) => m.subject ?? '' },
+					{ key: 'read', get: (m) => m.read },
+				],
+				`${items.length} messages (${unreadCount} unread)`,
+			),
+			json: items,
+		})
+		const firstUnread = items.find((m) => !m.read)
+		if (firstUnread) nextStep(`cyberfleet read ${firstUnread.id}`)
 	})
+
+/** Print + ack a message — a thin alias of `ack` (both move it out of the unread set). */
+function runReadOrAck(field: 'read' | 'acked') {
+	return (msgId: string, opts: RootOpts) => {
+		const ctx = ctxOf(opts)
+		const meId = requireSelf(ctx)
+		const msg = ack({ store: ctx.store }, meId, msgId)
+		emit(formatOf(opts), {
+			toon: toonObject({ [field]: msg.id, from: msg.fromHandle, subject: msg.subject, body: msg.body }),
+			json: msg,
+		})
+	}
+}
 
 rootOpts(program.command('read'))
 	.description('print a message and acknowledge it')
 	.argument('<msg-id>', 'message id')
-	.action((msgId, opts) => {
-		const ctx = ctxOf(opts)
-		const meId = requireSelf(ctx)
-		const msg = read({ root: ctx.root }, meId, msgId)
-		printFields({ from: msg.fromHandle, subject: msg.subject, id: msg.id })
-		console.log(`\n${msg.body}`)
-	})
+	.action(runReadOrAck('read'))
+
+rootOpts(program.command('ack'))
+	.description('acknowledge a message (thin alias of `read` — both print + move it to acked)')
+	.argument('<msg-id>', 'message id')
+	.action(runReadOrAck('acked'))
 
 rootOpts(program.command('spawn'))
 	.description('launch a new peer session in its own git worktree (tmux or herdr)')
@@ -139,10 +211,9 @@ rootOpts(program.command('spawn'))
 	.option('--task <text>', 'brief text, or - for stdin')
 	.option('--brief-file <path>', 'read the brief from a file')
 	.option('--handle <name>', 'handle for the new peer')
-	.option('--branch <name>', 'branch for the new ship worktree (default cyberfleet/ship-<id>)')
+	.option('--branch <name>', 'branch for the new ship worktree (default cyberlegion/unit-<id>)')
 	.option('--worktree-path <path>', 'where to check out the new ship worktree')
-	.action(async (opts) => {
-		const { spawn } = await import('./spawn.ts')
+	.action((opts) => {
 		const ctx = ctxOf(opts)
 		touch(ctx)
 		const res = spawn(ctx, {
@@ -153,13 +224,15 @@ rootOpts(program.command('spawn'))
 			branch: opts.branch,
 			worktreePath: opts.worktreePath,
 		})
-		printFields({
-			spawned: res.agent.id,
-			handle: res.agent.handle,
-			harness: res.agent.harness,
-			worktree: res.agent.worktree?.root,
-			pane: res.pane,
-			launch: res.launch,
+		emit(formatOf(opts), {
+			toon: toonObject({
+				spawned: res.agent.id,
+				handle: res.agent.handle,
+				harness: res.agent.harness,
+				worktree: res.agent.worktree?.root,
+				pane: res.pane,
+			}),
+			json: res,
 		})
 	})
 
@@ -169,60 +242,87 @@ rootOpts(program.command('prune'))
 		const ctx = ctxOf(opts)
 		touch(ctx)
 		const changed = prune(ctx)
-		console.log(changed.length ? `pruned ${changed.length} agent(s)` : 'nothing to prune')
+		emit(formatOf(opts), {
+			toon: toonList(
+				'pruned',
+				changed,
+				[
+					{ key: 'id', get: (a: AgentRecord) => a.id },
+					{ key: 'handle', get: (a: AgentRecord) => a.handle },
+				],
+				changed.length ? `pruned ${changed.length} agent(s)` : 'nothing to prune',
+			),
+			json: changed,
+		})
 	})
 
 rootOpts(program.command('decommission'))
 	.description("tear down a ship's worktree + session and reap its state (the deterministic inverse of spawn)")
 	.argument('<id>', 'ship id')
 	.option('--force', 'discard uncommitted changes in the worktree (never overrides the flagship rule)')
-	.action(async (id, opts) => {
-		const { decommission } = await import('./decommission.ts')
+	.action((id, opts) => {
 		const ctx = ctxOf(opts)
 		touch(ctx)
 		const res = decommission(ctx, { id, force: opts.force })
-		printFields({ decommissioned: id, worktree: res.worktreeRoot ?? '-', pane: res.pane ?? '-' })
+		emit(formatOf(opts), {
+			toon: toonObject({ decommissioned: id, worktree: res.worktreeRoot ?? '-', pane: res.pane ?? '-' }),
+			json: res,
+		})
 	})
 
-program
-	.command('install')
+rootOpts(program.command('install'))
 	.description('wire the fleet surfacing hook into a harness config')
 	.requiredOption('--agent <harness>', 'claude | cursor | codex')
 	.option('--dir <path>', 'project dir to write config into', process.cwd())
 	.action((opts) => {
 		const results = install(opts.agent as Harness, opts.dir)
-		for (const r of results) console.log(`${r.status}: ${r.harness} ${r.vendorEvent} → ${r.file}`)
+		emit(formatOf(opts), {
+			toon: toonList(
+				'hooks',
+				results,
+				[
+					{ key: 'event', get: (r) => r.event },
+					{ key: 'status', get: (r) => r.status },
+					{ key: 'file', get: (r) => r.file },
+				],
+				`${results.length} hooks`,
+			),
+			json: results,
+		})
 	})
 
 rootOpts(program.command('missions'))
 	.description("who needs the Council's hands — ships × mission × gate × leash, derived from SDD state")
-	.option('--json', 'emit the full structured array instead of the table')
 	.option('--agents-root <path>', 'override the root under which .agents/ is resolved (default: the primary checkout)')
 	.action((opts) => {
 		const ctx = ctxOf(opts)
 		touch(ctx)
 		const agentsRoot = opts.agentsRoot ?? resolveAgentsRoot(realExec)
-		const agents = listAgents(ctx.root).filter((a) => a.status !== 'exited')
+		const agents = listAgents(ctx.store).filter((a) => a.status !== 'exited')
 		const rows = buildMissions(agentsRoot, agents)
-		if (opts.json) {
-			console.log(JSON.stringify(rows, null, 2))
-			return
-		}
-		printTable(rows, [
-			{ label: 'handle', get: (r) => r.handle },
-			{ label: 'branch/cr', get: (r) => r.branch ?? '-' },
-			{ label: 'status', get: (r) => r.status },
-			{
-				label: 'mission',
-				get: (r) => (r.mission ? `${r.mission.status} ${r.mission.completed}/${r.mission.total}` : '-'),
-			},
-			{ label: 'spec', get: (r) => r.spec?.status ?? '-' },
-			{ label: 'gate:spec', get: (r) => (r.gate.spec ? `${r.gate.spec.verdict}(${r.gate.spec.by})` : '-') },
-			{ label: 'gate:impl', get: (r) => (r.gate.impl ? `${r.gate.impl.verdict}(${r.gate.impl.by})` : '-') },
-			{ label: 'leash', get: (r) => r.leash ?? '-' },
-			{ label: 'council', get: (r) => (r.needsCouncil ? 'yes' : '-') },
-			{ label: 'HAL', get: (r) => (r.hal ? '!' : '') },
-		])
+		emit(formatOf(opts), {
+			toon: toonList(
+				'missions',
+				rows,
+				[
+					{ key: 'handle', get: (r) => r.handle },
+					{ key: 'branch', get: (r) => r.branch ?? '-' },
+					{ key: 'status', get: (r) => r.status },
+					{
+						key: 'mission',
+						get: (r) => (r.mission ? `${r.mission.status} ${r.mission.completed}/${r.mission.total}` : '-'),
+					},
+					{ key: 'spec', get: (r) => r.spec?.status ?? '-' },
+					{ key: 'gate:spec', get: (r) => (r.gate.spec ? `${r.gate.spec.verdict}(${r.gate.spec.by})` : '-') },
+					{ key: 'gate:impl', get: (r) => (r.gate.impl ? `${r.gate.impl.verdict}(${r.gate.impl.by})` : '-') },
+					{ key: 'leash', get: (r) => r.leash ?? '-' },
+					{ key: 'council', get: (r) => (r.needsCouncil ? 'yes' : '-') },
+					{ key: 'hal', get: (r) => (r.hal ? '!' : '') },
+				],
+				`${rows.length} ships`,
+			),
+			json: rows,
+		})
 	})
 
 rootOpts(program.command('jump'))
@@ -231,27 +331,18 @@ rootOpts(program.command('jump'))
 	.action((peer, opts) => {
 		const ctx = ctxOf(opts)
 		touch(ctx)
-		const agent = resolveShip(ctx.root, peer)
-		if (agent.tmux?.pane) {
+		const agent = resolveAgent(ctx.store, peer)
+		const pane = agent.tmux?.pane ?? ctx.store.findPaneByAgentId(agent.id)
+		if (pane) {
 			try {
-				execFileSync('tmux', ['select-pane', '-t', agent.tmux.pane], { stdio: 'ignore' })
-				printFields({ jumped: agent.handle, pane: agent.tmux.pane })
+				selectSessionAdapter(ctx.env ?? process.env).focus(realExec, { id: pane })
+				emit(formatOf(opts), { toon: toonObject({ jumped: agent.handle, pane }), json: { jumped: agent.handle, pane } })
 				return
 			} catch {
-				// tmux unavailable or pane gone — fall through to printing a cd target
+				// no live session backend, or the pane is gone — fall through to printing a cd target
 			}
 		}
 		console.log(agent.worktree?.root ?? agent.cwd)
-	})
-
-rootOpts(program.command('ack'))
-	.description('acknowledge a message (thin alias of `read` — both print + move it to acked)')
-	.argument('<msg-id>', 'message id')
-	.action((msgId, opts) => {
-		const ctx = ctxOf(opts)
-		const meId = requireSelf(ctx)
-		const msg = read({ root: ctx.root }, meId, msgId)
-		printFields({ acked: msg.id, from: msg.fromHandle, subject: msg.subject })
 	})
 
 rootOpts(program.command('pause'))
@@ -259,9 +350,9 @@ rootOpts(program.command('pause'))
 	.argument('<peer>', 'handle, id, or worktree branch/CR ref')
 	.action((peer, opts) => {
 		const ctx = ctxOf(opts)
-		const agent = resolveShip(ctx.root, peer)
-		const rec = pauseAgent(ctx.root, agent.id)
-		printFields({ paused: rec.handle, status: rec.status })
+		const agent = resolveAgent(ctx.store, peer)
+		const rec = pauseAgent(ctx, agent.id)
+		emit(formatOf(opts), { toon: toonObject({ paused: rec.handle, status: rec.status }), json: rec })
 		process.stderr.write(
 			'note: this only flips the cyberfleet ship record to status:paused — it is NOT a bridge to ' +
 				"SDD's pause-mission checkpoint (which rewrites the plan brief's todos/## NEXT anchor). " +

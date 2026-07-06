@@ -122,9 +122,18 @@ dependency is established by intent. cyberfleet is **untouched**.
   track `.agents/cyberfleet/config.json`. (An SDD-outer-loop *schedule* was considered and dropped — not
   needed now; if added later, SDD owns the loop cadence, not the fleet.)
 
-  **Remaining open decision:** lib-export (cyberlegion exposes a lib entry cyberfleet imports) vs
-  CLI-shell-out (cyberfleet's fleet verbs delegate to `npx cyberlegion`); `missions` reads hub JSON
-  directly either way. Plus coordination with cyberfleet's in-flight persona branch.
+  **Consumption model (settled): a narrow lib façade.** cyberlegion exposes a curated `src/index.ts`
+  (a package `exports` entry) — `Store`, the domain types (`Message`, `AgentRecord`, `Harness`), and the
+  handful of read/action functions cyberfleet needs — NOT the whole internals. cyberfleet depends via
+  `workspace:*` and imports from it (type-safe, in-process, no subprocess). Rationale: cyberfleet is TS
+  code (unlike SDD's markdown skills, which must use the CLI), so a function call is the idiomatic and
+  cheaper mechanism; the perf cost of a per-call Node-process spawn is real and avoidable. The **CLI
+  stays the sole contract for SDD, agents, and any external consumer** — only cyberfleet (the workspace
+  sibling) imports the lib. Versioning stays contained: the façade is small + semver'd, in-monorepo it's
+  `workspace:*` (changesets co-bumps both, always matched), and breakage surfaces at the shared
+  typecheck/CI. Split into **CR-6a** (add the lib façade to cyberlegion — safe/additive) → **CR-6b**
+  (gut cyberfleet's duplicate mechanism, import the façade, apply the storage design, keep its remaining
+  fleet tests green). Still needs coordination with cyberfleet's in-flight persona branch at merge time.
 - **CR-8 `legion-publish`** — add a changeset + let the plugin build resolve `npx cyberlegion@<version>`
   pins. **Premature until the feature is complete + reviewed + merged**: per repo precedent, in-flight
   `0.0.0` packages (cyberfleet) carry no changeset; adding one now would publish an incomplete feature

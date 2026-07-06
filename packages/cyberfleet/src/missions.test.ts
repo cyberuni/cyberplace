@@ -1,8 +1,8 @@
 import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import type { AgentRecord } from 'cyberlegion'
 import { beforeEach, describe, expect, it } from 'vitest'
-import type { AgentRecord } from './identity.ts'
 import { buildMissionRow, buildMissions } from './missions.ts'
 
 let agentsRoot: string

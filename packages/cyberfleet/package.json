@@ -37,7 +37,8 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"commander": "^14.0.3"
+		"commander": "^14.0.3",
+		"cyberlegion": "workspace:*"
 	},
 	"devDependencies": {
 		"@types/node": "^24.10.1",

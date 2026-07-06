@@ -5,75 +5,55 @@ import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { beforeEach, describe, expect, it } from 'vitest'
 
-// Exercises the actual built CLI entrypoint (bin → dist/cli.mjs) end-to-end.
+// Exercises the actual built CLI entrypoint (bin → dist/cli.mjs) end-to-end. Mechanism-verb
+// behavior (register/who/send/inbox/read/ack/spawn/decommission/install/prune) now lives in — and
+// is tested by — cyberlegion; this file keeps smoke coverage for cyberfleet's own fleet-layer verbs
+// (mode/missions/jump/pause/gate approve) plus a basic wiring check.
+
 const BIN = fileURLToPath(new URL('../bin/cyberfleet.mjs', import.meta.url))
 
 let work: string
 let root: string
 beforeEach(() => {
 	work = mkdtempSync(join(tmpdir(), 'cf-'))
-	root = join(work, '.cyberfleet')
+	root = join(work, '.agents', 'cyberlegion')
 })
 
 function cf(args: string[], env: Record<string, string> = {}, cwd?: string): string {
 	return execFileSync('node', [BIN, ...args, '--root', root], {
 		encoding: 'utf8',
-		env: { ...process.env, CYBERFLEET_AGENT_ID: '', ...env },
+		env: { ...process.env, CYBERLEGION_AGENT_ID: '', ...env },
 		...(cwd ? { cwd } : {}),
 	})
 }
 
-describe('cli end-to-end', () => {
-	it('who prints the cwd column and value', () => {
-		cf(['register', '--handle', 'alice', '--harness', 'codex'], { CYBERFLEET_AGENT_ID: 'alice1' })
-		const out = cf(['who'])
-		expect(out).toMatch(/\bCWD\b/)
-		expect(out).toContain(process.cwd())
+describe('cli wiring', () => {
+	it('--help lists the fleet verb surface', () => {
+		const out = execFileSync('node', [BIN, '--help'], { encoding: 'utf8' })
+		for (const verb of ['register', 'who', 'mode', 'send', 'inbox', 'read', 'spawn', 'missions', 'jump', 'pause']) {
+			expect(out).toContain(verb)
+		}
 	})
+})
 
-	it('send --body-file delivers the file body to the peer inbox', () => {
-		cf(['register', '--handle', 'alice', '--harness', 'codex'], { CYBERFLEET_AGENT_ID: 'alice1' })
-		cf(['register', '--handle', 'bob', '--harness', 'cursor'], { CYBERFLEET_AGENT_ID: 'bob1' })
-		const bf = join(work, 'msg.txt')
-		writeFileSync(bf, 'from a file')
-		cf(['send', '--to', 'bob', '--body-file', bf], { CYBERFLEET_AGENT_ID: 'alice1' })
-		const unread = cf(['inbox', '--unread'], { CYBERFLEET_AGENT_ID: 'bob1' })
-		expect(unread).toContain('from a file')
+describe('mode', () => {
+	it('reports command-center with the shared fleet root (TOON output)', () => {
+		const out = cf(['mode'], {}, work)
+		expect(out).toContain('mode: command-center')
+		expect(out).toContain(`fleetRoot: ${root}`)
 	})
+})
 
-	it('inbox --hook emits the SessionStart payload over the wire', () => {
-		cf(['register', '--handle', 'alice', '--harness', 'codex'], { CYBERFLEET_AGENT_ID: 'alice1' })
-		cf(['register', '--handle', 'bob', '--harness', 'cursor'], { CYBERFLEET_AGENT_ID: 'bob1' })
-		cf(['send', '--to', 'bob', '--body', 'hook me'], { CYBERFLEET_AGENT_ID: 'alice1' })
-		const out = cf(['inbox', '--hook', '--event', 'SessionStart'], { CYBERFLEET_AGENT_ID: 'bob1' })
-		const payload = JSON.parse(out)
-		expect(payload.hookSpecificOutput.hookEventName).toBe('SessionStart')
-		expect(payload.hookSpecificOutput.additionalContext).toContain('hook me')
-	})
-
-	it('ack is a thin alias of read — prints and moves the message to acked', () => {
-		cf(['register', '--handle', 'alice', '--harness', 'codex'], { CYBERFLEET_AGENT_ID: 'alice1' })
-		cf(['register', '--handle', 'bob', '--harness', 'cursor'], { CYBERFLEET_AGENT_ID: 'bob1' })
-		cf(['send', '--to', 'bob', '--body', 'ack me', '--subject', 'hi'], { CYBERFLEET_AGENT_ID: 'alice1' })
-		const unread = cf(['inbox', '--unread'], { CYBERFLEET_AGENT_ID: 'bob1' })
-		const msgId = /^\*\s+(\S+)/.exec(unread)?.[1]
-		expect(msgId).toBeTruthy()
-		const acked = cf(['ack', msgId!], { CYBERFLEET_AGENT_ID: 'bob1' })
-		expect(acked).toContain('acked')
-		const afterUnread = cf(['inbox', '--unread'], { CYBERFLEET_AGENT_ID: 'bob1' })
-		expect(afterUnread).toContain('no unread mail')
-	})
-
+describe('fleet verbs', () => {
 	it('pause flips the ship record to status:paused and flags the SDD-bridge gap', () => {
-		cf(['register', '--handle', 'alice', '--harness', 'codex'], { CYBERFLEET_AGENT_ID: 'alice1' })
+		cf(['register', '--handle', 'alice', '--harness', 'codex'], { CYBERLEGION_AGENT_ID: 'alice1' })
 		const out = cf(['pause', 'alice'])
-		expect(out).toContain('paused')
-		const who = cf(['who', '--all'])
-		expect(who).toContain('paused')
+		expect(out).toContain('paused: alice')
+		expect(out).toContain('status: paused')
 	})
 
 	it("jump prints the ship's cwd when there is no live tmux pane to select", () => {
-		cf(['register', '--handle', 'alice', '--harness', 'codex'], { CYBERFLEET_AGENT_ID: 'alice1' }, work)
+		cf(['register', '--handle', 'alice', '--harness', 'codex'], { CYBERLEGION_AGENT_ID: 'alice1' }, work)
 		const out = cf(['jump', 'alice'], {}, work)
 		expect(out.trim()).toBe(work)
 	})
@@ -83,8 +63,8 @@ describe('cli end-to-end', () => {
 	})
 
 	it('missions --json emits an array shaped by the mission row schema', () => {
-		cf(['register', '--handle', 'alice', '--harness', 'codex'], { CYBERFLEET_AGENT_ID: 'alice1' }, work)
-		const out = cf(['missions', '--json', '--agents-root', work])
+		cf(['register', '--handle', 'alice', '--harness', 'codex'], { CYBERLEGION_AGENT_ID: 'alice1' }, work)
+		const out = cf(['missions', '--format', 'json', '--agents-root', work])
 		const rows = JSON.parse(out)
 		expect(Array.isArray(rows)).toBe(true)
 		expect(rows).toHaveLength(1)
@@ -105,11 +85,11 @@ describe('cli end-to-end', () => {
 		writeFileSync(join(work, '.agents', 'specs', project, 'spec.md'), '---\nstatus: implemented\n---\n')
 		// The fleet registry has no worktree-writing verb exercised here, so hand-write the record
 		// with a worktree.branch matching the ledger's cr (the ship↔CR join key).
-		cf(['register', '--handle', 'alice', '--harness', 'codex'], { CYBERFLEET_AGENT_ID: 'alice1' })
+		cf(['register', '--handle', 'alice', '--harness', 'codex'], { CYBERLEGION_AGENT_ID: 'alice1' })
 		const rec = JSON.parse(readFileSync(join(root, 'agents', 'alice1.json'), 'utf8'))
 		rec.worktree = { root: join(work, 'worktree'), branch: 'add-fleet-comms' }
 		writeFileSync(join(root, 'agents', 'alice1.json'), JSON.stringify(rec))
-		const out = cf(['missions', '--json', '--agents-root', work], { CYBERFLEET_AGENT_ID: 'alice1' })
+		const out = cf(['missions', '--format', 'json', '--agents-root', work], { CYBERLEGION_AGENT_ID: 'alice1' })
 		const rows = JSON.parse(out)
 		expect(rows[0]).toMatchObject({
 			handle: 'alice',
