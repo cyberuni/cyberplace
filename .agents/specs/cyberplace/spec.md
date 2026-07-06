@@ -42,12 +42,12 @@ lifecycle. One published package (`packages/cyberplace`, `bin: cyberplace`) ship
 ## Backfill scope note (flagged)
 
 This project had no consolidated spec. It is backfilled **narrow**: only the **`marketplace`**
-capability — the curated awesome-list discovery plus the new **Tavern** crew storefront — is
-scaffolded now, because that is where the requested change lands. The remaining source domains
-(`packages/cyberplace/src/`: `audit/`, `commit/`, `governance/`, `hook/`, `registry/`, `skill/`,
-plus the CLI shell) are listed in the placement map as **planned** capabilities to backfill by
-demand. `status: draft` — no node's `.feature` is authored here; the per-unit explore grill fills
-them.
+capability — the curated awesome-list discovery plus the **Tavern** crew storefront — is scaffolded,
+because that is where the requested change landed; the `marketplace/tavern` node has since carried a
+frozen `.feature` through two mission CRs to `status: implemented`. The remaining source domains
+(`packages/cyberplace/src/`: `audit/`, `commit/`, `governance/`, `hook/`, `registry/`, `skill/`, plus
+the CLI shell) stay unbackfilled — no node's `.feature` is authored for them yet — and are listed in
+the placement map as **planned** capabilities to backfill by demand.
 
 ## Project-path note
 
