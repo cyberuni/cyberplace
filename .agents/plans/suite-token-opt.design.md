@@ -1,36 +1,34 @@
 # CR-B — SDD suite token reduction (design)
 
 ## Goal
-Cut token usage in the SDD mission loop around **defining and consuming behavior suites** (`.feature`), by delegating mechanical work to scripts/engines. Target the costly *consume* side (judges/gate re-deriving what a script can compute).
+Cut token usage in the SDD mission loop around **consuming behavior suites** (`.feature`), by delegating mechanical parse/diff work to the published **`gherkin-cli`** (`npx gherkin-cli@<pinned>`) and mechanizing what the LLM re-derives.
 
-## Where tokens burn (touch-point findings)
-- **Define:** spec-producer already self-checks with `check-suite.mts` before returning — already off the LLM.
-- **Consume (costly):**
-  - spec-judge spawned **cold every grill round** (up to 3×) — each re-runs `resolve-governances`, re-loads every bar body, **re-composes precedence by hand**. No warm carry-over.
-  - impl-producer + impl-judge repeat resolve→load→compose for impl bars.
-  - gate digest reads raw `.feature` to list added/modified/narrowed scenario names — re-tokenizing by hand.
-  - `check-suite.mts` already builds a full structured parse (names, tags incl `@frozen`/`@rubric`, ordered steps, outlines, examples, counts) but **discards it** — emits only violation strings. Every judge re-tokenizes from raw text.
+> **Pivot (from the original loose-lib plan):** parsing, the manifest, and additive-detection are no longer built inside SDD. They are provided by the external, AXI-conformant `gherkin-cli` (own cyberuni repo, published to npm), invoked via **pinned npx** — an external ref agentskills blesses, no plugin-root-lib / self-containment problem. `build-resolve-pins` pins the version. SDD's `.mts` engines never import it; they shell it and read `--format json`.
+
+## Where tokens burn (unchanged analysis)
+- spec-judge spawned **cold every grill round** re-runs `resolve-governances` + re-composes precedence by hand.
+- gate digest + judges re-tokenize raw `.feature` by hand.
+- additive-self-clear is decided by an LLM round today.
 
 ## Optimizations (this CR)
-1. **Shared Gherkin parser → plugin-root neutral lib.** `check-suite` owns a hand-rolled tokenizer; `check-spec-structure` re-implements a mini `countScenarios`; the new engines (#3/#4) want the same parse. Extract one parser to a plugin-level home; consumers import it. Kills the duplication (already drifting: mini vs full).
-2. **`resolve-governances --compose` mode.** Matcher is deliberately "dumb" (candidates by tier); every consumer re-runs the precedence fold `sdd < plugin < project-root < project` + `compose: replace` as LLM reasoning. Add a mode that emits the final ordered, replace-applied load-list. Consumers load the named set — zero precedence reasoning.
-3. **Mechanical additive-detection engine.** `git diff` a touched `.feature` vs its committed version; classify per scenario: **added** (new `Scenario:`, nothing else touched — mechanical, safe → additive self-clears **without a judge round**) vs **touched** (needs a judge look). Narrowing-vs-rewrite stays semantic. Contradiction is a hard floor (Conflict) → additive still needs a contradiction-only check, not a full re-grade.
-4. **`check-suite` manifest output (`--format toon`).** Emit the already-built parse — scenario names + tags (`@frozen`/`@rubric`) + counts. Gate digest + judges consume the manifest instead of re-tokenizing raw `.feature`.
-5. **Wiring.** Propagate the conductor's lazy-load discipline (load bar *names* up front, *bodies* only at the invoking bar) into the judge agent defs (which still say "load each candidate body and compose"). Judges/conductor consume the composed set (#2) + manifest (#4).
+
+1. **Manifest via `gherkin-cli parse` (was #4).** Where the conductor / gate digest / judges today read raw `.feature` into LLM context, they instead call `npx gherkin-cli@<pin> parse <files>` and consume the compact TOON manifest (names, tags incl `@frozen`/`@rubric`, counts; `--full` for steps). SDD applies its own doctrine lints (adverb/rubric-noun bans) over that manifest — those stay SDD-side.
+2. **Additive-detection via `gherkin-cli diff` (was #3).** The freeze / additive-self-clear decision calls `npx gherkin-cli@<pin> diff --base <ref> <file>` and reads `addOnly`. `addOnly: true` ⇒ purely additive ⇒ self-clears with **no judge round**. Any `modified`/`removed` ⇒ the judge is scoped to the changed scenarios (narrowing/contradiction stays semantic; Conflict is still a hard floor).
+3. **`resolve-governances --compose` (#2, SDD-side, no gherkin).** Add a `--compose` mode that emits the final ordered, replace-applied governance load-list, so the producer + judges (every grill round) stop re-deriving the precedence fold as LLM reasoning.
+4. **Wiring / lazy-load.** Propagate the conductor's lazy-load discipline into the judge agent defs; route the conductor/judges to consume the composed set (#3) + the manifest (#1) + the additive signal (#2).
+
+## Optional / follow-up (not token wins)
+- Repoint `check-suite.mts` / `check-spec-structure.mts` to `gherkin-cli` (robustness — drop the hand-rolled tokenizer + the drifting `countScenarios`). Improves correctness, not tokens; can be its own CR.
 
 ## Off the table (by design)
-- impl-judge re-deriving each scenario's oracle regardless of blast radius — ADR-0016 independence. The re-derivation IS the verdict.
-- Semantic judgments (coverage, ordering rationale, near-miss balance, narrowing detection) — need the LLM.
+- impl-judge re-deriving each scenario's oracle (ADR-0016 independence).
+- Semantic judgments (coverage, ordering rationale, near-miss balance, narrowing detection).
 
-## Boundary decision (settled)
-Plugin-root shared lib is **agentskills-conformant**: the spec allows scripts to reference documented external deps and is silent on plugins; the strict "same-folder only" rule is cyberplace's own S4, stricter than the standard. S4 scans only SKILL.md refs, **not `.mts` imports** — so the shared-lib import never trips it. Mitigate the `npx skills add --skill <member>` runtime dangle with:
-- `compatibility` frontmatter on member skills: "Part of the SDD plugin — install the full plugin, not this skill alone".
-- a fail-loud guard in each entry script (clear "install the plugin" message on import failure).
-- a website "install as a plugin" note.
-Relaxing S4 to match the standard = **CR-A**, a separate follow-up (full SDD backfill of an audit/self-containment node into the cyberplace spec).
+## Boundary decision (settled — see reference memory / ADR route)
+`gherkin-cli` is invoked via **pinned npx** (external ref → agentskills-conformant; the strict cyberplace S4 only scans SKILL.md refs, and an `npx <pkg>@<ver>` ref is the blessed form `build-resolve-pins` already handles). No plugin-root shared lib, no `internal:true` hack. Relax-S4 (CR-A) remains an independent follow-up.
 
 ## Spec nodes touched (provisional)
-- `authoring/suite-format` — parser + manifest (`check-suite`)
-- `mission/resolution` — `resolve-governances --compose`
-- new engine node — additive-detection (place provisionally near suite-format)
-- `mission/conductor` + judge nodes — lazy-load + consume composed set/manifest
+- `mission/resolution` — `resolve-governances --compose`.
+- `mission/conductor` + `authoring/spec-gate` — consume `gherkin-cli` manifest + `diff --addOnly`; the additive-self-clear mechanization.
+- judge agent defs (`sdd-spec-judge`, `sdd-impl-judge`) — lazy-load + consume the composed set/manifest.
+- A new/updated reference note on the `gherkin-cli` dependency + its pin.
