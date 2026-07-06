@@ -2,7 +2,8 @@
 cr-ref: cyberfleet-verdict-roundtrip
 project: cyberfleet
 project-path: packages/cyberfleet
-status: active
+status: superseded
+superseded-by: legion-wake
 todos:
   - content: "Explore: grill messaging revise (thread filter + await verb + body-file), spike await polling"
     status: in_progress
@@ -17,6 +18,12 @@ todos:
 ---
 
 # CR: cyberfleet-verdict-roundtrip — the reply-and-correlate primitive
+
+> **SUPERSEDED** by the cyberlegion extraction (`.agents/plans/cyberlegion.design.md`). This capability —
+> thread-correlated inbox, blocking `await`, verdict-as-body-file, and its four resolved `await`
+> decisions — is folded into cyberlegion's `mail` + `wake` nodes and built there in **CR-4
+> `legion-wake`**, not against cyberfleet's `messaging` node. The `await` design decisions below carry
+> over verbatim. Kept for provenance; do not resume this mission.
 
 Revise the `messaging/` node of the cyberfleet CLI project. Add the deferred phase-2 slice its own
 Non-goals anticipated: **thread-correlated inbox** (`InboxQuery.thread` + `inbox()` filter, CLI
