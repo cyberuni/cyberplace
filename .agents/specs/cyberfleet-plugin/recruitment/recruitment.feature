@@ -60,13 +60,13 @@ Feature: recruitment — the fleet persona: Crimp recruits and discharges crew t
     Given the Council has picked a crew from the Tavern and Crimp has installed it via npx skills add
       or plugin install
     When Crimp completes the recruit
-    Then it runs cyberfleet register for the newly installed crew so the fleet knows the crew exists
+    Then it runs cyberlegion identity register for the newly installed crew so the fleet knows the crew exists
 
   @behavior
   Scenario: a crew installed but not yet registered is treated as an unfinished recruit
     Given a crew that Crimp has installed but has not yet registered into the fleet
     When Crimp checks the state of the recruit
-    Then it does not report the recruit complete and it runs cyberfleet register before finishing
+    Then it does not report the recruit complete and it runs cyberlegion identity register before finishing
 
   # ── Discharge: confirm → uninstall → retire ──
 

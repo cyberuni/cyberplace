@@ -1,14 +1,15 @@
 import { execFileSync } from 'node:child_process'
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { beforeEach, describe, expect, it } from 'vitest'
 
-// Exercises the actual built CLI entrypoint (bin → dist/cli.mjs) end-to-end. Mechanism-verb
-// behavior (register/who/send/inbox/read/ack/spawn/decommission/install/prune) now lives in — and
-// is tested by — cyberlegion; this file keeps smoke coverage for cyberfleet's own fleet-layer verbs
-// (mode/missions/jump/pause/gate approve) plus a basic wiring check.
+// Exercises the actual built CLI entrypoint (bin → dist/cli.mjs) end-to-end. The mechanism verbs
+// (register/who/send/inbox/read/ack/spawn/decommission/install/prune) are NOT part of cyberfleet —
+// they live in, and are tested by, the sibling `cyberlegion` CLI. This file covers ONLY cyberfleet's
+// own fleet-layer verbs (mode/missions/jump/pause/gate approve) plus a basic wiring check. Ship
+// records are written straight into the shared cyberlegion hub (no `cyberfleet register` exists).
 
 const BIN = fileURLToPath(new URL('../bin/cyberfleet.mjs', import.meta.url))
 
@@ -27,11 +28,39 @@ function cf(args: string[], env: Record<string, string> = {}, cwd?: string): str
 	})
 }
 
+/**
+ * Seed a ship record directly into the cyberlegion hub (`<root>/agents/<id>.json`). cyberfleet has
+ * no `register` verb of its own — a ship is registered via `cyberlegion identity register`; the
+ * fleet verbs here only READ the shared registry, so a hand-written record is the lightest fixture.
+ */
+function seedShip(id: string, handle: string, extra: Record<string, unknown> = {}): void {
+	mkdirSync(join(root, 'agents'), { recursive: true })
+	const ts = new Date().toISOString()
+	const rec = {
+		id,
+		handle,
+		harness: 'codex',
+		cwd: work,
+		worktree: null,
+		tmux: null,
+		status: 'active',
+		createdAt: ts,
+		lastSeen: ts,
+		...extra,
+	}
+	writeFileSync(join(root, 'agents', `${id}.json`), JSON.stringify(rec))
+}
+
 describe('cli wiring', () => {
-	it('--help lists the fleet verb surface', () => {
+	it('--help lists only the fleet verb surface (no mechanism verbs)', () => {
 		const out = execFileSync('node', [BIN, '--help'], { encoding: 'utf8' })
-		for (const verb of ['register', 'who', 'mode', 'send', 'inbox', 'read', 'spawn', 'missions', 'jump', 'pause']) {
+		for (const verb of ['mode', 'missions', 'jump', 'pause', 'gate']) {
 			expect(out).toContain(verb)
+		}
+		// the mechanism verbs were cut — they live in cyberlegion now. Assert on verbs whose strings
+		// don't collide with the remaining fleet-verb descriptions (e.g. "spawned unit" in prose).
+		for (const verb of ['register', 'inbox', 'decommission', 'install', 'prune']) {
+			expect(out).not.toContain(verb)
 		}
 	})
 })
@@ -46,14 +75,14 @@ describe('mode', () => {
 
 describe('fleet verbs', () => {
 	it('pause flips the ship record to status:paused and flags the SDD-bridge gap', () => {
-		cf(['register', '--handle', 'alice', '--harness', 'codex'], { CYBERLEGION_AGENT_ID: 'alice1' })
+		seedShip('alice1', 'alice')
 		const out = cf(['pause', 'alice'])
 		expect(out).toContain('paused: alice')
 		expect(out).toContain('status: paused')
 	})
 
 	it("jump prints the ship's cwd when there is no live tmux pane to select", () => {
-		cf(['register', '--handle', 'alice', '--harness', 'codex'], { CYBERLEGION_AGENT_ID: 'alice1' }, work)
+		seedShip('alice1', 'alice')
 		const out = cf(['jump', 'alice'], {}, work)
 		expect(out.trim()).toBe(work)
 	})
@@ -63,7 +92,7 @@ describe('fleet verbs', () => {
 	})
 
 	it('missions --json emits an array shaped by the mission row schema', () => {
-		cf(['register', '--handle', 'alice', '--harness', 'codex'], { CYBERLEGION_AGENT_ID: 'alice1' }, work)
+		seedShip('alice1', 'alice')
 		const out = cf(['missions', '--format', 'json', '--agents-root', work])
 		const rows = JSON.parse(out)
 		expect(Array.isArray(rows)).toBe(true)
@@ -83,12 +112,8 @@ describe('fleet verbs', () => {
 			].join('\n'),
 		)
 		writeFileSync(join(work, '.agents', 'specs', project, 'spec.md'), '---\nstatus: implemented\n---\n')
-		// The fleet registry has no worktree-writing verb exercised here, so hand-write the record
-		// with a worktree.branch matching the ledger's cr (the ship↔CR join key).
-		cf(['register', '--handle', 'alice', '--harness', 'codex'], { CYBERLEGION_AGENT_ID: 'alice1' })
-		const rec = JSON.parse(readFileSync(join(root, 'agents', 'alice1.json'), 'utf8'))
-		rec.worktree = { root: join(work, 'worktree'), branch: 'add-fleet-comms' }
-		writeFileSync(join(root, 'agents', 'alice1.json'), JSON.stringify(rec))
+		// Seed the ship record with a worktree.branch matching the ledger's cr (the ship↔CR join key).
+		seedShip('alice1', 'alice', { worktree: { root: join(work, 'worktree'), branch: 'add-fleet-comms' } })
 		const out = cf(['missions', '--format', 'json', '--agents-root', work], { CYBERLEGION_AGENT_ID: 'alice1' })
 		const rows = JSON.parse(out)
 		expect(rows[0]).toMatchObject({

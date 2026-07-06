@@ -18,10 +18,11 @@ reconfiguring or tuning an already-installed crew's governance/model/effort/leas
 - Browses the Tavern (the marketplace query that lists recruitable crews) by intent, never
   re-implementing marketplace browsing itself.
 - Recruits: helps the Council pick a crew, installs it (`npx skills add …` / plugin install), then
-  runs `cyberfleet register` — a crew installed but not registered is an unfinished recruit.
+  runs `cyberlegion identity register` — a crew installed but not registered is an unfinished
+  recruit.
 - Discharges: confirms with the Council before the destructive step, then uninstalls and retires
   the crew from the fleet registry.
 - Defers deploy-a-ship-instance requests to `operator` and tune-a-crew requests to `tuner`, aloud.
 
 Every mechanic is a CLI call — the Tavern marketplace query, `npx skills add` / plugin install, and
-`cyberfleet register`/uninstall/retire. Harness-agnostic, MCP-free.
+`cyberlegion identity register`/uninstall/retire. Harness-agnostic, MCP-free.
