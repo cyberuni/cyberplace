@@ -1,7 +1,14 @@
 ---
 import starlightConfig from 'virtual:starlight/user-config'
 
-const title = starlightConfig?.title ?? 'cyberplace'
+// Starlight keys `title` by locale (e.g. { en: 'cyberplace' }) — resolve it to a
+// string for the current route's locale, falling back to the first entry.
+const rawTitle = starlightConfig?.title as string | Record<string, string> | undefined
+const locale = Astro.currentLocale
+const title =
+	typeof rawTitle === 'string'
+		? rawTitle
+		: ((locale && rawTitle?.[locale]) ?? (rawTitle && Object.values(rawTitle)[0]) ?? 'cyberplace')
 
 const navItems = [
 	{ label: 'Docs', href: '/getting-started/introduction' },
