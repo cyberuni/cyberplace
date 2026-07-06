@@ -44,7 +44,6 @@ The repo doubles as a plugin marketplace (`.claude-plugin/marketplace.json`). No
 | `cyberfleet`        | Fleet persona layer (Pod, Operator) for the cyberfleet CLI              |
 | `cyberlegion`       | Agent session spawning, messaging, and dispatch — the Legion and Legate  |
 | `commit-discipline` | Commit-discipline hooks and workflow                                     |
-| `tmux`              | Fork conversations into panes, manage sessions                          |
 
 ## Development
 
