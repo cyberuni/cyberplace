@@ -8,11 +8,11 @@ approval:
     by: agent
     cause: dimension
     why:
-      floor: none — all-additive extension of the frozen `plugin/build/` node (new pin-resolution scenarios, no existing scenario narrowed or rewritten) → self-clears, `build.feature` stays `@frozen`, no re-open. No Clearance (no narrowing), Compatibility (no shipped semver bump this CR), or Conflict (no logical contradiction) floor fires.
-      blast: moderate — single behavioral node (`plugin/build/`), but the added behavior introduces a build-time network dependency and rewrites the plugin's source SKILL.md pins.
-      novelty: low — folds an existing idiom (resolve `npx <cli>@<version>` pins, same-major bound — cf. `self-update` / the upgrade-universal-plugin skill) into the build derivation step; the contract is well-understood.
-      confidence: high — cold sdd-spec-judge 3-lens {oracle, builder, architect} ALIGNED true (round 1 Builder FAIL on three coverage gaps — unresolvable-package vs unreachable-registry, `--range` ~/^ aliases, `--package` compose — plus Architect FAIL on the placement/capability-map disagreement; all fixed then re-graded ALIGNED true). check-suite / check-spec-state / check-spec-structure (0/0) / concept-index (no drift) clean, 0 open markers. Self-asserted (by agent) — ratify or kick back.
-      cr: build-resolve-pins
+      floor: Clearance — narrows `plugin/build/`, deleting the pin-resolution scenarios + the `--registry`/`--range`/`--package`/`--allow-major`/`--skip-pins` flags from the frozen `build.feature` (pin resolution relocates to the new `plugin/bundle/` node). PRE-AUTHORIZED by the user in-session this run; `build.feature` re-opened for the narrowing and re-frozen at this gate. Compatibility n/a (impl unbuilt this CR — no shipped semver bump). Conflict none — the root maps route pins to `bundle` only and narrowed `build.feature` retains zero pin references.
+      blast: moderate — one narrowed node (`plugin/build/`) + one new node (`plugin/bundle/`) + root capability/placement/concept maps. The pin machinery relocates via the existing `RegistryClient` DIP seam (a workspace-version source reading local `packages/<pkg>/package.json`); workspace-only, offline — removes build's former network dependency rather than adding one.
+      novelty: moderate — a structural `build`/`bundle` split along the dev-vs-release axis (new verb) realizing #84's "pinning belongs to release, not build" thesis; the pin mechanics themselves are established (relocated, not invented). Workspace resolution fixes the off-by-one registry lookup at `changeset version` time; a doc-example ignore protects `upgrade-universal-plugin`'s illustration strings; external (non-workspace) pins are skipped.
+      confidence: high — cold sdd-spec-judge 3-lens {oracle, builder, architect} ALIGNED true (all three PASS first round). check-spec-state OK / check-suite OK (boolean throughout, correct sectioning) / concept-index updated (new `release` concept), 0 open markers. One non-blocking coverage gap (bundle lacked build's missing-manifest precondition) closed with a mirror scenario before freeze. Self-asserted (by agent) — ratify or kick back.
+      cr: build-bundle-split
 ---
 
 # universal-plugin — the cross-vendor plugin build/derivation engine (CLI)
@@ -31,8 +31,10 @@ CLI turns that canonical manifest into what each AI-agent runtime (Claude Code, 
 Copilot CLI) expects, and resolves shared governance documents by name. Two concerns:
 
 - **The `plugin` command group** — `universal-plugin plugin build` **derives** per-vendor manifests
-  from the canonical one; `plugin validate` **checks** the canonical manifest against the schema and
-  each vendor's rules; `plugin init` **scaffolds** a new plugin project.
+  from the canonical one; `plugin bundle` **materializes** the release form (pins the plugin's skill
+  `npx <cli>@<version>` references to the shipping workspace versions); `plugin validate` **checks** the
+  canonical manifest against the schema and each vendor's rules; `plugin init` **scaffolds** a new
+  plugin project.
 - **`governance`** — `universal-plugin governance show <name>` / `list` **resolves** governance
   documents by name across a fixed scope precedence, so agents reference governance by name, not by a
   fragile filesystem path.
@@ -70,8 +72,9 @@ is a peer of the `cyberfleet` CLI.
 
 | Folder | Type | What |
 |---|---|---|
-| [`plugin/`](./plugin/README.md) | group | the `plugin` command group — build / validate / init |
-| [`plugin/build/`](./plugin/build/README.md) | behavioral | `universal-plugin plugin build [--vendor] [--dry-run] [--clean] [--registry] [--range] [--package] [--allow-major] [--skip-pins]` — derive per-vendor manifests from the canonical `.plugin/plugin.json`, and resolve + pin the `npx <cli>@<version>` references in the plugin's skills |
+| [`plugin/`](./plugin/README.md) | group | the `plugin` command group — build / bundle / validate / init |
+| [`plugin/build/`](./plugin/build/README.md) | behavioral | `universal-plugin plugin build [--vendor] [--dry-run] [--clean]` — derive per-vendor manifests from the canonical `.plugin/plugin.json` (dev-consumable form; no pins) |
+| [`plugin/bundle/`](./plugin/bundle/README.md) | behavioral | `universal-plugin plugin bundle [--dry-run] [--full] [--format]` — materialize the release form: pin the `npx <cli>@<version>` references in the plugin's skills to their shipping workspace versions |
 | [`plugin/validate/`](./plugin/validate/README.md) | behavioral | `universal-plugin plugin validate [--vendor] [--strict]` — check the canonical manifest against schema + vendor rules |
 | [`plugin/init/`](./plugin/init/README.md) | behavioral | `universal-plugin plugin init [--name] [--vendor] [--scaffold] [--force] [--yes]` — scaffold a new plugin project |
 | [`governance/`](./governance/README.md) | behavioral | `universal-plugin governance show <name>` / `list` — resolve governance documents by name across scopes |
@@ -83,11 +86,13 @@ Where a new concept lives — slot here, do not invent placement (strategy = **c
 
 - **a new canonical-manifest op** (derive / check / scaffold the `.plugin/plugin.json`) →
   `plugin/<verb>/` (a new unit node under the `plugin` group).
-- **a new op resolving/refreshing the version pins in the plugin's own skills** (the
-  `npx <cli>@<version>` references a plugin's skills carry) → **folded into `plugin/build/`** — it
-  shares build's derive-from-source-of-truth idiom and runs as a build step, not a separate verb. It is
-  **not** the `self-update` hook-file concern (updating `universal-plugin`'s own pin across a project's
-  hook files departs with the sync engine — see the non-goals below).
+- **a new op resolving/pinning the version pins in the plugin's own skills** (the
+  `npx <cli>@<version>` references a plugin's skills carry) → **`plugin/bundle/`** — pinning is a
+  release-time **materialization** step (resolve each workspace CLI to the version in its local
+  `packages/<pkg>/package.json` at `changeset version`, skipping doc-example and external pins),
+  distinct from `build`'s dev-time manifest derivation. `build` no longer touches pins. It is **not**
+  the `self-update` hook-file concern (updating `universal-plugin`'s own pin across a project's hook
+  files departs with the sync engine — see the non-goals below).
 - **a new name→document resolution op** (resolve or list governance by name across scopes) →
   `governance/`.
 - **a new shared output / CLI convention** (TOON shape, aggregate, next-step, empty-state,
@@ -102,8 +107,8 @@ Where a new concept lives — slot here, do not invent placement (strategy = **c
 - **post-install artifact-copy (`prepare`)** → **dropped** — not chartered in this spec.
 
 The nesting rule: capabilities at the top; a command group (`plugin/`) may hold unit nodes
-(`plugin/build/`), but no node is three deep — any further sub-grouping is a `concept:` tag, not a
-folder. The `plugin/` group index carries no `spec-type` marker (it is a descriptive index, not a
+(`plugin/build/`, `plugin/bundle/`), but no node is three deep — any further sub-grouping is a
+`concept:` tag, not a folder. The `plugin/` group index carries no `spec-type` marker (it is a descriptive index, not a
 scanned node).
 
 <!-- BEGIN generated: by-concept (project-spec/concept-index) -->
@@ -114,8 +119,9 @@ scanned node).
 
 | Concept | Facets |
 |---|---|
-| `axi` | `axi/` (reference) · `governance/` (behavior) · `plugin/build/` (behavior) · `plugin/init/` (behavior) · `plugin/validate/` (behavior) |
+| `axi` | `axi/` (reference) · `governance/` (behavior) · `plugin/build/` (behavior) · `plugin/bundle/` (behavior) · `plugin/init/` (behavior) · `plugin/validate/` (behavior) |
 | `canonical-manifest` | `plugin/build/` (behavior) · `plugin/init/` (behavior) · `plugin/validate/` (behavior) |
 | `governance` | `governance/` (behavior) |
+| `release` | `plugin/bundle/` (behavior) |
 
 <!-- END generated: by-concept -->
