@@ -1,0 +1,55 @@
+---
+name: legate-rename
+status: active
+todos:
+  - content: "rename gateway skill cyberlegion→legate (folder + name: + heading)"
+    status: pending
+  - content: "rename agent legate.md→headless-legate.md (name: + heading + self-refs)"
+    status: pending
+  - content: "fix artifact code-refs: `legate` agent→`headless-legate`; `cyberlegion` gateway→`legate` (persona 'the Legate' stays)"
+    status: pending
+  - content: "revise cyberlegion-plugin spec (spec.md + gateway/dispatch READMEs)"
+    status: pending
+  - content: "update website cyberlegion/overview.md stale agent ref"
+    status: pending
+  - content: "pnpm verify (audit checks folder==name); commit + handoff"
+    status: pending
+---
+
+# CR legate-rename — rename gateway skill + headless agent
+
+Target spec: `.agents/specs/cyberlegion-plugin` (project `plugins/cyberlegion`, status draft).
+
+## CR
+
+Two renames in the `cyberlegion` plugin:
+- gateway **skill** `cyberlegion` → `legate` (folder `plugins/cyberlegion/skills/cyberlegion/` →
+  `.../legate/`, `name:`, `# heading`)
+- headless **agent** `legate` → `headless-legate` (`plugins/cyberlegion/agents/legate.md` →
+  `headless-legate.md`, `name:`, heading, self-refs)
+
+Result model: **the Legate** (persona) is realized in-session by skill `legate`, headless by agent
+`headless-legate`. The persona word "the Legate" is unchanged everywhere.
+
+## Reference-fix rule (per file)
+
+- code `` `legate` `` meaning the **agent** → `` `headless-legate` ``
+- `` `cyberlegion` `` / "the cyberlegion gateway" meaning the **skill** → `` `legate` ``
+- prose **"the Legate"** (persona/role) → **unchanged**
+- `` `cyberlegion` CLI `` / plugin/package name `cyberlegion` → **unchanged**
+
+## Freeze / gate
+
+Spec is `draft`, no `.feature` suites (owed) → nothing `@frozen`. No freeze re-open, no spec-gate
+freeze, no impl-judge. This is a descriptive-node revise + artifact rename.
+
+## Out of scope (deliberate)
+
+- CLI spec `packages/cyberlegion/.agents/spec` — different project; its refs are to the persona /
+  the historical CR name `legion-gateway-legate`, not the renamed artifacts.
+- ADR 0022/0023 — historical decision records; `legate` mentions describe the decision at the time.
+
+## NEXT
+
+Do the rename + ref-fixes in `plugins/cyberlegion/` and `.agents/specs/cyberlegion-plugin/`, update
+the one website overview line, run `pnpm verify`, commit.
