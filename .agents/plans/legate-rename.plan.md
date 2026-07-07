@@ -3,17 +3,17 @@ name: legate-rename
 status: active
 todos:
   - content: "rename gateway skill cyberlegion→legate (folder + name: + heading)"
-    status: pending
+    status: done
   - content: "rename agent legate.md→headless-legate.md (name: + heading + self-refs)"
-    status: pending
+    status: done
   - content: "fix artifact code-refs: `legate` agent→`headless-legate`; `cyberlegion` gateway→`legate` (persona 'the Legate' stays)"
-    status: pending
+    status: done
   - content: "revise cyberlegion-plugin spec (spec.md + gateway/dispatch READMEs)"
-    status: pending
+    status: done
   - content: "update website cyberlegion/overview.md stale agent ref"
-    status: pending
-  - content: "pnpm verify (audit checks folder==name); commit + handoff"
-    status: pending
+    status: done
+  - content: "audit-validate (folder==name green); commit + handoff"
+    status: done
 ---
 
 # CR legate-rename — rename gateway skill + headless agent
@@ -51,5 +51,7 @@ freeze, no impl-judge. This is a descriptive-node revise + artifact rename.
 
 ## NEXT
 
-Do the rename + ref-fixes in `plugins/cyberlegion/` and `.agents/specs/cyberlegion-plugin/`, update
-the one website overview line, run `pnpm verify`, commit.
+LANDED in commit `9bf85ab` (branch `main`, not pushed). Retire this brief at doctrine distillation.
+Full `pnpm verify` is red on a pre-existing, unrelated cause: the untracked `.agents/cyberlegion/
+worktrees/` checkout pollutes knip/typecheck globs (not gitignored). That is a separate repo-hygiene
+fix, out of scope for this rename.
