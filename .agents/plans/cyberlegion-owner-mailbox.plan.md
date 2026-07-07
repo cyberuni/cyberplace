@@ -1,17 +1,17 @@
 ---
 name: cyberlegion-owner-mailbox
-status: active
+status: done
 todos:
   - content: "author additive scenarios: surfacing (+4 owner-mail) and mail (+6 --owner) nodes + READMEs"
     status: done
   - content: "spec gate: both additive (addOnly); spec-judge ALIGNED; ledger gate line"
     status: done
   - content: "impl: inject-inbox owner-mail surfacing gated on spawnedBy; mail --owner selector on inbox/read/ack"
-    status: pending
+    status: done
   - content: "impl: verification per frozen scenario; impl gate (cold impl-judge)"
-    status: pending
+    status: done
   - content: "root pnpm verify; commit; handoff"
-    status: pending
+    status: done
 ---
 
 # CR cyberlegion-owner-mailbox — the human read path
