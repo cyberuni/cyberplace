@@ -57,57 +57,284 @@ test('plugin build --dry-run lists vendors without writing', () => {
 	}
 })
 
-test('plugin build --skip-pins leaves pins untouched but still builds manifests', () => {
-	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'universal-plugin-skippins-'))
-	try {
-		fs.mkdirSync(path.join(root, '.plugin'))
-		fs.mkdirSync(path.join(root, 'skills', 'x'), { recursive: true })
-		fs.writeFileSync(
-			path.join(root, '.plugin', 'plugin.json'),
-			JSON.stringify({ name: 'test-plugin', vendorExtensions: { 'claude-code': {} } }),
-		)
-		fs.writeFileSync(path.join(root, 'skills', 'x', 'SKILL.md'), 'npx cyberplace@1.2.0')
-		const result = spawnSync('node', [bin, 'plugin', 'build', '--skip-pins', '--root', root], {
-			encoding: 'utf8',
-			env: { ...process.env, NODE_NO_WARNINGS: '1' },
-		})
-		expect(result.status).toBe(0)
-		expect(fs.existsSync(path.join(root, '.claude-plugin', 'plugin.json'))).toBe(true)
-		expect(fs.readFileSync(path.join(root, 'skills', 'x', 'SKILL.md'), 'utf8')).toBe('npx cyberplace@1.2.0')
-	} finally {
-		fs.rmSync(root, { recursive: true, force: true })
-	}
-})
-
-test('plugin build --format json includes a pins array even when empty (--skip-pins)', () => {
-	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'universal-plugin-pinsjson-'))
+test('plugin build --format json returns a structured build result', () => {
+	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'universal-plugin-buildjson-'))
 	try {
 		fs.mkdirSync(path.join(root, '.plugin'))
 		fs.writeFileSync(
 			path.join(root, '.plugin', 'plugin.json'),
 			JSON.stringify({ name: 'test-plugin', vendorExtensions: { 'claude-code': {} } }),
 		)
-		const result = spawnSync('node', [bin, 'plugin', 'build', '--skip-pins', '--format', 'json', '--root', root], {
+		const result = spawnSync('node', [bin, 'plugin', 'build', '--format', 'json', '--root', root], {
 			encoding: 'utf8',
 			env: { ...process.env, NODE_NO_WARNINGS: '1' },
 		})
 		expect(result.status).toBe(0)
 		const parsed = JSON.parse(result.stdout)
-		expect(Array.isArray(parsed.pins)).toBe(true)
+		expect(Array.isArray(parsed.written)).toBe(true)
 	} finally {
 		fs.rmSync(root, { recursive: true, force: true })
 	}
 })
 
-test('plugin build --help documents the pin-resolution flags', () => {
+test('plugin build --help no longer documents pin-resolution flags', () => {
 	const result = spawnSync('node', [bin, 'plugin', 'build', '--help'], {
 		encoding: 'utf8',
 		env: { ...process.env, NODE_NO_WARNINGS: '1' },
 	})
 	expect(result.status).toBe(0)
-	expect(result.stdout).toMatch(/--registry/)
-	expect(result.stdout).toMatch(/--range/)
-	expect(result.stdout).toMatch(/--skip-pins/)
+	expect(result.stdout).not.toMatch(/--registry/)
+	expect(result.stdout).not.toMatch(/--range/)
+	expect(result.stdout).not.toMatch(/--skip-pins/)
+	expect(result.stdout).not.toMatch(/--allow-major/)
+})
+
+// ── plugin bundle ──
+
+function mkBundleFixture(prefix: string) {
+	const root = fs.mkdtempSync(path.join(os.tmpdir(), prefix))
+	fs.mkdirSync(path.join(root, '.plugin'))
+	fs.writeFileSync(path.join(root, '.plugin', 'plugin.json'), JSON.stringify({ name: 'test-plugin' }))
+	return root
+}
+
+function writeWorkspacePkg(root: string, name: string, version?: string) {
+	const dir = path.join(root, 'packages', name)
+	fs.mkdirSync(dir, { recursive: true })
+	if (version !== undefined) {
+		fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify({ name, version }))
+	}
+}
+
+function writeSkill(root: string, relPath: string, content: string) {
+	const full = path.join(root, 'skills', relPath)
+	fs.mkdirSync(path.dirname(full), { recursive: true })
+	fs.writeFileSync(full, content)
+}
+
+function runBundle(root: string, ...args: string[]) {
+	return spawnSync('node', [bin, 'plugin', 'bundle', '--root', root, ...args], {
+		encoding: 'utf8',
+		env: { ...process.env, NODE_NO_WARNINGS: '1' },
+	})
+}
+
+// Scenario: missing .plugin/plugin.json fails
+test('plugin bundle fails when .plugin/plugin.json is missing', () => {
+	const empty = fs.mkdtempSync(path.join(os.tmpdir(), 'universal-plugin-bundle-missing-'))
+	try {
+		const result = runBundle(empty)
+		expect(result.status).toBe(1)
+		expect(result.stderr).toMatch(/No \.plugin\/plugin\.json found/)
+	} finally {
+		fs.rmSync(empty, { recursive: true, force: true })
+	}
+})
+
+// Scenario: bundle pins a workspace CLI to its local package.json version
+test('plugin bundle pins a workspace CLI to its local package.json version', () => {
+	const root = mkBundleFixture('universal-plugin-bundle-pin-')
+	try {
+		writeWorkspacePkg(root, 'cyberplace', '0.1.0')
+		writeSkill(root, 'x/SKILL.md', 'npx cyberplace@0.0.9')
+		const result = runBundle(root)
+		expect(result.status).toBe(0)
+		expect(fs.readFileSync(path.join(root, 'skills', 'x', 'SKILL.md'), 'utf8')).toBe('npx cyberplace@0.1.0')
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
+})
+
+// Scenario: a workspace package whose local package.json is unreadable warns and skips
+test('plugin bundle warns and skips a workspace package with no readable version', () => {
+	const root = mkBundleFixture('universal-plugin-bundle-unreadable-')
+	try {
+		writeWorkspacePkg(root, 'cyberfleet') // directory exists, no package.json written
+		writeSkill(root, 'x/SKILL.md', 'npx cyberfleet@0.0.1')
+		const result = runBundle(root)
+		expect(result.status).toBe(0)
+		expect(fs.readFileSync(path.join(root, 'skills', 'x', 'SKILL.md'), 'utf8')).toBe('npx cyberfleet@0.0.1')
+		expect(result.stderr).toMatch(/cyberfleet/)
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
+})
+
+// Scenario: a pin for a package with no workspace entry is left untouched
+test('plugin bundle leaves an external pin untouched', () => {
+	const root = mkBundleFixture('universal-plugin-bundle-external-')
+	try {
+		writeSkill(root, 'x/SKILL.md', 'npx gherkin-cli@0.0.1')
+		const result = runBundle(root)
+		expect(result.status).toBe(0)
+		expect(fs.readFileSync(path.join(root, 'skills', 'x', 'SKILL.md'), 'utf8')).toBe('npx gherkin-cli@0.0.1')
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
+})
+
+// Scenario: --dry-run reports resolved pins without writing them
+test('plugin bundle --dry-run reports without writing', () => {
+	const root = mkBundleFixture('universal-plugin-bundle-dryrun-')
+	try {
+		writeWorkspacePkg(root, 'cyberplace', '0.1.0')
+		writeSkill(root, 'x/SKILL.md', 'npx cyberplace@0.0.9')
+		const result = runBundle(root, '--dry-run')
+		expect(result.status).toBe(0)
+		expect(fs.readFileSync(path.join(root, 'skills', 'x', 'SKILL.md'), 'utf8')).toBe('npx cyberplace@0.0.9')
+		expect(result.stdout).toMatch(/cyberplace/)
+		expect(result.stdout).toMatch(/0\.0\.9/)
+		expect(result.stdout).toMatch(/0\.1\.0/)
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
+})
+
+// Scenario: a bundle prints TOON pins rows and a pre-computed aggregate
+test('plugin bundle prints pins rows and a pre-computed aggregate', () => {
+	const root = mkBundleFixture('universal-plugin-bundle-aggregate-')
+	try {
+		writeWorkspacePkg(root, 'cyberplace', '0.1.0')
+		writeWorkspacePkg(root, 'cyberfleet', '0.0.1')
+		writeSkill(root, 'x/SKILL.md', 'npx cyberplace@0.0.9 and npx cyberfleet@0.0.1')
+		const result = runBundle(root)
+		expect(result.status).toBe(0)
+		expect(result.stdout).toMatch(/package/i)
+		expect(result.stdout).toMatch(/status/i)
+		expect(result.stdout).toMatch(/pinned 1, unchanged 1, skipped 0/)
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
+})
+
+// Scenario: --format json returns a structured pins result
+test('plugin bundle --format json returns a structured pins result', () => {
+	const root = mkBundleFixture('universal-plugin-bundle-json-')
+	try {
+		writeWorkspacePkg(root, 'cyberplace', '0.1.0')
+		writeSkill(root, 'x/SKILL.md', 'npx cyberplace@0.0.9')
+		const result = runBundle(root, '--format', 'json')
+		expect(result.status).toBe(0)
+		const parsed = JSON.parse(result.stdout)
+		expect(Array.isArray(parsed.pins)).toBe(true)
+		expect(parsed.pins[0]).toMatchObject({ package: 'cyberplace', resolved: '0.1.0' })
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
+})
+
+// Scenario: --format toon names the default explicitly
+test('plugin bundle --format toon names the default explicitly', () => {
+	const root = mkBundleFixture('universal-plugin-bundle-toon-')
+	try {
+		writeWorkspacePkg(root, 'cyberplace', '0.1.0')
+		writeSkill(root, 'x/SKILL.md', 'npx cyberplace@0.0.9')
+		const result = runBundle(root, '--format', 'toon')
+		expect(result.status).toBe(0)
+		expect(result.stdout).toMatch(/cyberplace/)
+		expect(result.stdout).toMatch(/pinned 1, unchanged 0, skipped 0/)
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
+})
+
+// Scenario: a large pins list truncates with a size hint / --full suppresses truncation
+test('plugin bundle truncates a large pins list and --full shows all', () => {
+	const root = mkBundleFixture('universal-plugin-bundle-truncate-')
+	try {
+		const lines: string[] = []
+		for (let i = 0; i < 40; i++) {
+			const name = `cyberpkg-${i}`
+			writeWorkspacePkg(root, name, '1.0.0')
+			lines.push(`npx ${name}@0.0.1`)
+		}
+		writeSkill(root, 'x/SKILL.md', lines.join('\n'))
+
+		const truncated = runBundle(root, '--dry-run')
+		expect(truncated.status).toBe(0)
+		expect(truncated.stdout).toMatch(/… \+\d+ more — rerun with --full/)
+
+		const full = runBundle(root, '--dry-run', '--full')
+		expect(full.status).toBe(0)
+		expect(full.stdout).not.toMatch(/more — rerun with --full/)
+		for (let i = 0; i < 40; i++) {
+			expect(full.stdout).toMatch(new RegExp(`cyberpkg-${i}\\b`))
+		}
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
+})
+
+// Scenario: no pins to resolve is a definitive empty state
+test('plugin bundle reports a definitive empty state when there is nothing to bundle', () => {
+	const root = mkBundleFixture('universal-plugin-bundle-empty-')
+	try {
+		writeSkill(root, 'x/SKILL.md', 'no references here')
+		const result = runBundle(root)
+		expect(result.status).toBe(0)
+		expect(result.stdout).toMatch(/pinned 0/)
+		expect(result.stderr).toMatch(/nothing to bundle/)
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
+})
+
+// Scenario: a successful bundle ends with a next-step suggestion
+test('plugin bundle ends stderr with a next-step suggestion', () => {
+	const root = mkBundleFixture('universal-plugin-bundle-nextstep-')
+	try {
+		writeWorkspacePkg(root, 'cyberplace', '0.1.0')
+		writeSkill(root, 'x/SKILL.md', 'npx cyberplace@0.0.9')
+		const result = runBundle(root)
+		expect(result.status).toBe(0)
+		expect(result.stderr.trimEnd().endsWith('→ review and commit the pinned skills')).toBe(true)
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
+})
+
+// Scenario: bundle never prompts interactively — exercised implicitly: run() never hangs waiting
+// on stdin and always exits deterministically.
+test('plugin bundle never prompts interactively', () => {
+	const root = mkBundleFixture('universal-plugin-bundle-noprompt-')
+	try {
+		writeWorkspacePkg(root, 'cyberplace', '0.1.0')
+		writeSkill(root, 'x/SKILL.md', 'npx cyberplace@0.0.9')
+		const result = spawnSync('node', [bin, 'plugin', 'bundle', '--root', root], {
+			encoding: 'utf8',
+			input: '',
+			timeout: 5000,
+			env: { ...process.env, NODE_NO_WARNINGS: '1' },
+		})
+		expect(result.status).toBe(0)
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
+})
+
+// Scenario: an unknown flag fails loud
+test('plugin bundle --frobnicate fails loud naming the flag', () => {
+	const root = mkBundleFixture('universal-plugin-bundle-unknownflag-')
+	try {
+		const result = runBundle(root, '--frobnicate')
+		expect(result.status).toBe(1)
+		expect(result.stderr).toMatch(/--frobnicate/)
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
+})
+
+// Scenario: --help documents the bundle flags
+test('plugin bundle --help documents synopsis, flags, and an example', () => {
+	const result = spawnSync('node', [bin, 'plugin', 'bundle', '--help'], {
+		encoding: 'utf8',
+		env: { ...process.env, NODE_NO_WARNINGS: '1' },
+	})
+	expect(result.status).toBe(0)
+	expect(result.stdout).toMatch(/Usage:/)
+	expect(result.stdout).toMatch(/--dry-run/)
+	expect(result.stdout).toMatch(/--full/)
+	expect(result.stdout).toMatch(/Example:/)
 })
 
 test('governance list includes packaged defaults when project root has no governances', () => {
