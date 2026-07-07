@@ -10,8 +10,8 @@ todos:
     status: completed
   - content: "Impl gate: cold sdd-impl-judge over frozen scenarios; pnpm verify"
     status: completed
-  - content: "Handoff: push + PR; file follow-up CRs (builder automation + root version-script wiring; de-placeholder cyberlegion prose); detached Warden"
-    status: in_progress
+  - content: "Handoff: push + PR #85; follow-ups #86/#87/#88/#89; detached Warden spawned"
+    status: completed
 ---
 
 # build-bundle-split — release-time workspace pin resolution via a build/bundle split
@@ -24,10 +24,14 @@ Spec gate + deliver + impl gate DONE. Commits on branch `build-bundle-split`:
 `3285861` (spec gate), `d7abf28` (impl gate). `pnpm verify` GREEN (19/19). bundle 20/20 frozen scenarios
 pass; project stays `approved` (build's 3 AXI scenarios pre-existing/tracked). Placement final (no relocate).
 
-**Handoff remaining (awaiting user OK — outward-facing):**
-- push branch + open PR (#84) with distilled summary + combat log.
-- file 3 follow-up CRs (GitHub issues): builder automation; root version-script wiring; de-placeholder cyberlegion prose.
-- spawn `sdd:sdd-warden` detached (post-mission formation pass).
+**Handoff DONE:**
+- PR **#85** opened (closes #84), branch `build-bundle-split` pushed.
+- Follow-up issues filed: **#86** builder automation · **#87** root version-script wiring ·
+  **#88** de-placeholder cyberlegion prose · **#89** implement build's AXI output surface (→ lets the
+  project advance `approved`→`implemented`).
+- `sdd:sdd-warden` spawned detached (post-mission formation pass; not gating).
+
+Mission complete pending PR #85 review/merge + doctrine distillation. Keep this plan until then.
 
 Deliver plan (delegate build to a sonnet impl-producer):
 - New `packages/universal-plugin/src/bundle/` (domain `bundle.ts` + `cli.ts`), reusing `src/pin/`
