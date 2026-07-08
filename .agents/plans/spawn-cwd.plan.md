@@ -10,7 +10,7 @@ todos:
     status: done
   - content: "impl gate: verify one check per frozen scenario"
     status: done
-  - content: "handoff: land; file CR-2 (cyberfleet owns worktree) + CR-3 (cyberlegion removes worktree) as follow-up CRs"
+  - content: "handoff: land"
     status: done
 ---
 
@@ -28,23 +28,13 @@ it ran in; `close` on a `--cwd` unit tears down the session/pane but removes no 
 Additive to a frozen `.feature` → new scenarios self-clear, stay `@frozen`, no re-open
 (edit class read via `gherkin-cli diff --base dc907c2`).
 
-## Why this CR is first (3-CR sequence)
+## Why `--cwd` is useful on its own
 
-Worktree ownership moves cyberlegion → cyberfleet, but cyberfleet can only own it once cyberlegion
-can spawn **into** an existing dir. So:
-
-1. **CR-1 (this):** cyberlegion additive `--cwd` — the non-breaking enabler.
-2. **CR-2 (cyberfleet):** cyberfleet owns the worktree lifecycle and spawns via `--cwd`.
-3. **CR-3 (cyberlegion):** remove worktree creation/management (narrowing → re-open, last).
-
-## Worktree design (context for CR-2/CR-3, not built here)
-
-`WorktreeBackend` seam owned by cyberfleet:
-- `git` backend (default/tmux/bare): `git worktree add -b` / `remove`; named branch = `<cr-ref>`.
-- `herdr` backend (mux=herdr): `herdr worktree create/remove`; co-manages worktree + pane.
-- native lease / in-use check + safe-prune of merged ship worktrees (idea borrowed from
-  kunchenguid/treehouse; no external dependency). treehouse rejected: its pooled detached-HEAD
-  model fights the named-branch=cr-ref ship identity.
+`--cwd` lets a caller (or `herdr worktree create`) hand spawn an already-existing directory instead
+of forcing spawn to cut its own worktree — useful when the caller wants its own worktree lifecycle
+(e.g. an already-checked-out herdr worktree) without cyberlegion re-creating one. Worktree ownership
+stays with cyberlegion: this is an additive spawn mode, not a step toward moving that ownership
+elsewhere.
 
 ## NEXT
 
@@ -53,8 +43,5 @@ typecheck clean). Project spec.md kept at `draft` (additive slice does not advan
 project). Cold impl-judge intentionally skipped for this additive change; the 5 frozen scenarios each
 have a mapped passing test.
 
-Follow-ups filed as new CRs (see their briefs):
-- **CR-2 `cyberfleet-worktree`** — cyberfleet owns the worktree lifecycle (git|herdr backend +
-  lease/safe-prune), spawns via `--cwd`. Do next.
-- **CR-3 `cyberlegion-drop-worktree`** — remove worktree creation/management from cyberlegion
-  (narrowing → re-open of `session.feature`). Do LAST, after CR-2 ships.
+No follow-up CRs filed. Worktree lifecycle stays owned by cyberlegion (the cyberfleet-ownership
+direction from an earlier draft of this plan was dropped).
