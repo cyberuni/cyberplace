@@ -4,6 +4,7 @@
 	"type": "module",
 	"scripts": {
 		"build": "turbo build",
+		"bundle": "node packages/universal-plugin/bin/universal-plugin.mjs plugin bundle --root plugins/aced && node packages/universal-plugin/bin/universal-plugin.mjs plugin bundle --root plugins/cyberfleet && node packages/universal-plugin/bin/universal-plugin.mjs plugin bundle --root plugins/cyberlegion && node packages/universal-plugin/bin/universal-plugin.mjs plugin bundle --root plugins/cyberspace && node packages/universal-plugin/bin/universal-plugin.mjs plugin bundle --root plugins/quill && node packages/universal-plugin/bin/universal-plugin.mjs plugin bundle --root plugins/sdd",
 		"cf": "pnpm run --filter=cyberfleet",
 		"check": "biome check --write",
 		"cl": "pnpm run --filter=cyberlegion",
@@ -19,7 +20,7 @@
 		"un": "pnpm run --filter=universal-plugin",
 		"verify": "turbo verify",
 		"verify:specs": "pnpm typecheck:specs && node --experimental-strip-types --test plugins/sdd/skills/spec-gate/scripts/check-spec-state.test.mts plugins/sdd/skills/spec-gate/scripts/check-suite.test.mts plugins/sdd/skills/resolve-governances/scripts/resolve-governances.test.mts plugins/sdd/skills/plan-retirement/scripts/retire-plans.test.mts plugins/sdd/skills/discover-specs/scripts/discover-specs.test.mts plugins/sdd/skills/manage-spec-anchors/scripts/manage-spec-anchors.test.mts plugins/sdd/skills/manage-ignore/scripts/manage-ignore.test.mts plugins/sdd/skills/discover-plans/scripts/discover-plans.test.mts plugins/sdd/skills/concept-index/scripts/concept-index.test.mts plugins/sdd/skills/place-node/scripts/place-node.test.mts plugins/sdd/skills/check-spec-structure/scripts/check-spec-structure.test.mts plugins/sdd/skills/resolve-tracking/scripts/resolve-tracking.test.mts plugins/sdd/skills/check-plan-safety/scripts/check-plan-safety.test.mts && node plugins/sdd/skills/spec-gate/scripts/check-spec-state.mts --root .agents/specs && node plugins/sdd/skills/spec-gate/scripts/check-suite.mts --root .agents/specs && node plugins/sdd/skills/resolve-governances/scripts/resolve-governances.mts --root . && node plugins/sdd/skills/concept-index/scripts/concept-index.mts --spec-dir .agents/specs/sdd --check && node plugins/sdd/skills/check-spec-structure/scripts/check-spec-structure.mts --spec-dir .agents/specs/sdd --check && node plugins/sdd/skills/resolve-tracking/scripts/resolve-tracking.mts --root . && node plugins/sdd/skills/check-plan-safety/scripts/check-plan-safety.mts --root . --check",
-		"version": "changeset version",
+		"version": "changeset version && pnpm run bundle",
 		"web": "pnpm run --filter=website"
 	},
 	"devDependencies": {
