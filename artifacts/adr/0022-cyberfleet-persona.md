@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed
+Accepted
 
 ## Context
 
@@ -120,25 +120,27 @@ Adopt **Option 3**.
    is a specific unattended-conductor role, not a persona. Do **not** reuse "Commander" for anything
    in this layer — SDD's Oracle actor already owns that fleet-role name.
 
-8. **Model: a ship is a git worktree carrying a tracked `.cyberfleet/` marker.** One Pod maps to
+8. **Model: a ship is a git worktree carrying a tracked cyberlegion marker.** One Pod maps to
    one pane/tab/window — the isolation boundary (a worktree) equals the presentation boundary (a
    terminal surface), matching how tmux, herdr, and orca already frame a running session. The
-   marker (`.cyberfleet/config.json`) is **tracked in git**, while the rest of `.cyberfleet/`
-   (agents, inbox, panes, worktrees, self) stays gitignored volatile state
-   (`.gitignore`: `.cyberfleet/*` + `!.cyberfleet/config.json`). Because the marker is tracked, it
-   travels to every worktree cut from a branch that has it — **the primary checkout and every
-   worktree it spawns are both ships**; there is no flagship/command-center split by checkout
-   identity. Mode is detected by **the tracked marker's presence alone at this project root** — no
-   check against `.agents/specs` or any SDD state, and no distinction between "the primary" and "a
-   worktree." **Pod** is the persona for being inside a ship (primary or worktree) and may spawn
-   further worktree-ships for parallel work — spawning is a ship capability, not something reserved
-   for outside a ship. **Operator** is the persona for being **outside any ship** — an
-   uninitialized or neutral folder with no marker yet — where its job is to oversee the fleet, init
-   or spawn a first ship, and route across ships from outside. Spawning a new ship still means
-   spawning a new worktree, and `spawn` immediately stamps it with its own `.cyberfleet/config.json`
-   so the freshly spawned ship self-detects as a ship before that marker is ever committed on its
-   branch (extending `cyberfleet spawn`, `.agents/specs/cyberfleet/spawn/README.md`, from
-   "new peer session" to "new worktree + new peer session").
+   marker is `.agents/cyberlegion/config.json` (reusing cyberlegion's own tracked hub marker,
+   `packages/cyberlegion/src/paths.ts`'s `ensureMarker`, rather than a cyberfleet-specific
+   `.cyberfleet/` file as originally drafted here) — **tracked in git**, so it travels to every
+   worktree cut from a branch that has it. The rest of cyberfleet's runtime state (agents, inbox,
+   panes) is cyberlegion's own gitignored hub state, not a parallel `.cyberfleet/` tree. Because the
+   marker is tracked, **the primary checkout and every worktree it spawns are both ships**; there is
+   no flagship/command-center split by checkout identity. Mode is detected by **the tracked
+   marker's presence alone at this project root** (`cyberfleet mode`, `packages/cyberfleet/src/mode.ts`'s
+   `detectMode`) — no check against `.agents/specs` or any SDD state, and no distinction between
+   "the primary" and "a worktree." **Pod** is the persona for being inside a ship (primary or
+   worktree) and may spawn further worktree-ships for parallel work — spawning is a ship capability,
+   not something reserved for outside a ship. **Operator** is the persona for being **outside any
+   ship** (`mode` reports `command-center`) — an uninitialized or neutral folder with no marker
+   yet — where its job is to oversee the fleet, init or spawn a first ship, and route across ships
+   from outside. Spawning a new ship still means spawning a new worktree, and `spawn` immediately
+   stamps it with its own `.agents/cyberlegion/config.json` (cyberlegion's `session.ts`, via
+   `ensureMarker`) so the freshly spawned ship self-detects as a ship before that marker is ever
+   committed on its branch.
 
 9. **Console = two adapters**, following firstmate's four-verb spine (worktree add/remove; session
    open/send/read/teardown). Ship **tmux** (`$TMUX`) and **herdr** (`HERDR_ENV`, which carries real
@@ -149,13 +151,15 @@ Adopt **Option 3**.
     worktrees × missions × gate-status × leash/autonomy state — from append-only state rather than
     tracking a mutable view; the field that matters most is "who needs the Council's hands." The
     view stays thin (an fzf picker, a status-bar segment, a pane title) while the actions remain
-    plain CLI verbs (`gate approve`, `jump`, `pause`, `ack`). A real TUI is deferred to a future
-    GitHub issue, not built now. State wrinkle: the tracked ship marker travels per-worktree (that's
-    what makes each one a ship), but the mutable **runtime state** (agents/inbox/panes) does not —
-    it stays gitignored and pinned to the primary checkout's `.cyberfleet/`, shared fleet-wide via
-    `CYBERFLEET_ROOT`, so any ship's query sees the whole fleet rather than forking a view per
-    worktree. This is a runtime-state-sharing convenience, not a command-center seat — the primary
-    is a ship like any other; it just happens to also host the shared inbox/agents/panes state.
+    plain CLI verbs — shipped: `mode`, `missions`, `jump`, `pause`, `gate approve` (stubbed pending a
+    real SDD ledger write path); deferred: an `ack` verb (no acknowledgement command exists yet). A
+    real TUI is deferred to a future GitHub issue, not built now. State wrinkle: the tracked ship
+    marker travels per-worktree (that's what makes each one a ship), but the mutable **runtime
+    state** (agents/inbox/panes) does not — it is cyberlegion's own gitignored hub state, shared
+    fleet-wide via `$CYBERLEGION_ROOT` (or `--root`/`--space`), so any ship's query sees the whole
+    fleet rather than forking a view per worktree. This is a runtime-state-sharing convenience, not a
+    command-center seat — the primary is a ship like any other; it just happens to also host the
+    shared inbox/agents/panes state.
 
 ## Rationale
 
@@ -187,7 +191,7 @@ an honest signal instead of a liability.
 ### Negative
 
 - Two gateway skills (Pod, Operator) to build and keep in sync, instead of one.
-- Mode detection by the tracked `.cyberfleet/config.json` marker's presence alone is a hard
+- Mode detection by the tracked `.agents/cyberlegion/config.json` marker's presence alone is a hard
   boundary; a marker copied, committed, or created in the wrong place silently flips a session's
   persona — and because the marker is tracked, it now also flips for every worktree cut from that
   branch, which is intended (primary and worktrees are both ships) but worth stating plainly.
@@ -214,13 +218,14 @@ This lands spec-first, as change requests against `.agents/specs/cyberfleet/`, b
 - **Adapter split + worktree creation** — extend `spawn` (and a new `worktree` verb pair) to add/
   remove a git worktree per ship, and implement the tmux and herdr session adapters behind the
   existing four-verb spine.
-- **Mode-switch + the two gateway skills** — a tracked `.cyberfleet/config.json`-marker-presence
-  check, the `Pod` gateway skill (ship-scoped, primary or worktree) and the `Operator` gateway
-  skill (outside-any-ship-scoped), plus the shared `CYBERFLEET_ROOT` pin (at the primary's runtime
-  state) so queries from any ship span the whole fleet.
-- **The query + verbs + HAL tell** — `cyberfleet missions --json`, the `gate approve` / `jump` /
-  `pause` / `ack` verb set, and the leash-crossing HAL flash wired to the existing SDD leash
-  derivation.
+- **Mode-switch + the two gateway skills** — a tracked `.agents/cyberlegion/config.json`-marker-presence
+  check (reusing cyberlegion's own hub marker), the `Pod` gateway skill (ship-scoped, primary or
+  worktree) and the `Operator` gateway skill (outside-any-ship-scoped), plus the shared
+  `$CYBERLEGION_ROOT` pin (cyberlegion's own hub-root resolution) so queries from any ship span the
+  whole fleet.
+- **The query + verbs + HAL tell** — `cyberfleet missions --json`, the shipped `mode` / `jump` /
+  `pause` / `gate approve` verbs (an `ack` verb remains unbuilt), and the leash-crossing HAL flash
+  (`packages/cyberfleet/src/sdd/hal.ts`) wired to the existing SDD leash derivation.
 
 All new tooling is TypeScript + `npx`-distributed, matching the rest of cyberspace/cyberplace;
 never Python. zellij, orca, a live `send` nudge, and a full TUI are explicitly deferred to future
@@ -229,7 +234,8 @@ change requests or a future GitHub issue, not built as part of this decision.
 ## Related Decisions
 
 - [ADR-0020](0020-sharded-ledger.md) — the collision-free, per-writer file-shard pattern this
-  persona layer's `.cyberfleet/` messaging queue already follows (`messaging/README.md`).
+  persona layer's messaging already follows, via cyberlegion's mail node
+  (`packages/cyberlegion/.agents/spec/mail/README.md`), not a cyberfleet-owned queue.
 - [ADR-0021](0021-spec-dependency-kinds.md) — the fleet capability and this persona layer sit in
   the `cyberspace` project spec, independent of SDD's own spec; the intent-not-slug discipline
   applies to how this ADR references SDD's fleet metaphor.
