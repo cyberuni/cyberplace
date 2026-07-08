@@ -118,7 +118,7 @@ rootOpts(program.command('jump'))
 		const ctx = ctxOf(opts)
 		touch(ctx)
 		const agent = resolveAgent(ctx.store, peer)
-		const pane = agent.tmux?.pane ?? ctx.store.findPaneByAgentId(agent.id)
+		const pane = agent.pane?.id ?? ctx.store.findPaneByAgentId(agent.id)
 		if (pane) {
 			try {
 				selectSessionAdapter(ctx.env ?? process.env).focus(realExec, { id: pane })

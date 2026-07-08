@@ -42,7 +42,7 @@ function seedShip(id: string, handle: string, extra: Record<string, unknown> = {
 		harness: 'codex',
 		cwd: work,
 		worktree: null,
-		tmux: null,
+		pane: null,
 		status: 'active',
 		createdAt: ts,
 		lastSeen: ts,

@@ -7,11 +7,11 @@ todos:
   - content: "spec gate: cold spec-judge, freeze touched .feature, record re-open of the 3 rewritten scenarios"
     status: completed
   - content: "deliver: build impl against frozen suite (mux-probe HERDR_PANE_ID fix, mux-agnostic resolveSelfId/register, auto-register hook, prune herdr-liveness)"
-    status: pending
+    status: completed
   - content: "impl gate: cold impl-judge over frozen scenarios"
-    status: pending
+    status: completed
   - content: "handoff: Warden placement pass, branch + PR, follow-ups"
-    status: pending
+    status: in_progress
 ---
 
 # herdr-mux-identity
