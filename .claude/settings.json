@@ -6,18 +6,6 @@
       "WebFetch(domain:github.com)"
     ]
   },
-  "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node packages/cyberplace/bin/cyberplace.mjs hook run --name commit-discipline --extract AGENTS.md --heading 'Commit Discipline'"
-          }
-        ]
-      }
-    ]
-  },
   "enabledPlugins": {
     "aced@cyberplace-next": true,
     "quill@cyberplace-next": true,
