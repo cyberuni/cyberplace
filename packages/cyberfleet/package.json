@@ -1,6 +1,6 @@
 {
 	"name": "cyberfleet",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "Harness-agnostic, MCP-free inter-agent sessions and messaging over the filesystem",
 	"keywords": [
 		"agent",

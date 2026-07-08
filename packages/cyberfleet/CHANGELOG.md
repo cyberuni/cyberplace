@@ -1,5 +1,15 @@
 # cyberfleet
 
+## 0.0.2
+
+### Patch Changes
+
+- Updated dependencies [667163c]
+- Updated dependencies [667163c]
+- Updated dependencies [2758ea9]
+- Updated dependencies [9e24386]
+  - cyberlegion@0.1.0
+
 ## 0.0.1
 
 ### Patch Changes
