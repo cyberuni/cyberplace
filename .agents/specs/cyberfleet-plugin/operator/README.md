@@ -28,7 +28,7 @@ enough to prune). All four eval layers carry signal.
 **Subject** — dispatching the fleet from outside any one ship:
 
 - **Activate outside any ship** — Operator runs when `cyberfleet mode` reports `command-center` (no
-  `.cyberfleet/` at this project root); it defers entirely to Pod when the mode is `ship`.
+  `.agents/cyberlegion/` at this project root); it defers entirely to Pod when the mode is `ship`.
 - **Commission the first ship or a peer from outside** — when the Council wants to stand up the
   fleet's first ship or a new peer session from outside any ship, `cyberlegion session spawn` with a brief
   that stands on its own (the new Pod starts cold and reads it through its own SessionStart hook);
