@@ -57,9 +57,11 @@ DONE through handoff. Spec gate (seq:2 `by:agent`) + impl gate (seq:3 `by:uniona
 Warden formation pass spawned detached. Keep this plan until the PR is merged and doctrine-distilled,
 then retire.
 
-Follow-ups (file as new CRs when picked up):
+Follow-ups:
 1. e2e-verify the auto-register + best-effort scenarios through a real `mail hook` subprocess (today
-   unit-level at `injectInbox()`).
-2. herdr harness auto-detection (the `tmux display-message` pane-command probe stays tmux-only).
+   unit-level at `injectInbox()`). → **filed #91**
+2. herdr harness auto-detection (the `tmux display-message` pane-command probe stays tmux-only). →
+   **filed #92**
 3. Doctrine note: check plan/design "freeze impact" against `gherkin-cli diff` counts before trusting
-   them complete (the surfacing narrowing slipped the first accounting).
+   them complete (the surfacing narrowing slipped the first accounting). — doctrine-loop note, not a
+   GH CR (belongs in the SDD ledger, not an issue).
