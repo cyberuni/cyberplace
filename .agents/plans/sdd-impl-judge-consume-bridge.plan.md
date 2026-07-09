@@ -1,18 +1,18 @@
 ---
 name: sdd-impl-judge-consume-bridge
-status: active
+status: done
 blocked-by: sdd-verify-scenarios-spec
 todos:
-  - content: "revise the impl-judge contract: for a DETERMINISTIC artifact-type, the judge runs verify-scenarios and reasons by hand over ONLY the UNBOUND set (not every scenario) — grows the default path in plugins/sdd/agents/sdd-impl-judge.md 'Map and run' step 2"
-    status: pending
-  - content: "revise impl-producer-governance so a deterministic verification is authored as a bound test (spec: describe namespace + verbatim scenario-name title) whose report maps back to the scenario"
-    status: pending
-  - content: "spec gate (re-open): both changes narrow/rewrite frozen scenarios in .agents/specs/sdd/mission/impl-judge/impl-judge.feature (and impl-producer/) — confirm ratified re-open before touching, re-freeze after"
-    status: pending
-  - content: "guard: agent-behavior types stay ACED-judged (unchanged); an artifact-type with no scenario-bridge config falls back to full by-hand judging (no regression)"
-    status: pending
-  - content: "root pnpm verify; commit; handoff"
-    status: pending
+  - content: "impl-judge contract wired via Option 2 (run-level leash): judge runs verify-scenarios; UNBOUND+FAIL+high-BR-bound judged, low-BR-bound accepted on report — grew Map-and-run step 0 in sdd-impl-judge.md"
+    status: completed
+  - content: "impl-producer-governance: deterministic verification bound via spec:<node> describe + verbatim scenario-name title (additive impl-producer.feature scenario, self-clears)"
+    status: completed
+  - content: "spec gate re-open (user-ratified): narrowed the impl-judge independence scenarios to the by-hand set + added the bridge stage; both features re-frozen; cold spec-judge ALIGNED (2 iters, caught intra-suite Conflict)"
+    status: completed
+  - content: "guard: no-bridge domain falls back to full by-hand judging (frozen scenario); agent-behavior types unaffected (bridge is the default judge's deterministic path only)"
+    status: completed
+  - content: "root pnpm verify green; cold impl-judge PASS (static inspection); committed d1e6dfac"
+    status: completed
 ---
 
 # CR sdd-impl-judge-consume-bridge — wire the default impl-judge to the scenario→test bridge
@@ -40,5 +40,7 @@ scenarios; additive scenarios self-clear, narrowing does not.
 
 ## NEXT
 
-Blocked by `sdd-verify-scenarios-spec` (the bridge must be spec'd/frozen before the gate depends on
-it). Then run `start-mission` against `.agents/specs/sdd/`.
+DONE — committed `d1e6dfac` on branch `sdd-scenario-test-bridge` (not pushed). Completes the bridge
+arc (CR #1 `sdd-verify-scenarios-spec` = `d0a86616`). The default `sdd-impl-judge` now consumes the
+`verify-scenarios` bridge for deterministic types under the run-level leash (Option 2). Plan retires
+once the branch merges and is doctrine-distilled.
