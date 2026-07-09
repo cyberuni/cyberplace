@@ -3,13 +3,13 @@ name: provenance-model-durability-sync
 status: active
 todos:
   - content: "sync design/provenance-model.md: add the correction-line durability record model (gate-iteration line before the why + finalize backstop), consistent with the frozen conductor.feature + combat-log-governance"
-    status: pending
+    status: completed
   - content: "spec gate: design doc has no .feature — run the mechanical checks (referenced-artifact --base HEAD + structure) + a judge pass only if a behavioral node is touched; keep it a prose sync"
-    status: pending
+    status: completed
   - content: "formation pass: run sdd:manage 'audit the corpus structure' (referenced-artifact-escalation + d2 both touched the spec tree); file/self-clear findings"
-    status: pending
+    status: completed
   - content: "handoff: root pnpm verify, land"
-    status: pending
+    status: completed
 ---
 
 # provenance-model-durability-sync — two follow-ups from the d2 + ref-escalation missions
@@ -39,14 +39,19 @@ follow-ups, surfaced by the cold judges.
   prose edit kept consistent with frozen scenarios, not a full gate cycle. Referenced-artifact check now
   diff-scopes to introduced refs (`--base HEAD`), so touching it won't false-block on pre-existing refs.
 
-## NEXT — resume here
-- **Next action:** revise `.agents/specs/sdd/design/provenance-model.md` — add the correction-line durability
-  record model to its record/entry-shape section, mirroring the landed `combat-log-governance` `### correction`
-  "Durability discipline" bullet and the 5 frozen `conductor.feature` scenarios (section "Correction-line
-  durability"). Drive it via `sdd:start-mission` (a `revise` of the design node); the conductor decides whether
-  a judge pass is warranted (design doc, no `.feature` → likely mechanical checks only).
-- **Then:** run the on-demand formation pass via `sdd:manage` ("audit the corpus structure" → `formation-loop`),
-  scoped corpus-wide; self-clear or file its findings as new CRs.
-- **Reference (source, not to relitigate):** commits `154aff3b`/`5f69f2f2` (d2), `75b32c49` (ref-escalation);
-  both judges' OBSERVATIONS named `provenance-model.md` as the untouched owning doc. The d2 + ref-escalation
-  briefs are complete/retirement-ready — do not reopen them.
+## NEXT — DONE (retirement-ready)
+All four todos landed on `main`.
+- **Doc sync** — `25f6d8e3`: added the "Correction-line durability" block to `provenance-model.md`'s
+  `### correction` section — discrete `judge-iteration` line before the gate `why`, finalize backstop
+  (creates the combat log if absent, forces no minimum-footprint line), forced line stays a combat-log
+  `correction` (six-kind tier split holds, no `cause` enum edit), durability via the Scanner's distillation.
+  Mirrors the frozen `conductor.feature` "Correction-line durability" scenarios + `combat-log-governance`.
+- **Spec gate** — mechanical checks green (referenced-artifact `--base HEAD`, structure); no `.feature` /
+  behavioral node touched → no judge pass (prose sync, per the resolved decision).
+- **Formation pass** — SELF-CLEARED: `check-spec-structure` (no blocking/advisory) + `concept-index`
+  (no drift) green corpus-wide on the touched sdd nodes; `judge-iteration` reconciles with the frozen
+  `correction-kind` enum; no new/split node introduced. Standing observation (not this mission's finding,
+  no CR): `provenance-model.md` is the largest design node (378 lines vs next 225) — a future split
+  candidate the oversize-advisory currently tolerates.
+- **Handoff** — root `pnpm verify` green (19/19); committed to `main`.
+- **Reference (source, do not reopen):** `154aff3b`/`5f69f2f2` (d2), `75b32c49` (ref-escalation).
