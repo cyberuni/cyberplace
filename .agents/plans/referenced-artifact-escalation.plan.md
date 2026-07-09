@@ -7,11 +7,11 @@ todos:
   - content: "spec gate: cold sdd-spec-judge; freeze reworked scenarios on approve"
     status: completed
   - content: "deliver: diff-scope the ref check (gate only CR-introduced backtick paths) + emit unresolved-introduced refs as a judgment finding, not a hard block; verification per frozen scenario"
-    status: in_progress
+    status: completed
   - content: "impl gate: cold sdd-impl-judge; advance on all-pass"
-    status: pending
+    status: completed
   - content: "handoff: root pnpm verify, land; unblocks d2-correction-line-durability"
-    status: pending
+    status: in_progress
 ---
 
 # referenced-artifact-escalation — the must/can fix for the ref pre-filter
