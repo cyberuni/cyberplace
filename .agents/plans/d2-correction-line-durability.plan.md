@@ -11,7 +11,7 @@ todos:
   - content: "impl gate: cold sdd-impl-judge; advance status:implemented on all-pass"
     status: completed
   - content: "handoff: root pnpm verify, land, keep combat log, nudge formation"
-    status: in_progress
+    status: completed
 ---
 
 # D2+D3 — correction-line durability
@@ -48,7 +48,14 @@ missions that wrote no combat log.
   D1 defect (must-vs-can), now its own prerequisite CR **[[referenced-artifact-escalation]]**.
 
 ## NEXT
-UNBLOCKED — `referenced-artifact-escalation` landed (`75b32c49`), the false-block is fixed. The D2+D3 draft edits are
-already in the working tree (uncommitted: `combat-log/README.md`, `conductor/README.md`, `conductor.feature`). On
-resume: re-run the spec gate against the fixed check (should be clean now — both the concern-table gap and the
-false-block are resolved), self-assert, deliver (the governance-skill prose realizing the emit step), impl gate, land.
+LANDED — full mission complete (commits `154aff3b` spec transition, `5f69f2f2` impl). Both gates self-asserted within
+auto-all leash; cold spec-judge ALIGNED after one judge-iteration correction, cold impl-judge IMPLEMENTATION_PASS
+(5/5, invariants held). Root `pnpm verify` green. Ledger shard `d2-correction-line-durability.d2b4e1.jsonl`
+(seq1 leash / seq2 spec / seq3 impl); combat log `d2-correction-line-durability.log.jsonl` (dogfooded the finalize
+backstop with this mission's own spec-gate judge iteration). Mission complete — awaiting doctrine-loop retirement.
+
+**Follow-ups (unfiled):**
+- Sync `design/provenance-model.md` with the correction-line durability discipline (both judges flagged it as the
+  doc that owns the record/entry-shape model + rationale; untouched this CR → a Warden reconcile / small doc CR).
+- Formation pass is due (both this CR and `referenced-artifact-escalation` touched the spec tree) — run on-demand
+  via `sdd:manage` ("audit the corpus structure").
