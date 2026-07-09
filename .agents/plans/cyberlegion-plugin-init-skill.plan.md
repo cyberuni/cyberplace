@@ -3,13 +3,13 @@ name: cyberlegion-plugin-init-skill
 status: active
 todos:
   - content: "explore: draft init/ node spec.md + init-cyberlegion.feature (aced-scenario-writer), grill + spec-judge"
-    status: in_progress
+    status: completed
   - content: "spec gate: freeze init-cyberlegion.feature, status write-back"
-    status: pending
+    status: completed
   - content: "deliver: build init-cyberlegion SKILL.md + README to keep; add init row to legate map (gateway node); impl gate"
-    status: pending
-  - content: "handoff: Warden placement pass, branch/PR, follow-ups"
-    status: pending
+    status: completed
+  - content: "handoff: branch/PR, follow-ups"
+    status: in_progress
 ---
 
 # CR cyberlegion-plugin-init-skill — the interactive onboarding skill (follow-up to init-legate)
@@ -39,6 +39,10 @@ cyberspace-spec CR only if an explicit routing note is wanted later.
 
 ## NEXT
 
-Run start-mission against `.agents/specs/cyberlegion-plugin`. Artifact-type = skill → aced squad
-(spec-producer aced-scenario-writer, impl-judge aced-impl-judge) per the registry. Author the skill
-node's spec + .feature (activation triggers + the delegate-to-CLI behavior), gate, build, handoff.
+Spec+impl gates PASSED (aced spec-judge ALIGNED; aced impl-judge 18/18). `pnpm verify` green. Skill
+`plugins/cyberlegion/skills/init-cyberlegion/` built; legate map disambiguated. Remaining: open the PR,
+then let the detached Warden formation pass run. Root `cyberlegion-plugin` status stays `draft` until
+gateway/dispatch features are also gated (owed — separate CRs).
+
+Follow-ups: (1) gateway/gateway.feature + dispatch/dispatch.feature owed; (2) optional cyberspace init
+step-5 explicit routing note (dropped from this CR — generic init-* discovery already surfaces it).
