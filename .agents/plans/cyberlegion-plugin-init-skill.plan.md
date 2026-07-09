@@ -9,7 +9,7 @@ todos:
   - content: "deliver: build init-cyberlegion SKILL.md + README to keep; add init row to legate map (gateway node); impl gate"
     status: completed
   - content: "handoff: branch/PR, follow-ups"
-    status: in_progress
+    status: completed
 ---
 
 # CR cyberlegion-plugin-init-skill — the interactive onboarding skill (follow-up to init-legate)
