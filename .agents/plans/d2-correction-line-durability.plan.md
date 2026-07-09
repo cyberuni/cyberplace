@@ -3,11 +3,11 @@ name: d2-correction-line-durability
 status: active
 todos:
   - content: "explore: spec the gate-time discrete correction-line emission + no-log minimum-footprint line"
-    status: in_progress
+    status: completed
   - content: "spec gate: cold sdd-spec-judge over touched combat-log / conductor / spec-gate nodes; freeze on approve"
-    status: pending
+    status: completed
   - content: "deliver: build the correction-line emission into the self-assert/gate path + verification per scenario"
-    status: pending
+    status: in_progress
   - content: "impl gate: cold sdd-impl-judge; advance status:implemented on all-pass"
     status: pending
   - content: "handoff: root pnpm verify, land, keep combat log, nudge formation"
