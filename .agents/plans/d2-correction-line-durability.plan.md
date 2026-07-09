@@ -7,11 +7,11 @@ todos:
   - content: "spec gate: cold sdd-spec-judge over touched combat-log / conductor / spec-gate nodes; freeze on approve"
     status: completed
   - content: "deliver: build the correction-line emission into the self-assert/gate path + verification per scenario"
-    status: in_progress
+    status: completed
   - content: "impl gate: cold sdd-impl-judge; advance status:implemented on all-pass"
-    status: pending
+    status: completed
   - content: "handoff: root pnpm verify, land, keep combat log, nudge formation"
-    status: pending
+    status: in_progress
 ---
 
 # D2+D3 — correction-line durability
