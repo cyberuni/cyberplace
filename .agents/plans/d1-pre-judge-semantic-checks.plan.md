@@ -11,7 +11,7 @@ todos:
   - content: "impl gate: cold sdd-impl-judge; advance status:implemented on all-pass"
     status: completed
   - content: "handoff: root pnpm verify, land, keep combat log, nudge formation"
-    status: in_progress
+    status: completed
 ---
 
 # D1 — pre-judge semantic checks (use-case coverage + sibling-prose sweep)
@@ -48,10 +48,16 @@ referenced-artifact scenarios stay true (the sweep only widens which files are p
 - Cold spec-judge round 1: FAIL — caught a frozen-scenario narrowing (an insert Edit orphaned `And the gate spawns the cold judge`). Fixed: restored the assertion, removed the orphan, added a boundary scenario, synced the README Use Cases row. Logged as a discrete `correction` (cause: spec-feature-contradiction) in the combat log.
 - Cold spec-judge round 2: **re-verifying in background** (blocking items only; scope/coverage/placement passed round 1).
 
-## Open follow-up (route, don't act silently)
-Judge OBSERVATION (architect): the additive-self-clear detection keys on raw git line-diff and can be fooled by
-context-line reassignment (a trailing step orphaned onto a new scenario shows as no `-` line). Suggests the
-classifier diff at the **scenario-step level** (per named Scenario), not raw lines. → candidate follow-up CR.
+## Open follow-ups (routed, not acted on — new CR candidates)
+1. **scenario-step-level additive detection** (spec-judge architect OBS): the additive-self-clear classifier keys on
+   raw git line-diff and can be fooled by context-line reassignment (a trailing step orphaned onto a new scenario
+   shows as no `-` line — this CR's own round-1 bug). Diff at the **scenario-step level** (per named Scenario), not raw
+   lines. Touches the freeze/additive machinery (gherkin-cli diff consumers).
+2. **backfill Scenario-column Use Cases tables** (impl-judge architect OBS): the new use-case-coverage check is currently
+   dead against the live corpus — no node README today uses a `Scenario`-column table, so only the `--files` unit tests
+   exercise the failure path. Backfill the convention into behavioral node Use Cases tables to give the check teeth.
+
+## Status: LANDED (f1a1eda0 on main). Both gates passed (by:agent, auto-all leash). Keep brief until doctrine-distilled.
 
 ## NEXT
 On judge round-2 ALIGNED: self-assert the spec gate within auto-all leash — freeze `spec-gate.feature`,
