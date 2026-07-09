@@ -1,17 +1,17 @@
 ---
 name: sdd-verify-scenarios-spec
-status: active
+status: done
 todos:
-  - content: "classify: verify-scenarios is a behavioral SDD capability (deterministic engine) — scaffold a spec node under .agents/specs/sdd/ (placement: mission/ family, near impl-judge/impl-producer; confirm home via place-node)"
-    status: pending
-  - content: "author spec.md (## Use Cases) + <unit>.feature covering: source-set union+fold, junit adapter node/leaf/key extraction, @id: override, outline-as-one-key, XML unescape, PASS/FAIL/UNBOUND/EXTRA classification, non-zero exit on UNBOUND/FAIL"
-    status: pending
-  - content: "backfill from the shipped engine (source+tests already exist at plugins/sdd/skills/verify-scenarios/) — read source/tests/history, do not re-grill seed intent"
-    status: pending
-  - content: "spec gate: freeze the .feature; the existing verify-scenarios.test.mts is the impl-side coverage — confirm every frozen scenario has a verification before impl gate"
-    status: pending
-  - content: "root pnpm verify; commit; handoff"
-    status: pending
+  - content: "classify + place: behavioral node mission/verify-scenarios (concept: delivery, near impl-judge/impl-producer)"
+    status: completed
+  - content: "author README (## Use Cases) + 29-scenario .feature: source-set parse/union, gherkin key derivation (@id/outline), junit node/leaf/key + XML unescape + literal-> non-trunc, PASS/FAIL/UNBOUND/EXTRA fold, CLI surface, non-zero exit"
+    status: completed
+  - content: "backfill from shipped engine; cold spec-judge ALIGNED (2 iters)"
+    status: completed
+  - content: "spec gate froze the .feature; deliver added 14 tests (1/scenario) + 3 pure-lift refactors; cold impl-judge PASS (1 iter)"
+    status: completed
+  - content: "root pnpm verify green (387 tests); committed d0a86616; concept-index regenerated"
+    status: completed
 ---
 
 # CR sdd-verify-scenarios-spec — spec + freeze the scenario→test bridge engine
@@ -45,5 +45,6 @@ arc — see `sdd-impl-judge-consume-bridge` for wiring it into the gate.
 
 ## NEXT
 
-Not yet started. Run `start-mission` against `.agents/specs/sdd/`. First confirm the node home with
-`place-node` (near `mission/impl-judge`), then backfill spec.md + `.feature` from the shipped engine.
+DONE — committed `d0a86616` on branch `sdd-scenario-test-bridge` (not pushed). New frozen node
+`mission/verify-scenarios/` (concept: delivery). Unblocks `sdd-impl-judge-consume-bridge` (CR #2).
+Plan retires once the branch merges and is doctrine-distilled.
