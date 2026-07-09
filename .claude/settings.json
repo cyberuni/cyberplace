@@ -10,5 +10,28 @@
     "aced@cyberplace-next": true,
     "quill@cyberplace-next": true,
     "sdd@cyberplace-next": true
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cyberlegion mail hook --event SessionStart"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cyberlegion mail hook --event PostToolUse"
+          }
+        ],
+        "matcher": "Write|Edit"
+      }
+    ]
   }
 }
