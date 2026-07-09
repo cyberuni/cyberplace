@@ -12,8 +12,8 @@ todos:
     status: completed
   - content: "Impl gate — cold impl-judge IMPLEMENTATION_PASS (mutation-backstopped); one doc-blocker fixed"
     status: completed
-  - content: "Handoff — land, distill note, follow-ups as new CRs"
-    status: in_progress
+  - content: "Handoff — landed; both gates Council-ratified (by:unional); follow-ups noted"
+    status: completed
 ---
 
 # plan-retirement-distill-gate
