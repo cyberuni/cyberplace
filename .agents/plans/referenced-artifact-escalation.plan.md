@@ -11,7 +11,7 @@ todos:
   - content: "impl gate: cold sdd-impl-judge; advance on all-pass"
     status: completed
   - content: "handoff: root pnpm verify, land; unblocks d2-correction-line-durability"
-    status: in_progress
+    status: completed
 ---
 
 # referenced-artifact-escalation — the must/can fix for the ref pre-filter
@@ -48,5 +48,8 @@ pre-existing, legitimate `.agents/sdd/artifact-types.toml` ref into scope and fa
 - The sibling-prose sweep (D1) inherits the new behavior automatically.
 
 ## NEXT
-Start explore: grill the reworked part-a scenarios (ratified re-open), author the diff-scoped + surface-for-judgment
-behavior, spawn the cold spec-judge. Then deliver against the frozen rework. On land, resume d2-correction-line-durability.
+LANDED (commits `1c338574` spec-gate transition, `75b32c49` impl). Both gates self-asserted within auto-all leash;
+cold spec-judge ALIGNED, cold impl-judge IMPLEMENTATION_PASS (10/10). Root `pnpm verify` green. Ledger shard
+`referenced-artifact-escalation.a87f60.jsonl` (seq1 leash / seq2 spec / seq3 impl). Mission complete — awaiting
+doctrine-loop retirement. This unblocks **[[d2-correction-line-durability]]** (its spec gate was false-blocked by
+the old fail-closed check, now fixed).
