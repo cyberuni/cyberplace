@@ -1,0 +1,2 @@
+{"kind":"leash","cr":"cyberlegion-plugin-init-skill","leash":"auto-spec","by":"derived","approach":["thin CLI-wrapper skill; additive new node + additive legate row; no frozen scenario narrowed"]}
+{"kind":"gate","cr":"cyberlegion-plugin-init-skill","gate":"spec","node":"init","verdict":"approve","by":"agent","why":"aced spec-judge ALIGNED (oracle/builder/architect all PASS); added hook-only guard scenario; no open markers; frozen init-cyberlegion.feature"}

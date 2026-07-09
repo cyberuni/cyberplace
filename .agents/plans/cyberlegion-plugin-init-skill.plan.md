@@ -2,11 +2,13 @@
 name: cyberlegion-plugin-init-skill
 status: active
 todos:
-  - content: "author init-cyberlegion skill node (SKILL.md + README): probe via admin doctor, run cyberlegion init, detect root, ask, then identity owner --handle legate + identity bind-main"
+  - content: "explore: draft init/ node spec.md + init-cyberlegion.feature (aced-scenario-writer), grill + spec-judge"
+    status: in_progress
+  - content: "spec gate: freeze init-cyberlegion.feature, status write-back"
     status: pending
-  - content: "add init classification row to the legate skill map; surface init-cyberlegion from the top-level cyberspace init companion discovery"
+  - content: "deliver: build init-cyberlegion SKILL.md + README to keep; add init row to legate map (gateway node); impl gate"
     status: pending
-  - content: "spec gate (aced or default per artifact-type=skill) + impl + handoff"
+  - content: "handoff: Warden placement pass, branch/PR, follow-ups"
     status: pending
 ---
 
@@ -28,8 +30,12 @@ not the in-skill-JSON init-aced/quill pattern). Interactive flow, delegating eve
 5. On yes: `cyberlegion identity owner --handle legate` + (in a pane) `cyberlegion identity bind-main`.
 
 Also: add an `init` row to the `legate` classification map (`plugins/cyberlegion/skills/legate/SKILL.md`)
-routing setup intents here, and surface `init-cyberlegion` from the top-level `init` skill's companion
-discovery (`plugins/cyberspace/skills/init/SKILL.md` step 5).
+routing setup intents here.
+
+**Scope decision (this run):** the top-level cyberspace `init` step-5 companion surfacing is a
+different project spec (`plugins/cyberspace`) — dropped from this CR. Its discovery already scans
+`init-*` skills generically, so `init-cyberlegion` surfaces there with no explicit edit. File a
+cyberspace-spec CR only if an explicit routing note is wanted later.
 
 ## NEXT
 
