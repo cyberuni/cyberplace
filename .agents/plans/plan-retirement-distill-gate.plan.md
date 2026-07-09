@@ -8,12 +8,12 @@ todos:
     status: completed
   - content: "Spec gate — approve; re-froze plan-retirement.feature + scanner.feature; combat-log shape"
     status: completed
-  - content: "Deliver — realize the distilled gate in retire-plans.mts + tests; Scanner distills write-side"
-    status: in_progress
-  - content: "Impl gate — cold impl-judge over frozen scenarios; verify fail-closed on missing distillation"
-    status: pending
+  - content: "Deliver — distilled gate in retire-plans.mts + 25 tests; Scanner distills write-side (3 sites)"
+    status: completed
+  - content: "Impl gate — cold impl-judge IMPLEMENTATION_PASS (mutation-backstopped); one doc-blocker fixed"
+    status: completed
   - content: "Handoff — land, distill note, follow-ups as new CRs"
-    status: pending
+    status: in_progress
 ---
 
 # plan-retirement-distill-gate
@@ -48,12 +48,13 @@ no backfill of old strategy entries needed for correctness.
 
 ## NEXT
 
-Spec frozen. **Deliver** against the frozen suites:
-1. `retire-plans.mts` — read the project ledger dir (new `--ledger <dir>`), and for each cleared
-   cr-ref require a `strategy` entry with `distills == cr-ref` before deleting; fail-closed on
-   absence or missing `--ledger`. `distills` keys the gate, never a substring `evidence` mention;
-   an unratified distilling entry still clears. + tests per frozen scenario.
-2. Scanner write-side (`doctrine-loop` skill / `sdd-scanner` + `combat-log-governance` SKILL.md):
-   record `distills: <cr-ref>` on a Ship/Kill distillation; omit for milestone/drift/token-waste.
-3. Impl gate: cold `sdd:sdd-impl-judge` over the frozen scenarios (fail-closed-on-absence,
-   cross-ref-not-distills, unratified-still-clears, happy path, partial pair).
+Both gates passed (spec + impl), root `pnpm verify` green. **Handoff**: land the deliver commit,
+then file follow-ups as new CRs:
+1. **Grandfather-backfill** (optional): existing strategy entries (incl. this session's `364c83`,
+   `9bb674`) carry no `distills` field — harmless (their missions are already retired / plans gone),
+   but a backfill would let any future re-derivation match them. Low priority.
+2. **Cause-enum precision**: the impl-gate correction (`spec-feature-contradiction`) was a
+   nearest-bucket fit — the real class is *operating-doc/sibling-prose contradicts the shipped impl*
+   (also seen in `acaa41`). A Council-ratified enum value would sharpen matchability. File as a
+   doctrine strategy or a small governance CR.
+3. Corpus **formation pass** is due (on-demand, `sdd:manage`) — this CR touched 3 nodes.
