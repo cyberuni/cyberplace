@@ -67,12 +67,39 @@ impl-status frontmatter field — the deliver **is** the committed code (`ddb145
 **not pushed**. Also landed since: mux backend-select → Scenario Outline (`27fa8c4c`,
 freeze-preserving reconcile, ADR-0021).
 
-**LIVE FRONTIER → CR-4** (the one pending todo): delete the result-slot (`prep`/`collect` +
-`Store.result`: `resultPath`/`writeResult`/`readResult`), move verdict-schema validation onto mail
-receive, relocate `dispatch` (routing) to the Legate plugin. Fold in the `dispatch/` spec's stale
-`session spawn` → `unit spawn` noun (README.md L45/50/56/74/77 + dispatch.feature L9/117/118) — parked
-so the whole node lands as one coherent change. Spec-first per SDD (open a CR against the cyberlegion
-plugin `dispatch` spec + the cyberlegion package spec).
+**LIVE FRONTIER → CR-4** (the one pending todo). **Design resolved with the human (2 forks
+answered + charter-reasoned coupling):**
+
+- **Dissolve `dispatch` CLI group entirely** (not a slimmed prep). Delete `src/dispatch/{prep,collect,
+  channel,verdict}.ts`, the `dispatch` command group in `cli.ts` (L494–610 + imports L10–12), and the
+  dispatch re-exports in `index.ts` (L20–25). The `session spawn` noun-fix is MOOT — the whole
+  `dispatch/` node retires, so its stale refs die with it (no freeze-preserving reconcile needed).
+- **Delete `Store.result`** — `resultPath`/`writeResult`/`readResult` (store.ts L87–93 +
+  file-store.ts L130–141) + `paths.resultFile` (paths.ts L96). `writeResult` has no src caller;
+  `resultPath`/`readResult` only called from prep/collect (both deleted).
+- **Delete `validateVerdict` + verdict-schema scenarios** now (verdict.ts; agent-visible in
+  dispatch.feature L81–101 which retires with the node). Verdict validation returns with the deferred
+  `mail --verdict-schema` CR.
+- **Subagent return = Task-result** (the caller's harness returns the subagent's final message);
+  warm-peer/channel return = **mail** (`mail await`). This is why the result-slot is dominated.
+- **Delete `realizeSubagentInstruction`** (agentdef/realize.ts L54 + index.ts L9 export). Its sole
+  caller was `dispatch prep`. Keeping it = a renamed slim-prep (rejected). RE-OPENS the frozen `agent`
+  node: drop the `realizeSubagentInstruction` scenario group (agent.feature L108–123) + the "or a
+  subagent instruction" clause (agent README L4/L8). Keep `realizeLaunch` (channel, still used by
+  `unit spawn`) + `agent resolve`.
+- **Plugin relocation (routing brain).** Rewrite `plugins/cyberlegion/skills/dispatch-governance` and
+  `subagent-backend-governance`: channel path composes `unit spawn` + `mail await` directly (no
+  `dispatch channel`); subagent path builds the Task instruction from `agent resolve` fields + brief,
+  subagent returns via Task-result (no `dispatch prep`/`collect`, no result file). Update the plugin
+  SDD spec `.agents/specs/cyberlegion-plugin/dispatch/` to match.
+
+**Package-spec ripple (spec gate, spec-first):** retire `dispatch/` node; edit root `spec.md`
+(title L18 "…and dispatch", intro L25 "result-slot primitives", hub L32 "dispatch data",
+capabilities row L49, note L53); re-open `agent/` node (narrowing). Two frozen re-opens
+(dispatch retire = removal; agent = narrowing) → human-ratified spec gate.
+
+**Execution order:** (1) spec change → spec gate + human ratify; (2) deliver = code deletion +
+plugin governance rewrite (delegate mechanical deletion to sonnet) → impl gate.
 
 **DOWNSTREAM CONSUMER SWEEP — DONE** (`996ce22e`, human-authorized "sweep everything"). Updated all
 live callers to the new surface: cyberlegion plugin skills (legate/manage-inbox/init-cyberlegion/
