@@ -12,8 +12,8 @@ todos:
     status: completed
   - content: "delete the result-slot: drop dispatch prep/collect + the Store.result domain (resultPath/writeResult/readResult); move verdict-schema validation onto mail read/await; dispatch (routing) moves to the Legate plugin"
     status: pending
-  - content: "update docs: website cyberlegion/architecture page (added) + refresh cyberlegion/overview.md once the CLI change lands; note deferred attach --follow and mail --verdict-schema"
-    status: pending
+  - content: "update docs: website cyberlegion/architecture page (added) + refresh cyberlegion/overview.md once the CLI change lands; note deferred attach --follow and mail --verdict-schema. DONE (37ce1cbd): overview capabilities table realigned; architecture migration table already current. Downstream-consumer sweep also DONE (996ce22e): plugin skills/agents/readmes + cyberfleet + other-project spec READMEs + 3 frozen .feature reference-renames (freeze-preserving)"
+    status: completed
 ---
 
 # CR cyberlegion-cli-realign — realign the CLI to its real architecture
@@ -67,23 +67,15 @@ committed code, gate-provenance goes to the ledger). CR-2 deliver committed `ddb
 (feat!, `.changeset/cyberlegion-cli-realign.md` minor+BREAKING). Branch `cyberlegion-cli-realign`,
 **not pushed**.
 
-**Next work item — DOWNSTREAM CONSUMER SWEEP (surfaced, awaiting scope call).** The BREAKING rename
-leaves live callers pointing at gone commands. Enumerated:
-- **cyberlegion plugin skills** (runtime callers, `plugins/cyberlegion/`): `skills/legate/SKILL.md`,
-  `skills/manage-inbox/SKILL.md`, `skills/init-cyberlegion/{SKILL,README}.md`,
-  `skills/relay-governance/SKILL.md`, `skills/dispatch-governance/{SKILL,README}.md`,
-  `agents/headless-legate.md`. All name `identity register/owner/who/prune/bind-main`, `session
-  spawn/close/nudge`, `admin doctor/install`.
-- **cyberfleet plugin skills** (`plugins/cyberfleet/`): `skills/{pod,operator,crimp}/{SKILL,README}.md`
-  — `session spawn`, `identity register/who/prune`.
-- **Other-project frozen SDD specs** (`.agents/specs/cyberlegion-plugin/*`,
-  `.agents/specs/cyberfleet-plugin/*` READMEs): reference old commands — these are FROZEN specs of
-  OTHER projects; reconcile through THEIR gates (Warden), do NOT hand-edit in this CLI mission.
-- **Do NOT touch:** `artifacts/adr/0024-*.md` (references old names as the pre-change motivation —
-  historical rationale, correct as-is).
+**DOWNSTREAM CONSUMER SWEEP — DONE** (`996ce22e`, human-authorized "sweep everything"). Updated all
+live callers to the new surface: cyberlegion plugin skills (legate/manage-inbox/init-cyberlegion/
+relay-governance/dispatch-governance) + `agents/headless-legate.md`; cyberfleet plugin skills
+(pod/operator/crimp); cyberfleet package spec; the cyberlegion-plugin + cyberfleet-plugin SDD spec
+READMEs; and 3 frozen `.feature`s (operator/pod/recruitment + init-cyberlegion) as freeze-preserving
+command-noun reconciles (ADR-0021). `artifacts/adr/0024-*.md` + architecture.md migration table left
+naming old commands intentionally (pre-change motivation). Root verify green.
 
 **Follow-ups (recorded, not lost):**
-- **todo #6 docs (below):** website `cyberlegion/architecture` + `overview.md` refresh (still pending).
 - **Scenario-bridge rebind (judge advisory):** the `describe('spec:cyberlegion/identity'|'…/unit')`
   wrappers are stale vs the 9-node tree — `verify-scenarios` now binds 0/167. Rewrap test describes to
   `spec:cyberlegion/<node>` (unit/registry, unit/lifecycle, mux, mail/core, mail/wait, mail/surface,
