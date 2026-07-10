@@ -8,8 +8,8 @@ todos:
     status: completed
   - content: "realign the cyberlegion spec tree: rename identity/->unit, dissolve session/, new mux/, dissolve surfacing/->mail+init and wake/->mail+mux, add attach/. SPEC GATE RATIFIED (status:approved, by:unional; all 9 features frozen; ledger gate line written; judge oracle-PASS + change-fixed)"
     status: completed
-  - content: "CLI change: identity->unit, session folded into unit, owner->register --standing, bind-main/main->attach/--clear, admin doctor/mode->mux doctor/mode, admin install folds into init. Keep hot-path aliases (who/send/inbox/spawn) + bare-status. Spec+build via SDD, verify green"
-    status: pending
+  - content: "CLI change: identity->unit, session folded into unit, owner->register --standing, bind-main/main->attach/--clear, admin doctor/mode->mux doctor/mode, admin install folds into init. Keep hot-path aliases (who/send/inbox/spawn) + bare-status. Spec+build via SDD, verify green. DONE: committed ddb14587 (feat!, changeset minor+BREAKING); 328 tests green, root verify green; impl gate PASS (cold sdd-impl-judge 167/167). AWAITS human gate ratification (by:unional)"
+    status: completed
   - content: "delete the result-slot: drop dispatch prep/collect + the Store.result domain (resultPath/writeResult/readResult); move verdict-schema validation onto mail read/await; dispatch (routing) moves to the Legate plugin"
     status: pending
   - content: "update docs: website cyberlegion/architecture page (added) + refresh cyberlegion/overview.md once the CLI change lands; note deferred attach --follow and mail --verdict-schema"
@@ -59,25 +59,44 @@ chased a symptom (oversized `identity/`); the real cause is the spec organized o
 
 ## NEXT — resume here
 
-**Next action:** run CR-2 **deliver** — the CLI rename sweep in `packages/cyberlegion/src/` so the CLI
-matches the now-frozen spec, then gate it. Delegate the mechanical rename to a sonnet subagent against
-the 9 frozen `.feature`s; then spawn the cold `sdd:sdd-impl-judge` over them and hold the impl gate
-here (human-ratified, by:unional). Rename map:
-- `identity <verb>` → `unit <verb>`; `session <verb>` → `unit <verb>` (backend-select/placement →
-  `mux`); `owner --handle` → `register --standing`; `bind-main`/`main` → `attach`/`--clear`/`--show`;
-  `admin doctor`/`mode` → `mux doctor`/`mode`; `admin install` → `init` (folded).
-- New behavior to build: `unit who` gains a `pane` field + `"N units"` aggregate (drop `session list`);
-  `mux mode`; `admin migrate`. Keep hot-path aliases (`who`/`send`/`inbox`/`spawn`) + bare-status.
-- **The BREAKING CLI change + the changeset land here** — run `add-changeset`. Update
-  `cli.ts` + the ~200-test suite; `pnpm verify` green before the impl gate.
+**Blocked on human:** the **impl gate is PASS** (cold `sdd:sdd-impl-judge`, 167/167 frozen scenarios,
+no structural blocker) but **awaits ratification by:unional** — this gate is human-ratified. On yes:
+ratify via `sdd:spec-gate`/ledger in-session (write the `gate` entry to the sharded ledger +
+combat-log; the CLI package spec has no impl-status frontmatter field to flip — the deliver is the
+committed code, gate-provenance goes to the ledger). CR-2 deliver committed `ddb14587`
+(feat!, `.changeset/cyberlegion-cli-realign.md` minor+BREAKING). Branch `cyberlegion-cli-realign`,
+**not pushed**.
+
+**Next work item — DOWNSTREAM CONSUMER SWEEP (surfaced, awaiting scope call).** The BREAKING rename
+leaves live callers pointing at gone commands. Enumerated:
+- **cyberlegion plugin skills** (runtime callers, `plugins/cyberlegion/`): `skills/legate/SKILL.md`,
+  `skills/manage-inbox/SKILL.md`, `skills/init-cyberlegion/{SKILL,README}.md`,
+  `skills/relay-governance/SKILL.md`, `skills/dispatch-governance/{SKILL,README}.md`,
+  `agents/headless-legate.md`. All name `identity register/owner/who/prune/bind-main`, `session
+  spawn/close/nudge`, `admin doctor/install`.
+- **cyberfleet plugin skills** (`plugins/cyberfleet/`): `skills/{pod,operator,crimp}/{SKILL,README}.md`
+  — `session spawn`, `identity register/who/prune`.
+- **Other-project frozen SDD specs** (`.agents/specs/cyberlegion-plugin/*`,
+  `.agents/specs/cyberfleet-plugin/*` READMEs): reference old commands — these are FROZEN specs of
+  OTHER projects; reconcile through THEIR gates (Warden), do NOT hand-edit in this CLI mission.
+- **Do NOT touch:** `artifacts/adr/0024-*.md` (references old names as the pre-change motivation —
+  historical rationale, correct as-is).
+
+**Follow-ups (recorded, not lost):**
+- **todo #6 docs (below):** website `cyberlegion/architecture` + `overview.md` refresh (still pending).
+- **Scenario-bridge rebind (judge advisory):** the `describe('spec:cyberlegion/identity'|'…/unit')`
+  wrappers are stale vs the 9-node tree — `verify-scenarios` now binds 0/167. Rewrap test describes to
+  `spec:cyberlegion/<node>` (unit/registry, unit/lifecycle, mux, mail/core, mail/wait, mail/surface,
+  attach, admin, init) to restore the bridge (from [[project_sdd_scenario_test_bridge]]).
+- **Cosmetic (judge advisory):** `identity.ts`/`session.ts` filenames are pre-rename residue (they now
+  back the `unit` group); optional rename, not a contract issue.
+
 Then **CR-4**: dispatch → the Legate plugin + delete `Store.result` (prep/collect/resultPath).
 
-**State — done, don't redo:** CR-0 (ADR-0024) landed. CR-2 **spec gate RATIFIED** — `spec.md
-status: approved`, 9 `.feature`s frozen under the new tree, ledger
-`cyberlegion-cli-realign.5f028d.jsonl`. Spec-judge: oracle PASS, architect/builder change→all
-fixed→green. Scenario→impl contract: `cyberlegion-cli-realign.migration-map.md`. 8 commits on branch
-`cyberlegion-cli-realign` (last `ffae1ad7`), **not pushed**.
+**State — done, don't redo:** CR-0 (ADR-0024) landed. CR-2 **spec gate RATIFIED** (`spec.md
+status: approved`, 9 frozen features, ledger `cyberlegion-cli-realign.5f028d.jsonl`). **CR-2 deliver
+DONE + impl-gate PASS** (commit `ddb14587`). Scenario→impl contract:
+`cyberlegion-cli-realign.migration-map.md`.
 
 **Working method — do not relitigate:** see `## Resolved decisions` + `## CR-2 resolutions` above.
-Deferred (not this CR): `attach --follow`, `mail --verdict-schema`, and the `dispatch/` stale refs
-(`session spawn`/`wake`) that go stale in CR-3/CR-4.
+Deferred (not this CR): `attach --follow`, `mail --verdict-schema`.
