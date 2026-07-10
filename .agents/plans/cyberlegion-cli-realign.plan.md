@@ -3,9 +3,9 @@ name: cyberlegion-cli-realign
 status: active
 todos:
   - content: "settle sequencing: this is an ADR + spec-node realignment + real CLI change + dispatch-to-plugin + Store.result deletion. Decide the CR split (likely: ADR first, then spec realign, then CLI rename sweep, then dispatch extraction) and which land independently"
-    status: pending
-  - content: "write the ADR reversing the cyberlegion concept-axis placement: spec nodes = command groups + one node per real architectural layer (mux); surfacing/wake dissolve; supersede/partial-supersede the concept-axis ADR"
-    status: pending
+    status: completed
+  - content: "write the ADR (ADR-0024) recording the node alignment: spec nodes = command groups + one node per real architectural layer (mux); surfacing/wake dissolve to concept: tags; APPLIES the concept-axis doctrine (does not reverse it), keeps dispatch in the Legate per ADR-0023"
+    status: completed
   - content: "realign the cyberlegion spec tree: rename identity/->unit, dissolve session/ (spawn/close/list/focus/read/nudge -> unit), new mux/ node (from console/ behaviors: doctor/mode + pane abstraction), dissolve surfacing/->mail+init and wake/->mail+mux, add attach/ (from bind-main/main). Move dispatch/ out to the plugin spec. Freeze-preserving where scenarios move verbatim"
     status: pending
   - content: "CLI change: identity->unit, session folded into unit, owner->register --standing, bind-main/main->attach/--clear, admin doctor/mode->mux doctor/mode, admin install folds into init. Keep hot-path aliases (who/send/inbox/spawn) + bare-status. Spec+build via SDD, verify green"
@@ -45,10 +45,15 @@ chased a symptom (oversized `identity/`); the real cause is the spec organized o
 
 ## NEXT
 
-Not yet started as an SDD mission. The design is settled and captured in the sibling `.design.md` +
-the hosted artifact. First actionable step is **todo 1 — sequencing**: decide the CR split (lead with
-the ADR, since it reverses a standing placement decision, then the spec realignment, then the CLI
-rename sweep, then the dispatch extraction + Store.result deletion). Run `start-mission` against
-`packages/cyberlegion/.agents/spec` for the first sub-CR once the sequence is set. Everything that
-moves verbatim is freeze-preserving and self-clears at the spec gate; the node *existence/placement*
-changes and the CLI rename are the ratified deltas.
+**CR-0 (ADR-0024) is written** — `artifacts/adr/0024-cyberlegion-cli-node-alignment.md` records the
+node alignment and the 4-CR sequence. It is an *application* of the concept-axis doctrine (concepts
+are tags, not folders), not a reversal, and keeps `dispatch` in the Legate per ADR-0023.
+
+Next actionable step is **CR-2 — the spec-tree realignment**: run `start-mission` against
+`packages/cyberlegion/.agents/spec` to rename `identity/`→`unit/`, dissolve `session/` (spawn/close/
+list→unit; focus/read/nudge→unit) and `surfacing`/`wake` (→`mail`/`mux` + `concept:` tags), add the
+`mux/` and `attach/` nodes, and fold `owner`→`register --standing` / `bind-main`→`attach`. Everything
+that moves verbatim is freeze-preserving and self-clears at the spec gate; the node
+existence/placement changes are the ratified deltas. Then CR-3 (CLI rename sweep) and CR-4 (dispatch
+→ plugin + `Store.result` deletion). This is large — delegate the build units to sonnet, orchestrate
+and gate here.

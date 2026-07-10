@@ -151,9 +151,9 @@ simply has to be a registered unit — a session, or `--standing` when headless 
 
 ## Scope of the realignment CR(s)
 
-This is bigger than the split it supersedes. It carries: (a) an ADR reversing the concept-axis
-placement decision for cyberlegion; (b) a spec-node realignment (`mux · unit · mail · agent · attach ·
-init · admin`; `surfacing`/`wake` dissolved); (c) a real CLI change (`identity`→`unit`, `session`
-folded, `owner`→`register --standing`, `bind-main`→`attach`, `doctor`/`mode`→`mux`); (d) moving
-`dispatch` to the plugin and deleting the `Store.result` slot. Sequence and per-CR splitting are the
-first mission decisions.
+This is bigger than the split it supersedes. It carries: (a) an ADR (ADR-0024) recording the node
+alignment — an *application* of the concept-axis doctrine (concepts are tags, not folders), not a
+reversal; (b) a spec-node realignment (`mux · unit · mail · agent · attach · init · admin`;
+`surfacing`/`wake` dissolved); (c) a real CLI change (`identity`→`unit`, `session` folded,
+`owner`→`register --standing`, `bind-main`→`attach`, `doctor`/`mode`→`mux`); (d) moving `dispatch` to
+the plugin (per ADR-0023) and deleting the `Store.result` slot. Sequencing is locked in ADR-0024.

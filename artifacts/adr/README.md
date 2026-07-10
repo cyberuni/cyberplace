@@ -23,6 +23,7 @@ This directory contains Architecture Decision Records (ADRs) for cyberplace — 
 | [0017](0017-frontmatter-is-the-router-index.md) | Spec frontmatter is the router's upfront index — minimal `status` + `project-path` | Accepted | 2026-06-28 |
 | [0022](0022-cyberfleet-persona.md) | The cyberfleet persona — naming, mode-switch, and query-first fleet view | Proposed | 2026-07-04 |
 | [0023](0023-dispatch-seam.md) | The `subagent \| channel` dispatch seam | Proposed | 2026-07-05 |
+| [0024](0024-cyberlegion-cli-node-alignment.md) | cyberlegion spec nodes align to the command tree and the mux/legion layer split | Proposed | 2026-07-09 |
 
 ## Creating a new ADR
 
