@@ -6,8 +6,8 @@ todos:
     status: completed
   - content: "write the ADR (ADR-0024) recording the node alignment: spec nodes = command groups + one node per real architectural layer (mux); surfacing/wake dissolve to concept: tags; APPLIES the concept-axis doctrine (does not reverse it), keeps dispatch in the Legate per ADR-0023"
     status: completed
-  - content: "realign the cyberlegion spec tree: rename identity/->unit, dissolve session/ (spawn/close/list/focus/read/nudge -> unit), new mux/ node (from console/ behaviors: doctor/mode + pane abstraction), dissolve surfacing/->mail+init and wake/->mail+mux, add attach/ (from bind-main/main). RESTRUCTURE + all 4 resolutions AUTHORED; awaiting spec-gate ratification (not self-asserted — high blast radius)"
-    status: in_progress
+  - content: "realign the cyberlegion spec tree: rename identity/->unit, dissolve session/, new mux/, dissolve surfacing/->mail+init and wake/->mail+mux, add attach/. SPEC GATE RATIFIED (status:approved, by:unional; all 9 features frozen; ledger gate line written; judge oracle-PASS + change-fixed)"
+    status: completed
   - content: "CLI change: identity->unit, session folded into unit, owner->register --standing, bind-main/main->attach/--clear, admin doctor/mode->mux doctor/mode, admin install folds into init. Keep hot-path aliases (who/send/inbox/spawn) + bare-status. Spec+build via SDD, verify green"
     status: pending
   - content: "delete the result-slot: drop dispatch prep/collect + the Store.result domain (resultPath/writeResult/readResult); move verdict-schema validation onto mail read/await; dispatch (routing) moves to the Legate plugin"
@@ -76,9 +76,12 @@ right). All blocking findings fixed (commit `2ec126b9`): illegal `spec-type: ind
 ratified re-opens (`registry`/`surface`) unfrozen; four stale READMEs synced; dangling
 `install-pending` refs removed. `check-spec-state` / `check-suite` / `check-spec-structure` all GREEN.
 
-**NEXT = the spec gate** (NOT self-asserted — whole-tree blast radius needs human ratification). On
-ratify: freeze each touched `.feature` under its new path, set `spec.md status: approved`, write the
-`gate` ledger line. Freeze note: pure command-noun renames are freeze-*preserving* reconciles
-(ADR-0021); only the `unit who` output-shape change (res #1) and the init codex extension (res #2,
-additive) touched behavior — both ratified in the resolutions. After the gate: CR-2 deliver (build the
-CLI to match — this IS CR-3's rename sweep), then CR-4 (dispatch → plugin + `Store.result` delete).
+**SPEC GATE RATIFIED** (by:unional, `status: approved`, 9 features frozen, ledger
+`cyberlegion-cli-realign.5f028d.jsonl` seq1 leash + seq2 gate). Spec side of CR-2 is DONE.
+
+**NEXT = CR-2 deliver = the CLI rename sweep** (`src/`): build the CLI to match the frozen spec —
+`identity`→`unit`, `session`→`unit`(+mux), `owner`→`register --standing`, `bind-main`/`main`→
+`attach`/`--clear`/`--show`, `admin doctor`/`mode`→`mux`, `admin install`→`init`, new `unit who` shape
+(pane, "N units"), `mux mode`, `admin migrate`. Then the cold impl-judge over the 9 frozen features.
+This is where the BREAKING CLI change + the changeset land. Then CR-4 (dispatch → plugin +
+`Store.result` delete). Delegate the mechanical rename to sonnet; hold the impl gate here.
