@@ -71,6 +71,11 @@ ratification, the user went AFK, and 4 judgment calls (below) want a decision fi
 init extended with codex coverage (install-pending deleted); `mux mode` + `admin migrate` scenarios
 authored; `attach --show` settled. No sub-node oversized (registry 38, mail 25/24/13). No TODOs left.
 
+**Cold spec-judge ran** (verdict: oracle PASS; architect/builder returned *change*, not reject — shape
+right). All blocking findings fixed (commit `2ec126b9`): illegal `spec-type: index` dropped; the two
+ratified re-opens (`registry`/`surface`) unfrozen; four stale READMEs synced; dangling
+`install-pending` refs removed. `check-spec-state` / `check-suite` / `check-spec-structure` all GREEN.
+
 **NEXT = the spec gate** (NOT self-asserted — whole-tree blast radius needs human ratification). On
 ratify: freeze each touched `.feature` under its new path, set `spec.md status: approved`, write the
 `gate` ledger line. Freeze note: pure command-noun renames are freeze-*preserving* reconciles
