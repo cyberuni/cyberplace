@@ -6,8 +6,8 @@ todos:
     status: completed
   - content: "write the ADR (ADR-0024) recording the node alignment: spec nodes = command groups + one node per real architectural layer (mux); surfacing/wake dissolve to concept: tags; APPLIES the concept-axis doctrine (does not reverse it), keeps dispatch in the Legate per ADR-0023"
     status: completed
-  - content: "realign the cyberlegion spec tree: rename identity/->unit, dissolve session/ (spawn/close/list/focus/read/nudge -> unit), new mux/ node (from console/ behaviors: doctor/mode + pane abstraction), dissolve surfacing/->mail+init and wake/->mail+mux, add attach/ (from bind-main/main). Move dispatch/ out to the plugin spec. Freeze-preserving where scenarios move verbatim"
-    status: pending
+  - content: "realign the cyberlegion spec tree: rename identity/->unit, dissolve session/ (spawn/close/list/focus/read/nudge -> unit), new mux/ node (from console/ behaviors: doctor/mode + pane abstraction), dissolve surfacing/->mail+init and wake/->mail+mux, add attach/ (from bind-main/main). Freeze-preserving where scenarios move verbatim. MIGRATION MAP DONE (migration-map.md); restructure NOT started"
+    status: in_progress
   - content: "CLI change: identity->unit, session folded into unit, owner->register --standing, bind-main/main->attach/--clear, admin doctor/mode->mux doctor/mode, admin install folds into init. Keep hot-path aliases (who/send/inbox/spawn) + bare-status. Spec+build via SDD, verify green"
     status: pending
   - content: "delete the result-slot: drop dispatch prep/collect + the Store.result domain (resultPath/writeResult/readResult); move verdict-schema validation onto mail read/await; dispatch (routing) moves to the Legate plugin"
@@ -45,15 +45,20 @@ chased a symptom (oversized `identity/`); the real cause is the spec organized o
 
 ## NEXT
 
-**CR-0 (ADR-0024) is written** — `artifacts/adr/0024-cyberlegion-cli-node-alignment.md` records the
-node alignment and the 4-CR sequence. It is an *application* of the concept-axis doctrine (concepts
-are tags, not folders), not a reversal, and keeps `dispatch` in the Legate per ADR-0023.
+**CR-0 (ADR-0024) landed.** **CR-2 explore: the migration map is DONE**
+(`cyberlegion-cli-realign.migration-map.md`) — the full scenario→target-node contract, counts,
+cross-refs, coverage gaps, and 4 judgment calls. The tree restructure is **NOT started** — execution
+paused deliberately: it's a whole-spec-tree change (high blast radius) whose spec gate needs human
+ratification, the user went AFK, and 4 judgment calls (below) want a decision first.
 
-Next actionable step is **CR-2 — the spec-tree realignment**: run `start-mission` against
-`packages/cyberlegion/.agents/spec` to rename `identity/`→`unit/`, dissolve `session/` (spawn/close/
-list→unit; focus/read/nudge→unit) and `surfacing`/`wake` (→`mail`/`mux` + `concept:` tags), add the
-`mux/` and `attach/` nodes, and fold `owner`→`register --standing` / `bind-main`→`attach`. Everything
-that moves verbatim is freeze-preserving and self-clears at the spec gate; the node
-existence/placement changes are the ratified deltas. Then CR-3 (CLI rename sweep) and CR-4 (dispatch
-→ plugin + `Store.result` deletion). This is large — delegate the build units to sonnet, orchestrate
-and gate here.
+**Resume CR-2 restructure** by: (1) settle the 4 judgment calls in the map (the `who`/`list` merge
+shape; the `admin install`→`init` dedup; `selectWakePath` placement; accept-oversized-advisory vs
+sub-split); (2) execute the moves — `git mv identity → unit`, fold `session` scenarios into `unit`,
+carve `attach/` + `mux/`, dissolve `surfacing`/`wake` into `mail`/`mux`/`init` with `concept:` tags,
+author the new `mux mode` + `admin migrate` scenarios; (3) update the 6 cross-references; (4) run the
+spec gate (freeze-preserving reference-renames re-freeze under new paths; only the 2 real re-opens —
+judgment #1, #2 — need ratified re-open). Delegate mechanical moves to sonnet, hold the gate here.
+Then CR-3 (CLI rename sweep) and CR-4 (dispatch → plugin + `Store.result` deletion).
+
+**Freeze note:** pure command-noun renames are freeze-*preserving* reconciles (ADR-0021), not
+re-opens — do not over-ratify them.
