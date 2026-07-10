@@ -6,7 +6,7 @@ todos:
     status: completed
   - content: "write the ADR (ADR-0024) recording the node alignment: spec nodes = command groups + one node per real architectural layer (mux); surfacing/wake dissolve to concept: tags; APPLIES the concept-axis doctrine (does not reverse it), keeps dispatch in the Legate per ADR-0023"
     status: completed
-  - content: "realign the cyberlegion spec tree: rename identity/->unit, dissolve session/ (spawn/close/list/focus/read/nudge -> unit), new mux/ node (from console/ behaviors: doctor/mode + pane abstraction), dissolve surfacing/->mail+init and wake/->mail+mux, add attach/ (from bind-main/main). Freeze-preserving where scenarios move verbatim. MIGRATION MAP DONE (migration-map.md); restructure NOT started"
+  - content: "realign the cyberlegion spec tree: rename identity/->unit, dissolve session/ (spawn/close/list/focus/read/nudge -> unit), new mux/ node (from console/ behaviors: doctor/mode + pane abstraction), dissolve surfacing/->mail+init and wake/->mail+mux, add attach/ (from bind-main/main). RESTRUCTURE + all 4 resolutions AUTHORED; awaiting spec-gate ratification (not self-asserted — high blast radius)"
     status: in_progress
   - content: "CLI change: identity->unit, session folded into unit, owner->register --standing, bind-main/main->attach/--clear, admin doctor/mode->mux doctor/mode, admin install folds into init. Keep hot-path aliases (who/send/inbox/spawn) + bare-status. Spec+build via SDD, verify green"
     status: pending
@@ -43,6 +43,20 @@ chased a symptom (oversized `identity/`); the real cause is the spec organized o
   mail (uniformity). Verdict-schema check moves onto mail receive.
 - **Deferred, written down:** `attach --follow` (tmux focus-events); `mail --verdict-schema`.
 
+## CR-2 resolutions (settled with the human)
+
+1. **`who`/`list` merge** → one **`unit who`** (alias `who`): fields `id·handle·harness·status·pane`,
+   aggregate `"N units"`, default non-exited + `--all`. Drop `unit list`. (`list` stays only for static
+   catalogs, e.g. `agent list`.) A real re-open (Then-clauses change).
+2. **`admin install`→`init` dedup** → reconcile into `init.feature` (extend PostToolUse to include
+   codex), don't blind-append. A real re-open.
+3. **`selectWakePath`** → park in `mux/` for CR-2 but **mark deprecated** (moves to the plugin in CR-4
+   with dispatch/routing).
+4. **Oversized `unit`/`mail`** → **sub-specs** (nested command-axis nodes), authored in CR-2:
+   `unit/{registry,lifecycle}`, `mail/{core,wait,surface}`. This replaces the `concept: wake/surfacing`
+   tagging — `mail/wait` (await/watch) and `mail/surface` (hook) are real mail sub-commands, correctly
+   subordinate to `mail` instead of top-level siblings.
+
 ## NEXT
 
 **CR-0 (ADR-0024) landed.** **CR-2 explore: the migration map is DONE**
@@ -51,14 +65,15 @@ cross-refs, coverage gaps, and 4 judgment calls. The tree restructure is **NOT s
 paused deliberately: it's a whole-spec-tree change (high blast radius) whose spec gate needs human
 ratification, the user went AFK, and 4 judgment calls (below) want a decision first.
 
-**Resume CR-2 restructure** by: (1) settle the 4 judgment calls in the map (the `who`/`list` merge
-shape; the `admin install`→`init` dedup; `selectWakePath` placement; accept-oversized-advisory vs
-sub-split); (2) execute the moves — `git mv identity → unit`, fold `session` scenarios into `unit`,
-carve `attach/` + `mux/`, dissolve `surfacing`/`wake` into `mail`/`mux`/`init` with `concept:` tags,
-author the new `mux mode` + `admin migrate` scenarios; (3) update the 6 cross-references; (4) run the
-spec gate (freeze-preserving reference-renames re-freeze under new paths; only the 2 real re-opens —
-judgment #1, #2 — need ratified re-open). Delegate mechanical moves to sonnet, hold the gate here.
-Then CR-3 (CLI rename sweep) and CR-4 (dispatch → plugin + `Store.result` deletion).
+**CR-2 restructure + authoring is DONE** (uncommitted→committed as the pre-gate checkpoint). New tree:
+`mux · unit/{registry,lifecycle} · mail/{core,wait,surface} · agent · attach · init · admin` (+
+`dispatch` untouched, CR-4). All 4 resolutions applied: `unit who` merged (pane field, "N units");
+init extended with codex coverage (install-pending deleted); `mux mode` + `admin migrate` scenarios
+authored; `attach --show` settled. No sub-node oversized (registry 38, mail 25/24/13). No TODOs left.
 
-**Freeze note:** pure command-noun renames are freeze-*preserving* reconciles (ADR-0021), not
-re-opens — do not over-ratify them.
+**NEXT = the spec gate** (NOT self-asserted — whole-tree blast radius needs human ratification). On
+ratify: freeze each touched `.feature` under its new path, set `spec.md status: approved`, write the
+`gate` ledger line. Freeze note: pure command-noun renames are freeze-*preserving* reconciles
+(ADR-0021); only the `unit who` output-shape change (res #1) and the init codex extension (res #2,
+additive) touched behavior — both ratified in the resolutions. After the gate: CR-2 deliver (build the
+CLI to match — this IS CR-3's rename sweep), then CR-4 (dispatch → plugin + `Store.result` delete).
