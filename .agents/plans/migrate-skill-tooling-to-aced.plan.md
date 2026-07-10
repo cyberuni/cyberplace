@@ -12,22 +12,18 @@ todos:
     status: completed
   - content: "SPEC GATE passed — froze 3 new .feature, gate:spec ledger line, aced root status implemented->approved; check-spec-state OK"
     status: completed
-  - content: "Deliver: port audit/validate.ts -> config-authoring/improve-skill/scripts/validate.mts (inline readSkillManifest, node:test); wire define-skill to call it"
-    status: pending
-  - content: "Deliver: port skill/source.ts -> contribute-skill/scripts/source.mts (node-only, node:test)"
-    status: pending
-  - content: "Deliver: port skill/list.ts (inline getPackageRoot) + skill/repair.ts -> manage engines with node:test"
-    status: pending
-  - content: "Rewire consumers to local scripts: aced improve-skill/define-skill/contribute-skill SKILL.md + readme; cyberspace universal-plugin/init/create-skill"
-    status: pending
-  - content: "cyberplace: drop auditCommand + skillCommand from cli.ts, delete src/audit + src/skill, update cyberplace readme + governances/skill-repo-structure.md"
-    status: pending
-  - content: "Wire aced *.test.mts into root package.json verify:specs; pnpm verify green"
-    status: pending
-  - content: "Impl gate (cold SDD-default impl-judge, node:test per frozen scenario) -> aced status implemented"
-    status: pending
-  - content: "Handoff: finalize placement (Warden scoped), branch + PR (OUTWARD-FACING, awaiting user confirm)"
-    status: pending
+  - content: "Deliver: ported 4 engines -> improve-skill/validate.mts (34 tests), list-skills.mts (17), repair-private-skills.mts (21), contribute-skill/source.mts (8); SKILL.md rewired to local scripts; enumeration correction S1-S5->S1-S6 (impl source-of-truth)"
+    status: completed
+  - content: "Wire aced *.test.mts into root verify:specs; verify:specs GREEN (509 tests, all SDD checks + no leaks)"
+    status: completed
+  - content: "cyberplace deletion + consumer rewiring: dropped audit+skill cmds/src, inlined manifest->registry, relocated check/repair:private-skills to root->aced engine, rewired cyberspace 3 consumers + cyberplace readme/governances + aced prose refs"
+    status: completed
+  - content: "Full pnpm verify GREEN 19/19 (knip fixed via plugins/aced workspace; cyberplace 240/240 with cmds removed)"
+    status: completed
+  - content: "Impl gate: 3 deterministic nodes APPROVE; improve-skill engine architect-conflict (Q5 doc drift) fixed + re-verified (39 tests); aced-impl-judge APPROVE agent half; status->implemented, gate:impl ledger line"
+    status: completed
+  - content: "Handoff: deliver committed 77bfbeb2 (+ source 17a60115); gate provenance commit; PR next (OUTWARD-FACING, awaiting user confirm)"
+    status: in_progress
 ---
 
 # migrate-skill-tooling-to-aced — CLI skill-tooling into aced as capability nodes
