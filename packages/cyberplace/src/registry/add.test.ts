@@ -34,7 +34,7 @@ afterEach(() => {
 })
 
 function mockFetchInstall(
-	skills: Array<{ name: string; content?: string; manifest?: import('../skill/manifest.js').SkillManifest | null }>,
+	skills: Array<{ name: string; content?: string; manifest?: import('./manifest.js').SkillManifest | null }>,
 ) {
 	vi.mocked(fetchAndInstallSkill).mockImplementation(async (_provider, _spec, installDir) => {
 		return skills.map(({ name, content = `---\nname: ${name}\n---`, manifest = null }) => {

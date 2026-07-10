@@ -134,8 +134,10 @@ https://github.com/cyberuni/universal-plugin/blob/main/spec/universal-plugin-sys
 
 ### Step 6 — Audit skills
 
+Audit each skill via the aced **improve-skill** skill's mechanical `validate.mts` engine:
+
 ```bash
-npx cyberplace audit validate --path skills/<skill-name>
+node "<path to aced improve-skill>/scripts/validate.mts" --path skills/<skill-name>
 ```
 
 Fix any CRITICAL findings. Then invoke the **audit-skill** skill for full review.

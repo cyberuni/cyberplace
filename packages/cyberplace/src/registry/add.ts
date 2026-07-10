@@ -1,9 +1,9 @@
 import * as fs from 'node:fs'
 import { join } from 'node:path'
 
-import { isPackageManaged } from '../skill/manifest.js'
 import { matchProvider, type Provider, readConfig } from './config.js'
 import { setLockEntry } from './lock.js'
+import { isPackageManaged } from './manifest.js'
 import { installNpmPackage, listNpmSkills } from './npm.js'
 import { fetchAndInstallSkill } from './remote.js'
 import { getInstallDir, type Scope } from './scope.js'
