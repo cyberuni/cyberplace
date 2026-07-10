@@ -1,7 +1,27 @@
+#!/usr/bin/env node
+// validate — the deterministic mechanical-check engine for the ACED improve-skill node. Ported
+// from the cyberplace CLI's `audit validate` (packages/cyberplace/src/audit/{validate,cli}.ts +
+// skill/manifest.ts, inlined here for self-containment).
+//
+// Runs ONLY the mechanical check subset: S1-S6, Q1-Q5, Q10-Q11, E1-E2, E6, E9. Everything
+// else (Q6-Q9, Q12-Q16, E3-E5, E7-E8, P1-P3) is agent-only quality review and is NOT run here —
+// that is judged separately by the improve-skill agent skill / the ACED impl-judge.
+//
+// CLI:
+//   --path <path>    validate a single skill directory or SKILL.md file (default: whole-project scan)
+//   --root <path>    repo root to scan from (default: cwd)
+//   --format <fmt>   text (default, human-readable) or json (machine-readable findings)
+//
+// Exit codes: 0 = no CRITICAL findings (including "no SKILL.md files found"); 1 = at least one
+// CRITICAL finding, OR --path named a target with no SKILL.md.
+//
+// Pure functions are exported for node:test; running the file directly drives the CLI. No deps
+// (the repo's node-≥23.6 convention) — imports ONLY node:* builtins.
+
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 
-import { readSkillManifest } from '../skill/manifest.js'
+// ── types ──
 
 type Severity = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW'
 
@@ -18,7 +38,56 @@ export interface CheckResult {
 	warnings: Finding[]
 }
 
+// ── skill.json manifest (inlined from cyberplace src/skill/manifest.ts) ──
+
+interface SkillManifest {
+	distribution?: {
+		install_via: string
+		package?: { name: string; bin?: string }
+	}
+}
+
+function readSkillManifest(skillDir: string): SkillManifest | null {
+	const filePath = path.join(skillDir, 'skill.json')
+	if (!fs.existsSync(filePath)) return null
+	try {
+		return JSON.parse(fs.readFileSync(filePath, 'utf8')) as SkillManifest
+	} catch {
+		return null
+	}
+}
+
+// ── scan scope ──
+
 export const SKILL_DIRS = ['skills', '.agents/skills']
+
+export function findSkillFiles(dirs: string[], cwd: string): string[] {
+	const seen = new Set<string>()
+	const results: string[] = []
+
+	for (const dir of dirs) {
+		const base = path.join(cwd, dir)
+		if (!fs.existsSync(base)) continue
+
+		for (const entry of fs.readdirSync(base, { withFileTypes: true })) {
+			const skillFile = path.join(base, entry.name, 'SKILL.md')
+			if (!fs.existsSync(skillFile)) continue
+			try {
+				const real = fs.realpathSync(skillFile)
+				if (!seen.has(real)) {
+					seen.add(real)
+					results.push(real)
+				}
+			} catch {
+				// skip unresolvable symlinks
+			}
+		}
+	}
+
+	return results.sort()
+}
+
+// ── check constants ──
 
 const GENERIC_PHRASES = [
 	'helps with',
@@ -92,31 +161,7 @@ function hasStdoutAsDataMitigation(content: string): boolean {
 	)
 }
 
-export function findSkillFiles(dirs: string[], cwd: string): string[] {
-	const seen = new Set<string>()
-	const results: string[] = []
-
-	for (const dir of dirs) {
-		const base = path.join(cwd, dir)
-		if (!fs.existsSync(base)) continue
-
-		for (const entry of fs.readdirSync(base, { withFileTypes: true })) {
-			const skillFile = path.join(base, entry.name, 'SKILL.md')
-			if (!fs.existsSync(skillFile)) continue
-			try {
-				const real = fs.realpathSync(skillFile)
-				if (!seen.has(real)) {
-					seen.add(real)
-					results.push(real)
-				}
-			} catch {
-				// skip unresolvable symlinks
-			}
-		}
-	}
-
-	return results.sort()
-}
+// ── frontmatter / body parsing ──
 
 function parseFrontmatter(content: string): { name: string; description: string; internal: boolean } {
 	const lines = content.split('\n')
@@ -279,6 +324,8 @@ function findPublicSkillExternalRefs(
 
 	return Array.from(findings, ([ref, reason]) => ({ ref, reason }))
 }
+
+// ── the mechanical check engine: S1-S6, Q1-Q5, Q10-Q11, E1-E2, E6, E9 ──
 
 export function runChecks(filePath: string): CheckResult {
 	const criticals: Finding[] = []
@@ -493,21 +540,6 @@ export function runChecks(filePath: string): CheckResult {
 				'Document --yes (or equivalent) in SKILL.md for autonomous agent runs',
 			)
 		}
-
-		for (const f of scriptFiles) {
-			const src = fs.readFileSync(path.join(scriptsDir, f), 'utf8')
-			const usesConsoleOut = /console\.(log|info)\(/.test(src)
-			const hasContractWrite = /process\.stdout\.write/.test(src)
-			if (usesConsoleOut && !hasContractWrite) {
-				warn(
-					'MEDIUM',
-					'Q12',
-					'Script stdout hygiene',
-					`${f}: uses console.log/info without process.stdout.write JSON contract`,
-					'Use process.stdout.write(JSON…) for contract output; gate prose behind --verbose on stderr',
-				)
-			}
-		}
 	}
 
 	for (const pat of E1_PATTERNS) {
@@ -596,3 +628,131 @@ export function runChecks(filePath: string): CheckResult {
 
 	return { criticals, warnings }
 }
+
+// ── CLI: scan resolution, report, exit code ──
+
+function flag(argv: string[], name: string): string | undefined {
+	const i = argv.indexOf(name)
+	return i === -1 ? undefined : argv[i + 1]
+}
+
+export interface ScanOutcome {
+	ok: boolean
+	exitCode: number
+	message?: string
+	results: Array<{ filePath: string; dirName: string; criticals: Finding[]; warnings: Finding[] }>
+}
+
+// Resolve --path (single skill dir or SKILL.md file) or the whole-project scan (SKILL_DIRS),
+// run the mechanical check subset over each resolved SKILL.md, and roll up the exit code:
+// a --path target with no SKILL.md errors non-zero; a project scan with zero SKILL.md files
+// exits zero; any CRITICAL finding anywhere exits non-zero; otherwise exits zero.
+export function scan(cwd: string, pathArg?: string): ScanOutcome {
+	let skillFiles: string[]
+
+	if (pathArg) {
+		const resolved = path.resolve(cwd, pathArg)
+		const skillMd = resolved.endsWith('SKILL.md') ? resolved : path.join(resolved, 'SKILL.md')
+		if (!fs.existsSync(skillMd)) {
+			return { ok: false, exitCode: 1, message: `No SKILL.md found at ${skillMd}`, results: [] }
+		}
+		skillFiles = [skillMd]
+	} else {
+		skillFiles = findSkillFiles(SKILL_DIRS, cwd)
+	}
+
+	if (skillFiles.length === 0) {
+		return { ok: true, exitCode: 0, message: 'No SKILL.md files found.', results: [] }
+	}
+
+	const results = skillFiles.map((filePath) => ({
+		filePath,
+		dirName: path.basename(path.dirname(filePath)),
+		...runChecks(filePath),
+	}))
+
+	const totalCriticals = results.reduce((n, r) => n + r.criticals.length, 0)
+	return { ok: totalCriticals === 0, exitCode: totalCriticals === 0 ? 0 : 1, results }
+}
+
+function printFinding(w: (s: string) => void, f: Finding): void {
+	const icon = f.severity === 'CRITICAL' ? '❌' : '⚠️ '
+	w(`  ${icon} [${f.severity}] ${f.checkId} — ${f.name}`)
+	w(`     Evidence: ${f.evidence}`)
+	w(`     Fix:      ${f.fix}`)
+}
+
+function printReport(w: (s: string) => void, outcome: ScanOutcome): void {
+	if (outcome.results.length === 0) {
+		w(outcome.message ?? '')
+		return
+	}
+
+	w(`Validating ${outcome.results.length} skill(s)…`)
+
+	let totalCriticals = 0
+	let totalWarnings = 0
+
+	for (const { dirName, criticals, warnings } of outcome.results) {
+		w(`\n── ${dirName} ─────────────────────────`)
+		totalCriticals += criticals.length
+		totalWarnings += warnings.length
+
+		for (const f of criticals) printFinding(w, f)
+		for (const f of warnings) printFinding(w, f)
+
+		if (criticals.length === 0) {
+			w('  ✅ no CRITICAL findings')
+		} else {
+			w('  🚨 DO NOT commit or install until all CRITICAL findings are resolved.')
+		}
+	}
+
+	w('\n══════════════════════════════════════')
+	w(`Results: ${totalCriticals} critical failure(s), ${totalWarnings} warning(s)`)
+
+	if (totalCriticals > 0) {
+		w('❌ Fix all CRITICAL findings before merging.')
+	} else {
+		w('✅ All checks passed (S1–S6, Q1–Q5, Q10–Q11, E1–E2, E6, E9).')
+		w('   Run the improve-skill agent skill for full quality review (Q6–Q16, E3–E5, E7–E8, P1–P3).')
+	}
+}
+
+const HELP = `usage: validate.mts [--path <path>] [--root <path>] [--format text|json]
+
+Validate skills against the mechanical check subset (S1-S6, Q1-Q5, Q10-Q11, E1-E2, E6, E9).
+
+  --path <path>    validate a single skill directory or SKILL.md file (default: whole-project scan)
+  --root <path>    repo root to scan from (default: cwd)
+  --format <fmt>   text (default) or json
+  --help           show this message
+`
+
+export function main(argv: string[]): number {
+	if (argv.includes('--help') || argv.includes('-h')) {
+		process.stdout.write(HELP)
+		return 0
+	}
+
+	const cwd = path.resolve(flag(argv, '--root') ?? '.')
+	const pathArg = flag(argv, '--path')
+	const format = flag(argv, '--format') ?? (argv.includes('--json') ? 'json' : 'text')
+
+	const outcome = scan(cwd, pathArg)
+
+	if (format === 'json') {
+		process.stdout.write(`${JSON.stringify(outcome, null, 2)}\n`)
+		return outcome.exitCode
+	}
+
+	if (!outcome.ok && outcome.results.length === 0) {
+		process.stderr.write(`${outcome.message}\n`)
+		return outcome.exitCode
+	}
+
+	printReport((s) => process.stdout.write(`${s}\n`), outcome)
+	return outcome.exitCode
+}
+
+if (import.meta.main) process.exit(main(process.argv.slice(2)))

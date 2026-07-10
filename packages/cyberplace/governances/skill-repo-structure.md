@@ -36,11 +36,7 @@ Collection plus validation and install hygiene.
 - Documented install commands in README
 - Optional committed `skills-lock.json` when the repo dogfoods `npx skills add`
 
-**Validate with:**
-
-```bash
-npx cyberplace@<version> audit validate
-```
+**Validate with:** your skill-validation tool (e.g. the aced `improve-skill` skill's `validate.mts` engine).
 
 ### Tooling library
 
@@ -91,7 +87,7 @@ Do not treat plugin-bundle layout as the default — most repos use flat `skills
 | `.agents/skills/` | Repo-internal contributor skills (`metadata: internal: true`) |
 | `skills.sh.json` | skills.sh groupings and install scopes |
 | `.claude-plugin/marketplace.json` | Claude plugin marketplace groupings |
-| CI on `skills/` | Block merges that fail `audit validate` |
+| CI on `skills/` | Block merges that fail skill validation |
 | `awesome-skills.json` | Curated discovery (cyberplace-specific; optional elsewhere) |
 
 ## Contributor and patch conventions
@@ -145,7 +141,7 @@ Prefer **digest + lockfile** over ad hoc path scraping for reproducible installs
 Treat a repository as a **skill repo** when any of:
 
 - `skills/**/SKILL.md` exists (or `plugins/**/skills/**/SKILL.md` for bundle archetype)
-- README or package scripts document `audit validate` / skill validation
+- README or package scripts document a skill-validation command
 - Primary purpose is distributing Agent Skills (not an application that happens to have one skill)
 
 Use **`init-skill-repo`** (when shipped) to scaffold and wire disciplines for this profile.
@@ -155,7 +151,7 @@ Use **`init-skill-repo`** (when shipped) to scaffold and wire disciplines for th
 | Archetype | Minimum check |
 | --- | --- |
 | Collection | Manual or `skills-ref validate` per skill |
-| Maintained / tooling | `npx cyberplace@<version> audit validate` in CI |
+| Maintained / tooling | your skill-validation tool (e.g. the aced `improve-skill` `validate.mts` engine) in CI |
 | Tooling library | Full repo verify command documented in AGENTS.md |
 
 Full quality review (Q6–Q13, E3–E8): run the **improve-skill** agent skill after mechanical validation passes.

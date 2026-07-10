@@ -62,11 +62,17 @@ skill (the manual fallback that writes each vendor's files itself).
 
 ## 4. Repair repo-private skills
 
-Repair repo-private skills through the CLI — do not read each `SKILL.md` under `.agents/skills/` by hand.
+Repair repo-private skills through the aced `manage` gateway's **repair-private-skills** engine — do not
+read each `SKILL.md` under `.agents/skills/` by hand.
 
-Run `npx cyberplace@<exact> skill repair-private` (use `skill validate-private` to check without writing) — this
-is the `cyberplace` CLI, not `universal-plugin`. It sets `metadata: internal: true` on repo-private skills and
-removes erroneous symlinks into `skills/`.
+Load `manage` and route to `repair-private-skills`, or run its engine directly:
+
+```bash
+node "<aced repair-private-skills dir>/scripts/repair-private-skills.mts" --root . repair
+```
+
+Use `validate` in place of `repair` to check without writing. It sets `metadata: internal: true` on
+repo-private skills and removes erroneous symlinks into `skills/`.
 
 ## 5. Surface companion init skills
 

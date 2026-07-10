@@ -4,9 +4,9 @@ import * as fs from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 
-import type { SkillManifest } from '../skill/manifest.js'
-import { readSkillManifest } from '../skill/manifest.js'
 import type { Provider } from './config.js'
+import type { SkillManifest } from './manifest.js'
+import { readSkillManifest } from './manifest.js'
 import type { Marketplace } from './marketplace.js'
 import type { RepoSpec } from './spec.js'
 
