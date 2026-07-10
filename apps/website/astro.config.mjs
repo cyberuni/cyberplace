@@ -114,6 +114,7 @@ export default defineConfig({
 					label: 'cyberlegion',
 					items: [
 						{ label: 'Overview', slug: 'cyberlegion/overview' },
+						{ label: 'CLI Architecture (target)', slug: 'cyberlegion/architecture' },
 					],
 				},
 				{
