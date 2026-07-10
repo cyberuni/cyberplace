@@ -94,12 +94,35 @@ answered + charter-reasoned coupling):**
   SDD spec `.agents/specs/cyberlegion-plugin/dispatch/` to match.
 
 **Package-spec ripple (spec gate, spec-first):** retire `dispatch/` node; edit root `spec.md`
-(title L18 "…and dispatch", intro L25 "result-slot primitives", hub L32 "dispatch data",
-capabilities row L49, note L53); re-open `agent/` node (narrowing). Two frozen re-opens
-(dispatch retire = removal; agent = narrowing) → human-ratified spec gate.
+(title, intro, hub, capabilities row, note); re-open `agent/` (drop realizeSubagentInstruction group)
++ re-open `mux/` (drop `selectWakePath` group — CR-2 res#3 relocation, folded in here). **THREE
+frozen re-opens** (dispatch retire = removal; agent + mux = narrowing) → human-ratified spec gate.
+Also relocate `src/wake/wake-path.ts` (`selectWakePath`, no internal caller) to the plugin routing
+governance at deliver, and drop the index.ts:63 export.
 
-**Execution order:** (1) spec change → spec gate + human ratify; (2) deliver = code deletion +
-plugin governance rewrite (delegate mechanical deletion to sonnet) → impl gate.
+**Execution order:** (1) spec change → spec gate + human ratify ✅ **DONE** (ledger seq:4,
+`status: approved` by:unional; agent+mux re-frozen; dispatch node retired; retired contract carried
+into migration-map §"CR-4 — retired dispatch contract"); (2) **← DELIVER NEXT** = code deletion +
+plugin routing relocation → impl gate.
+
+**DELIVER checklist (CR-4 code, delegate mechanical deletion to sonnet):**
+- Delete `src/dispatch/{prep,collect,channel,verdict}.ts` + `src/dispatch/` dir.
+- Delete `src/wake/wake-path.ts` (`selectWakePath`) + its tests.
+- `store/store.ts` L87–93 + `file-store.ts` L130–141: remove `resultPath`/`writeResult`/`readResult`;
+  `paths.ts` L96: remove `resultFile`.
+- `agentdef/realize.ts`: remove `realizeSubagentInstruction` + `RealizeSubagentOptions` (keep
+  `realizeLaunch`). `index.ts`: drop exports L9 (realizeSubagentInstruction), L20–25 (dispatch),
+  L62–63 (WakePath/selectWakePath).
+- `cli.ts`: remove the `dispatch` command group (L494–610) + imports L10–12. Keep `unit spawn`,
+  `mail`, `agent`.
+- Delete the dispatch/wake-path/verdict TEST files.
+- Plugin: rewrite `dispatch-governance` + `subagent-backend-governance` (channel → `unit spawn` +
+  `mail await`; subagent → build instruction from `agent resolve` + brief, return via Task-result;
+  fold `selectWakePath`'s wake-matrix decision into the routing table). Update plugin SDD spec
+  `.agents/specs/cyberlegion-plugin/dispatch/` prose if it names the retired CLI verbs.
+- Changeset: BREAKING (major/minor per 0.x) — removes public `dispatch` surface + `Store.result` +
+  `selectWakePath`/`realizeSubagentInstruction` exports.
+- Root `pnpm verify` green; impl gate (cold sdd-impl-judge over the surviving frozen features).
 
 **DOWNSTREAM CONSUMER SWEEP — DONE** (`996ce22e`, human-authorized "sweep everything"). Updated all
 live callers to the new surface: cyberlegion plugin skills (legate/manage-inbox/init-cyberlegion/

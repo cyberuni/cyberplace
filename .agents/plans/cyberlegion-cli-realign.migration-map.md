@@ -104,3 +104,48 @@ was produced in the CR-2 explore analysis. Regenerate cheaply by re-reading the 
 `.feature` files (`identity`, `session`, `surfacing`, `wake`) against the per-node source→target above;
 the only genuine REWRITEs (behavior deltas) are the two in Judgment calls #1 and #2 — everything else
 is reference-rename (freeze-preserving) or verbatim relocation.
+
+## CR-4 — retired `dispatch/` contract (carried forward)
+
+The `dispatch/` node (result-slot primitives) was **dissolved** in CR-4 — the whole node deleted, the
+routing brain relocated to the Legate plugin governance. The retired scenario set is preserved here so
+CR-5 (`legion-gateway-legate`) and the deferred `mail --verdict-schema` CR start from a carried
+contract, not prose memory. Each retired behavior maps to where it now lives:
+
+**prep — envelope allocation** (all DROPPED; the plugin composes primitives directly):
+- prep mints an id, defaults thread to it, writes the brief into the Store → DROPPED (no Store brief slot; caller passes the brief inline)
+- an explicit `--thread` overrides the default → DROPPED
+- prep computes the result-file path without creating it → DROPPED (no result slot)
+- prep builds the subagent instruction from a resolved agent def → **relocated to plugin**: `subagent-backend-governance` composes it from the `agent resolve` payload
+- prep falls back to a generic instruction when no agent def is given → **relocated to plugin governance**
+- prep spawns nothing (no session/pane/agent record) → moot (no prep)
+- an unresolvable `--agent` name fails loud → preserved by `agent resolve`'s own fail-loud (frozen `agent.feature`)
+- prep requires a brief source → **plugin governance** invariant (caller supplies a brief)
+
+**Two result channels** (the load-bearing design, now the CLI's return model):
+- subagent path result = a file the parent's Task tool waits on → **CHANGED**: subagent returns via **Task-result** (the harness returns its final message); no file
+- channel path result = mail on the thread, never a file → **preserved**: warm peer returns via `mail await` (frozen `mail/wait/wait.feature`)
+
+**collect** (all DROPPED — no result file to read):
+- collect reads a written result file → returns validated DispatchResult → DROPPED
+- collect on a dispatch with no result file yet errors clearly → DROPPED
+
+**verdict schema** (all DEFERRED to the `mail --verdict-schema` CR; `validateVerdict` deleted):
+- invalid JSON in the result body is an error
+- a missing required key fails validation
+- a primitive type mismatch fails validation
+- an unreadable or invalid schema file is itself an error
+  → the minimal validator: parse body as JSON; non-array object; every `required` key present; each
+  present `properties` key's primitive type (`string|number|boolean`) matches. Deliberately not full
+  JSON-Schema, no deps. Re-home onto the mail receive path (`awaitReply`/`mail read`) behind a
+  `--verdict-schema <file>` flag when that CR runs.
+
+**dispatch channel — CLI-driven convenience** (relocated to plugin governance composing `unit spawn` + `mail await`):
+- channel without `--wait` spawns the peer and returns the envelope → **plugin**: `unit spawn` then return
+- channel `--wait` spawns the peer and returns the validated DispatchResult once the reply arrives → **plugin**: `unit spawn` + `mail await`
+- `unit spawn --agent` composes the def's realized launch → preserved in frozen `unit/lifecycle/lifecycle.feature`
+- channel with no tmux/herdr available errors rather than running inline → **plugin** decision (mux probe → strategy)
+
+**CLI never auto-routes** (preserved as a standing charter invariant, root `spec.md` + `agent`/`mux` non-goals):
+- no dispatch verb accepts `--backend auto` or spawns a headless subprocess
+- prep and collect never open a session or call a harness Task tool
