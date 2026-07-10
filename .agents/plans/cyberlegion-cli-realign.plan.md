@@ -57,31 +57,27 @@ chased a symptom (oversized `identity/`); the real cause is the spec organized o
    tagging — `mail/wait` (await/watch) and `mail/surface` (hook) are real mail sub-commands, correctly
    subordinate to `mail` instead of top-level siblings.
 
-## NEXT
+## NEXT — resume here
 
-**CR-0 (ADR-0024) landed.** **CR-2 explore: the migration map is DONE**
-(`cyberlegion-cli-realign.migration-map.md`) — the full scenario→target-node contract, counts,
-cross-refs, coverage gaps, and 4 judgment calls. The tree restructure is **NOT started** — execution
-paused deliberately: it's a whole-spec-tree change (high blast radius) whose spec gate needs human
-ratification, the user went AFK, and 4 judgment calls (below) want a decision first.
+**Next action:** run CR-2 **deliver** — the CLI rename sweep in `packages/cyberlegion/src/` so the CLI
+matches the now-frozen spec, then gate it. Delegate the mechanical rename to a sonnet subagent against
+the 9 frozen `.feature`s; then spawn the cold `sdd:sdd-impl-judge` over them and hold the impl gate
+here (human-ratified, by:unional). Rename map:
+- `identity <verb>` → `unit <verb>`; `session <verb>` → `unit <verb>` (backend-select/placement →
+  `mux`); `owner --handle` → `register --standing`; `bind-main`/`main` → `attach`/`--clear`/`--show`;
+  `admin doctor`/`mode` → `mux doctor`/`mode`; `admin install` → `init` (folded).
+- New behavior to build: `unit who` gains a `pane` field + `"N units"` aggregate (drop `session list`);
+  `mux mode`; `admin migrate`. Keep hot-path aliases (`who`/`send`/`inbox`/`spawn`) + bare-status.
+- **The BREAKING CLI change + the changeset land here** — run `add-changeset`. Update
+  `cli.ts` + the ~200-test suite; `pnpm verify` green before the impl gate.
+Then **CR-4**: dispatch → the Legate plugin + delete `Store.result` (prep/collect/resultPath).
 
-**CR-2 restructure + authoring is DONE** (uncommitted→committed as the pre-gate checkpoint). New tree:
-`mux · unit/{registry,lifecycle} · mail/{core,wait,surface} · agent · attach · init · admin` (+
-`dispatch` untouched, CR-4). All 4 resolutions applied: `unit who` merged (pane field, "N units");
-init extended with codex coverage (install-pending deleted); `mux mode` + `admin migrate` scenarios
-authored; `attach --show` settled. No sub-node oversized (registry 38, mail 25/24/13). No TODOs left.
+**State — done, don't redo:** CR-0 (ADR-0024) landed. CR-2 **spec gate RATIFIED** — `spec.md
+status: approved`, 9 `.feature`s frozen under the new tree, ledger
+`cyberlegion-cli-realign.5f028d.jsonl`. Spec-judge: oracle PASS, architect/builder change→all
+fixed→green. Scenario→impl contract: `cyberlegion-cli-realign.migration-map.md`. 8 commits on branch
+`cyberlegion-cli-realign` (last `ffae1ad7`), **not pushed**.
 
-**Cold spec-judge ran** (verdict: oracle PASS; architect/builder returned *change*, not reject — shape
-right). All blocking findings fixed (commit `2ec126b9`): illegal `spec-type: index` dropped; the two
-ratified re-opens (`registry`/`surface`) unfrozen; four stale READMEs synced; dangling
-`install-pending` refs removed. `check-spec-state` / `check-suite` / `check-spec-structure` all GREEN.
-
-**SPEC GATE RATIFIED** (by:unional, `status: approved`, 9 features frozen, ledger
-`cyberlegion-cli-realign.5f028d.jsonl` seq1 leash + seq2 gate). Spec side of CR-2 is DONE.
-
-**NEXT = CR-2 deliver = the CLI rename sweep** (`src/`): build the CLI to match the frozen spec —
-`identity`→`unit`, `session`→`unit`(+mux), `owner`→`register --standing`, `bind-main`/`main`→
-`attach`/`--clear`/`--show`, `admin doctor`/`mode`→`mux`, `admin install`→`init`, new `unit who` shape
-(pane, "N units"), `mux mode`, `admin migrate`. Then the cold impl-judge over the 9 frozen features.
-This is where the BREAKING CLI change + the changeset land. Then CR-4 (dispatch → plugin +
-`Store.result` delete). Delegate the mechanical rename to sonnet; hold the impl gate here.
+**Working method — do not relitigate:** see `## Resolved decisions` + `## CR-2 resolutions` above.
+Deferred (not this CR): `attach --follow`, `mail --verdict-schema`, and the `dispatch/` stale refs
+(`session spawn`/`wake`) that go stale in CR-3/CR-4.
