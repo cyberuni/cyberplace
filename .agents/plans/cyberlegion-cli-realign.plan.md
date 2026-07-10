@@ -10,8 +10,8 @@ todos:
     status: completed
   - content: "CLI change: identity->unit, session folded into unit, owner->register --standing, bind-main/main->attach/--clear, admin doctor/mode->mux doctor/mode, admin install folds into init. Keep hot-path aliases (who/send/inbox/spawn) + bare-status. Spec+build via SDD, verify green. DONE: committed ddb14587 (feat!, changeset minor+BREAKING); 328 tests green, root verify green; impl gate PASS (cold sdd-impl-judge 167/167). GATE RATIFIED by:unional (ledger seq:3)"
     status: completed
-  - content: "delete the result-slot: drop dispatch prep/collect + the Store.result domain (resultPath/writeResult/readResult); move verdict-schema validation onto mail read/await; dispatch (routing) moves to the Legate plugin"
-    status: pending
+  - content: "delete the result-slot: drop dispatch prep/collect + the Store.result domain (resultPath/writeResult/readResult); move verdict-schema validation onto mail read/await; dispatch (routing) moves to the Legate plugin. DONE (CR-4): dispatch dissolved entirely — spec gate seq:4 + impl gate seq:5 both RATIFIED by:unional; deliver b863089d + surface-sweep 6f476d26; status implemented; verdict-schema deferred to a mail --verdict-schema CR"
+    status: completed
   - content: "update docs: website cyberlegion/architecture page (added) + refresh cyberlegion/overview.md once the CLI change lands; note deferred attach --follow and mail --verdict-schema. DONE (37ce1cbd): overview capabilities table realigned; architecture migration table already current. Downstream-consumer sweep also DONE (996ce22e): plugin skills/agents/readmes + cyberfleet + other-project spec READMEs + 3 frozen .feature reference-renames (freeze-preserving)"
     status: completed
 ---
@@ -58,6 +58,28 @@ chased a symptom (oversized `identity/`); the real cause is the spec organized o
    subordinate to `mail` instead of top-level siblings.
 
 ## NEXT — resume here
+
+**MISSION COMPLETE.** All 6 todos done. `cyberlegion-cli-realign` (CR-0 ADR-0024, CR-2 CLI realign,
+CR-4 dispatch dissolution) has landed on branch `cyberlegion-cli-realign` — **not pushed**. Root spec
+`packages/cyberlegion/.agents/spec/spec.md` is `status: implemented`. Ledger
+`cyberlegion-cli-realign.5f028d.jsonl` holds all 5 provenance entries (leash + CR-2 spec/impl +
+CR-4 spec/impl gates, all by:unional).
+
+**Remaining, not blocking the mission:**
+- **Push + PR:** branch is ~25 commits ahead of origin/main, unpushed. Two changesets pending
+  (`cyberlegion-cli-realign.md`, `cyberlegion-cr4-dissolve-dispatch.md`).
+- **Retire superseded brief:** `cyberlegion-identity-presence-split.plan.md` was superseded by this
+  mission (§Supersedes) — retire it once this lands/merges (plan-retirement gates on merged+distilled).
+- **Scenario-bridge rebind** (judge advisory, carried from CR-2): `verify-scenarios` binds 0/167 —
+  rewrap test `describe`s to `spec:cyberlegion/<node>` for the 9-node tree.
+- **CR-5** `legion-gateway-legate`: the routing brain / wake-matrix driver. Retired dispatch contract
+  is preserved in `migration-map.md` §"CR-4 — retired dispatch contract" for it.
+- **Deferred features** (written down): `attach --follow` (tmux focus-events); `mail --verdict-schema`
+  (re-homes the dropped verdict validation onto the mail receive path).
+
+---
+
+### (historical) prior frontier — resume notes below are superseded by MISSION COMPLETE above
 
 **CR-2 impl gate RATIFIED** (by:unional, in-session) — ledger shard
 `cyberlegion-cli-realign.5f028d.jsonl` seq:3 (`kind:gate gate:impl verdict:approve cause:dimension`;
