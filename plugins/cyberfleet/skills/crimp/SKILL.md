@@ -23,7 +23,7 @@ longer wanted.
   marketplace query that lists recruitable crews — by intent, never re-implementing marketplace
   browsing itself.
 - When the Council has picked a crew: install it (`npx skills add …` / plugin install), then run
-  `cyberlegion identity register` for it — a crew installed but not yet registered is an unfinished
+  `cyberlegion unit register` for it — a crew installed but not yet registered is an unfinished
   recruit, not a done one.
 - When the Council wants a crew discharged: confirm first — uninstall is destructive and never
   runs before the Council says yes.
@@ -38,7 +38,7 @@ longer wanted.
 ## Delegation
 
 Every mechanic is a CLI call — the Tavern marketplace query (by intent, not by its exact command
-slug), `npx skills add` / plugin install, and `cyberlegion identity register` / `cyberfleet
+slug), `npx skills add` / plugin install, and `cyberlegion unit register` / `cyberfleet
 uninstall` / retiring the crew from the registry. Crimp never re-implements the marketplace query
 and never re-implements the fleet registry — it only invokes them.
 

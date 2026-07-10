@@ -15,10 +15,10 @@ Not for running a mission or hailing crew inside an already-initialized ship —
 
 ## What it does
 
-- `cyberlegion session spawn` — from outside any ship, launches the fleet's first ship with a
+- `cyberlegion unit spawn` — from outside any ship, launches the fleet's first ship with a
   self-contained brief the new Pod reads cold (once inside a ship, spawning further worktree-ships
   for parallel work is Pod's job).
-- `cyberlegion identity who` / `mail send` / `mail inbox` / `mail read` / `identity prune` — lists,
+- `cyberlegion unit who` / `mail send` / `mail inbox` / `mail read` / `unit prune` — lists,
   messages, and sweeps the fleet.
 - Defers to `pod` when this working directory carries the `.agents/cyberlegion/config.json` marker.
 

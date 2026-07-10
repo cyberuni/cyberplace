@@ -51,7 +51,7 @@ Feature: operator — the command-center persona
   Scenario: Operator commissions a ship from outside with a self-contained brief
     Given the Council wants to stand up the fleet's first ship or a new peer session from outside any ship
     When Operator commissions it
-    Then it runs cyberlegion session spawn with a brief that stands on its own, since the new Pod starts cold
+    Then it runs cyberlegion unit spawn with a brief that stands on its own, since the new Pod starts cold
       and reads it through its own SessionStart hook, and addresses it by handle
 
   @behavior
@@ -66,7 +66,7 @@ Feature: operator — the command-center persona
   Scenario: Operator lists the fleet, optionally including exited ships
     Given the Council asks what sessions are out there
     When Operator reports the fleet
-    Then it runs cyberlegion identity who, adding --all to include exited ships when the Council wants them
+    Then it runs cyberlegion unit who, adding --all to include exited ships when the Council wants them
 
   # ── Route messages between ships ──
 
@@ -82,7 +82,7 @@ Feature: operator — the command-center persona
   Scenario: dead ships are swept on request
     Given the Council asks to clear out dead ships
     When Operator sweeps them
-    Then it runs cyberlegion identity prune
+    Then it runs cyberlegion unit prune
 
   # ── Offload + harness-agnostic + MCP-free ──
 

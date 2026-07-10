@@ -18,7 +18,7 @@ mission, and hailing specialist crew when their concern comes up.
 
 ## Decisions
 
-- On entry, when this session has no fleet identity yet: run `cyberlegion identity register
+- On entry, when this session has no fleet identity yet: run `cyberlegion unit register
   --handle <name>` then `cyberlegion mail inbox --unread`; read and speak any mail before acting
   further.
 - When the Council wants a change made to this ship's project: dispatch to SDD's `start-mission` —
@@ -32,7 +32,7 @@ mission, and hailing specialist crew when their concern comes up.
 - When a message needs to reach a peer: `cyberlegion mail send --to <handle>`, always addressed by
   handle, never a raw id.
 - When the Council wants concurrent work on this project: spawn a worktree-ship with `cyberlegion
-  session spawn --harness <claude|cursor|codex> --handle <name> --task "<self-contained brief>"` —
+  unit spawn --harness <claude|cursor|codex> --handle <name> --task "<self-contained brief>"` —
   Pod is already in a ship and may fan out into more of them; the new worktree is a ship too the
   moment it exists (the tracked `.agents/cyberlegion/` marker travels with it).
 - Handled mail is acked immediately with `cyberlegion mail read <msg-id>` — never left unread once
@@ -45,8 +45,8 @@ mission, and hailing specialist crew when their concern comes up.
 
 ## Delegation
 
-Every mechanic is a `cyberlegion` CLI call — identity register, mail inbox, mail read, mail send,
-session spawn — plus `cyberfleet missions` for the fleet-layer view. Pod never re-implements the
+Every mechanic is a `cyberlegion` CLI call — unit register, mail inbox, mail read, mail send,
+unit spawn — plus `cyberfleet missions` for the fleet-layer view. Pod never re-implements the
 file store, never types into another pane, never reaches for an MCP messaging server, and never
 assumes a peer runs the same harness. HAL-above-leash detection lives entirely in `cyberfleet
 missions --json`'s `hal` field — Pod only reads it and decides whether to speak, never re-derives
