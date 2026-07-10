@@ -30,7 +30,7 @@ function cf(args: string[], env: Record<string, string> = {}, cwd?: string): str
 
 /**
  * Seed a ship record directly into the cyberlegion hub (`<root>/agents/<id>.json`). cyberfleet has
- * no `register` verb of its own — a ship is registered via `cyberlegion identity register`; the
+ * no `register` verb of its own — a ship is registered via `cyberlegion unit register`; the
  * fleet verbs here only READ the shared registry, so a hand-written record is the lightest fixture.
  */
 function seedShip(id: string, handle: string, extra: Record<string, unknown> = {}): void {

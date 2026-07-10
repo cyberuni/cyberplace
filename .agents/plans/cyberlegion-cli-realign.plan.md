@@ -84,6 +84,12 @@ naming old commands intentionally (pre-change motivation). Root verify green.
   back the `unit` group); optional rename, not a contract issue.
 
 Then **CR-4**: dispatch → the Legate plugin + delete `Store.result` (prep/collect/resultPath).
+**Fold into CR-4** the `dispatch/` spec's stale `session spawn` → `unit spawn` noun (README.md
+L45/50/56/74/77 + dispatch.feature L9/117/118) — deliberately left untouched now so the whole node
+(relocation + noun-rename + Store.result deletion) lands as one coherent change, not a piecemeal
+frozen-feature edit. Everything else in the repo is swept; `packages/cyberlegion/.agents/spec/`'s
+"old `admin install`" / "folded `session list`" / "`admin doctor` moved to `mux/`" mentions are
+intentional migration history, correct as-is.
 
 **State — done, don't redo:** CR-0 (ADR-0024) landed. CR-2 **spec gate RATIFIED** (`spec.md
 status: approved`, 9 frozen features, ledger `cyberlegion-cli-realign.5f028d.jsonl`). **CR-2 deliver
