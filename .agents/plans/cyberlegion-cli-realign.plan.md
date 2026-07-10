@@ -8,7 +8,7 @@ todos:
     status: completed
   - content: "realign the cyberlegion spec tree: rename identity/->unit, dissolve session/, new mux/, dissolve surfacing/->mail+init and wake/->mail+mux, add attach/. SPEC GATE RATIFIED (status:approved, by:unional; all 9 features frozen; ledger gate line written; judge oracle-PASS + change-fixed)"
     status: completed
-  - content: "CLI change: identity->unit, session folded into unit, owner->register --standing, bind-main/main->attach/--clear, admin doctor/mode->mux doctor/mode, admin install folds into init. Keep hot-path aliases (who/send/inbox/spawn) + bare-status. Spec+build via SDD, verify green. DONE: committed ddb14587 (feat!, changeset minor+BREAKING); 328 tests green, root verify green; impl gate PASS (cold sdd-impl-judge 167/167). AWAITS human gate ratification (by:unional)"
+  - content: "CLI change: identity->unit, session folded into unit, owner->register --standing, bind-main/main->attach/--clear, admin doctor/mode->mux doctor/mode, admin install folds into init. Keep hot-path aliases (who/send/inbox/spawn) + bare-status. Spec+build via SDD, verify green. DONE: committed ddb14587 (feat!, changeset minor+BREAKING); 328 tests green, root verify green; impl gate PASS (cold sdd-impl-judge 167/167). GATE RATIFIED by:unional (ledger seq:3)"
     status: completed
   - content: "delete the result-slot: drop dispatch prep/collect + the Store.result domain (resultPath/writeResult/readResult); move verdict-schema validation onto mail read/await; dispatch (routing) moves to the Legate plugin"
     status: pending
@@ -59,13 +59,20 @@ chased a symptom (oversized `identity/`); the real cause is the spec organized o
 
 ## NEXT — resume here
 
-**Blocked on human:** the **impl gate is PASS** (cold `sdd:sdd-impl-judge`, 167/167 frozen scenarios,
-no structural blocker) but **awaits ratification by:unional** — this gate is human-ratified. On yes:
-ratify via `sdd:spec-gate`/ledger in-session (write the `gate` entry to the sharded ledger +
-combat-log; the CLI package spec has no impl-status frontmatter field to flip — the deliver is the
-committed code, gate-provenance goes to the ledger). CR-2 deliver committed `ddb14587`
-(feat!, `.changeset/cyberlegion-cli-realign.md` minor+BREAKING). Branch `cyberlegion-cli-realign`,
-**not pushed**.
+**CR-2 impl gate RATIFIED** (by:unional, in-session) — ledger shard
+`cyberlegion-cli-realign.5f028d.jsonl` seq:3 (`kind:gate gate:impl verdict:approve cause:dimension`;
+cold `sdd:sdd-impl-judge` 167/167 PASS, no structural blocker). The CLI package spec has no
+impl-status frontmatter field — the deliver **is** the committed code (`ddb14587`, feat!,
+`.changeset/cyberlegion-cli-realign.md` minor+BREAKING). Branch `cyberlegion-cli-realign`,
+**not pushed**. Also landed since: mux backend-select → Scenario Outline (`27fa8c4c`,
+freeze-preserving reconcile, ADR-0021).
+
+**LIVE FRONTIER → CR-4** (the one pending todo): delete the result-slot (`prep`/`collect` +
+`Store.result`: `resultPath`/`writeResult`/`readResult`), move verdict-schema validation onto mail
+receive, relocate `dispatch` (routing) to the Legate plugin. Fold in the `dispatch/` spec's stale
+`session spawn` → `unit spawn` noun (README.md L45/50/56/74/77 + dispatch.feature L9/117/118) — parked
+so the whole node lands as one coherent change. Spec-first per SDD (open a CR against the cyberlegion
+plugin `dispatch` spec + the cyberlegion package spec).
 
 **DOWNSTREAM CONSUMER SWEEP — DONE** (`996ce22e`, human-authorized "sweep everything"). Updated all
 live callers to the new surface: cyberlegion plugin skills (legate/manage-inbox/init-cyberlegion/
