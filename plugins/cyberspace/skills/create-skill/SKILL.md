@@ -63,10 +63,11 @@ If you cannot answer all five, stop and resolve them with the user before procee
 
 ## Phase 4 — Structural audit
 
-Run `improve-skill` before any testing:
+Run the aced **improve-skill** skill on the new skill before any testing — it bundles the mechanical
+`validate.mts` engine that runs the structural checks without an LLM:
 
 ```bash
-npx cyberplace@<version> audit validate --path skills/<name>
+node "<path to aced improve-skill>/scripts/validate.mts" --path skills/<name>
 ```
 
 - Resolve all CRITICAL and HIGH findings before proceeding.

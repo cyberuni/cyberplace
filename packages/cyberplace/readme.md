@@ -82,29 +82,6 @@ npx cyberplace governance show agent-tool-output
 
 Available governances: `agent-tool-output`, `cli-resolution`, `skill-design`, `skill-repo-structure`, `universal-plugin`.
 
-### Skill utilities
-
-```sh
-# List skills visible to agents (repo, global, package)
-npx cyberplace skill list
-
-# Find which source repo an installed skill came from
-npx cyberplace skill source commit
-
-# Validate repo-private skills under .agents/skills/
-npx cyberplace skill validate-private
-npx cyberplace skill repair-private
-```
-
-### Audit
-
-Validate a skill against structural and quality checks (S1–S5, Q1–Q5, Q10–Q11, E1–E2, E6, E9):
-
-```sh
-npx cyberplace audit validate --path .agents/skills/my-skill
-npx cyberplace audit validate            # all skills in the repo
-```
-
 ### Output formats
 
 Most commands accept `--format`:

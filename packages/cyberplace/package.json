@@ -32,8 +32,6 @@
 		"build": "tsdown",
 		"dev": "tsx src/cli.ts",
 		"prepack": "pnpm build",
-		"check:private-skills": "pnpm build && node bin/cyberplace.mjs skill validate-private --root ../..",
-		"repair:private-skills": "pnpm build && node bin/cyberplace.mjs skill repair-private --root ../..",
 		"render:awesome-list": "pnpm build && node bin/cyberplace.mjs awesome render",
 		"test": "pnpm build && vitest run src",
 		"test:watch": "vitest",
