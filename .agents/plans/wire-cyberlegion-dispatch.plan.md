@@ -15,8 +15,8 @@ todos:
     status: completed
   - content: "Deliver: skill edits (start-mission SKILL + sdd-automaton) + cold impl-judge APPROVE"
     status: completed
-  - content: "Handoff: impl gate ratified (by:unional), PR to main, /new"
-    status: in_progress
+  - content: "Handoff: impl gate ratified (by:unional), PR #120 to main, /new"
+    status: completed
 ---
 
 # CR: wire SDD workflow with cyberlegion dispatch
