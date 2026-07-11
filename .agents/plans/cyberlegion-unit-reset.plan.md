@@ -14,8 +14,8 @@ todos:
     status: completed
   - content: "Impl gate ratified (by:unional): cold impl-judge PASS, risk guarantees backstopped; ledger seq3"
     status: completed
-  - content: "Handoff: commit spec+impl, push branch, open PR; SDD follow-up CR to swap /new (deferred to SDD project)"
-    status: in_progress
+  - content: "Handoff: committed spec+impl, pushed, PR #141; follow-ups #138 (sibling error scenarios) + SDD /new swap filed"
+    status: completed
 ---
 
 # CR: cyberlegion `unit clear` — warm-unit context reset through the mux
@@ -47,9 +47,9 @@ the warm/cold decoupling (warmth = unit, coldness = context). Revise CR against 
 
 ## NEXT
 
-Run the explore grill on the open design questions (mechanism realization, harness coverage + fail-loud
-shape, whether reset verifies fresh-context or is best-effort like focus, CLI shape `unit clear <ref>`
-vs `--reset`). Then draft the spec.md + additive `.feature` scenarios and spawn the cold spec-judge.
+DONE — both gates ratified, PR #141 open (Closes #122). Keep this plan until #141 merges and the
+Doctrine loop distills it. Remaining threads live as their own issues: **#138** (backfill unknown-id/
+no-pane error scenarios onto focus/nudge/read) and the **SDD `/new`→`unit clear` swap** in `plugins/sdd`.
 
 ## Ledger
 
