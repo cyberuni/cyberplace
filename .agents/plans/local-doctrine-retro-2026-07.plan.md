@@ -14,9 +14,9 @@ todos:
     status: completed
   - content: "CR B (durable combat-log footprint) — NO CR: the correction-line discipline already shipped via d2-correction-line-durability (frozen conductor.feature + combat-log-governance). CUT the footprint reinforcement cluster as stale"
     status: completed
-  - content: "Council decision on the still-pending clusters C, D, E, F, G"
-    status: pending
-  - content: "push branch chore/doctrine-distill-retire-plans + open PR (distill + retirement commits)"
+  - content: "Council decision on clusters C-G: C+D inlined (branch chore/doctrine-distill-2026-07-11); E filed #140 (ACED); F cut (recusal path PR #130); G out-of-scope (cyberlegion corpus)"
+    status: completed
+  - content: "push branch chore/doctrine-distill-2026-07-11 + open PR (record-keeping + C prune + D enum)"
     status: pending
 ---
 
@@ -78,15 +78,23 @@ Branch `chore/doctrine-distill-retire-plans` (off `main`, **unpushed**), two com
      `sibling-prose-contradiction` name from acaa41) to both enum homes:
      `combat-log-governance/SKILL.md` + `design/provenance-model.md` (Three→Four grounded). No frozen
      `.feature` pins the value list, so additive; `pnpm verify` 19/19. `strategy.364c83` seq2 spent — CUT.
-   - **E — gate-role naming convention** at authoring time (name judges by role+scope, not verbs):
-     `strategy.7668d1` seq2.
-   - **F — resolve-governances for SDD's own nodes** (SDD skill nodes resolve to the ACES squad,
-     forcing a manual per-mission override): `strategy.0000-legacy` seq43.
-   - **G — cyberlegion Warden cross-node reconcile nudge** for shared cross-cutting primitives:
-     `packages/cyberlegion/.agents/spec/ledger/strategy.dae416.jsonl` seq1 (different corpus — a
-     cyberlegion CR, not sdd).
+   - **E — gate-role naming convention — FILED as a CR/issue (not inlined).** Real + un-done (no
+     convention exists), but it targets the **ACED** corpus (`define-agent` / `define-skill`), needs a
+     design grill (exact pattern, all-subagents-vs-gate-scorers, hard-check-vs-advisory), and is
+     testable ACED behavior — a proper ACED mission, not an SDD-batch doc tweak. Filed **cyberuni/cyberplace#140**.
+     `strategy.7668d1` seq2 → queued to #140.
+   - **F — resolve-governances for SDD's own nodes — RESOLVED (recusal path, user ratified "leave it").**
+     Superseded by PR #130's recuse→fallback seam (`05a72b6f` spec, `280f3a33` impl): ACED **recuses**
+     on wrong-squad (boolean/deterministic) SDD nodes and the conductor auto-falls-back to SDD-default
+     — no manual per-mission override. Frozen conductor scenario "a resolved producer that recuses
+     falls back to the SDD default" + `aced-fit` SKILL both live. F's "resolve-to-default-directly"
+     alternative is explicitly NOT wanted (don't backfill ACED — [[reference_aced_recuses_on_sdd_self_spec]]).
+     `strategy.0000-legacy` seq43 spent — CUT.
+   - **G — cyberlegion Warden cross-node reconcile nudge — OUT OF SCOPE (different corpus).** Source
+     `packages/cyberlegion/.agents/spec/ledger/strategy.dae416.jsonl` seq1 is a **cyberlegion** CR, not
+     sdd; belongs to the cyberlegion project's own doctrine loop, not this SDD retro. Leave for that corpus.
 
-4. **Push `chore/doctrine-distill-retire-plans` + open PR** — the distill + retirement commits.
+4. **Push + open PR** — record-keeping + C (prune) + D (enum growth). All clusters A–G now dispositioned.
 
 ## Resolved decisions — do not relitigate
 
