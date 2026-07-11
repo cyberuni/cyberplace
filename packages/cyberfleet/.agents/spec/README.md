@@ -12,8 +12,11 @@ personas and the `crew` recruit/tune personas) is the sibling `cyberfleet-plugin
 
 Fleet verbs (what cyberfleet owns):
 
-- **`cyberfleet mode`** — report ship (a spawned unit worktree) vs command-center, and the shared
-  fleet root.
+- **`cyberfleet init`** — commission a ship: write cyberfleet's own opt-in marker
+  `.agents/cyberfleet/ship.json`, idempotent.
+- **`cyberfleet mode`** — report ship (any directory carrying the `.agents/cyberfleet/` marker — git
+  primary, worktree, or non-git folder alike) vs command-center (off-ship), and the shared fleet root.
+  Keyed on cyberfleet's own marker, never cyberlegion's.
 - **`cyberfleet missions`** — the Council view: ships × mission × gate × leash, derived from SDD
   state (the one place cyberfleet reads SDD).
 - **`cyberfleet jump <peer>`** — focus a ship's session pane, or print its worktree path to `cd`
@@ -29,7 +32,7 @@ The mechanism — unit, mail, unit spawn/close, surfacing — was **extracted in
 spawn`/`close`. cyberfleet no longer describes them.
 
 Squad note: the fleet verbs are deterministic `cyberfleet` CLI behaviors (SDD-default + a script
-harness — boolean scenarios, no rubric). They are currently **implemented but not yet captured as
-behavioral spec nodes** (a known backfill gap — see `spec.md`). The agent-behavior nodes (ACED —
-activation and judgment) are in the `cyberfleet-plugin` project.
-</content>
+harness — boolean scenarios, no rubric). `init` and `mode` are captured as behavioral nodes
+(`init/`, `mode/`); `missions` / `jump` / `pause` / `gate approve` remain **implemented but not yet
+captured as behavioral nodes** (a known backfill gap — see `spec.md`). The agent-behavior nodes
+(ACED — activation and judgment) are in the `cyberfleet-plugin` project.
