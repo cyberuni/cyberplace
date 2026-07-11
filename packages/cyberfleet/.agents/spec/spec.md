@@ -1,5 +1,5 @@
 ---
-status: approved
+status: implemented
 project-path: packages/cyberfleet
 approval:
   spec:
@@ -9,6 +9,14 @@ approval:
     why:
       blast: low — new opt-in marker + mode re-base on an unpublished (v0) CLI; first two behavioral nodes on a previously descriptive-only spec
       basis: ratified in-session; final cold spec-judge ALIGNED (oracle/builder/architect); mechanical state/suite/gherkin/structure green; init reshaped to a minimal marker per review
+      cr: cyberfleet-mode-init
+  impl:
+    verdict: approve
+    by: unional
+    cause: dimension
+    why:
+      blast: low — deterministic detectMode re-base + a new parameterless `init` command on a v0 CLI; no behavior changed elsewhere
+      basis: cold impl-judge PASS — all 8 frozen scenarios independently re-derived and verified; no scope creep; plugin persona sweep correct; 58 cyberfleet tests + root pnpm verify 19/19 green
       cr: cyberfleet-mode-init
 ---
 

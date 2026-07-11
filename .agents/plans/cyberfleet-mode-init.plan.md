@@ -7,13 +7,13 @@ todos:
   - content: "spec gate: froze both .feature, wrote approval.spec (by:unional) + gate:spec ledger line, root draft -> approved"
     status: completed
   - content: "deliver: re-base detectMode onto .agents/cyberfleet/ship.json; add `cyberfleet init` (write {version} marker); tests"
-    status: in_progress
-  - content: "deliver: plugin sweep — Operator/Pod boundary framing (command-center = off-ship, not primary)"
-    status: pending
-  - content: "impl gate: cold impl-judge per frozen scenario; root pnpm verify green"
-    status: pending
+    status: completed
+  - content: "deliver: plugin sweep — Operator/Pod ship-detection -> .agents/cyberfleet/; command-center = off-ship"
+    status: completed
+  - content: "impl gate: cold impl-judge PASS (8/8 frozen scenarios); root pnpm verify 19/19; approval.impl + gate:impl; status -> implemented"
+    status: completed
   - content: "handoff: branch cyberfleet-mode-init -> PR; Warden placement pass"
-    status: pending
+    status: in_progress
 ---
 
 # cyberfleet-mode-init
