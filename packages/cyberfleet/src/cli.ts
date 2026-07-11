@@ -15,6 +15,7 @@ import {
 	toonObject,
 	touch,
 } from 'cyberlegion'
+import { initShip } from './init.ts'
 import { buildMissions, resolveAgentsRoot } from './missions.ts'
 import { detectMode } from './mode.ts'
 
@@ -67,8 +68,20 @@ program
 	.description('Fleet layer over cyberlegion — ships, missions, and the Council view')
 	.version('0.0.0')
 
+program
+	.command('init')
+	.description('commission this directory as a ship by writing the cyberfleet marker (.agents/cyberfleet/ship.json)')
+	.action(() => {
+		const result = initShip()
+		if (!result.created) {
+			console.log(`cyberfleet marker already present at ${result.root} — no-op`)
+			return
+		}
+		console.log(`wrote cyberfleet marker at ${result.root}`)
+	})
+
 rootOpts(program.command('mode'))
-	.description('report ship (a spawned unit worktree) vs command-center, and the shared fleet root')
+	.description('report ship (has the .agents/cyberfleet/ marker) vs command-center, and the shared fleet root')
 	.action((opts) => {
 		const info = detectMode({ root: opts.root, space: opts.space })
 		emit(formatOf(opts), {
