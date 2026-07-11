@@ -5,13 +5,13 @@ todos:
   - content: "Intake: sdd verify-scenarios node, plan + leash shard"
     status: completed
   - content: "Explore: add absolute-honored + relative-under-root path scenarios (additive, self-clear); cold sdd spec-judge"
-    status: pending
+    status: completed
   - content: "Spec gate: freeze new scenarios, gate line"
-    status: pending
+    status: completed
   - content: "Deliver: underRoot() isAbsolute guard at the 3 join sites; tests; sdd impl-judge"
-    status: pending
+    status: completed
   - content: "Impl gate; pnpm verify; handoff branch + PR (fixes #108)"
-    status: pending
+    status: completed
 ---
 
 # verify-scenarios-path-resolution — honor absolute path args, don't double-prefix
