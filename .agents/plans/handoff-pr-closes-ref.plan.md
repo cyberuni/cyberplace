@@ -12,8 +12,8 @@ todos:
     status: completed
   - content: "impl gate: sdd-impl-judge IMPLEMENTATION_PASS; ledger seq3 self-asserted"
     status: completed
-  - content: "handoff: pnpm verify 19/19; branch+PR (no Closes ref — CR has no source issue, dogfoods the negative case); combat log kept"
-    status: pending
+  - content: "handoff: pnpm verify 19/19; PR #130 (no Closes ref — CR has no source issue, dogfoods the negative case); combat log kept; follow-up (tighten frozen merged-PR Given) surfaced"
+    status: completed
 ---
 
 # CR handoff-pr-closes-ref — handoff writes the PR auto-close reference
