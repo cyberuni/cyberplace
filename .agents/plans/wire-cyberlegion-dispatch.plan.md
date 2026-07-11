@@ -45,5 +45,13 @@ at handoff.
 Grill the user on the warm/cold-judge tension and the `/new` reset boundary; then draft
 revised conductor spawn scenarios.
 
+## Blocking dependency (post-handoff)
+- **#122** — cyberlegion needs an agent-invocable "reset agent session through the mux" primitive.
+  An agent can't issue `/new` (client slash command), so the skill's `/new`-reset of warm units is
+  unrealizable until #122 lands. Frozen `.feature` is intent-worded ("resets to a fresh context")
+  so the contract holds; only the SKILL realization is blocked.
+- **Follow-up:** once #122 lands, update PR #120's skill to call the cyberlegion primitive instead
+  of the bare `/new`.
+
 ## CR link
-This plan is the CR. Source: user change prompt (no external URL).
+This plan is the CR. Source: user change prompt (no external URL). PR #120.
