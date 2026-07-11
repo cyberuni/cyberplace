@@ -66,10 +66,10 @@ marker. First behavioral nodes for the descriptive-only cyberfleet CLI spec.
 
 ## Follow-ups (out of scope — future CRs)
 
-- **The ship's `blueprint`** — capture a ship's live layout (its sectors/panes + what runs in each)
-  so re-entry rebuilds it on the bridge console. A Pod-driven action (save on request; restore on
-  entry), likely a new cyberfleet CLI verb to read/write the blueprint. Naming settled: blueprint
-  (artifact) / bridge console (live view) / sector (a pane). NOT init.
+- **The ship's `blueprint`** (filed #119) — capture a ship's live layout (its sectors/panes + what
+  runs in each) so re-entry rebuilds it on the bridge console. A Pod-driven action (save on request;
+  restore on entry), likely a new cyberfleet CLI verb to read/write the blueprint. Naming settled:
+  blueprint (artifact) / bridge console (live view) / sector (a pane). NOT init.
 - **Persisted cyberlegion hub `space`** — configure the hub root globally / per-project (read by the
   cyberlegion CLI), not only ad-hoc `--space`. Filed as cyberlegion issue #115. cyberfleet does not
   own this; `ship.json` records no space.
