@@ -1,8 +1,8 @@
+@frozen
 Feature: mode — ship vs command-center, keyed on cyberfleet's own marker
   cyberfleet mode reports ship (a place fleet work runs) or command-center (off any ship) by the
   presence of cyberfleet's own tracked marker .agents/cyberfleet/ (its ship.json) at the project
-  root — never by cyberlegion's private .agents/cyberlegion/config.json. Git shape is irrelevant:
-  primary checkout, linked worktree, and non-git folder are all equal.
+  root. Git shape is irrelevant: primary checkout, linked worktree, and non-git folder are all equal.
 
   # ── The marker is the sole ship signal ──
 

@@ -12,8 +12,8 @@ personas and the `crew` recruit/tune personas) is the sibling `cyberfleet-plugin
 
 Fleet verbs (what cyberfleet owns):
 
-- **`cyberfleet init`** — commission a ship: write cyberfleet's own marker `.agents/cyberfleet/ship.json`
-  (the opt-in + commissioning defaults), idempotent.
+- **`cyberfleet init`** — commission a ship: write cyberfleet's own opt-in marker
+  `.agents/cyberfleet/ship.json`, idempotent.
 - **`cyberfleet mode`** — report ship (any directory carrying the `.agents/cyberfleet/` marker — git
   primary, worktree, or non-git folder alike) vs command-center (off-ship), and the shared fleet root.
   Keyed on cyberfleet's own marker, never cyberlegion's.

@@ -1,6 +1,15 @@
 ---
-status: draft
+status: approved
 project-path: packages/cyberfleet
+approval:
+  spec:
+    verdict: approve
+    by: unional
+    cause: dimension
+    why:
+      blast: low — new opt-in marker + mode re-base on an unpublished (v0) CLI; first two behavioral nodes on a previously descriptive-only spec
+      basis: ratified in-session; final cold spec-judge ALIGNED (oracle/builder/architect); mechanical state/suite/gherkin/structure green; init reshaped to a minimal marker per review
+      cr: cyberfleet-mode-init
 ---
 
 # cyberfleet — the fleet layer over cyberlegion
@@ -37,7 +46,7 @@ Only the verbs with genuine fleet logic live here — everything else is `cyberl
 
 | Verb | What |
 |---|---|
-| `cyberfleet init` | commission a ship — write cyberfleet's own marker `.agents/cyberfleet/ship.json` (the opt-in + commissioning defaults); idempotent. See [`init/`](./init/README.md) |
+| `cyberfleet init` | commission a ship — write cyberfleet's own opt-in marker `.agents/cyberfleet/ship.json`; idempotent. See [`init/`](./init/README.md) |
 | `cyberfleet mode` | report **ship** (any directory carrying the `.agents/cyberfleet/` marker — git primary, worktree, or non-git folder) vs **command-center** (off-ship), and the shared fleet root. Keyed on cyberfleet's own marker, never `.agents/cyberlegion/`. See [`mode/`](./mode/README.md) |
 | `cyberfleet missions` | the Council view — ships × mission × gate × leash, **derived from SDD state** (the one place cyberfleet reads SDD) |
 | `cyberfleet jump <peer>` | select/focus a ship's session (tmux pane), or print its worktree path to `cd` into |
@@ -56,8 +65,7 @@ now; cyberfleet no longer owns or re-describes them.
 Where a new concept lives — slot here, do not invent placement:
 
 - **a new ship-commissioning operation** (writing/reading cyberfleet's own `.agents/cyberfleet/`
-  marker, the fleet's opt-in + commissioning defaults) → the `init` surface (create) / `mode`
-  surface (read).
+  opt-in marker) → the `init` surface (create) / `mode` surface (read).
 - **a new fleet-status / mode operation** (ship vs command-center, the shared root) → the `mode`
   surface. Ship/command-center is keyed on cyberfleet's **own** `.agents/cyberfleet/` marker, never
   cyberlegion's `.agents/cyberlegion/`.
@@ -76,7 +84,7 @@ Where a new concept lives — slot here, do not invent placement:
 
 | Node | What |
 |---|---|
-| [`init/`](./init/README.md) | commission a ship — write `.agents/cyberfleet/ship.json` (opt-in + defaults), idempotent |
+| [`init/`](./init/README.md) | commission a ship — write `.agents/cyberfleet/ship.json` (opt-in marker), idempotent |
 | [`mode/`](./mode/README.md) | ship vs command-center, keyed on cyberfleet's own `.agents/cyberfleet/` marker |
 
 ## Backfill gap (known)
