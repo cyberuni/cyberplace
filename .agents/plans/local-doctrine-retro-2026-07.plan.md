@@ -72,8 +72,12 @@ Branch `chore/doctrine-distill-retire-plans` (off `main`, **unpushed**), two com
      Every other `plugins/sdd-new` ref is **correct history — leave**: ADR-0017, `CHANGELOG.md`, the
      dated `docs/research/2026-07-operator-test-migration-coverage.md` survey, and test fixtures (opaque
      `project-path` strings, not runnable). `strategy.ba6a39` seq4 is now spent — CUT. Source: `strategy.ba6a39` seq4.
-   - **D — cause-enum growth** (add "operating-doc / sibling prose contradicts shipped impl"):
-     `strategy.364c83` seq2.
+   - **D — cause-enum growth — RESOLVED (Council-ratified governance edit).** Added
+     `prose-impl-contradiction` ("a skill's own operating docs or a sibling design doc asserted
+     behavior the shipped implementation no longer has", superseding the never-ratified
+     `sibling-prose-contradiction` name from acaa41) to both enum homes:
+     `combat-log-governance/SKILL.md` + `design/provenance-model.md` (Three→Four grounded). No frozen
+     `.feature` pins the value list, so additive; `pnpm verify` 19/19. `strategy.364c83` seq2 spent — CUT.
    - **E — gate-role naming convention** at authoring time (name judges by role+scope, not verbs):
      `strategy.7668d1` seq2.
    - **F — resolve-governances for SDD's own nodes** (SDD skill nodes resolve to the ACES squad,
