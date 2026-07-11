@@ -2,7 +2,7 @@
 	"$schema": "https://turbo.build/schema.json",
 	"ui": "tui",
 	"tasks": {
-		"//#check": {
+		"//#check:ci": {
 			"cache": false,
 			"outputs": []
 		},
@@ -30,7 +30,7 @@
 			"persistent": true
 		},
 		"verify": {
-			"dependsOn": ["//#check", "//#knip", "//#verify:specs", "build", "typecheck", "lint", "test"]
+			"dependsOn": ["//#check:ci", "//#knip", "//#verify:specs", "build", "typecheck", "lint", "test"]
 		}
 	}
 }
