@@ -6,10 +6,10 @@ todos:
     status: completed
   - content: "spec gate: cold aced-spec-validator ALIGNED; dispatch.feature FROZEN, ledger gate:spec approve by:unional; root status stays draft (init/ precedent)"
     status: completed
-  - content: "impl gate: cold aced-impl-judge verifies the shipped skills (incl. new fail-loud guard) against the frozen .feature; deliver the two skill edits"
+  - content: "impl gate: cold aced-impl-judge PASS 24/24; deliver = fail-loud guard + result-file reconcile committed; ledger gate:impl approve by:unional"
+    status: completed
+  - content: "handoff: pnpm verify, no changeset (plugin is marketplace-distributed), push branch legion-gateway-legate + PR; follow-up CR = untested subagent|channel seam scenario"
     status: in_progress
-  - content: "handoff: Warden placement pass (dispatch/ stays), land branch + changeset if skills touched, follow-ups as new CRs"
-    status: pending
 ---
 
 # CR legion-gateway-legate (CR-5) — freeze the Legate routing-brain spec
