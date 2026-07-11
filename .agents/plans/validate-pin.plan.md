@@ -5,13 +5,13 @@ todos:
   - content: "Intake: cyberlegion spec, plan + leash shard"
     status: completed
   - content: "Explore: add malformed-pin-rejection scenario to init.feature (additive, self-clears); cold sdd spec-judge"
-    status: pending
+    status: completed
   - content: "Spec gate: re-freeze, gate line"
-    status: pending
+    status: completed
   - content: "Deliver: validatePin() in install.ts + cli fail() wrap; install.test.ts; sdd impl-judge"
-    status: pending
+    status: completed
   - content: "Impl gate; pnpm verify; handoff branch + PR (closes #109)"
-    status: pending
+    status: completed
 ---
 
 # validate-pin — reject a malformed `init --pin` before registering a broken hook
