@@ -94,6 +94,28 @@ Feature: plugin bundle — materialize the release form
     And stdout is TOON with a pins row carrying "package" "cyberplace", "current" "0.0.9", "resolved" "0.1.0"
     And the exit code is 0
 
+  # ── Version-map artifact ──
+
+  Scenario: bundle writes a .plugin/pins.json map of resolved workspace versions
+    Given a skill "skills/x/SKILL.md" contains "npx cyberplace@0.0.9"
+    When I run "universal-plugin plugin bundle"
+    Then ".plugin/pins.json" is JSON mapping "cyberplace" to "0.1.0"
+    And the exit code is 0
+
+  Scenario: --dry-run does not write .plugin/pins.json
+    Given a skill "skills/x/SKILL.md" contains "npx cyberplace@0.0.9"
+    And there is no ".plugin/pins.json"
+    When I run "universal-plugin plugin bundle --dry-run"
+    Then no ".plugin/pins.json" is written
+    And the exit code is 0
+
+  Scenario: an external package is excluded from the pins map
+    Given a skill "skills/x/SKILL.md" contains "npx cyberplace@0.0.9" and "npx gherkin-cli@0.0.1"
+    And there is no workspace package "gherkin-cli"
+    When I run "universal-plugin plugin bundle"
+    Then ".plugin/pins.json" maps "cyberplace" to "0.1.0"
+    And ".plugin/pins.json" has no "gherkin-cli" key
+
   # ── AXI output contract ──
 
   Scenario: a bundle prints TOON pins rows and a pre-computed aggregate
