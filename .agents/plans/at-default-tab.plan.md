@@ -14,10 +14,10 @@ todos:
     status: completed
   - content: "docs — DONE: concept table in mux/README (spec+readme) + website architecture.md; overview.md enumeration drop window+default tab"
     status: completed
-  - content: "impl gate: cold impl-judge re-verifying 2 fixed blockers (tmux -d focus, --at reject test); then status approved->implemented + ledger seq3"
-    status: in_progress
-  - content: "handoff: root verify; commit (feat!, changeset minor+BREAKING for window drop); PR; keep combat log"
-    status: pending
+  - content: "impl gate — DONE: re-judge IMPLEMENTATION_PASS true (both blockers fixed); status implemented; ledger seq3 by:unional"
+    status: completed
+  - content: "handoff — DONE: root verify 19/19; commit 211de720 (feat!, changeset cyberlegion minor+BREAKING); PR #125; combat log kept"
+    status: completed
 ---
 
 # CR at-default-tab — cyberlegion `--at` defaults to `tab`
@@ -47,5 +47,7 @@ maps `tab`/`window` -> `new-window` correctly.
 
 ## NEXT
 
-Grilling user on scope: confirm herdr-tab fix is in-scope (forced), confirm `window` aliasing,
-confirm re-open of the frozen default scenario. Then write the spec revise.
+Mission COMPLETE — landed as PR #125 (commit 211de720). Both gates ratified by:unional
+(ledger seq2 spec / seq3 impl). status: implemented. Retire this plan once #125 merges and
+doctrine-distills. Formation pass (corpus structure) is due on-demand via `sdd:manage` — not
+run here (mux was a revise of an existing node, no relocation).
