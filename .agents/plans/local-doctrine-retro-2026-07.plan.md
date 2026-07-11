@@ -63,10 +63,15 @@ Branch `chore/doctrine-distill-retire-plans` (off `main`, **unpushed**), two com
 
 3. **Council decision on the still-pending clusters** (undecided this session — see
    `## Strategy review verdicts`):
-   - **C — PRUNE stale `plugins/sdd-new` paths.** Confirmed a **real functional break**, not just
-     prose: the `pause-mission` skill's `checkGateFloor` step points at the old
-     `plugins/sdd-new/.../check-spec-state.mts`; the live script is under `plugins/sdd/...`. Also in
-     `discover-specs` example rows. Quick, high-value PRUNE CR. Source: `strategy.ba6a39` seq4.
+   - **C — PRUNE stale `plugins/sdd-new` paths — RESOLVED (escape, not a CR).** The functional break
+     the retro named was **already fixed** by `22909589` (pause-mission `checkGateFloor` now points at
+     `plugins/sdd/skills/spec-gate/scripts/check-spec-state.mts`; discover-specs prose clean). The one
+     **live** break that survived: `testcases/spec-layout/README.md` — a runnable "Validate all"
+     command at the dead+renamed `plugins/sdd-new/skills/validate-spec/...` → fixed to
+     `plugins/sdd/skills/spec-gate/scripts/check-spec-state.mts` (verified: `spec states OK`, exit 0).
+     Every other `plugins/sdd-new` ref is **correct history — leave**: ADR-0017, `CHANGELOG.md`, the
+     dated `docs/research/2026-07-operator-test-migration-coverage.md` survey, and test fixtures (opaque
+     `project-path` strings, not runnable). `strategy.ba6a39` seq4 is now spent — CUT. Source: `strategy.ba6a39` seq4.
    - **D — cause-enum growth** (add "operating-doc / sibling prose contradicts shipped impl"):
      `strategy.364c83` seq2.
    - **E — gate-role naming convention** at authoring time (name judges by role+scope, not verbs):
