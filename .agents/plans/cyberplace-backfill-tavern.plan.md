@@ -15,14 +15,14 @@ todos:
     status: completed
   - content: "impl gate: cold impl-judge per frozen scenario"
     status: completed
-  - content: "handoff: branch cyberplace-backfill-tavern -> PR; file Mission A (Crimp+Tuner) follow-up"
-    status: in_progress
+  - content: "handoff: branch cyberplace-backfill-tavern -> PR #64 (MERGED); Mission A follow-up filed"
+    status: completed
   - content: "FOLLOW-UP CR: de-dup deriveInstallCommand in awesome/render.ts onto the awesome/lib.ts export"
     status: pending
   - content: "FOLLOW-UP: awesome-list backfill (deferred stub -> full node) when demanded"
     status: pending
   - content: "FOLLOW-UP: Mission A — Crimp + Tuner personas in the cyberfleet spec"
-    status: pending
+    status: completed
 ---
 
 # cyberplace-backfill-tavern
@@ -50,12 +50,15 @@ are named in the placement map as planned homes, backfilled later by demand.
 
 ## NEXT
 
-**Spec gate PASSED** (tavern node, ALIGNED true round 3; `status: approved`,
-`tavern.feature` @frozen, ledger shard `cyberplace-backfill-tavern.d3a68e.jsonl`).
-Deliver next: build to keep from the frozen `tavern.feature` —
-(1) a reserved `crew` tag convention + the `cyberplace tavern` command over the
-awesome catalog (`packages/cyberplace/src/awesome/` + `cli.ts`, reusing
-`deriveInstallCommand`/`findAwesomeSkills`), (2) the Starlight storefront page
-`apps/website/src/content/docs/tavern/` + sidebar reg, (3) one verification per
-frozen scenario. Then the impl gate (cold impl-judge). awesome-list stays a
-deferred draft stub. Follow-up: Mission A (Crimp+Tuner in the cyberfleet spec).
+**MISSION LANDED.** Both gates passed and the deliver commit merged via **PR #64**
+(`cyberplace = implemented`, `tavern.feature` @frozen, ledger shard
+`cyberplace-backfill-tavern.d3a68e.jsonl`). The Mission A follow-up (Crimp+Tuner)
+was filed and executed as **`fleet-crew-personas`** (PR #65). Brief is
+retirement-eligible pending doctrine distillation.
+
+Two follow-up CRs remain, both **separate change requests, not this mission**:
+1. **de-dup `deriveInstallCommand`** — still duplicated (`src/awesome/lib.ts:146`
+   private `function`, and `src/awesome/render.ts:36`). Export it from `lib.ts` and
+   import in `render.ts`. Small, self-contained cleanup.
+2. **awesome-list backfill** — the deferred draft stub becomes a full node only
+   when demanded; not triggered.
