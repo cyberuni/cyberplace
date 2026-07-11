@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cyberlegion mail hook --event SessionStart"
+            "command": "node scripts/legion-mail-hook.mjs --event SessionStart"
           }
         ]
       }
@@ -27,7 +27,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cyberlegion mail hook --event PostToolUse"
+            "command": "node scripts/legion-mail-hook.mjs --event PostToolUse"
           }
         ],
         "matcher": "Write|Edit"
