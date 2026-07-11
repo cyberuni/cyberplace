@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process'
-import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -54,7 +54,7 @@ function seedShip(id: string, handle: string, extra: Record<string, unknown> = {
 describe('cli wiring', () => {
 	it('--help lists only the fleet verb surface (no mechanism verbs)', () => {
 		const out = execFileSync('node', [BIN, '--help'], { encoding: 'utf8' })
-		for (const verb of ['mode', 'missions', 'jump', 'pause', 'gate']) {
+		for (const verb of ['init', 'mode', 'missions', 'jump', 'pause', 'gate']) {
 			expect(out).toContain(verb)
 		}
 		// the mechanism verbs were cut — they live in cyberlegion now. Assert on verbs whose strings
@@ -70,6 +70,17 @@ describe('mode', () => {
 		const out = cf(['mode'], {}, work)
 		expect(out).toContain('mode: command-center')
 		expect(out).toContain(`fleetRoot: ${root}`)
+	})
+})
+
+describe('init', () => {
+	it('writes the cyberfleet marker (fresh), then reports a no-op on re-run', () => {
+		const cwd = mkdtempSync(join(tmpdir(), 'cf-init-cli-'))
+		const first = execFileSync('node', [BIN, 'init'], { encoding: 'utf8', cwd })
+		expect(first).toContain('wrote cyberfleet marker')
+		expect(existsSync(join(cwd, '.agents', 'cyberfleet', 'ship.json'))).toBe(true)
+		const second = execFileSync('node', [BIN, 'init'], { encoding: 'utf8', cwd })
+		expect(second).toContain('already present')
 	})
 })
 
