@@ -12,8 +12,8 @@ todos:
     status: completed
   - content: "impl gate: cold impl-judge PASS (8/8 frozen scenarios); root pnpm verify 19/19; approval.impl + gate:impl; status -> implemented"
     status: completed
-  - content: "handoff: branch cyberfleet-mode-init -> PR; Warden placement pass"
-    status: in_progress
+  - content: "handoff: branch cyberfleet-mode-init -> PR #118; Warden placement pass (no-op, nodes in blessed home)"
+    status: completed
 ---
 
 # cyberfleet-mode-init
@@ -83,16 +83,11 @@ marker. First behavioral nodes for the descriptive-only cyberfleet CLI spec.
 
 ## NEXT — resume here
 
-**Spec gate DONE** (`status: approved`, both `.feature` `@frozen`, `approval.spec` by:unional +
-`gate: spec` ledger line; `check-spec-state` OK).
+**MISSION COMPLETE — landed as PR #118** (`status: implemented`, both `.feature` `@frozen`,
+`approval.spec` + `approval.impl` by:unional, `gate: spec` + `gate: impl` ledger lines). Both gates
+ratified in-session; cold impl-judge PASS (8/8 frozen scenarios); `pnpm verify` 19/19; 58 tests green.
 
-**Next action — deliver** (build-to-keep against the frozen suite):
-1. Re-base `packages/cyberfleet/src/mode.ts` — `detectMode` keys on `.agents/cyberfleet/ship.json`
-   presence (not `.agents/cyberlegion/config.json`); update `mode.test.ts`.
-2. Add `cyberfleet init` to `packages/cyberfleet/src/cli.ts` (+ a new module) — writes `ship.json`
-   (`version`/`harness`/`at`, optional `space`), idempotent, git-independent; tests.
-3. Plugin persona sweep: `plugins/cyberfleet/skills/{operator,pod}` — reframe command-center as
-   *off-ship*, not "the primary checkout."
-4. Root `pnpm verify` green, then the **impl gate** (cold `sdd:sdd-impl-judge`) → `status: implemented`.
+**Remaining:** await PR #118 merge, then retire this brief at doctrine distillation.
 
-**Blocking decision:** none open. Design is settled (see Resolved decisions).
+**Blocking decision:** none. Follow-ups are separate CRs (see Follow-ups): blueprint capture/restore
+(future Pod CR), cyberlegion hub-space config (#115), SDD suite guidance (#113, #114).
