@@ -60,7 +60,7 @@ Feature: pod — the ship's bridge persona
   Scenario: Pod establishes identity and reads unread mail before acting
     Given a session entering a ship with no fleet identity yet
     When Pod begins
-    Then it runs cyberlegion identity register then cyberlegion mail inbox --unread and speaks any mail before taking further action
+    Then it runs cyberlegion unit register then cyberlegion mail inbox --unread and speaks any mail before taking further action
 
   @behavior
   Scenario: handled mail is acked immediately
@@ -90,7 +90,7 @@ Feature: pod — the ship's bridge persona
   Scenario: concurrent work is spawned as a worktree-ship with a self-contained brief
     Given Pod is inside a ship and the Council wants concurrent work on this project
     When Pod delegates the parallel work
-    Then it runs cyberlegion session spawn, which creates a new worktree-ship stamped with its own
+    Then it runs cyberlegion unit spawn, which creates a new worktree-ship stamped with its own
       .cyberfleet/config.json marker, handing it a brief that stands on its own and addressing it by handle
 
   # ── HAL tell (ADR-0022 decision 6) ──

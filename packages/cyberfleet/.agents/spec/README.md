@@ -23,9 +23,9 @@ Fleet verbs (what cyberfleet owns):
 - **`cyberfleet gate approve`** — stubbed; a human ratification is not safely relayable through this
   CLI (the relayed-ratification seam).
 
-The mechanism — identity, mail, session spawn/teardown, surfacing — was **extracted into
+The mechanism — unit, mail, unit spawn/close, surfacing — was **extracted into
 `cyberlegion`** (`../../../cyberlegion/.agents/spec/`). A fleet persona runs those verbs directly:
-`cyberlegion identity register`, `cyberlegion mail send`/`inbox`/`read`, `cyberlegion session
+`cyberlegion unit register`, `cyberlegion mail send`/`inbox`/`read`, `cyberlegion unit
 spawn`/`close`. cyberfleet no longer describes them.
 
 Squad note: the fleet verbs are deterministic `cyberfleet` CLI behaviors (SDD-default + a script

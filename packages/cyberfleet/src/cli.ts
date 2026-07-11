@@ -23,7 +23,7 @@ import { detectMode } from './mode.ts'
 // focus), `pause` (a status-only marker), and the `gate approve` stub. The mechanism verbs
 // (register/who/send/inbox/read/ack/spawn/prune/decommission/install) are NOT re-exposed here — they
 // live in the `cyberlegion` CLI, which cyberfleet depends up on. A fleet persona runs those directly
-// (`cyberlegion identity register`, `cyberlegion mail send`, `cyberlegion session spawn`, …).
+// (`cyberlegion unit register`, `cyberlegion mail send`, `cyberlegion unit spawn`, …).
 
 interface RootOpts {
 	root?: string

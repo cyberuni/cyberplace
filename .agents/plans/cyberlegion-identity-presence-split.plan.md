@@ -64,10 +64,17 @@ already settled. It is the boundary/name decision, not the freeze, that pushes t
   presence." CLI verb surface is unaffected either way (verbs stay under `identity` regardless of
   which spec node documents them, matching how `who`/`spawn`/`send` already alias across nodes).
 
+## SUPERSEDED
+
+**Do not resume this brief.** Working the split surfaced that it chased a symptom: `identity/` is
+oversized because the spec is organized on an invented axis (`surfacing`/`wake`) that matches no CLI
+command. The real fix is a corpus realignment to the architecture — see
+[`cyberlegion-cli-realign.plan.md`](./cyberlegion-cli-realign.plan.md) and its
+[`.design.md`](./cyberlegion-cli-realign.design.md). Under the realignment there is no `presence/`
+node: `identity/` becomes `unit/`, `owner` folds into `register --standing`, and the main-pane verbs
+become `attach` — so the oversize resolves without the carve this brief proposed. Retire this brief
+when the realignment lands.
+
 ## NEXT
 
-Not yet started. Run `start-mission` against `packages/cyberlegion/.agents/spec` for this CR. First
-decide the new node's name and whether register-time `identity` prefix on the moved verbs stays as-is
-(the spec split is documentation-only; no CLI renaming implied). Then split `identity.feature`
-verbatim into the two files, update the four cross-referencing docs above, and run the spec gate
-(should self-clear coverage-preservation; only the node existence itself is the ratified change).
+Superseded by `cyberlegion-cli-realign`. No action here.

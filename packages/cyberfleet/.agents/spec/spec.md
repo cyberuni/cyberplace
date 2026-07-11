@@ -21,7 +21,7 @@ it in the fleet's own operations.
 
 The dependency is **by intent** (ADR-0021): cyberfleet imports `cyberlegion` as a workspace library
 for its own verbs, and a fleet persona runs the mechanism verbs against the `cyberlegion` CLI
-directly (`cyberlegion identity register`, `cyberlegion mail send`, `cyberlegion session spawn`, …).
+directly (`cyberlegion unit register`, `cyberlegion mail send`, `cyberlegion unit spawn`, …).
 cyberfleet does **not** re-expose those mechanism verbs — that duplication is exactly what the
 extraction removed.
 
@@ -53,7 +53,7 @@ Where a new concept lives — slot here, do not invent placement:
 - **a new Council/mission-view operation** (joining ships to SDD mission/gate/leash state) → the
   `missions` surface — the only place cyberfleet reads SDD.
 - **a new ship-navigation operation** (focus a pane, resolve a worktree path) → the `jump` surface.
-- **a new mechanism operation** (identity, mail, session spawn/teardown, surfacing, dispatch, wake)
+- **a new mechanism operation** (unit, mail, unit spawn/close, surfacing, dispatch, wake)
   → **not here** — that is `cyberlegion` (`packages/cyberlegion`). cyberfleet depends up on it.
 - **a new persona / mode-switch / crew behavior** (when to spawn, message etiquette, recruit or tune
   a crew) → **not here** — that is the `cyberfleet-plugin` project (`plugins/cyberfleet`).

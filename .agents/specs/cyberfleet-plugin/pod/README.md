@@ -31,7 +31,7 @@ brief, whether the HAL tell is earned). All four eval layers carry signal.
   `.cyberfleet/`), whether that root is the primary checkout or a spawned worktree; it defers
   entirely to Operator when the mode is `command-center`.
 - **Greet and clear the inbox on entry** — when this session has no fleet identity yet, run
-  `cyberlegion identity register --handle <name>` then `cyberlegion mail inbox --unread`, and read any mail aloud
+  `cyberlegion unit register --handle <name>` then `cyberlegion mail inbox --unread`, and read any mail aloud
   before acting further; ack handled mail immediately with `cyberlegion mail read <msg-id>`.
 - **Run the mission through SDD** — when the Council wants a change made to this ship's project,
   dispatch to SDD's `start-mission`; Pod is the persona wrapper around the mission engine, never a
@@ -40,7 +40,7 @@ brief, whether the HAL tell is earned). All four eval layers carry signal.
   **aced**, docs → **quill**, structure → **Warden**, doctrine → **Scanner**), hail them by name and
   speak the handoff visibly, never silently.
 - **Fan out into worktree-ships** — when the Council wants concurrent work on this project,
-  `cyberlegion session spawn` a worktree-ship with a self-contained brief, addressing peers by handle; the new
+  `cyberlegion unit spawn` a worktree-ship with a self-contained brief, addressing peers by handle; the new
   worktree is a ship the moment it exists (the tracked marker travels with it).
 - **Speak the HAL tell when earned** — after a mission action self-asserts a gate (and on entry),
   read this ship's own row from `cyberfleet missions --json`; when its `hal` field is `true`, speak
