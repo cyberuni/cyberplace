@@ -2,10 +2,12 @@
 name: sdd-scenario-step-diff
 status: active
 todos:
-  - content: "explore: settle where the additive/freeze classification lives + whether gherkin-cli diff already exposes per-scenario step identity; grill spec+suite for the change"
-    status: in_progress
-  - content: "spec gate: cold sdd-spec-judge over touched spec-gate/freeze .feature + README; freeze on approve"
-    status: pending
+  - content: "explore: settle classification locus + gherkin-cli signal; grill spec+suite (DONE — see Explore SETTLED)"
+    status: completed
+  - content: "author spec: additive freeze-edit-class scenarios + README section (516d3111); self-run pre-filters GREEN"
+    status: completed
+  - content: "spec gate: cold sdd-spec-judge ALIGNED round 2 (round 1 FAIL reframed); gate approve recorded (shard b7f3a2), .feature stays @frozen"
+    status: completed
   - content: "deliver: implement the scenario-step-level diff / fail-closed pre-judge check; one verification per frozen scenario"
     status: pending
   - content: "impl gate: cold sdd-impl-judge; advance status on all-pass"
@@ -70,9 +72,31 @@ re-open) is exactly what fails closed. Baseref = the file's committed HEAD versi
 - d1 **follow-up #2** (backfill `Scenario`-column Use Cases tables so the landed use-case check has
   teeth against the live corpus) is a SEPARATE CR — not this one.
 
+## Spec-gate round 1 — FAILED, reframed (combat log seq2, cause: design-overreach)
+
+The first draft framed a still-`@frozen` narrowing as **fail-closed** — the cold spec-judge caught that
+this **contradicts** the standing narrowing→Clearance model (the frozen sibling scenario "a narrowing
+edit unfreezes its file and fires Clearance", `lifecycle-model.md:169`, and `autonomy-rubric.md`'s
+**pre-grantable Clearance**), and gave no path for CR-pre-authorized Clearance. **Correct model:** the
+bug is a *classification* error (a narrowing misread as additive by raw line-diff, so it self-clears and
+Clearance never fires) — the fix is a **structural** per-scenario classification that routes a detected
+narrowing to the **existing** Clearance floor; it adds **no** new verdict. Reworked spec = commit
+`12bf1728` (amended). Round 2 cold spec-judge in flight.
+
 ## NEXT — resume here
 
-Explore is COMPLETE and the design is settled (above). Next action: **author the spec additively**
+If round-2 judge ALIGNED: record the `gate` ledger line (approve; `.feature` stays `@frozen`, additive
+self-cleared), then DELIVER. If FAIL: read its required changes, reconcile, re-judge.
+
+Deliver plan (after gate): the classification already has a home — the digest-side mechanical diff
+(`spec-gate` consumes `gherkin-cli diff`). Implement so the edit-class classification is structural per
+scenario (not raw line-diff), with one verification per new frozen scenario; decide standalone
+`check-freeze.mts` vs strengthening the existing gherkin-cli-diff consumer path at deliver. Then impl
+gate + handoff.
+
+Original explore/authoring detail below.
+
+Explore is COMPLETE and the design is settled (above). Original next action was: **author the spec additively**
 against `.agents/specs/sdd/authoring/spec-gate/` —
 1. spec.md/README: a `## Use Cases` row + prose for the freeze edit-class pre-filter (fail-closed on a
    still-`@frozen` file with `addOnly:false`, exempt when unfrozen / whole-scenario-added / pure rename).
