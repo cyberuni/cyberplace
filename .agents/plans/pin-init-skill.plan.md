@@ -5,15 +5,15 @@ todos:
   - content: "Intake: cyberlegion-plugin spec, plan + leash shard"
     status: completed
   - content: "Explore: add pins.json-read + --pin scenarios; re-open the two --agent 'plain init' scenarios to drop the pin-blind wording; sync SKILL.md prose; status->draft"
-    status: pending
+    status: completed
   - content: "Cold aced spec-judge over the changed scenarios; incorporate"
-    status: pending
+    status: completed
   - content: "Spec gate: re-freeze init-cyberlegion.feature, gate line"
-    status: pending
+    status: completed
   - content: "Deliver: rewrite SKILL.md version-pin flow to read pins.json + pass --pin; aced impl-judge"
-    status: pending
+    status: completed
   - content: "Impl gate; pnpm verify; handoff branch + PR (Part C of hook plan)"
-    status: pending
+    status: completed
 ---
 
 # pin-init-skill — init-cyberlegion reads the bundled pin, passes `--pin`
