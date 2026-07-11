@@ -1,7 +1,7 @@
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 
-import { flattenAwesomeEntries, validateAwesomeList } from './lib.js'
+import { deriveInstallCommand, flattenAwesomeEntries, validateAwesomeList } from './lib.js'
 
 interface Highlight {
 	type: string
@@ -32,10 +32,6 @@ interface SkillEntry {
 }
 
 type Entry = RepoEntry | SkillEntry
-
-function deriveInstallCommand(entry: Entry): string {
-	return entry.type === 'repo' ? `npx skills add ${entry.repo}` : `npx skills add ${entry.repo} --skill ${entry.skill}`
-}
 
 export function renderAwesomeListMarkdown(entries: Entry[]): string {
 	const sections: string[] = ['## Awesome Skills', '']
