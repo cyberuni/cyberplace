@@ -10,8 +10,8 @@ todos:
     status: completed
   - content: "impl gate: sdd-impl-judge IMPLEMENTATION_PASS (no code change; Step 4 already satisfies); ledger seq3"
     status: completed
-  - content: "handoff: pnpm verify; stacked PR base sdd-handoff-pr-closes-ref; residual coverage-gap filed as follow-up"
-    status: pending
+  - content: "handoff: pnpm verify 19/19; #130 merged mid-flight -> rebased onto main, PR #134 (base main); residual coverage-gap surfaced as follow-up"
+    status: completed
 ---
 
 # CR handoff-tighten-merged-pr — tighten the frozen merged-PR scenario's Given
