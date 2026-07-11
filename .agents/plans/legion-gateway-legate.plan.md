@@ -8,8 +8,8 @@ todos:
     status: completed
   - content: "impl gate: cold aced-impl-judge PASS 24/24; deliver = fail-loud guard + result-file reconcile committed; ledger gate:impl approve by:unional"
     status: completed
-  - content: "handoff: pnpm verify, no changeset (plugin is marketplace-distributed), push branch legion-gateway-legate + PR; follow-up CR = untested subagent|channel seam scenario"
-    status: in_progress
+  - content: "handoff: pnpm verify green, no changeset (marketplace plugin), rebased on main + pushed, PR #132 open; follow-up CR = untested subagent|channel seam scenario"
+    status: completed
 ---
 
 # CR legion-gateway-legate (CR-5) — freeze the Legate routing-brain spec
@@ -63,9 +63,11 @@ malformed def (interactive ⇒ must be warm; cold one-shot ⇒ must not be inter
 
 ## NEXT — resume here
 
-Spec gate DONE (frozen, ledger `gate:spec approve by:unional`, root stays draft). **Impl gate next:**
-spawn the cold `aced-impl-judge` to verify the shipped skills (`dispatch-governance`,
-`subagent-backend-governance`, `relay-governance`, `headless-legate` agent) — including the new
-fail-loud guard — against the frozen `dispatch.feature` (24 scenarios). On PASS, present impl gate
-for ratification (leash auto-none), then handoff: `pnpm verify`, changeset if the marketplace plugin
-build cares, land branch + PR, follow-up = the untested `subagent|channel` seam scenario.
+**MISSION COMPLETE — PR #132 open.** Both gates ratified (spec + impl, `by:unional`), 3 commits on
+branch `legion-gateway-legate` rebased on origin/main, `pnpm verify` green (19/19), pushed.
+
+**Remaining, not blocking:**
+- **Await merge of PR #132**, then retire this brief at doctrine distillation.
+- **Follow-up CR** (unfiled): freeze the `subagent | channel` seam's "never pin a command name" half
+  as a testable scenario (spec-judge flagged it consumer-coupling, out of dispatch/'s own surface).
+- Formation pass due corpus-wide (on-demand via `sdd:manage`) — not gated on.
