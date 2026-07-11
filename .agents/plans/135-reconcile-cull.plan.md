@@ -3,15 +3,15 @@ name: 135-reconcile-cull
 status: active
 todos:
   - content: "explore: draft registry.feature additions (listPanes contract, reconcile cull, mux-scoped/standing/pane-null guards, who --reconcile wiring)"
-    status: in_progress
+    status: completed
   - content: "spec gate: freeze additive scenarios on unit/registry"
-    status: pending
+    status: completed
   - content: "deliver: listPanes on SessionAdapter (herdr+tmux), reconcile(ctx) in identity.ts, wire who --reconcile + prune"
-    status: pending
-  - content: "impl gate: cold impl-judge pass per frozen scenario"
-    status: pending
+    status: completed
+  - content: "impl gate: cold impl-judge pass per frozen scenario (9/9 PASS)"
+    status: completed
   - content: "handoff: pnpm verify, commit, push, PR"
-    status: pending
+    status: in_progress
 ---
 
 # CR 135-reconcile-cull — cull half of reconcile-against-mux
