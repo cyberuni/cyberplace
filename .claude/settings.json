@@ -1,4 +1,7 @@
 {
+  "env": {
+    "CYBERLEGION_HOOK_PRIMARY_FALLBACK": "1"
+  },
   "permissions": {
     "allow": [
       "Bash(pnpm vitest *)",
