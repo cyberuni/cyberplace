@@ -11,12 +11,12 @@ todos:
     status: completed
   - content: "Promote harness-spawning.md ADR-0023 seam intent-only -> wired; README concern+prose"
     status: completed
-  - content: "Spec gate: cold spec-judge (iterating fixes), freeze touched .feature, ledger gate line"
+  - content: "Spec gate: cold spec-judge ALIGNED (1 fix round), features self-clear frozen, ledger gate line"
+    status: completed
+  - content: "Deliver: skill edits (start-mission SKILL + sdd-automaton) + cold impl-judge APPROVE"
+    status: completed
+  - content: "Handoff: impl gate ratified (by:unional), PR to main, /new"
     status: in_progress
-  - content: "Deliver: build-to-keep skill edits (start-mission/handoff) + impl gate"
-    status: pending
-  - content: "Handoff: finalize placement, land, issue /new"
-    status: pending
 ---
 
 # CR: wire SDD workflow with cyberlegion dispatch
