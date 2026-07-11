@@ -6,7 +6,7 @@ import { output, printTable } from '../output.js'
 import { realPinFs, resolveSkillsDir } from '../pin/fs.js'
 import type { BundlePin } from './bundle.js'
 import { bundlePins } from './bundle.js'
-import { discoverWorkspace, realVersionSource } from './fs.js'
+import { discoverWorkspace, realVersionSource, writePinsMap } from './fs.js'
 
 const TRUNCATE_THRESHOLD = 20
 const NEXT_STEP = '→ review and commit the pinned skills\n'
@@ -37,6 +37,8 @@ export function bundleCommand(): Command {
 				const versionSource = realVersionSource(discoverWorkspace(root))
 
 				const result = bundlePins(pinFs, versionSource, { dryRun: opts.dryRun })
+
+				if (!opts.dryRun) writePinsMap(root, result.pins)
 
 				for (const warning of result.warnings) {
 					process.stderr.write(`warn: ${warning}\n`)

@@ -173,6 +173,51 @@ test('plugin bundle leaves an external pin untouched', () => {
 	}
 })
 
+// Scenario: bundle writes a .plugin/pins.json map of resolved workspace versions
+test('plugin bundle writes .plugin/pins.json mapping resolved workspace versions', () => {
+	const root = mkBundleFixture('universal-plugin-bundle-pinsmap-')
+	try {
+		writeWorkspacePkg(root, 'cyberplace', '0.1.0')
+		writeSkill(root, 'x/SKILL.md', 'npx cyberplace@0.0.9')
+		const result = runBundle(root)
+		expect(result.status).toBe(0)
+		const pins = JSON.parse(fs.readFileSync(path.join(root, '.plugin', 'pins.json'), 'utf8'))
+		expect(pins.cyberplace).toBe('0.1.0')
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
+})
+
+// Scenario: --dry-run does not write .plugin/pins.json
+test('plugin bundle --dry-run does not write .plugin/pins.json', () => {
+	const root = mkBundleFixture('universal-plugin-bundle-pinsmap-dry-')
+	try {
+		writeWorkspacePkg(root, 'cyberplace', '0.1.0')
+		writeSkill(root, 'x/SKILL.md', 'npx cyberplace@0.0.9')
+		const result = runBundle(root, '--dry-run')
+		expect(result.status).toBe(0)
+		expect(fs.existsSync(path.join(root, '.plugin', 'pins.json'))).toBe(false)
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
+})
+
+// Scenario: an external package is excluded from the pins map
+test('plugin bundle excludes an external package from .plugin/pins.json', () => {
+	const root = mkBundleFixture('universal-plugin-bundle-pinsmap-ext-')
+	try {
+		writeWorkspacePkg(root, 'cyberplace', '0.1.0')
+		writeSkill(root, 'x/SKILL.md', 'npx cyberplace@0.0.9\nnpx gherkin-cli@0.0.1')
+		const result = runBundle(root)
+		expect(result.status).toBe(0)
+		const pins = JSON.parse(fs.readFileSync(path.join(root, '.plugin', 'pins.json'), 'utf8'))
+		expect(pins.cyberplace).toBe('0.1.0')
+		expect(pins['gherkin-cli']).toBeUndefined()
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
+})
+
 // Scenario: --dry-run reports resolved pins without writing them
 test('plugin bundle --dry-run reports without writing', () => {
 	const root = mkBundleFixture('universal-plugin-bundle-dryrun-')

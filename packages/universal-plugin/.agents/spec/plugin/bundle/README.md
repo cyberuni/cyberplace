@@ -49,7 +49,13 @@ output per the AXI contract:
   for concrete-looking pins; no pins row is emitted for a package inside a pin-exempt skill.
 - **External pins skipped** — a pin for a package with **no workspace entry** is left untouched with
   status `skipped`; there is no local version to resolve and `bundle` never falls back to guessing.
-- **`--dry-run`** — resolves and reports the pins without writing them.
+- **Version-map artifact** — alongside the skill rewrites, `bundle` writes `<root>/.plugin/pins.json`,
+  a flat `{ "<package>": "<resolvedVersion>" }` map of the workspace-resolved pins (`pinned` +
+  `unchanged`), so a bundled plugin's skills can read the shipped version programmatically — e.g. an
+  init skill via `${CLAUDE_PLUGIN_ROOT}/.plugin/pins.json` — instead of scraping rewritten prose.
+  External/`skipped` packages are excluded (no authoritative workspace version).
+- **`--dry-run`** — resolves and reports the pins without writing them (neither the skill files nor
+  `.plugin/pins.json`).
 - **AXI output** — `bundle` prints a TOON pins section to stdout, one row per package
   (`package, current, resolved, status` where status ∈ `pinned | unchanged | skipped`), plus a
   pre-computed aggregate `pinned N, unchanged M, skipped K`; `--format json` returns a `pins` array;
@@ -59,7 +65,8 @@ output per the AXI contract:
   flags with a synopsis and one example.
 
 **Non-goals** — deriving vendor manifests ([`plugin build`](../build/README.md) owns that; `bundle`
-touches only skill pins, not `.plugin/plugin.json` or the vendor outputs); resolving pins against a
+does not rewrite the `.plugin/plugin.json` manifest or the vendor outputs — its only writes are the
+skill pins plus the generated `.plugin/pins.json` sibling); resolving pins against a
 **registry** (that was `build`'s old model — off by one at release — and is retired, not moved here);
 crossing a major boundary or styling ranges (the workspace version is taken verbatim); the **builder
 automation** that runs `build` on edit and guards the committed form (a separate concern); the root
@@ -78,7 +85,8 @@ Every scenario in [`bundle.feature`](./bundle.feature) maps to one of these beha
 | **best-effort broken entry** | unreadable workspace `package.json` warns + skips, exit 0 |
 | **doc-example ignore** | pin-exempt skill never rewritten (concrete or placeholder, workspace or not); no pins row |
 | **external pins skipped** | no workspace entry → left untouched, status `skipped` |
-| **`--dry-run`** | reports resolved pins without writing |
+| **version-map artifact** | writes `.plugin/pins.json` (workspace-resolved `{pkg: version}`); excludes external/`skipped`; `--dry-run` skips it |
+| **`--dry-run`** | reports resolved pins without writing (skill files or `.plugin/pins.json`) |
 | **TOON pins + aggregate (#1,#2,#4)** | pins rows (`package, current, resolved, status`) + `pinned N` aggregate |
 | **`--format json` / `--format toon`** | JSON `pins` array; `--format toon` names the default |
 | **truncation / `--full`** | large list truncates with a hint; `--full` shows all |

@@ -1,6 +1,6 @@
 import * as fsNode from 'node:fs'
 import * as path from 'node:path'
-import type { VersionSource } from './bundle.js'
+import type { BundlePin, VersionSource } from './bundle.js'
 
 const DEFAULT_GLOBS = ['packages/*']
 
@@ -93,6 +93,22 @@ export function discoverWorkspace(root: string): Map<string, string | undefined>
 	}
 
 	return map
+}
+
+/** Writes `<root>/.plugin/pins.json` — a flat, key-sorted `{ "<package>": "<resolvedVersion>" }`
+ *  map of the workspace-resolved pins (`pinned` + `unchanged`), so a bundled plugin's skills can read
+ *  the shipped version programmatically (e.g. `${CLAUDE_PLUGIN_ROOT}/.plugin/pins.json`). External /
+ *  `skipped` packages are excluded — they have no authoritative workspace version. */
+export function writePinsMap(root: string, pins: BundlePin[]): void {
+	const map: Record<string, string> = {}
+	for (const pin of pins) {
+		if (pin.status === 'pinned' || pin.status === 'unchanged') map[pin.package] = pin.resolved
+	}
+	const sorted: Record<string, string> = {}
+	for (const key of Object.keys(map).sort((a, b) => a.localeCompare(b))) sorted[key] = map[key]!
+	const dir = path.join(root, '.plugin')
+	fsNode.mkdirSync(dir, { recursive: true })
+	fsNode.writeFileSync(path.join(dir, 'pins.json'), `${JSON.stringify(sorted, null, 2)}\n`)
 }
 
 export function realVersionSource(workspace: Map<string, string | undefined>): VersionSource {
