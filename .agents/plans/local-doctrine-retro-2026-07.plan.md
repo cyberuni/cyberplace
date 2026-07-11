@@ -10,10 +10,10 @@ todos:
     status: completed
   - content: "Council decision: A (extend pre-judge engine) + B (durable combat-log footprint) KEPT; H + I recommended cut"
     status: completed
-  - content: "open CR A — RE-SCOPED: scenario-step-level structural diff (d1 follow-up #1); brief sdd-scenario-step-diff. use-case-row check already landed in d1 (f1a1eda0)"
-    status: in_progress
-  - content: "open CR for B — require a durable combat-log line (matchable cause) for in-session missions"
-    status: pending
+  - content: "CR A — scenario-step-level structural diff — SHIPPED as sdd-scenario-step-diff (both gates PASS; classify-edit-class.mts)"
+    status: completed
+  - content: "CR B (durable combat-log footprint) — NO CR: the correction-line discipline already shipped via d2-correction-line-durability (frozen conductor.feature + combat-log-governance). CUT the footprint reinforcement cluster as stale"
+    status: completed
   - content: "Council decision on the still-pending clusters C, D, E, F, G"
     status: pending
   - content: "push branch chore/doctrine-distill-retire-plans + open PR (distill + retirement commits)"
@@ -44,13 +44,22 @@ Branch `chore/doctrine-distill-retire-plans` (off `main`, **unpushed**), two com
      assertion (d1's own round-1 bug). Fix: diff at the **per-named-Scenario step level** in the
      `gherkin-cli diff` consumers (the freeze/additive machinery). Follow-up #2 stays a SEPARATE CR.
 
-2. **Open CR B** via `start-mission` against `.agents/specs/sdd`: **durable combat-log footprint** —
-   in-session / self-asserted missions currently write no `*.log.jsonl`; judge-iteration corrections
-   get folded into the gate `why` prose instead of a discrete `correction` line with a matchable
-   `cause`, starving the doctrine loop's stated PRIMARY input. Evidence: this retro found only 8 of 34
-   briefs kept a log. Ledger reinforcements: `.agents/specs/sdd/ledger/` shards `strategy.317dd8` seq2,
-   `strategy.7668d1` seq1, `strategy.acaa41` seq2, `strategy.ba6a39` seq2. Decide the minimum footprint
-   (a discrete correction line per in-session mission, cause enum enforced).
+2. **CR B — NO CR TO OPEN. Already shipped; CUT the footprint reinforcement cluster.** The reframed
+   ask (a discrete `correction` line with matchable `cause` when a producer changes an artifact in
+   response to a gate/judge iteration; no change ⇒ no correction line) is **already the standing,
+   frozen, implemented discipline** — do not open a mission, it produces an empty diff.
+   - **Shipped by `d2-correction-line-durability`:** `154aff3b` (spec) + `5f69f2f2` (realize in the
+     conductor governance); spec gate ALIGNED, impl gate IMPLEMENTATION_PASS (all 5 frozen scenarios).
+   - **Frozen scenarios** in `mission/conductor/conductor.feature` (lines ~419–442): discrete
+     correction line on a judge-iteration self-assert; written **before** the gate `why`; a **clean
+     gate appends none**; finalize backstop flushes an unflushed correction; **no minimum-footprint
+     line** is forced. Contract in `common-governances/combat-log/README.md` + `combat-log-governance/SKILL.md:134`.
+   - **CUT** the stale reinforcement lines `strategy.317dd8` seq2, `strategy.7668d1` seq1,
+     `strategy.acaa41` seq2, `strategy.ba6a39` seq2 — they re-draft an already-shipped discipline
+     (drift/staleness). Cut = leave unratified, no corpus action. The earlier "durable combat-log
+     footprint" reading conflated the *bare footprint line* (which reconcile-forward-footprint shipped
+     as an existence guard, and which does not feed doctrine consumption) with the *cause-tagged
+     correction line* (which d2 shipped) — both halves are done.
 
 3. **Council decision on the still-pending clusters** (undecided this session — see
    `## Strategy review verdicts`):
