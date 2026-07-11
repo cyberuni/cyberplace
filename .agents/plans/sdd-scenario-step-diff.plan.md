@@ -8,12 +8,12 @@ todos:
     status: completed
   - content: "spec gate: cold sdd-spec-judge ALIGNED round 2 (round 1 FAIL reframed); gate approve recorded (shard b7f3a2), .feature stays @frozen"
     status: completed
-  - content: "deliver: implement the scenario-step-level diff / fail-closed pre-judge check; one verification per frozen scenario"
-    status: pending
-  - content: "impl gate: cold sdd-impl-judge; advance status on all-pass"
-    status: pending
-  - content: "handoff: root pnpm verify, land, keep combat log"
-    status: pending
+  - content: "deliver: built classify-edit-class.mts (structural per-scenario diff + git rename) + 11 tests bound to the 7 frozen scenarios + SKILL routing prose + explicit gate run step"
+    status: completed
+  - content: "impl gate: cold sdd-impl-judge — all 7 frozen scenarios PASS, exercise-backstop verified, no regression; impl approve recorded (shard b7f3a2 seq3)"
+    status: completed
+  - content: "handoff: land the deliver commit; then root pnpm verify. FOLLOW-UP (strategist OBS, non-blocking): scenario-2 title 'classified as a narrowing' vs its Then 'modified/not-additive' diverge now mixed is a real bucket — retitle on a future ADDITIVE pass (title-only, no re-open)"
+    status: in_progress
 ---
 
 # CR A — scenario-step-level structural diff (freeze/pre-judge integrity)
