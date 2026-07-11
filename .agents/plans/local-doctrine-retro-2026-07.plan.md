@@ -10,8 +10,8 @@ todos:
     status: completed
   - content: "Council decision: A (extend pre-judge engine) + B (durable combat-log footprint) KEPT; H + I recommended cut"
     status: completed
-  - content: "open CR for A — extend check-spec-state.mts with use-case-row-has-scenario + per-scenario assertion-diff"
-    status: pending
+  - content: "open CR A — RE-SCOPED: scenario-step-level structural diff (d1 follow-up #1); brief sdd-scenario-step-diff. use-case-row check already landed in d1 (f1a1eda0)"
+    status: in_progress
   - content: "open CR for B — require a durable combat-log line (matchable cause) for in-session missions"
     status: pending
   - content: "Council decision on the still-pending clusters C, D, E, F, G"
@@ -30,18 +30,19 @@ Branch `chore/doctrine-distill-retire-plans` (off `main`, **unpushed**), two com
 
 ## NEXT — resume here
 
-1. **Open CR A** via `start-mission` against `.agents/specs/sdd`: **extend the existing pre-judge
-   mechanical engine** (`check-spec-state.mts` in the `spec-gate` skill) — it is NOT a new phase. The
-   engine already ships `referenced-artifact-exists` and already runs in both places (spec-producer
-   self-run per `spec-producer-governance` step 5 + `spec-gate` fail-closed pre-filter). Two checks
-   remain to add, same dual wiring:
-   - **use-case-row-has-scenario** — a `## Use Cases` entry-point row with no backing scenario.
-     Largely = finish/merge the kept `d1-pre-judge-semantic-checks` plan (its exact subject; unmerged
-     on branch). Reconcile against that plan before authoring, don't duplicate it.
-   - **per-scenario assertion-count / step-identity diff** — catch an Edit that silently reassigns a
-     frozen scenario's step onto an adjacent/new scenario (invisible to a line-diff). Source:
-     `.agents/specs/sdd/ledger/strategy.dae416.jsonl` seq1.
-   Frame the CR as "extend the pre-judge engine," not "add a pre-judge phase."
+1. **CR A — RE-SCOPED (Council-approved 2026-07): scenario-step-level structural diff only.** Brief:
+   `.agents/plans/sdd-scenario-step-diff.plan.md`. Target `.agents/specs/sdd` (spec-gate authoring node)
+   + impl `plugins/sdd/skills/spec-gate/scripts/`.
+   - **Reconciliation (corrects this brief's earlier stale-cache premise):** d1 (`f1a1eda0`, on `main`)
+     ALREADY landed `referenced-artifact-exists`, the **use-case-row→scenario** coverage check, and the
+     **sibling-prose sweep** in `plugins/sdd/skills/spec-gate/scripts/check-spec-state.mts` (+147 lines).
+     The earlier reading came from a stale plugin *cache*; the repo source is ahead. Those checks are DONE.
+   - **Real remaining work = d1's routed follow-up #1**, which `strategy.dae416` seq1 independently
+     rediscovered (same root cause): the additive-self-clear **freeze classifier** and the pre-judge
+     check both key on **raw git line-diff**, which a context-line reassignment fools — a trailing step
+     orphaned onto a new/adjacent scenario shows no `-` line, so a frozen scenario silently loses an
+     assertion (d1's own round-1 bug). Fix: diff at the **per-named-Scenario step level** in the
+     `gherkin-cli diff` consumers (the freeze/additive machinery). Follow-up #2 stays a SEPARATE CR.
 
 2. **Open CR B** via `start-mission` against `.agents/specs/sdd`: **durable combat-log footprint** —
    in-session / self-asserted missions currently write no `*.log.jsonl`; judge-iteration corrections
