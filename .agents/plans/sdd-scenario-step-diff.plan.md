@@ -12,8 +12,8 @@ todos:
     status: completed
   - content: "impl gate: cold sdd-impl-judge — all 7 frozen scenarios PASS, exercise-backstop verified, no regression; impl approve recorded (shard b7f3a2 seq3)"
     status: completed
-  - content: "handoff: land the deliver commit; then root pnpm verify. FOLLOW-UP (strategist OBS, non-blocking): scenario-2 title 'classified as a narrowing' vs its Then 'modified/not-additive' diverge now mixed is a real bucket — retitle on a future ADDITIVE pass (title-only, no re-open)"
-    status: in_progress
+  - content: "handoff: deliver landed (79d1d251); root pnpm verify 19/19 GREEN. MISSION COMPLETE through both gates. FOLLOW-UP (strategist OBS, non-blocking): scenario-2 title 'classified as a narrowing' vs its Then 'modified/not-additive' diverge now mixed is a real bucket — retitle on a future ADDITIVE pass (title-only, no re-open)"
+    status: completed
 ---
 
 # CR A — scenario-step-level structural diff (freeze/pre-judge integrity)
