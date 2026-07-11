@@ -2,18 +2,18 @@
 name: sdd-retire-no-log-branch
 status: active
 todos:
-  - content: "explore: RECONCILED — retirement gate keys solely on `distills` (never written by real strategy) and has no no-log branch, so the mechanical sweep is inoperative; scope = add the 'no combat log on disk ⇒ nothing to distill ⇒ retire' branch (DONE — see The reconcile)"
+  - content: "explore: RECONCILED — gate keyed solely on `distills` (never written) + no no-log branch; scoped to add the 'no combat log ⇒ nothing to distill ⇒ retire' branch (DONE)"
+    status: completed
+  - content: "author spec: additive scenario on plan-retirement.feature (plan.md present, NO log.jsonl, no distills ⇒ retired) + README use-case row + clearance-boundary prose; reconciled provenance-model.md carve-out; stays @frozen (1 added/0 mod/0 removed, self-clears) — commit a2d4d47b"
+    status: completed
+  - content: "spec gate: cold sdd-spec-judge ALIGNED (oracle/builder/architect PASS), no judge iteration; approve recorded (shard 216cab seq2)"
+    status: completed
+  - content: "deliver: retire-plans.mts discoverLogs + predicate present&&(distilled||!logPresent), missing-ledger still skips all; 30/30 tests; skill SKILL.md+README.md synced — commit f4f6bc77"
+    status: completed
+  - content: "impl gate: cold sdd-impl-judge IMPLEMENTATION_PASS (11/11 frozen scenarios); approve recorded (shard 216cab seq3)"
+    status: completed
+  - content: "handoff: root pnpm verify 19/19 GREEN; both gates passed. PENDING: push + PR (awaiting user, per CR A pattern). Combat log kept (none written — clean-pass, no judge iteration, per d2)."
     status: in_progress
-  - content: "author spec: additive scenario(s) on plan-retirement.feature (cleared + plan.md present + NO log.jsonl + no distills ⇒ retired) + README use-case row; stays @frozen (additive, self-clears)"
-    status: pending
-  - content: "spec gate: cold sdd-spec-judge over the touched plan-retirement node"
-    status: pending
-  - content: "deliver: retire-plans.mts predicate → planPresent && (distilled || !logPresent); one test per new frozen scenario"
-    status: pending
-  - content: "impl gate: cold sdd-impl-judge"
-    status: pending
-  - content: "handoff: root pnpm verify, land, keep combat log"
-    status: pending
 ---
 
 # CR B — retirement-gate no-log branch (re-scoped from "durable combat-log footprint")
@@ -85,21 +85,23 @@ explicit enough to add against safely.)
 
 ## NEXT — resume here
 
-1. Author additively against `.agents/specs/sdd/doctrine/plan-retirement/`:
-   - `plan-retirement.feature`: a new scenario — *a cleared cr-ref whose plan.md exists but whose
-     log.jsonl does NOT exist, with no distilling strategy, is still retired (nothing to distill) —
-     its plan.md deleted.* Contrast it explicitly with the frozen `:22` (both files present ⇒
-     fail-closed). Consider a second guard scenario if the judge wants the source-uncleared no-log
-     case pinned (likely already covered by the frozen "did not clear" scenario at `:64`).
-   - `README.md`: add a Use Cases row for the no-log branch; refine the "distilled-gate, mechanical"
-     row + *The clearance boundary* prose to say the fail-closed applies **when a combat log exists**
-     (align sibling prose to the new scenario — a d1-style check would want this).
-2. Spec gate: cold `sdd-spec-judge`. `.feature` stays `@frozen` (additive self-clear).
-3. Deliver: `plugins/sdd/skills/plan-retirement/scripts/retire-plans.mts` — thread a `logPresent`
-   set (glob `*.log.jsonl` like `discoverPlans` globs `*.plan.md`) into `decideRetirements`, predicate
-   `planPresent && (distilled || !logPresent)`; add one `retire-plans.test.mts` case per new frozen
-   scenario. Update the `plan-retirement` + `doctrine-loop` SKILL prose if either restates the gate.
-4. Impl gate: cold `sdd-impl-judge`. Then handoff: root `pnpm verify`, land, keep the combat log.
+**Mission complete through both gates.** Commits on branch `sdd-retire-no-log-branch`:
+`9475fcc5` (re-scope) → `a2d4d47b` (spec gate) → `f4f6bc77` (impl gate). Root `pnpm verify` 19/19.
+
+1. **Push + PR** — pending user go (CR A's pattern was to push+PR after both gates). Then land.
+2. **Follow-up CRs surfaced this mission (NOT built here):**
+   - **`distills` is never written even for distilled missions with a log.** No `strategy` line in
+     any ledger carries `distills`; the Scanner drafts reinforcement/milestone strategy that omits it
+     (only Ship/Kill set it). So the mechanical gate still can't retire a *with-log* mission that was
+     distilled via a reinforcement line. A doctrine-loop **write-discipline** CR: does the Scanner
+     reliably set `distills` on a Ship/Kill distillation? (Keep the with-log gate fail-closed — that
+     is correct pressure toward the hook.)
+   - **Plan-brief drift** (`strategy.ba6a39` seq2): a concluded mission can leave its brief
+     `status:active` / todo `in_progress` while its work merged. Terminal-state hygiene + a drift
+     check on the tracked brief. Small separate CR.
+3. **Doctrine C–G decisions still pending Council** (from `local-doctrine-retro-2026-07`): C (the
+   `plugins/sdd-new` path — likely stale-cache only, verify), D (cause-enum growth), E (gate-role
+   naming), F (resolve-governances SDD self-nodes), G (cyberlegion Warden nudge).
 
 ## Guardrails carried
 
