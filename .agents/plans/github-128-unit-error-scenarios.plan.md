@@ -12,9 +12,9 @@ todos:
   - content: "spec gate: cold spec-judge, freeze self-clears (additive), record gate line"
     status: completed
   - content: "deliver: impl-producer adds one verification per new scenario (no production code change)"
-    status: pending
+    status: completed
   - content: "impl gate: cold impl-judge; advance to implemented"
-    status: pending
+    status: completed
   - content: "handoff: PR with Closes #128, mail operator"
     status: pending
 ---
