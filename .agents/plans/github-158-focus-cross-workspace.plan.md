@@ -16,7 +16,7 @@ todos:
   - content: "impl gate: cold impl-judge; root pnpm verify; advance to implemented"
     status: completed
   - content: "handoff: PR with Closes #158, mail legate"
-    status: pending
+    status: completed
 ---
 
 # github-158 — unit focus beams across workspace/tab, not just the current pane
