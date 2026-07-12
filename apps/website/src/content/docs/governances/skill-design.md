@@ -17,7 +17,7 @@ Encode what to decide and how. Do not repeat generic best practices or facts the
 
 One workflow per skill. User-facing skills match a situation; sub-skills are called explicitly by other skills.
 
-- Sub-skills prefix the `description` with `"Internal skill:"` to avoid accidental activation.
+- Partial skills (sub-skills a caller invokes by name) set `user-invocable: false` and lead the `description` with the `"Partial Skill:"` prefix to avoid accidental activation.
 - Neither type should be loaded as ambient context.
 
 ### No baked-in opinions

@@ -33,7 +33,7 @@ Encode what to decide and how. Do not repeat generic best practices, API docs, o
 
 One workflow per skill. User-facing skills match a situation; sub-skills are called explicitly by other skills.
 
-- Sub-skills have no situational trigger — prefix the `description` with `"Internal skill:"` and name the caller (e.g. `"Internal skill: called by improve-skill."`) to avoid accidental activation.
+- **Partial skills** (sub-skills — a reusable part of a larger capability, loaded or invoked **by name** by another skill, never matched to a user situation) have no situational trigger. Set `user-invocable: false` (the classifier) and lead the `description` with the `"Partial Skill:"` prefix, naming the caller — recommended form `"Partial Skill: invoke by name only — <identity>. <caller>."` (e.g. `"Partial Skill: invoke by name only — the skill-audit engine, invoked by improve-skill."`). The prefix is a self-declaration for the reader, not a harness mechanism: a partial skill stays `disable-model-invocation: false` so its caller can invoke it by name, so keep the description minimal and non-trigger-shaped to avoid accidental model activation.
 - Neither type should be loaded as ambient context.
 
 ### No baked-in opinions
