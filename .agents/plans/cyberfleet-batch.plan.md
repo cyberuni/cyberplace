@@ -54,11 +54,6 @@ barrier); ordering only at **Operation-coherent retirement**.
   reference only (they validated the model: dep-DAG, discovered-from, cycle-reject, `ready`).
 - Target project spec: `packages/cyberfleet/.agents/spec`? — **REVISIT: placement moved to SDD**, so the
   node likely lives under `.agents/specs/sdd` (confirm exact node at spec time via discover-specs).
-- **Status authority**: the DAG log owns scheduling state (open/claimed/retired); the plan brief keeps
-  the detail layer + the human dispatch clearance (`approved`) — different axes; log wins on conflict;
-  a stale brief = plan-retirement sweep debt.
-- **Log writes are trunk-side**: in-flight discoveries reach the log via the existing relay (mission
-  reports → trunk-side session appends); v1 unaffected (conductor authors trunk-side).
 
 ## v1 carve = the self-hosting kernel (dogfood)
 
