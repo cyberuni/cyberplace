@@ -436,9 +436,21 @@ Store shape (SDD-native, per-repo):
   design), referencing their node id. Retired missions persist in the graph as history, no brief.
 - **WAW/WAR NOT stored** — computed from touch-sets at ready-time (only ever over the small active
   frontier).
-- **Engine** (`.mts`, zero-dep): fold the store → reject cycles at write; compute ready-set
-  (transitive blocking + WAW-mutex from touch-sets); emit live frontier. beads' `ready`/`cycles`
-  primitives reimplemented at our scale.
+- **Engine** (`.mts`, zero-dep): fold the store → compute ready-set (transitive blocking + WAW-mutex
+  from touch-sets); emit live frontier. beads' `ready`/`cycles` primitives reimplemented at our scale.
+- **Cycles — write-guard + fold-time quarantine (never crash).** A cycle means the *decomposition* is
+  wrong (two missions mutually depend ⇒ neither is independently deliverable ⇒ bad cut) — a signal to
+  surface, not merely refuse. Three layers: (1) **write-time guard** — best-effort reject an edge that
+  closes a cycle against the graph-so-far (cheap, immediate), overridable when recording a genuinely
+  discovered mutual dependency; (2) **fold-time contract** — the fold **never fails**; a cycle in the
+  reduced graph quarantines every mission on it (`blocked-by-cycle`, excluded from `ready`; dependents
+  are already transitively blocked) and surfaces it as a **repair item** in `ready` + `cycles`
+  (deterministic SCC pass, trivial at 1k); (3) **repair = re-lowering**, recorded as an append — fuse
+  the cycle's missions (operator fusion) or retract the offending edge, at the normal intake/Explore
+  touchpoints (the same timing as every graph mutation).
+- **Tombstone/retract event kind.** Append-only can't delete, so edge-retraction and mission-fusion
+  need a **tombstone event** the fold honors (skip the retracted edge/node). A schema primitive from
+  **v1** (cheap now, painful to retrofit) — one mechanism serving cycle-repair and any later re-cut.
 - **At 1k the back-end can be lavish** — whole-graph / naive O(n²) analysis is cheap; no incremental
   algorithms, caches, or indexes needed. Simple fold-and-walk.
 
@@ -553,12 +565,14 @@ Dogfooding *decides* the carve by asking: what is the minimal kernel that lets i
 **v1 = the self-hosting kernel:**
 - **Store** — the git-tracked mission graph (**in-tree files**, single writer ⇒ no sharding):
   nodes = Operations/Missions, edges = RAW deps + parent-child, status, **declared node-level
-  `touch-set`** (the spec-nodes a mission writes — hand-authored in v1). General schema (not overfit
-  to our project). (F3 moves it to the `sdd/mission-graph` orphan ref behind the SDD engine's git-access seam.)
+  `touch-set`** (the spec-nodes a mission writes — hand-authored in v1), + a **tombstone/retract**
+  kind (edge/node removal for re-cut). General schema (not overfit to our project). (F3 moves it to
+  the `sdd/mission-graph` orphan ref behind the SDD engine's git-access seam.)
 - **`ready` + `cycles`** — a zero-dep `.mts` engine: fold the store → the frontier (`ready`), including
   the **node-level WAW-mutex**: a candidate whose declared touch-set intersects an in-flight mission's
-  is held back (serialize at issue; soft downgrades arrive with the finer ladder, deferred). Reject
-  cycles at write (`cycles`).
+  is held back (serialize at issue; soft downgrades arrive with the finer ladder, deferred). Cycles:
+  best-effort **write-guard** + **fold-time quarantine** (never crash — exclude the cycle, surface a
+  repair item), retraction via a **tombstone** event. All three are v1.
 - **Manual node authoring** — the conductor writes nodes/edges/touch-sets by hand (frontmatter/append)
   during intake/Explore. No automation.
 
@@ -595,10 +609,13 @@ against the live graph as an on-demand audit.
   provisional forward view (pinned tie-break, e.g. by mission ref). The graph is dynamic between snapshots.
 - **Scheduling state is read from the graph, not the brief** — the graph is authoritative; brief
   existence never implies "not retired."
+- **The fold never fails on a cyclic graph** — cycle members are quarantined out of `ready` and
+  surfaced as repair items; edge/mission retraction is an append (tombstone), never an in-place delete.
 - Every declared Operation capstone's closure is **dependency-closed**; non-closed capstones flagged.
 - **Retire order is Operation-coherent** (trunk stays deployable); issue order is barrier-free.
 - Forward view is marked **provisional**, with commitment decaying over the horizon.
-- Read-only, zero side effects, pure derivation (the deterministic back-end).
+- **The query path is read-only** (`ready`/`cycles` derive with zero side effects); the write path is
+  separate — it appends events (nodes/edges/status/tombstones) and runs the best-effort write-time guard.
 - Conservative on low-confidence touch-sets (file-only tier ⇒ treat same-file as hard/needs-review).
 
 ## Limitations / non-goals / feasibility caveats
@@ -680,6 +697,10 @@ against the live graph as an on-demand audit.
   deferred): the mission loop ends at handoff→PR; the lifecycle loop merges (Operation-order), tears
   down the pod, writes the graph, dispatches next. Single graph writer; missions **report**, the
   owner **writes** (in-flight discoveries ride the existing relay). v1 runs none of it (F3 concern).
+- **Cycle handling** (all v1) = write-guard + fold-time quarantine + tombstone: a cycle = a bad
+  decomposition (mutual dep) to surface, not just refuse; the fold never crashes — it quarantines the
+  cycle out of `ready` and surfaces a repair item; re-cut/retract is a **tombstone** append (no
+  in-place delete). Repair rides the normal intake/Explore touchpoints.
 
 ## Open (next)
 - **Finer-than-node granularity mechanism** — how the optional file-region/symbol check downgrades

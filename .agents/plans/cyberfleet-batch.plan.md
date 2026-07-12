@@ -10,7 +10,7 @@ todos:
     status: pending
   - content: "spec gate: cold spec-judge ALIGNED, freeze .feature"
     status: pending
-  - content: "deliver: build the git-tracked mission graph (in-tree files, single-writer, no sharding) + ready/cycles .mts engine + tests"
+  - content: "deliver: build the git-tracked mission graph (in-tree files, single-writer, no sharding, tombstone kind) + ready/cycles .mts engine (write-guard + fold-time cycle quarantine) + tests"
     status: pending
   - content: "impl gate: cold impl-judge PASS; root pnpm verify"
     status: pending
@@ -73,7 +73,8 @@ Build only the minimum to plan its own remaining work, then self-host:
    (Operations/Missions, RAW+parent-child edges, status, **declared node-level touch-sets**).
 2. **`ready` + `cycles`** — zero-dep `.mts` behind a git-access seam: fold the store → frontier incl.
    the **node-level WAW-mutex** (declared touch-set intersection with an in-flight mission ⇒ held
-   back); reject cycles at write.
+   back); cycles = write-guard + **fold-time quarantine** (never crash, surface repair item) +
+   **tombstone** retract kind.
 3. **Manual node authoring** — conductor (the single writer) writes nodes/edges/touch-sets by hand
    during intake/Explore.
 Then: author the active Operation(s) into the store, amend deferred Operations back into the CR
@@ -101,7 +102,7 @@ acceptance bar at handoff, not a frozen scenario; live-graph checks = state-inde
 ## Open questions
 
 - Exact SDD node + engine surface names; whether Operation-capstone needs a new frontmatter field.
-- Store schema exact fields (keep general, not overfit to this project).
+- Store schema exact fields (keep general, not overfit to this project; tombstone/retract kind settled).
 - Finer semantic rung for non-behavioral prose (governance/reference) — likely "don't descend".
 - F3 store mechanics: the `sdd/mission-graph` orphan-ref read/query/write **SDD engine** (git plumbing
   vs dedicated worktree for the ref) + ledger-shard keying on the mission-ref. (Owner settled = SDD.)
