@@ -50,7 +50,7 @@ This repo's `cyberplace` Claude Code marketplace is a **`directory` source** poi
    ```
    Every `@cyberplace` line must equal HEAD.
 
-4. **Tell the user to restart.** Plugins load only at `claude` **process** startup — `/new` and `/clear` reset the conversation but do NOT reload plugins. The re-pin takes effect only after they fully quit and relaunch the `claude` process.
+4. **Tell the user to run `/reload-plugins`.** This reloads every active plugin's code from disk into the running process — plugins, skills, agents, hooks, and plugin MCP/LSP servers — so the re-pin takes effect without a restart. `/new` and `/clear` do NOT reload plugins; `/reload-skills` only refreshes skill text, not plugin code/agents/hooks. Caveats: if a re-pinned plugin ships an MCP server the reload may invalidate the prompt cache on the next request — pass `/reload-plugins --force` to push it through. A full quit-and-relaunch of the `claude` process is the fallback if `/reload-plugins` misbehaves.
 
 ## Notes
 
