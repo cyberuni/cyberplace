@@ -12,9 +12,9 @@ todos:
   - content: "spec gate: cold spec-judge, freeze self-clears (additive), record gate line"
     status: completed
   - content: "deliver: impl-producer makes focus resolve workspace+tab and drive ws->tab->pane (herdr + tmux)"
-    status: pending
+    status: completed
   - content: "impl gate: cold impl-judge; root pnpm verify; advance to implemented"
-    status: pending
+    status: completed
   - content: "handoff: PR with Closes #158, mail legate"
     status: pending
 ---
@@ -46,10 +46,10 @@ which was test-only), so deliver builds code in both adapters + likely extends
 
 ## NEXT
 
-Spec gate PASSED (cold sdd-spec-judge ALIGNED; addOnly:true freeze self-cleared;
-status: approved). Deliver: dispatch impl-producer to make `SessionAdapter.focus`
-resolve the target pane's workspace_id+tab_id and drive ws->tab->pane (herdr:
-`workspace focus`/`tab focus`; tmux: `switch-client`/`select-window`/`select-pane`),
-with fail-loud when the recorded pane no longer resolves in the backend. Add one
-verification per new frozen scenario. Then rebase onto origin/main, run the impl
-gate (cold impl-judge), root `pnpm verify`.
+Impl gate PASSED (cold sdd-impl-judge IMPLEMENTATION_PASS true; root pnpm verify
+green; status: implemented). Handoff: push branch, open PR (Closes #158), mail
+legate. FOLLOW-UP (flag to Council, do NOT fold into #158): the general
+"SessionAdapter verifies its observable effect or fails loud" rule (cr150 doctrine
+sibling) — focus:true read-back+retry on focus WITH the attach-relative
+no-attached-client no-op scenario, and the same audit on clear. Recorded in
+github-158-focus-cross-workspace.log.jsonl.
