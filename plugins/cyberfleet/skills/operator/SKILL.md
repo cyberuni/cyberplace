@@ -23,9 +23,12 @@ sessions, never in the field.
 
 - When the Council wants to stand up the fleet's first ship (nothing initialized yet) or a new
   peer session from outside any ship: `cyberlegion unit spawn --harness <claude|cursor|codex>
-  --handle <name> --task "<self-contained brief>"` — the brief must stand on its own since the new
-  Pod starts cold and reads it through its own SessionStart hook. Spawning further worktree-ships
-  for parallel work once inside a ship is Pod's job, not Operator's.
+  --handle <name> --task "<self-contained brief>" --at workspace` — the brief must stand on its own
+  since the new Pod starts cold and reads it through its own SessionStart hook, and `--at workspace`
+  opens the ship in its own herdr workspace rather than a pane crowding a neighbor's (a ship is its
+  own worktree and its own workspace — Operator asserts that opinion; the cyberlegion primitive stays
+  neutral). Spawning further worktree-ships for parallel work once inside a ship is Pod's job, not
+  Operator's.
 - When the Council asks what's out there: `cyberlegion unit who` to list the fleet; add `--all`
   to include exited ships.
 - When a message needs to cross ships: `cyberlegion mail send --to <handle>`, `cyberlegion mail
