@@ -25,7 +25,18 @@ Target project spec: `aced` (`.agents/specs/aced/`, implemented). Node:
 Touched file: `plugins/aced/skills/improve-skill/scripts/validate.mts` — deterministic
 engine, SDD-default production chain.
 
-## NEXT — RE-OPENED (design corrected)
+## NEXT — DONE (corrected design shipped to PR #144)
+
+Both gates re-passed on the corrected by-name-callee model: cold SDD spec-judge ALIGNED, cold SDD
+impl-judge APPROVE (54/54 tests; 41-skill migration verified clean repo-wide), `pnpm verify` 19/19,
+`status: implemented`. PR #144 updated. Await review/merge → doctrine-distill → retire plan.
+Deferred follow-up: reconcile `skill-design.md` governance (still frames internal via
+`metadata: internal: true`) + document the "agent-invoked-by-name callee" category + note
+`disable-model-invocation` is unusable here (breaks by-name loading). Note: the default engine scan
+covers `skills`/`.agents/skills`, not `plugins/*/skills/` — the 41 plugin skills aren't CI-gated by
+it today (a separate scan-scope question).
+
+## History — RE-OPENED (design corrected)
 
 User review caught a real flaw: v1 keyed "description is not a trigger" on `user-invocable:false OR
 metadata.internal`, but per Claude Code docs neither suppresses model auto-invocation
