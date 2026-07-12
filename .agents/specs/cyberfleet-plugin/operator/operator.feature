@@ -55,6 +55,13 @@ Feature: operator — the command-center persona
       and reads it through its own SessionStart hook, and addresses it by handle
 
   @behavior
+  Scenario: a commissioned ship opens in its own workspace
+    Given the Council wants a new ship commissioned from outside any ship
+    When Operator runs the spawn
+    Then it passes --at workspace on the cyberlegion unit spawn call, so the new ship opens in its own
+      herdr workspace rather than a pane crowding a neighbor's
+
+  @behavior
   Scenario: Operator does not fan out worktree-ships once inside a ship
     Given parallel work is wanted on a project that is already an initialized ship
     When the request is routed
