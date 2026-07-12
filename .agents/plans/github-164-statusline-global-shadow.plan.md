@@ -11,11 +11,11 @@ todos:
   - content: "spec gate — cold sdd-spec-judge; classify-edit-class addOnly (self-clear, stays @frozen)"
     status: completed
   - content: "deliver — engine --detect + global-base compose + --no-global-base; tests; SKILL.md flow; rebase"
-    status: in_progress
+    status: completed
   - content: "impl gate — cold sdd-impl-judge per frozen scenario; pnpm verify"
-    status: pending
+    status: completed
   - content: "handoff — PR Closes #164; mail operator"
-    status: pending
+    status: in_progress
 ---
 
 # github-164 — sdd:init statusline wiring silently shadows a global statusLine
@@ -62,4 +62,10 @@ file — detection is read-only.
 
 ## NEXT
 
-Explore: write the additive scenarios + prose, run the stdin-replay spike, then spec gate.
+Mission landed — both gates approved (by: agent), branch rebased onto origin/main, two
+commits (spec freeze + impl), root pnpm verify green. PR opened, Closes #164. Await
+review/merge; plan retires via doctrine after merge. Notes for the record: conductor review
+aligned the detect/compose absent-predicate and made the test suite hermetic against the
+machine's real global settings; ship-local cyberlegion config kept out of the branch.
+Follow-up nudge: a corpus-wide formation pass is due (`sdd:manage` → "audit the corpus
+structure") — on-demand, gate nothing on it.
