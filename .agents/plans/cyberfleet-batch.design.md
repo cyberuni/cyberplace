@@ -226,6 +226,72 @@ SSA-ness + flags residue.
 Refines the hazard model: **WAW-hard collapses to versioned-RAW whenever an order can be imposed**;
 irreducibly hard only for order-less concurrent co-writes of one symbol.
 
+## Finer-than-node granularity (collision disambiguation)
+
+Finer-than-node is **disambiguation at a collision, not a primary signal.** Default: two missions
+collide at node level → **serialize (conservative)**. Descend to a finer grain **only** to justify
+downgrading a *suspected false hard* to soft/parallel. The machinery runs rarely, on the colliding
+pair — never as the baseline touch-set.
+
+The ladder (descend only until classifiable, then stop):
+```
+project / spec        ← barrier scope
+  spec-node           ← PRIMARY atom (stable, cheap, artifact-neutral); collision ⇒ serialize by default
+    file              ← a node has many files; different files ⇒ usually not a real collision (cheap, ~stable)
+      file-region     ← same file, disjoint line-hunks ⇒ textually soft (predicted, artifact-neutral)
+        semantic unit ← last rung, ARTIFACT-TYPE-SPECIFIC (richest, least stable)
+```
+Most same-node collisions resolve at the **file** rung (a node holds several files; missions usually
+touch different ones). `cli.ts` prune-vs-gc needs only **file-region**. The semantic rung is the rare
+bottom for genuinely entangled same-file work.
+
+**File-sets are *sourced*, never *derived*.** SDD does not map suite→impl files today, and a global
+suite→impl analysis would be expensive — so it is off the table. The file-set comes from: (1) the
+mission's **declared** touch-set (plan-brief floor — already there); (2) the **capability-first folder
+convention** (node ↔ folder glob — cheap, requires screaming architecture); (3) **post-hoc git diff**
+(corrects the prediction, monadic). The file rung applies only when both colliding missions have
+declared file-sets; else stay node-serial. Cost is bounded to the colliding pair, never project-wide.
+
+Semantic rung — **freeze-anchored, not section-anchored** (answers the "too dynamic" worry):
+- **code impl** → symbol/export via diff hunks.
+- **behavioral prose** (skill/subagent/doc with a `.feature`) → the **scenario** (the frozen contract:
+  stable by construction; additive scenarios self-clear). Already mechanized via `gherkin-cli diff` —
+  same scenario ⇒ hard, different scenarios ⇒ soft. Reuses existing SDD tooling.
+- **non-behavioral prose** (governance/reference) → no suite to anchor → sections too dynamic → **do
+  not descend; stay node-serial** (rarer, often shared-thin indexes).
+
+Two safety/monadic properties:
+- **Confidence decays down the ladder** (node stable → symbol/scenario predicted/churny); a low-rung
+  "soft" is lower-confidence → treat conservatively; cap the descent by parallelism payoff.
+- **Finer info arrives later** (monadic): early = node-only; Explore reveals scenarios, the diff
+  reveals hunks. So the schedule **starts node-conservative and *relaxes* to parallel as finer info
+  arrives** — conservative-first, relax-on-evidence; never optimistically parallelize a hard case.
+
+**File is a *default* second signal** (decided — cost is low): node primary + file always known (from
+declared touch-sets + folder convention). Region + semantic rungs stay **collision-only** (descend to
+downgrade a suspected false-hard). Defer general semantic-rung symbol analysis to v2.
+
+**Touch-set tool placement**: the post-hoc/correction touch-set computer is an **SDD engine** (part of
+the SDD-native estimator) — a self-contained `.mts` composing `git diff <base>..<head>` (files+hunks)
++ `gherkin-cli diff` (changed scenarios) + `resolve-governances` (node + artifact-type). **Not**
+universal-plugin (that is plugin packaging). Extract to a shared CLI only if a non-SDD consumer appears.
+
+## Partitioning prerequisites (the scheduler depends on + elevates + measures)
+
+The scheduler's precision rests on **clean partitioning at two levels**. Both are existing SDD concerns
+this capability makes load-bearing — it *depends on* them, *strengthens* their recommendation, and
+*measures* their quality (its false-conflict signal = a partition-quality metric surfaced to the Warden).
+
+| Level | Partition rule | SDD surface | Action this capability drives |
+| --- | --- | --- | --- |
+| **Code** | capability-first (screaming architecture) → node ↔ folder | `spec-layout.md` S1 (default) | strengthen S1 from "default" to **strongly recommended; layered/framework-first discouraged** (it scatters capabilities → node↔folder breaks → collisions explode → scheduling degrades). False-conflict rate measures it. |
+| **Spec** | one behavior = one scenario in one owning node (no cross-node suite overlap) | formation loop / **gap** | new **intra-project cross-node scenario dedup** (spec-level SSA). Uncovered today: cross-*project* `dedupe-specs`/`split-spec` retired; `check-spec-structure` is intra-*node* node-shape only. Suite overlap poisons the scenario rung (same behavior in two files looks file-disjoint but is a hard collision). |
+
+Follow-up CRs (separate from the scheduler engine):
+- **F1**: strengthen `spec-layout.md` / `start-mission` / `place-node` capability-first recommendation +
+  optional layout-quality signal from the Warden.
+- **F2**: formation-loop intra-project cross-node scenario-overlap detection + dedup (spec-level SSA).
+
 ## Barrier missions (architecture / project-wide refactors)
 
 A distinct mission **class** the node-ownership model doesn't capture: architecture / project-wide
@@ -364,6 +430,10 @@ Store shape (SDD-native):
   only known-cheap shared-thin-file overlaps stay soft/parallel. Coarser atom ⇒ bias to serial.
 - **Barrier missions** (architecture/project-wide refactors) = fences: called out explicitly,
   done first/early once confirmed, high-blast/HITL, largely from the formation loop.
+- **Finer-than-node = a collision-time ladder** (node→file→region→semantic), descend only to downgrade
+  a suspected false-hard; file-sets sourced (declared + folder convention + git diff), never derived.
+- **Two partitioning prerequisites** the scheduler depends on/elevates/measures: code = capability-first
+  (strengthen spec-layout S1 → F1); spec = one-behavior-one-scenario (formation cross-node dedup → F2).
 - **DAG is monadic/dynamic** (discovered through Explore + micro/macro iterations), never fully known.
   Engine re-derives a **live frontier/ready-set**; commit near, speculate far, lazily lower the frontier.
 - **Execution is barrier-free dataflow** (Turborepo/OoO fire-when-ready, MIMD) — "waves" are a view,
