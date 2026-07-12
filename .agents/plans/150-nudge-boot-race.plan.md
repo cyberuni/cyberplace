@@ -10,15 +10,15 @@ todos:
   - content: Intake — locate spec, scaffold plan, resolve governances (SDD default chain)
     status: completed
   - content: Explore — add additive boot-race scenarios to unit/lifecycle.feature; cold spec-judge
-    status: pending
+    status: completed
   - content: Spec gate — freeze .feature, ledger gate line, status stays implemented
-    status: pending
+    status: completed
   - content: Deliver — implement submit-verify-retry nudge across adapters + bind scenarios with tests
-    status: pending
+    status: completed
   - content: Impl gate — rebase onto main, cold impl-judge per frozen scenario
-    status: pending
+    status: completed
   - content: Handoff — PR (Closes #150), mail operator, clear warm units
-    status: pending
+    status: in_progress
 ---
 
 # CR: nudge boot-race robustness (#150)
@@ -59,5 +59,6 @@ a hard overlap.
 
 ## NEXT
 
-Run explore: draft the additive boot-race scenarios + README sync, dispatch the cold sdd-spec-judge,
-converge, then spec gate (freeze).
+Both gates PASS (self-asserted within auto-all leash). Rebased onto main (incl. cr128 PR #152).
+Handoff: push branch, open PR with `Closes #150`, mail operator. Keep this plan until the PR merges
+and is doctrine-distilled.
