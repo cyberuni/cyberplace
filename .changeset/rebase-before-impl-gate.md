@@ -11,6 +11,10 @@ gate**, so the frozen suite verifies the merged tree that actually lands.
   lands, so handoff stays a pure consumer that never re-verifies.
 - **Conflicts are deliver work.** A textual conflict is resolved as deliver code work against the
   frozen `.feature` (never a `.feature` edit); the gate re-runs on the resolved tree.
+- **A conflict that can't be resolved confidently halts.** The frozen suite covers only this CR's
+  behavior, so a wrongly-resolved conflict could pass the gate and land broken — a low-confidence
+  resolution is a confidence-dimension stop: the conductor halts and escalates (in-session asks;
+  headless returns `needs-input`), records a `halt`, and never guess-resolves.
 - **No new hard floor.** Rebasing an unmerged CR branch is git-reversible (reflog), so it introduces
   no new mandatory stop. A conflict resolution that would narrow a frozen scenario still fires the
   existing Clearance floor; semver-over-ceiling fires Compatibility; a genuine contradiction fires
