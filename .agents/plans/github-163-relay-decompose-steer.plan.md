@@ -7,13 +7,13 @@ todos:
   - content: "intake — CR opened, leash recorded, plan scaffolded"
     status: completed
   - content: "explore — additive receive-triage scenarios on dispatch.feature; draft SKILL/README"
-    status: pending
+    status: completed
   - content: "spec gate — classify-edit-class addOnly + cold spec-judge; self-assert"
-    status: pending
+    status: completed
   - content: "deliver — relay-governance SKILL.md + README receive contract; impl gate; pnpm verify"
-    status: pending
+    status: completed
   - content: "handoff — PR that Closes #163; mail operator"
-    status: pending
+    status: in_progress
 ---
 
 # github-163 — relay-governance: decompose a relayed steer by authority level
@@ -54,4 +54,5 @@ CR fixes general RECEIVE mechanics.
 
 ## NEXT
 
-Explore: draft the additive scenarios, spike the SKILL.md section, dispatch cold spec-judge.
+Handoff: PR open (Closes #163), both gates approved (spec-judge ALIGNED, impl-judge APPROVE
+9/9), pnpm verify green. Awaits merge; then doctrine-distill and retire this plan.
