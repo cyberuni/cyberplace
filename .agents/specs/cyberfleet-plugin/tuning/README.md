@@ -8,7 +8,7 @@ concept: [crew-ops]
 The user-facing entry to **reconfiguring an existing automaton** — a crew/persona already in the
 fleet. **Tuner** is a persona gateway skill shipped in the `cyberfleet` plugin
 (`plugins/cyberfleet/skills/tuner/`), a mechanic/maintenance-tech voice (NieR "plug-in chip"
-flavor). Where **Pod** and **Operator** (the `gateway/` node) coordinate *sessions*, Tuner works on
+flavor). Where **Pod** (`pod/`) and **Operator** (`operator/`) coordinate *sessions*, Tuner works on
 one crew unit's **program**: it adjusts the automaton's governance, **model**, **effort**, and
 **leash**; **re-chips** its loadout (adds/removes the skills and governances it carries); and
 **hot-swaps** the whole automaton for another.
@@ -52,7 +52,7 @@ verbs:
 
 **Non-goals** — recruiting or acquiring a **new** crew type (browse the Tavern, install/register a
 persona) — that is the **Crimp** persona (`recruitment/`), deferred; deploying or spawning a **ship
-instance** / worktree to run work — that is the **Operator** persona (`gateway/`), deferred;
+instance** / worktree to run work — that is the **Operator** persona (`operator/`), deferred;
 authoring a **brand-new** skill or agent from scratch — that is `define-skill` / a fresh
 `define-agent`, not a reconfiguration; and the engine internals themselves (the runner-def
 mechanics live in `manage-model-runners`, the agent-def edit mechanics in `define-agent` /
