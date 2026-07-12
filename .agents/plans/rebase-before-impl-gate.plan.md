@@ -10,7 +10,7 @@ todos:
   - content: "impl gate: cold impl-judge static-inspects the realization"
     status: completed
   - content: "handoff: pnpm verify, changeset, branch + PR"
-    status: in_progress
+    status: completed
 ---
 
 # CR: rebase onto target before the impl gate (Design A)
@@ -42,8 +42,7 @@ never re-verifies (its frozen non-goal is intact).
 
 ## NEXT
 
-Draft the additive scenarios in `mission/conductor/conductor.feature` + the
-`### Rebase onto the target before the gate` subsection in `mission/conductor/README.md`,
-then spawn the cold spec-judge.
+Landed as PR #143 (both gates self-asserted within leash, pnpm verify 19/19).
+Awaiting merge; doctrine loop retires this plan post-merge + distill.
 
 CR source: bare prompt (start-mission argument).
