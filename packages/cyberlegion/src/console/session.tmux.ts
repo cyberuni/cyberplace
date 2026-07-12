@@ -1,23 +1,27 @@
-import type { SessionAdapter, SessionReadOptions, SessionTarget } from './session.ts'
+import type { LivePane, SessionAdapter, SessionReadOptions, SessionTarget } from './session.ts'
 
 /** tmux backend — detected via `$TMUX`. */
 export const tmuxSessionAdapter: SessionAdapter = {
 	name: 'tmux',
 
 	open(exec, opts) {
-		// tmux has no native "tab" concept — a new window is the closest analogue. 'workspace' maps to
-		// a new detached session (`-d`, no `-t`) — genuinely separate from the caller's current
-		// session, unlike every other placement, which targets it. Omitting `-s` lets tmux assign the
-		// session name, avoiding any collision; the returned pane id is globally unique server-wide, so
-		// every other adapter method keeps working unchanged regardless of which session a pane is in.
+		// tmux has fewer tiers than herdr: no Workspace level, and "window" is its name for the Tab
+		// concept. So both 'workspace' (own visible space) and 'tab' collapse to a new WINDOW — the
+		// finest "own visible space" unit tmux offers, visible in the status bar and reachable by
+		// `select-window` (which cross-window beaming/focus relies on). `-d` opens it in the
+		// background without stealing the caller's focus. A ship is never placed in a detached
+		// (`new-session -d`) session — that is invisible to the attached client and unreachable by
+		// beaming; a truly-detached session would be a separate explicit intent, not a ship spawn.
+		const at = opts.at ?? 'tab'
 		const args =
-			opts.at === 'workspace'
-				? ['new-session', '-d', '-c', opts.cwd, '-P', '-F', '#{pane_id}']
-				: opts.at === 'pane:down'
+			at === 'workspace' || at === 'tab'
+				? // `-d` keeps focus on the caller (opens the window in the background) — without it tmux
+					// switches the attached client to the new window, stealing the caller's focus. The
+					// returned pane id and subsequent `send-keys -t` still target the new pane.
+					['new-window', '-d', '-c', opts.cwd, '-P', '-F', '#{pane_id}']
+				: at === 'pane:down'
 					? ['split-window', '-v', '-c', opts.cwd, '-P', '-F', '#{pane_id}']
-					: opts.at === 'tab' || opts.at === 'window'
-						? ['new-window', '-c', opts.cwd, '-P', '-F', '#{pane_id}']
-						: ['split-window', '-h', '-c', opts.cwd, '-P', '-F', '#{pane_id}']
+					: ['split-window', '-h', '-c', opts.cwd, '-P', '-F', '#{pane_id}']
 		const pane = exec('tmux', args)
 		if (!pane) throw new Error(`tmux ${args[0]} failed`)
 		const target: SessionTarget = { id: pane }
@@ -29,6 +33,11 @@ export const tmuxSessionAdapter: SessionAdapter = {
 		exec('tmux', ['send-keys', '-t', target.id, text, 'Enter'])
 	},
 
+	submit(exec, target) {
+		// Bare Enter — flushes an already-staged buffer without re-typing it.
+		exec('tmux', ['send-keys', '-t', target.id, 'Enter'])
+	},
+
 	read(exec, target, opts?: SessionReadOptions) {
 		const args = ['capture-pane', '-p', '-t', target.id]
 		if (opts?.lines != null) args.push('-S', `-${opts.lines}`)
@@ -36,6 +45,16 @@ export const tmuxSessionAdapter: SessionAdapter = {
 	},
 
 	focus(exec, target) {
+		// A bare `select-pane` only moves focus within the caller's OWN attached session/window — a
+		// peer's pane can live in a different tmux session and window entirely, so that alone would
+		// silently no-op on the attached client. Resolve the pane's session + window from
+		// `list-panes -a` first and drive the beam in order: switch-client (session), then
+		// select-window, then select-pane. Resolution happens BEFORE any switch is issued, so an
+		// unresolvable pane throws instead of a partial or false-success beam.
+		const out = exec('tmux', ['list-panes', '-a', '-F', '#{pane_id} #{session_name} #{window_id}'])
+		const { sessionName, windowId } = parsePaneLocation(out, target.id)
+		exec('tmux', ['switch-client', '-t', sessionName])
+		exec('tmux', ['select-window', '-t', windowId])
 		exec('tmux', ['select-pane', '-t', target.id])
 	},
 
@@ -49,4 +68,30 @@ export const tmuxSessionAdapter: SessionAdapter = {
 		if (exec('tmux', ['has-session', '-t', target.id]) !== null) return true
 		return (exec('tmux', ['list-panes', '-a', '-F', '#{pane_id}']) ?? '').split('\n').includes(target.id)
 	},
+
+	listPanes(exec): LivePane[] {
+		const out = exec('tmux', ['list-panes', '-a', '-F', '#{pane_id} #{pane_current_command} #{pane_current_path}'])
+		if (!out) return []
+		return out
+			.split('\n')
+			.filter(Boolean)
+			.map((line) => {
+				const [id, , ...cwdParts] = line.split(' ')
+				return { id: id ?? '', mux: 'tmux' as const, cwd: cwdParts.length ? cwdParts.join(' ') : undefined }
+			})
+			.filter((p) => p.id !== '')
+	},
+}
+
+/**
+ * `tmux list-panes -a -F '#{pane_id} #{session_name} #{window_id}'` lists every pane server-wide.
+ * Resolving fails — no line's pane id matches `id` — when the pane no longer exists in the backend,
+ * and that must throw so `focus` never issues a switch-client/select-window against a pane it
+ * couldn't actually resolve.
+ */
+function parsePaneLocation(out: string | null, id: string): { sessionName: string; windowId: string } {
+	const line = (out ?? '').split('\n').find((l) => l.split(' ')[0] === id)
+	if (!line) throw new Error(`peer's pane ${id} could not be resolved to beam to`)
+	const [, sessionName, windowId] = line.split(' ')
+	return { sessionName: sessionName!, windowId: windowId! }
 }

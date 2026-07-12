@@ -18,10 +18,34 @@ describe('herdrSessionAdapter (mocked exec — herdr is not installed in this en
 			result: { pane: { pane_id: 'w3:pB', tab_id: 'w3:t1', workspace_id: 'w3' }, type: 'pane_info' },
 		})
 		const exec = fakeExec(calls, { 'pane split': splitOut })
-		const target = herdrSessionAdapter.open(exec, { cwd: '/unit', launch: 'claude' })
+		const target = herdrSessionAdapter.open(exec, { cwd: '/unit', launch: 'claude', at: 'pane:right' })
 		expect(target).toEqual({ id: 'w3:pB' })
 		expect(calls[0]).toEqual(['pane', 'split', '--current', '--direction', 'right', '--cwd', '/unit'])
 		expect(calls[1]).toEqual(['pane', 'run', 'w3:pB', 'claude'])
+	})
+
+	it("open() at 'tab' opens a real herdr tab without stealing focus, extracting the pane id the same way as workspace create", () => {
+		const calls: string[][] = []
+		const tabOut = JSON.stringify({
+			result: { root_pane: { pane_id: 'w3:pT' }, tab: { tab_id: 'w3:t2' }, type: 'tab_created' },
+		})
+		const exec = fakeExec(calls, { 'tab create': tabOut })
+		const target = herdrSessionAdapter.open(exec, { cwd: '/unit', launch: 'claude', at: 'tab' })
+		expect(target).toEqual({ id: 'w3:pT' })
+		expect(calls[0]).toEqual(['tab', 'create', '--cwd', '/unit', '--no-focus'])
+		expect(calls[1]).toEqual(['pane', 'run', 'w3:pT', 'claude'])
+	})
+
+	it('open() with no --at defaults to opening a tab (not a split pane)', () => {
+		const calls: string[][] = []
+		const tabOut = JSON.stringify({
+			result: { root_pane: { pane_id: 'w3:pT' }, tab: { tab_id: 'w3:t2' }, type: 'tab_created' },
+		})
+		const exec = fakeExec(calls, { 'tab create': tabOut })
+		const target = herdrSessionAdapter.open(exec, { cwd: '/unit', launch: 'claude' })
+		expect(target).toEqual({ id: 'w3:pT' })
+		expect(calls[0]).toEqual(['tab', 'create', '--cwd', '/unit', '--no-focus'])
+		expect(calls[1]).toEqual(['pane', 'run', 'w3:pT', 'claude'])
 	})
 
 	it("open() at 'workspace' creates a separate workspace instead of splitting the current one", () => {
@@ -116,12 +140,23 @@ describe('herdrSessionAdapter (mocked exec — herdr is not installed in this en
 
 	it('open() throws when herdr reports no pane id', () => {
 		const exec: Exec = () => null
-		expect(() => herdrSessionAdapter.open(exec, { cwd: '/unit', launch: 'claude' })).toThrow(/herdr pane split/)
+		expect(() => herdrSessionAdapter.open(exec, { cwd: '/unit', launch: 'claude', at: 'pane:right' })).toThrow(
+			/herdr pane split/,
+		)
 	})
 
 	it('open() throws when herdr output lacks result.pane.pane_id', () => {
 		const exec = fakeExec([], { 'pane split': JSON.stringify({ id: 'cli:pane:split', result: {} }) })
-		expect(() => herdrSessionAdapter.open(exec, { cwd: '/unit', launch: 'claude' })).toThrow(/pane_id/)
+		expect(() => herdrSessionAdapter.open(exec, { cwd: '/unit', launch: 'claude', at: 'pane:right' })).toThrow(
+			/pane_id/,
+		)
+	})
+
+	it('open() throws when herdr reports no tab root pane id', () => {
+		const exec: Exec = () => null
+		expect(() => herdrSessionAdapter.open(exec, { cwd: '/unit', launch: 'claude', at: 'tab' })).toThrow(
+			/herdr tab create/,
+		)
 	})
 
 	it('send() runs text in the target pane', () => {
@@ -129,6 +164,13 @@ describe('herdrSessionAdapter (mocked exec — herdr is not installed in this en
 		const exec = fakeExec(calls)
 		herdrSessionAdapter.send(exec, { id: 'p-1' }, 'hello')
 		expect(calls[0]).toEqual(['pane', 'run', 'p-1', 'hello'])
+	})
+
+	it('submit() flushes the staged buffer with a bare Enter, never re-typing the text', () => {
+		const calls: string[][] = []
+		const exec = fakeExec(calls)
+		herdrSessionAdapter.submit(exec, { id: 'p-1' })
+		expect(calls[0]).toEqual(['pane', 'send-keys', 'p-1', 'Enter'])
 	})
 
 	it('read() captures visible pane output, optionally scoped to N lines', () => {
@@ -141,11 +183,25 @@ describe('herdrSessionAdapter (mocked exec — herdr is not installed in this en
 		expect(calls[1]).toEqual(['pane', 'read', 'p-1', '--source', 'visible', '--lines', '50'])
 	})
 
-	it('focus() focuses the target pane', () => {
+	it("focus() beams the attached client to the pane's own workspace and tab, in order", () => {
 		const calls: string[][] = []
-		const exec = fakeExec(calls)
-		herdrSessionAdapter.focus(exec, { id: 'p-1' })
-		expect(calls[0]).toEqual(['pane', 'focus', 'p-1'])
+		const paneGetOut = JSON.stringify({
+			result: { pane: { pane_id: 'w3:pB', workspace_id: 'w7', tab_id: 'w7:t2' } },
+		})
+		const exec = fakeExec(calls, { 'pane get': paneGetOut })
+		herdrSessionAdapter.focus(exec, { id: 'w3:pB' })
+		expect(calls).toEqual([
+			['pane', 'get', 'w3:pB'],
+			['workspace', 'focus', 'w7'],
+			['tab', 'focus', 'w7:t2'],
+		])
+	})
+
+	it('focus() throws instead of a false success when the recorded pane no longer resolves, and switches nothing', () => {
+		const calls: string[][] = []
+		const exec = fakeExec(calls, { 'pane get': null })
+		expect(() => herdrSessionAdapter.focus(exec, { id: 'gone-pane' })).toThrow(/could not be resolved to beam to/)
+		expect(calls).toEqual([['pane', 'get', 'gone-pane']])
 	})
 
 	it('teardown() closes the pane', () => {
@@ -162,5 +218,26 @@ describe('herdrSessionAdapter (mocked exec — herdr is not installed in this en
 		expect(herdrSessionAdapter.paneExists(fakeExec([], { 'pane read': '' }), { id: 'w3:p4' })).toBe(true)
 		// gone pane — read fails (Exec yields null)
 		expect(herdrSessionAdapter.paneExists((): string | null => null, { id: 'w3:p4' })).toBe(false)
+	})
+
+	it('listPanes() reports only panes with an agent, dropping scaffold panes with none', () => {
+		const listOut = JSON.stringify({
+			result: {
+				panes: [
+					{ pane_id: 'w3:p1', agent: 'claude', cwd: '/repo/a' },
+					{ pane_id: 'w3:p2', agent: 'codex', cwd: '/repo/b' },
+					{ pane_id: 'w3:p3' }, // scaffold pane, no agent — dropped
+				],
+			},
+		})
+		expect(herdrSessionAdapter.listPanes(fakeExec([], { 'pane list': listOut }))).toEqual([
+			{ id: 'w3:p1', mux: 'herdr', harness: 'claude', cwd: '/repo/a' },
+			{ id: 'w3:p2', mux: 'herdr', harness: 'codex', cwd: '/repo/b' },
+		])
+	})
+
+	it('listPanes() returns empty when herdr reports nothing or unparseable output', () => {
+		expect(herdrSessionAdapter.listPanes((): string | null => null)).toEqual([])
+		expect(herdrSessionAdapter.listPanes(() => 'not json')).toEqual([])
 	})
 })

@@ -1,5 +1,11 @@
 import { resolve } from 'node:path'
-import type { OpenInNewWorktreeOptions, SessionAdapter, SessionReadOptions, SessionTarget } from './session.ts'
+import type {
+	LivePane,
+	OpenInNewWorktreeOptions,
+	SessionAdapter,
+	SessionReadOptions,
+	SessionTarget,
+} from './session.ts'
 import type { Worktree } from './worktree.ts'
 
 /**
@@ -16,15 +22,22 @@ export const herdrSessionAdapter: SessionAdapter = {
 	name: 'herdr',
 
 	open(exec, opts) {
+		const at = opts.at ?? 'tab'
 		let id: string
-		if (opts.at === 'workspace') {
+		if (at === 'workspace') {
 			// A genuinely separate workspace, not a pane inside the caller's current one — `--no-focus`
 			// so spawning doesn't steal the caller's attention/focus.
 			const out = exec('herdr', ['workspace', 'create', '--cwd', opts.cwd, '--no-focus'])
 			if (!out) throw new Error('herdr workspace create failed')
-			id = parseWorkspaceRootPaneId(out)
+			id = parseRootPaneId(out, 'herdr workspace create')
+		} else if (at === 'tab') {
+			// A real tab in the current window, not a split pane — `--no-focus` so spawning doesn't
+			// steal the caller's attention/focus, matching workspace/worktree spawns.
+			const out = exec('herdr', ['tab', 'create', '--cwd', opts.cwd, '--no-focus'])
+			if (!out) throw new Error('herdr tab create failed')
+			id = parseRootPaneId(out, 'herdr tab create')
 		} else {
-			const direction = opts.at === 'pane:down' ? 'down' : 'right'
+			const direction = at === 'pane:down' ? 'down' : 'right'
 			const out = exec('herdr', ['pane', 'split', '--current', '--direction', direction, '--cwd', opts.cwd])
 			if (!out) throw new Error('herdr pane split failed')
 			id = parsePaneId(out)
@@ -64,6 +77,12 @@ export const herdrSessionAdapter: SessionAdapter = {
 		exec('herdr', ['pane', 'run', target.id, text])
 	},
 
+	submit(exec, target) {
+		// `pane run <id> ""` is a no-op in herdr, so a bare Enter keystroke is the only way to flush
+		// an already-staged buffer without re-typing it.
+		exec('herdr', ['pane', 'send-keys', target.id, 'Enter'])
+	},
+
 	read(exec, target, opts?: SessionReadOptions) {
 		const args = ['pane', 'read', target.id, '--source', 'visible']
 		if (opts?.lines != null) args.push('--lines', String(opts.lines))
@@ -71,7 +90,17 @@ export const herdrSessionAdapter: SessionAdapter = {
 	},
 
 	focus(exec, target) {
-		exec('herdr', ['pane', 'focus', target.id])
+		// `herdr pane focus` only accepts `--direction` (no by-id form), and a peer's pane can sit in
+		// a different workspace/tab than the attached client — a single pane-level command can't beam
+		// the client there. Resolve the pane's own workspace/tab from the backend first (`pane get`)
+		// and drive the beam in order: workspace focus, then tab focus. A tab's active pane IS the
+		// pane, so landing on the tab lands input focus on it — herdr has no separate by-id pane
+		// focus to reach for. Resolution is attempted BEFORE any switch is issued, so an unresolvable
+		// pane throws instead of a partial or false-success beam.
+		const out = exec('herdr', ['pane', 'get', target.id])
+		const { workspaceId, tabId } = parsePaneLocation(out, target.id)
+		exec('herdr', ['workspace', 'focus', workspaceId])
+		exec('herdr', ['tab', 'focus', tabId])
 	},
 
 	teardown(exec, target) {
@@ -83,6 +112,24 @@ export const herdrSessionAdapter: SessionAdapter = {
 		// and fails — Exec yields null — when the pane id no longer names a pane. A live pane is exactly
 		// the non-null case; an empty live pane ('') must NOT read as gone.
 		return exec('herdr', ['pane', 'read', target.id, '--source', 'visible']) !== null
+	},
+
+	listPanes(exec): LivePane[] {
+		const out = exec('herdr', ['pane', 'list'])
+		if (!out) return []
+		let panes: unknown
+		try {
+			panes = JSON.parse(out)?.result?.panes
+		} catch {
+			return []
+		}
+		if (!Array.isArray(panes)) return []
+		return panes
+			.filter(
+				(p): p is { pane_id: string; agent: string; cwd?: string } =>
+					typeof p?.pane_id === 'string' && typeof p?.agent === 'string' && p.agent !== '',
+			)
+			.map((p) => ({ id: p.pane_id, mux: 'herdr' as const, harness: p.agent, cwd: p.cwd }))
 	},
 }
 
@@ -106,18 +153,43 @@ function parsePaneId(out: string): string {
 }
 
 /**
- * `herdr workspace create` emits its new workspace's initial pane at `.result.root_pane.pane_id`
- * (a different path than `pane split`'s `.result.pane.pane_id`).
+ * `herdr pane get <id>` emits `{"result":{"pane":{"workspace_id":...,"tab_id":...,...}}}`. Resolving
+ * fails — `out` is null (Exec failure: the pane no longer names a live pane in the backend) or the
+ * JSON has no string `workspace_id`/`tab_id` — and that must throw so `focus` never issues a
+ * workspace/tab switch against a pane it couldn't actually resolve.
  */
-function parseWorkspaceRootPaneId(out: string): string {
+function parsePaneLocation(out: string | null, id: string): { workspaceId: string; tabId: string } {
+	let workspaceId: unknown
+	let tabId: unknown
+	if (out != null) {
+		try {
+			const pane = JSON.parse(out)?.result?.pane
+			workspaceId = pane?.workspace_id
+			tabId = pane?.tab_id
+		} catch {
+			// unparseable — falls through to the unresolved check below
+		}
+	}
+	if (typeof workspaceId !== 'string' || workspaceId === '' || typeof tabId !== 'string' || tabId === '') {
+		throw new Error(`peer's pane ${id} could not be resolved to beam to`)
+	}
+	return { workspaceId, tabId }
+}
+
+/**
+ * `herdr workspace create` and `herdr tab create` both emit their new root pane at
+ * `.result.root_pane.pane_id` (a different path than `pane split`'s `.result.pane.pane_id`).
+ * `label` names the command in error messages (e.g. "herdr workspace create").
+ */
+function parseRootPaneId(out: string, label: string): string {
 	let paneId: unknown
 	try {
 		paneId = JSON.parse(out)?.result?.root_pane?.pane_id
 	} catch {
-		throw new Error(`herdr workspace create returned unparseable output: ${out.slice(0, 200)}`)
+		throw new Error(`${label} returned unparseable output: ${out.slice(0, 200)}`)
 	}
 	if (typeof paneId !== 'string' || paneId === '') {
-		throw new Error(`herdr workspace create output had no result.root_pane.pane_id: ${out.slice(0, 200)}`)
+		throw new Error(`${label} output had no result.root_pane.pane_id: ${out.slice(0, 200)}`)
 	}
 	return paneId
 }

@@ -58,6 +58,32 @@ Feature: unit lifecycle — warm peer session lifecycle over a multiplexer
     When a caller runs unit spawn --agent <name> --harness codex --task t
     Then the spawned peer's harness is codex
 
+  # ── Spawn resolves the default placement by mode: own visible space vs the caller's current space ──
+  # The fleet-layer caller (Operator) is mux-agnostic — it expresses intent ("own isolated, visible
+  # space"), never a mux placement. A new-worktree spawn is that intent, so it defaults to `workspace`
+  # (mapped per-mux in mux/); a --cwd spawn opted into an existing space, so it defaults to a tab there.
+
+  Scenario: a new-worktree spawn with no --at defaults to its own visible space (workspace), deterministically
+    Given a caller running unit spawn with no --at (creating a new worktree)
+    When unit spawn runs
+    Then the session opens at workspace — its own isolated, visible space
+    And the placement does not depend on whichever workspace is currently focused
+
+  Scenario: a --cwd spawn with no --at defaults to a tab in the caller's current space, not its own workspace
+    Given a caller running unit spawn --cwd <an existing directory outside the primary checkout> with no --at
+    When unit spawn runs
+    Then the session opens at tab in the caller's current space
+
+  Scenario: an explicit --at overrides the new-worktree default of workspace
+    Given a caller running unit spawn --at tab (creating a new worktree)
+    When unit spawn runs
+    Then the session opens at tab, not the new-worktree default of workspace
+
+  Scenario: an explicit --at overrides the --cwd default of tab
+    Given a caller running unit spawn --cwd <an existing directory outside the primary checkout> --at workspace
+    When unit spawn runs
+    Then the session opens at workspace, not the --cwd default of tab
+
   # ── Spawn into an existing dir without a worktree (--cwd) ──
 
   Scenario: --cwd spawns a session into an existing directory and creates no worktree
@@ -151,12 +177,12 @@ Feature: unit lifecycle — warm peer session lifecycle over a multiplexer
     Then it throws that removal failed
     And the unit's record and stored data are left intact for a retry
 
-  # ── An unknown id errors ──
+  # ── An unresolvable id errors ──
 
-  Scenario: closing an unregistered id errors and reaps nothing
-    Given no unit registered under a given id
+  Scenario: closing an unresolvable id errors and reaps nothing
+    Given no unit addressable under a given id
     When a caller runs unit close <id>
-    Then it throws that no unit is registered under that id
+    Then it throws that no unit is addressable under that id
 
   # ── Reaps only the targeted unit ──
 
@@ -173,12 +199,146 @@ Feature: unit lifecycle — warm peer session lifecycle over a multiplexer
     When a caller runs unit focus <ref>
     Then the session adapter focuses that peer's pane
 
-  Scenario: nudge rings a peer's session as a payload-free doorbell
+  # ── focus beams the attached view all the way to the peer, across workspace and tab ──
+
+  Scenario: focus beams the attached client across workspace and tab to a peer's pane
+    Given a registered peer whose live pane sits in a different workspace and tab than the attached view
+    When a caller runs unit focus <ref>
+    Then the session adapter resolves that pane's own workspace and tab from the backend
+    And it switches the attached client's active workspace to that pane's workspace
+    And then switches its active tab to that pane's tab
+    And then lands input focus on that pane
+    And the attached view ends on the peer's pane rather than no-opping in the caller's current workspace
+
+  Scenario: nudge delivers a default check-mail doorbell message to a peer's session
     Given a registered peer with a live session pane
     When a caller runs unit nudge <ref>
-    Then the session adapter sends an empty keystroke to that peer's pane
+    Then the session adapter delivers the default check-mail message as a turn to that peer's pane
+
+  Scenario: nudge carries a caller-supplied message with --message
+    Given a registered peer with a live session pane
+    When a caller runs unit nudge <ref> --message "<text>"
+    Then the session adapter delivers that message as a turn to the peer's pane
+
+  # ── nudge is robust to the harness boot race: a successful nudge means the turn was taken ──
+
+  Scenario: nudge confirms the turn was taken and reports success without re-submitting
+    Given a registered peer whose pane takes the first submit immediately
+    When a caller runs unit nudge <ref>
+    Then nudge reads the pane back, confirms the nudge text is no longer staged, and reports success
+    And it issues no re-submit
+
+  Scenario: nudge re-submits when the harness boot swallows the first submit
+    Given a registered peer whose harness is still booting so the first submit stages the nudge text unsent
+    When a caller runs unit nudge <ref>
+    Then nudge re-submits the staged input until the peer takes the turn
+    And it reports success only once the nudge text is no longer staged
+
+  Scenario: a boot-race re-submit does not duplicate the message
+    Given a registered peer whose first submit staged the nudge text unsent
+    When a caller runs unit nudge <ref>
+    Then nudge flushes the already-staged buffer rather than re-typing to complete the turn, so the peer's turn carries the message once
+
+  Scenario: nudge fails loud when the turn is never taken within the bounded retry cap
+    Given a registered peer whose pane keeps the nudge text staged unsent past the retry cap
+    When a caller runs unit nudge <ref>
+    Then it throws that the peer never took the turn
+    And it does not report success
 
   Scenario: read scrapes a peer's session screen
     Given a registered peer with a live session pane holding some output
     When a caller runs unit read <ref> --lines 20
     Then the captured trailing output from that pane is printed
+
+  # ── focus, nudge, read: error cases (unresolvable ref, no live pane) ──
+
+  Scenario: focus on an unresolvable ref errors and focuses nothing
+    Given no unit addressable under a given ref
+    When a caller runs unit focus <ref>
+    Then it throws that no unit is addressable under that ref
+    And no pane is focused
+
+  Scenario: focus on a unit with no known session pane errors and focuses nothing
+    Given a registered unit with no known session pane
+    When a caller runs unit focus <ref>
+    Then it throws that the unit has no known session pane
+    And no pane is focused
+
+  Scenario: focus surfaces an error instead of a false success when the recorded pane no longer resolves in the backend
+    Given a registered peer whose recorded pane no longer resolves to a live pane in the session backend
+    When a caller runs unit focus <ref>
+    Then it throws that the peer's pane could not be resolved to beam to
+    And it does not report a successful focus
+    And no workspace, tab, or pane is switched
+
+  Scenario: nudge on an unresolvable ref errors and delivers nothing
+    Given no unit addressable under a given ref
+    When a caller runs unit nudge <ref>
+    Then it throws that no unit is addressable under that ref
+    And nothing is delivered to any pane
+
+  Scenario: nudge on a unit with no known session pane errors and delivers nothing
+    Given a registered unit with no known session pane
+    When a caller runs unit nudge <ref>
+    Then it throws that the unit has no known session pane
+    And nothing is delivered to any pane
+
+  Scenario: read on an unresolvable ref errors and scrapes nothing
+    Given no unit addressable under a given ref
+    When a caller runs unit read <ref>
+    Then it throws that no unit is addressable under that ref
+    And no pane output is captured
+
+  Scenario: read on a unit with no known session pane errors and scrapes nothing
+    Given a registered unit with no known session pane
+    When a caller runs unit read <ref>
+    Then it throws that the unit has no known session pane
+    And no pane output is captured
+
+  # ── clear resets a warm peer's context while keeping its pane/process warm ──
+
+  Scenario: clear injects the harness's own in-session reset into a warm peer and tears nothing down
+    Given a registered peer with harness claude and a live session pane
+    When a caller runs unit clear <ref>
+    Then the session adapter sends "/clear" to that peer's pane
+    And no session pane is torn down
+    And no worktree is removed
+    And the unit's registry record, pane pointer, and worktree are unchanged
+
+  Scenario Outline: clear resolves each harness's own fresh-context command from a per-harness map
+    Given a registered peer with harness <harness> and a live session pane
+    When a caller runs unit clear on that peer
+    Then the session adapter sends "<command>" to that peer's pane
+
+    Examples:
+      | harness | command   |
+      | claude  | /clear    |
+      | codex   | /clear    |
+      | copilot | /clear    |
+      | cursor  | /new-chat |
+
+  # ── A harness with no honest fresh-context command fails loud ──
+
+  Scenario: clear fails loud on a harness whose reset would not truly empty the context
+    Given a registered peer with harness gemini and a live session pane
+    When a caller runs unit clear <ref>
+    Then it throws naming the harness and its missing reset mapping
+    And nothing is sent to that peer's pane
+
+  Scenario: clear errors on an unmapped harness rather than guessing a command
+    Given a registered peer with harness grok and a live session pane
+    When a caller runs unit clear <ref>
+    Then it throws naming the reset map
+    And nothing is sent to that peer's pane
+
+  # ── clear needs a live target, like nudge and focus ──
+
+  Scenario: clear on an unresolvable ref errors and sends nothing
+    Given no unit addressable under a given ref
+    When a caller runs unit clear <ref>
+    Then it throws that no unit is addressable under that ref
+
+  Scenario: clear on a unit with no known session pane errors and sends nothing
+    Given a registered unit with no known session pane
+    When a caller runs unit clear <ref>
+    Then it throws that the unit has no known session pane

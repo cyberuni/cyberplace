@@ -1,6 +1,6 @@
 ---
 name: combat-log-governance
-description: "Internal skill: the SDD combat-log contract — the two-face provenance record (current-state frontmatter plus the tracked combat log and the durable sharded ledger directory), the report / correction / halt / leash / gate / strategy entry shapes, per-entry handle + combat-log write-time ts under a safe-to-publish floor, the matchable cause enum, and write-ownership. Loaded by the conductor, spec-gate, and the doctrine-loop Scanner. Not triggered by users directly."
+description: "Partial Skill: invoke by name only — the SDD combat-log contract, the durable provenance record's shape. Loaded by the conductor, spec-gate, and the doctrine-loop Scanner, not user-triggered."
 user-invocable: false
 ---
 
@@ -116,6 +116,7 @@ the ledger's `strategy` count.
   | `coverage-gap` | a use case or operation lacked a covering scenario |
   | `design-overreach` | the design added a mechanism the architecture did not need |
   | `spec-feature-contradiction` | the `spec.md` body and the `.feature` asserted contradictory behavior |
+  | `prose-impl-contradiction` | a skill's own operating docs or a sibling design doc asserted behavior the shipped implementation no longer has |
 
   **Growth:** closed at any moment, discovered from usage — a new value is added only when a real
   recurring correction has no category. Adding one is an **edit to this governance, ratified by the

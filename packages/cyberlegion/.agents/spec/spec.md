@@ -7,23 +7,23 @@ approval:
     by: agent
     cause: dimension
     why:
-      floor: none
-      blast: low — a command-string change in install.ts + a new opt-in init `--pin` flag; the upsert migration matcher rewrites a legacy bare entry in place (never duplicates); 295/295 cyberlegion tests, full pnpm verify 19/19.
-      novelty: low — faithful impl of the frozen npx-form scenarios; `hookTarget` normalization collapses bare/unpinned/pinned to one target so re-init always rewrites in place.
-      confidence: high — cold sdd-impl-judge: all scenarios PASS, IMPLEMENTATION_PASS true, exercise-backstop confirmed (make hookCommand ignore pin → the --pin test fails; drop the rewrite-in-place branch → the migration test fails); diff scoped to install.ts/cli.ts. Non-blocking follow-ups: a pre-existing verify-scenarios.mts path-resolution bug (scenario-bridge unusable for cyberlegion until fixed); the deferred malformed-`--pin` validation scenario.
-      judge: cold sdd-impl-judge — all scenarios PASS, IMPLEMENTATION_PASS true, exercise-backstop confirmed.
-      cr: hook-npx-pin
+      floor: none — new `mail/doorbell` node is a fresh `@frozen` feature; `mail/core` unchanged (its Bunker-addressing scenarios were reverted as a metaphor leak — see below); no frozen non-CR scenario weakened.
+      blast: low-medium — new `console/doorbell.ts` `wakeRecipient` (best-effort, lazy adapter) + `mail send --no-nudge` wiring; reuses the shipped #150 `nudge`; touches no registry/worktree path. Root `pnpm verify` green; cyberlegion tests green.
+      novelty: low-medium — best-effort push doorbell layered over durable delivery: ring a peer's live pane or a standing owner's bound main pane on send; the adapter is selected lazily inside the swallowing try so a no-mux session never trips `selectSessionAdapter` and never fails the send. Verify-effect-or-fail-loud is the nudge's own for the live case; a no-target recipient is a legitimate no-op, not a failure (aligns sibling #158's attach-relative no-op framing). Metaphor-free: the package knows only "standing owner" + "bound main pane" — no fleet/persona name; the "Bunker" naming for the owner inbox is re-homed to the cyberfleet plugin.
+      confidence: high — cold sdd-impl-judge IMPLEMENTATION_PASS true; every frozen doorbell scenario PASS with independently re-derived oracles; the `--no-nudge` CLI-flag binding is mutation-confirmed (e2e tests fail under `noNudge:false`, restore clean). Fixed a latent eager-`selectSessionAdapter` throw that would have failed a no-mux send.
+      judge: cold sdd-impl-judge — IMPLEMENTATION_PASS true; every doorbell scenario PASS; lazy-adapter refactor verified sound; diff confined to the doorbell behavior, no bleed.
+      cr: github-159-doorbell-bunker
   spec:
     verdict: approve
     by: agent
-    cause: clearance
+    cause: dimension
     why:
-      floor: clearance — re-opened two frozen contracts (ratified by the user's approval of the cyberlegion surfacing-hook plan): mail/surface/surface.feature's dedicated-command scenario generalized (exact bare string → "runs the dedicated mail hook --event, not a generic exec", ceding the npx-prefix specifics to init); init/init.feature's two SessionStart-registration scenarios rewritten from the bare form to `npx cyberlegion mail hook --event`. Both re-frozen this gate.
-      blast: low — a command-string form change to the surfacing hook plus a new opt-in `--pin` flag; additive pin/unpin/legacy-migration scenarios; no capability removed. Fixes a deployability gap (the bare command needed a global install; cyberlegion is unpublished + unlinked at the repo root).
-      novelty: low — aligns cyberlegion to the repo hook convention (`npx <pkg>@<version>`); the pinned version is injected by the init skill (Part C, via the bundle-emitted .plugin/pins.json), not runtime-read from the binary.
-      confidence: high — cold sdd-spec-judge ALIGNED (oracle/builder/architect all PASS, no blocker). One non-blocking content gap (no malformed-`--pin` validation scenario) deferred as a follow-up — the version comes from the trusted bundle-stamped pins map, not free user input. legion-publish dependency: the npx pin is dormant until cyberlegion publishes (not a defect).
-      judge: cold sdd-spec-judge — oracle/builder/architect all PASS; ALIGNED true; non-blocking: defer the `--pin` validation scenario.
-      cr: hook-npx-pin
+      floor: none — new `mail/doorbell` node is a fresh `@frozen` feature; `mail/core` is unchanged; no frozen scenario weakened.
+      blast: low-medium — new behavioral `mail/doorbell` node (push-doorbell-on-send); reuses the shipped #150 nudge submit-verify path and existing store primitives (`getMainPane`/`findPaneByAgentId`); touches no registry/worktree path.
+      novelty: low-medium — best-effort push doorbell layered over durable delivery: a peer's live pane or a standing owner's bound main pane is rung on send; no-live-target (headless / no main pane / ring past cap) is a legitimate no-op, never a send failure. Metaphor-free — the package knows only "standing owner" + "bound main pane"; the owner-inbox naming (the fleet's "Bunker") is a cyberfleet concern. Aligns with sibling #158's attach-relative no-op framing; #158's verify-effect-or-fail-loud rule is DEFERRED to a follow-up CR, so this notes the seam.
+      confidence: high — cold sdd-spec-judge ALIGNED (oracle/builder/architect all PASS); no open markers; check-suite + check-spec-state OK.
+      judge: cold sdd-spec-judge — oracle/builder/architect all PASS; ALIGNED true.
+      cr: github-159-doorbell-bunker
 ---
 
 # cyberlegion — the CLI: harness-agnostic agent spawn and messaging
@@ -53,7 +53,7 @@ mailbox + registry access goes through a domain `Store` interface (a `FileStore`
 |---|---|
 | [`mux/`](./mux/README.md) | the unit-agnostic pane abstraction — backend selection, placement, multiplexer detection |
 | [`unit/`](./unit/registry/README.md) | the instance registry (`unit/registry`) + warm session lifecycle (`unit/lifecycle`) |
-| [`mail/`](./mail/README.md) | durable inter-agent messaging — plain send/inbox/read/ack/delete (`mail/core`), thread correlation and bounded await/watch (`mail/wait`), hook injection and owner-mail surfacing (`mail/surface`) |
+| [`mail/`](./mail/README.md) | durable inter-agent messaging — plain send/inbox/read/ack/delete (`mail/core`), thread correlation and bounded await/watch (`mail/wait`), hook injection and owner-mail surfacing / the pull side (`mail/surface`), waking the recipient on delivery / the push-side doorbell (`mail/doorbell`) |
 | [`agent/`](./agent/README.md) | resolve reusable agent definitions |
 | [`attach/`](./attach/README.md) | the human's read-pane — an attention pointer to the hub's main pane |
 | [`init/`](./init/README.md) | the onboarding front door — auto-detect the harness and register the surfacing hook (owns the per-harness installer) |

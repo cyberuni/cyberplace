@@ -7,8 +7,8 @@ approval:
     by: agent
     cause: dimension
     why:
-      leash: within — auto-spec; freeze-preserving structural change removing the fleet/ capability (5 nodes gateway/identity/messaging/spawn/surfacing) from the cyberspace spec, relocated to ../cyberfleet to align the spec project with the cyberfleet plugin/CLI; no retained scenario content touched; reversible feature branch add-fleet-comms; self-asserted by:agent into the async review queue
-      basis: pure git mv of the 5 fleet node folders + their add-fleet-comms ledger shard off cyberspace onto a new ../cyberfleet project root; capability + placement maps updated to drop fleet (placement rule now points to ../cyberfleet/spec.md); by-concept index regenerated (concept-index --write, cyberspace now bootstrap+glossary only); check-spec-structure 0 blocking / 0 advisory on cyberspace; no re-grade — no retained cyberspace content changed. Historical add-write-vendor-config / add-fleet-comms gate detail remains in the ledger shards
+      leash: within — auto-spec; freeze-preserving structural change removing the fleet/ capability (5 nodes gateway/identity/messaging/spawn/surfacing) from the cyberspace spec, relocated to ../cyberfleet-plugin to align the spec project with the cyberfleet plugin/CLI; no retained scenario content touched; reversible feature branch add-fleet-comms; self-asserted by:agent into the async review queue
+      basis: pure git mv of the 5 fleet node folders + their add-fleet-comms ledger shard off cyberspace onto a new ../cyberfleet-plugin project root; capability + placement maps updated to drop fleet (placement rule now points to ../cyberfleet-plugin/spec.md); by-concept index regenerated (concept-index --write, cyberspace now bootstrap+glossary only); check-spec-structure 0 blocking / 0 advisory on cyberspace; no re-grade — no retained cyberspace content changed. Historical add-write-vendor-config / add-fleet-comms gate detail remains in the ledger shards
       cr: relocate-fleet-spec
   impl:
     verdict: approve
@@ -68,8 +68,8 @@ Where a new concept lives — slot here, do not invent placement (`../sdd/design
 - **a new *cross-vendor plugin* authoring or lifecycle operation** (scaffold/build, publish, upgrade pinned
   versions — anything backed by the `universal-plugin` CLI) → `plugin/`.
 - **a new *inter-session runtime* operation** (create a peer agent session, message between sessions, surface
-  mail — anything backed by the `cyberfleet` CLI) → the separate `../cyberfleet/` project spec, not here (this
-  capability relocated out of cyberspace; see `../cyberfleet/spec.md`).
+  mail — anything backed by the `cyberfleet` CLI) → the separate `../cyberfleet-plugin/` project spec, not here (this
+  capability relocated out of cyberspace; see `../cyberfleet-plugin/spec.md`).
 - **a rule or model** (the harness-agnostic mapping, a baseline-config convention) → `design/` (descriptive); a
   **decision + its rationale** → `design/decisions/` (ADR); a **unit's design fork** → that unit's
   `<unit>.solution.md`.

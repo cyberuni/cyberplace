@@ -7,20 +7,32 @@ import type { Worktree } from './worktree.ts'
  * `'workspace'` opens a genuinely separate workspace/session (herdr: `workspace create`; tmux: a
  * new detached session) — the caller's current workspace/session is left untouched, unlike every
  * other placement, which adds a pane/window inside it. */
-export type SessionPlacement = 'pane:right' | 'pane:down' | 'tab' | 'window' | 'workspace'
+export type SessionPlacement = 'pane:right' | 'pane:down' | 'tab' | 'workspace'
 
 interface SessionOpenOptions {
 	/** Working directory the new pane/window/session should start in. */
 	cwd: string
 	/** Command line to launch inside the new pane once it is open. */
 	launch: string
-	/** Placement relative to the caller; defaults to 'pane:right'. */
+	/** Placement relative to the caller; defaults to 'tab'. */
 	at?: SessionPlacement
 }
 
 /** Opaque handle to an open pane/window/session; backend-specific id lives in `id`. */
 export interface SessionTarget {
 	id: string
+}
+
+/** A pane the backend can currently see, as reported by `listPanes` (bulk enumeration). */
+export interface LivePane {
+	/** Backend-native pane id. */
+	id: string
+	/** Which multiplexer this pane belongs to. */
+	mux: 'tmux' | 'herdr'
+	/** The harness running in this pane, when the backend can report it (herdr only). */
+	harness?: string
+	/** The pane's working directory, when the backend reports it. */
+	cwd?: string
 }
 
 export interface SessionReadOptions {
@@ -55,9 +67,21 @@ export interface SessionAdapter {
 	openInNewWorktree?(exec: Exec, opts: OpenInNewWorktreeOptions): { target: SessionTarget; worktree: Worktree }
 	/** Type text into the target session (submitted, not queued). */
 	send(exec: Exec, target: SessionTarget, text: string): void
+	/**
+	 * Submit the target's already-staged input buffer via a bare Enter keystroke — no new text is
+	 * typed. Used to complete a turn whose atomic `send` was swallowed by a booting harness (the
+	 * text staged in the input box, unsent); flushing never re-types the message, so a re-submit
+	 * cannot duplicate it.
+	 */
+	submit(exec: Exec, target: SessionTarget): void
 	/** Capture the target session's current output. */
 	read(exec: Exec, target: SessionTarget, opts?: SessionReadOptions): string
-	/** Move input focus to the target session; best-effort (may no-op if the backend can't). */
+	/**
+	 * Beam the attached client's view all the way to the target pane — across workspace and tab, not
+	 * just within the current one. Resolves the pane's own workspace/tab from the backend and drives
+	 * the full switch chain; best-effort within (the backend owns the actual move), but throws rather
+	 * than reporting a false success when the recorded pane no longer resolves to a live pane.
+	 */
 	focus(exec: Exec, target: SessionTarget): void
 	/** Close the target session. */
 	teardown(exec: Exec, target: SessionTarget): void
@@ -67,4 +91,10 @@ export interface SessionAdapter {
 	 * probed with a tmux query (or vice versa).
 	 */
 	paneExists(exec: Exec, target: SessionTarget): boolean
+	/**
+	 * Enumerate every live pane this backend can currently see — the bulk counterpart to
+	 * `paneExists`'s single targeted query. `reconcile` uses this to cull dead records in one pass
+	 * against the mux the caller is actually inside; it never enumerates the other mux.
+	 */
+	listPanes(exec: Exec): LivePane[]
 }

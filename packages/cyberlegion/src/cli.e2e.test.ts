@@ -1,5 +1,5 @@
 import { execFileSync, spawnSync } from 'node:child_process'
-import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -205,6 +205,75 @@ describe('spec:cyberlegion/unit', () => {
 			expect(JSON.parse(legion(['--format', 'json']))).toMatchObject({ self: null, unread: 0, units: 0 })
 		})
 	})
+
+	// spec: focus, nudge, read: error cases (unresolvable ref, no live pane) — resolveTarget (cli.ts)
+	// guards both before any command touches the session adapter, so nothing is focused/delivered/
+	// scraped on either error. These tests never reach a real session adapter, since resolveTarget
+	// throws first — proving the guard runs before any adapter call.
+	describe('focus, nudge, read: error cases', () => {
+		it('focus on an unresolvable ref errors and focuses nothing', () => {
+			const { stderr } = legionOut(['unit', 'focus', 'ghost'])
+			expect(() => legion(['unit', 'focus', 'ghost'])).toThrow()
+			expect(stderr).toMatch(/no agent addressable as/)
+			expect(stderr).toContain('ghost')
+		})
+
+		it('focus on a unit with no known session pane errors and focuses nothing', () => {
+			// Registering with no mux env in the child process (baseEnv strips TMUX/HERDR_*) yields a
+			// unit with pane: null — a registered id that resolveTarget still cannot address.
+			const rec = JSON.parse(
+				legion(['unit', 'register', '--harness', 'claude', '--handle', 'nopane', '--format', 'json']),
+			)
+			expect(rec.pane).toBeNull()
+			const { stderr } = legionOut(['unit', 'focus', rec.id])
+			expect(() => legion(['unit', 'focus', rec.id])).toThrow()
+			expect(stderr).toMatch(/no known session pane/)
+		})
+
+		it('nudge on an unresolvable ref errors and delivers nothing', () => {
+			const { stderr } = legionOut(['unit', 'nudge', 'ghost'])
+			expect(() => legion(['unit', 'nudge', 'ghost'])).toThrow()
+			expect(stderr).toMatch(/no agent addressable as/)
+			expect(stderr).toContain('ghost')
+		})
+
+		it('nudge on a unit with no known session pane errors and delivers nothing', () => {
+			const rec = JSON.parse(
+				legion(['unit', 'register', '--harness', 'claude', '--handle', 'nopane', '--format', 'json']),
+			)
+			expect(rec.pane).toBeNull()
+			const { stderr } = legionOut(['unit', 'nudge', rec.id])
+			expect(() => legion(['unit', 'nudge', rec.id])).toThrow()
+			expect(stderr).toMatch(/no known session pane/)
+		})
+
+		it('read on an unresolvable ref errors and scrapes nothing', () => {
+			const { stderr } = legionOut(['unit', 'read', 'ghost'])
+			expect(() => legion(['unit', 'read', 'ghost'])).toThrow()
+			expect(stderr).toMatch(/no agent addressable as/)
+			expect(stderr).toContain('ghost')
+		})
+
+		it('read on a unit with no known session pane errors and scrapes nothing', () => {
+			const rec = JSON.parse(
+				legion(['unit', 'register', '--harness', 'claude', '--handle', 'nopane', '--format', 'json']),
+			)
+			expect(rec.pane).toBeNull()
+			const { stderr } = legionOut(['unit', 'read', rec.id])
+			expect(() => legion(['unit', 'read', rec.id])).toThrow()
+			expect(stderr).toMatch(/no known session pane/)
+		})
+
+		// spec: close on an unresolvable id errors and reaps nothing — at the CLI, close resolves the
+		// ref through resolveAgent (id/handle/branch) BEFORE decommission, so an unresolvable id throws
+		// the same "no agent addressable" message as the rest of the cluster and reaps nothing.
+		it('close on an unresolvable id errors and reaps nothing', () => {
+			const { stderr } = legionOut(['unit', 'close', 'ghost'])
+			expect(() => legion(['unit', 'close', 'ghost'])).toThrow()
+			expect(stderr).toMatch(/no agent addressable as/)
+			expect(stderr).toContain('ghost')
+		})
+	})
 })
 
 describe('mail group', () => {
@@ -318,6 +387,50 @@ describe('the standing owner mailbox — mail --owner', () => {
 	})
 })
 
+// The push-side doorbell, driven through the real CLI flag (not wakeRecipient directly), so the
+// --no-nudge → behavior wiring is actually exercised. A live-pane recipient without --no-nudge
+// attempts the ring; the mux is pinned to tmux and the pane does not exist, so the ring fails and
+// surfaces a best-effort "doorbell not confirmed" warning on stderr (never failing the send). That
+// warning is the observable that separates "ring attempted" from "ring suppressed": with --no-nudge
+// no ring is attempted and no warning appears. The slow baseline send exhausts nudge's retry cap
+// (~4s), hence the widened timeouts.
+describe('spec:cyberlegion/mail/doorbell — CLI --no-nudge', () => {
+	const muxEnv = { CYBERLEGION_MUX: 'tmux' }
+
+	it('--no-nudge suppresses the delivery doorbell to a peer (the flag reaches the behavior)', () => {
+		legion(['unit', 'register', '--harness', 'claude', '--handle', 'alice'])
+		legion(['unit', 'register', '--harness', 'claude', '--handle', 'bob'], { TMUX: 't', TMUX_PANE: '%77' })
+		// Baseline (non-vacuity): a live-pane peer without --no-nudge attempts the ring → stderr warning,
+		// send still succeeds.
+		const attempted = legionOut(['mail', 'send', '--from', 'alice', '--to', 'bob', '--body', 'wake'], muxEnv)
+		expect(attempted.stdout).toContain('sent:')
+		expect(attempted.stderr).toMatch(/doorbell/i)
+		// --no-nudge suppresses the ring → no warning, message still delivered.
+		const suppressed = legionOut(
+			['mail', 'send', '--from', 'alice', '--to', 'bob', '--no-nudge', '--body', 'quiet'],
+			muxEnv,
+		)
+		expect(suppressed.stdout).toContain('sent:')
+		expect(suppressed.stderr).not.toMatch(/doorbell/i)
+	}, 20_000)
+
+	it("--no-nudge suppresses the doorbell to a standing owner's bound main pane", () => {
+		legion(['unit', 'register', '--harness', 'claude', '--handle', 'alice'])
+		legion(['unit', 'register', '--standing', '--handle', 'owner'])
+		legion(['attach'], { TMUX: 't', TMUX_PANE: '%9' }) // bind the main pane — the human's live presence
+		// Baseline (non-vacuity): a standing-owner send with a bound main pane attempts the ring → stderr warning.
+		const attempted = legionOut(['mail', 'send', '--from', 'alice', '--to', 'owner', '--body', 'report'], muxEnv)
+		expect(attempted.stderr).toMatch(/doorbell/i)
+		// --no-nudge suppresses the ring to the bound main pane → no warning.
+		const suppressed = legionOut(
+			['mail', 'send', '--from', 'alice', '--to', 'owner', '--no-nudge', '--body', 'quiet'],
+			muxEnv,
+		)
+		expect(suppressed.stdout).toContain('sent:')
+		expect(suppressed.stderr).not.toMatch(/doorbell/i)
+	}, 20_000)
+})
+
 describe('AXI fail-loud behavior', () => {
 	it('an unknown flag fails loud with a nonzero exit', () => {
 		expect(() => legion(['unit', 'who', '--bogus'])).toThrow()
@@ -325,6 +438,12 @@ describe('AXI fail-loud behavior', () => {
 
 	it('mail send without a caller identity fails with a structured stderr error', () => {
 		expect(() => legion(['mail', 'send', '--to', 'ghost', '--body', 'hi'])).toThrow()
+	})
+
+	it('unit spawn --at rejects a value outside the allowed set (window was removed)', () => {
+		const { stderr } = legionOut(['unit', 'spawn', '--harness', 'claude', '--task', 't', '--at', 'window'])
+		expect(() => legion(['unit', 'spawn', '--harness', 'claude', '--task', 't', '--at', 'window'])).toThrow()
+		expect(stderr).toMatch(/Allowed choices are pane:right, pane:down, tab, workspace/)
 	})
 })
 
@@ -436,5 +555,21 @@ describe('admin group', () => {
 		const out = JSON.parse(legion(['admin', 'migrate', '--from', src, '--to', dst, '--format', 'json']))
 		expect(out).toMatchObject({ agents: 2, messages: 1 })
 		expect(legionAt(dst, ['unit', 'who', '--all'])).toContain('alice')
+	})
+})
+
+describe('spec:cyberlegion/init', () => {
+	it('a malformed --pin is rejected before any hook is registered', () => {
+		const proj = mkdtempSync(join(tmpdir(), 'cl-init-'))
+		// execFileSync throws on a non-zero exit — a rejected pin must fail cleanly, not stack-trace.
+		expect(() => legion(['init', '--agent', 'claude', '--dir', proj, '--pin', '1.2.3 && evil'])).toThrow()
+		expect(existsSync(join(proj, '.claude/settings.json'))).toBe(false)
+	})
+
+	it('a --pin that is a version or dist-tag token is accepted', () => {
+		const proj = mkdtempSync(join(tmpdir(), 'cl-init-'))
+		expect(() => legion(['init', '--agent', 'claude', '--dir', proj, '--pin', '0.2.0'])).not.toThrow()
+		const cfg = JSON.parse(readFileSync(join(proj, '.claude/settings.json'), 'utf8'))
+		expect(cfg.hooks.SessionStart[0].hooks[0].command).toBe('npx cyberlegion@0.2.0 mail hook --event SessionStart')
 	})
 })
