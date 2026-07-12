@@ -13,7 +13,7 @@ todos:
   - content: "impl gate: cold SDD impl-judge per frozen scenario"
     status: completed
   - content: "handoff: branch + PR, closes #133"
-    status: in_progress
+    status: completed
 ---
 
 # CR #133 — Guard internal skill descriptions against operational-detail drift
@@ -27,17 +27,15 @@ engine, SDD-default production chain.
 
 ## NEXT
 
-Spec authored + graded (cold spec-judge). Decisions locked: mechanical objective markers only
-(paths, `.agents/`/`scripts/` dirs, check-IDs, named artifact files), WARN/MEDIUM severity, new
-check **Q17**; Q1 + Q2-words gated public-only; internal = `user-invocable:false` OR
-`metadata.internal:true`. Enumeration scenario widened (Q17) — ratified re-open. Judge Builder-fix
-(metadata.internal arm scenario) applied; awaiting judge re-confirm → then spec gate freeze.
+**DONE — PR #144 open** (branch `feat/aced-guard-internal-descriptions`, closes #133). Both gates
+passed (cold SDD spec-judge ALIGNED; cold SDD impl-judge APPROVE 49/49), `pnpm verify` 19/19,
+`status: implemented`. Remaining: await review/merge, then doctrine-distill + retire this plan
+(`sdd:manage` → plan-retirement). A corpus-wide formation pass is due on-demand (not gating).
 
-Then DELIVER against frozen `.feature`: edit `plugins/aced/skills/improve-skill/scripts/validate.mts`
-— (a) `parseFrontmatter` returns internal via top-level `user-invocable:false` OR `metadata.internal`;
-(b) gate Q1 + Q2-words to `isPublicShippedSkill`; (c) add Q17 mechanical check; (d) add engine tests
-per frozen scenario. Marker regexes validated in scratchpad spike4 (0 FP on 43 shipped, 10 drift
-caught). Then impl gate (cold SDD impl-judge), then handoff branch + PR closes #133.
+Follow-up (non-blocking, fileable as a new CR): Q2 vague-phrase sub-check has no dedicated
+regression test for the internal case (impl-judge observation); and skill-design governance line 68
+still says internal skills use `metadata: internal: true`, contradicting `user-invocable-is-top-level`
+— a doc-drift reconcile out of scope here.
 
 ## Original two coupled changes:
 
