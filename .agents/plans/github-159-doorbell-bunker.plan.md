@@ -14,11 +14,11 @@ todos:
   - content: Spec gate — freeze new/touched .feature, ledger gate line, status stays implemented
     status: completed
   - content: Deliver — implement nudge-on-send + Bunker notify + mail bunker path; verification per scenario
-    status: in_progress
+    status: completed
   - content: Impl gate — rebase onto main, cold impl-judge per frozen scenario, root pnpm verify
-    status: pending
+    status: completed
   - content: Handoff — Warden placement pass, PR (Closes #159), mail Bunker, clear warm units
-    status: pending
+    status: in_progress
 ---
 
 # CR: register + nudge on mail delivery + rename owner inbox to Bunker (#159)
@@ -81,9 +81,17 @@ Sibling ship `beam` (#158, unit focus beaming) establishes SessionAdapter
 verify-observable-effect-or-fail-loud. Do NOT block. Align vocabulary if #158 lands first; else note
 the seam. Rebase-before-impl-gate handles landing order.
 
+## Follow-up (new CR, not this PR)
+
+Migrate the `cyberlegion-plugin` (draft) docs `legate` → `bunker` owner-inbox handle for coherence
+with this rename — `plugins/cyberlegion/skills/init-cyberlegion/{SKILL.md,README.md}` suggest
+`unit register --standing --handle legate`. Safe to defer: back-compat is preserved (`mail bunker`
+and `--owner legate` both resolve), and those skills belong to a separate SDD project.
+
 ## NEXT
 
-Deliver against the frozen suite. Impl sketch:
+DONE through impl gate (both gates self-asserted by:agent, auto-all leash). Handoff: push + PR
+(Closes #159), mail status to the Bunker, clear this ship's context. Impl sketch (reference):
 - `message.ts` (or a new `console/doorbell.ts`): `wakeRecipient(ctx, adapter, exec, {toId, senderId, noNudge})`
   — best-effort. Resolve recipient record; if `kind:standing` → target = `getMainPane()`, else target =
   `pane?.id ?? findPaneByAgentId(toId)`. No target, or target == sender's own pane → no-op. Else
