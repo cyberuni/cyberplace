@@ -37,6 +37,22 @@ Campaign   = existing SDD product outer loop (grow/prune capabilities) — UNTOU
   sits a rung *above* Operation; the Operation rung was empty, so no rename.
 - **Campaign** — SDD's existing product outer loop; left as-is.
 
+## Not a new engine — formalizing the existing loop
+
+This is **not** a new pre-mission compiler bolted on. It **formalizes + enriches the flow SDD already
+runs**: intake already turns a CR (GitHub issue / Asana task / prompt) into a plan under
+`.agents/plans`; Explore already reshapes mission scope, files follow-up CRs, and discovers blocks;
+post-mission already feeds back. We add three things to decisions the conductor **already makes by hand**:
+- **plan → plan*s*** — intake can split one CR into multiple Operations/missions (a DAG, not one flat brief);
+- **criteria** — node-ownership/SSA, hazards (RAW/WAW/WAR), Operation-coherence, blast — to guide cuts
+  that are currently intuition;
+- **persistence** — the DAG log, so the plan(s) are a queryable graph Explore + post-mission update.
+
+Touchpoints where the DAG is created/updated = the existing phases: **intake** (initial split),
+**Explore** (scope change, discovered edges, follow-up CRs), **handoff/post-mission** (discovered-from,
+retirement). Worked example: **#120 blocked on #122** — today ad-hoc (block + wait); formalized, it is
+a **RAW edge discovered during Explore**, written to the DAG so the scheduler routes around it.
+
 ## The hazard mapping (why the compiler model is load-bearing)
 
 Edge convention: `A → B` = "A must finish before B" (A produces, B consumes).
@@ -154,6 +170,83 @@ parallel worktrees, but **merge/retire in an Operation-coherent order** (the reo
 trunk stays deployable. Plus **latency hiding** (MIMD-friendly): a mission blocked on a gate/CI/human
 lets its agent pick up another ready mission.
 
+## SSA lowering procedure (the reasoning front-end)
+
+Goal restated as SSA construction: a CR's total **write-set** is what it creates or modifies.
+Lowering = **partition the write-set so each unit has exactly one owning mission** (SSA: one
+assignment per variable; missions = versions).
+
+**Granularity — the unit is the spec-node, NOT the export.** (Revised: per-export is unstable under
+monadic uncertainty and not artifact-type-neutral — skills/subagents/governances/docs are prose, no
+"export".) The stable, artifact-neutral atom is the **spec-node = `project + capability +
+artifact-type`**, whose contract is its **frozen `.feature`** — exactly what the mission loop freezes.
+So **SSA = one owning mission per spec-node**. It is stable (capability known early, symbols churn),
+artifact-neutral, already SDD-native + cheap (`resolve-governances` / `project-path`), and matches
+production practice (Uber/Aviator schedule at coarse build-target granularity; symbol-level is
+research-only). **Screaming architecture is the precision lever**: clean capability boundaries make a
+node-level collision a *real* collision (architecture quality = scheduler precision); where node-level
+over-serializes (one thin file, two capabilities — e.g. `cli.ts` prune vs gc), that is usually an
+architectural **smell** to split. Exception: legitimate shared-thin files (CLI router, barrel,
+registry) get an **optional finer file-region/symbol check** to downgrade hard→soft. The exact finer
+mechanism (and whether prose ever needs scenario-level) is **open — artifact-type-specific, deferred**.
+
+Procedure:
+1. **Recover the write-set (def set).** Primary unit = **spec-nodes** (project+capability+artifact-
+   type) the CR touches — stable + cheap (`resolve-governances`/`project-path`). Optional finer
+   (file-region/symbol) only for known shared-thin files. Partial/predicted at the frontier (monadic).
+2. **Node-interference view (deterministic seams).** Compute **cohesion** (nodes that must co-change),
+   **contention** (a node touched by >1 concern), **def-use** (RAW). Scaffolded by capability
+   boundaries / artifact-types / new-vs-modified (a new node = single-writer by construction;
+   contention only on existing shared nodes).
+3. **Partition symbols → missions (SSA rename + register allocation).** Agent's cut, toward: single-
+   writer-per-symbol, high cohesion within a mission (≈ operator fusion, don't over-split coupled
+   symbols), Operation-coherence. **Crosses CR boundaries** — missions regroup work by *ownership*,
+   not by originating CR (so N CRs → M missions, not 1:1).
+4. **Resolve contention by versioning (key refinement).** Two concerns writing node X → version it
+   `X_v1`(A) → `X_v2`(B) with a RAW edge. **A WAW is only irreducibly hard when the two writers are
+   otherwise independent (no order to impose).** Versioning **is** the resolution (order them, do
+   first, rebase/rework second → versioned-RAW). **Policy: serialize at ISSUE (strong default).**
+   Mechanism note: worktrees mean git only surfaces the conflict at *retire* — but at **node**
+   granularity a same-node collision is usually a *substantial semantic* merge (hard/impossible), so
+   optimistic parallel-then-merge is the wrong default; don't start them concurrently. Contrast RAW
+   (blocks *starting*, needs the output). **The coarser the atom, the more a collision biases to
+   issue-serial** (coarse merges are expensive). Only known-cheap overlaps (shared-thin files) stay
+   soft/parallel. **Irreducible-hard** = even serialized, the second needs real **rework** (not a
+   clean replay) because the first moved the ground.
+5. **Emit RAW edges from def-use** across the assignment = the dependency DAG.
+6. **Lazy/monadic frontier expansion.** Deeply lower only the frontier; leave far work coarse until
+   it approaches, then Explore refines it.
+
+Maps to compiler **SSA construction + register allocation**: interference graph = symbol-contention;
+coloring = assign symbols to missions (registers); **spilling = the irreducible serialize**; φ-nodes
+= merge/rebase reconciliation. Division of labor: deterministic engine *proposes* (seams, interference,
+contention, def-use); agent *decides the cut* (partition + versioning) toward SSA; back-end *verifies*
+SSA-ness + flags residue.
+
+Refines the hazard model: **WAW-hard collapses to versioned-RAW whenever an order can be imposed**;
+irreducibly hard only for order-less concurrent co-writes of one symbol.
+
+## Barrier missions (architecture / project-wide refactors)
+
+A distinct mission **class** the node-ownership model doesn't capture: architecture / project-wide
+refactoring **doesn't own one node — it cross-cuts many**, so its blast is (near) the whole graph
+**of its project/spec** (monorepo projects are isolated — a refactor in one project does not fence
+another's missions) and it WAW-conflicts with almost everything in that project. In CPU/compiler terms these are **barriers / fences**
+(serializing instruction, stop-the-world, schema migration): missions can't reorder across them, and
+everything after rebases onto the new world — a **global φ-node** partitioning the schedule into
+epochs (before-refactor / after-refactor).
+
+- **Must be called out explicitly** — cannot be scheduled as a normal node-owning mission; their real
+  edge set is "conflicts with most of the fleet."
+- **Do them first/early — once the need is known and the target shape is clear.** Doing a refactor
+  *after* parallel fan-out forces a fleet-wide rebase/rework (moves the ground under everyone); cost
+  only grows with delay. Caveats: refactors are often **discovered mid-flight** (monadic) → then it's
+  a **drain-and-rebase** (pause in-flight, do the barrier, rebase the fleet), cheaper the sooner;
+  a purely **speculative** refactor risks wasted or wrong-shape work → confirm the need first.
+- Usually on the **critical path** (hoisting early is also cost-optimal) and **high-blast → HITL-gated**.
+- **SDD home**: barrier missions are largely what the **formation loop** (Architect/Warden, corpus
+  structure) produces — structural CRs = fences in the scheduler.
+
 ## Architecture lessons (CPU / GPU / NPU)
 
 The hazard *dynamics* are CPU (renaming, OoO, speculation); the *graph* is monadic/dynamic (above);
@@ -214,8 +307,9 @@ the design ceiling — it confirms no DB, and shapes the layout below.
 Store shape (SDD-native):
 - **DAG log = the source of truth for graph structure** — a **sharded, append-only, git-tracked
   event log** (the SDD `ledger/` pattern) holding nodes + edges (RAW, parent-child/Operation,
-  discovered-from) + status changes + structured `touch-set` (files/symbols/regions/tier), `blast`,
-  `hitl|afk`, `artifact-type`, `confidence`. Sharded per-writer so concurrent agents growing the
+  discovered-from) + status changes + `touch-set` (**primary = spec-nodes touched**; optional finer
+  file-region/symbol for shared-thin files; + tier/confidence), `blast`, `hitl|afk`, `artifact-type`.
+  Sharded per-writer so concurrent agents growing the
   graph (monadic) never collide; status history = the audit trail. Conceptually beads_rust's
   SQLite+JSONL split (structured graph + detail) done git-native.
 - **Plan briefs (`.plan.md`) = the live detail layer** for *active* missions only (todos, NEXT,
@@ -260,8 +354,16 @@ Store shape (SDD-native):
 - **Decomposition (lowering) is core to v1** — without it the scheduler has nothing to interleave.
 - Engine is **hybrid**: reasoning front-end (lower) + deterministic back-end (hazard + schedule).
   Sits above the mission loop as a pre-mission planner; reuses `explore` unit-identification.
-- **LOWER objective = SSA** (single owning mission per symbol); reasoning pass aims for it, back-end
-  flags the residue. Merge discipline = in-order (Operation-ordered) retirement.
+- **LOWER objective = SSA** (single owning mission **per spec-node** — the stable, artifact-neutral
+  atom, contract = its frozen suite; NOT per-export). Reasoning pass aims for it, back-end flags the
+  residue. Screaming architecture = precision lever. Merge discipline = in-order (Operation-ordered)
+  retirement. WAW-hard collapses to versioned-RAW when an order can be imposed (bites at retire, not issue).
+- **Not a new engine** — formalizes + enriches the existing intake→plan(s)→Explore→post-mission loop
+  with a DAG, criteria, and persistence. Lowering rides the existing phases.
+- **Node-level hard collision → serialize at ISSUE (strong default)** (coarse merges are expensive);
+  only known-cheap shared-thin-file overlaps stay soft/parallel. Coarser atom ⇒ bias to serial.
+- **Barrier missions** (architecture/project-wide refactors) = fences: called out explicitly,
+  done first/early once confirmed, high-blast/HITL, largely from the formation loop.
 - **DAG is monadic/dynamic** (discovered through Explore + micro/macro iterations), never fully known.
   Engine re-derives a **live frontier/ready-set**; commit near, speculate far, lazily lower the frontier.
 - **Execution is barrier-free dataflow** (Turborepo/OoO fire-when-ready, MIMD) — "waves" are a view,
@@ -270,9 +372,9 @@ Store shape (SDD-native):
   beads/beads_rust are the design reference, not a runtime dep. No Dolt, no external DB.
 
 ## Open (next)
-- **How the LOWER step works**: deterministic seams (spec-nodes/artifact-types) with reasoning only
-  to group/name, vs a full agent/skill reasoning pass; and whether this is a *generalization of
-  `explore`* or a *distinct station* that calls explore per mission.
+- **Finer-than-node granularity mechanism** — how the optional file-region/symbol check downgrades
+  hard→soft for shared-thin files (CLI router/barrel/registry); whether prose artifact-types ever need
+  scenario/section-level. Artifact-type-specific; likely deferred. (Node is the stable primary atom.)
 - **Name** the engine (compiler/scheduler vocabulary; avoid the `plan` token — collides with SDD
   `.plan.md` mission briefs).
 - Which axes are v1 vs deferred (concurrency + deliverability + granularity core; cost may be v2).
