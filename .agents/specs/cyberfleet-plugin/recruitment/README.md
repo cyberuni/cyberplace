@@ -51,12 +51,12 @@ eval layers carry signal.
 - **Voice** — a tavern recruiter: warm, a little salty; the voice lives only in what Crimp says,
   never in the mechanics (which stay CLI calls).
 
-**Non-goals** — spawning, listing, or pruning ship **instances** (that is `gateway/`'s **Operator**
+**Non-goals** — spawning, listing, or pruning ship **instances** (that is `operator/`'s **Operator**
 persona — deployment); reconfiguring or tuning a crew's program — governance, model, effort, leash
 (that is `tuning/`'s **Tuner** persona); authoring a brand-new skill/persona from scratch (that is
 skill-authoring — `define-skill`, not recruitment); the marketplace/Tavern query engine itself and
 the fleet registry mechanics (Crimp invokes those, it does not own them); in-ship mission work
-(`gateway/`'s Pod).
+(`pod/`'s Pod).
 
 Every scenario in [`recruitment.feature`](./recruitment.feature) maps to one of these behaviors:
 

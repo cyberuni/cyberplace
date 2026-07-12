@@ -6,7 +6,7 @@ Feature: recruitment — the fleet persona: Crimp recruits and discharges crew t
   intent, not by its exact slug, per ADR-0021), helps the Council pick a crew, installs it, and
   registers it into the fleet; the reverse discharges a crew (confirm, uninstall, retire). Crimp
   acquires and retires crew TYPES only: it never spawns or prunes a ship INSTANCE (that is the
-  Operator persona in gateway/) and never reconfigures or tunes a crew (that is the Tuner persona
+  Operator persona in operator/) and never reconfigures or tunes a crew (that is the Tuner persona
   in tuning/). It browses and installs; it does not deploy and does not tune. The scenarios below
   cover the recruit flow, the discharge flow, the fleet registration rule, and the two boundary
   deferrals.
