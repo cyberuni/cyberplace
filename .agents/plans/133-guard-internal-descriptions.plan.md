@@ -5,15 +5,15 @@ todos:
   - content: "explore: grill new mechanical check for internal-skill description drift (validate.mts)"
     status: completed
   - content: "fix parseFrontmatter to detect top-level user-invocable:false (misses 24/43 internal skills)"
-    status: pending
+    status: completed
   - content: "spec gate: freeze improve-skill.feature (additive scenario + re-open of enumeration scenario)"
-    status: pending
+    status: completed
   - content: "deliver: implement check + verification against frozen scenarios"
-    status: pending
+    status: completed
   - content: "impl gate: cold SDD impl-judge per frozen scenario"
-    status: pending
+    status: completed
   - content: "handoff: branch + PR, closes #133"
-    status: pending
+    status: in_progress
 ---
 
 # CR #133 — Guard internal skill descriptions against operational-detail drift
