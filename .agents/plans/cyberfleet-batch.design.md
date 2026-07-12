@@ -437,6 +437,40 @@ Decisions:
 - **Claims are append-events**; rare two-dispatcher races resolve at fold-time by deterministic
   tie-break. Single Operator is the common case at 1k scale.
 
+## v1 carve + self-host bootstrap
+
+**Strategy: dogfood — the system's first job is planning its own build (a self-hosting compiler).**
+Acceptance bar: if it can't usefully plan its own remaining work, it isn't ready. Our own project (a
+handful of real Operations/Missions with genuine deps) is the primary test fixture, alongside the
+#135/#136/#137 worked example.
+
+Dogfooding *decides* the carve by asking: what is the minimal kernel that lets it eat its own dogfood?
+
+**v1 = the self-hosting kernel (minimal):**
+- **Store** — the sharded, append-only, git-tracked mission-graph log: nodes = Operations/Missions,
+  edges = RAW deps + parent-child, status. General schema (not overfit to our project).
+- **`ready` + `cycles`** — a zero-dep `.mts` engine: fold the log → the frontier (`ready`); reject
+  cycles at write (`cycles`).
+- **Manual node authoring** — the conductor writes nodes/edges by hand (frontmatter/append) during
+  intake/Explore. No automation.
+
+**Deferred out of v1 (each becomes a Mission in the self-hosted graph):**
+git-diff touch-set tool · node-level WAW/WAR classification · SSA-lowering automation · finer-than-node
+region/semantic rungs · barrier-mission handling · dispatcher surface / headless-operator (F3) ·
+symbol-level produce/consume dep inference · F1 (spec-layout strengthening) · F2 (cross-node scenario
+dedup) · merge backstop (dispatch-consumer) · blast-field auto-compute · naming finalization.
+
+**Bootstrap sequence:**
+1. Build the kernel via the current SDD flat plan (the one irreducible manual seed — it can't plan
+   itself into existence).
+2. The moment `ready` works, decompose *this project's* remaining work into Operations/Missions and
+   author them into the store — its own backlog becomes its first Campaign.
+3. Drive the rest with `ready`; each deferred item above is a hand-classified Mission until the
+   automation that would classify it is itself built (conservative-first, relax-as-capability-arrives).
+
+**Validation suite (free from dogfooding):** `.feature` scenarios = "given this project's authored
+graph, `ready`/`cycles` return exactly X" — own graph as fixture + the worked example.
+
 ## Criteria (what a correct output must satisfy)
 - The **ready-set** never surfaces a mission with an unsatisfied RAW/WAW predecessor; no two
   concurrently-ready missions are a WAW pair.
@@ -488,6 +522,10 @@ Decisions:
   per-mission mechanism (`unit spawn`/Legate), NOT the scheduler. Issue vs Operation-ordered-retire
   split; capacity is the Operator's; feedback rides existing intake/Explore/handoff phases (no
   reporting protocol); touch-set correction tool = SDD engine.
+- **v1 = self-hosting kernel** (store + `ready`/`cycles` + manual authoring); **dogfood** the rest —
+  the system plans its own build. Everything else deferred to Missions in its own graph.
+- **Naming: parked** (low value). Units settled (Campaign>Operation>Mission>Task); store =
+  descriptive placeholder ("mission graph" / ORBAT); capability + store names finalize during spec.
 - **DAG is monadic/dynamic** (discovered through Explore + micro/macro iterations), never fully known.
   Engine re-derives a **live frontier/ready-set**; commit near, speculate far, lazily lower the frontier.
 - **Execution is barrier-free dataflow** (Turborepo/OoO fire-when-ready, MIMD) — "waves" are a view,

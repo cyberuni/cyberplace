@@ -2,50 +2,92 @@
 name: cyberfleet-batch
 status: active
 todos:
-  - content: "explore/design: settle concept model (compiler/scheduler for missions) — DONE, see design.md"
+  - content: "design: full compiler/scheduler model captured in design.md (DONE)"
     status: completed
-  - content: "design: SSA lowering procedure — how the reasoning front-end cuts toward single-writer-per-symbol"
-    status: in_progress
-  - content: "design: ready-set -> dispatcher surface (how Operator/Legate consume the frontier)"
+  - content: "spec: name + exact SDD node placement (finalize in-context during spec authoring)"
     status: pending
-  - content: "name the engine + re-home files to the SDD target node; retire stale cyberfleet-batch naming"
-    status: pending
-  - content: "spec: draft the SDD node spec.md + .feature (SSA lowering, RAW/WAW/WAR, ready-set, Operation retirement)"
+  - content: "spec: write the SDD node spec.md + .feature for the v1 KERNEL (store + ready/cycles + manual authoring)"
     status: pending
   - content: "spec gate: cold spec-judge ALIGNED, freeze .feature"
     status: pending
-  - content: "deliver: build the zero-dep ready/cycles engine + per-scenario verification"
+  - content: "deliver: build the sharded append-only mission-graph log + ready/cycles .mts engine + tests"
     status: pending
   - content: "impl gate: cold impl-judge PASS; root pnpm verify"
     status: pending
-  - content: "handoff: PR, distilled summary, file deferred forks as follow-up CRs"
+  - content: "self-host: author THIS project's Operations/Missions into the store as its first Campaign"
+    status: pending
+  - content: "handoff: PR; file the deferred backlog + F1/F2/F3 as follow-up CRs"
     status: pending
 ---
 
-# cyberfleet-batch — (working ref; concept renamed pending)
+# cyberfleet-batch — CR→mission compiler/scheduler (working ref; concept rename pending)
 
-> ⚠ **Concept evolved substantially during explore — see `.agents/plans/cyberfleet-batch.design.md`
-> for the living design.** No longer "a cyberfleet batch verb." Now: an **SDD-native mission
-> compiler/scheduler** that lowers CRs into individually-executable missions and schedules them for
-> parallel work. Name + exact SDD node **pending**; file rename deferred until named.
+> **Design is captured in `.agents/plans/cyberfleet-batch.design.md` — read it first.** This brief is
+> the actionable handoff. Concept renamed a long way from "cyberfleet batch verb": it is now an
+> **SDD-native system that compiles change-requests into a scheduled graph of executable missions.**
 
-An engine that takes change-requests and compiles them into a scheduled graph of **missions**,
-using a dependency DAG + blast-radius hazard analysis (RAW/WAW/WAR), aiming decomposition toward
-**SSA** (single owning mission per symbol), emitting a live **ready-set** (barrier-free, MIMD),
-retiring in **Operation**-coherent order to keep trunk deployable. Hierarchy: **Campaign > Operation
-> Mission > Task** (existing SDD Campaign product loop untouched).
+## The model (one paragraph)
 
-- Placement: **SDD** (facts + schedule + blast); cyberfleet/cyberlegion consume + dispatch. Exact
-  node pending.
-- Store: SDD-native sharded append-only DAG log (ledger pattern) + plan briefs as live detail; ~1k
-  ceiling; no DB. beads/beads_rust = design reference only.
+**Not a new engine** — it *formalizes + enriches the existing intake→plan(s)→Explore→post-mission
+loop* with a persisted DAG, criteria, and queries. A **CR is decomposed into one or more Operations**
+(each a graph of Missions), added into the standing **mission graph** (store). Hierarchy **Campaign >
+Operation > Mission > Task** (Campaign = existing SDD product loop, untouched; Operation = releasable
+unit; Mission = executable node w/ a `.plan.md`; Task = its todos). Relationships = the three CPU data
+hazards: **RAW** (dep → serialize), **WAW** (hard, same spec-node → serialize at issue), **WAR** (soft,
+same-file-diff-region → parallel + rebase). Lowering aims for **SSA** (one owning Mission per spec-node
+— the stable, artifact-neutral atom, contract = its frozen suite). The DAG is **monadic/dynamic**
+(discovered through Explore, not known up front); execution is **barrier-free dataflow** (fire-when-
+ready, MIMD; "waves" are a view, not a barrier); ordering only at **Operation-coherent retirement**.
+
+## Placement & store
+
+- **SDD owns it** (facts + schedule + blast); **cyberfleet Operator** consumes the `ready` frontier +
+  runs the dispatch loop; **cyberlegion** = per-mission mechanism (`unit spawn`/Legate).
+- **Store** = SDD-native **sharded, append-only, git-tracked mission-graph log** (the `ledger/`
+  pattern). ~1k-entry ceiling → no DB; whole-graph analysis is cheap. beads/beads_rust = design
+  reference only (they validated the model: dep-DAG, discovered-from, cycle-reject, `ready`).
+- Target project spec: `packages/cyberfleet/.agents/spec`? — **REVISIT: placement moved to SDD**, so the
+  node likely lives under `.agents/specs/sdd` (confirm exact node at spec time via discover-specs).
+
+## v1 carve = the self-hosting kernel (dogfood)
+
+Build only the minimum to plan its own remaining work, then self-host:
+1. **Store** — sharded append-only mission-graph log (Operations/Missions, RAW+parent-child edges, status).
+2. **`ready` + `cycles`** — zero-dep `.mts`: fold shards → frontier; reject cycles at write.
+3. **Manual node authoring** — conductor writes nodes/edges by hand during intake/Explore.
+Then: author this project's own graph → drive the rest via `ready`. Validation = own graph as fixture
++ #135/#136/#137 worked example.
+
+## Backlog (deferred out of v1 → each a Mission in the self-hosted graph)
+
+- git-diff touch-set tool (SDD engine = `git diff` + `gherkin-cli diff` + `resolve-governances`)
+- node-level touch-set + WAW/WAR classification (soft/hard)
+- finer-than-node ladder: file (default signal) → region → semantic (scenarios/symbols); shared-thin-file exception
+- SSA-lowering criteria/automation; symbol-level produce/consume dep inference
+- barrier-mission handling (fences; from formation loop)
+- **F3**: cyberfleet **headless-operator** (unattended dispatch-loop driver; none exists today) + Pod-boundary settle
+- merge backstop (speculative-CI/bisection) — lives in the dispatch consumer
+- blast-field auto-compute (the touch-set estimator sharpens SDD's hand-asserted `blast:`)
+- **F1**: strengthen `spec-layout.md` S1 capability-first → strongly-recommended + Warden layout-quality signal
+- **F2**: formation-loop intra-project cross-node scenario-overlap dedup (spec-level SSA)
+- naming finalization (units settled; store/capability = placeholders)
+
+## Open questions
+
+- Exact SDD node + engine surface names; whether Operation-capstone needs a new frontmatter field.
+- Store schema exact fields (keep general, not overfit to this project).
+- Finer semantic rung for non-behavioral prose (governance/reference) — likely "don't descend".
+
+## Provenance
+
 - Design brief: `.agents/plans/cyberfleet-batch.design.md`.
-- Research: `.research/work-decomposition-cr-parallelism/conclusion.md`.
-- Settled forks: estimator SDD-native; v1 declared-edges-only (symbol inference = follow-up);
-  Operation (not Campaign) for the release unit.
+- Research: `.research/work-decomposition-cr-parallelism/` (conclusion.md — landscape + beads/wayfinder/build-graph/merge-queue prior art).
+- Settled forks: estimator SDD-native; v1 declared-edges-only; Operation (not Campaign) for the release unit; store SDD-native (no DB); dispatch loop = cyberfleet Operator (not Legate).
+- Run-start leash shard was removed (was misplaced under cyberfleet ledger); re-emit under the SDD node at spec time.
 
 ## NEXT
 
-Design thread: the **SSA lowering procedure** — how the reasoning front-end cuts a CR into missions
-that approach single-writer-per-symbol, scaffolded by spec-node/artifact-type ownership seams, done
-lazily/monadically at the frontier. Then the ready-set→dispatcher surface, then name + spec draft.
+Move from design into spec: run the SDD spec phase for the **v1 kernel** — confirm the exact SDD node
+(via discover-specs; placement is SDD, not the cyberfleet package), name it in-context, and draft
+`spec.md` + `.feature` for {store, `ready`, `cycles`, manual authoring} with the self-host validation
+scenarios. Everything in the Backlog is a follow-up, not part of v1.
