@@ -9,15 +9,15 @@ todos:
   - content: "spec gate: freeze improve-skill.feature additive scenarios + manage-skill-dirs.feature"
     status: completed
   - content: "deliver: implement config union + glob findSkillFiles + --dir flag + verification"
-    status: pending
+    status: completed
   - content: "deliver: implement manage-skill-dirs engine + skill"
-    status: pending
+    status: completed
   - content: "deliver: wire mechanical scan into pnpm verify; clean first-run backlog"
-    status: pending
+    status: completed
   - content: "impl gate: cold SDD impl-judge per frozen scenario"
-    status: pending
+    status: completed
   - content: "handoff: branch + PR, closes #149"
-    status: pending
+    status: in_progress
 ---
 
 # CR #149 — customizable skill-scan locations + wire the mechanical scan into CI
@@ -73,21 +73,22 @@ step; do not silently ship a red gate.
 - E1 discriminator prototype: 15/15 crisp, non-overlapping (recursion / glob / abs-home-var path).
 - Glob matcher + CRUD/induce/preview fully reusable from `manage-spec-anchors.mts` (minus `<project>`).
 
-## NEXT — deliver (build-to-keep)
+## NEXT — handoff (PR open, awaiting merge)
 
-**Spec gate PASSED** (round-2 ALIGNED, status: approved, 3 .feature @frozen, ledger gate line written,
-check-spec-state OK). Now build against the frozen contract:
+**Both gates PASSED.** Spec gate: round-2 cold spec-judge ALIGNED. Impl gate: cold impl-judge APPROVE,
+all frozen scenarios PASS, no regression, BLOCKER null. status: **implemented**. `pnpm verify` 20/20.
+Two commits on `feat/aced-skill-scan-locations`: spec gate (73b83e6a) + deliver (ea96c44b). Impl-gate
+status transition committed next; branch pushed; PR opened closing #149.
 
-1. `validate.mts` — read `.agents/aced/skill-dirs.toml` (`anchors`), union onto SKILL_DIRS; glob
-   expansion (`*` one seg, `**` any depth) in findSkillFiles; repeatable `--dir <glob>` flag (`--path`
-   wins); E1 severity split (scoped `rm -f <named rel file>`→WARN, catastrophic→CRITICAL). Update
-   validate.test.mts. Reuse glob/toml logic from manage-spec-anchors.mts.
-2. NEW `plugins/aced/skills/manage-skill-dirs/` — SKILL.md (partial, `user-invocable:false`,
-   `metadata.internal:true`, "Partial Skill:" desc) + README + scripts/manage-skill-dirs.mts + test.
-   Port manage-spec-anchors.mts (config path `.agents/aced/skill-dirs.toml`, 2 fixed defaults, drop
-   `<project>`, patterns probe `<dir>/<child>/SKILL.md`).
-3. `plugins/aced/skills/manage/SKILL.md` — add manage-skill-dirs route.
-4. `package.json` + `turbo.json` — `//#check:skills` task (validate.mts --root .) + verify dependsOn.
-5. Create `.agents/aced/skill-dirs.toml` with `anchors = ["plugins/*/skills","packages/*/skills"]`
-   (repo opts itself in). Verify whole-corpus scan is CRITICAL-free (E1 refine clears the 1).
-6. Impl gate: spawn cold sdd:sdd-impl-judge per frozen scenario. Then handoff (PR closes #149).
+After merge:
+- **Doctrine-distill + retire this plan** (`sdd:manage` → doctrine loop) once source merged AND distilled.
+- **Formation nudge**: a corpus-wide formation pass is due (new node landed) — `sdd:manage` → formation-loop, on-demand.
+
+### Follow-ups (file as new CRs, do not block #149)
+- **S1 parent-dirname edge** (impl-judge note, pre-existing): S1 ("SKILL.md in own directory") checks
+  literal parent dirname `=== 'skills'`; a future skill-dir pattern whose final segment isn't literally
+  `skills` would false-positive S1. Never fires with the real anchors (both end in `skills`). Harden S1
+  to derive the skill-root from the configured scan location, not a hardcoded `'skills'`.
+- **Glob-logic duplication** (impl-judge note): `expandSkillDirPattern`/`collectDescendants` duplicated
+  between validate.mts and manage-skill-dirs.mts — mirrors the manage-spec-anchors precedent (no-deps
+  self-contained .mts). Optional: extract a shared glob util if a third consumer appears.
