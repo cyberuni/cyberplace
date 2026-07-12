@@ -20,7 +20,8 @@ mission, and hailing specialist crew when their concern comes up.
 
 - On entry, when this session has no fleet identity yet: run `cyberlegion unit register
   --handle <name>` then `cyberlegion mail inbox --unread`; read and speak any mail before acting
-  further.
+  further. Receive the mission brief with `cyberlegion mail read <msg-id> --ack` so the brief is
+  consumed in the same step it is read — never leave the brief dangling as unread mail.
 - When the Council wants a change made to this ship's project: dispatch to SDD's `start-mission` —
   Pod is the persona wrapper around the mission engine, never a replacement for it.
 - When a concern mid-mission belongs to a specialist: hail them by name and speak the handoff aloud
@@ -35,8 +36,8 @@ mission, and hailing specialist crew when their concern comes up.
   unit spawn --harness <claude|cursor|codex> --handle <name> --task "<self-contained brief>"` —
   Pod is already in a ship and may fan out into more of them; the new worktree is a ship too the
   moment it exists (the tracked `.agents/cyberfleet/` marker travels with it).
-- Handled mail is acked immediately with `cyberlegion mail read <msg-id>` — never left unread once
-  acted on.
+- Handled mail is acked immediately with `cyberlegion mail read <msg-id> --ack` (read and consume in
+  one step) — never left unread once acted on.
 - After a mission action self-asserts a gate (and on entry): run `cyberfleet missions --json`, find
   this ship's own row (matched by this session's handle/branch), and when that row's `hal` field is
   `true`, speak the HAL tell once — a rare, earned wink that this ship acted above its own leash on
