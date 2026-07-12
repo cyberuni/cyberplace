@@ -388,6 +388,55 @@ Store shape (SDD-native):
 - **At 1k the back-end can be lavish** — whole-graph / naive O(n²) analysis is cheap; no incremental
   algorithms, caches, or indexes needed. Simple fold-and-walk.
 
+## Ready-set → dispatcher surface (the output side)
+
+Because the scheduler is a **pure derivation over the git-tracked DAG log**, the surface is a **pull
+query, not a service** — no push/protocol/daemon; the DAG log is the coordination substrate.
+
+**`ready`** — a stateless SDD CLI query (TOON / `--format json`, like `discover-plans`). Folds the
+DAG-log shards → the live frontier: missions with **no unsatisfied RAW predecessor and not WAW-blocked**
+by an in-flight same-node mission. Ranked (active-Operation priority → critical-path length). Per-mission
+schema: id, node, operation, blast, hitl|afk, model-tier, brief-pointer, why-ready, soft-overlap
+annotations, rank.
+
+Consumed at the existing three layers, keeping the `cyberfleet decides / cyberlegion dispatches` line
+clean: **SDD `ready`** *computes* → **cyberfleet `missions`/Council** *displays* it (+ gate/leash) →
+**cyberfleet Operator** *acts* — it owns the **dispatch loop** (fleet-level decision), realized
+**headless-operator** when unattended. Per mission it calls **cyberlegion mechanism** (`unit spawn`,
+or **Legate** for warm/cold strategy). **Legate/headless-legate is the per-unit mechanism executor,
+NOT the scheduler** — the loop and the ready-set consumption are the Operator's.
+
+> **Gap → F3**: there is **no headless-operator** today (cyberfleet has no `agents/` dir; only
+> headless-legate exists at the mechanism layer). The unattended fleet-level dispatch-loop driver must
+> be built as a cyberfleet agent. (Cyberfleet-internal detail for that CR: today the operator skill
+> says spawning parallel worktree-ships from *inside* a ship is Pod's job — so the headless-operator's
+> relationship to Pod-style spawns needs settling there, not here.)
+
+Dispatch loop (**the cyberfleet Operator / headless-operator owns this loop**; cyberlegion calls are mechanism):
+```
+loop:
+  ready = sdd ready                      # pull frontier (ranked)
+  while capacity K and ready:
+    m = pick(ready)                      # dispatcher policy: rank + human-availability
+    claim(m)                             # append claim event to DAG log (status=in-progress)
+    cyberlegion unit spawn <worktree>    # AFK -> autonomous; HITL -> human channel
+  on mission-done(m):                    # rides the mission's existing HANDOFF phase
+    append: status=retired, corrected touch-set (git-diff tool), discovered-from
+    merge in Operation-order + speculative-CI backstop
+  # next `ready` reflects it -> re-derive
+```
+
+Decisions:
+- **Two orderings split**: `ready` governs **issue**; **retirement is Operation-ordered merge** (dispatcher
+  merges in Operation-coherent order + speculative-CI/bisection backstop). Scheduler emits Operation
+  structure as retire *guidance*; the merge + backstop is the dispatcher's (scheduler stays read-only).
+- **Capacity is the dispatcher's**: `ready` emits the full frontier + ranking; dispatcher applies K
+  (issue width) + human-availability. Scheduler = what's *possible*; dispatcher = what to *run*.
+- **Feedback rides existing phases** — intake writes nodes, Explore updates edges, handoff writes
+  retirement/corrected-touch-set/discovered-from. No reporting protocol; the scheduler just re-derives.
+- **Claims are append-events**; rare two-dispatcher races resolve at fold-time by deterministic
+  tie-break. Single Operator is the common case at 1k scale.
+
 ## Criteria (what a correct output must satisfy)
 - The **ready-set** never surfaces a mission with an unsatisfied RAW/WAW predecessor; no two
   concurrently-ready missions are a WAW pair.
@@ -434,6 +483,11 @@ Store shape (SDD-native):
   a suspected false-hard; file-sets sourced (declared + folder convention + git diff), never derived.
 - **Two partitioning prerequisites** the scheduler depends on/elevates/measures: code = capability-first
   (strengthen spec-layout S1 → F1); spec = one-behavior-one-scenario (formation cross-node dedup → F2).
+- **Output = a `ready` pull query** (pure derivation over the DAG log) consumed by the **cyberfleet
+  Operator's dispatch loop** (a new **headless-operator** when unattended — F3); cyberlegion is the
+  per-mission mechanism (`unit spawn`/Legate), NOT the scheduler. Issue vs Operation-ordered-retire
+  split; capacity is the Operator's; feedback rides existing intake/Explore/handoff phases (no
+  reporting protocol); touch-set correction tool = SDD engine.
 - **DAG is monadic/dynamic** (discovered through Explore + micro/macro iterations), never fully known.
   Engine re-derives a **live frontier/ready-set**; commit near, speculate far, lazily lower the frontier.
 - **Execution is barrier-free dataflow** (Turborepo/OoO fire-when-ready, MIMD) — "waves" are a view,
