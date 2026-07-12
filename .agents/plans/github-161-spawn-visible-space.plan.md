@@ -7,15 +7,15 @@ todos:
   - content: "intake — CR opened, leash recorded, plan scaffolded"
     status: completed
   - content: "explore — draft mux + lifecycle spec diff; spike the code change"
-    status: pending
+    status: completed
   - content: "spec gate — reconcile frozen mux default scenario + README; freeze"
-    status: pending
+    status: completed
   - content: "deliver — session.ts conditional default, cli.ts, tmux adapter workspace->new-window; per-scenario verify"
-    status: pending
+    status: completed
   - content: "impl gate — cold impl-judge over frozen scenarios; root pnpm verify"
-    status: pending
+    status: completed
   - content: "handoff — PR that Closes #161; mail legate"
-    status: pending
+    status: in_progress
 ---
 
 # github-161 — spawn defaults a ship to its own VISIBLE space
@@ -61,6 +61,7 @@ different functions, soft overlap; don't collide.
 
 ## NEXT
 
-Explore: dispatch/author the mux + lifecycle spec diff, spike the code change on both
-adapters (herdr already correct; tmux new-window), run cyberlegion tests to validate, then
-dispatch the cold spec-judge and take the spec gate.
+Mission landed — both gates approved (by: agent), branch rebased onto origin/main, two
+commits (spec freeze c78d1a20, impl 872ad4af). PR opened, Closes #161. Await review/merge;
+plan retires via doctrine after merge. Follow-up nudge: a corpus-wide formation pass is due
+(`sdd:manage` → "audit the corpus structure") — on-demand, gate nothing on it.
