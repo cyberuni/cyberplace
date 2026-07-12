@@ -25,17 +25,30 @@ Target project spec: `aced` (`.agents/specs/aced/`, implemented). Node:
 Touched file: `plugins/aced/skills/improve-skill/scripts/validate.mts` — deterministic
 engine, SDD-default production chain.
 
-## NEXT
+## NEXT — RE-OPENED (design corrected)
 
-**DONE — PR #144 open** (branch `feat/aced-guard-internal-descriptions`, closes #133). Both gates
-passed (cold SDD spec-judge ALIGNED; cold SDD impl-judge APPROVE 49/49), `pnpm verify` 19/19,
-`status: implemented`. Remaining: await review/merge, then doctrine-distill + retire this plan
-(`sdd:manage` → plan-retirement). A corpus-wide formation pass is due on-demand (not gating).
+User review caught a real flaw: v1 keyed "description is not a trigger" on `user-invocable:false OR
+metadata.internal`, but per Claude Code docs neither suppresses model auto-invocation
+(`disable-model-invocation:true` does — and it would break the by-name loading these skills require).
+Corrected category model: **agent-invoked-by-name callee** (resolved via registry + artifact-type;
+must stay `disable-model-invocation:false` so the orchestrator can call it).
 
-Follow-up (non-blocking, fileable as a new CR): Q2 vague-phrase sub-check has no dedicated
-regression test for the internal case (impl-judge observation); and skill-design governance line 68
-still says internal skills use `metadata: internal: true`, contradicting `user-invocable-is-top-level`
-— a doc-drift reconcile out of scope here.
+**Corrected design (re-froze spec, status→draft):**
+- Detection = `user-invocable:false` only (drop metadata.internal; verified 0-FP vs gateways, 41 skills)
+- Q3 sharpened → require `"Internal skill: by name only"` prefix
+- NEW **Q18** → flag user-facing trigger language on a by-name callee (spurious-match risk)
+- Q17 op-detail guard → keep; Q1/Q2-words public-only → keep
+- Prose justification rewritten (README + .feature header comment)
+
+**Deliver (this pass, ONE combined PR #144):**
+1. validate.mts: re-key detection to user-invocable:false; drop metadata.internal from internal-class;
+   sharpen Q3 to require "by name only" prefix; add Q18; update enumeration (Q17,Q18) + summary/help.
+2. **Migrate 41 shipped descriptions** → `"Internal skill: by name only — <identity>. <callers>."`
+   (delegate by plugin to Sonnet agents, like sweep 1812364d). So the sharpened Q3 passes green.
+3. Re-run spec gate (cold judge) → impl gate (cold judge) → pnpm verify → push to #144.
+
+Deferred follow-up: skill-design.md governance still says internal = `metadata: internal: true`
+(mis-frames the category) — reconcile in a governance CR.
 
 ## Original two coupled changes:
 
