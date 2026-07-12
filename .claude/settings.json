@@ -38,5 +38,9 @@
         "matcher": "Write|Edit"
       }
     ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "# sdd-statusline:begin\n# sdd-statusline:mode:own-line\n__sdd_orig() {\n~/.claude/statusline.sh\n}\n__sdd_base=\"$(__sdd_orig 2>/dev/null)\"\n__sdd_file=\".agents/sdd/statusline\"\nif [ -s \"$__sdd_file\" ]; then\n  __sdd_val=\"$(cat \"$__sdd_file\")\"\n  printf '%s\\n%s\\n' \"$__sdd_base\" \"$__sdd_val\"\nelse\n  printf '%s\\n' \"$__sdd_base\"\nfi\n# sdd-statusline:end"
   }
 }
