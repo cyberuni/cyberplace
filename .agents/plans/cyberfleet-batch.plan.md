@@ -52,12 +52,14 @@ barrier); ordering only at **Operation-coherent retirement**.
   dispatch next; Operator-owned near-term, dedicated-agent split deferred); **cyberlegion** =
   per-mission mechanism (`unit spawn`/Legate).
 - **Store** = the **mission graph** (name settled; "DAG log" retired) — SDD-native, **git-tracked,
-  per-repo**. **Single writer** (conductor v1 / Operator F3) ⇒ **no sharding**; append-only for audit
-  only. **v1 = in-tree files** (single session, no cross-branch problem); **F3 = the
-  `cyberfleet/mission-graph` orphan ref** behind `cyberfleet` CLI read/query/write — an *in-repo*
-  git-backed queryable datastore ("our Dolt, in-repo not global"), behind a git-access seam so the
-  v1→F3 swap never touches `ready`/`cycles`. ~1k ceiling → no DB. **Rejected: the cyberlegion global
-  hub** (= GasTown HQ+Beads+Dolt; wrong locality — mail is global by nature, the graph is per-repo).
+  per-repo**; **mission-graph management is SDD work** (same layer as `ready`/`cycles`, NOT
+  cyberfleet). **Single write-decider** (conductor v1 / Operator's lifecycle loop F3) ⇒ **no
+  sharding**; append-only for audit only. **v1 = in-tree files** (single session, no cross-branch
+  problem); **F3 = the `sdd/mission-graph` orphan ref** — an *in-repo* git-backed queryable datastore
+  ("our Dolt, in-repo not global"), read/query/write via an **SDD engine** behind a git-access seam so
+  the v1→F3 swap never touches `ready`/`cycles`. cyberfleet only consumes `ready` + calls the SDD write
+  path from the lifecycle loop. ~1k ceiling → no DB. **Rejected: the cyberlegion global hub** (=
+  GasTown HQ+Beads+Dolt; wrong locality — mail is global by nature, the graph is per-repo).
   beads/beads_rust = design reference only.
 - **Status authority = the graph** (open/claimed/retired); the brief keeps detail + the human dispatch
   clearance (`approved`) — different axes, graph wins on conflict, stale brief = plan-retirement sweep.
@@ -89,7 +91,7 @@ acceptance bar at handoff, not a frozen scenario; live-graph checks = state-inde
 - SSA-lowering criteria/automation; symbol-level produce/consume dep inference
 - barrier-mission handling (fences; from formation loop)
 - **F3**: cyberfleet **headless-operator** + the lifecycle loop (merge/teardown/graph-write/dispatch;
-  none exists today) + the `cyberfleet/mission-graph` orphan-ref store CLI + Pod-boundary settle
+  none exists today) + the `sdd/mission-graph` orphan-ref store engine (**SDD**, not cyberfleet) + Pod-boundary settle
 - merge backstop (speculative-CI/bisection) — lives in the lifecycle loop (dispatch consumer)
 - blast-field auto-compute (the touch-set estimator sharpens SDD's hand-asserted `blast:`)
 - **F1**: strengthen `spec-layout.md` S1 capability-first → strongly-recommended + Warden layout-quality signal
@@ -101,8 +103,8 @@ acceptance bar at handoff, not a frozen scenario; live-graph checks = state-inde
 - Exact SDD node + engine surface names; whether Operation-capstone needs a new frontmatter field.
 - Store schema exact fields (keep general, not overfit to this project).
 - Finer semantic rung for non-behavioral prose (governance/reference) — likely "don't descend".
-- F3 store mechanics: the `cyberfleet/mission-graph` orphan-ref read/query/write CLI (git plumbing vs
-  dedicated worktree; verb-surface owner cyberfleet-vs-SDD) + ledger-shard keying on the mission-ref.
+- F3 store mechanics: the `sdd/mission-graph` orphan-ref read/query/write **SDD engine** (git plumbing
+  vs dedicated worktree for the ref) + ledger-shard keying on the mission-ref. (Owner settled = SDD.)
 
 ## Provenance
 

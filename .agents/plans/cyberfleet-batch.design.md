@@ -420,11 +420,12 @@ Store shape (SDD-native, per-repo):
   files; + tier/confidence), `blast`, `hitl|afk`, `artifact-type`. Append-only is kept for the
   **audit trail** (the monadic "how the graph grew" history), *not* for collision-avoidance — see
   single-writer.
-- **Single writer ⇒ no sharding.** The lifecycle owner writes the graph (v1: the conductor, by hand;
-  F3: the Operator — see the dispatcher surface). With one writer, per-writer sharding earns nothing,
-  so **drop it**: a plain append-only file (or small current-state file-set) suffices. This is the
-  payoff of "missions report, the owner writes" (finding 6). Sharding (the `ledger/` pattern) returns
-  only if a real multi-writer case ever appears.
+- **Single write-decider ⇒ no sharding.** One actor decides every write (v1: the conductor, by hand;
+  F3: the Operator's lifecycle loop) — invoking the SDD mission-graph engine to append. With writes
+  serialized through one decider, per-writer sharding earns nothing, so **drop it**: a plain
+  append-only file (or small current-state file-set) suffices. This is the payoff of "missions
+  report, the decider writes" (finding 6). Sharding (the `ledger/` pattern) returns only if a real
+  multi-decider case ever appears.
 - **Status authority = the graph, not the brief.** The graph owns **scheduling state** (open /
   claimed / retired — what `ready` folds); the brief owns the **detail layer + the human dispatch
   clearance** (`status: approved` — a leash flag, human-attributed per the relayed-ratification seam).
@@ -447,14 +448,16 @@ that swap is the Dolt slide, avoided at ~1k scale):
 - **v1 = in-tree git-tracked files.** Single session, no fleet ⇒ **no cross-branch visibility problem
   exists**; the conductor writes graph files on its working branch like any tracked file, merged via
   the normal PR. Dead simple, zero new git machinery.
-- **F3 = the orphan ref `cyberfleet/mission-graph`.** When the fleet runs, missions execute on their
-  own branches, so the graph moves off the code branches onto a **dedicated in-repo orphan ref** —
+- **F3 = the orphan ref `sdd/mission-graph`.** When the fleet runs, missions execute on their own
+  branches, so the graph moves off the code branches onto a **dedicated in-repo orphan ref** —
   git-tracked + per-repo (correct locality) yet **branch-independent** (every ship reads the same
-  graph regardless of its checkout — this dissolves finding 6). Accessed behind **`cyberfleet` CLI
-  read/query/write commands: our Dolt — a git-backed queryable datastore — but *in-repo*, not global
-  or a separate DB.** The `ready`/`cycles` reasoning stays behind the same seam, so the v1→F3 swap
-  never touches it. (Reasoning depends on the store only as a CLI tool — the way SDD engines already
-  shell to `git` / `gherkin-cli` — a tool dep, not a layer inversion.)
+  graph regardless of its checkout — this dissolves finding 6). Read/query/write is an **SDD engine**
+  — mission-graph *management* is SDD work, the same layer that owns `ready`/`cycles`, NOT cyberfleet:
+  **our Dolt — a git-backed queryable datastore — but *in-repo*, not global or a separate DB.** The
+  reasoning stays behind the same git-access seam, so the v1→F3 swap never touches it. cyberfleet only
+  *consumes* `ready` and *calls* the SDD write path from its lifecycle loop (orchestrator — the way it
+  calls `cyberlegion unit spawn` — not the store's owner). So there is **no cross-package layer
+  inversion**: SDD owns both the reasoning and the store.
 
 ## Ready-set → dispatcher surface (the output side)
 
@@ -490,7 +493,7 @@ session lean is a **nice-to-have deferred** (a fresh Operator is one `/new` away
 this** (manual authoring, no fleet) — the whole loop is an F3 concern.
 
 ```
-lifecycle loop (Operator-owned; cyberlegion calls are mechanism; store I/O behind the F3 cyberfleet store-CLI seam):
+lifecycle loop (Operator-owned; cyberlegion spawn + the SDD mission-graph engine are the mechanisms it calls):
   ready = sdd ready                      # pull frontier (ranked) — SDD reasoning over the store
   while capacity K and ready:
     m = pick(ready)                      # dispatcher policy: rank + human-availability
@@ -551,7 +554,7 @@ Dogfooding *decides* the carve by asking: what is the minimal kernel that lets i
 - **Store** — the git-tracked mission graph (**in-tree files**, single writer ⇒ no sharding):
   nodes = Operations/Missions, edges = RAW deps + parent-child, status, **declared node-level
   `touch-set`** (the spec-nodes a mission writes — hand-authored in v1). General schema (not overfit
-  to our project). (F3 moves it to the `cyberfleet/mission-graph` orphan ref behind a CLI seam.)
+  to our project). (F3 moves it to the `sdd/mission-graph` orphan ref behind the SDD engine's git-access seam.)
 - **`ready` + `cycles`** — a zero-dep `.mts` engine: fold the store → the frontier (`ready`), including
   the **node-level WAW-mutex**: a candidate whose declared touch-set intersects an in-flight mission's
   is held back (serialize at issue; soft downgrades arrive with the finer ladder, deferred). Reject
@@ -662,12 +665,14 @@ against the live graph as an on-demand audit.
 - **Execution is barrier-free dataflow** (Turborepo/OoO fire-when-ready, MIMD) — "waves" are a view,
   not a barrier. Ordering only at retire (Operation-coherent merge).
 - **Store = SDD-native, per-repo, git-tracked** (a new mission graph beside the plan briefs + a
-  zero-dep `ready`/`cycles` `.mts` engine behind a git-access seam). **Single writer** (conductor in
-  v1 / Operator in F3) ⇒ **no sharding**; append-only kept for audit only. **v1 = in-tree files**;
-  **F3 = the `cyberfleet/mission-graph` orphan ref** behind `cyberfleet` CLI read/query/write — an
-  *in-repo* git-backed queryable datastore ("our Dolt, but in-repo not global"). **Rejected: the
-  cyberlegion global hub** (= GasTown's HQ+Beads+Dolt slide; wrong locality — mail is global by
-  nature, the mission graph is per-repo). beads/beads_rust = design reference only. No external DB.
+  zero-dep `ready`/`cycles` + read/query/write `.mts` engine behind a git-access seam). **Mission-graph
+  management is SDD work** (same layer as the reasoning, NOT cyberfleet). **Single write-decider**
+  (conductor v1 / Operator's lifecycle loop F3) ⇒ **no sharding**; append-only kept for audit only.
+  **v1 = in-tree files**; **F3 = the `sdd/mission-graph` orphan ref** — an *in-repo* git-backed
+  queryable datastore ("our Dolt, but in-repo not global"). cyberfleet only consumes `ready` + calls
+  the SDD write path from its lifecycle loop. **Rejected: the cyberlegion global hub** (= GasTown's
+  HQ+Beads+Dolt slide; wrong locality — mail is global by nature, the mission graph is per-repo).
+  beads/beads_rust = design reference only. No external DB.
 - **Status authority = the mission graph** (scheduling state: open/claimed/retired); the brief keeps
   the detail layer + the human dispatch clearance (`approved`) — different axes, graph wins on
   conflict, a stale brief = plan-retirement sweep debt.
@@ -686,6 +691,6 @@ against the live graph as an on-demand audit.
 - Exact target SDD node + engine surface; whether Operation-capstone declaration needs a new
   frontmatter field on the plan brief. (Mission ↔ CR/`.plan.md` relation settled — see
   "CR ↔ Operation ↔ mission plan".)
-- **F3 store mechanics** — the `cyberfleet/mission-graph` orphan-ref read/query/write CLI (git
-  plumbing vs a dedicated worktree; who owns the verb surface — cyberfleet store-CLI vs SDD),
-  and ledger-shard keying under Mission-shaped machinery (per the locally-minted mission-ref).
+- **F3 store mechanics** — the `sdd/mission-graph` orphan-ref read/query/write **SDD engine** (git
+  plumbing vs a dedicated worktree for the ref), and ledger-shard keying under Mission-shaped
+  machinery (per the locally-minted mission-ref). (Owner settled = SDD, not cyberfleet.)
