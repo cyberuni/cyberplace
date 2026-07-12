@@ -31,8 +31,10 @@ enough to prune). All four eval layers carry signal.
   `.agents/cyberlegion/` at this project root); it defers entirely to Pod when the mode is `ship`.
 - **Commission the first ship or a peer from outside** — when the Council wants to stand up the
   fleet's first ship or a new peer session from outside any ship, `cyberlegion unit spawn` with a brief
-  that stands on its own (the new Pod starts cold and reads it through its own SessionStart hook);
-  spawning further worktree-ships once inside a ship is Pod's job, not Operator's.
+  that stands on its own (the new Pod starts cold and reads it through its own SessionStart hook) and
+  `--at workspace` so the ship opens in its own herdr workspace, not a pane crowding a neighbor (a
+  cyberfleet-layer opinion Operator asserts; the cyberlegion primitive stays neutral); spawning
+  further worktree-ships once inside a ship is Pod's job, not Operator's.
 - **List the fleet** — when the Council asks what's out there, `cyberlegion unit who`; add `--all` to
   include exited ships.
 - **Route messages between ships** — when a message must cross ships, `cyberlegion mail send --to
