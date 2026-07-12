@@ -3,15 +3,15 @@ name: 136-reconcile-adopt
 status: active
 todos:
   - content: "explore: draft registry.feature adopt scenarios (herdr adopt, handle rule, skip unclassifiable, tmux boundary, idempotency, prune stays cull-only)"
-    status: in_progress
+    status: completed
   - content: "spec gate: additive scenarios on frozen unit/registry self-clear; cold spec-judge"
-    status: pending
+    status: completed
   - content: "deliver: adopt branch in reconcile(ctx) (identity.ts), wire who --reconcile adopt, prune cull-only"
-    status: pending
+    status: completed
   - content: "impl gate: cold impl-judge pass per frozen adopt scenario"
-    status: pending
+    status: completed
   - content: "handoff: pnpm verify, commit, push, PR linking #136"
-    status: pending
+    status: completed
 ---
 
 # CR 136-reconcile-adopt — adopt half of reconcile-against-mux
@@ -45,6 +45,4 @@ Source: https://github.com/cyberuni/cyberplace/issues/136
 
 ## NEXT
 
-Explore done when: adopt scenarios drafted on `registry.feature` (additive-only, stays `@frozen`,
-self-clears), README bullets + mapping table updated, non-goal line about adopt removed; then cold
-spec-judge → spec gate.
+Done — PR open against main (impl 9/9 frozen scenarios PASS, root verify green). Await merge; retention/GC is #137.
