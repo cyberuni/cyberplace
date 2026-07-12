@@ -84,7 +84,7 @@ description: "One sentence trigger description — WHAT it does, WHEN to invoke 
 ...content...
 ```
 
-For sub-skills (called by other skills, not triggered by user situation), prefix the description with `"Internal skill:"` to prevent accidental activation.
+For **partial skills** (sub-skills — a reusable part of a larger capability, called **by name** by another skill, not triggered by a user situation), set `user-invocable: false` and lead the description with the `"Partial Skill:"` prefix — recommended form `"Partial Skill: invoke by name only — <identity>. <caller>."`. Keep the description minimal and non-trigger-shaped (a partial skill stays `disable-model-invocation: false` so its caller can invoke it by name, so the harness still sees the description). This is distinct from `metadata: internal: true`, which marks a *project-local internal* skill (marketplace visibility) — orthogonal to being a partial.
 
 ## Language
 

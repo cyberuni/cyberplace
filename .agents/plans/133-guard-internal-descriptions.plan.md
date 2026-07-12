@@ -25,7 +25,19 @@ Target project spec: `aced` (`.agents/specs/aced/`, implemented). Node:
 Touched file: `plugins/aced/skills/improve-skill/scripts/validate.mts` — deterministic
 engine, SDD-default production chain.
 
-## NEXT — DONE (renamed to "Partial Skill", shipped to PR #144)
+## NEXT — DONE (corpus rename complete, PR #144)
+
+Full `"Internal skill:"` → `"Partial Skill:"` reconcile folded in and shipped:
+- **improve-skill node** (engine + .feature + SKILL.md Q3 row + check-definitions.md + 41 skill descriptions)
+- **define-skill + define-governance nodes** (reworded frozen scenarios + SKILL.md template/guidance/G1) — cold spec-judge ALIGNED + impl-judge APPROVE
+- **6 subagent descriptions** (aced + quill `agents/`), **skill-design.md**, **AGENTS.md**, **3 website mirrors**, **2 cyberlegion README leads**
+- Historical records (ADRs 0013/0014, `artifacts/specs/*` legacy, CHANGELOG, activation research doc) intentionally left as-is.
+
+All gates re-passed, `pnpm verify` 19/19 (verify:specs 540/540), `status: implemented`. Await review/merge → doctrine-distill → retire plan.
+
+## History — earlier passes
+
+### DONE (renamed to "Partial Skill", shipped to PR #144)
 
 Category finalized as **Partial Skill** (a decomposed, reusable part the orchestrator loads/invokes
 by name; DISTINCT from `metadata.internal` = project-local internal, which skill-design.md rightly

@@ -14,7 +14,7 @@ A `SKILL.md` file has two parts:
 - **`description` frontmatter** — the only field loaded at startup; it carries the entire triggering burden. A well-formed description states the capability, "Use this skill when…", and at least one implicit phrasing an agent might not otherwise connect to the trigger.
 - **Body** — the workflow itself: numbered steps for a process skill, tool usage and guardrails for a tool-based skill, or rules and pass conditions for a standard (tone/format/quality) skill.
 
-Skills stay narrow and composable by design: one workflow per skill. A skill that other skills call internally, rather than one a user triggers directly, prefixes its description with `"Internal skill:"` so it never self-activates on a user request.
+Skills stay narrow and composable by design: one workflow per skill. A **partial skill** — a reusable part that other skills call by name, rather than one a user triggers directly — sets `user-invocable: false` and leads its description with the `"Partial Skill:"` prefix so it never self-activates on a user request.
 
 ## Placement
 
