@@ -8,13 +8,13 @@ status: active
 ledger-shard: ledger/github-159-doorbell-bunker.3c90b8.jsonl
 todos:
   - content: Intake — locate spec, scaffold plan, resolve governances (SDD default chain)
-    status: in_progress
+    status: completed
   - content: Explore — author mail/doorbell.feature + additive mail/core Bunker scenarios; cold spec-judge
-    status: pending
+    status: completed
   - content: Spec gate — freeze new/touched .feature, ledger gate line, status stays implemented
-    status: pending
+    status: completed
   - content: Deliver — implement nudge-on-send + Bunker notify + mail bunker path; verification per scenario
-    status: pending
+    status: in_progress
   - content: Impl gate — rebase onto main, cold impl-judge per frozen scenario, root pnpm verify
     status: pending
   - content: Handoff — Warden placement pass, PR (Closes #159), mail Bunker, clear warm units
@@ -83,6 +83,16 @@ the seam. Rebase-before-impl-gate handles landing order.
 
 ## NEXT
 
-Explore: scaffold the `mail/doorbell` node, classify (behavioral, concept: [lifecycle, surfacing]),
-grill the doorbell.feature scenarios + additive mail/core Bunker scenarios, dispatch cold spec-judge,
-build-to-learn spike on message.ts send-nudge hook.
+Deliver against the frozen suite. Impl sketch:
+- `message.ts` (or a new `console/doorbell.ts`): `wakeRecipient(ctx, adapter, exec, {toId, senderId, noNudge})`
+  — best-effort. Resolve recipient record; if `kind:standing` → target = `getMainPane()`, else target =
+  `pane?.id ?? findPaneByAgentId(toId)`. No target, or target == sender's own pane → no-op. Else
+  `await nudge(adapter, exec, {id: target}, DOORBELL_MSG)` in try/catch → best-effort warning, never
+  throw. `--no-nudge` skips entirely.
+- `cli.ts` `mail send` action: after `send(...)`, call `wakeRecipient` (make action async); add
+  `--no-nudge` flag; surface a `nudge` field / warning in output.
+- `cli.ts`: new `mail bunker [read|ack]` command → resolveBunker(store) = standing `bunker` else
+  `legate`, errors naming how to mint; routes to the same inbox/peek/ack paths as `--owner`.
+- Tests: one verification per frozen doorbell scenario + the 6 Bunker mail/core scenarios.
+Then rebase onto origin/main, cold impl-judge, root `pnpm verify`.
+Delegate the mechanical build to a sonnet subagent (feedback: delegate implementation).
