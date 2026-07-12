@@ -167,11 +167,17 @@ How lowering output lands — decided:
   is parked as coarse Operation entries on the CR source, not as local nodes.
 - **Opt-in:** mark the active Operation on the CR source.
 - After lowering, the machinery unit **shifts from CR-shaped to Mission-shaped**: **PR = Mission**
-  (branch, spec-gate diff scope, plan brief — all per-Mission). The CR remains the intake artifact
-  (the coarse request). In practice the two often coincide: lowering at the tracker mints one issue
-  per Mission, so the mission-ref *is* that issue's ref. **Open: ledger-shard keying** (stay per
-  cr-ref, or move to mission-ref) — settle at spec time.
-  Cross-CR regrouping happens at the *tracker* (amend/file issues), never by blending branches.
+  (branch, spec-gate diff scope, plan brief — all per-Mission). The CR remains the intake artifact —
+  it carries the **stakeholder's intent**; missions are the *local decomposition* of that intent into
+  manageable, deliverable, ideally parallel-executable pieces. **Missions generally do NOT get their
+  own tracker refs** (a common case, not an edge case) — reconciling every mission back to the CR
+  source is possible but generally undesirable: the tracker speaks intent, not decomposition. So the
+  **mission-ref is minted locally** (the DAG-log node id), with the originating CR(s) kept as
+  provenance on the node. The tracker is amended at the **Operation** grain only (deferred Operations
+  onto the CR). **Open: ledger-shard keying** (stay per cr-ref, or move to the local mission-ref) —
+  settle at spec time.
+- Cross-CR regrouping is likewise **local**: a mission drawing on two CRs lists both as provenance;
+  branches are never blended (one branch per Mission).
 - A cross-Operation RAW edge into deferred work is recorded as a ref on the CR source (the
   "Depends on CR-1" pattern); it enters the local graph when that Operation activates.
 
@@ -221,9 +227,9 @@ Procedure:
 3. **Partition symbols → missions (SSA rename + register allocation).** Agent's cut, toward: single-
    writer-per-symbol, high cohesion within a mission (≈ operator fusion, don't over-split coupled
    symbols), Operation-coherence. **Crosses CR boundaries** — missions regroup work by *ownership*,
-   not by originating CR (so N CRs → M missions, not 1:1). Regrouping is realized at the *tracker*
-   (amend/file issues — see "CR ↔ Operation ↔ mission plan"); the machinery then follows the Mission
-   (PR = Mission).
+   not by originating CR (so N CRs → M missions, not 1:1). Regrouping is *local* — a mission lists
+   its originating CR(s) as provenance (see "CR ↔ Operation ↔ mission plan"); the machinery follows
+   the Mission (PR = Mission).
 4. **Resolve contention by versioning (key refinement).** Two concerns writing node X → version it
    `X_v1`(A) → `X_v2`(B) with a RAW edge. **A WAW is only irreducibly hard when the two writers are
    otherwise independent (no order to impose).** Versioning **is** the resolution (order them, do
@@ -494,8 +500,9 @@ Expected engine reads: with #135 retired, `ready` = {#136, #137} minus the WAW-m
 (capstone #136 — registry truthfulness); #137 = its own Mission. The issues also show the amend-back
 pattern (see "CR ↔ Operation ↔ mission plan") done by hand: split issues carrying "Depends on CR-1
 (#PLACEHOLDER_CR1)" refs — with *unresolved placeholders*, exactly the bookkeeping the tracker
-amendment should mechanize. The example is **distilled into an authored test fixture at spec time**
-(the issues are the source; the fixture is the durable form).
+amendment should mechanize. (Here each piece happened to get its own issue; the general model does
+NOT require missions to have tracker refs.) The example is **distilled into an authored test fixture
+at spec time** (the issues are the source; the fixture is the durable form).
 
 ## v1 carve + self-host bootstrap
 
@@ -602,8 +609,10 @@ against the live graph as an on-demand audit.
 - **CR ↔ Operation ↔ mission plan**: a CR lowers to one-or-more Operations or a standalone Mission
   (side quest); the project works one-or-few Operations at a time; deferred Operations are **amended
   back into the CR + its source** (tracker = far-horizon store, local graph = near horizon; opt-in
-  active-Operation marker); the machinery unit shifts CR→Mission (**PR = Mission**; ledger-shard
-  keying cr-ref vs mission-ref = open).
+  active-Operation marker); the machinery unit shifts CR→Mission (**PR = Mission**). CR = stakeholder
+  intent; missions = local decomposition, generally WITHOUT tracker refs — mission-ref minted locally
+  (node id), CR(s) kept as provenance, tracker amended at Operation grain only. Ledger-shard keying
+  (cr-ref vs mission-ref) = open.
 - **Validation = engine-suite convention**: frozen scenarios over per-scenario authored fixture
   graphs (never the live store); worked example = **GitHub issues #135/#136/#137** distilled into a
   fixture; dogfood self-host = the acceptance bar, not a frozen scenario; live-graph checks limited
@@ -633,5 +642,5 @@ against the live graph as an on-demand audit.
 - Exact target SDD node + engine surface; whether Operation-capstone declaration needs a new
   frontmatter field on the plan brief. (Mission ↔ CR/`.plan.md` relation settled — see
   "CR ↔ Operation ↔ mission plan".)
-- **Ledger-shard keying** under Mission-shaped machinery — stay per cr-ref, or move to mission-ref
-  (moot when the tracker mints one issue per Mission and the refs coincide).
+- **Ledger-shard keying** under Mission-shaped machinery — stay per cr-ref, or move to the locally
+  minted mission-ref (missions generally lack tracker refs, so the two usually do NOT coincide).

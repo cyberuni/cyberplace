@@ -34,7 +34,9 @@ standalone Mission** (side quest). **The project works one-or-few Operations at 
 active Operation(s) enter the local **mission graph** (store) + `.agents/plans/*.plan.md` mission
 briefs; **deferred Operations are amended back into the CR + its source** (GitHub/Asana — the tracker
 is the far-horizon store; opt-in: mark the active Operation there). The machinery unit shifts from
-CR-shaped to **Mission-shaped** (**PR = Mission**; ledger-shard keying cr-ref vs mission-ref = open). Hierarchy **Campaign > Operation > Mission > Task**
+CR-shaped to **Mission-shaped** (**PR = Mission**): CR = stakeholder intent, Missions = the local
+decomposition into manageable, deliverable, ideally parallel-executable pieces — generally **without**
+tracker refs (mission-ref minted locally = node id; originating CR(s) kept as provenance). Hierarchy **Campaign > Operation > Mission > Task**
 (Campaign = existing SDD product loop, untouched; Operation = releasable unit; Mission = executable
 node w/ a `.plan.md`; Task = its todos). Relationships = the three CPU data hazards: **RAW** (dep →
 serialize), **WAW** (hard, same spec-node → serialize at issue), **WAR** (soft → parallel + rebase).
@@ -92,8 +94,8 @@ acceptance bar at handoff, not a frozen scenario; live-graph checks = state-inde
 - Exact SDD node + engine surface names; whether Operation-capstone needs a new frontmatter field.
 - Store schema exact fields (keep general, not overfit to this project).
 - Finer semantic rung for non-behavioral prose (governance/reference) — likely "don't descend".
-- Ledger-shard keying under Mission-shaped machinery (cr-ref vs mission-ref; moot when the tracker
-  mints one issue per Mission).
+- Ledger-shard keying under Mission-shaped machinery (cr-ref vs locally-minted mission-ref; missions
+  generally lack tracker refs, so the two usually do NOT coincide).
 
 ## Provenance
 
