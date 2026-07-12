@@ -166,8 +166,11 @@ How lowering output lands — decided:
   the local graph is the near horizon. This gives commit-near/speculate-far a concrete home: far work
   is parked as coarse Operation entries on the CR source, not as local nodes.
 - **Opt-in:** mark the active Operation on the CR source.
-- After lowering, **each Mission is itself CR-shaped** (a concrete issue / plan brief), so the
-  CR-shaped machinery is preserved (spec-gate diff scope, ledger shards per cr-ref, PR = CR branch).
+- After lowering, the machinery unit **shifts from CR-shaped to Mission-shaped**: **PR = Mission**
+  (branch, spec-gate diff scope, plan brief — all per-Mission). The CR remains the intake artifact
+  (the coarse request). In practice the two often coincide: lowering at the tracker mints one issue
+  per Mission, so the mission-ref *is* that issue's ref. **Open: ledger-shard keying** (stay per
+  cr-ref, or move to mission-ref) — settle at spec time.
   Cross-CR regrouping happens at the *tracker* (amend/file issues), never by blending branches.
 - A cross-Operation RAW edge into deferred work is recorded as a ref on the CR source (the
   "Depends on CR-1" pattern); it enters the local graph when that Operation activates.
@@ -219,7 +222,8 @@ Procedure:
    writer-per-symbol, high cohesion within a mission (≈ operator fusion, don't over-split coupled
    symbols), Operation-coherence. **Crosses CR boundaries** — missions regroup work by *ownership*,
    not by originating CR (so N CRs → M missions, not 1:1). Regrouping is realized at the *tracker*
-   (amend/file issues — see "CR ↔ Operation ↔ mission plan"); each lowered mission is again CR-shaped.
+   (amend/file issues — see "CR ↔ Operation ↔ mission plan"); the machinery then follows the Mission
+   (PR = Mission).
 4. **Resolve contention by versioning (key refinement).** Two concerns writing node X → version it
    `X_v1`(A) → `X_v2`(B) with a RAW edge. **A WAW is only irreducibly hard when the two writers are
    otherwise independent (no order to impose).** Versioning **is** the resolution (order them, do
@@ -381,9 +385,11 @@ Options weighed:
   relations outside it anyway).
 - **Drop to Dolt** — rejected: Dolt = version-controlled DB; **git already versions our files**.
   beads_rust abandoning Dolt for SQLite confirms it was overkill.
-- **SDD-native (chosen)** — extend the plan-brief graph `discover-plans` already reads; add a small
-  zero-dep `ready`/`cycles` `.mts` engine. Fits scale (tens–low-hundreds of coarse missions, ~ms
-  graph walk), unifies provenance, no new toolchain.
+- **SDD-native (chosen)** — a new DAG log **beside** the plan briefs `discover-plans` already lists
+  (honest scoping: `discover-plans` reads a *flat* brief list — name/status/todos — no graph; the
+  graph is new, the briefs stay the detail layer); add a small zero-dep `ready`/`cycles` `.mts`
+  engine. Fits scale (tens–low-hundreds of coarse missions, ~ms graph walk), unifies provenance,
+  no new toolchain.
 
 **Scale: ~1k entries top** (per-project CR/Mission planner, NOT a general issue tracker). This is
 the design ceiling — it confirms no DB, and shapes the layout below.
@@ -398,6 +404,13 @@ Store shape (SDD-native):
   SQLite+JSONL split (structured graph + detail) done git-native.
 - **Plan briefs (`.plan.md`) = the live detail layer** for *active* missions only (todos, NEXT,
   design), referencing their node id. Retired missions persist in the DAG log as history, no brief.
+- **Status authority — the log wins.** Two different axes, so no duplication: the **log owns
+  scheduling state** (open / claimed / retired — what `ready` folds); the **brief owns the detail
+  layer + the human dispatch clearance** (`status: approved` — a leash/clearance flag,
+  human-attributed, which stays on the brief per the relayed-ratification seam). A brief never
+  asserts scheduling state. A brief outliving a log-retirement is sweep debt for `plan-retirement`,
+  not a second truth. `discover-plans` answers "what briefs exist"; `ready` answers "what can issue
+  now" — different questions, no shared field.
 - **WAW/WAR NOT stored** — computed from touch-sets at ready-time (only ever over the small active
   frontier).
 - **Engine** (`.mts`, zero-dep): fold the shards → reject cycles at write; compute ready-set
@@ -454,6 +467,15 @@ Decisions:
   retirement/corrected-touch-set/discovered-from. No reporting protocol; the scheduler just re-derives.
 - **Claims are append-events**; rare two-dispatcher races resolve at fold-time by deterministic
   tie-break. Single Operator is the common case at 1k scale.
+- **Log writes are trunk-side.** A dispatched mission runs in an isolated worktree: a shard appended
+  on its branch reaches the fold only at merge — too late for mid-flight routing (the #120→#122
+  case *requires* a discovered edge to reroute the scheduler before the mission ends). So in-flight
+  scheduler events (discovered edge, block, follow-up) cross the boundary via the **existing relay**:
+  the mission reports the discovery, the trunk-side session (Operator/conductor) appends it. Keeps
+  the log single-sided (write-time cycle-reject stays meaningful). Folding shards directly off
+  in-flight mission branches (shared `.git`, no merge needed) is parked as the alternative. **v1 has
+  no gap** — the conductor authors trunk-side; the mechanism detail lands with the dispatcher-era
+  (F3) missions.
 
 ## Worked example — GitHub issues #135/#136/#137 (fixture source)
 
@@ -580,8 +602,8 @@ against the live graph as an on-demand audit.
 - **CR ↔ Operation ↔ mission plan**: a CR lowers to one-or-more Operations or a standalone Mission
   (side quest); the project works one-or-few Operations at a time; deferred Operations are **amended
   back into the CR + its source** (tracker = far-horizon store, local graph = near horizon; opt-in
-  active-Operation marker); each lowered Mission is again CR-shaped, preserving the CR-shaped
-  gate/ledger/PR machinery.
+  active-Operation marker); the machinery unit shifts CR→Mission (**PR = Mission**; ledger-shard
+  keying cr-ref vs mission-ref = open).
 - **Validation = engine-suite convention**: frozen scenarios over per-scenario authored fixture
   graphs (never the live store); worked example = **GitHub issues #135/#136/#137** distilled into a
   fixture; dogfood self-host = the acceptance bar, not a frozen scenario; live-graph checks limited
@@ -592,8 +614,14 @@ against the live graph as an on-demand audit.
   Engine re-derives a **live frontier/ready-set**; commit near, speculate far, lazily lower the frontier.
 - **Execution is barrier-free dataflow** (Turborepo/OoO fire-when-ready, MIMD) — "waves" are a view,
   not a barrier. Ordering only at retire (Operation-coherent merge).
-- **Store = SDD-native** (extend the plan-brief graph + a zero-dep `ready`/`cycles` `.mts` engine);
-  beads/beads_rust are the design reference, not a runtime dep. No Dolt, no external DB.
+- **Store = SDD-native** (a new DAG log beside the plan briefs + a zero-dep `ready`/`cycles` `.mts`
+  engine); beads/beads_rust are the design reference, not a runtime dep. No Dolt, no external DB.
+- **Status authority = the log** (scheduling state: open/claimed/retired); the brief keeps the
+  detail layer + the human dispatch clearance (`approved`) — different axes, log wins on conflict,
+  a stale brief = plan-retirement sweep debt, never a second truth.
+- **Log writes are trunk-side**: in-flight discoveries reach the log via the existing relay (mission
+  reports → trunk-side session appends); folding shards off in-flight branches parked as the
+  alternative; v1 unaffected (conductor authors trunk-side).
 
 ## Open (next)
 - **Finer-than-node granularity mechanism** — how the optional file-region/symbol check downgrades
@@ -605,3 +633,5 @@ against the live graph as an on-demand audit.
 - Exact target SDD node + engine surface; whether Operation-capstone declaration needs a new
   frontmatter field on the plan brief. (Mission ↔ CR/`.plan.md` relation settled — see
   "CR ↔ Operation ↔ mission plan".)
+- **Ledger-shard keying** under Mission-shaped machinery — stay per cr-ref, or move to mission-ref
+  (moot when the tracker mints one issue per Mission and the refs coincide).

@@ -33,8 +33,8 @@ loop* with a persisted DAG, criteria, and queries. A **CR lowers into one or mor
 standalone Mission** (side quest). **The project works one-or-few Operations at a time**: only the
 active Operation(s) enter the local **mission graph** (store) + `.agents/plans/*.plan.md` mission
 briefs; **deferred Operations are amended back into the CR + its source** (GitHub/Asana — the tracker
-is the far-horizon store; opt-in: mark the active Operation there). Each lowered Mission is again
-CR-shaped, preserving the gate/ledger/PR machinery. Hierarchy **Campaign > Operation > Mission > Task**
+is the far-horizon store; opt-in: mark the active Operation there). The machinery unit shifts from
+CR-shaped to **Mission-shaped** (**PR = Mission**; ledger-shard keying cr-ref vs mission-ref = open). Hierarchy **Campaign > Operation > Mission > Task**
 (Campaign = existing SDD product loop, untouched; Operation = releasable unit; Mission = executable
 node w/ a `.plan.md`; Task = its todos). Relationships = the three CPU data hazards: **RAW** (dep →
 serialize), **WAW** (hard, same spec-node → serialize at issue), **WAR** (soft → parallel + rebase).
@@ -52,6 +52,11 @@ barrier); ordering only at **Operation-coherent retirement**.
   reference only (they validated the model: dep-DAG, discovered-from, cycle-reject, `ready`).
 - Target project spec: `packages/cyberfleet/.agents/spec`? — **REVISIT: placement moved to SDD**, so the
   node likely lives under `.agents/specs/sdd` (confirm exact node at spec time via discover-specs).
+- **Status authority**: the DAG log owns scheduling state (open/claimed/retired); the plan brief keeps
+  the detail layer + the human dispatch clearance (`approved`) — different axes; log wins on conflict;
+  a stale brief = plan-retirement sweep debt.
+- **Log writes are trunk-side**: in-flight discoveries reach the log via the existing relay (mission
+  reports → trunk-side session appends); v1 unaffected (conductor authors trunk-side).
 
 ## v1 carve = the self-hosting kernel (dogfood)
 
@@ -87,6 +92,8 @@ acceptance bar at handoff, not a frozen scenario; live-graph checks = state-inde
 - Exact SDD node + engine surface names; whether Operation-capstone needs a new frontmatter field.
 - Store schema exact fields (keep general, not overfit to this project).
 - Finer semantic rung for non-behavioral prose (governance/reference) — likely "don't descend".
+- Ledger-shard keying under Mission-shaped machinery (cr-ref vs mission-ref; moot when the tracker
+  mints one issue per Mission).
 
 ## Provenance
 
