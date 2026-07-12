@@ -15,4 +15,4 @@ strategy produces a clean, declared tree, and double as the `backfill-project-sp
 | `location/agentic-plugin-hoist` | capability-first | hoisted | hoist out of a shippable plugin (ACED is the full example) |
 | `location/monorepo` | capability-first | monorepo-member | multi-project backfill (one tree per package + outer) |
 
-Validate all: `node plugins/sdd-new/skills/validate-spec/scripts/check-spec-state.mts --root testcases/spec-layout`
+Validate all: `node plugins/sdd/skills/spec-gate/scripts/check-spec-state.mts --root testcases/spec-layout`
