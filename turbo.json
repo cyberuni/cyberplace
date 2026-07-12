@@ -6,6 +6,10 @@
 			"cache": false,
 			"outputs": []
 		},
+		"//#check:skills": {
+			"cache": false,
+			"outputs": []
+		},
 		"//#knip": {
 			"cache": false,
 			"outputs": []
@@ -30,7 +34,16 @@
 			"persistent": true
 		},
 		"verify": {
-			"dependsOn": ["//#check:ci", "//#knip", "//#verify:specs", "build", "typecheck", "lint", "test"]
+			"dependsOn": [
+				"//#check:ci",
+				"//#check:skills",
+				"//#knip",
+				"//#verify:specs",
+				"build",
+				"typecheck",
+				"lint",
+				"test"
+			]
 		}
 	}
 }
