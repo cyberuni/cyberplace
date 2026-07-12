@@ -12,7 +12,7 @@ todos:
   - content: "impl gate — verify SKILL.md matches new scenario; pnpm verify"
     status: completed
   - content: "handoff — commit, push, PR closing #124"
-    status: in_progress
+    status: completed
 ---
 
 # CR 124 — Operator spawns ships with own workspace
