@@ -7,17 +7,17 @@ approval:
     by: agent
     cause: dimension
     why:
-      leash: re-open — the former `gateway/` node (the two fleet personas bundled in one node) was split into two per-persona nodes, `pod/` (in-ship bridge) and `operator/` (out-of-ship dispatcher), by the `split-gateway-personas` change. Per ADR-0022 they were always two shipped skills; this gives each its own node, `.feature`, and design. The frozen `gateway.feature` was retired and re-authored as `pod.feature` and `operator.feature`, each scoped to one persona's real behavior (read faithfully from the built `plugins/cyberfleet/skills/{pod,operator}` SKILL.md) plus the shared etiquette and its half of the mode-switch. Both new `.feature` files are `@frozen`; `recruitment` and `tuning` are untouched. Prior project current-state (`split-cyberfleet-spec`) is the overwritten twin; its durable record stays in the ledger shards.
-      basis: this is a re-partition of already-gated, already-built behavior — no new capability. Self-asserted by:agent (done directly in main at the Council's direction); structural checks green — concept-index no drift, check-spec-structure 0/0, both persona SKILL.md pass `audit validate`. Source-of-truth gates for the underlying behavior remain in `ledger/`: the gateway personas under `add-fleet-comms.f1e2d3.jsonl`. Follow-up closed: the deferred cold ACED spec+impl judge pass ran over both new nodes and both passed cleanly — pod (spec ALIGNED true, impl PASS, @trigger 8/8, @rubric 8.7/9) and operator (spec ALIGNED true, impl PASS, @trigger 8/8, @rubric 9.0/9); only low/info observations, none blocking (see the `split-gateway-personas` ledger report entry).
-      cr: split-gateway-personas
+      leash: re-open (owner-ratified) — the frozen `pod.feature` scenario "handled mail is acked immediately" pinned its mechanic as `cyberlegion mail read`, which today only peeks (never acks), so the frozen scenario was self-contradictory. #173 rewrites the mechanic to `cyberlegion mail read --ack`; the acceptance criterion (acked immediately, never left unread) is unchanged — a stale-mechanic correction, not a narrowing, so no Clearance floor. Plus one additive scenario "Pod consumes its mission brief in one read-and-ack step" (brief consumed the same step it is read, no dangling unread mail). `operator`, `recruitment`, `tuning` untouched. Durable record in the `ledger/` shard `github-173-mail-read-ack.39e078.jsonl`.
+      basis: cold ACED spec-judge ALIGNED true (oracle/builder/architect all PASS); the new brief-consume scenario is non-duplicative of the entry inbox-peek scenario. Pre-existing base parse breakage (line-wrapped Given + stray `</content>`) and a marker-path drift (`.agents/cyberfleet/` vs `.cyberfleet/config.json`) confirmed on `main`, unrelated to #173, left as hygiene follow-ups (see the ledger report entry).
+      cr: github-173-mail-read-ack
   impl:
     verdict: approve
     by: agent
     cause: dimension
     why:
-      leash: within — no implementation changed by the split; the two persona skills (`plugins/cyberfleet/skills/{pod,operator}`) already built and passing `audit validate`, and the new nodes were authored to match them. Root stays `implemented`.
-      basis: `pod/` and `operator/` each map one-to-one onto the shipped skill; both remain `@frozen`. See the `ledger/` shards.
-      cr: split-gateway-personas
+      leash: within — the Pod skill body (`plugins/cyberfleet/skills/pod/SKILL.md`) now names `cyberlegion mail read <msg-id> --ack` for both brief-receive and handled-mail ack, satisfying both changed scenarios; `pod.feature` stays `@frozen`.
+      basis: cold ACED impl-judge IMPLEMENTATION_PASS true; both changed scenarios PASS, no regression on the unchanged frozen scenarios (mode-switch, @trigger, HAL, @rubric). See the `ledger/` shards.
+      cr: github-173-mail-read-ack
 ---
 
 # cyberfleet-plugin — the fleet & crew personas (agent behavior)

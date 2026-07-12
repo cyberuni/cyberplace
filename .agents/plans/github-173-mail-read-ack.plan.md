@@ -4,13 +4,13 @@ status: active
 target: main
 todos:
   - content: "explore + draft: mail/core additive read --ack scenarios (idempotent); pod re-open + brief-consume"
-    status: in_progress
+    status: completed
   - content: "spec gate: judge both nodes, freeze, ledger lines, report operator at spec gate"
-    status: pending
+    status: completed
   - content: "deliver: readAck in message.ts + `mail read --ack` in cli.ts, rebuild dist, update pod SKILL.md, tests, changeset"
-    status: pending
+    status: completed
   - content: "impl gate + handoff: pnpm verify, rebase main, commit units, PR closing #173, report operator done"
-    status: pending
+    status: in_progress
 ---
 
 # CR github-173 — mail read+ack in one step; Pod consumes brief with it
@@ -39,4 +39,8 @@ Two touched project specs (one PR, coherent units):
 - pod frozen-scenario re-open: **ratified**.
 
 ## NEXT
-Draft the additive mail/core scenarios and the pod edits; grill with a cold spec-judge; then spec gate.
+Both gates self-asserted (spec + impl, by:agent). Two units committed + rebased on main; root
+`pnpm verify` green; dist rebuilt. Remaining: push branch, open PR closing #173, report operator done.
+Hygiene follow-ups (out of scope, filed in cyberfleet ledger report): pod.feature pre-existing parse
+breakage (wrapped Given + stray `</content>`); SKILL.md `.agents/cyberfleet/` vs pod.feature
+`.cyberfleet/config.json` marker-path drift.
