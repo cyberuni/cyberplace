@@ -18,13 +18,13 @@ todos:
     status: completed
   - id: deliver
     content: "Build: new init SKILL+README, edit manage SKILL, add status write/clear to start-mission"
-    status: in_progress
+    status: completed
   - id: impl-gate
-    content: "Rebase onto main, cold impl-judge per frozen scenario, status=implemented"
-    status: pending
+    content: "Rebased onto main (pkg.json conflict resolved), cold impl-judge 24/24 PASS, impl gate self-asserted"
+    status: completed
   - id: handoff
-    content: "Warden placement pass, branch->PR, changeset"
-    status: pending
+    content: "gateway/init placement kept, changeset added, branch->PR"
+    status: in_progress
 ---
 
 # CR: init-statusline
