@@ -6,7 +6,7 @@ todos:
     status: completed
   - content: "spec: name + exact SDD node placement (finalize in-context during spec authoring)"
     status: pending
-  - content: "spec: write the SDD node spec.md + .feature for the v1 KERNEL (store + ready/cycles + manual authoring)"
+  - content: "spec: write the SDD node spec.md + .feature for the v1 KERNEL (store w/ touch-sets + ready w/ WAW-mutex + cycles + manual authoring); scenarios over authored fixture graphs incl. the #135/#136/#137 fixture"
     status: pending
   - content: "spec gate: cold spec-judge ALIGNED, freeze .feature"
     status: pending
@@ -14,7 +14,7 @@ todos:
     status: pending
   - content: "impl gate: cold impl-judge PASS; root pnpm verify"
     status: pending
-  - content: "self-host: author THIS project's Operations/Missions into the store as its first Campaign"
+  - content: "self-host: author the active Operation(s) into the store as its first Campaign; amend deferred Operations back into the CR source"
     status: pending
   - content: "handoff: PR; file the deferred backlog + F1/F2/F3 as follow-up CRs"
     status: pending
@@ -29,15 +29,19 @@ todos:
 ## The model (one paragraph)
 
 **Not a new engine** — it *formalizes + enriches the existing intake→plan(s)→Explore→post-mission
-loop* with a persisted DAG, criteria, and queries. A **CR is decomposed into one or more Operations**
-(each a graph of Missions), added into the standing **mission graph** (store). Hierarchy **Campaign >
-Operation > Mission > Task** (Campaign = existing SDD product loop, untouched; Operation = releasable
-unit; Mission = executable node w/ a `.plan.md`; Task = its todos). Relationships = the three CPU data
-hazards: **RAW** (dep → serialize), **WAW** (hard, same spec-node → serialize at issue), **WAR** (soft,
-same-file-diff-region → parallel + rebase). Lowering aims for **SSA** (one owning Mission per spec-node
-— the stable, artifact-neutral atom, contract = its frozen suite). The DAG is **monadic/dynamic**
-(discovered through Explore, not known up front); execution is **barrier-free dataflow** (fire-when-
-ready, MIMD; "waves" are a view, not a barrier); ordering only at **Operation-coherent retirement**.
+loop* with a persisted DAG, criteria, and queries. A **CR lowers into one or more Operations, or a
+standalone Mission** (side quest). **The project works one-or-few Operations at a time**: only the
+active Operation(s) enter the local **mission graph** (store) + `.agents/plans/*.plan.md` mission
+briefs; **deferred Operations are amended back into the CR + its source** (GitHub/Asana — the tracker
+is the far-horizon store; opt-in: mark the active Operation there). Each lowered Mission is again
+CR-shaped, preserving the gate/ledger/PR machinery. Hierarchy **Campaign > Operation > Mission > Task**
+(Campaign = existing SDD product loop, untouched; Operation = releasable unit; Mission = executable
+node w/ a `.plan.md`; Task = its todos). Relationships = the three CPU data hazards: **RAW** (dep →
+serialize), **WAW** (hard, same spec-node → serialize at issue), **WAR** (soft → parallel + rebase).
+Lowering aims for **SSA** (one owning Mission per spec-node — the stable, artifact-neutral atom,
+contract = its frozen suite). The DAG is **monadic/dynamic** (discovered through Explore, not known up
+front); execution is **barrier-free dataflow** (fire-when-ready, MIMD; "waves" are a view, not a
+barrier); ordering only at **Operation-coherent retirement**.
 
 ## Placement & store
 
@@ -52,17 +56,23 @@ ready, MIMD; "waves" are a view, not a barrier); ordering only at **Operation-co
 ## v1 carve = the self-hosting kernel (dogfood)
 
 Build only the minimum to plan its own remaining work, then self-host:
-1. **Store** — sharded append-only mission-graph log (Operations/Missions, RAW+parent-child edges, status).
-2. **`ready` + `cycles`** — zero-dep `.mts`: fold shards → frontier; reject cycles at write.
-3. **Manual node authoring** — conductor writes nodes/edges by hand during intake/Explore.
-Then: author this project's own graph → drive the rest via `ready`. Validation = own graph as fixture
-+ #135/#136/#137 worked example.
+1. **Store** — sharded append-only mission-graph log (Operations/Missions, RAW+parent-child edges,
+   status, **declared node-level touch-sets**).
+2. **`ready` + `cycles`** — zero-dep `.mts`: fold shards → frontier incl. the **node-level WAW-mutex**
+   (declared touch-set intersection with an in-flight mission ⇒ held back); reject cycles at write.
+3. **Manual node authoring** — conductor writes nodes/edges/touch-sets by hand during intake/Explore.
+Then: author the active Operation(s) into the store, amend deferred Operations back into the CR
+source → drive the rest via `ready`. Validation = per-scenario **authored fixture graphs**
+(engine-suite convention — never the live store; it mutates every retirement, snapshots churn too
+fast to freeze) + the **#135/#136/#137 worked example (GitHub issues in this repo — reconcile-against-
+mux: RAW #135→#136, #137 WAW-pairs #136)** distilled into a fixture; dogfood self-host = the
+acceptance bar at handoff, not a frozen scenario; live-graph checks = state-independent invariants only.
 
 ## Backlog (deferred out of v1 → each a Mission in the self-hosted graph)
 
-- git-diff touch-set tool (SDD engine = `git diff` + `gherkin-cli diff` + `resolve-governances`)
-- node-level touch-set + WAW/WAR classification (soft/hard)
-- finer-than-node ladder: file (default signal) → region → semantic (scenarios/symbols); shared-thin-file exception
+- git-diff touch-set **correction** tool (SDD engine = `git diff` + `gherkin-cli diff` + `resolve-governances`)
+- finer-than-node ladder: file (default signal) → region → semantic (scenarios/symbols); shared-thin-file
+  hard→soft downgrade (node-level touch-sets + WAW-mutex moved INTO v1)
 - SSA-lowering criteria/automation; symbol-level produce/consume dep inference
 - barrier-mission handling (fences; from formation loop)
 - **F3**: cyberfleet **headless-operator** (unattended dispatch-loop driver; none exists today) + Pod-boundary settle
@@ -89,5 +99,7 @@ Then: author this project's own graph → drive the rest via `ready`. Validation
 
 Move from design into spec: run the SDD spec phase for the **v1 kernel** — confirm the exact SDD node
 (via discover-specs; placement is SDD, not the cyberfleet package), name it in-context, and draft
-`spec.md` + `.feature` for {store, `ready`, `cycles`, manual authoring} with the self-host validation
-scenarios. Everything in the Backlog is a follow-up, not part of v1.
+`spec.md` + `.feature` for {store w/ declared touch-sets, `ready` w/ node-level WAW-mutex, `cycles`,
+manual authoring}. Scenarios follow the engine-suite convention: authored fixture graphs (incl. the
+#135/#136/#137 fixture), never the live store; dogfood self-host is the acceptance bar at handoff.
+Everything in the Backlog is a follow-up, not part of v1.

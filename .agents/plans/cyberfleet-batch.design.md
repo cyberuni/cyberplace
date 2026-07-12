@@ -155,6 +155,23 @@ Consequences:
 - AOT/NPU (static whole-graph reasoning) is **demoted to the known core** (settled specs/impl); the
   **frontier is CPU/monadic** (discover, speculate, re-derive).
 
+## CR ↔ Operation ↔ mission plan (the tracker is the far-horizon store)
+
+How lowering output lands — decided:
+- A CR lowers into **one or more Operations, or a standalone Mission** (a side quest).
+- **The project works one (or very few) Operations at a time.** The local mission graph and the
+  `.agents/plans/*.plan.md` briefs (which are *mission* plans) cover only the active Operation(s).
+- **Deferred Operations are written back to the CR**: amend the CR and its source (GitHub issue /
+  Asana task) to capture the Operations *not* being worked. The tracker is the **far-horizon store**;
+  the local graph is the near horizon. This gives commit-near/speculate-far a concrete home: far work
+  is parked as coarse Operation entries on the CR source, not as local nodes.
+- **Opt-in:** mark the active Operation on the CR source.
+- After lowering, **each Mission is itself CR-shaped** (a concrete issue / plan brief), so the
+  CR-shaped machinery is preserved (spec-gate diff scope, ledger shards per cr-ref, PR = CR branch).
+  Cross-CR regrouping happens at the *tracker* (amend/file issues), never by blending branches.
+- A cross-Operation RAW edge into deferred work is recorded as a ref on the CR source (the
+  "Depends on CR-1" pattern); it enters the local graph when that Operation activates.
+
 ## Execution model: barrier-free dataflow (Turborepo/OoO), not GPU warps
 
 Missions are **independent agent sessions (MIMD)**, not SIMT lockstep — so there is **no wave
@@ -201,7 +218,8 @@ Procedure:
 3. **Partition symbols → missions (SSA rename + register allocation).** Agent's cut, toward: single-
    writer-per-symbol, high cohesion within a mission (≈ operator fusion, don't over-split coupled
    symbols), Operation-coherence. **Crosses CR boundaries** — missions regroup work by *ownership*,
-   not by originating CR (so N CRs → M missions, not 1:1).
+   not by originating CR (so N CRs → M missions, not 1:1). Regrouping is realized at the *tracker*
+   (amend/file issues — see "CR ↔ Operation ↔ mission plan"); each lowered mission is again CR-shaped.
 4. **Resolve contention by versioning (key refinement).** Two concerns writing node X → version it
    `X_v1`(A) → `X_v2`(B) with a RAW edge. **A WAW is only irreducibly hard when the two writers are
    otherwise independent (no order to impose).** Versioning **is** the resolution (order them, do
@@ -437,39 +455,71 @@ Decisions:
 - **Claims are append-events**; rare two-dispatcher races resolve at fold-time by deterministic
   tie-break. Single Operator is the common case at 1k scale.
 
+## Worked example — GitHub issues #135/#136/#137 (fixture source)
+
+The trio are **GitHub issues in this repo** (cyberlegion *reconcile-against-mux*): one design
+conversation, lowered by hand into exactly the shapes this engine formalizes —
+- **#135 (CR-1, cull)** — new `listPanes` adapter primitive + reconcile-cull on the registry node.
+  **Retired** (closed).
+- **#136 (CR-2, adopt)** — *consumes* CR-1's `listPanes` ⇒ a true **RAW edge #135 → #136**; touches
+  the same registry/reconcile node.
+- **#137 (retention/GC)** — deliberately split out ("retention is a distinct lifecycle concern") — a
+  **standalone side-quest Mission**, no RAW edge; but its "fold into `prune`/`reconcile`?" scope
+  overlaps #136's node ⇒ a node-level **WAW pair** with #136.
+
+Expected engine reads: with #135 retired, `ready` = {#136, #137} minus the WAW-mutex ⇒ surface one
+(pinned tie-break ⇒ #136), the other on its retirement. Operation view: #135+#136 = one Operation
+(capstone #136 — registry truthfulness); #137 = its own Mission. The issues also show the amend-back
+pattern (see "CR ↔ Operation ↔ mission plan") done by hand: split issues carrying "Depends on CR-1
+(#PLACEHOLDER_CR1)" refs — with *unresolved placeholders*, exactly the bookkeeping the tracker
+amendment should mechanize. The example is **distilled into an authored test fixture at spec time**
+(the issues are the source; the fixture is the durable form).
+
 ## v1 carve + self-host bootstrap
 
 **Strategy: dogfood — the system's first job is planning its own build (a self-hosting compiler).**
 Acceptance bar: if it can't usefully plan its own remaining work, it isn't ready. Our own project (a
-handful of real Operations/Missions with genuine deps) is the primary test fixture, alongside the
-#135/#136/#137 worked example.
+handful of real Operations/Missions with genuine deps) is the primary acceptance case, alongside the
+#135/#136/#137 worked example above.
 
 Dogfooding *decides* the carve by asking: what is the minimal kernel that lets it eat its own dogfood?
 
-**v1 = the self-hosting kernel (minimal):**
+**v1 = the self-hosting kernel:**
 - **Store** — the sharded, append-only, git-tracked mission-graph log: nodes = Operations/Missions,
-  edges = RAW deps + parent-child, status. General schema (not overfit to our project).
-- **`ready` + `cycles`** — a zero-dep `.mts` engine: fold the log → the frontier (`ready`); reject
+  edges = RAW deps + parent-child, status, **declared node-level `touch-set`** (the spec-nodes a
+  mission writes — hand-authored in v1). General schema (not overfit to our project).
+- **`ready` + `cycles`** — a zero-dep `.mts` engine: fold the log → the frontier (`ready`), including
+  the **node-level WAW-mutex**: a candidate whose declared touch-set intersects an in-flight mission's
+  is held back (serialize at issue; soft downgrades arrive with the finer ladder, deferred). Reject
   cycles at write (`cycles`).
-- **Manual node authoring** — the conductor writes nodes/edges by hand (frontmatter/append) during
-  intake/Explore. No automation.
+- **Manual node authoring** — the conductor writes nodes/edges/touch-sets by hand (frontmatter/append)
+  during intake/Explore. No automation.
 
 **Deferred out of v1 (each becomes a Mission in the self-hosted graph):**
-git-diff touch-set tool · node-level WAW/WAR classification · SSA-lowering automation · finer-than-node
-region/semantic rungs · barrier-mission handling · dispatcher surface / headless-operator (F3) ·
-symbol-level produce/consume dep inference · F1 (spec-layout strengthening) · F2 (cross-node scenario
-dedup) · merge backstop (dispatch-consumer) · blast-field auto-compute · naming finalization.
+git-diff touch-set correction tool · SSA-lowering automation · finer-than-node file/region/semantic
+rungs (incl. the shared-thin-file hard→soft downgrade) · barrier-mission handling · dispatcher
+surface / headless-operator (F3) · symbol-level produce/consume dep inference · F1 (spec-layout
+strengthening) · F2 (cross-node scenario dedup) · merge backstop (dispatch-consumer) · blast-field
+auto-compute · naming finalization.
 
 **Bootstrap sequence:**
 1. Build the kernel via the current SDD flat plan (the one irreducible manual seed — it can't plan
    itself into existence).
-2. The moment `ready` works, decompose *this project's* remaining work into Operations/Missions and
-   author them into the store — its own backlog becomes its first Campaign.
+2. The moment `ready` works, decompose *this project's* remaining work: author the **active
+   Operation(s)** into the store, amend the **deferred Operations back into the CR + its source** —
+   its own backlog becomes its first Campaign.
 3. Drive the rest with `ready`; each deferred item above is a hand-classified Mission until the
    automation that would classify it is itself built (conservative-first, relax-as-capability-arrives).
 
-**Validation suite (free from dogfooding):** `.feature` scenarios = "given this project's authored
-graph, `ready`/`cycles` return exactly X" — own graph as fixture + the worked example.
+**Validation:** the frozen `.feature` follows the engine-suite convention (plan-discovery /
+discovery): abstract Given–When–Then over per-scenario **constructed** graphs, node:test-verified
+against authored fixtures — **never bound to the live store** (it mutates on every retirement, so
+exact-output-over-live-state is flaky by construction, and point-in-time snapshots churn too fast to
+freeze). The #135/#136/#137 worked example is distilled into one such fixture. Dogfooding is the
+**acceptance bar, not a frozen scenario**: at handoff the kernel must have planned this project's own
+remaining work (a process check, recorded in the plan/ledger). Invariants that hold for *any* graph
+state ("ready never surfaces a mission with an unsatisfied RAW predecessor") may additionally run
+against the live graph as an on-demand audit.
 
 ## Criteria (what a correct output must satisfy)
 - The **ready-set** never surfaces a mission with an unsatisfied RAW/WAW predecessor; no two
@@ -495,7 +545,8 @@ graph, `ready`/`cycles` return exactly X" — own graph as fixture + the worked 
 
 ## Settled so far
 - Split: SDD owns this engine (facts + schedule + blast); cyberfleet/cyberlegion consume+dispatch.
-- v1 dependency detection: **declared-edges-only**; symbol-level produce/consume inference = follow-up CR.
+- v1 dependency detection: **declared-only** (declared RAW edges + declared node-level touch-sets);
+  symbol-level produce/consume inference = follow-up CR.
 - Compiler/scheduler model with the RAW/WAW/WAR hazard mapping.
 - Vocabulary: **Campaign > Operation > Mission > Task** (Operation = the releasable unit, confirmed;
   existing Campaign product loop untouched).
@@ -522,8 +573,19 @@ graph, `ready`/`cycles` return exactly X" — own graph as fixture + the worked 
   per-mission mechanism (`unit spawn`/Legate), NOT the scheduler. Issue vs Operation-ordered-retire
   split; capacity is the Operator's; feedback rides existing intake/Explore/handoff phases (no
   reporting protocol); touch-set correction tool = SDD engine.
-- **v1 = self-hosting kernel** (store + `ready`/`cycles` + manual authoring); **dogfood** the rest —
-  the system plans its own build. Everything else deferred to Missions in its own graph.
+- **v1 = self-hosting kernel** (store w/ declared touch-sets + `ready` w/ node-level WAW-mutex +
+  `cycles` + manual authoring); **dogfood** the rest — the system plans its own build. Everything
+  else deferred to Missions in its own graph. (Touch-sets + WAW classification pulled INTO v1 so the
+  Criteria hold from day one; only the finer-ladder downgrades are deferred.)
+- **CR ↔ Operation ↔ mission plan**: a CR lowers to one-or-more Operations or a standalone Mission
+  (side quest); the project works one-or-few Operations at a time; deferred Operations are **amended
+  back into the CR + its source** (tracker = far-horizon store, local graph = near horizon; opt-in
+  active-Operation marker); each lowered Mission is again CR-shaped, preserving the CR-shaped
+  gate/ledger/PR machinery.
+- **Validation = engine-suite convention**: frozen scenarios over per-scenario authored fixture
+  graphs (never the live store); worked example = **GitHub issues #135/#136/#137** distilled into a
+  fixture; dogfood self-host = the acceptance bar, not a frozen scenario; live-graph checks limited
+  to state-independent invariants.
 - **Naming: parked** (low value). Units settled (Campaign>Operation>Mission>Task); store =
   descriptive placeholder ("mission graph" / ORBAT); capability + store names finalize during spec.
 - **DAG is monadic/dynamic** (discovered through Explore + micro/macro iterations), never fully known.
@@ -541,4 +603,5 @@ graph, `ready`/`cycles` return exactly X" — own graph as fixture + the worked 
   `.plan.md` mission briefs).
 - Which axes are v1 vs deferred (concurrency + deliverability + granularity core; cost may be v2).
 - Exact target SDD node + engine surface; whether Operation-capstone declaration needs a new
-  frontmatter field on the plan brief; how a decomposed mission relates to a CR/`.plan.md`.
+  frontmatter field on the plan brief. (Mission ↔ CR/`.plan.md` relation settled — see
+  "CR ↔ Operation ↔ mission plan".)
