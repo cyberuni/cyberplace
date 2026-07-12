@@ -2,17 +2,17 @@
 status: active
 todos:
   - content: "Intake: plan brief, leash line, statusline"
-    status: pending
+    status: completed
   - content: "Explore: session-adapter spec node + .feature draft; root spec.md maps"
-    status: pending
+    status: completed
   - content: "Spec gate: cold aced-spec-validator to ALIGNED; freeze .feature"
-    status: pending
+    status: completed
   - content: "Deliver: session-adapter-governance SKILL.md+README, ADR 0025, ratify doctrine entry 2"
-    status: pending
+    status: completed
   - content: "Impl gate: cold aced-impl-judge over frozen suite"
-    status: pending
+    status: completed
   - content: "Handoff: pnpm verify, commits, PR closing #162"
-    status: pending
+    status: completed
 ---
 
 # CR 162 — session-adapter verify-effect-or-fail-loud governance
@@ -54,6 +54,5 @@ Decisions settled at intake:
 
 ## NEXT
 
-Start intake: write leash line to
-`.agents/specs/cyberlegion-plugin/ledger/162-session-adapter-governance.fcdfa8.jsonl`, set
-statusline `explore`, then draft the spec node.
+Mission landed: both gates approved (spec ALIGNED 12/12, impl APPROVE 12/12), pnpm verify green,
+PR open closing #162. Awaiting merge; retire this plan via doctrine distill after merge.
