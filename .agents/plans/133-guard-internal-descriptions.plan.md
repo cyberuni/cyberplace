@@ -25,7 +25,22 @@ Target project spec: `aced` (`.agents/specs/aced/`, implemented). Node:
 Touched file: `plugins/aced/skills/improve-skill/scripts/validate.mts` — deterministic
 engine, SDD-default production chain.
 
-## NEXT — DONE (corrected design shipped to PR #144)
+## NEXT — DONE (renamed to "Partial Skill", shipped to PR #144)
+
+Category finalized as **Partial Skill** (a decomposed, reusable part the orchestrator loads/invokes
+by name; DISTINCT from `metadata.internal` = project-local internal, which skill-design.md rightly
+owns). Q3 requires the `"Partial Skill:"` prefix (full form `"Partial Skill: invoke by name only —
+…"`). Engine + tests + 41 descriptions renamed. Both gates re-passed (cold spec-judge ALIGNED, cold
+impl-judge APPROVE 54/54), verify 19/19, `status: implemented`.
+
+**OPEN follow-up (both judges flagged): the old `"Internal skill:"` prefix is still TAUGHT in 3
+places — a repo would now author skills that fail the new Q3:**
+- `packages/cyberplace/governances/skill-design.md:36`
+- `CLAUDE.md` "Adding a New Skill" (sub-skills → prefix `"Internal skill:"`)
+- `plugins/aced/skills/define-governance/SKILL.md` G-checklist (G1 enforces `"Internal skill:"`)
+Decision pending: fold the convention-doc updates into PR #144 or a follow-up CR.
+
+## History — DONE (by-name-callee design, superseded by the Partial Skill rename)
 
 Both gates re-passed on the corrected by-name-callee model: cold SDD spec-judge ALIGNED, cold SDD
 impl-judge APPROVE (54/54 tests; 41-skill migration verified clean repo-wide), `pnpm verify` 19/19,
