@@ -2,14 +2,14 @@
 status: active
 todos:
   - content: "explore: draft conductor rebase-before-gate scenarios + prose, cold spec-judge"
-    status: pending
+    status: completed
   - content: "spec gate: additive scenarios self-clear (stay @frozen), status stays approved"
+    status: completed
+  - content: "deliver: add rebase-before-impl-gate step to start-mission SKILL (automaton inherits)"
+    status: completed
+  - content: "impl gate: cold impl-judge static-inspects the realization"
     status: pending
-  - content: "deliver: add rebase-before-impl-gate step to start-mission SKILL + sdd-automaton"
-    status: pending
-  - content: "impl gate: cold impl-judge over merged-tree behavior"
-    status: pending
-  - content: "handoff: pnpm verify, branch + PR"
+  - content: "handoff: pnpm verify, changeset, branch + PR"
     status: pending
 ---
 
