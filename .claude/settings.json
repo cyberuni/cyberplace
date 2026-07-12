@@ -10,9 +10,11 @@
     ]
   },
   "enabledPlugins": {
-    "aced@cyberplace-next": true,
-    "quill@cyberplace-next": true,
-    "sdd@cyberplace-next": true
+    "aced@cyberplace": true,
+    "quill@cyberplace": true,
+    "sdd@cyberplace": true,
+    "cyberfleet@cyberplace": true,
+    "cyberlegion@cyberplace": true
   },
   "hooks": {
     "SessionStart": [
