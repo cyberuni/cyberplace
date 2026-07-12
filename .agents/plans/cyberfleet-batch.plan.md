@@ -37,8 +37,9 @@ is the far-horizon store; opt-in: mark the active Operation there). The machiner
 CR-shaped to **Mission-shaped** (**PR = Mission**): CR = stakeholder intent, Missions = the local
 decomposition into manageable, deliverable, ideally parallel-executable pieces — generally **without**
 tracker refs (mission-ref minted locally = node id; originating CR(s) kept as provenance). Hierarchy **Campaign > Operation > Mission > Task**
-(Campaign = existing SDD product loop, untouched; Operation = releasable unit; Mission = executable
-node w/ a `.plan.md`; Task = its todos). Relationships = the three CPU data hazards: **RAW** (dep →
+(Campaign = existing SDD product loop, untouched; Operation = a **declared set of missions + a
+designated capstone**, its release floor = the capstone's dependency closure, support members share
+priority but don't gate release; Mission = executable node w/ a `.plan.md`; Task = its todos). Relationships = the three CPU data hazards: **RAW** (dep →
 serialize), **WAW** (hard, same spec-node → serialize at issue), **WAR** (soft → parallel + rebase).
 Lowering aims for **SSA** (one owning Mission per spec-node — the stable, artifact-neutral atom,
 contract = its frozen suite). The DAG is **monadic/dynamic** (discovered through Explore, not known up

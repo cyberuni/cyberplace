@@ -99,22 +99,26 @@ detection. The merge-time speculative/bisection backstop is the "flush on mispre
  └──────┘        └───────────────────┘
 ```
 
-**Axis 2 — Deliverability (Operations).** Orthogonal to concurrency. An **Operation** = a
-*capstone* mission ★ + its **dependency closure**; when the closure completes, the project is
-**releasable/deployable**. The distinguishing property is *shippable product value* — NOT
-"builds + tests green" (every Mission already has that). Not every sub-graph is an Operation. A
-capstone is partly **declared** (the Operation's deployable objective — semantic value can't be
-fully inferred, like a compiler can't infer transaction boundaries) and partly **checkable**: the
-engine verifies the closure is *dependency-closed* (no missing prerequisite). Deliverability = the
-legal **ship points**; concurrency = how fast we reach them; prefer wave boundaries that land on
-Operation cuts. Priority is derived here: missions in the active Operation outrank the rest.
+**Axis 2 — Deliverability (Operations).** Orthogonal to concurrency. An **Operation** = a **declared
+set of missions with one designated capstone ★** (membership is a judgment call — stored as the
+parent-child/label edges, matching how support work gets grouped — *not* a derived closure). Its
+**release floor = the capstone's dependency closure** (a derived subset): when the floor completes,
+the project is **releasable/deployable**. The distinguishing property is *shippable product value* —
+NOT "builds + tests green" (every Mission already has that). Not every sub-graph is an Operation. A
+capstone is partly **declared** (the deployable objective — semantic value can't be fully inferred,
+like a compiler can't infer transaction boundaries) and partly **checkable**: the engine verifies
+**dependency-closed ⇔ the capstone's closure ⊆ the declared set** (no prerequisite missing from the
+declaration; a *support* member outside the closure is legal — that's what support is). Deliverability
+= the legal **ship points**; concurrency = how fast we reach them; prefer wave boundaries that land on
+Operation cuts. Priority is derived from **declared membership**: missions in the active Operation
+outrank the rest (so support work inherits the priority; the closure alone would starve it).
 
 ```
-   ┌─ Operation O1 (capstone ★M3) ─┐
-   │   M1 ──► M3★                   │  releasable when {M1,M3} done
-   └───────────────────────────────┘
-                    └──► M4★         Operation O2 (capstone ★M4) = {M1,M3,M4}
-   M2★ = its own Operation {M2}      M5 = support inside O1, not a capstone
+   ┌─ Operation O1 (capstone ★M3) = declared {M1, M3, M5} ─┐
+   │   M1 ──► M3★        M5 (support, in O1, not in floor)  │  releasable when FLOOR {M1,M3} done
+   └────────────────────────────────────────────────────────┘
+                    └──► M4★         Operation O2 (capstone ★M4) = declared {M1,M3,M4}
+   M2★ = its own Operation {M2}      M5 shares O1's priority + retire window, does NOT gate release
 ```
 
 **Axis 3 — Granularity / lowering.** How a coarse CR splits into missions and how fine to stop
@@ -611,7 +615,9 @@ against the live graph as an on-demand audit.
   existence never implies "not retired."
 - **The fold never fails on a cyclic graph** — cycle members are quarantined out of `ready` and
   surfaced as repair items; edge/mission retraction is an append (tombstone), never an in-place delete.
-- Every declared Operation capstone's closure is **dependency-closed**; non-closed capstones flagged.
+- Every declared Operation is **dependency-closed** (the capstone's closure ⊆ the declared set — a
+  prerequisite missing from the declaration is flagged); a declared support member outside the closure
+  is legal. Release floor = the capstone's closure; support members don't gate release.
 - **Retire order is Operation-coherent** (trunk stays deployable); issue order is barrier-free.
 - Forward view is marked **provisional**, with commitment decaying over the horizon.
 - **The query path is read-only** (`ready`/`cycles` derive with zero side effects); the write path is
@@ -623,7 +629,8 @@ against the live graph as an on-demand audit.
   tool faces; the DAG is probabilistic, re-checked at merge. **SOFT = rebase-cost hint, NOT a
   safety proof** (~33% of clean merges are semantically broken — Brun). Keep a speculative/bisection
   merge backstop **in the dispatch consumer** (non-goal of this engine).
-- **Not any sub-graph is a story** — capstones are declared + checked, not freely enumerated.
+- **Not any sub-graph is a story** — an Operation is a *declared* set (capstone + members), checked
+  for dependency-closure, not a freely-enumerated derived closure.
 - Decomposition (lowering) semantic quality is bounded by what a static estimator can see;
   the front-end may be v2.
 - The engine **schedules and identifies**; it does **not** spawn worktrees or run missions
@@ -637,6 +644,11 @@ against the live graph as an on-demand audit.
 - Vocabulary: **Campaign > Operation > Mission > Task** (Operation = the releasable unit, confirmed;
   existing Campaign product loop untouched).
 - 5 axes; priority folds into the Operation axis.
+- **Operation = a declared set + designated capstone** (membership is judgment, stored as
+  parent-child/label edges — NOT a derived closure); the **release floor = the capstone's dependency
+  closure** (derived subset). Engine check: dependency-closed ⇔ closure ⊆ declared set. Support
+  members (outside the closure) share the Operation's priority + retire window but don't gate release.
+  (Reconciles the old "Operation = capstone + closure" wording with the local-label model.)
 - **Decomposition (lowering) is core to v1** — without it the scheduler has nothing to interleave.
 - Engine is **hybrid**: reasoning front-end (lower) + deterministic back-end (hazard + schedule).
   Sits above the mission loop as a pre-mission planner; reuses `explore` unit-identification.
