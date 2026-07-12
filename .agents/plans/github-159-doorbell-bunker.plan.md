@@ -81,12 +81,18 @@ Sibling ship `beam` (#158, unit focus beaming) establishes SessionAdapter
 verify-observable-effect-or-fail-loud. Do NOT block. Align vocabulary if #158 lands first; else note
 the seam. Rebase-before-impl-gate handles landing order.
 
-## Follow-up (new CR, not this PR)
+## Scope correction (metaphor-free package)
 
-Migrate the `cyberlegion-plugin` (draft) docs `legate` → `bunker` owner-inbox handle for coherence
-with this rename — `plugins/cyberlegion/skills/init-cyberlegion/{SKILL.md,README.md}` suggest
-`unit register --standing --handle legate`. Safe to defer: back-compat is preserved (`mail bunker`
-and `--owner legate` both resolve), and those skills belong to a separate SDD project.
+The Bunker rename was REVERTED out of `packages/cyberlegion` — the package is the metaphor-free
+foundation (charter: pure mechanism, no fleet/persona/place name). "Bunker" is a `plugins/cyberfleet`
+concept (the Operator's place). This PR now ships only the **metaphor-free doorbell mechanism**
+(peer pane / standing-owner→bound-main-pane); `mail/core` reverted to origin/main; `mail bunker` +
+`resolveBunker` removed; init hint made generic.
+
+## Follow-up (new CR, cyberfleet — not this PR)
+
+Realize the "Bunker" naming for the human's report-up owner inbox in `plugins/cyberfleet` (the
+Operator persona layer), over the package's generic `--owner <handle>` + the new doorbell.
 
 ## NEXT
 
