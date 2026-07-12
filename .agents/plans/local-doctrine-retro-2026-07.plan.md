@@ -10,13 +10,13 @@ todos:
     status: completed
   - content: "Council decision: A (extend pre-judge engine) + B (durable combat-log footprint) KEPT; H + I recommended cut"
     status: completed
-  - content: "open CR A — RE-SCOPED: scenario-step-level structural diff (d1 follow-up #1); brief sdd-scenario-step-diff. use-case-row check already landed in d1 (f1a1eda0)"
-    status: in_progress
-  - content: "open CR for B — require a durable combat-log line (matchable cause) for in-session missions"
-    status: pending
-  - content: "Council decision on the still-pending clusters C, D, E, F, G"
-    status: pending
-  - content: "push branch chore/doctrine-distill-retire-plans + open PR (distill + retirement commits)"
+  - content: "CR A — scenario-step-level structural diff — SHIPPED as sdd-scenario-step-diff (both gates PASS; classify-edit-class.mts)"
+    status: completed
+  - content: "CR B (durable combat-log footprint) — NO CR: the correction-line discipline already shipped via d2-correction-line-durability (frozen conductor.feature + combat-log-governance). CUT the footprint reinforcement cluster as stale"
+    status: completed
+  - content: "Council decision on clusters C-G: C+D inlined (branch chore/doctrine-distill-2026-07-11); E filed #140 (ACED); F cut (recusal path PR #130); G out-of-scope (cyberlegion corpus)"
+    status: completed
+  - content: "push branch chore/doctrine-distill-2026-07-11 + open PR (record-keeping + C prune + D enum)"
     status: pending
 ---
 
@@ -44,31 +44,57 @@ Branch `chore/doctrine-distill-retire-plans` (off `main`, **unpushed**), two com
      assertion (d1's own round-1 bug). Fix: diff at the **per-named-Scenario step level** in the
      `gherkin-cli diff` consumers (the freeze/additive machinery). Follow-up #2 stays a SEPARATE CR.
 
-2. **Open CR B** via `start-mission` against `.agents/specs/sdd`: **durable combat-log footprint** —
-   in-session / self-asserted missions currently write no `*.log.jsonl`; judge-iteration corrections
-   get folded into the gate `why` prose instead of a discrete `correction` line with a matchable
-   `cause`, starving the doctrine loop's stated PRIMARY input. Evidence: this retro found only 8 of 34
-   briefs kept a log. Ledger reinforcements: `.agents/specs/sdd/ledger/` shards `strategy.317dd8` seq2,
-   `strategy.7668d1` seq1, `strategy.acaa41` seq2, `strategy.ba6a39` seq2. Decide the minimum footprint
-   (a discrete correction line per in-session mission, cause enum enforced).
+2. **CR B — NO CR TO OPEN. Already shipped; CUT the footprint reinforcement cluster.** The reframed
+   ask (a discrete `correction` line with matchable `cause` when a producer changes an artifact in
+   response to a gate/judge iteration; no change ⇒ no correction line) is **already the standing,
+   frozen, implemented discipline** — do not open a mission, it produces an empty diff.
+   - **Shipped by `d2-correction-line-durability`:** `154aff3b` (spec) + `5f69f2f2` (realize in the
+     conductor governance); spec gate ALIGNED, impl gate IMPLEMENTATION_PASS (all 5 frozen scenarios).
+   - **Frozen scenarios** in `mission/conductor/conductor.feature` (lines ~419–442): discrete
+     correction line on a judge-iteration self-assert; written **before** the gate `why`; a **clean
+     gate appends none**; finalize backstop flushes an unflushed correction; **no minimum-footprint
+     line** is forced. Contract in `common-governances/combat-log/README.md` + `combat-log-governance/SKILL.md:134`.
+   - **CUT** the stale reinforcement lines `strategy.317dd8` seq2, `strategy.7668d1` seq1,
+     `strategy.acaa41` seq2, `strategy.ba6a39` seq2 — they re-draft an already-shipped discipline
+     (drift/staleness). Cut = leave unratified, no corpus action. The earlier "durable combat-log
+     footprint" reading conflated the *bare footprint line* (which reconcile-forward-footprint shipped
+     as an existence guard, and which does not feed doctrine consumption) with the *cause-tagged
+     correction line* (which d2 shipped) — both halves are done.
 
 3. **Council decision on the still-pending clusters** (undecided this session — see
    `## Strategy review verdicts`):
-   - **C — PRUNE stale `plugins/sdd-new` paths.** Confirmed a **real functional break**, not just
-     prose: the `pause-mission` skill's `checkGateFloor` step points at the old
-     `plugins/sdd-new/.../check-spec-state.mts`; the live script is under `plugins/sdd/...`. Also in
-     `discover-specs` example rows. Quick, high-value PRUNE CR. Source: `strategy.ba6a39` seq4.
-   - **D — cause-enum growth** (add "operating-doc / sibling prose contradicts shipped impl"):
-     `strategy.364c83` seq2.
-   - **E — gate-role naming convention** at authoring time (name judges by role+scope, not verbs):
-     `strategy.7668d1` seq2.
-   - **F — resolve-governances for SDD's own nodes** (SDD skill nodes resolve to the ACES squad,
-     forcing a manual per-mission override): `strategy.0000-legacy` seq43.
-   - **G — cyberlegion Warden cross-node reconcile nudge** for shared cross-cutting primitives:
-     `packages/cyberlegion/.agents/spec/ledger/strategy.dae416.jsonl` seq1 (different corpus — a
-     cyberlegion CR, not sdd).
+   - **C — PRUNE stale `plugins/sdd-new` paths — RESOLVED (escape, not a CR).** The functional break
+     the retro named was **already fixed** by `22909589` (pause-mission `checkGateFloor` now points at
+     `plugins/sdd/skills/spec-gate/scripts/check-spec-state.mts`; discover-specs prose clean). The one
+     **live** break that survived: `testcases/spec-layout/README.md` — a runnable "Validate all"
+     command at the dead+renamed `plugins/sdd-new/skills/validate-spec/...` → fixed to
+     `plugins/sdd/skills/spec-gate/scripts/check-spec-state.mts` (verified: `spec states OK`, exit 0).
+     Every other `plugins/sdd-new` ref is **correct history — leave**: ADR-0017, `CHANGELOG.md`, the
+     dated `docs/research/2026-07-operator-test-migration-coverage.md` survey, and test fixtures (opaque
+     `project-path` strings, not runnable). `strategy.ba6a39` seq4 is now spent — CUT. Source: `strategy.ba6a39` seq4.
+   - **D — cause-enum growth — RESOLVED (Council-ratified governance edit).** Added
+     `prose-impl-contradiction` ("a skill's own operating docs or a sibling design doc asserted
+     behavior the shipped implementation no longer has", superseding the never-ratified
+     `sibling-prose-contradiction` name from acaa41) to both enum homes:
+     `combat-log-governance/SKILL.md` + `design/provenance-model.md` (Three→Four grounded). No frozen
+     `.feature` pins the value list, so additive; `pnpm verify` 19/19. `strategy.364c83` seq2 spent — CUT.
+   - **E — gate-role naming convention — FILED as a CR/issue (not inlined).** Real + un-done (no
+     convention exists), but it targets the **ACED** corpus (`define-agent` / `define-skill`), needs a
+     design grill (exact pattern, all-subagents-vs-gate-scorers, hard-check-vs-advisory), and is
+     testable ACED behavior — a proper ACED mission, not an SDD-batch doc tweak. Filed **cyberuni/cyberplace#140**.
+     `strategy.7668d1` seq2 → queued to #140.
+   - **F — resolve-governances for SDD's own nodes — RESOLVED (recusal path, user ratified "leave it").**
+     Superseded by PR #130's recuse→fallback seam (`05a72b6f` spec, `280f3a33` impl): ACED **recuses**
+     on wrong-squad (boolean/deterministic) SDD nodes and the conductor auto-falls-back to SDD-default
+     — no manual per-mission override. Frozen conductor scenario "a resolved producer that recuses
+     falls back to the SDD default" + `aced-fit` SKILL both live. F's "resolve-to-default-directly"
+     alternative is explicitly NOT wanted (don't backfill ACED — [[reference_aced_recuses_on_sdd_self_spec]]).
+     `strategy.0000-legacy` seq43 spent — CUT.
+   - **G — cyberlegion Warden cross-node reconcile nudge — OUT OF SCOPE (different corpus).** Source
+     `packages/cyberlegion/.agents/spec/ledger/strategy.dae416.jsonl` seq1 is a **cyberlegion** CR, not
+     sdd; belongs to the cyberlegion project's own doctrine loop, not this SDD retro. Leave for that corpus.
 
-4. **Push `chore/doctrine-distill-retire-plans` + open PR** — the distill + retirement commits.
+4. **Push + open PR** — record-keeping + C (prune) + D (enum growth). All clusters A–G now dispositioned.
 
 ## Resolved decisions — do not relitigate
 
