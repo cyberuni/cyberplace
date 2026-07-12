@@ -4,13 +4,13 @@ todos:
   - content: "explore: push-race scenario (additive) + scenario-3 Given tightening (re-open); prose"
     status: in_progress
   - content: "spec gate: additive self-clears; scenario-3 re-open ratified in-session, re-frozen"
-    status: pending
+    status: completed
   - content: "deliver: push-race re-rebase+re-verify prose in start-mission Step 3/4"
-    status: pending
+    status: completed
   - content: "impl gate: cold impl-judge static-inspects the realization"
-    status: pending
+    status: completed
   - content: "handoff: pnpm verify, changeset, branch + PR"
-    status: pending
+    status: completed
 ---
 
 # CR: rebase-conflict refinements (follow-ups to #143)
@@ -30,7 +30,7 @@ Two follow-ups on `mission/conductor/` (rebase-before-impl-gate):
 
 ## NEXT
 
-Update start-mission Step 3/4 prose for the push-race loop; cold spec-judge; spec gate
-(additive self-clears, scenario-3 re-open→re-approve in the same session); impl gate; PR.
+Both gates self-asserted (spec ALIGNED, impl IMPLEMENTATION_PASS), verify 19/19. Handoff: rebase
+onto target, open PR. Awaiting merge; doctrine loop retires post-merge.
 
 CR source: bare prompt (operator follow-up on #143).
