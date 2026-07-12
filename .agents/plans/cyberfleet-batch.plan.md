@@ -10,7 +10,7 @@ todos:
     status: pending
   - content: "spec gate: cold spec-judge ALIGNED, freeze .feature"
     status: pending
-  - content: "deliver: build the sharded append-only mission-graph log + ready/cycles .mts engine + tests"
+  - content: "deliver: build the git-tracked mission graph (in-tree files, single-writer, no sharding) + ready/cycles .mts engine + tests"
     status: pending
   - content: "impl gate: cold impl-judge PASS; root pnpm verify"
     status: pending
@@ -48,21 +48,32 @@ barrier); ordering only at **Operation-coherent retirement**.
 ## Placement & store
 
 - **SDD owns it** (facts + schedule + blast); **cyberfleet Operator** consumes the `ready` frontier +
-  runs the dispatch loop; **cyberlegion** = per-mission mechanism (`unit spawn`/Legate).
-- **Store** = SDD-native **sharded, append-only, git-tracked mission-graph log** (the `ledger/`
-  pattern). ~1k-entry ceiling → no DB; whole-graph analysis is cheap. beads/beads_rust = design
-  reference only (they validated the model: dep-DAG, discovered-from, cycle-reject, `ready`).
+  runs the **lifecycle loop** (above the mission loop: merge PR → tear down pod → write graph →
+  dispatch next; Operator-owned near-term, dedicated-agent split deferred); **cyberlegion** =
+  per-mission mechanism (`unit spawn`/Legate).
+- **Store** = the **mission graph** (name settled; "DAG log" retired) — SDD-native, **git-tracked,
+  per-repo**. **Single writer** (conductor v1 / Operator F3) ⇒ **no sharding**; append-only for audit
+  only. **v1 = in-tree files** (single session, no cross-branch problem); **F3 = the
+  `cyberfleet/mission-graph` orphan ref** behind `cyberfleet` CLI read/query/write — an *in-repo*
+  git-backed queryable datastore ("our Dolt, in-repo not global"), behind a git-access seam so the
+  v1→F3 swap never touches `ready`/`cycles`. ~1k ceiling → no DB. **Rejected: the cyberlegion global
+  hub** (= GasTown HQ+Beads+Dolt; wrong locality — mail is global by nature, the graph is per-repo).
+  beads/beads_rust = design reference only.
+- **Status authority = the graph** (open/claimed/retired); the brief keeps detail + the human dispatch
+  clearance (`approved`) — different axes, graph wins on conflict, stale brief = plan-retirement sweep.
 - Target project spec: `packages/cyberfleet/.agents/spec`? — **REVISIT: placement moved to SDD**, so the
   node likely lives under `.agents/specs/sdd` (confirm exact node at spec time via discover-specs).
 
 ## v1 carve = the self-hosting kernel (dogfood)
 
 Build only the minimum to plan its own remaining work, then self-host:
-1. **Store** — sharded append-only mission-graph log (Operations/Missions, RAW+parent-child edges,
-   status, **declared node-level touch-sets**).
-2. **`ready` + `cycles`** — zero-dep `.mts`: fold shards → frontier incl. the **node-level WAW-mutex**
-   (declared touch-set intersection with an in-flight mission ⇒ held back); reject cycles at write.
-3. **Manual node authoring** — conductor writes nodes/edges/touch-sets by hand during intake/Explore.
+1. **Store** — the git-tracked mission graph, **in-tree files, single writer ⇒ no sharding**
+   (Operations/Missions, RAW+parent-child edges, status, **declared node-level touch-sets**).
+2. **`ready` + `cycles`** — zero-dep `.mts` behind a git-access seam: fold the store → frontier incl.
+   the **node-level WAW-mutex** (declared touch-set intersection with an in-flight mission ⇒ held
+   back); reject cycles at write.
+3. **Manual node authoring** — conductor (the single writer) writes nodes/edges/touch-sets by hand
+   during intake/Explore.
 Then: author the active Operation(s) into the store, amend deferred Operations back into the CR
 source → drive the rest via `ready`. Validation = per-scenario **authored fixture graphs**
 (engine-suite convention — never the live store; it mutates every retirement, snapshots churn too
@@ -77,20 +88,21 @@ acceptance bar at handoff, not a frozen scenario; live-graph checks = state-inde
   hard→soft downgrade (node-level touch-sets + WAW-mutex moved INTO v1)
 - SSA-lowering criteria/automation; symbol-level produce/consume dep inference
 - barrier-mission handling (fences; from formation loop)
-- **F3**: cyberfleet **headless-operator** (unattended dispatch-loop driver; none exists today) + Pod-boundary settle
-- merge backstop (speculative-CI/bisection) — lives in the dispatch consumer
+- **F3**: cyberfleet **headless-operator** + the lifecycle loop (merge/teardown/graph-write/dispatch;
+  none exists today) + the `cyberfleet/mission-graph` orphan-ref store CLI + Pod-boundary settle
+- merge backstop (speculative-CI/bisection) — lives in the lifecycle loop (dispatch consumer)
 - blast-field auto-compute (the touch-set estimator sharpens SDD's hand-asserted `blast:`)
 - **F1**: strengthen `spec-layout.md` S1 capability-first → strongly-recommended + Warden layout-quality signal
 - **F2**: formation-loop intra-project cross-node scenario-overlap dedup (spec-level SSA)
-- naming finalization (units settled; store/capability = placeholders)
+- naming finalization (units + store noun "mission graph" settled; engine/capability name = placeholder)
 
 ## Open questions
 
 - Exact SDD node + engine surface names; whether Operation-capstone needs a new frontmatter field.
 - Store schema exact fields (keep general, not overfit to this project).
 - Finer semantic rung for non-behavioral prose (governance/reference) — likely "don't descend".
-- Ledger-shard keying under Mission-shaped machinery (cr-ref vs locally-minted mission-ref; missions
-  generally lack tracker refs, so the two usually do NOT coincide).
+- F3 store mechanics: the `cyberfleet/mission-graph` orphan-ref read/query/write CLI (git plumbing vs
+  dedicated worktree; verb-surface owner cyberfleet-vs-SDD) + ledger-shard keying on the mission-ref.
 
 ## Provenance
 
