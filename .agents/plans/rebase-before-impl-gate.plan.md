@@ -8,9 +8,9 @@ todos:
   - content: "deliver: add rebase-before-impl-gate step to start-mission SKILL (automaton inherits)"
     status: completed
   - content: "impl gate: cold impl-judge static-inspects the realization"
-    status: pending
+    status: completed
   - content: "handoff: pnpm verify, changeset, branch + PR"
-    status: pending
+    status: in_progress
 ---
 
 # CR: rebase onto target before the impl gate (Design A)
