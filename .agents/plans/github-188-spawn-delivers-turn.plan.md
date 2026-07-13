@@ -6,15 +6,15 @@ spec: packages/cyberlegion/.agents/spec/unit/lifecycle
 source: https://github.com/cyberuni/cyberplace/issues/188
 todos:
   - content: "explore: author additive turn-delivery scenarios on lifecycle.feature + README sync"
-    status: pending
+    status: completed
   - content: "spec gate: cold sdd-spec-judge; freeze self-clears (additive); self-assert"
-    status: pending
+    status: completed
   - content: "deliver: SPAWN_DOORBELL + wakeSpawn best-effort in doorbell.ts; --no-wake on unit spawn; rebuild dist"
-    status: pending
+    status: completed
   - content: "impl gate: cold sdd-impl-judge over frozen scenarios"
-    status: pending
-  - content: "handoff: ADR-0026 (spawn delivers first turn), changeset, pnpm verify green, PR closing #188"
-    status: pending
+    status: completed
+  - content: "handoff: ADR-0027 (spawn delivers first turn), changeset, pnpm verify green, PR closing #188"
+    status: completed
 ---
 
 # CR github-188 — unit spawn delivers the first turn
@@ -41,7 +41,7 @@ charter (`packages/cyberlegion/.agents/spec/spec.md`). Payload-delivery (brief f
 - `packages/cyberlegion/.agents/spec/unit/lifecycle/README.md` — Use-Case bullet + scenario-map rows.
 - `packages/cyberlegion/src/console/doorbell.ts` — `SPAWN_DOORBELL` + `wakeSpawn` best-effort helper.
 - `packages/cyberlegion/src/cli.ts` — `--no-wake` on `unit spawn`; async action calls `wakeSpawn`.
-- tests + rebuilt `dist/cli.mjs` + changeset + ADR-0026.
+- tests + rebuilt `dist/cli.mjs` + changeset + ADR-0027.
 
 ## Out of scope (record, don't build)
 
@@ -52,4 +52,7 @@ charter (`packages/cyberlegion/.agents/spec/spec.md`). Payload-delivery (brief f
 
 ## NEXT
 
-Author the additive scenarios on `lifecycle.feature`, sync the README, run the spec gate.
+DONE — both gates self-asserted (spec + impl judges PASS), `pnpm verify` green, ADR-0027 recorded,
+PR opened against `main` closing #188. Keep this plan until the PR merges and doctrine-distills.
+Follow-up CR: reconcile `dispatch-governance`'s wake-matrix mode-B (now double-rings a fresh channel
+spawn) to lean on spawn's turn-delivery.

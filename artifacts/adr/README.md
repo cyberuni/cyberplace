@@ -26,6 +26,7 @@ This directory contains Architecture Decision Records (ADRs) for cyberplace — 
 | [0024](0024-cyberlegion-cli-node-alignment.md) | cyberlegion spec nodes align to the command tree and the mux/legion layer split | Proposed | 2026-07-09 |
 | [0025](0025-mission-graph-compiler-scheduler-model.md) | Mission-graph model — an optimizing compiler + CPU instruction scheduler, not an Agile taxonomy | Accepted | 2026-07-12 |
 | [0026](0026-mission-graph-store.md) | Mission-graph store — SDD-native, per-repo, git-tracked; no beads/Dolt/global hub | Accepted | 2026-07-12 |
+| [0027](0027-spawn-delivers-first-turn.md) | `unit spawn` delivers the spawned peer's first turn (best-effort, `--no-wake` opt-out) | Accepted | 2026-07-12 |
 
 ## Creating a new ADR
 
