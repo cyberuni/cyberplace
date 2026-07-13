@@ -24,6 +24,8 @@ This directory contains Architecture Decision Records (ADRs) for cyberplace — 
 | [0022](0022-cyberfleet-persona.md) | The cyberfleet persona — naming, mode-switch, and query-first fleet view | Proposed | 2026-07-04 |
 | [0023](0023-dispatch-seam.md) | The `subagent \| channel` dispatch seam | Proposed | 2026-07-05 |
 | [0024](0024-cyberlegion-cli-node-alignment.md) | cyberlegion spec nodes align to the command tree and the mux/legion layer split | Proposed | 2026-07-09 |
+| [0025](0025-mission-graph-compiler-scheduler-model.md) | Mission-graph model — an optimizing compiler + CPU instruction scheduler, not an Agile taxonomy | Accepted | 2026-07-12 |
+| [0026](0026-mission-graph-store.md) | Mission-graph store — SDD-native, per-repo, git-tracked; no beads/Dolt/global hub | Accepted | 2026-07-12 |
 
 ## Creating a new ADR
 
