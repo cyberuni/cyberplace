@@ -33,7 +33,10 @@ loop* with a persisted DAG, criteria, and queries. A **CR lowers into one or mor
 standalone Mission** (side quest). **The project works one-or-few Operations at a time**: only the
 active Operation(s) enter the local **mission graph** (store) + `.agents/plans/*.plan.md` mission
 briefs; **deferred Operations are amended back into the CR + its source** (GitHub/Asana — the tracker
-is the far-horizon store; opt-in: mark the active Operation there). The machinery unit shifts from
+is the far-horizon store; opt-in tracker marker = human bookkeeping). **"Active" is not a runtime
+toggle** — activeness = presence in the local graph, decided at ingress; the concurrent set is small
+by construction, so no active-flag/prioritizer is needed. **Operation progress = completed/total
+declared missions** (derived readout + soft near-floor signal). The machinery unit shifts from
 CR-shaped to **Mission-shaped** (**PR = Mission**): CR = stakeholder intent, Missions = the local
 decomposition into manageable, deliverable, ideally parallel-executable pieces — generally **without**
 tracker refs (mission-ref minted locally = node id; originating CR(s) kept as provenance). Hierarchy **Campaign > Operation > Mission > Task**

@@ -110,8 +110,14 @@ like a compiler can't infer transaction boundaries) and partly **checkable**: th
 **dependency-closed ⇔ the capstone's closure ⊆ the declared set** (no prerequisite missing from the
 declaration; a *support* member outside the closure is legal — that's what support is). Deliverability
 = the legal **ship points**; concurrency = how fast we reach them; prefer wave boundaries that land on
-Operation cuts. Priority is derived from **declared membership**: missions in the active Operation
-outrank the rest (so support work inherits the priority; the closure alone would starve it).
+Operation cuts. Priority derives from **declared membership** (all of an Operation's declared members
+— support included — rank together, so support isn't starved). **"Active" is not a runtime toggle**:
+an Operation is active iff it is **present in the local graph**, and *which* Operations are local is
+decided at **ingress** (deferred Operations stay on the CR — see "CR ↔ Operation ↔ mission plan").
+The concurrent set is **small by construction** (screaming architecture + one-or-few Operations at a
+time), so no heavy inter-Operation prioritizer is needed. **Operation progress = completed / total
+declared missions** — a derived ratio (cheap fold), a status readout and a soft "near the release
+floor" signal for which local Operation to push over the line. Not a stored field.
 
 ```
    ┌─ Operation O1 (capstone ★M3) = declared {M1, M3, M5} ─┐
@@ -133,8 +139,10 @@ The schedule must respect gates: a HITL capstone can't be auto-shipped. The SDD 
 wall-clock) + **capacity** (fleet hosts K parallel worktrees = issue width) + the **rebase tax**
 from soft overlaps. The objective + constraints the scheduler optimizes against.
 
-*(Priority is not an independent axis — it is derived from Axis 2: missions in the active
-Operation outrank the rest. MVP-first = choose which Operation is active.)*
+*(Priority is not an independent axis — it derives from Axis 2. "Active" = the Operation(s) lowered
+into the local graph at ingress (deferred ones stay on the CR); MVP-first = which Operation you lower
+first. The set is small by design, so no runtime active-flag or inter-Operation prioritizer is needed;
+progress = completed/total declared missions guides which local Operation to finish.)*
 
 **5 axes.** Axes 1–2 are the heart; 3 defines the nodes; 4–5 shape and constrain the schedule.
 
@@ -169,7 +177,9 @@ How lowering output lands — decided:
   Asana task) to capture the Operations *not* being worked. The tracker is the **far-horizon store**;
   the local graph is the near horizon. This gives commit-near/speculate-far a concrete home: far work
   is parked as coarse Operation entries on the CR source, not as local nodes.
-- **Opt-in:** mark the active Operation on the CR source.
+- **Opt-in:** mark the active Operation on the CR source (human bookkeeping on the tracker). In the
+  local graph there is **no separate active flag** — activeness = **presence in the local graph**,
+  chosen at ingress. Operation progress = completed/total declared missions (derived readout).
 - After lowering, the machinery unit **shifts from CR-shaped to Mission-shaped**: **PR = Mission**
   (branch, spec-gate diff scope, plan brief — all per-Mission). The CR remains the intake artifact —
   it carries the **stakeholder's intent**; missions are the *local decomposition* of that intent into
@@ -482,7 +492,8 @@ Because the scheduler is a **pure derivation over the git-tracked mission graph*
 
 **`ready`** — a stateless SDD CLI query (TOON / `--format json`, like `discover-plans`). Folds the
 mission graph → the live frontier: missions with **no unsatisfied RAW predecessor and not WAW-blocked**
-by an in-flight same-node mission. Ranked (active-Operation priority → critical-path length). Per-mission
+by an in-flight same-node mission. Ranked by **critical-path length** (+ progress-to-floor to push a
+near-done Operation over the line; all local Operations are active by presence). Per-mission
 schema: id, node, operation, blast, hitl|afk, model-tier, brief-pointer, why-ready, soft-overlap
 annotations, rank.
 
@@ -649,6 +660,11 @@ against the live graph as an on-demand audit.
   closure** (derived subset). Engine check: dependency-closed ⇔ closure ⊆ declared set. Support
   members (outside the closure) share the Operation's priority + retire window but don't gate release.
   (Reconciles the old "Operation = capstone + closure" wording with the local-label model.)
+- **"Active Operation" = decided at ingress = present in the local graph** (deferred Operations stay
+  on the CR; opt-in tracker marker is human bookkeeping) — **NOT** a runtime toggle with an owner.
+  The concurrent set is small by construction (screaming architecture + few-at-a-time), so no
+  active-flag or inter-Operation prioritizer is needed. **Operation progress = completed / total
+  declared missions** (derived ratio: status readout + soft near-floor signal).
 - **Decomposition (lowering) is core to v1** — without it the scheduler has nothing to interleave.
 - Engine is **hybrid**: reasoning front-end (lower) + deterministic back-end (hazard + schedule).
   Sits above the mission loop as a pre-mission planner; reuses `explore` unit-identification.
