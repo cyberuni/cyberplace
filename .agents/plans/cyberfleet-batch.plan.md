@@ -19,7 +19,7 @@ todos:
   - content: "distill the design into durable homes: project spec (spec.md + DESIGN-NOTES) for the WHAT; 2 ADRs for the WHY (1 model/architecture: compiler mapping + axes + lifecycle loop; 1 store: mission graph SDD-native/per-repo + beads/Dolt/GasTown rejection + orphan-ref F3); research survey docs/research/2026-07-work-decomposition.md from the .research dossier"
     status: completed
   - content: "handoff: PR; file the deferred backlog + F1/F2/F3/F4 as follow-up CRs; delete cyberfleet-batch.design.md once distilled to spec + ADRs (by hand this time; deterministic via F4 going forward)"
-    status: in_progress
+    status: completed
 ---
 
 # cyberfleet-batch — CR→mission compiler/scheduler (working ref; concept rename pending)
@@ -201,6 +201,7 @@ one plan brief → one PR at handoff); M1/M2 are the hand-authored dogfood conte
   the ledger), and their proper retirement is **F4's automated sweep (#193)**, gated on distilled/migrated.
   `plan.md` retires post-merge via plan-retirement as usual.
 
-**Remaining = the PR only** (#9): rename branch → `sdd-mission-graph`, run `add-changeset` if the sdd-plugin
-change needs one, push, open PR to `main`. After merge: plan-retirement retires `plan.md`; F4 (#193) later
-retires the design/operations/evidence briefs. Op2–5 coarse heads are in the store, surfaced by `ready`.
+**MISSION DELIVERED — PR [#197](https://github.com/cyberuni/cyberplace/pull/197) open** (branch
+`sdd-mission-graph`, 31 commits; no changeset — `@cyberplace/sdd-plugin` is private). All 9 todos
+complete. **After merge:** plan-retirement retires `plan.md` + (F4/#193, when built) the
+design/operations/evidence briefs. Op2–5 coarse heads are in the store, surfaced by `ready`.
