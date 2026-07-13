@@ -11,9 +11,9 @@ todos:
   - content: "spec gate: cold spec-judge ALIGNED, freeze .feature"
     status: completed
   - content: "deliver: build the git-tracked mission graph (in-tree files, single-writer, no sharding, tombstone kind) + ready/cycles .mts engine (write-guard + fold-time cycle quarantine) + tests"
-    status: pending
+    status: completed
   - content: "impl gate: cold impl-judge PASS; root pnpm verify"
-    status: pending
+    status: completed
   - content: "self-host: author the active Operation(s) into the store as its first Campaign; amend deferred Operations back into the CR source"
     status: pending
   - content: "distill the design into durable homes: project spec (spec.md + DESIGN-NOTES) for the WHAT; 2 ADRs for the WHY (1 model/architecture: compiler mapping + axes + lifecycle loop; 1 store: mission graph SDD-native/per-repo + beads/Dolt/GasTown rejection + orphan-ref F3); research survey docs/research/2026-07-work-decomposition.md from the .research dossier"
@@ -161,24 +161,33 @@ acceptance bar at handoff, not a frozen scenario; live-graph checks = state-inde
   audit, stale-orphan detection, stacked-PR forwarding. `.feature` freezes "the fold ignores it"; README
   carries an edge-kinds table + a callout explaining the record-but-don't-fold decision.
 
+## Findings / follow-ups (carry into Op1.M2)
+
+- **`node` term is OVERLOADED — disambiguate at M2 distillation.** SDD "node" = a **spec-node** (the
+  SSA atom a mission owns); mission-graph "node" = a **graph vertex** (Mission/Operation). The design
+  brief's `ready` schema used the spec-node reading; the frozen mission-graph glossary pinned the vertex
+  reading → the delivered frontier `node` field is a low-information constant (always `mission`). Not a
+  contract violation (the frozen scenario only requires the field *present*), so deferred, not re-opened.
+  At M2, when the brief distills into the project spec + glossary/TERMINOLOGY + ADRs: (1) split the term
+  (e.g. `spec-node` vs `mission-graph node`), and (2) decide whether the frontier should carry the
+  **owned spec-node** (the useful reading) — an additive v2 refinement, no re-freeze. Filed as a
+  follow-up issue; recorded in `ledger/cyberfleet-batch.eed565.jsonl` seq3.
+- **Doctrine candidate:** the spec-gate alignment check graded ALIGNED but missed a spec.md↔.feature
+  field-list mismatch (README enumerated 7 frontier fields, the `.feature` scenario 8). Candidate for a
+  mechanical field-enumeration consistency check — for the doctrine loop.
+
 ## NEXT
 
-**Op1.M1 spec is FROZEN (spec gate PASSED).** `.agents/specs/sdd/mission-graph/` holds `README.md`
-(plain-language, Key-terms glossary, Use Cases + store/ready/cycles/Operations/status/validation) +
-`mission-graph.feature` (**36 boolean scenarios, `@frozen`**, engine-suite convention over constructed
-fixtures incl. the #135/#136/#137 fixture). Cold `sdd-spec-judge` **ALIGNED** (oracle/builder/architect
-PASS). Gate recorded in `ledger/cyberfleet-batch.eed565.jsonl` (seq1 leash `auto-none`, seq2 gate spec
-approve `by: unional` — HITL ratified). Side-effects this session: `spec-format` bar now requires
-readable-for-non-engineers vocabulary (separate commit); issue **#182** filed (auto-inject universal
-governances into plugin production chains).
+**Op1.M1 is COMPLETE — the kernel is built + verified + landed.** Both gates passed HITL:
+- **spec gate** — cold `sdd-spec-judge` ALIGNED, `mission-graph.feature` `@frozen` (36 scenarios).
+- **impl gate** — cold `sdd-impl-judge` **IMPLEMENTATION_PASS** (36/36, none hollow), `pnpm verify`
+  green. Engine delivered at `plugins/sdd/skills/mission-graph/` (zero-dep `.mts` + tests).
+- Both recorded in `ledger/cyberfleet-batch.eed565.jsonl` (seq1 leash `auto-none`, seq2 spec, seq3 impl;
+  `by: unional`). Session side-effects: `spec-format` readability bar (committed) + issue **#182**.
 
-**Next = Op1.M1 deliver (todo #5).** Build the delivery: `plugins/sdd/skills/mission-graph/` — a
-self-contained, zero-dep `.mts` engine + colocated `.test.mts` over **authored fixtures** (never the
-live store), realizing all 36 frozen scenarios: the append-only store (nodes/edges/status/tombstone,
-schema v:1), the read-only `ready` fold (RAW frontier + node-level WAW-mutex, pinned tie-break), the
-`cycles` write-guard + fold-time SCC quarantine, and the Operation closure/floor/progress check. Store
-access behind a git-access seam (v1 in-tree → F3 orphan-ref later). Distill the #135/#136/#137 example
-into one fixture. **Delegate the build to Sonnet** (concrete build unit). Then the **impl gate** (todo
-#6): cold `sdd-impl-judge` re-derives each frozen scenario's oracle + runs verification → PASS; root
-`pnpm verify`. **This gate is HITL too** (leash `auto-none`) → bring the impl-judge verdict for
-ratification before landing. **Op1.M2** (self-host) + Op2–5 remain follow-ups.
+**Next = Op1.M2 ★ (self-host proof) — a follow-up, NOT this mission.** Author *this* project's own
+Operation/Mission graph into the delivered store; run `ready` and prove it returns the correct frontier
+(the acceptance bar: the kernel must usefully plan Op2–5). Amend the deferred Operations (Op2–5) back
+onto the CR source. Then handoff: distill `cyberfleet-batch.design.md` into the project spec (DESIGN-
+NOTES) + 2 ADRs + `docs/research/2026-07-work-decomposition.md`, resolve the **`node` term** (above),
+delete the transient design brief, PR. Op2–5 remain far-horizon.
