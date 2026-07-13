@@ -15,7 +15,7 @@ todos:
   - content: "impl gate: cold impl-judge PASS; root pnpm verify"
     status: completed
   - content: "self-host: author the active Operation(s) into the store as its first Campaign; amend deferred Operations back into the CR source"
-    status: pending
+    status: completed
   - content: "distill the design into durable homes: project spec (spec.md + DESIGN-NOTES) for the WHAT; 2 ADRs for the WHY (1 model/architecture: compiler mapping + axes + lifecycle loop; 1 store: mission graph SDD-native/per-repo + beads/Dolt/GasTown rejection + orphan-ref F3); research survey docs/research/2026-07-work-decomposition.md from the .research dossier"
     status: pending
   - content: "handoff: PR; file the deferred backlog + F1/F2/F3/F4 as follow-up CRs; delete cyberfleet-batch.design.md once distilled to spec + ADRs (by hand this time; deterministic via F4 going forward)"
@@ -176,18 +176,29 @@ acceptance bar at handoff, not a frozen scenario; live-graph checks = state-inde
   field-list mismatch (README enumerated 7 frontier fields, the `.feature` scenario 8). Candidate for a
   mechanical field-enumeration consistency check — for the doctrine loop.
 
+## Self-host proof (Op1.M2 acceptance bar — PASSED)
+
+The kernel was run on its own dogfood: this project's Op1–5 graph was authored into the real store
+(`.agents/mission-graph/events.jsonl`, 21 events) **via the engine's own write path**, and `ready`
+returned the correct frontier — `{op2-m1, op3-m1, op4-m1, op5-m1}` (op4 parallel-safe / "no RAW
+predecessors"; op2/op3/op5 "RAW-satisfied: op1-m1 retired"), M2 (`claimed`) excluded, `cycles` empty,
+`operation op1` closed with floor `{op1-m1, op1-m2}` and progress `1/2`. **The kernel usefully plans its
+own remaining work → acceptance bar met.**
+
 ## NEXT
 
-**Op1.M1 is COMPLETE — the kernel is built + verified + landed.** Both gates passed HITL:
-- **spec gate** — cold `sdd-spec-judge` ALIGNED, `mission-graph.feature` `@frozen` (36 scenarios).
-- **impl gate** — cold `sdd-impl-judge` **IMPLEMENTATION_PASS** (36/36, none hollow), `pnpm verify`
-  green. Engine delivered at `plugins/sdd/skills/mission-graph/` (zero-dep `.mts` + tests).
-- Both recorded in `ledger/cyberfleet-batch.eed565.jsonl` (seq1 leash `auto-none`, seq2 spec, seq3 impl;
-  `by: unional`). Session side-effects: `spec-format` readability bar (committed) + issue **#182**.
+**Op1.M1 COMPLETE (both gates HITL-ratified); Op1.M2 self-host DONE.** This is ONE flat SDD mission
+(cyberfleet-batch = one plan brief → one PR at handoff); M1/M2 are the hand-authored dogfood content,
+not separate PRs (the `PR = Mission` model becomes real only once the system self-hosts — which M2 just
+proved). Remaining M2 work before the single handoff PR:
 
-**Next = Op1.M2 ★ (self-host proof) — a follow-up, NOT this mission.** Author *this* project's own
-Operation/Mission graph into the delivered store; run `ready` and prove it returns the correct frontier
-(the acceptance bar: the kernel must usefully plan Op2–5). Amend the deferred Operations (Op2–5) back
-onto the CR source. Then handoff: distill `cyberfleet-batch.design.md` into the project spec (DESIGN-
-NOTES) + 2 ADRs + `docs/research/2026-07-work-decomposition.md`, resolve the **`node` term** (above),
-delete the transient design brief, PR. Op2–5 remain far-horizon.
+1. **Distill** (todo #8) — `cyberfleet-batch.design.md` → durable homes: the mission-graph node
+   DESIGN-NOTES (the WHAT), **2 ADRs** (WHY — ADR-A: the compiler/scheduler model = CR→Operation→Mission
+   mapping + the 5 axes + hazard mapping + lifecycle loop; ADR-B: the store = SDD-native/per-repo/git-
+   tracked + beads/Dolt/GasTown rejection + orphan-ref F3 + single-writer), and the research survey
+   `docs/research/2026-07-work-decomposition.md` from `.research/work-decomposition-cr-parallelism/`.
+2. **Handoff** (todo #9) — file Op2–5 + F1/F2/F3/F4/F5 + SQ-name/SQ-intake as follow-up issues (the
+   "amend deferred Operations onto the CR source"); resolve the **`node` term** (issue #184) at this
+   distillation; **delete `cyberfleet-batch.design.md`** once distilled; open the PR.
+
+Op2–5 remain far-horizon (their coarse heads are now in the store, surfaced by `ready`).
