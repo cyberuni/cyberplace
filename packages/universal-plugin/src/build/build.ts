@@ -28,12 +28,10 @@ export interface BuildOptions {
 	clean?: boolean
 }
 
-export type VendorStatus = 'built' | 'skipped' | 'failed'
-
 export interface VendorRow {
 	vendor: string
 	path: string
-	status: VendorStatus
+	status: 'built' | 'skipped' | 'failed'
 }
 
 export interface BuildResult {
