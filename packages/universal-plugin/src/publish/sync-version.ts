@@ -1,15 +1,10 @@
 import * as path from 'node:path'
+import { detectIndent } from '../json.js'
 import type { SyncVersionFs } from './fs.js'
 
 export interface SyncVersionResult {
 	version: string
 	manifestPath: string
-}
-
-function detectIndent(json: string): string | number {
-	const match = json.match(/\n([ \t]+)/)
-	if (!match) return '\t'
-	return match[1].startsWith('\t') ? '\t' : match[1].length
 }
 
 export function syncVersion(root: string, syncFs: SyncVersionFs): SyncVersionResult {

@@ -1,5 +1,6 @@
 import * as fsNode from 'node:fs'
 import * as path from 'node:path'
+import { detectIndent } from '../json.js'
 import type { BundlePin, VersionSource } from './bundle.js'
 
 const DEFAULT_GLOBS = ['packages/*']
@@ -108,7 +109,10 @@ export function writePinsMap(root: string, pins: BundlePin[]): void {
 	for (const key of Object.keys(map).sort((a, b) => a.localeCompare(b))) sorted[key] = map[key]!
 	const dir = path.join(root, '.plugin')
 	fsNode.mkdirSync(dir, { recursive: true })
-	fsNode.writeFileSync(path.join(dir, 'pins.json'), `${JSON.stringify(sorted, null, 2)}\n`)
+	const pinsPath = path.join(dir, 'pins.json')
+	const existing = fsNode.existsSync(pinsPath) ? fsNode.readFileSync(pinsPath, 'utf8') : null
+	const indent = existing ? detectIndent(existing) : '\t'
+	fsNode.writeFileSync(pinsPath, `${JSON.stringify(sorted, null, indent)}\n`)
 }
 
 export function realVersionSource(workspace: Map<string, string | undefined>): VersionSource {

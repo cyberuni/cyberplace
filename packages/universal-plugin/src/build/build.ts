@@ -1,5 +1,6 @@
 import * as fs from 'node:fs'
 import * as path from 'node:path'
+import { detectIndent } from '../json.js'
 
 type VendorId = 'claude-code' | 'cursor' | 'codex' | 'copilot-cli'
 
@@ -40,12 +41,6 @@ export interface BuildResult {
 	warnings: string[]
 	rows: VendorRow[]
 	summary: { built: number; skipped: number; failed: number }
-}
-
-function detectIndent(json: string): string | number {
-	const match = json.match(/\n([ \t]+)/)
-	if (!match) return '\t'
-	return match[1].startsWith('\t') ? '\t' : match[1].length
 }
 
 export function readManifest(root: string): PluginManifest {
