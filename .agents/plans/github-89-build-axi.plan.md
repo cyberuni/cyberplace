@@ -1,17 +1,17 @@
 ---
-status: active
+status: implemented
 cr: github-89-build-axi
 project: universal-plugin
 source: https://github.com/cyberuni/cyberplace/issues/89
 todos:
   - content: Extend BuildResult with per-vendor rows + summary; status built/skipped/failed
-    status: pending
+    status: done
   - content: Rewrite build/cli.ts output to default TOON table + aggregate + stderr next-step
-    status: pending
+    status: done
   - content: Add e2e scenarios mirroring the frozen AXI build.feature scenarios
-    status: pending
+    status: done
   - content: pnpm verify; impl gate (cold sdd-impl-judge); advance project spec approved->implemented
-    status: pending
+    status: done
 ---
 
 # github-89 — implement plugin build's AXI output surface
@@ -24,4 +24,4 @@ Contract: `packages/universal-plugin/.agents/spec/plugin/build/build.feature` (`
 Reference impl: `packages/universal-plugin/src/bundle/cli.ts`.
 
 ## NEXT
-Implement build.ts row/summary model, then cli.ts TOON surface, then mirror e2e tests.
+Landed. Project spec advanced approved → implemented. PR closes #89.
