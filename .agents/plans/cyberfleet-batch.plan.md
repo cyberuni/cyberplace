@@ -6,7 +6,7 @@ todos:
     status: completed
   - content: "spec: name + exact SDD node placement (finalize in-context during spec authoring)"
     status: pending
-  - content: "spec: write the SDD node spec.md + .feature for the v1 KERNEL (store w/ touch-sets + ready w/ WAW-mutex + cycles + manual authoring); scenarios over authored fixture graphs incl. the #135/#136/#137 fixture"
+  - content: "spec: write the SDD node spec.md + .feature for the v1 KERNEL (store w/ touch-sets + ready w/ WAW-mutex + cycles + manual authoring); scenarios over authored fixture graphs incl. the #135/#136/#137 fixture; re-emit the run-start leash shard under the SDD node (was removed from the cyberfleet ledger)"
     status: pending
   - content: "spec gate: cold spec-judge ALIGNED, freeze .feature"
     status: pending
