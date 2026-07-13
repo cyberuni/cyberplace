@@ -8,11 +8,11 @@ todos:
   - content: "spec gate: cold sdd-spec-judge ALIGNED, freeze .feature, ledger gate line, status approved"
     status: completed
   - content: "deliver: build touch-set-correction.mts engine + tests + SKILL/README; per-scenario verification; pnpm verify green"
-    status: in_progress
+    status: completed
   - content: "impl gate: rebase onto origin/main, cold sdd-impl-judge PASS, status implemented"
-    status: pending
+    status: completed
   - content: "handoff: finalize placement, PR referencing (not closing) #189, mail operator with outcomes"
-    status: pending
+    status: in_progress
 ---
 
 # CR github-189 (Op2) — git-diff touch-set correction tool
@@ -47,6 +47,11 @@ placement") + ADR-0025 / ADR-0026. Own dogfood node: `op2-m1`, declared touch-se
 - Region/hunk tier; writing to the mission graph. PR **references** #189, does not close it.
 
 ## NEXT
-Explore: author `.agents/specs/sdd/touch-set-correction/` (spec.md + touch-set-correction.feature),
-provisional placement under the orchestration concept (sibling of mission-graph). Cold spec-judge each
-round. Then spec gate.
+Both gates self-asserted (spec ALIGNED, impl PASS on cold judges), each with one judge-iteration
+correction (spec: 2 builder coverage gaps + premature @frozen; impl: artifactType not surfaced —
+mutation-caught). Node `sdd/touch-set-correction` frozen (21 scenarios); engine + 23 node:tests wired
+into `verify:specs`; root `pnpm verify` green. Placement blessed (sibling of mission-graph, architect
+PASS). Remaining: push branch, open PR **referencing** (not closing) #189, mail operator done.
+Dogfood note: the tool run on this very branch correctly flags `sdd/touch-set-correction` **missed** and
+the graph's declared `sdd/mission-graph-touchset` **over-declared** — the prediction drift it exists to catch.
+Deferred on #189: finer-than-node ladder + SSA-lowering (the rest of the issue).
