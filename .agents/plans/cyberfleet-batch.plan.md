@@ -5,9 +5,9 @@ todos:
   - content: "design: full compiler/scheduler model captured in design.md (DONE)"
     status: completed
   - content: "spec: name + exact SDD node placement (finalize in-context during spec authoring)"
-    status: pending
+    status: completed
   - content: "spec: write the SDD node spec.md + .feature for the v1 KERNEL (store w/ touch-sets + ready w/ WAW-mutex + cycles + manual authoring); scenarios over authored fixture graphs incl. the #135/#136/#137 fixture; re-emit the run-start leash shard under the SDD node (was removed from the cyberfleet ledger)"
-    status: pending
+    status: in_progress
   - content: "spec gate: cold spec-judge ALIGNED, freeze .feature"
     status: pending
   - content: "deliver: build the git-tracked mission graph (in-tree files, single-writer, no sharding, tombstone kind) + ready/cycles .mts engine (write-guard + fold-time cycle quarantine) + tests"
@@ -139,18 +139,40 @@ acceptance bar at handoff, not a frozen scenario; live-graph checks = state-inde
 - Settled forks: estimator SDD-native; v1 declared-edges-only; Operation (not Campaign) for the release unit; store SDD-native (no DB); dispatch loop = cyberfleet Operator (not Legate).
 - Run-start leash shard was removed (was misplaced under cyberfleet ledger); re-emit under the SDD node at spec time.
 
+## Resolved decisions
+
+- **Node placement** — a **new top-level SDD capability** `.agents/specs/sdd/mission-graph/`, a
+  **single-node behavioral capability** (README + `mission-graph.feature`, mirroring `formation/`);
+  registered as a Capability-map row + regenerated concept-index (`concept: orchestration`). One node ⇒
+  the whole M1 mission owns it (SSA: one owning mission per spec-node). NOT the cyberfleet package.
+- **Name** — node + store noun = **`mission-graph`** (store noun "mission graph" was already settled);
+  engine verbs = **`ready`** / **`cycles`** (settled) + a separate write path. The delivery skill shares
+  the `mission-graph` name (`plugins/sdd/skills/mission-graph/`, decided at deliver). The broader
+  **compiler/scheduler capability concept name** stays parked → an **Op1.M2** / project-spec-distillation
+  concern, NOT an M1 blocker.
+- **Concept axis** — `orchestration` (joins `cr-concurrency`, `loops`, `conductor`); no new axis invented.
+- **v1 scope tightened at spec time** — dropped critical-path **ranking** and **soft-overlap
+  annotations** from the `ready` output (dispatcher/finer-ladder concerns, not in the design's §Criteria);
+  frontier order is the pinned mission-ref tie-break. Everything in the Backlog stays a follow-up.
+- **`discovered-from` edge — kept as provenance-only** (user call at the spec gate) — a v1 store
+  edge-kind the fold **records but never acts on**; captured from day one because lineage can't be
+  backfilled (same "cheap now, painful to retrofit" class as tombstone + schema-version). Consumers all
+  deferred: decomposition-quality metric (spawn fan-out = under-lowered cut), growth/decision-evidence
+  audit, stale-orphan detection, stacked-PR forwarding. `.feature` freezes "the fold ignores it"; README
+  carries an edge-kinds table + a callout explaining the record-but-don't-fold decision.
+
 ## NEXT
 
-**Design + planning are DONE. Resume into `Op1.M1` — spec the v1 kernel.** First read, in order:
-`cyberfleet-batch.operations.md` (the Op1–5 graph; only **Op1.M1** is active), then
-`cyberfleet-batch.design.md` (the model), then `cyberfleet-batch.evidence.md` (why the graph is shaped
-this way). This mission = **Op1.M1** only (spec + build the kernel); **Op1.M2** (self-host) and Op2–5
-are follow-ups.
+**Op1.M1 spec is DRAFTED.** `.agents/specs/sdd/mission-graph/` now holds `README.md` (spec.md-equiv:
+Use Cases + store/ready/cycles/Operations/status/validation sections) + `mission-graph.feature` (~35
+boolean scenarios, engine-suite convention over constructed fixtures incl. the #135/#136/#137 fixture),
+un-frozen. `sdd/spec.md` Capability-map row + concept-index regenerated. Committed as the spec-draft unit.
 
-Then run the SDD spec phase: confirm the exact SDD node (via discover-specs; placement is SDD, not the
-cyberfleet package), name it in-context, and draft `spec.md` + `.feature` for {store w/ declared
-touch-sets + tombstone + schema `v:1`, `ready` w/ node-level WAW-mutex, `cycles` w/ write-guard +
-fold-time quarantine, manual authoring}. Scenarios follow the engine-suite convention: authored fixture
-graphs (incl. the #135/#136/#137 fixture), never the live store; dogfood self-host is the acceptance bar
-at handoff. Re-emit the run-start leash shard under the SDD node. Everything in the Backlog is a
-follow-up, not part of v1.
+**Next = the spec gate (todo #4).** Run `pnpm verify` first (mechanical suite-format/spec-format
+pre-filter must pass). Then spawn a **cold** `sdd:sdd-spec-judge` over the touched
+`spec.md` + `.feature` for the {oracle, builder, architect} backward lens set → an ALIGNED rollup. On
+ALIGNED: **re-emit the run-start leash shard** under the SDD node ledger (`.agents/specs/sdd/ledger/` —
+was removed from the cyberfleet ledger), add the `@frozen` tag to `mission-graph.feature`, and record
+the gate in the ledger. Then Op1.M1 deliver (todo #5): build the zero-dep `.mts` engine + colocated
+`.test.mts` over the fixtures (delegate the build to Sonnet). **Op1.M2** (self-host) + Op2–5 are
+follow-ups, out of scope for this mission.
