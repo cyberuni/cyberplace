@@ -10,8 +10,8 @@ installable persona gateway skill, per `.agents/specs/cyberfleet-plugin/recruitm
   crew it no longer wants.
 
 Not for spawning or pruning a ship **instance** — that is `operator`'s job (deployment). Not for
-reconfiguring or tuning an already-installed crew's governance/model/effort/leash — that is
-`tuner`. Not for authoring a brand-new skill from scratch — that is `define-skill`.
+building or reconfiguring an automaton (governance/model/effort/leash) — that is
+`mechanic`. Not for authoring a plain workflow skill from scratch — that is `define-skill`.
 
 ## What it does
 
@@ -22,7 +22,7 @@ reconfiguring or tuning an already-installed crew's governance/model/effort/leas
   recruit.
 - Discharges: confirms with the Council before the destructive step, then uninstalls and retires
   the crew from the fleet registry.
-- Defers deploy-a-ship-instance requests to `operator` and tune-a-crew requests to `tuner`, aloud.
+- Defers deploy-a-ship-instance requests to `operator` and build-or-tune-a-crew requests to `mechanic`, aloud.
 
 Every mechanic is a CLI call — the Tavern marketplace query, `npx skills add` / plugin install, and
 `cyberlegion unit register`/uninstall/retire. Harness-agnostic, MCP-free.

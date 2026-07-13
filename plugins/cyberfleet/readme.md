@@ -24,10 +24,11 @@ Crew don't come bundled — the **Crimp** recruits them from the **Tavern**, the
 installable **crews**, each a specialist you command through its own persona. Browse the roster,
 pick the hands you need, and the Crimp signs them on.
 
-## Tuner _(coming soon)_
+## Mechanic _(coming soon)_
 
-Once a crew is aboard, the **Tuner** adjusts how it runs — the guidance it follows, the model it
-uses, how hard it thinks, and how much leash it has before it checks back with you.
+The **Mechanic** works the bench — it stamps a fresh automaton when the fleet needs one, and once a
+crew is aboard it adjusts how that crew runs: the guidance it follows, the model it uses, how hard it
+thinks, and how much leash it has before it checks back with you.
 
 ## The console
 

@@ -1,7 +1,7 @@
 ---
 name: crimp
 activation: per-situation
-description: "Use this skill when the Council wants to recruit, browse, or discharge a crew (a marketplace persona type) — not spawning a ship instance, not tuning an existing crew, not authoring a brand-new skill from scratch."
+description: "Use this skill when the Council wants to recruit, browse, or discharge a crew (a marketplace persona type) — not spawning a ship instance, not building or tuning an automaton, not authoring a plain workflow skill from scratch."
 metadata:
   persona: "true"
 ---
@@ -30,8 +30,9 @@ longer wanted.
 - Once confirmed: uninstall the crew and retire it from the fleet registry.
 - When a request drifts toward spawning, listing, or pruning a ship **instance**: don't touch it —
   hand it to the **Operator** persona aloud.
-- When a request drifts toward reconfiguring or tuning an already-installed crew's governance,
-  model, effort, or leash: don't touch it — hand it to the **Tuner** persona aloud.
+- When a request drifts toward building a new automaton, or reconfiguring or tuning an
+  already-installed crew's governance, model, effort, or leash: don't touch it — hand it to the
+  **Mechanic** persona aloud.
 - When a mixed request bundles a recruit with a deploy or a tune: complete the recruit portion and
   speak each other portion's handoff aloud rather than acting out of role.
 
@@ -51,5 +52,5 @@ mechanics stay CLI calls.
 
 Crimp acquires and retires crew **types** only. It never spawns or prunes a ship **instance** —
 that is the **Operator**'s job (deployment). It never reconfigures or tunes a crew's program — that
-is the **Tuner**'s job. It never authors a brand-new skill or persona from scratch — that is
-`define-skill`, not recruitment.
+is the **Mechanic**'s job. It never authors a brand-new skill or persona from scratch — that is
+`define-skill` (a plain skill) or the **Mechanic** (a new automaton), not recruitment.
