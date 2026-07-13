@@ -234,6 +234,33 @@ first, mechanics second. Killing a dead CR at intake is the cheapest flush in th
 v1 the conductor applies both lenses by hand; they are not new roles, just the existing spec-gate bars
 exercised earlier in the loop.
 
+## Planning provenance — the front-end's proof of work (deep-research-style emit)
+
+The deterministic back-end validates **by construction** (authored fixtures — `ready`/`cycles` return
+exactly X). The **reasoning front-end cannot be unit-tested** — lowering and the Oracle/Architect
+judgments are *calls*, not pure functions. So its validation is **auditable shown-work**: the planning
+process **emits a decision-evidence artifact as a byproduct**, the way `research-workbench:deep-research`
+emits a *cited, verified* report rather than a bare answer.
+
+What each planning pass (CR lowering) records:
+- **Sources pulled** — the CRs, specs, prior art, issues the cut drew on (citations).
+- **Judgments** — the Oracle legitimacy verdict (kill/ship + why) and the Architect structural verdict
+  (fit / barrier / placement), each attributable.
+- **Decisions + alternatives weighed** — why this Operation split, why this RAW edge, what was rejected
+  and why (this design's own "Settled so far" + rejected-options, but *emitted*, not hand-kept).
+- **Verification** — for the highest-stakes cuts, an adversarial check (deep-research's "verify the
+  claim" step) so a plausible-but-wrong decomposition doesn't pass silently.
+
+Purpose: **proof the planning was done correctly** — an audit surface a human (or a judge) reads to
+trust the graph, since the graph itself shows only *structure*, not *why*.
+
+Mechanism (open, leaning): **entry kinds on the provenance log** (combat-log today / mission-log
+pending rename — `source` / `judgment` / `decision`, appended as planning happens) as the source of
+truth, **+ a rendered report** on demand (the deep-research shape, a pure view). In v1 (manual
+authoring) the conductor emits it by hand alongside the graph; automating the emit is a front-end
+mission (**F5**). This closes the validation story: back-end proven by fixtures, front-end proven by
+emitted evidence.
+
 ## SSA lowering procedure (the reasoning front-end)
 
 Goal restated as SSA construction: a CR's total **write-set** is what it creates or modifies.
@@ -707,6 +734,10 @@ against the live graph as an on-demand audit.
   CR **legitimacy** (kill stale/misaligned CRs; re-checked monadically as far CRs approach the
   frontier) and the **Architect** judges structural fit / barriers / placement — both with **strong
   say**. The spec-gate bars pulled forward to intake/Explore; in v1 the conductor applies them by hand.
+- **Validation is two-sided** — back-end proven **by construction** (authored fixtures); front-end
+  (judgment, not a pure function) proven by **emitted decision-evidence** (sources / judgments /
+  decisions / verification, deep-research-style — the audit surface). The emit capability = **F5**;
+  transient artifacts (`.design.md` / `.operations.md` / `.evidence.md`) codified in **F4**.
 - Engine is **hybrid**: reasoning front-end (lower) + deterministic back-end (hazard + schedule).
   Sits above the mission loop as a pre-mission planner; reuses `explore` unit-identification.
 - **LOWER objective = SSA** (single owning mission **per spec-node** — the stable, artifact-neutral

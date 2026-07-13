@@ -111,10 +111,17 @@ acceptance bar at handoff, not a frozen scenario; live-graph checks = state-inde
 - blast-field auto-compute (the touch-set estimator sharpens SDD's hand-asserted `blast:`)
 - **F1**: strengthen `spec-layout.md` S1 capability-first → strongly-recommended + Warden layout-quality signal
 - **F2**: formation-loop intra-project cross-node scenario-overlap dedup (spec-level SSA)
-- **F4**: codify the `<cr-ref>.design.md` artifact in SDD — a recognized **transient CR-level design
-  brief** for a CR that fans into multiple Operations (captures the overall cross-Operation design the
-  per-mission `.plan.md`s reference; keep the name — it parallels `.plan.md`). Extend `retire-plans` to
-  sweep `<cr-ref>.design.md` gated on distilled → **deterministic cleanup**, no orphan.
+- **F4**: codify the **transient CR-level planning artifacts** in SDD — `<cr-ref>.design.md` (overall
+  design/model), `<cr-ref>.operations.md` (the hand-authored Operation/Mission graph = pre-store
+  self-host seed), and `<cr-ref>.evidence.md` (the decision-evidence emit — see F5). All are created at
+  planning when a CR fans into multiple Operations and parallel `.plan.md`. Extend `retire-plans` to
+  sweep all of them gated on distilled/migrated → **deterministic cleanup**, no orphan. (`.operations.md`
+  retires when its graph migrates into the store at self-host.)
+- **F5**: the **decision-evidence emit** — the reasoning front-end's *proof of work*. Planning emits a
+  structured record (sources pulled, Oracle/Architect judgments, decisions + alternatives weighed,
+  adversarial verification) the way `research-workbench:deep-research` emits a cited report — the audit
+  surface that validates the front-end (which can't be unit-tested). Mechanism: entry kinds on the
+  provenance log (source of truth) + a rendered report. v1 = conductor emits by hand; automate later.
 - naming finalization (units + store noun "mission graph" settled; engine/capability name = placeholder)
 
 ## Open questions

@@ -20,7 +20,9 @@
 | Op4 — Corpus prerequisites (F1+F2) | ★ capability-first + one-behavior-one-scenario enforced/measured | far horizon (parallel-safe) | coarse |
 | Op5 — Risk & barriers | ★ barrier fences modeled + blast auto-computed | far horizon | coarse |
 
-Side-quests (standalone single-mission Operations): **SQ-F4** codify `.design.md` + retire-plans sweep ·
+Side-quests (standalone single-mission Operations): **SQ-F4** codify transient planning artifacts
+(`.design.md` / `.operations.md` / `.evidence.md`) + retire-plans sweep · **SQ-F5** decision-evidence
+emit (front-end proof of work, deep-research-style — provenance-log entry kinds + rendered report) ·
 **SQ-name** finalize engine/capability name · **SQ-intake** automate the Oracle/Architect intake vet.
 
 **Active-Operation call (ingress):** only **Op1** is lowered into local missions now. Op2–5 stay parked
@@ -134,6 +136,11 @@ Capstone ★ = blast auto-computed. **Deps:** Op1 → M5.1; Op2 (touch-set tool)
   to sweep it (deterministic cleanup). Independent.
 - **SQ-name** — finalize the engine/capability name (store noun "mission graph" settled; avoid the
   `plan` token). Independent, small.
+- **SQ-F5** — the **decision-evidence emit**: the reasoning front-end's proof of work (sources,
+  Oracle/Architect judgments, decisions + alternatives, adversarial verification), deep-research-style.
+  Provenance-log entry kinds + rendered report. Manual in v1 (see `cyberfleet-batch.evidence.md`, the
+  first dogfood instance); automated with the front-end. Validates the half of the system that can't
+  be unit-tested.
 - **SQ-intake** — automate the **Oracle legitimacy + Architect** intake vet (manual/by-hand in v1).
   Depends on Op2's front-end.
 
