@@ -28,10 +28,20 @@ export interface BuildOptions {
 	clean?: boolean
 }
 
+export type VendorStatus = 'built' | 'skipped' | 'failed'
+
+export interface VendorRow {
+	vendor: string
+	path: string
+	status: VendorStatus
+}
+
 export interface BuildResult {
 	vendors: VendorId[]
 	written: string[]
 	warnings: string[]
+	rows: VendorRow[]
+	summary: { built: number; skipped: number; failed: number }
 }
 
 function detectIndent(json: string): string | number {
@@ -72,11 +82,13 @@ export function buildPlugin(root: string, opts: BuildOptions = {}): BuildResult 
 	if (errors.length > 0) throw new Error(`plugin.json validation failed:\n${errors.map((e) => `  - ${e}`).join('\n')}`)
 
 	const warnings: string[] = []
+	const rows: VendorRow[] = []
 	const vendorExtensions = manifest.vendorExtensions ?? {}
 
 	let vendors = Object.keys(vendorExtensions).filter((v): v is VendorId => {
 		if (!KNOWN_VENDORS.has(v)) {
 			warnings.push(`Unknown vendor "${v}" in vendorExtensions — skipped`)
+			rows.push({ vendor: v, path: '-', status: 'skipped' })
 			return false
 		}
 		return true
@@ -91,14 +103,15 @@ export function buildPlugin(root: string, opts: BuildOptions = {}): BuildResult 
 
 	if (vendors.length === 0) {
 		warnings.push('No vendors declared in vendorExtensions — nothing to build')
-		return { vendors: [], written: [], warnings }
+		return { vendors: [], written: [], warnings, rows, summary: summarize(rows) }
 	}
 
 	const written: string[] = []
 	const { vendorExtensions: _ext, $schema: _schema, ...canonical } = manifest
 
 	for (const vendor of vendors) {
-		const outputPath = path.join(root, VENDOR_OUTPUT[vendor])
+		const relPath = VENDOR_OUTPUT[vendor]
+		const outputPath = path.join(root, relPath)
 		const outputDir = path.dirname(outputPath)
 		const vendorFields = vendorExtensions[vendor] ?? {}
 		const vendorManifest = { ...canonical, ...vendorFields }
@@ -110,14 +123,27 @@ export function buildPlugin(root: string, opts: BuildOptions = {}): BuildResult 
 			}
 		}
 
-		if (!opts.dryRun) {
-			if (opts.clean && fs.existsSync(outputPath)) fs.unlinkSync(outputPath)
-			fs.mkdirSync(outputDir, { recursive: true })
-			fs.writeFileSync(outputPath, `${JSON.stringify(vendorManifest, null, indent)}\n`)
+		try {
+			if (!opts.dryRun) {
+				if (opts.clean && fs.existsSync(outputPath)) fs.unlinkSync(outputPath)
+				fs.mkdirSync(outputDir, { recursive: true })
+				fs.writeFileSync(outputPath, `${JSON.stringify(vendorManifest, null, indent)}\n`)
+			}
+			written.push(outputPath)
+			rows.push({ vendor, path: relPath, status: 'built' })
+		} catch (err) {
+			warnings.push(`Failed to write "${vendor}" → ${relPath}: ${err instanceof Error ? err.message : String(err)}`)
+			rows.push({ vendor, path: relPath, status: 'failed' })
 		}
-
-		written.push(outputPath)
 	}
 
-	return { vendors, written, warnings }
+	return { vendors, written, warnings, rows, summary: summarize(rows) }
+}
+
+function summarize(rows: VendorRow[]): BuildResult['summary'] {
+	return {
+		built: rows.filter((r) => r.status === 'built').length,
+		skipped: rows.filter((r) => r.status === 'skipped').length,
+		failed: rows.filter((r) => r.status === 'failed').length,
+	}
 }
