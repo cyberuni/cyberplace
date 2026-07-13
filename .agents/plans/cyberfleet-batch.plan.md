@@ -17,9 +17,9 @@ todos:
   - content: "self-host: author the active Operation(s) into the store as its first Campaign; amend deferred Operations back into the CR source"
     status: completed
   - content: "distill the design into durable homes: project spec (spec.md + DESIGN-NOTES) for the WHAT; 2 ADRs for the WHY (1 model/architecture: compiler mapping + axes + lifecycle loop; 1 store: mission graph SDD-native/per-repo + beads/Dolt/GasTown rejection + orphan-ref F3); research survey docs/research/2026-07-work-decomposition.md from the .research dossier"
-    status: pending
+    status: completed
   - content: "handoff: PR; file the deferred backlog + F1/F2/F3/F4 as follow-up CRs; delete cyberfleet-batch.design.md once distilled to spec + ADRs (by hand this time; deterministic via F4 going forward)"
-    status: pending
+    status: in_progress
 ---
 
 # cyberfleet-batch — CR→mission compiler/scheduler (working ref; concept rename pending)
@@ -187,18 +187,20 @@ own remaining work → acceptance bar met.**
 
 ## NEXT
 
-**Op1.M1 COMPLETE (both gates HITL-ratified); Op1.M2 self-host DONE.** This is ONE flat SDD mission
-(cyberfleet-batch = one plan brief → one PR at handoff); M1/M2 are the hand-authored dogfood content,
-not separate PRs (the `PR = Mission` model becomes real only once the system self-hosts — which M2 just
-proved). Remaining M2 work before the single handoff PR:
+**Op1.M1 COMPLETE; Op1.M2 self-host + distill DONE.** This is ONE flat SDD mission (cyberfleet-batch =
+one plan brief → one PR at handoff); M1/M2 are the hand-authored dogfood content, not separate PRs.
 
-1. **Distill** (todo #8) — `cyberfleet-batch.design.md` → durable homes: the mission-graph node
-   DESIGN-NOTES (the WHAT), **2 ADRs** (WHY — ADR-A: the compiler/scheduler model = CR→Operation→Mission
-   mapping + the 5 axes + hazard mapping + lifecycle loop; ADR-B: the store = SDD-native/per-repo/git-
-   tracked + beads/Dolt/GasTown rejection + orphan-ref F3 + single-writer), and the research survey
-   `docs/research/2026-07-work-decomposition.md` from `.research/work-decomposition-cr-parallelism/`.
-2. **Handoff** (todo #9) — file Op2–5 + F1/F2/F3/F4/F5 + SQ-name/SQ-intake as follow-up issues (the
-   "amend deferred Operations onto the CR source"); resolve the **`node` term** (issue #184) at this
-   distillation; **delete `cyberfleet-batch.design.md`** once distilled; open the PR.
+- **Distilled** (#8 ✓): ADR-0025 (model) + ADR-0026 (store) + `docs/research/2026-07-work-decomposition.md`
+  (survey) + node README WHY cross-links. `node` term disambiguated in the docs (issue #184 — engine-field
+  half stays open).
+- **Deferred backlog filed** (the "amend Operations onto the CR source"): **#189** Op2 · **#190** Op3 ·
+  **#191** Op4 · **#192** Op5 · **#193** SQ-F4 · **#194** SQ-F5 · **#195** SQ-name · **#196** SQ-intake.
+  Plus #182 (universal-governance injection) + #184 (`node` engine field).
+- **Transient briefs KEPT, not hand-deleted** (user call): `cyberfleet-batch.{design,operations,evidence}.md`
+  stay in the tree — doctrine doesn't consume them (it reads combat log + ledger; this mission has none/uses
+  the ledger), and their proper retirement is **F4's automated sweep (#193)**, gated on distilled/migrated.
+  `plan.md` retires post-merge via plan-retirement as usual.
 
-Op2–5 remain far-horizon (their coarse heads are now in the store, surfaced by `ready`).
+**Remaining = the PR only** (#9): rename branch → `sdd-mission-graph`, run `add-changeset` if the sdd-plugin
+change needs one, push, open PR to `main`. After merge: plan-retirement retires `plan.md`; F4 (#193) later
+retires the design/operations/evidence briefs. Op2–5 coarse heads are in the store, surfaced by `ready`.
