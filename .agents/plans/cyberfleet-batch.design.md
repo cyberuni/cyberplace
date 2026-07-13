@@ -458,6 +458,10 @@ Store shape (SDD-native, per-repo):
   files; + tier/confidence), `blast`, `hitl|afk`, `artifact-type`. Append-only is kept for the
   **audit trail** (the monadic "how the graph grew" history), *not* for collision-avoidance — see
   single-writer.
+- **Schema versioned from v1.** Every event carries a schema version (`v: 1` to start). Deferred
+  fields (finer touch-set tiers, auto-computed `blast`, `hitl|afk`) then land **additively** — the
+  fold tolerates mixed versions, no migration. Cheap insurance against an append-only store that can't
+  be rewritten.
 - **Single write-decider ⇒ no sharding.** One actor decides every write (v1: the conductor, by hand;
   F3: the Operator's lifecycle loop) — invoking the SDD mission-graph engine to append. With writes
   serialized through one decider, per-writer sharding earns nothing, so **drop it**: a plain
@@ -605,8 +609,8 @@ Dogfooding *decides* the carve by asking: what is the minimal kernel that lets i
 - **Store** — the git-tracked mission graph (**in-tree files**, single writer ⇒ no sharding):
   nodes = Operations/Missions, edges = RAW deps + parent-child, status, **declared node-level
   `touch-set`** (the spec-nodes a mission writes — hand-authored in v1), + a **tombstone/retract**
-  kind (edge/node removal for re-cut). General schema (not overfit to our project). (F3 moves it to
-  the `sdd/mission-graph` orphan ref behind the SDD engine's git-access seam.)
+  kind (edge/node removal for re-cut), + a **schema version** (`v: 1`). General schema (not overfit to
+  our project). (F3 moves it to the `sdd/mission-graph` orphan ref behind the SDD engine's git-access seam.)
 - **`ready` + `cycles`** — a zero-dep `.mts` engine: fold the store → the frontier (`ready`), including
   the **node-level WAW-mutex**: a candidate whose declared touch-set intersects an in-flight mission's
   is held back (serialize at issue; soft downgrades arrive with the finer ladder, deferred). Cycles:
@@ -661,9 +665,11 @@ against the live graph as an on-demand audit.
 
 ## Limitations / non-goals / feasibility caveats
 - Touch-sets are **predictive** (before the work is done) — inherit false-negative risk no build
-  tool faces; the DAG is probabilistic, re-checked at merge. **SOFT = rebase-cost hint, NOT a
-  safety proof** (~33% of clean merges are semantically broken — Brun). Keep a speculative/bisection
-  merge backstop **in the dispatch consumer** (non-goal of this engine).
+  tool faces; the graph is probabilistic, re-checked at merge. **SOFT = rebase-cost hint, NOT a
+  safety proof** (~33% of clean merges are semantically broken — Brun). **v1 sidesteps this** — the
+  node-level WAW-mutex serializes same-node work, so there is no soft-parallel path yet; when the finer
+  ladder later enables soft-parallel, keep a speculative/bisection **merge backstop in the dispatch
+  consumer** (non-goal of this engine).
 - **Not any sub-graph is a story** — an Operation is a *declared* set (capstone + members), checked
   for dependency-closure, not a freely-enumerated derived closure.
 - Decomposition (lowering) semantic quality is bounded by what a static estimator can see;
