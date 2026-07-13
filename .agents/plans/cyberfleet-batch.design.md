@@ -468,6 +468,13 @@ Store shape (SDD-native, per-repo):
   append-only file (or small current-state file-set) suffices. This is the payoff of "missions
   report, the decider writes" (finding 6). Sharding (the `ledger/` pattern) returns only if a real
   multi-decider case ever appears.
+- **Write-ownership; per-event originator deferred.** The SDD mission-graph engine is the only write
+  mechanism (no hand-edits); the single write-decider is the only authorized caller. A per-event
+  **originator** stamp (which mission discovered a fact — node-id primary, combat-log `handle` fallback
+  for node-less events) is **deferred (YAGNI)**: its only consumer is telemetry / the Warden's
+  partition-quality metric, neither of which exists yet, and git history already gives coarse who/when
+  provenance for free. When a consumer arrives it lands as an **additive schema-v2 field** — the payoff
+  of versioning from v1.
 - **Status authority = the graph, not the brief.** The graph owns **scheduling state** (open /
   claimed / retired — what `ready` folds); the brief owns the **detail layer + the human dispatch
   clearance** (`status: approved` — a leash flag, human-attributed per the relayed-ratification seam).
