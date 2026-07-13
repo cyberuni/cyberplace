@@ -14,7 +14,7 @@ todos:
   - content: "impl gate: rebase onto origin/main, cold sdd-impl-judge PASS, status implemented"
     status: completed
   - content: "handoff: PR referencing (not closing) #189, mail legate with outcomes"
-    status: in_progress
+    status: completed
 ---
 
 # CR github-189 (Op2 ★ capstone, part 1 of 2) — the symbol rung
@@ -52,11 +52,11 @@ by symbol") is **narrowed** to the un-inferable fallback → a **re-open** needi
 WAW/RAW/disjoint scenarios are **additive** (self-clear).
 
 ## NEXT
-Spec gate PASSED (cold sdd-spec-judge round 2 ALIGNED true; round 1 architect FAIL on 3 stale README
-passages → fixed, judge-iteration logged). Re-open ratified + RAW→hard ratified by user. .feature frozen
-(4 symbol scenarios: disjoint→soft, symbol-waw→hard, symbol-raw→hard, un-inferable→deferred). Ledger shard
-5c7b1a. Deliver next: extend collision-ladder.mts — add SymbolSet to FileTouch (optional, null-safe),
-'symbol' rung (deepest, low confidence), classifySymbols pure fn wired into classifyFile isCode branch,
-thin diff→symbol extract seam (best-effort, null on unparsed lang). Update existing code-file test (rung
-semantic→symbol for the deferred case). 4 new node:tests. Rebase onto origin/main. Cold impl-judge. Then
-handoff PR referencing (not closing) #189.
+SHIPPED — PR #201 (https://github.com/cyberuni/cyberplace/pull/201), references (not closes) #189. Both
+gates cold-judged + self-asserted (auto-all): spec ALIGNED (round 1 architect FAIL on stale README →
+fixed, judge-iteration logged), impl PASS clean (21/21, no reject; self-hardened both RAW directions
+post-pass). .feature frozen (21 scenarios). Rebased onto origin/main; pnpm verify 20/20. Ledger shard
+5c7b1a. Nothing remaining on THIS mission.
+Deferred on #189: the ★ SSA-lowering doctrine (third bullet, SECOND half) — the reasoning front-end that
+partitions a change into missions + versions WAW→ordered-dep. Its judgment is tested via ACED (user
+directive), a separate mission. See memory project_189_ssa_lowering_followup. Only after that does #189 close.
