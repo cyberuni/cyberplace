@@ -18,7 +18,7 @@ todos:
     status: pending
   - content: "distill the design into durable homes: project spec (spec.md + DESIGN-NOTES) for the WHAT; 2 ADRs for the WHY (1 model/architecture: compiler mapping + axes + lifecycle loop; 1 store: mission graph SDD-native/per-repo + beads/Dolt/GasTown rejection + orphan-ref F3); research survey docs/research/2026-07-work-decomposition.md from the .research dossier"
     status: pending
-  - content: "handoff: PR; file the deferred backlog + F1/F2/F3 as follow-up CRs; delete cyberfleet-batch.design.md (content migrated to spec + ADRs) so it does not orphan past plan-retirement"
+  - content: "handoff: PR; file the deferred backlog + F1/F2/F3/F4 as follow-up CRs; delete cyberfleet-batch.design.md once distilled to spec + ADRs (by hand this time; deterministic via F4 going forward)"
     status: pending
 ---
 
@@ -107,6 +107,10 @@ acceptance bar at handoff, not a frozen scenario; live-graph checks = state-inde
 - blast-field auto-compute (the touch-set estimator sharpens SDD's hand-asserted `blast:`)
 - **F1**: strengthen `spec-layout.md` S1 capability-first → strongly-recommended + Warden layout-quality signal
 - **F2**: formation-loop intra-project cross-node scenario-overlap dedup (spec-level SSA)
+- **F4**: codify the `<cr-ref>.design.md` artifact in SDD — a recognized **transient CR-level design
+  brief** for a CR that fans into multiple Operations (captures the overall cross-Operation design the
+  per-mission `.plan.md`s reference; keep the name — it parallels `.plan.md`). Extend `retire-plans` to
+  sweep `<cr-ref>.design.md` gated on distilled → **deterministic cleanup**, no orphan.
 - naming finalization (units + store noun "mission graph" settled; engine/capability name = placeholder)
 
 ## Open questions
