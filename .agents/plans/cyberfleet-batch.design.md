@@ -69,6 +69,8 @@ Soft overlaps are WAR anti-dependencies: false dependencies a rebase dissolves. 
 WAW: genuine output collisions. This *explains* the soft/hard split instead of asserting it.
 
 The pipeline (**hybrid** — reasoning front-end + deterministic back-end):
+0. **Vet the CR (Oracle gate)** — before lowering, judge whether the CR is *legit* (see "Intake
+   judgment"). A dead CR is killed here — the cheapest possible flush (nothing lowered).
 1. **Lower** — coarse CR → candidate missions (compiler front-end). **Core to v1**: a CR is a coarse
    program; the parallelism lives *inside* it, so without lowering there is nothing to interleave.
    This is a **reasoning** step (semantic cut), not a pure function — an agent/skill pass, scaffolded
@@ -209,6 +211,28 @@ The one real ordering constraint is at **retire, not issue**: missions are worke
 parallel worktrees, but **merge/retire in an Operation-coherent order** (the reorder-buffer / ROB) so
 trunk stays deployable. Plus **latency hiding** (MIMD-friendly): a mission blocked on a gate/CI/human
 lets its agent pick up another ready mission.
+
+## Intake judgment — the Oracle gate + Architect's say (the front-end judges, not just cuts)
+
+Lowering is **not only mechanical partitioning**. The reasoning front-end applies two SDD actor
+lenses with **strong weight** during intake/Explore — the same bars the spec gate grades, pulled
+*forward* to planning so a bad CR never reaches the mechanics:
+
+- **Oracle — CR legitimacy (kill-or-ship).** Is the CR *legit*: does it still **improve the product**?
+  A CR can be **stale** (a better solution already shipped since it was filed) or **misaligned** (comes
+  from an angle that does not fit the product direction). The Oracle **kills or reshapes it before
+  lowering** wastes effort. **Monadic**: legitimacy is re-checked when a far-horizon CR approaches the
+  frontier — a CR legit at filing can go stale while parked on the tracker, so commit-near/speculate-far
+  means far CRs are re-validated by the Oracle at ingress, not trusted blindly.
+- **Architect — structural fit.** *How* the CR decomposes: node placement (screaming architecture),
+  whether it is a **barrier** (project-wide refactor → fence, hoisted early), and the cohesion of the
+  cut. The Architect has **strong say** in how the write-set partitions into missions (feeds the SSA
+  procedure below).
+
+So the front-end = **Oracle (should we?) + Architect (how?) + the SSA mechanics (the cut)** — judgment
+first, mechanics second. Killing a dead CR at intake is the cheapest flush in the whole pipeline. In
+v1 the conductor applies both lenses by hand; they are not new roles, just the existing spec-gate bars
+exercised earlier in the loop.
 
 ## SSA lowering procedure (the reasoning front-end)
 
@@ -666,6 +690,10 @@ against the live graph as an on-demand audit.
   active-flag or inter-Operation prioritizer is needed. **Operation progress = completed / total
   declared missions** (derived ratio: status readout + soft near-floor signal).
 - **Decomposition (lowering) is core to v1** — without it the scheduler has nothing to interleave.
+- **Intake judgment: Oracle + Architect lenses in planning** — before lowering, the **Oracle** judges
+  CR **legitimacy** (kill stale/misaligned CRs; re-checked monadically as far CRs approach the
+  frontier) and the **Architect** judges structural fit / barriers / placement — both with **strong
+  say**. The spec-gate bars pulled forward to intake/Explore; in v1 the conductor applies them by hand.
 - Engine is **hybrid**: reasoning front-end (lower) + deterministic back-end (hazard + schedule).
   Sits above the mission loop as a pre-mission planner; reuses `explore` unit-identification.
 - **LOWER objective = SSA** (single owning mission **per spec-node** — the stable, artifact-neutral

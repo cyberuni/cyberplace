@@ -16,7 +16,9 @@ todos:
     status: pending
   - content: "self-host: author the active Operation(s) into the store as its first Campaign; amend deferred Operations back into the CR source"
     status: pending
-  - content: "handoff: PR; file the deferred backlog + F1/F2/F3 as follow-up CRs"
+  - content: "distill the design into durable homes: project spec (spec.md + DESIGN-NOTES) for the WHAT; 2 ADRs for the WHY (1 model/architecture: compiler mapping + axes + lifecycle loop; 1 store: mission graph SDD-native/per-repo + beads/Dolt/GasTown rejection + orphan-ref F3); research survey docs/research/2026-07-work-decomposition.md from the .research dossier"
+    status: pending
+  - content: "handoff: PR; file the deferred backlog + F1/F2/F3 as follow-up CRs; delete cyberfleet-batch.design.md (content migrated to spec + ADRs) so it does not orphan past plan-retirement"
     status: pending
 ---
 
@@ -45,9 +47,13 @@ designated capstone**, its release floor = the capstone's dependency closure, su
 priority but don't gate release; Mission = executable node w/ a `.plan.md`; Task = its todos). Relationships = the three CPU data hazards: **RAW** (dep →
 serialize), **WAW** (hard, same spec-node → serialize at issue), **WAR** (soft → parallel + rebase).
 Lowering aims for **SSA** (one owning Mission per spec-node — the stable, artifact-neutral atom,
-contract = its frozen suite). The DAG is **monadic/dynamic** (discovered through Explore, not known up
-front); execution is **barrier-free dataflow** (fire-when-ready, MIMD; "waves" are a view, not a
-barrier); ordering only at **Operation-coherent retirement**.
+contract = its frozen suite). Before lowering, the front-end **judges, not just cuts**: the **Oracle**
+vets CR **legitimacy** (kill stale/misaligned CRs — re-checked as far CRs approach) and the
+**Architect** judges structural fit / barriers / placement — both with strong say (the spec-gate bars
+pulled forward to intake/Explore; conductor applies them by hand in v1). The DAG is **monadic/dynamic**
+(discovered through Explore, not known up front); execution is **barrier-free dataflow**
+(fire-when-ready, MIMD; "waves" are a view, not a barrier); ordering only at **Operation-coherent
+retirement**.
 
 ## Placement & store
 
