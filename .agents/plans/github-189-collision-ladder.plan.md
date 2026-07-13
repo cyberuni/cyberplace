@@ -12,7 +12,7 @@ todos:
   - content: "impl gate: rebase onto origin/main, cold sdd-impl-judge PASS, status implemented; mail legate"
     status: completed
   - content: "handoff: finalize placement, PR referencing (not closing) #189, mail legate with outcomes"
-    status: in_progress
+    status: completed
 ---
 
 # CR github-189 (Op2) — finer-than-node ladder (collision-ladder)
