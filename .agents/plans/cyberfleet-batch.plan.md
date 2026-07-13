@@ -141,9 +141,16 @@ acceptance bar at handoff, not a frozen scenario; live-graph checks = state-inde
 
 ## NEXT
 
-Move from design into spec: run the SDD spec phase for the **v1 kernel** — confirm the exact SDD node
-(via discover-specs; placement is SDD, not the cyberfleet package), name it in-context, and draft
-`spec.md` + `.feature` for {store w/ declared touch-sets, `ready` w/ node-level WAW-mutex, `cycles`,
-manual authoring}. Scenarios follow the engine-suite convention: authored fixture graphs (incl. the
-#135/#136/#137 fixture), never the live store; dogfood self-host is the acceptance bar at handoff.
-Everything in the Backlog is a follow-up, not part of v1.
+**Design + planning are DONE. Resume into `Op1.M1` — spec the v1 kernel.** First read, in order:
+`cyberfleet-batch.operations.md` (the Op1–5 graph; only **Op1.M1** is active), then
+`cyberfleet-batch.design.md` (the model), then `cyberfleet-batch.evidence.md` (why the graph is shaped
+this way). This mission = **Op1.M1** only (spec + build the kernel); **Op1.M2** (self-host) and Op2–5
+are follow-ups.
+
+Then run the SDD spec phase: confirm the exact SDD node (via discover-specs; placement is SDD, not the
+cyberfleet package), name it in-context, and draft `spec.md` + `.feature` for {store w/ declared
+touch-sets + tombstone + schema `v:1`, `ready` w/ node-level WAW-mutex, `cycles` w/ write-guard +
+fold-time quarantine, manual authoring}. Scenarios follow the engine-suite convention: authored fixture
+graphs (incl. the #135/#136/#137 fixture), never the live store; dogfood self-host is the acceptance bar
+at handoff. Re-emit the run-start leash shard under the SDD node. Everything in the Backlog is a
+follow-up, not part of v1.
