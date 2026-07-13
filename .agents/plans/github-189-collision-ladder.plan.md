@@ -4,15 +4,15 @@ status: active
 target: main
 todos:
   - content: "explore + draft: README(spec) + collision-ladder.feature for the finer-than-node ladder classifier (node sdd/collision-ladder)"
-    status: in_progress
+    status: completed
   - content: "spec gate: cold sdd-spec-judge ALIGNED, freeze .feature, ledger gate line, status approved; mail legate"
-    status: pending
+    status: completed
   - content: "deliver: build collision-ladder.mts engine + tests + SKILL/README; per-scenario verification; pnpm verify green"
-    status: pending
+    status: completed
   - content: "impl gate: rebase onto origin/main, cold sdd-impl-judge PASS, status implemented; mail legate"
-    status: pending
+    status: completed
   - content: "handoff: finalize placement, PR referencing (not closing) #189, mail legate with outcomes"
-    status: pending
+    status: in_progress
 ---
 
 # CR github-189 (Op2) — finer-than-node ladder (collision-ladder)
@@ -49,9 +49,12 @@ Builds on the merged `sdd/touch-set-correction` node (PR #199) — reuses its st
 - Writing the verdict into the mission graph / running the scheduler (the graph consumes; ladder produces).
 
 ## NEXT
-Author node `sdd/collision-ladder` (sibling of `touch-set-correction`, concept `orchestration`):
-README(spec) + boolean `.feature` over CONSTRUCTED pairwise touched-detail (never a live diff/store).
-Pure classifier is the tested heart; thin IO seam (hunks via `git diff -U0`, scenarios/artifact-type
-reused from the correction composition) is not unit-tested. Then spec gate (freeze + cold judge),
-deliver engine + node:tests wired into `verify:specs`, impl gate (cold judge), handoff PR referencing #189.
-Ledger shard hash: `1cf516`.
+Both gates self-asserted (spec ALIGNED, impl PASS on cold judges). Node `sdd/collision-ladder` frozen
+(18 scenarios); engine + 18 node:tests wired into `verify:specs`; root `pnpm verify` green (20/20).
+Spec gate: cold sdd-spec-judge ALIGNED round 1, two non-blocking wording gaps fixed pre-freeze. Impl
+gate: cold sdd-impl-judge round 1 rejected (CLI `--format` flag path unbound — mutation-caught), fixed
+test-only + judge-iteration correction logged, round 2 PASS. Placement finalized (sibling of
+touch-set-correction; placement map + concept-index registered). Ledger shard hash `1cf516`.
+Remaining: push branch, open PR **referencing** (not closing) #189, mail legate done.
+Deferred on #189: the ★ SSA-lowering / symbol-level capstone (third bullet) — an overlapping-region
+code file stays hard, flagged `symbol-rung-deferred`.
