@@ -7,9 +7,9 @@ todos:
   - content: "spec: name + exact SDD node placement (finalize in-context during spec authoring)"
     status: completed
   - content: "spec: write the SDD node spec.md + .feature for the v1 KERNEL (store w/ touch-sets + ready w/ WAW-mutex + cycles + manual authoring); scenarios over authored fixture graphs incl. the #135/#136/#137 fixture; re-emit the run-start leash shard under the SDD node (was removed from the cyberfleet ledger)"
-    status: in_progress
+    status: completed
   - content: "spec gate: cold spec-judge ALIGNED, freeze .feature"
-    status: pending
+    status: completed
   - content: "deliver: build the git-tracked mission graph (in-tree files, single-writer, no sharding, tombstone kind) + ready/cycles .mts engine (write-guard + fold-time cycle quarantine) + tests"
     status: pending
   - content: "impl gate: cold impl-judge PASS; root pnpm verify"
@@ -163,16 +163,22 @@ acceptance bar at handoff, not a frozen scenario; live-graph checks = state-inde
 
 ## NEXT
 
-**Op1.M1 spec is DRAFTED.** `.agents/specs/sdd/mission-graph/` now holds `README.md` (spec.md-equiv:
-Use Cases + store/ready/cycles/Operations/status/validation sections) + `mission-graph.feature` (~35
-boolean scenarios, engine-suite convention over constructed fixtures incl. the #135/#136/#137 fixture),
-un-frozen. `sdd/spec.md` Capability-map row + concept-index regenerated. Committed as the spec-draft unit.
+**Op1.M1 spec is FROZEN (spec gate PASSED).** `.agents/specs/sdd/mission-graph/` holds `README.md`
+(plain-language, Key-terms glossary, Use Cases + store/ready/cycles/Operations/status/validation) +
+`mission-graph.feature` (**36 boolean scenarios, `@frozen`**, engine-suite convention over constructed
+fixtures incl. the #135/#136/#137 fixture). Cold `sdd-spec-judge` **ALIGNED** (oracle/builder/architect
+PASS). Gate recorded in `ledger/cyberfleet-batch.eed565.jsonl` (seq1 leash `auto-none`, seq2 gate spec
+approve `by: unional` — HITL ratified). Side-effects this session: `spec-format` bar now requires
+readable-for-non-engineers vocabulary (separate commit); issue **#182** filed (auto-inject universal
+governances into plugin production chains).
 
-**Next = the spec gate (todo #4).** Run `pnpm verify` first (mechanical suite-format/spec-format
-pre-filter must pass). Then spawn a **cold** `sdd:sdd-spec-judge` over the touched
-`spec.md` + `.feature` for the {oracle, builder, architect} backward lens set → an ALIGNED rollup. On
-ALIGNED: **re-emit the run-start leash shard** under the SDD node ledger (`.agents/specs/sdd/ledger/` —
-was removed from the cyberfleet ledger), add the `@frozen` tag to `mission-graph.feature`, and record
-the gate in the ledger. Then Op1.M1 deliver (todo #5): build the zero-dep `.mts` engine + colocated
-`.test.mts` over the fixtures (delegate the build to Sonnet). **Op1.M2** (self-host) + Op2–5 are
-follow-ups, out of scope for this mission.
+**Next = Op1.M1 deliver (todo #5).** Build the delivery: `plugins/sdd/skills/mission-graph/` — a
+self-contained, zero-dep `.mts` engine + colocated `.test.mts` over **authored fixtures** (never the
+live store), realizing all 36 frozen scenarios: the append-only store (nodes/edges/status/tombstone,
+schema v:1), the read-only `ready` fold (RAW frontier + node-level WAW-mutex, pinned tie-break), the
+`cycles` write-guard + fold-time SCC quarantine, and the Operation closure/floor/progress check. Store
+access behind a git-access seam (v1 in-tree → F3 orphan-ref later). Distill the #135/#136/#137 example
+into one fixture. **Delegate the build to Sonnet** (concrete build unit). Then the **impl gate** (todo
+#6): cold `sdd-impl-judge` re-derives each frozen scenario's oracle + runs verification → PASS; root
+`pnpm verify`. **This gate is HITL too** (leash `auto-none`) → bring the impl-judge verdict for
+ratification before landing. **Op1.M2** (self-host) + Op2–5 remain follow-ups.
