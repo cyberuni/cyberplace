@@ -71,7 +71,8 @@ test('plugin build --format json returns a structured build result', () => {
 		})
 		expect(result.status).toBe(0)
 		const parsed = JSON.parse(result.stdout)
-		expect(Array.isArray(parsed.written)).toBe(true)
+		expect(Array.isArray(parsed.built)).toBe(true)
+		expect(parsed.summary).toMatchObject({ built: 1, skipped: 0, failed: 0 })
 	} finally {
 		fs.rmSync(root, { recursive: true, force: true })
 	}

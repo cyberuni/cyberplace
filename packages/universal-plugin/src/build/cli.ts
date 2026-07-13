@@ -41,7 +41,14 @@ export function buildCommand(): Command {
 				}
 
 				const { built, skipped, failed } = result.summary
-				output(result, () => {
+				const jsonResult = {
+					built: result.rows.filter((r) => r.status === 'built'),
+					skipped: result.rows.filter((r) => r.status === 'skipped'),
+					failed: result.rows.filter((r) => r.status === 'failed'),
+					summary: result.summary,
+					warnings: result.warnings,
+				}
+				output(jsonResult, () => {
 					if (result.rows.length > 0) {
 						printTable(result.rows, [
 							{ label: 'vendor', get: (r: VendorRow) => r.vendor },
