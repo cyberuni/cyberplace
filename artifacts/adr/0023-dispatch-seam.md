@@ -2,7 +2,11 @@
 
 ## Status
 
-Proposed
+Proposed. **Reconciled with the CR-4 shipped surface (ADR-0024):** the `cyberlegion` CLI carries
+**no** `dispatch` verb — the seam is realized by the Legate's `dispatch-governance` composing the CLI
+primitives `agent resolve` + `unit spawn` + `mail await` (the `subagent | channel | run-inline`
+routing choice). References below that once named a single load-bearing `dispatch` invocation are
+superseded by that composition; the intent-level dependency they establish stands unchanged.
 
 ## Context
 
@@ -64,7 +68,7 @@ fleet, mail, or persona concerns into SDD's spec.
   into later; keeps the Legate's routing judgment where it belongs (cyberlegion's
   `dispatch-governance`), not duplicated in SDD.
 - **Cons**: a documentation-only ADR without an accompanying impl change can read as aspirational
-  until a later CR actually threads dispatch calls through; requires readers to hold two vocabularies
+  until a later CR actually routes SDD's spawn points through the seam; requires readers to hold two vocabularies
   (SDD's depth-1/depth-2 story and cyberlegion's subagent/channel/run-inline strategies) side by side.
 
 ## Decision
@@ -96,15 +100,16 @@ today:
 SDD depends on this seam **by intent** (ADR-0021 rule 1): it references "cyberlegion's dispatch
 capability, the `subagent | channel` seam" and the strategies above, never cyberlegion's internal CLI
 subcommand names or `dispatch-governance`'s implementation. Exactly **one** SDD reference is
-load-bearing enough to name the concrete invocation (`npx cyberlegion@<version> dispatch ...`,
-`<version>` a placeholder — pinning it is CR-8's job, not this ADR's); every other SDD reference
-speaks only in intent/capability terms (ADR-0021 rule 2 — name a slug only at the one load-bearing
-site).
+load-bearing enough to name the concrete realization — post-CR-4 (ADR-0024) that realization is the
+Legate's `dispatch-governance` composing `agent resolve` + `unit spawn` + `mail await`, **not** a
+`dispatch` CLI verb (the CLI carries none; `<version>` a placeholder — pinning it is CR-8's job, not
+this ADR's); every other SDD reference speaks only in intent/capability terms (ADR-0021 rule 2 — name
+a slug only at the one load-bearing site).
 
-This ADR does **not** wire any dispatch call through SDD's runtime. It establishes the dependency and
-the vocabulary; a future CR may thread actual `dispatch` calls through the conductor's spawn points.
-Until then, SDD's spawning behavior is exactly what `harness-spawning.md` and `sdd-automaton.md`
-already describe.
+This ADR does **not** wire the seam through SDD's runtime. It establishes the dependency and the
+vocabulary; a future CR may route the conductor's spawn points through the seam
+(`dispatch-governance` composing the primitives above). Until then, SDD's spawning behavior is
+exactly what `harness-spawning.md` and `sdd-automaton.md` already describe.
 
 ## Rationale
 
@@ -141,9 +146,10 @@ to a runtime capability rather than a spec capability — the same discipline, o
 
 ### Risks
 
-- **Slug leakage at the one pinned site.** The single load-bearing `npx cyberlegion@<version>
-  dispatch ...` mention is the one place a real coupling exists; if a future edit copies that
-  invocation into a second SDD file "for convenience," ADR-0021's leakage failure mode reappears.
+- **Slug leakage at the one pinned site.** The single load-bearing realization mention
+  (`dispatch-governance` composing `agent resolve` + `unit spawn` + `mail await`) is the one place a
+  real coupling exists; if a future edit copies that realization into a second SDD file "for
+  convenience," ADR-0021's leakage failure mode reappears.
   Mitigation: the cross-reference resolver (`resolve-governances`, `check-plan-safety`) and this
   ADR's own text keep the count at exactly one.
 - **Boundary drift if cyberlegion's strategy names change.** If cyberlegion later renames `subagent`/
@@ -161,11 +167,15 @@ described runtime spawning behavior. Follow-up (not part of this ADR):
 - `plugins/sdd/agents/sdd-automaton.md` and `plugins/sdd/skills/plugin-contract-governance/SKILL.md`
   gain a minimal note that cold-judge/builder dispatch may be realized through this seam, pointing
   here (done as part of the CR that added this ADR).
-- A later CR may thread actual `dispatch` calls through the conductor's spawn points, once
-  cyberlegion is published (CR-8) and the pin lands.
+- A later CR may route the conductor's spawn points through the seam (`dispatch-governance`
+  composing `agent resolve` + `unit spawn` + `mail await`), once cyberlegion is published (CR-8) and
+  the pin lands.
 
 ## Related Decisions
 
+- [ADR-0024](0024-cyberlegion-cli-node-alignment.md) — held the CLI to its pure-mechanism charter and
+  kept `dispatch` (routing) out of the CLI entirely; the seam this ADR names is realized by the
+  Legate's `dispatch-governance` composing CLI primitives, with **no** `dispatch` verb on the CLI.
 - [ADR-0021](0021-spec-dependency-kinds.md) — the "depend on intent, never slug/internals; one
   load-bearing site" discipline this ADR applies to a runtime dispatch capability rather than a spec
   reference.

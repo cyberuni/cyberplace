@@ -1,6 +1,6 @@
 ---
 title: cyberfleet Overview
-description: A harness-agnostic, MCP-free way to direct a fleet of AI agents across your projects — Pod, Operator, Crimp, and Tuner over the cyberfleet console.
+description: A harness-agnostic, MCP-free way to direct a fleet of AI agents across your projects — Pod, Operator, Crimp, and Mechanic over the cyberfleet console.
 ---
 
 **cyberfleet** is a harness-agnostic, MCP-free way to direct a fleet of AI agents across your projects. It is the fleet-persona layer on top of [cyberlegion](/cyberlegion/overview/) — it carries only fleet-specific logic (ships, missions, and the Council view, derived from [SDD](/sdd/overview/) state), while the mechanism verbs (register, send, spawn, prune, …) run through the `cyberlegion` console underneath.
@@ -16,7 +16,7 @@ A **ship** is a workspace: a folder, a repository, or a worktree. Your fleet is 
 | [**Pod**](/cyberfleet/pod/) | Inside a ship (has `.agents/cyberlegion/`) | The bridge-companion of a ship — greets you, clears the inbox, runs the mission, and launches a sister ship when the work should fan out |
 | [**Operator**](/cyberfleet/operator/) | Outside a ship, over the fleet | The dispatcher — commissions your first ship, lists who's out there, routes messages between ships, and sweeps away the dead ones |
 | [**Crimp**](/cyberfleet/crimp/) | The Tavern storefront | Recruits **crews** — installable specialist personas — signs them on, and discharges them |
-| [**Tuner**](/cyberfleet/tuner/) *(coming soon)* | Any enlisted automaton | Adjusts how a crew runs — its guidance, model, effort, and leash |
+| [**Mechanic**](/cyberfleet/mechanic/) *(coming soon)* | The bench, over any automaton | Builds a new automaton and reconfigures existing ones — guidance, model, effort, loadout, and leash |
 
 ## The console
 

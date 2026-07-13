@@ -4,26 +4,26 @@ project-path: packages/cyberlegion
 approval:
   impl:
     verdict: approve
-    by: unional
+    by: agent
     cause: dimension
     why:
-      floor: none newly weakened — the one removed frozen scenario (nudge `empty keystroke`) is a ratified re-open replaced by two scenarios covering more ground (default message + `--message` override), not a coverage cut; Clearance authorized in-session.
-      blast: low — `unit nudge` now delivers a check-mail message (default, `--message` override) instead of `send(target, '')`; scoped to the nudge command block in `cli.ts` (+13/-3), the session adapters unchanged. 315/315 cyberlegion tests.
-      novelty: low — corrects a factual bug (an empty ring is a no-op on the herdr adapter — `pane run <id> ""` submits nothing — and a live agent session takes a turn only on real input).
-      confidence: high — cold sdd-impl-judge IMPLEMENTATION_PASS true; both nudge scenarios verified by oracle re-derivation. Noted gap: both scenarios UNBOUND on the junit bridge (reverting to `''` still passes 315/315), so verdict rests on source re-derivation — follow-up CR filed to bind them with a CLI test.
-      judge: cold sdd-impl-judge — IMPLEMENTATION_PASS true; both nudge scenarios PASS, diff scoped, no bleed.
-      cr: nudge-carries-message
+      floor: none — 5 additive scenarios on the frozen `mail/core.feature` for `mail read <id> --ack` (addOnly — freeze self-clears); no frozen scenario weakened.
+      blast: low — new `readAck` in `message.ts` composing the existing `listInbox`/`ackMessage` primitives, plus a `--ack` branch inside the existing `mail read` command (bare-read path untouched); no registry/worktree/store-schema change. Root `pnpm verify` green (20/20); cyberlegion 389 tests green; dist rebuilt.
+      novelty: low — `mail read <id> --ack` reads and consumes in one atomic step. Idempotent — always prints the body, acks only when still unread, so an already-acked message prints the body and succeeds (`acked: false`) rather than erroring like a bare `mail ack`; unknown id still errors; composes with `--owner`.
+      confidence: high — cold sdd-impl-judge IMPLEMENTATION_PASS true; all 5 new frozen scenarios PASS with independently re-derived oracles, idempotence genuinely non-erroring and distinct from double-ack, `--owner` codepath really exercised.
+      judge: cold sdd-impl-judge — IMPLEMENTATION_PASS true; all 5 read --ack scenarios PASS; no regression on the pre-existing frozen suite.
+      cr: github-173-mail-read-ack
   spec:
     verdict: approve
-    by: unional
-    cause: clearance
+    by: agent
+    cause: dimension
     why:
-      floor: Clearance — the removed frozen `empty keystroke` nudge scenario is a narrowing (deletion), authorized in-session by the human conductor; replaced by two scenarios covering the default and `--message` paths (net +1, more ground than the one removed).
-      blast: low — scoped to the `unit/lifecycle` node (README + `lifecycle.feature`); 24 of 26 scenarios unchanged.
-      novelty: low — corrects the doorbell contract from a no-op empty keystroke to a delivered message pointing the peer at its inbox.
-      confidence: high — cold sdd-spec-judge ALIGNED (oracle/builder/architect all PASS, no open markers). Non-blocking observation: nudge/focus/read carry no error-case scenario (pre-existing gap symmetric across the cluster) — follow-up CR.
+      floor: none — additive to `mail/core.feature` (gherkin-cli addOnly:true, 5 added / 0 modified / 0 removed); stays `@frozen`, no re-open.
+      blast: low — one new atomic read+ack CLI op on an existing behavioral node; `README.md` synced (new Use-Case bullet + scenario-map row + corrected owner read-state line).
+      novelty: low — combined `mail read --ack` collapses read-then-separately-ack into one round-trip; the two-step peek path (`mail read` without `--ack`) is unchanged.
+      confidence: high — cold sdd-spec-judge ALIGNED true (oracle/builder/architect all PASS) after closing two blocking gaps (owner-idempotent scenario + README sync); no open markers.
       judge: cold sdd-spec-judge — oracle/builder/architect all PASS; ALIGNED true.
-      cr: nudge-carries-message
+      cr: github-173-mail-read-ack
 ---
 
 # cyberlegion — the CLI: harness-agnostic agent spawn and messaging
@@ -53,7 +53,7 @@ mailbox + registry access goes through a domain `Store` interface (a `FileStore`
 |---|---|
 | [`mux/`](./mux/README.md) | the unit-agnostic pane abstraction — backend selection, placement, multiplexer detection |
 | [`unit/`](./unit/registry/README.md) | the instance registry (`unit/registry`) + warm session lifecycle (`unit/lifecycle`) |
-| [`mail/`](./mail/README.md) | durable inter-agent messaging — plain send/inbox/read/ack/delete (`mail/core`), thread correlation and bounded await/watch (`mail/wait`), hook injection and owner-mail surfacing (`mail/surface`) |
+| [`mail/`](./mail/README.md) | durable inter-agent messaging — plain send/inbox/read/ack/delete (`mail/core`), thread correlation and bounded await/watch (`mail/wait`), hook injection and owner-mail surfacing / the pull side (`mail/surface`), waking the recipient on delivery / the push-side doorbell (`mail/doorbell`) |
 | [`agent/`](./agent/README.md) | resolve reusable agent definitions |
 | [`attach/`](./attach/README.md) | the human's read-pane — an attention pointer to the hub's main pane |
 | [`init/`](./init/README.md) | the onboarding front door — auto-detect the harness and register the surfacing hook (owns the per-harness installer) |

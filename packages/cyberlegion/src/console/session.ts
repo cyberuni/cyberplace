@@ -23,6 +23,18 @@ export interface SessionTarget {
 	id: string
 }
 
+/** A pane the backend can currently see, as reported by `listPanes` (bulk enumeration). */
+export interface LivePane {
+	/** Backend-native pane id. */
+	id: string
+	/** Which multiplexer this pane belongs to. */
+	mux: 'tmux' | 'herdr'
+	/** The harness running in this pane, when the backend can report it (herdr only). */
+	harness?: string
+	/** The pane's working directory, when the backend reports it. */
+	cwd?: string
+}
+
 export interface SessionReadOptions {
 	/** How many trailing lines of output to capture; omit for the backend's default. */
 	lines?: number
@@ -55,9 +67,21 @@ export interface SessionAdapter {
 	openInNewWorktree?(exec: Exec, opts: OpenInNewWorktreeOptions): { target: SessionTarget; worktree: Worktree }
 	/** Type text into the target session (submitted, not queued). */
 	send(exec: Exec, target: SessionTarget, text: string): void
+	/**
+	 * Submit the target's already-staged input buffer via a bare Enter keystroke — no new text is
+	 * typed. Used to complete a turn whose atomic `send` was swallowed by a booting harness (the
+	 * text staged in the input box, unsent); flushing never re-types the message, so a re-submit
+	 * cannot duplicate it.
+	 */
+	submit(exec: Exec, target: SessionTarget): void
 	/** Capture the target session's current output. */
 	read(exec: Exec, target: SessionTarget, opts?: SessionReadOptions): string
-	/** Move input focus to the target session; best-effort (may no-op if the backend can't). */
+	/**
+	 * Beam the attached client's view all the way to the target pane — across workspace and tab, not
+	 * just within the current one. Resolves the pane's own workspace/tab from the backend and drives
+	 * the full switch chain; best-effort within (the backend owns the actual move), but throws rather
+	 * than reporting a false success when the recorded pane no longer resolves to a live pane.
+	 */
 	focus(exec: Exec, target: SessionTarget): void
 	/** Close the target session. */
 	teardown(exec: Exec, target: SessionTarget): void
@@ -67,4 +91,17 @@ export interface SessionAdapter {
 	 * probed with a tmux query (or vice versa).
 	 */
 	paneExists(exec: Exec, target: SessionTarget): boolean
+	/**
+	 * Whether the attached client is currently viewing this pane — the read-only focus probe the
+	 * owner-mail doorbell gates on (mail/doorbell). `true` = positively focused, `false` = positively
+	 * not focused, `undefined` = the backend cannot report focus or the query could not be answered
+	 * (callers FAIL OPEN on undefined). Read-only: moves no focus, opens nothing (unlike `focus`).
+	 */
+	isPaneFocused(exec: Exec, target: SessionTarget): boolean | undefined
+	/**
+	 * Enumerate every live pane this backend can currently see — the bulk counterpart to
+	 * `paneExists`'s single targeted query. `reconcile` uses this to cull dead records in one pass
+	 * against the mux the caller is actually inside; it never enumerates the other mux.
+	 */
+	listPanes(exec: Exec): LivePane[]
 }

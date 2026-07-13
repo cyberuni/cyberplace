@@ -1,8 +1,10 @@
 import { Command, Option } from 'commander'
 
 import { ROOT_OPTION, resolveRoot } from '../cli-options.js'
-import { output, printFields, printTable } from '../output.js'
-import { buildPlugin } from './build.js'
+import { output, printTable } from '../output.js'
+import { buildPlugin, type VendorRow } from './build.js'
+
+const NEXT_STEP = '→ universal-plugin plugin validate\n'
 
 interface BuildCliOptions {
 	vendor?: string
@@ -20,7 +22,7 @@ export function buildCommand(): Command {
 		.option('--dry-run', 'Print what would be written without writing')
 		.option('--verbose', 'Print field-by-field transformation decisions')
 		.option('--clean', 'Delete generated manifests before building')
-		.option('--format <format>', 'Output format: json or text (default: text)')
+		.option('--format <format>', 'Output format: json or toon (default: toon)')
 		.addOption(new Option('--json').hideHelp())
 		.addOption(ROOT_OPTION)
 		.addHelpText('after', '\nExample:\n  $ universal-plugin plugin build --vendor claude-code\n')
@@ -38,15 +40,27 @@ export function buildCommand(): Command {
 					process.stderr.write(`warn: ${warning}\n`)
 				}
 
-				output(result, () => {
-					if (result.vendors.length > 0) {
-						printFields({ vendors: result.vendors.join(', ') })
-						printTable(
-							result.written.map((p) => ({ path: p })),
-							[{ label: 'output', get: (r) => (opts.dryRun ? `(dry-run) ${r.path}` : r.path) }],
-						)
+				const { built, skipped, failed } = result.summary
+				const jsonResult = {
+					built: result.rows.filter((r) => r.status === 'built'),
+					skipped: result.rows.filter((r) => r.status === 'skipped'),
+					failed: result.rows.filter((r) => r.status === 'failed'),
+					summary: result.summary,
+					warnings: result.warnings,
+				}
+				output(jsonResult, () => {
+					if (result.rows.length > 0) {
+						printTable(result.rows, [
+							{ label: 'vendor', get: (r: VendorRow) => r.vendor },
+							{ label: 'path', get: (r: VendorRow) => r.path },
+							{ label: 'status', get: (r: VendorRow) => r.status },
+						])
 					}
+					console.log(`built ${built}, skipped ${skipped}, failed ${failed}`)
 				})
+
+				process.stderr.write(NEXT_STEP)
+				if (failed > 0) process.exitCode = 1
 			} catch (err) {
 				process.stderr.write(`${err instanceof Error ? err.message : String(err)}\n`)
 				process.exit(1)

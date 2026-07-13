@@ -7,17 +7,17 @@ approval:
     by: agent
     cause: dimension
     why:
-      leash: re-open — the former `gateway/` node (the two fleet personas bundled in one node) was split into two per-persona nodes, `pod/` (in-ship bridge) and `operator/` (out-of-ship dispatcher), by the `split-gateway-personas` change. Per ADR-0022 they were always two shipped skills; this gives each its own node, `.feature`, and design. The frozen `gateway.feature` was retired and re-authored as `pod.feature` and `operator.feature`, each scoped to one persona's real behavior (read faithfully from the built `plugins/cyberfleet/skills/{pod,operator}` SKILL.md) plus the shared etiquette and its half of the mode-switch. Both new `.feature` files are `@frozen`; `recruitment` and `tuning` are untouched. Prior project current-state (`split-cyberfleet-spec`) is the overwritten twin; its durable record stays in the ledger shards.
-      basis: this is a re-partition of already-gated, already-built behavior — no new capability. Self-asserted by:agent (done directly in main at the Council's direction); structural checks green — concept-index no drift, check-spec-structure 0/0, both persona SKILL.md pass `audit validate`. Source-of-truth gates for the underlying behavior remain in `ledger/`: the gateway personas under `add-fleet-comms.f1e2d3.jsonl`. Follow-up closed: the deferred cold ACED spec+impl judge pass ran over both new nodes and both passed cleanly — pod (spec ALIGNED true, impl PASS, @trigger 8/8, @rubric 8.7/9) and operator (spec ALIGNED true, impl PASS, @trigger 8/8, @rubric 9.0/9); only low/info observations, none blocking (see the `split-gateway-personas` ledger report entry).
-      cr: split-gateway-personas
+      leash: within — renamed the `tuning/` node to `mechanic/` (Tuner persona → Mechanic) and widened its charter from reconfigure-only to build+tune the automaton artifact. The rename is a freeze-preserving reconcile (gherkin keys on title, so the retitle reads remove+add, but the rename-only scenario oracles are unchanged). Three coupled re-opens ratified under conductor leash — all the Council-pre-decided charter change: re-chip engine `define-agent`/`improve-agent-definition` → `define-skill`/`improve-skill` (an automaton is a gateway skill, not a subagent); the build-boundary polarity flip (Mechanic now builds a not-yet-existing automaton via `define-skill` instead of deferring authoring to Crimp); and the twin author-from-scratch trigger narrowing (a plain workflow skill still defers to `define-skill` directly). Peer-persona mentions in `recruitment.feature` and `tavern.feature` migrated as freeze-preserving reference-renames (Crimp/Tavern behavior unchanged). Durable record in the `ledger/` shard `mechanic-rename-build-tune.b4c1a2.jsonl`.
+      basis: independent cold judge ALIGNED true — confirmed the rename/additive/re-open split (11 freeze-preserving renames, 3 additive, 3 re-opens) and flagged the author-from-scratch scenario as the twin re-open (adopted). Floor: none (no acceptance scenario deleted or weakened outside the intended charter widening).
+      cr: mechanic-rename-build-tune
   impl:
     verdict: approve
     by: agent
     cause: dimension
     why:
-      leash: within — no implementation changed by the split; the two persona skills (`plugins/cyberfleet/skills/{pod,operator}`) already built and passing `audit validate`, and the new nodes were authored to match them. Root stays `implemented`.
-      basis: `pod/` and `operator/` each map one-to-one onto the shipped skill; both remain `@frozen`. See the `ledger/` shards.
-      cr: split-gateway-personas
+      leash: within — `plugins/cyberfleet/skills/mechanic/SKILL.md` conforms to the frozen `mechanic.feature`: Jackass workshop-engineer voice with plug-in-chip identity; build → `define-skill`, re-chip → `define-skill`/`improve-skill` (never the subagent engines), model/effort → `manage-model-runners`, leash → autonomy rubric; advises-not-switches, confirms hot-swap, builds not-yet-existing automatons; thin in-session dispatcher. `mechanic.feature` stays `@frozen`.
+      basis: `pnpm verify` green (20/20 — gherkin parse + align-spec no drift + no leaks). README, website doc + nav slug, and Crimp/Tavern cross-refs migrated consistently. No changeset — no changeset-tracked package changed.
+      cr: mechanic-rename-build-tune
 ---
 
 # cyberfleet-plugin — the fleet & crew personas (agent behavior)
@@ -32,8 +32,8 @@ approval:
 ## What this is
 
 The `cyberfleet` plugin ships the **persona layer** of the fleet: the agent-behavior that decides
-*when* and *how* an agent reaches for the fleet, recruits or discharges a crew, and re-tunes an
-automaton's program. Every node here is a per-situation persona gateway skill (ACED carries all four
+*when* and *how* an agent reaches for the fleet, recruits or discharges a crew, and builds or
+re-tunes an automaton. Every node here is a per-situation persona gateway skill (ACED carries all four
 eval layers — activation and judgment). Each persona offloads every mechanic to a `cyberfleet` CLI
 call (or another engine) and keeps its voice only in what it says around them.
 
@@ -60,7 +60,7 @@ under `plugins/cyberfleet` so it is not carried inside the distributed marketpla
 | [`pod/`](./pod/README.md) | behavioral | the **Pod** persona — the in-ship bridge: greet, clear inbox, run the mission, hail crew, fan out worktree-ships, HAL tell |
 | [`operator/`](./operator/README.md) | behavioral | the **Operator** persona — the out-of-ship dispatcher: commission the first ship, list the fleet, route messages, prune dead ships |
 | [`recruitment/`](./recruitment/README.md) | behavioral | the **Crimp** persona — recruit/discharge crew types from the Tavern (browse, install, register; uninstall, retire) |
-| [`tuning/`](./tuning/README.md) | behavioral | the **Tuner** persona — adjust an automaton's program (governance/model/effort/leash), re-chip its loadout, hot-swap the unit |
+| [`mechanic/`](./mechanic/README.md) | behavioral | the **Mechanic** persona — build a new automaton or adjust an existing one's program (governance/model/effort/leash), re-chip its loadout, hot-swap the unit |
 
 ## Placement map
 
@@ -74,8 +74,9 @@ Where a new concept lives — slot here, do not invent placement:
   whichever persona's activation it governs; each node carries its own half.
 - **a new crew-acquisition persona behavior** (recruit/discharge a crew type — browse the Tavern,
   install/register, uninstall/retire) → `recruitment/` (the Crimp persona).
-- **a new crew-tuning persona behavior** (adjust an automaton's program — governance/model/effort/
-  leash — re-chip its loadout, hot-swap the unit) → `tuning/` (the Tuner persona).
+- **a new automaton-workshop persona behavior** (build a new automaton, or adjust an existing one's
+  program — governance/model/effort/leash — re-chip its loadout, hot-swap the unit) → `mechanic/`
+  (the Mechanic persona).
 - **a new identity / message-queue / peer-launch / hook-injection CLI operation** → **not here** —
   that is the `cyberfleet` CLI project (`packages/cyberfleet`).
 - **a cross-capability persona e2e** (spans ≥2 persona nodes) → this project's own e2e; a future
@@ -85,7 +86,7 @@ The nesting rule: capabilities at the top; any layering nests *inside* a capabil
 top-level folder. A node is `<capability>` and never nested. Two cross-cutting concerns run through
 this project (see the by-concept index below): `fleet` (the session-coordination personas — pod and
 operator) and `crew-ops` (the crew-operations personas that recruit and tune **crew** — recruitment (Crimp)
-and tuning (Tuner)). Note the distinction: a **crew** is a recruited specialist automaton (what
+and build+tune (Mechanic)). Note the distinction: a **crew** is a recruited specialist automaton (what
 Crimp signs on from the Tavern); `crew-ops` is the concern of *operating on* crew, not the crew
 itself.
 
@@ -97,7 +98,7 @@ itself.
 
 | Concept | Facets |
 |---|---|
-| `crew-ops` | `recruitment/` (behavior) · `tuning/` (behavior) |
+| `crew-ops` | `mechanic/` (behavior) · `recruitment/` (behavior) |
 | `fleet` | `operator/` (behavior) · `pod/` (behavior) |
 
 <!-- END generated: by-concept -->

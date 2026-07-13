@@ -1,7 +1,7 @@
 # cyberfleet plugin — the fleet & crew personas (agent behavior)
 
 The **persona layer** of the fleet: the agent-behavior that decides *when* and *how* an agent
-reaches for the fleet, recruits or discharges a crew, and re-tunes an automaton's program. Shipped
+reaches for the fleet, recruits or discharges a crew, and builds or re-tunes an automaton. Shipped
 as the `cyberfleet` plugin (`plugins/cyberfleet`), distributed to the marketplace.
 
 Every node here is a per-situation persona gateway skill (ACED carries all four eval layers —
@@ -42,8 +42,9 @@ Units:
   the `cyberfleet` CLI.
 - [**`recruitment`**](./recruitment/README.md) *(behavioral)* — the **Crimp** persona: recruit or
   discharge a crew type from the Tavern (browse, install, register; uninstall, retire).
-- [**`tuning`**](./tuning/README.md) *(behavioral)* — the **Tuner** persona: adjust an automaton's
-  program (governance/model/effort/leash), re-chip its loadout, hot-swap the unit.
+- [**`mechanic`**](./mechanic/README.md) *(behavioral)* — the **Mechanic** persona: build a new
+  automaton, or adjust an existing one's program (governance/model/effort/leash), re-chip its
+  loadout, hot-swap the unit.
 
 Scope: A voice-rubric dimension across the three persona nodes and a concrete in-session handler for
 the leash route are deferred non-blocking follow-ups. This project has its own cross-capability

@@ -63,10 +63,17 @@ Feature: pod — the ship's bridge persona
     Then it runs cyberlegion unit register then cyberlegion mail inbox --unread and speaks any mail before taking further action
 
   @behavior
+  Scenario: Pod consumes its mission brief in one read-and-ack step
+    Given Pod is entering a ship and its inbox holds an unread mission brief
+    When Pod receives that brief
+    Then it reads the brief with cyberlegion mail read --ack so the brief is consumed in the same
+      step it is read, leaving no dangling unread mail behind
+
+  @behavior
   Scenario: handled mail is acked immediately
     Given Pod has acted on an unread message
     When it finishes handling it
-    Then it acks that message with cyberlegion mail read and never leaves acted-on mail unread
+    Then it acks that message with cyberlegion mail read --ack and never leaves acted-on mail unread
 
   # ── Run the mission through SDD ──
 

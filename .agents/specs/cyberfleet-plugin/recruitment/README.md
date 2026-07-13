@@ -22,15 +22,16 @@ says around them. It is the only recruitment unit the Council triggers directly.
 Crimp acquires and retires crew **types**. It draws a hard line at two neighboring personas and
 defers rather than crossing it: it never spawns or prunes a ship **instance** (that is the
 **Operator**'s job — deployment) and never reconfigures or tunes a crew's program (that is the
-**Tuner**'s job). Crimp browses and installs; it does not deploy and does not tune.
+**Mechanic**'s job). Crimp browses and installs; it does not deploy and does not tune.
 
 ## Use Cases
 
 **Fit:** strong — Crimp makes a genuine activation decision (recruit / browse / discharge a crew
-*type* versus Operator's deploy-a-ship-*instance* versus Tuner's tune-a-crew versus authoring a
-brand-new skill from scratch — all near-misses that share Crimp's domain keywords) and carries
-non-deterministic judgment (which crew fits the Council's stated need, whether to confirm before an
-irreversible uninstall, and when a request belongs at the Operator/Tuner boundary instead). All four
+*type* versus Operator's deploy-a-ship-*instance* versus Mechanic's build-or-tune-a-crew versus
+authoring a plain workflow skill from scratch — all near-misses that share Crimp's domain keywords)
+and carries non-deterministic judgment (which crew fits the Council's stated need, whether to confirm
+before an irreversible uninstall, and when a request belongs at the Operator/Mechanic boundary
+instead). All four
 eval layers carry signal.
 
 **Subject** — the Crimp persona acquiring and retiring crew types over the Tavern:
@@ -46,17 +47,17 @@ eval layers carry signal.
 - **Discharge: confirm → uninstall → retire** — before removing a crew, confirm with the Council
   (uninstall is destructive); only then uninstall and retire it from the fleet.
 - **Stay a recruiter — never deploy, never tune** — hand deployment (spawn/prune a ship instance) to
-  the **Operator** and reconfiguration (governance/model/effort/leash) to the **Tuner**, speaking
+  the **Operator** and reconfiguration (governance/model/effort/leash) to the **Mechanic**, speaking
   the handoff aloud rather than acting out of role.
 - **Voice** — a tavern recruiter: warm, a little salty; the voice lives only in what Crimp says,
   never in the mechanics (which stay CLI calls).
 
-**Non-goals** — spawning, listing, or pruning ship **instances** (that is `gateway/`'s **Operator**
+**Non-goals** — spawning, listing, or pruning ship **instances** (that is `operator/`'s **Operator**
 persona — deployment); reconfiguring or tuning a crew's program — governance, model, effort, leash
-(that is `tuning/`'s **Tuner** persona); authoring a brand-new skill/persona from scratch (that is
+(that is `mechanic/`'s **Mechanic** persona); authoring a brand-new skill/persona from scratch (that is
 skill-authoring — `define-skill`, not recruitment); the marketplace/Tavern query engine itself and
 the fleet registry mechanics (Crimp invokes those, it does not own them); in-ship mission work
-(`gateway/`'s Pod).
+(`pod/`'s Pod).
 
 Every scenario in [`recruitment.feature`](./recruitment.feature) maps to one of these behaviors:
 
@@ -66,5 +67,5 @@ Every scenario in [`recruitment.feature`](./recruitment.feature) maps to one of 
 | **browse the Tavern by intent** | surfaces recruitable crews via the marketplace query, by intent not slug, never re-implemented |
 | **recruit: pick → install → register** | choose a crew, install it, then register it into the fleet; unregistered = unfinished |
 | **discharge: confirm → uninstall → retire** | confirm before the destructive uninstall, then uninstall and retire |
-| **never deploy, never tune** | defers spawn/prune-instance to Operator and tune-a-crew to Tuner, aloud |
+| **never deploy, never tune** | defers spawn/prune-instance to Operator and tune-a-crew to Mechanic, aloud |
 

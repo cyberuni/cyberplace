@@ -7,21 +7,21 @@ approval:
     by: agent
     cause: dimension
     why:
-      floor: clearance — re-open of the frozen tavern.feature (root implemented->draft) was user-directed (the user drove the redesign live and confirmed keep-crews/marketplace-source); the narrowing/rewrite clearance is pre-authorized. No Compatibility bump this CR, no Conflict.
-      blast: medium — one node (tavern) rewritten + crew-source neighbors reconciled (glossary/marketplace/awesome-list/design). Other cyberplace nodes untouched and stay frozen.
-      novelty: low — keeps the crew concept + AXI surface; changes the roster SOURCE (awesome catalog -> marketplace manifest crew-tag) and adds website cards + top nav.
-      confidence: high — cold sdd-spec-judge 3-lens {oracle,builder,architect} all PASS, ALIGNED true (round 1 architect FAIL on a leftover root-spec awesome-catalog framing + a stale source line + a tags-in-CLI mismatch; all fixed then re-graded PASS). check-suite / check-spec-state / check-spec-structure (0/0) clean, 0 open markers. Noted follow-up: malformed-manifest fail-loud scenario (repo-maintained input). Self-asserted (by agent) — ratify or kick back.
-      cr: tavern-plugin-storefront
+      floor: none — one ADDITIVE @frozen scenario (malformed-manifest fail-loud) that self-clears; no existing frozen scenario re-opened; root stays implemented. Item 1 is impl-only (no spec change).
+      blast: low — one node (tavern), one additive scenario; sibling nodes untouched.
+      novelty: low — closes the malformed-manifest fail-loud follow-up the tavern-plugin-storefront spec gate explicitly noted.
+      confidence: high — cold sdd-spec-judge 3-lens {oracle,builder,architect} all PASS, ALIGNED true, zero required fixes; mechanical check-spec-state + check-suite green. Self-asserted (by agent) — ratify or kick back.
+      cr: github-76
   impl:
     verdict: approve
     by: agent
     cause: dimension
     why:
-      floor: none — no frozen scenario narrowed at impl; the AXI surface stays impl-deferred (standing tavern README banner), unchanged by this CR.
-      blast: medium — repointed the tavern CLI roster source to the marketplace manifest crew-tag (deleted render.ts/lib.ts codegen) + new website top nav (SiteTitle override) + crew-card storefront component; awesome-list + other nodes untouched.
-      novelty: low — behavior-preserving source change + presentation; recruit command `cyberplace add <name>`.
-      confidence: high — cold sdd-impl-judge IMPLEMENTATION_PASS true; all 11 targeted behavioral scenarios verified against the real bin + built website HTML (cyberfleet crew card, top-nav active state, sidebar, boundary no-write); AXI scenarios recorded impl-deferred (not failures), consistent with the banner. Root pnpm verify green (typecheck/lint/test/knip/check-plan-safety/website build/verify:specs). Judge-flagged cleanup applied (removed the orphaned render:tavern package script). Non-blocking OBSERVATION: website TavernStorefront re-derives the crew filter (cyberplace exports no lib surface) — future CR. Self-asserted (by agent) — ratify or kick back.
-      cr: tavern-plugin-storefront
+      floor: none — no frozen scenario narrowed at impl; the tavern AXI surface is now BUILT (README impl-trails banner lifted); awesome/registry AXI surfaces stay impl-deferred per their own standing banners.
+      blast: low-medium — rewrote the tavern CLI to the AXI output surface (TOON default + aggregate/truncation/--full/json-escape/next-step/fail-loud/help) via a new shared renderToonTable in output.ts + a malformed-manifest guard in plugins.ts; awesome/registry and all other nodes untouched.
+      novelty: medium — first real TOON encoder in cyberplace (renderToonTable), sole encoder, tavern-only consumer.
+      confidence: high — cold sdd-impl-judge IMPLEMENTATION_PASS true; 22/22 behavioral scenarios re-derived and verified against the real bin over 6 self-built marketplace fixtures (TOON rows/aggregate, truncation + --full, json never truncated, 0-crews-found, content-first, next-step on stderr, non-interactive, unknown-flag fail-loud, --help, malformed-manifest fail-loud). Root pnpm verify green (typecheck/lint/test/knip/website build/verify:specs). Non-blocking OBSERVATION: AXI adoption still tavern-only (awesome/registry follow-up CR). Self-asserted (by agent) — ratify or kick back.
+      cr: github-76
 ---
 
 # cyberplace — the agent skill/plugin marketplace + authoring CLI
@@ -97,6 +97,8 @@ capability is a `concept:` tag recovered by the by-concept index, not a third fo
 
 | Concept | Facets |
 |---|---|
+| `acquire` | `marketplace/registry/` (behavior) |
+| `axi` | `axi/` (reference) · `marketplace/awesome-list/` (behavior) · `marketplace/registry/` (behavior) · `marketplace/tavern/` (behavior) |
 | `discovery` | `glossary/` (reference) · `marketplace/awesome-list/` (behavior) · `marketplace/tavern/` (behavior) |
 
 <!-- END generated: by-concept -->

@@ -38,12 +38,15 @@ describe('tmuxSessionAdapter', () => {
 		expect(calls[0]).toEqual(['new-window', '-d', '-c', '/u', '-P', '-F', '#{pane_id}'])
 	})
 
-	it("open() at 'workspace' opens a new detached session instead of a pane in the current one", () => {
+	it("open() at 'workspace' opens a visible background window in the current session, never a detached session", () => {
 		const calls: string[][] = []
-		const exec = fakeExec(calls, { 'new-session': '%20' })
+		const exec = fakeExec(calls, { 'new-window': '%20' })
 		const target = tmuxSessionAdapter.open(exec, { cwd: '/unit', launch: 'claude', at: 'workspace' })
 		expect(target).toEqual({ id: '%20' })
-		expect(calls[0]).toEqual(['new-session', '-d', '-c', '/unit', '-P', '-F', '#{pane_id}'])
+		// A window (visible in the status bar, select-window-able), not a new-session -d detached
+		// session that the attached client can't see or beam to.
+		expect(calls[0]).toEqual(['new-window', '-d', '-c', '/unit', '-P', '-F', '#{pane_id}'])
+		expect(calls.some((c) => c[0] === 'new-session')).toBe(false)
 		expect(calls[1]).toEqual(['send-keys', '-t', '%20', 'claude', 'Enter'])
 	})
 
@@ -59,6 +62,13 @@ describe('tmuxSessionAdapter', () => {
 		expect(calls[0]).toEqual(['send-keys', '-t', '%3', 'hello', 'Enter'])
 	})
 
+	it('submit() flushes the staged buffer with a bare Enter, never re-typing the text', () => {
+		const calls: string[][] = []
+		const exec = fakeExec(calls)
+		tmuxSessionAdapter.submit(exec, { id: '%3' })
+		expect(calls[0]).toEqual(['send-keys', '-t', '%3', 'Enter'])
+	})
+
 	it('read() captures pane output, optionally scoped to N lines', () => {
 		const calls: string[][] = []
 		const exec = fakeExec(calls, { 'capture-pane': 'line1\nline2' })
@@ -69,11 +79,23 @@ describe('tmuxSessionAdapter', () => {
 		expect(calls[1]).toEqual(['capture-pane', '-p', '-t', '%3', '-S', '-50'])
 	})
 
-	it('focus() selects the target pane', () => {
+	it("focus() beams the attached client to the pane's own session and window, in order", () => {
 		const calls: string[][] = []
-		const exec = fakeExec(calls)
+		const exec = fakeExec(calls, { 'list-panes': '%1 sess-a @1\n%3 sess-b @9\n%7 sess-a @1' })
 		tmuxSessionAdapter.focus(exec, { id: '%3' })
-		expect(calls[0]).toEqual(['select-pane', '-t', '%3'])
+		expect(calls).toEqual([
+			['list-panes', '-a', '-F', '#{pane_id} #{session_name} #{window_id}'],
+			['switch-client', '-t', 'sess-b'],
+			['select-window', '-t', '@9'],
+			['select-pane', '-t', '%3'],
+		])
+	})
+
+	it('focus() throws instead of a false success when the recorded pane no longer resolves, and switches nothing', () => {
+		const calls: string[][] = []
+		const exec = fakeExec(calls, { 'list-panes': '%1 sess-a @1\n%7 sess-a @1' })
+		expect(() => tmuxSessionAdapter.focus(exec, { id: '%3' })).toThrow(/could not be resolved to beam to/)
+		expect(calls).toEqual([['list-panes', '-a', '-F', '#{pane_id} #{session_name} #{window_id}']])
 	})
 
 	it('teardown() kills the pane', () => {
@@ -88,5 +110,37 @@ describe('tmuxSessionAdapter', () => {
 		expect(tmuxSessionAdapter.paneExists(fakeExec([], { 'list-panes': '%1\n%3\n%7' }), { id: '%3' })).toBe(true)
 		// list-panes omits it → gone
 		expect(tmuxSessionAdapter.paneExists(fakeExec([], { 'list-panes': '%1\n%7' }), { id: '%3' })).toBe(false)
+	})
+
+	it('isPaneFocused() reports true when the pane is active, its window current, and a client attached', () => {
+		const exec = fakeExec([], { 'list-panes': '%1 0 1 1\n%3 1 1 1\n%7 0 0 0' })
+		expect(tmuxSessionAdapter.isPaneFocused(exec, { id: '%3' })).toBe(true)
+	})
+
+	it('isPaneFocused() reports false when the pane is not active, its window is not current, or no client is attached', () => {
+		const exec = fakeExec([], { 'list-panes': '%1 0 1 1\n%3 0 1 1\n%7 1 0 1\n%9 1 1 0' })
+		expect(tmuxSessionAdapter.isPaneFocused(exec, { id: '%3' })).toBe(false)
+		expect(tmuxSessionAdapter.isPaneFocused(exec, { id: '%7' })).toBe(false)
+		expect(tmuxSessionAdapter.isPaneFocused(exec, { id: '%9' })).toBe(false)
+	})
+
+	it('isPaneFocused() reports unknown when the pane cannot be resolved or tmux reports nothing', () => {
+		const exec = fakeExec([], { 'list-panes': '%1 1 1 1' })
+		expect(tmuxSessionAdapter.isPaneFocused(exec, { id: '%3' })).toBeUndefined()
+		expect(tmuxSessionAdapter.isPaneFocused(() => null, { id: '%3' })).toBeUndefined()
+	})
+
+	it('listPanes() reports every live pane with its id and cwd, no harness', () => {
+		const calls: string[][] = []
+		const exec = fakeExec(calls, { 'list-panes': '%1 claude /repo/a\n%3 zsh /repo/b' })
+		expect(tmuxSessionAdapter.listPanes(exec)).toEqual([
+			{ id: '%1', mux: 'tmux', cwd: '/repo/a' },
+			{ id: '%3', mux: 'tmux', cwd: '/repo/b' },
+		])
+		expect(calls[0]).toEqual(['list-panes', '-a', '-F', '#{pane_id} #{pane_current_command} #{pane_current_path}'])
+	})
+
+	it('listPanes() returns empty when tmux reports nothing', () => {
+		expect(tmuxSessionAdapter.listPanes(() => null)).toEqual([])
 	})
 })

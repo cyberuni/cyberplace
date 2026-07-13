@@ -2,8 +2,8 @@ import { existsSync, mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { basename, dirname, join, resolve } from 'node:path'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { type Exec, type IdContext, loadAgent } from './identity.ts'
-import { resolveBrief, spawn } from './session.ts'
+import { type AgentRecord, type Exec, type Harness, type IdContext, loadAgent, saveAgent } from './identity.ts'
+import { clearUnit, resetCommandFor, resolveBrief, spawn } from './session.ts'
 import { FileStore } from './store/file-store.ts'
 
 let store: FileStore
@@ -316,5 +316,202 @@ describe('backend selection: herdr', () => {
 		expect(res.agent.worktree).toEqual({ root: resolve(worktreeRoot), branch: `cyberlegion/unit-${res.agent.id}` })
 		expect(res.agent.cwd).toBe(resolve(worktreeRoot))
 		expect(res.pane).toBe('w9:p1')
+	})
+})
+
+// ── spec:cyberlegion/unit/lifecycle — spawn resolves the default placement by mode ──────────────
+describe('spawn resolves the default --at by spawn mode (own visible space vs current space)', () => {
+	// herdr is the discriminating backend — 'workspace' → `worktree create` (own nested workspace),
+	// 'tab' → `tab create` (a tab in the caller's current space) are distinct herdr verbs.
+	function herdrExec(calls: string[][], worktreeRoot: string): Exec {
+		return (cmd, args) => {
+			if (cmd === 'git') {
+				if (args.includes('--git-common-dir')) return `${primaryRoot}/.git`
+				if (args.includes('worktree')) return ''
+				return null
+			}
+			calls.push(args)
+			if (args[0] === 'worktree' && args[1] === 'create') {
+				const branch = args[args.indexOf('--branch') + 1]
+				return JSON.stringify({
+					id: 'cli:worktree:create',
+					result: { root_pane: { pane_id: 'w9:p1' }, worktree: { branch, path: worktreeRoot } },
+				})
+			}
+			if (args[0] === 'tab' && args[1] === 'create') {
+				return JSON.stringify({ result: { root_pane: { pane_id: 'w3:pT' }, type: 'tab_created' } })
+			}
+			if (args[0] === 'workspace' && args[1] === 'create') {
+				return JSON.stringify({ result: { root_pane: { pane_id: 'w5:pW' }, type: 'workspace_created' } })
+			}
+			if (args[0] === 'pane' && args[1] === 'split') {
+				return JSON.stringify({ result: { pane: { pane_id: 'w3:pS' }, type: 'pane_info' } })
+			}
+			return null
+		}
+	}
+
+	it('a new-worktree spawn with no --at defaults to its own visible workspace (herdr nested worktree)', () => {
+		const calls: string[][] = []
+		const worktreeRoot = join(dirname(primaryRoot), 'default-ws-unit')
+		const res = spawn(
+			{ store, env: { CYBERLEGION_MUX: 'herdr' }, exec: herdrExec(calls, worktreeRoot), now: () => 1 },
+			{ harness: 'claude', task: 't' },
+		)
+		// No mux placement passed by the caller, yet it lands in its own nested workspace — deterministic.
+		expect(calls[0]!.slice(0, 2)).toEqual(['worktree', 'create'])
+		expect(calls.some((c) => c[0] === 'tab' && c[1] === 'create')).toBe(false)
+		expect(res.agent.cwd).toBe(resolve(worktreeRoot))
+	})
+
+	it('a new-worktree spawn with no --at lands a VISIBLE tmux window, never a detached session', () => {
+		const calls: string[][] = []
+		const exec: Exec = (cmd, args) => {
+			if (cmd === 'git') {
+				if (args.includes('--git-common-dir')) return `${primaryRoot}/.git`
+				if (args.includes('worktree')) return ''
+				return null
+			}
+			calls.push(args)
+			if (args[0] === 'new-window') return '%42'
+			return null
+		}
+		const res = spawn({ store, env: { CYBERLEGION_MUX: 'tmux' }, exec, now: () => 1 }, { harness: 'claude', task: 't' })
+		expect(calls[0]!.slice(0, 2)).toEqual(['new-window', '-d'])
+		expect(calls.some((c) => c[0] === 'new-session')).toBe(false)
+		expect(res.pane).toBe('%42')
+	})
+
+	it("a --cwd spawn with no --at defaults to a tab in the caller's current space, not its own workspace", () => {
+		const calls: string[][] = []
+		const existingDir = mkdtempSync(join(tmpdir(), 'cl-cwd-'))
+		spawn(
+			{ store, env: { CYBERLEGION_MUX: 'herdr' }, exec: herdrExec(calls, ''), now: () => 1 },
+			{ harness: 'claude', task: 't', cwd: existingDir },
+		)
+		expect(calls[0]!.slice(0, 2)).toEqual(['tab', 'create'])
+		expect(calls.some((c) => c[0] === 'worktree' && c[1] === 'create')).toBe(false)
+	})
+
+	it('an explicit --at overrides the new-worktree default (new-worktree spawn honoring --at tab)', () => {
+		const calls: string[][] = []
+		const worktreeRoot = join(dirname(primaryRoot), 'override-unit')
+		spawn(
+			{ store, env: { CYBERLEGION_MUX: 'herdr' }, exec: herdrExec(calls, worktreeRoot), now: () => 1 },
+			{ harness: 'claude', task: 't', at: 'tab' },
+		)
+		// Explicit tab wins even though the new-worktree default would have been workspace.
+		expect(calls[0]!.slice(0, 2)).toEqual(['tab', 'create'])
+		expect(calls.some((c) => c[0] === 'worktree' && c[1] === 'create')).toBe(false)
+	})
+
+	it('an explicit --at overrides the --cwd default (--cwd spawn honoring --at workspace)', () => {
+		const calls: string[][] = []
+		const existingDir = mkdtempSync(join(tmpdir(), 'cl-cwd-'))
+		spawn(
+			{ store, env: { CYBERLEGION_MUX: 'herdr' }, exec: herdrExec(calls, ''), now: () => 1 },
+			{ harness: 'claude', task: 't', cwd: existingDir, at: 'workspace' },
+		)
+		// Explicit workspace wins even though the --cwd default would have been tab.
+		expect(calls[0]!.slice(0, 2)).toEqual(['workspace', 'create'])
+		expect(calls.some((c) => c[0] === 'tab' && c[1] === 'create')).toBe(false)
+	})
+})
+
+// ── spec:cyberlegion/unit/lifecycle — clear resets a warm peer's context ────────────────────────
+
+/** Registers a unit record directly (no spawn) so `clear` scenarios start from a known-live peer. */
+function registerUnit(rec: Partial<AgentRecord> & { id: string }): AgentRecord {
+	const full: AgentRecord = {
+		handle: rec.id.slice(0, 6),
+		harness: 'claude',
+		cwd: '/somewhere',
+		worktree: { root: '/somewhere', branch: `cyberlegion/unit-${rec.id}` },
+		status: 'active',
+		createdAt: '2026-01-01T00:00:00.000Z',
+		lastSeen: '2026-01-01T00:00:00.000Z',
+		pane: { mux: 'tmux', id: '%9' },
+		...rec,
+	}
+	saveAgent(store, full)
+	return full
+}
+
+describe('resetCommandFor — the per-harness reset map', () => {
+	it.each([
+		['claude', '/clear'],
+		['codex', '/clear'],
+		['copilot', '/clear'],
+		['cursor', '/new-chat'],
+	])('resolves %s to %s', (harness, command) => {
+		expect(resetCommandFor(harness)).toBe(command)
+	})
+
+	it('throws naming gemini and its missing honest reset, for the known false-friend harness', () => {
+		expect(() => resetCommandFor('gemini')).toThrow(/gemini/)
+		expect(() => resetCommandFor('gemini')).toThrow(/context/)
+	})
+
+	it('throws naming the reset map for a truly unmapped harness', () => {
+		expect(() => resetCommandFor('grok')).toThrow(/grok/)
+		expect(() => resetCommandFor('grok')).toThrow(/reset map/)
+	})
+})
+
+describe('clear injects the harness reset into a warm peer and tears nothing down', () => {
+	it('sends "/clear" to a claude peer, leaving its record, pane, and worktree unchanged', () => {
+		registerUnit({ id: 'w1' })
+		const res = clearUnit(ctx(), 'w1')
+		expect(res).toEqual({ agent: expect.objectContaining({ id: 'w1' }), pane: '%9', command: '/clear' })
+		expect(sent.at(-1)).toEqual(['send-keys', '-t', '%9', '/clear', 'Enter'])
+		// nothing torn down — record, pane index binding, and worktree are exactly as registered
+		const rec = loadAgent(store, 'w1')
+		expect(rec).toMatchObject({ id: 'w1', status: 'active', pane: { mux: 'tmux', id: '%9' } })
+		expect(rec?.worktree).toEqual({ root: '/somewhere', branch: 'cyberlegion/unit-w1' })
+	})
+})
+
+describe('clear resolves each harness own fresh-context command from the per-harness map', () => {
+	it.each([
+		['claude', '/clear'],
+		['codex', '/clear'],
+		['copilot', '/clear'],
+		['cursor', '/new-chat'],
+	])('sends "%s" for harness %s', (harness, command) => {
+		registerUnit({ id: `h-${harness}`, harness: harness as Harness })
+		const res = clearUnit(ctx(), `h-${harness}`)
+		expect(res.command).toBe(command)
+		expect(sent.at(-1)).toEqual(['send-keys', '-t', '%9', command, 'Enter'])
+	})
+})
+
+describe('clear fails loud on a harness whose reset would not truly empty the context', () => {
+	it('throws naming gemini and sends nothing to its pane', () => {
+		registerUnit({ id: 'gem1', harness: 'gemini' as Harness })
+		expect(() => clearUnit(ctx(), 'gem1')).toThrow(/gemini/)
+		expect(sent).toHaveLength(0)
+	})
+})
+
+describe('clear errors on an unmapped harness rather than guessing a command', () => {
+	it('throws naming the reset map and sends nothing to its pane', () => {
+		registerUnit({ id: 'grok1', harness: 'grok' as Harness })
+		expect(() => clearUnit(ctx(), 'grok1')).toThrow(/reset map/)
+		expect(sent).toHaveLength(0)
+	})
+})
+
+describe('clear on an unresolvable ref errors and sends nothing', () => {
+	it('throws that no unit is addressable under that ref', () => {
+		expect(() => clearUnit(ctx(), 'ghost')).toThrow(/no agent addressable/)
+		expect(sent).toHaveLength(0)
+	})
+})
+
+describe('clear on a unit with no known session pane errors and sends nothing', () => {
+	it('throws that the unit has no known session pane', () => {
+		registerUnit({ id: 'nopane1', pane: null })
+		expect(() => clearUnit(ctx(), 'nopane1')).toThrow(/no known session pane/)
+		expect(sent).toHaveLength(0)
 	})
 })

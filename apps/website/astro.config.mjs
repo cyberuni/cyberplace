@@ -124,7 +124,7 @@ export default defineConfig({
 						{ label: 'Pod', slug: 'cyberfleet/pod' },
 						{ label: 'Operator', slug: 'cyberfleet/operator' },
 						{ label: 'Crimp', slug: 'cyberfleet/crimp' },
-						{ label: 'Tuner', slug: 'cyberfleet/tuner' },
+						{ label: 'Mechanic', slug: 'cyberfleet/mechanic' },
 					],
 				},
 				{

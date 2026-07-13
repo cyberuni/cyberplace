@@ -4,8 +4,10 @@ import { Command, Option } from 'commander'
 import { migrateStore } from './admin.ts'
 import { realizeLaunch } from './agentdef/realize.ts'
 import { type AgentDef, listAgentDefs, resolveAgentDef } from './agentdef/resolve.ts'
+import { DELIVERY_DOORBELL, wakeRecipient } from './console/doorbell.ts'
 import { selectSessionAdapter } from './console/index.ts'
 import { currentPane, probeMultiplexer } from './console/mux-probe.ts'
+import { nudge } from './console/nudge.ts'
 import { decommission } from './decommission.ts'
 import {
 	bumpLastSeen,
@@ -16,6 +18,7 @@ import {
 	loadAgent,
 	prune,
 	realExec,
+	reconcile,
 	register,
 	registerStanding,
 	resolveAgent,
@@ -24,11 +27,11 @@ import {
 	touch,
 } from './identity.ts'
 import { install } from './install.ts'
-import { ack, deleteMessage, inbox, peek, resolveBody, send } from './message.ts'
+import { ack, deleteMessage, inbox, peek, readAck, resolveBody, send } from './message.ts'
 import { emit, type Format, fail, nextStep, toonList, toonObject } from './output.ts'
 import { resolveRoot } from './paths.ts'
 import { injectInbox } from './runtime/inject-inbox.ts'
-import { spawn } from './session.ts'
+import { clearUnit, spawn } from './session.ts'
 import { FileStore } from './store/file-store.ts'
 import { awaitReply } from './wake/await.ts'
 import { watchMail } from './wake/watch.ts'
@@ -156,9 +159,10 @@ withGlobals(unit.command('whoami'))
 		})
 	})
 
-function runWho(opts: GlobalOpts & { all?: boolean }): void {
+function runWho(opts: GlobalOpts & { all?: boolean; reconcile?: boolean }): void {
 	const ctx = ctxOf(opts)
 	touch(ctx)
+	if (opts.reconcile) reconcile(ctx, { adopt: true })
 	const agents = listAgents(ctx.store).filter((a) => opts.all || a.status !== 'exited')
 	emit(formatOf(opts), {
 		toon: toonList(
@@ -181,6 +185,10 @@ function runWho(opts: GlobalOpts & { all?: boolean }): void {
 withGlobals(unit.command('who'))
 	.description('list the addressable units')
 	.option('--all', 'include exited units')
+	.option(
+		'--reconcile',
+		'live-probe the current mux: cull dead-pane records and adopt unbound harness-bearing panes before listing',
+	)
 	.action(runWho)
 
 withGlobals(unit.command('prune'))
@@ -219,9 +227,12 @@ function defineSpawn(cmd: Command): Command {
 			'spawn the session in an existing directory; create no worktree (mutually exclusive with --branch/--worktree-path)',
 		)
 		.addOption(
-			new Option('--at <placement>', 'where to open the new session')
-				.choices(['pane:right', 'pane:down', 'tab', 'workspace'])
-				.default('tab'),
+			// No hard default here — spawn resolves the default by mode (new-worktree → workspace,
+			// its own visible space; --cwd → tab in the caller's current space). Explicit wins.
+			new Option(
+				'--at <placement>',
+				'where to open the new session (default: new-worktree → workspace, --cwd → tab)',
+			).choices(['pane:right', 'pane:down', 'tab', 'workspace']),
 		)
 		.action((opts) => {
 			const ctx = ctxOf(opts)
@@ -295,21 +306,19 @@ withGlobals(unit.command('focus'))
 // The doorbell must carry a message: a live agent session only takes a turn when it receives
 // actual input (an empty ring is a no-op). Default points the peer at its inbox; the mail it
 // already has is the real payload.
-const DEFAULT_NUDGE_MESSAGE = 'You have unread mail from the fleet — check your inbox and read it.'
-
 withGlobals(unit.command('nudge'))
 	.description("ring a peer's session (a doorbell that tells them to check their mail)")
 	.argument('<ref>', 'unit id, handle, or worktree branch/CR ref')
-	.option('--message <text>', 'the doorbell text delivered to the peer session', DEFAULT_NUDGE_MESSAGE)
-	.action((ref, opts) => {
+	.option('--message <text>', 'the doorbell text delivered to the peer session', DELIVERY_DOORBELL)
+	.action(async (ref, opts) => {
 		const ctx = ctxOf(opts)
 		touch(ctx)
 		const target = resolveTarget(ctx, ref)
-		const message = opts.message || DEFAULT_NUDGE_MESSAGE
-		selectSessionAdapter(ctx.env ?? process.env).send(realExec, target, message)
+		const message = opts.message || DELIVERY_DOORBELL
+		const result = await nudge(selectSessionAdapter(ctx.env ?? process.env), realExec, target, message)
 		emit(formatOf(opts), {
 			toon: toonObject({ nudged: ref, pane: target.id }),
-			json: { ref, pane: target.id, message },
+			json: { ref, pane: target.id, message, resubmits: result.resubmits },
 		})
 	})
 
@@ -329,6 +338,26 @@ withGlobals(unit.command('read'))
 		}
 	})
 
+withGlobals(unit.command('clear'))
+	.description(
+		"reset a warm peer's context to cold by injecting its own harness fresh-context command — keeps the pane/session warm; tears down nothing",
+	)
+	.argument('<ref>', 'unit id, handle, or worktree branch/CR ref')
+	.action((ref, opts) => {
+		const ctx = ctxOf(opts)
+		touch(ctx)
+		let res: ReturnType<typeof clearUnit>
+		try {
+			res = clearUnit(ctx, ref)
+		} catch (err) {
+			fail(err instanceof Error ? err.message : String(err))
+		}
+		emit(formatOf(opts), {
+			toon: toonObject({ cleared: ref, pane: res.pane, command: res.command }),
+			json: { cleared: ref, pane: res.pane, command: res.command },
+		})
+	})
+
 // -------------------------------------------------------------------------------------------
 // mail — durable inter-agent messaging
 // -------------------------------------------------------------------------------------------
@@ -344,7 +373,8 @@ function defineSend(cmd: Command): Command {
 		.option('--body-file <path>', 'read body from a file, or - for stdin')
 		.option('--thread <id>', 'thread id')
 		.option('--reply-to <msg>', 'message id this replies to')
-		.action((opts) => {
+		.option('--no-nudge', "suppress the delivery doorbell (do not wake the recipient's pane)")
+		.action(async (opts) => {
 			const ctx = ctxOf(opts)
 			const fromId = opts.from ?? requireSelf(ctx)
 			const body = resolveBody(opts.body, opts.bodyFile)
@@ -352,15 +382,28 @@ function defineSend(cmd: Command): Command {
 				{ store: ctx.store },
 				{ fromId, to: opts.to, subject: opts.subject, body, thread: opts.thread, replyTo: opts.replyTo },
 			)
-			emit(formatOf(opts), { toon: toonObject({ sent: msg.id, to: opts.to, subject: msg.subject }), json: msg })
+			// Durable delivery is done; wake the recipient best-effort on top — never fails the send.
+			// The adapter is resolved lazily inside wakeRecipient (only when a pane is actually rung), so
+			// a no-mux session sending to a headless recipient never trips selectSessionAdapter's throw.
+			const wake = await wakeRecipient(ctx.store, () => selectSessionAdapter(ctx.env ?? process.env), realExec, {
+				toId: msg.to,
+				fromId,
+				noNudge: opts.nudge === false,
+			})
+			if (wake.warning) console.error(`delivery doorbell not confirmed (message still delivered): ${wake.warning}`)
+			emit(formatOf(opts), {
+				toon: toonObject({ sent: msg.id, to: opts.to, subject: msg.subject, rung: wake.rung }),
+				json: { ...msg, rung: wake.rung },
+			})
 		})
 }
 defineSend(mail.command('send'))
 
-function runInbox(opts: GlobalOpts & { unread?: boolean; from?: string; thread?: string; owner?: string }): void {
-	const ctx = ctxOf(opts)
-	touch(ctx)
-	const meId = opts.owner ? resolveStandingOwner(ctx.store, opts.owner) : requireSelf(ctx)
+type InboxOpts = GlobalOpts & { unread?: boolean; from?: string; thread?: string; owner?: string }
+
+/** List a resolved inbox (the caller's own or an --owner mailbox) as TOON with an aggregate;
+ * `readCmd` is the follow-up read command prefix surfaced as the next step. */
+function emitInbox(ctx: IdContext, opts: InboxOpts, meId: string, readCmd: string): void {
 	const items = inbox({ store: ctx.store }, { meId, unread: opts.unread, from: opts.from, thread: opts.thread })
 	const unreadCount = items.filter((i) => !i.read).length
 	emit(formatOf(opts), {
@@ -378,7 +421,14 @@ function runInbox(opts: GlobalOpts & { unread?: boolean; from?: string; thread?:
 		json: items,
 	})
 	const firstUnread = items.find((m) => !m.read)
-	if (firstUnread) nextStep(`cyberlegion mail read ${firstUnread.id}`)
+	if (firstUnread) nextStep(`${readCmd} ${firstUnread.id}`)
+}
+
+function runInbox(opts: InboxOpts): void {
+	const ctx = ctxOf(opts)
+	touch(ctx)
+	const meId = opts.owner ? resolveStandingOwner(ctx.store, opts.owner) : requireSelf(ctx)
+	emitInbox(ctx, opts, meId, 'cyberlegion mail read')
 }
 
 withGlobals(mail.command('inbox'))
@@ -390,12 +440,21 @@ withGlobals(mail.command('inbox'))
 	.action(runInbox)
 
 withGlobals(mail.command('read'))
-	.description('peek at a message without acknowledging it')
+	.description('read a message; --ack consumes it in the same step, otherwise it only peeks')
 	.argument('<msg-id>', 'message id')
-	.option('--owner <handle>', "peek a standing owner's mailbox instead of this session's own")
+	.option('--ack', 'acknowledge the message in the same step (idempotent — no error if already acked)')
+	.option('--owner <handle>', "read a standing owner's mailbox instead of this session's own")
 	.action((msgId, opts) => {
 		const ctx = ctxOf(opts)
 		const meId = opts.owner ? resolveStandingOwner(ctx.store, opts.owner) : requireSelf(ctx)
+		if (opts.ack) {
+			const { msg, acked } = readAck({ store: ctx.store }, meId, msgId)
+			emit(formatOf(opts), {
+				toon: toonObject({ id: msg.id, from: msg.fromHandle, subject: msg.subject, body: msg.body, acked }),
+				json: { ...msg, acked },
+			})
+			return
+		}
 		const msg = peek({ store: ctx.store }, meId, msgId)
 		if (!msg) fail(`"${msgId}" is not a message in this inbox`)
 		emit(formatOf(opts), {
@@ -715,7 +774,7 @@ withGlobals(program.command('init'))
 		})
 		const hasStandingOwner = listAgents(ctx.store).some((a) => a.kind === 'standing')
 		if (!hasStandingOwner) {
-			nextStep('cyberlegion unit register --standing --handle legate to mint the durable owner inbox')
+			nextStep('cyberlegion unit register --standing --handle <name> to mint the durable owner inbox')
 			nextStep('cyberlegion attach to bind this pane as the owner live presence')
 		}
 	})
@@ -734,6 +793,10 @@ withGlobals(program.command('inbox'))
 withGlobals(program.command('who'))
 	.description('list the addressable units (alias of `unit who`)')
 	.option('--all', 'include exited units')
+	.option(
+		'--reconcile',
+		'live-probe the current mux: cull dead-pane records and adopt unbound harness-bearing panes before listing',
+	)
 	.action(runWho)
 
 // -------------------------------------------------------------------------------------------

@@ -19,11 +19,16 @@ session opens through, independent of any unit's identity or lifecycle:
 
 - **The session backend is selected by environment** — tmux when `$TMUX` is set, herdr when
   `$HERDR_ENV` is set and `$TMUX` is not; an environment with neither throws asking for one.
-- **Placement defaults to tab** — `--at pane:right|pane:down|tab|workspace` chooses where the new
-  session opens; omitting it defaults to `tab` (a new tab in the caller's current window, opened
-  without stealing focus), so a spawned peer never shrinks the caller's pane by splitting it. `tab`
-  maps to each backend's native Tab primitive — tmux `new-window`, herdr `tab create` — never a
-  split pane.
+- **Placement maps each `--at` value onto the backend** — `--at pane:right|pane:down|tab|workspace`
+  chooses where the new session opens. This layer only maps a **resolved** placement onto the backend;
+  the spawn-mode-keyed **default** (new-worktree → `workspace`, `--cwd` → `tab`) lives in `unit/`
+  lifecycle, and `unit spawn` always resolves a concrete `--at` before calling this layer. (The
+  adapter keeps a defensive `at ?? 'tab'` fallback in code, but it is unreachable from `unit spawn`
+  and carries no user-observable behavior to spec — so it has no scenario.) `tab` maps to each
+  backend's native Tab primitive — tmux `new-window`, herdr
+  `tab create` — never a split pane. `workspace` maps to each backend's own **visible** space — herdr
+  `worktree create` (a new workspace nested under the source), tmux `new-window` (a window visible in
+  the status bar). Every placement opens without stealing the caller's focus.
 - **Multiplexer detection is two-mode** — `probeMultiplexer` first trusts `$CYBERLEGION_MUX`
   (`tmux`|`herdr`|`screen`|`none`) outright — this doubles as an override (`=none` forces no-mux even
   inside a real multiplexer). Failing that it walks the process ancestry from `$$` looking for a
@@ -32,6 +37,18 @@ session opens through, independent of any unit's identity or lifecycle:
   `mux doctor` runs discovery and prints an `export CYBERLEGION_MUX=<m> CYBERLEGION_MUX_PANE=<p>`
   hint so a caller can pin the fast-path; `unit spawn` injects the same vars into the spawned
   child's launch command so it inherits the fast-path instead of re-discovering.
+- **The backend reports whether a pane is currently focused** — a pane locator resolves to `focused`,
+  `not-focused`, or `unknown`, so a caller can tell whether a human is actually viewing a pane before
+  spending a turn on it (the doorbell's owner-mail focus gate, `mail/doorbell`). A pane is **focused**
+  only when a live client is currently displaying it. Each backend answers with its own primitive: on
+  **tmux**, the pane is the active pane of the current window in a session with an attached client
+  (`pane_active` + `window_active` + `session_attached`) — any of those unset is **not-focused**; on
+  **herdr**, the pane record's own `focused` flag (`pane get <id>`). A backend that has no primitive to
+  report focus — or a query that errors or names a pane the backend can no longer resolve — answers
+  **unknown** (a tri-state, not a boolean) so callers **fail open** — treat unknown as "go ahead"
+  rather than as "absent" — never suppressing behavior on a mux that simply can't tell.
+  This is a **read-only** probe: it moves no focus and opens nothing (unlike the `focus`/beam op that
+  drives the attached client's view to a pane).
 **Non-goals** — the unit registry and lifecycle that use the selected backend (`unit/`); the
 wake-matrix routing decision (`selectWakePath` — which wake path a gateway drives a turn through)
 that CR-4 moved out of the CLI to the Legate plugin's routing governance, alongside `dispatch`; the
@@ -54,15 +71,22 @@ concept onto whatever the live backend calls it:
 | **Pane**      | Pane    | Region | Pane    | Split Pane                    | Pane                  | Pane      |
 
 cyberlegion drives two of these backends (tmux, herdr). `--at` exposes three of the levels —
-`pane:right`/`pane:down` (**Pane**), `tab` (**Tab**), `workspace` (**Workspace**); tmux, having no
-Workspace level, maps `workspace` onto its next-widest unit, a new **Session**. There is no `window`
-value — "window" is tmux's local name for the **Tab** concept, already covered by `tab`.
+`pane:right`/`pane:down` (**Pane**), `tab` (**Tab**), `workspace` (**Workspace**). The property
+`workspace` guarantees is **its own space, VISIBLE in the attached client and navigable** — not a
+structural tier. tmux, having no Workspace level, maps `workspace` onto the finest unit that keeps
+that property: a new **Window** (visible in the status bar, `select-window`-able) — the same unit
+`tab` maps to, so under tmux `workspace` and `tab` collapse to a Window. It is deliberately **not** a
+new detached **Session** (`new-session -d`): a detached session is invisible to the attached client
+and unreachable by beaming (`select-window`, #158), so a ship is never spawned there — a truly
+detached session would be a separate explicit intent, out of scope. There is no `window` value —
+"window" is tmux's local name for the **Tab** concept, already covered by `tab`.
 
 Every scenario in [`mux.feature`](./mux.feature) maps to one of these behaviors:
 
 | Behavior | What it covers |
 |---|---|
 | **backend selected by environment** | tmux vs herdr selection; neither present errors |
-| **placement** | `--at` choices; default tab; tab honored per backend, never a split |
+| **placement** | `--at` choices; tab honored per backend, never a split; `workspace` → each backend's own visible space (herdr nested workspace, tmux window), never a detached tmux session |
 | **multiplexer detection is two-mode** | `$CYBERLEGION_MUX` fast-path + override; ancestry walk; hint fallback; `mux doctor` hint; `unit spawn` propagation |
 | **mux mode** | reports the detected session backend; "none" (exit 0) when no adapter is selectable |
+| **pane focus reporting** | tri-state focused / not-focused / unknown per backend (tmux: pane+window active & session attached; herdr: pane record `focused`); a query that can't be answered → unknown so callers fail open |

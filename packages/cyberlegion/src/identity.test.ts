@@ -9,11 +9,13 @@ import {
 	listAgents,
 	loadAgent,
 	prune,
+	reconcile,
 	register,
 	registerStanding,
 	resolveAgent,
 	resolveRecipient,
 	resolveSelfId,
+	saveAgent,
 	standingId,
 	touch,
 } from './identity.ts'
@@ -153,14 +155,14 @@ describe('spec:cyberlegion/identity', () => {
 
 		it('prune marks an agent exited when its tmux pane is gone', () => {
 			const rec = register(ctx({ TMUX: 't', TMUX_PANE: '%7' }, tmuxExec([])), { handle: 'a', harness: 'claude' })
-			const changed = prune({ store, exec: tmuxExec([]), now: () => FRESH })
+			const changed = prune({ store, env: {}, exec: tmuxExec([]), now: () => FRESH })
 			expect(changed.map((r) => r.id)).toContain(rec.id)
 			expect(loadAgent(store, rec.id)?.status).toBe('exited')
 		})
 
 		it('prune marks an agent exited when its herdr pane is gone', () => {
 			const rec = register(ctx({ HERDR_ENV: '1', HERDR_PANE_ID: 'w3:p4' }), { handle: 'a', harness: 'claude' })
-			const changed = prune({ store, exec: herdrExec([]), now: () => FRESH })
+			const changed = prune({ store, env: {}, exec: herdrExec([]), now: () => FRESH })
 			expect(changed.map((r) => r.id)).toContain(rec.id)
 			expect(loadAgent(store, rec.id)?.status).toBe('exited')
 		})
@@ -173,7 +175,7 @@ describe('spec:cyberlegion/identity', () => {
 				if (cmd === 'herdr' && args[0] === 'pane' && args[1] === 'read') return '' // pane is live (empty content)
 				return null
 			}
-			const changed = prune({ store, exec, now: () => FRESH })
+			const changed = prune({ store, env: {}, exec, now: () => FRESH })
 			expect(changed).toEqual([])
 			expect(loadAgent(store, rec.id)?.status).toBe('active')
 			expect(calls).not.toContain('tmux') // a herdr pane is never liveness-checked via tmux
@@ -181,16 +183,190 @@ describe('spec:cyberlegion/identity', () => {
 
 		it('prune marks an agent exited when its last-seen is stale', () => {
 			const rec = register(ctx({ CYBERLEGION_AGENT_ID: 'legacy' }), { handle: 'legacy', harness: 'claude' })
-			const changed = prune({ store, exec: nullExec, now: () => 1_700_000_000_000 + 999_999_999 })
+			const changed = prune({ store, env: {}, exec: nullExec, now: () => 1_700_000_000_000 + 999_999_999 })
 			expect(changed.map((r) => r.id)).toContain(rec.id)
 			expect(loadAgent(store, rec.id)?.status).toBe('exited')
 		})
 
 		it('prune leaves a live, recently-seen agent untouched', () => {
 			const rec = register(ctx({ TMUX: 't', TMUX_PANE: '%7' }, tmuxExec(['%7'])), { handle: 'a', harness: 'claude' })
-			const changed = prune({ store, exec: tmuxExec(['%7']), now: () => FRESH })
+			const changed = prune({ store, env: {}, exec: tmuxExec(['%7']), now: () => FRESH })
 			expect(changed).toEqual([])
 			expect(loadAgent(store, rec.id)?.status).toBe('active')
+		})
+	})
+
+	describe('reconcile: mux-scoped cull against the live pane set', () => {
+		const FRESH = 1_700_000_000_000
+		const tmuxListExec =
+			(lines: string[]): Exec =>
+			(cmd, args) => {
+				if (cmd !== 'tmux') return null
+				if (args[0] === 'list-panes') return lines.join('\n')
+				if (args[0] === 'display-message') return '@1'
+				return null
+			}
+		const herdrListExec =
+			(panes: Array<{ pane_id: string; agent?: string }>): Exec =>
+			(cmd, args) => {
+				if (cmd !== 'herdr') return null
+				if (args[0] === 'pane' && args[1] === 'list') {
+					return JSON.stringify({ result: { panes } })
+				}
+				return null
+			}
+
+		it('reconcile marks a record exited when its pane is absent from the live set', () => {
+			const e = { TMUX: 't', TMUX_PANE: '%7' }
+			const rec = register(ctx(e, tmuxListExec(['%7 claude /repo'])), { handle: 'a', harness: 'claude' })
+			const changed = reconcile({ store, env: e, exec: tmuxListExec([]), now: () => FRESH })
+			expect(changed.map((r) => r.id)).toContain(rec.id)
+			expect(loadAgent(store, rec.id)?.status).toBe('exited')
+		})
+
+		it('reconcile marks a record exited from within a herdr session too', () => {
+			const e = { HERDR_ENV: '1', HERDR_PANE_ID: 'w3:p4' }
+			const rec = register(ctx(e), { handle: 'a', harness: 'claude' })
+			const changed = reconcile({ store, env: e, exec: herdrListExec([]), now: () => FRESH })
+			expect(changed.map((r) => r.id)).toContain(rec.id)
+			expect(loadAgent(store, rec.id)?.status).toBe('exited')
+		})
+
+		it("reconcile is mux-scoped and never culls the other mux's records", () => {
+			const herdrRec = register(ctx({ HERDR_ENV: '1', HERDR_PANE_ID: 'w9:p1' }), { handle: 'b', harness: 'claude' })
+			const tmuxEnv = { TMUX: 't', TMUX_PANE: '%7' }
+			const changed = reconcile({ store, env: tmuxEnv, exec: tmuxListExec([]), now: () => FRESH })
+			expect(changed.map((r) => r.id)).not.toContain(herdrRec.id)
+			expect(loadAgent(store, herdrRec.id)?.status).toBe('active')
+		})
+
+		it('reconcile never touches a standing record', () => {
+			registerStanding({ store, env: {}, now: () => FRESH }, { handle: 'homa' })
+			const e = { TMUX: 't', TMUX_PANE: '%7' }
+			reconcile({ store, env: e, exec: tmuxListExec([]), now: () => FRESH })
+			expect(loadAgent(store, standingId('homa'))?.status).toBe('active')
+		})
+
+		it('a pane-null record is not pane-culled by reconcile', () => {
+			const rec = register(ctx({ CYBERLEGION_AGENT_ID: 'legacy' }), { handle: 'legacy', harness: 'claude' })
+			const e = { TMUX: 't', TMUX_PANE: '%7' }
+			const changed = reconcile({ store, env: e, exec: tmuxListExec([]), now: () => FRESH })
+			expect(changed.map((r) => r.id)).not.toContain(rec.id)
+			expect(loadAgent(store, rec.id)?.status).toBe('active')
+		})
+
+		it('reconcile outside any multiplexer pane culls nothing', () => {
+			register(ctx({ TMUX: 't', TMUX_PANE: '%7' }, tmuxListExec(['%7 claude /repo'])), {
+				handle: 'a',
+				harness: 'claude',
+			})
+			expect(reconcile({ store, env: {}, exec: tmuxListExec([]), now: () => FRESH })).toEqual([])
+		})
+
+		it('prune reconcile-culls too', () => {
+			const e = { TMUX: 't', TMUX_PANE: '%7' }
+			const rec = register(ctx(e, tmuxListExec(['%7 claude /repo'])), { handle: 'a', harness: 'claude' })
+			const changed = prune({ store, env: e, exec: tmuxListExec([]), now: () => FRESH })
+			expect(changed.map((r) => r.id)).toContain(rec.id)
+			expect(loadAgent(store, rec.id)?.status).toBe('exited')
+		})
+	})
+
+	describe('reconcile: adopt live-but-unregistered panes', () => {
+		const FRESH = 1_700_000_000_000
+		const herdrListExec =
+			(panes: Array<{ pane_id: string; agent?: string; cwd?: string }>): Exec =>
+			(cmd, args) => {
+				if (cmd !== 'herdr') return null
+				if (args[0] === 'pane' && args[1] === 'list') return JSON.stringify({ result: { panes } })
+				return null
+			}
+		const tmuxListExec =
+			(lines: string[]): Exec =>
+			(cmd, args) => {
+				if (cmd !== 'tmux') return null
+				if (args[0] === 'list-panes') return lines.join('\n')
+				return null
+			}
+		const herdrEnv = { HERDR_ENV: '1', HERDR_PANE_ID: 'w0:p0' }
+
+		it('reconcile adopts a live herdr pane with a detectable harness and no record', () => {
+			const exec = herdrListExec([{ pane_id: 'w3:p9', agent: 'claude', cwd: '/work/repos/feature-x' }])
+			const changed = reconcile({ store, env: herdrEnv, exec, now: () => FRESH }, { adopt: true })
+			expect(changed).toHaveLength(1)
+			const rec = changed[0]!
+			expect(rec.harness).toBe('claude')
+			expect(rec.status).toBe('active')
+			expect(rec.lastSeen).toBe(new Date(FRESH).toISOString())
+			expect(store.resolvePaneId('w3:p9')).toBe(rec.id)
+			expect(
+				listAgents(store)
+					.filter((a) => a.status !== 'exited')
+					.map((a) => a.id),
+			).toContain(rec.id)
+		})
+
+		it("an adopted record's handle derives from the pane's reported cwd basename", () => {
+			const exec = herdrListExec([{ pane_id: 'w3:p9', agent: 'claude', cwd: '/work/repos/feature-x' }])
+			const [rec] = reconcile({ store, env: herdrEnv, exec, now: () => FRESH }, { adopt: true })
+			expect(rec?.handle).toBe('feature-x')
+		})
+
+		it('an adopted pane with no reported cwd falls back to the id-prefix handle', () => {
+			const exec = herdrListExec([{ pane_id: 'w3:p9', agent: 'claude' }])
+			const [rec] = reconcile({ store, env: herdrEnv, exec, now: () => FRESH }, { adopt: true })
+			expect(rec?.handle).toBe(rec?.id.slice(0, 6))
+		})
+
+		it('a pane whose reported agent is not a known harness is never adopted', () => {
+			const exec = herdrListExec([{ pane_id: 'w3:p9', agent: 'gemini', cwd: '/work/x' }])
+			const changed = reconcile({ store, env: herdrEnv, exec, now: () => FRESH }, { adopt: true })
+			expect(changed).toEqual([])
+			expect(listAgents(store)).toHaveLength(0)
+		})
+
+		it('tmux panes are never adopted because tmux exposes no harness signal', () => {
+			const e = { TMUX: 't', TMUX_PANE: '%7' }
+			const exec = tmuxListExec(['%7 zsh /work/x', '%9 claude /work/y'])
+			const changed = reconcile({ store, env: e, exec, now: () => FRESH }, { adopt: true })
+			expect(changed).toEqual([])
+			expect(listAgents(store)).toHaveLength(0)
+		})
+
+		it('adopt is idempotent — a second reconcile mints no duplicate', () => {
+			const exec = herdrListExec([{ pane_id: 'w3:p9', agent: 'claude', cwd: '/work/x' }])
+			reconcile({ store, env: herdrEnv, exec, now: () => FRESH }, { adopt: true })
+			const again = reconcile({ store, env: herdrEnv, exec, now: () => FRESH }, { adopt: true })
+			expect(again).toEqual([])
+			expect(listAgents(store)).toHaveLength(1)
+		})
+
+		it('a live pane already bound to a registered agent is not re-adopted', () => {
+			const rec = register(ctx({ HERDR_ENV: '1', HERDR_PANE_ID: 'w3:p9' }), { handle: 'a', harness: 'claude' })
+			const exec = herdrListExec([{ pane_id: 'w3:p9', agent: 'claude', cwd: '/work/x' }])
+			const changed = reconcile({ store, env: herdrEnv, exec, now: () => FRESH }, { adopt: true })
+			expect(changed).toEqual([])
+			expect(listAgents(store)).toHaveLength(1)
+			expect(loadAgent(store, rec.id)?.status).toBe('active')
+		})
+
+		it('a live pane bound to an exited record is not adopted or resurrected', () => {
+			const rec = register(ctx({ HERDR_ENV: '1', HERDR_PANE_ID: 'w3:p9' }), { handle: 'a', harness: 'claude' })
+			const dead = loadAgent(store, rec.id)!
+			dead.status = 'exited'
+			saveAgent(store, dead)
+			const exec = herdrListExec([{ pane_id: 'w3:p9', agent: 'claude', cwd: '/work/x' }])
+			const changed = reconcile({ store, env: herdrEnv, exec, now: () => FRESH }, { adopt: true })
+			expect(changed).toEqual([])
+			expect(listAgents(store)).toHaveLength(1)
+			expect(loadAgent(store, rec.id)?.status).toBe('exited')
+		})
+
+		it('prune never adopts', () => {
+			const exec = herdrListExec([{ pane_id: 'w3:p9', agent: 'claude', cwd: '/work/x' }])
+			const changed = prune({ store, env: herdrEnv, exec, now: () => FRESH })
+			expect(changed).toEqual([])
+			expect(listAgents(store)).toHaveLength(0)
 		})
 	})
 
@@ -202,7 +378,7 @@ describe('spec:cyberlegion/identity', () => {
 		it('bumps last-seen on prune scan without a live pane', () => {
 			register(ctx({ CYBERLEGION_AGENT_ID: 'x' }), { handle: 'a', harness: 'claude' })
 			// a very old lastSeen would be pruned; a fresh one survives
-			expect(prune({ store, exec: nullExec, now: () => 1_700_000_000_000 })).toEqual([])
+			expect(prune({ store, env: {}, exec: nullExec, now: () => 1_700_000_000_000 })).toEqual([])
 		})
 
 		it("touch refreshes the caller's last-seen", () => {
@@ -232,7 +408,7 @@ describe('spec:cyberlegion/identity', () => {
 				{ store, env: aliceEnv, exec: nullExec, now: () => later },
 				{ handle: 'alice', harness: 'claude' },
 			)
-			prune({ store, exec: nullExec, now: () => later })
+			prune({ store, env: {}, exec: nullExec, now: () => later })
 			expect(loadAgent(store, alice.id)?.status).toBe('active')
 
 			const defaultList = listAgents(store).filter((a) => a.status !== 'exited')
@@ -279,7 +455,7 @@ describe('spec:cyberlegion/identity', () => {
 
 		it('prune never marks a standing record exited even when its last-seen is stale', () => {
 			registerStanding({ store, env: {}, now: () => 1_700_000_000_000 }, { handle: 'homa' })
-			const changed = prune({ store, exec: nullExec, now: () => 1_700_000_000_000 + 999_999_999 })
+			const changed = prune({ store, env: {}, exec: nullExec, now: () => 1_700_000_000_000 + 999_999_999 })
 			expect(changed).toEqual([])
 			expect(loadAgent(store, standingId('homa'))?.status).toBe('active')
 		})
@@ -307,7 +483,7 @@ describe('spec:cyberlegion/identity', () => {
 		it('a record with no kind field is treated as a session', () => {
 			const rec = register(ctx({ CYBERLEGION_AGENT_ID: 'legacy2' }), { handle: 'legacy2', harness: 'claude' })
 			expect(rec.kind).toBeUndefined()
-			const changed = prune({ store, exec: nullExec, now: () => 1_700_000_000_000 + 999_999_999 })
+			const changed = prune({ store, env: {}, exec: nullExec, now: () => 1_700_000_000_000 + 999_999_999 })
 			expect(changed.map((r) => r.id)).toContain(rec.id)
 			expect(loadAgent(store, rec.id)?.status).toBe('exited')
 		})

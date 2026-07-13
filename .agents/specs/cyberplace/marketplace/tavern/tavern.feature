@@ -5,7 +5,7 @@ Feature: tavern — browse and recruit crews
   entry's tags[]. Ships as a CLI command (cyberplace tavern) over the marketplace manifest and a
   website storefront (a Starlight section rendering the same roster as cards). cyberfleet's Crimp
   recruits crews through this CLI. The Tavern lists and points to recruit only; deploying, tuning,
-  and recruiting-through-the-persona are cyberfleet concerns (Operator / Tuner / Crimp), out of scope
+  and recruiting-through-the-persona are cyberfleet concerns (Operator / Mechanic / Crimp), out of scope
   here. General skill discovery lives in awesome-list. Output follows the shared AXI contract
   (../../axi/README.md): TOON by default, a pre-computed aggregate, a definitive empty state,
   next-step on stderr, and fail-loud errors.
@@ -52,6 +52,15 @@ Feature: tavern — browse and recruit crews
     Given the marketplace manifest has no crew-tagged plugins
     When a user runs cyberplace tavern
     Then the command exits 0 and reports that there are no crews
+
+  # ── A malformed manifest fails loud ──
+
+  Scenario: a present-but-malformed marketplace manifest fails loud
+    Given the marketplace manifest .claude-plugin/marketplace.json is present but contains malformed JSON
+    When a user runs cyberplace tavern
+    Then the exit code is 1
+    And stderr reports that the marketplace manifest could not be parsed
+    And it does not print an empty roster as if there were no crews
 
   # ── The website storefront ──
 

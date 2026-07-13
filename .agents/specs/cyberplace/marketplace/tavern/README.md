@@ -6,13 +6,11 @@ concept: [discovery, axi]
 # tavern — the crew-recruitment storefront
 
 > Output follows the shared [AXI output contract](../../axi/README.md) (TOON default, aggregate,
-> definitive empty state, next-step on stderr, fail-loud). **Impl trails the contract** — the shipped
-> `cyberplace tavern` still emits prose + `--format json`; the impl gate is withheld until a follow-up
-> mission builds the AXI surface.
+> definitive empty state, next-step on stderr, fail-loud).
 
 The **Tavern** is the dedicated place to browse and recruit **crews** — recruitable spaceship crews
 you command through their persona. It is a **discovery + point-to-recruit** surface only: it does not
-deploy a crew (that is cyberfleet's Operator), tune one (Tuner), or recruit through the persona
+deploy a crew (that is cyberfleet's Operator), tune one (Mechanic), or recruit through the persona
 (Crimp). cyberfleet's **Crimp recruits crews through this same `cyberplace` CLI** — the Tavern is the
 storefront, Crimp is the buyer.
 
@@ -51,7 +49,7 @@ Two facets ship together:
 **Non-goals (boundaries):**
 
 - The Tavern **lists and points to recruit** — it does not itself recruit, install, deploy, or tune.
-  Those are cyberfleet concerns (Crimp / Operator / Tuner); the seam is the crew-filtered marketplace
+  Those are cyberfleet concerns (Crimp / Operator / Mechanic); the seam is the crew-filtered marketplace
   query, depended on by intent, not by this node's slug (ADR-0021).
 - No **schema field invention** on the harness-facing manifest — `crew` is a reserved value in the
   entry's `tags[]`, not a bespoke top-level field.

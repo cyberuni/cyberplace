@@ -71,7 +71,8 @@ test('plugin build --format json returns a structured build result', () => {
 		})
 		expect(result.status).toBe(0)
 		const parsed = JSON.parse(result.stdout)
-		expect(Array.isArray(parsed.written)).toBe(true)
+		expect(Array.isArray(parsed.built)).toBe(true)
+		expect(parsed.summary).toMatchObject({ built: 1, skipped: 0, failed: 0 })
 	} finally {
 		fs.rmSync(root, { recursive: true, force: true })
 	}
@@ -87,6 +88,80 @@ test('plugin build --help no longer documents pin-resolution flags', () => {
 	expect(result.stdout).not.toMatch(/--range/)
 	expect(result.stdout).not.toMatch(/--skip-pins/)
 	expect(result.stdout).not.toMatch(/--allow-major/)
+})
+
+function mkBuildFixture(prefix: string, vendorExtensions: Record<string, unknown>) {
+	const root = fs.mkdtempSync(path.join(os.tmpdir(), prefix))
+	fs.mkdirSync(path.join(root, '.plugin'))
+	fs.writeFileSync(
+		path.join(root, '.plugin', 'plugin.json'),
+		JSON.stringify({ name: 'test-plugin', vendorExtensions }),
+	)
+	return root
+}
+
+function runBuild(root: string, ...args: string[]) {
+	return spawnSync('node', [bin, 'plugin', 'build', '--root', root, ...args], {
+		encoding: 'utf8',
+		env: { ...process.env, NODE_NO_WARNINGS: '1' },
+	})
+}
+
+// Scenario: a successful build prints a TOON result with per-vendor status and aggregate
+test('plugin build prints per-vendor TOON rows and a pre-computed aggregate', () => {
+	const root = mkBuildFixture('universal-plugin-build-toon-', { 'claude-code': {}, cursor: {} })
+	try {
+		const result = runBuild(root)
+		expect(result.status).toBe(0)
+		expect(result.stdout).toMatch(/vendor/i)
+		expect(result.stdout).toMatch(/path/i)
+		expect(result.stdout).toMatch(/status/i)
+		expect(result.stdout).toMatch(/built/)
+		expect(result.stdout).toMatch(/built 2, skipped 0, failed 0/)
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
+})
+
+// Scenario: no vendorExtensions declared is a definitive empty state
+test('plugin build with no vendorExtensions prints the built-0 aggregate and nothing-to-build', () => {
+	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'universal-plugin-build-empty-'))
+	try {
+		fs.mkdirSync(path.join(root, '.plugin'))
+		fs.writeFileSync(path.join(root, '.plugin', 'plugin.json'), JSON.stringify({ name: 'test-plugin' }))
+		const result = runBuild(root)
+		expect(result.status).toBe(0)
+		expect(result.stdout).toMatch(/built 0/)
+		expect(result.stderr).toMatch(/nothing to build/)
+		expect(fs.existsSync(path.join(root, '.claude-plugin'))).toBe(false)
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
+})
+
+// Scenario: --format toon names the default explicitly
+test('plugin build --format toon names the default explicitly', () => {
+	const root = mkBuildFixture('universal-plugin-build-toonflag-', { 'claude-code': {} })
+	try {
+		const result = runBuild(root, '--format', 'toon')
+		expect(result.status).toBe(0)
+		expect(result.stdout).toMatch(/claude-code/)
+		expect(result.stdout).toMatch(/built 1, skipped 0, failed 0/)
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
+})
+
+// Scenario: a successful build ends with a next-step suggestion
+test('plugin build ends stderr with a next-step suggestion', () => {
+	const root = mkBuildFixture('universal-plugin-build-nextstep-', { 'claude-code': {} })
+	try {
+		const result = runBuild(root)
+		expect(result.status).toBe(0)
+		expect(result.stderr.trimEnd().endsWith('→ universal-plugin plugin validate')).toBe(true)
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
 })
 
 // ── plugin bundle ──

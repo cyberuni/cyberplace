@@ -166,6 +166,13 @@ describe('herdrSessionAdapter (mocked exec — herdr is not installed in this en
 		expect(calls[0]).toEqual(['pane', 'run', 'p-1', 'hello'])
 	})
 
+	it('submit() flushes the staged buffer with a bare Enter, never re-typing the text', () => {
+		const calls: string[][] = []
+		const exec = fakeExec(calls)
+		herdrSessionAdapter.submit(exec, { id: 'p-1' })
+		expect(calls[0]).toEqual(['pane', 'send-keys', 'p-1', 'Enter'])
+	})
+
 	it('read() captures visible pane output, optionally scoped to N lines', () => {
 		const calls: string[][] = []
 		const exec = fakeExec(calls, { 'pane read': 'line1\nline2' })
@@ -176,11 +183,25 @@ describe('herdrSessionAdapter (mocked exec — herdr is not installed in this en
 		expect(calls[1]).toEqual(['pane', 'read', 'p-1', '--source', 'visible', '--lines', '50'])
 	})
 
-	it('focus() focuses the target pane', () => {
+	it("focus() beams the attached client to the pane's own workspace and tab, in order", () => {
 		const calls: string[][] = []
-		const exec = fakeExec(calls)
-		herdrSessionAdapter.focus(exec, { id: 'p-1' })
-		expect(calls[0]).toEqual(['pane', 'focus', 'p-1'])
+		const paneGetOut = JSON.stringify({
+			result: { pane: { pane_id: 'w3:pB', workspace_id: 'w7', tab_id: 'w7:t2' } },
+		})
+		const exec = fakeExec(calls, { 'pane get': paneGetOut })
+		herdrSessionAdapter.focus(exec, { id: 'w3:pB' })
+		expect(calls).toEqual([
+			['pane', 'get', 'w3:pB'],
+			['workspace', 'focus', 'w7'],
+			['tab', 'focus', 'w7:t2'],
+		])
+	})
+
+	it('focus() throws instead of a false success when the recorded pane no longer resolves, and switches nothing', () => {
+		const calls: string[][] = []
+		const exec = fakeExec(calls, { 'pane get': null })
+		expect(() => herdrSessionAdapter.focus(exec, { id: 'gone-pane' })).toThrow(/could not be resolved to beam to/)
+		expect(calls).toEqual([['pane', 'get', 'gone-pane']])
 	})
 
 	it('teardown() closes the pane', () => {
@@ -197,5 +218,41 @@ describe('herdrSessionAdapter (mocked exec — herdr is not installed in this en
 		expect(herdrSessionAdapter.paneExists(fakeExec([], { 'pane read': '' }), { id: 'w3:p4' })).toBe(true)
 		// gone pane — read fails (Exec yields null)
 		expect(herdrSessionAdapter.paneExists((): string | null => null, { id: 'w3:p4' })).toBe(false)
+	})
+
+	it("isPaneFocused() reports the pane record's focused boolean", () => {
+		const focusedOut = JSON.stringify({ result: { pane: { pane_id: 'w3:pB', focused: true } } })
+		expect(herdrSessionAdapter.isPaneFocused(fakeExec([], { 'pane get': focusedOut }), { id: 'w3:pB' })).toBe(true)
+
+		const notFocusedOut = JSON.stringify({ result: { pane: { pane_id: 'w3:pB', focused: false } } })
+		expect(herdrSessionAdapter.isPaneFocused(fakeExec([], { 'pane get': notFocusedOut }), { id: 'w3:pB' })).toBe(false)
+	})
+
+	it('isPaneFocused() reports unknown on an error envelope, unresolvable pane, or unparseable output', () => {
+		const errorOut = JSON.stringify({ error: { code: 'pane_not_found' } })
+		expect(herdrSessionAdapter.isPaneFocused(fakeExec([], { 'pane get': errorOut }), { id: 'gone' })).toBeUndefined()
+		expect(herdrSessionAdapter.isPaneFocused(() => null, { id: 'gone' })).toBeUndefined()
+		expect(herdrSessionAdapter.isPaneFocused(() => 'not json', { id: 'w3:pB' })).toBeUndefined()
+	})
+
+	it('listPanes() reports only panes with an agent, dropping scaffold panes with none', () => {
+		const listOut = JSON.stringify({
+			result: {
+				panes: [
+					{ pane_id: 'w3:p1', agent: 'claude', cwd: '/repo/a' },
+					{ pane_id: 'w3:p2', agent: 'codex', cwd: '/repo/b' },
+					{ pane_id: 'w3:p3' }, // scaffold pane, no agent — dropped
+				],
+			},
+		})
+		expect(herdrSessionAdapter.listPanes(fakeExec([], { 'pane list': listOut }))).toEqual([
+			{ id: 'w3:p1', mux: 'herdr', harness: 'claude', cwd: '/repo/a' },
+			{ id: 'w3:p2', mux: 'herdr', harness: 'codex', cwd: '/repo/b' },
+		])
+	})
+
+	it('listPanes() returns empty when herdr reports nothing or unparseable output', () => {
+		expect(herdrSessionAdapter.listPanes((): string | null => null)).toEqual([])
+		expect(herdrSessionAdapter.listPanes(() => 'not json')).toEqual([])
 	})
 })
