@@ -5,12 +5,6 @@ concept: [canonical-manifest, axi]
 
 # plugin build — derive per-vendor manifests
 
-> **Impl trails the AXI contract.** The shipped `plugin build` predates the AXI adoption (ADR-0003):
-> it emits human prose + `--format json`, not the frozen TOON default / aggregate / next-step /
-> fail-loud behavior. The derivation logic (merge, strip, vendor filtering, eager validation) is
-> live and correct; only the AXI output surface is unbuilt. The impl gate withholds certification
-> until a follow-up mission re-implements it against this frozen suite.
-
 `universal-plugin plugin build` compiles the canonical `.plugin/plugin.json` into one vendor-specific
 manifest per target vendor. Each vendor expects its manifest at a different path and shape;
 maintaining one file per vendor lets shared fields drift. Build treats the canonical manifest as the

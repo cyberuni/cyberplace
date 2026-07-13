@@ -1,5 +1,5 @@
 ---
-status: approved
+status: implemented
 name: universal-plugin
 project-path: packages/universal-plugin
 approval:
@@ -13,6 +13,16 @@ approval:
       novelty: moderate — a structural `build`/`bundle` split along the dev-vs-release axis (new verb) realizing #84's "pinning belongs to release, not build" thesis; the pin mechanics themselves are established (relocated, not invented). Workspace resolution fixes the off-by-one registry lookup at `changeset version` time; a doc-example ignore protects `upgrade-universal-plugin`'s illustration strings; external (non-workspace) pins are skipped.
       confidence: high — cold sdd-spec-judge 3-lens {oracle, builder, architect} ALIGNED true (all three PASS first round). check-spec-state OK / check-suite OK (boolean throughout, correct sectioning) / concept-index updated (new `release` concept), 0 open markers. One non-blocking coverage gap (bundle lacked build's missing-manifest precondition) closed with a mirror scenario before freeze. Self-asserted (by agent) — ratify or kick back.
       cr: build-bundle-split
+  impl:
+    verdict: approve
+    by: agent
+    cause: dimension
+    why:
+      floor: none — purely additive impl against a frozen contract. No Clearance (no scenario narrowed/deleted), no Compatibility (the AXI output surface was newly built, not a shipped semver bump), no Conflict (the frozen suite stayed self-consistent).
+      blast: small — closes the last standing impl gap in the #84/#85 build/bundle split: `plugin build`'s output surface (`src/build/build.ts` + `src/build/cli.ts`) re-implemented to the frozen AXI contract; e2e scenarios added; build node README's impl-trails disclaimer removed. No spec/suite change.
+      novelty: low — mechanically models `plugin bundle`'s AXI form (#85): default TOON table + `built N, skipped M, failed K` aggregate, `--format json` with a top-level `built` array, stderr next-step `→ universal-plugin plugin validate`.
+      confidence: high — cold sdd-impl-judge re-derived every scenario's oracle and drove the built CLI by hand across fixtures: all 18 frozen `build.feature` scenarios PASS, 0 failing, no regressions; pnpm verify green (171 tests). One judge-iteration correction (`--format json` initially lacked the frozen `built` array) recorded and fixed pre-gate. Self-asserted (by agent) — ratify or kick back.
+      cr: github-89-build-axi
 ---
 
 # universal-plugin — the cross-vendor plugin build/derivation engine (CLI)
