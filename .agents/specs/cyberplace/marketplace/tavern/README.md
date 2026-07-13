@@ -6,9 +6,7 @@ concept: [discovery, axi]
 # tavern — the crew-recruitment storefront
 
 > Output follows the shared [AXI output contract](../../axi/README.md) (TOON default, aggregate,
-> definitive empty state, next-step on stderr, fail-loud). **Impl trails the contract** — the shipped
-> `cyberplace tavern` still emits prose + `--format json`; the impl gate is withheld until a follow-up
-> mission builds the AXI surface.
+> definitive empty state, next-step on stderr, fail-loud).
 
 The **Tavern** is the dedicated place to browse and recruit **crews** — recruitable spaceship crews
 you command through their persona. It is a **discovery + point-to-recruit** surface only: it does not

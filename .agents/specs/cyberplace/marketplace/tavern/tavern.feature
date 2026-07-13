@@ -53,6 +53,15 @@ Feature: tavern — browse and recruit crews
     When a user runs cyberplace tavern
     Then the command exits 0 and reports that there are no crews
 
+  # ── A malformed manifest fails loud ──
+
+  Scenario: a present-but-malformed marketplace manifest fails loud
+    Given the marketplace manifest .claude-plugin/marketplace.json is present but contains malformed JSON
+    When a user runs cyberplace tavern
+    Then the exit code is 1
+    And stderr reports that the marketplace manifest could not be parsed
+    And it does not print an empty roster as if there were no crews
+
   # ── The website storefront ──
 
   Scenario: the Tavern website page renders a card per crew

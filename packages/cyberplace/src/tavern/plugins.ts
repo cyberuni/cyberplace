@@ -105,7 +105,16 @@ export function readMarketplacePlugins(root: string = findRepoRoot(), query?: st
 	const manifestPath = path.join(root, '.claude-plugin', 'marketplace.json')
 	if (!fs.existsSync(manifestPath)) throw new Error(`No .claude-plugin/marketplace.json found at ${manifestPath}`)
 
-	const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8')) as MarketplaceManifest
+	let manifest: MarketplaceManifest
+	try {
+		manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8')) as MarketplaceManifest
+	} catch (err) {
+		// Fail loud on a present-but-corrupt manifest rather than throwing a raw
+		// SyntaxError or yielding a silently empty roster.
+		throw new Error(
+			`Could not parse marketplace manifest at ${manifestPath}: ${err instanceof Error ? err.message : String(err)}`,
+		)
+	}
 	const plugins = (manifest.plugins ?? [])
 		.map((plugin): MarketplacePlugin => {
 			const tags = plugin.tags ?? []
