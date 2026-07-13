@@ -125,13 +125,112 @@ test('json output emits structured crew records', () => {
 	}
 })
 
-// Scenario: a marketplace with no crew-tagged plugins yields an empty roster, not an error
-test('a marketplace with no crew-tagged plugins yields an empty roster, not an error', () => {
+// AXI Scenario: tavern prints a TOON result with a pre-computed aggregate
+test('tavern prints a TOON result with a pre-computed aggregate', () => {
+	const root = makeMarketplace([
+		{ name: 'navigator', description: 'Navigator crew', source: './plugins/navigator', tags: ['crew'] },
+		{ name: 'gunner', description: 'Gunner crew', source: './plugins/gunner', tags: ['crew'] },
+	])
+	try {
+		const result = runCli('--root', root)
+		expect(result.status).toBe(0)
+		expect(result.stdout).toContain('crews[2]{name,description,recruit}:')
+		expect(result.stdout).toContain('2 crews')
+		expect(result.stdout).toContain('cyberplace add navigator')
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
+})
+
+// AXI Scenario: a long crew roster truncates with a size hint; --full disables it
+test('a long crew roster truncates with a size hint unless --full', () => {
+	const plugins = Array.from({ length: 40 }, (_, i) => ({
+		name: `crew${String(i).padStart(2, '0')}`,
+		description: `Crew ${i}`,
+		source: `./plugins/crew${i}`,
+		tags: ['crew'],
+	}))
+	const root = makeMarketplace(plugins)
+	try {
+		const truncated = runCli('--root', root)
+		expect(truncated.status).toBe(0)
+		expect(truncated.stdout).toMatch(/… \+\d+ lines — rerun with --full/)
+
+		const full = runCli('--full', '--root', root)
+		expect(full.status).toBe(0)
+		expect(full.stdout).not.toMatch(/rerun with --full/)
+		for (const p of plugins) expect(full.stdout).toContain(p.name)
+
+		const json = runCli('--format', 'json', '--root', root)
+		expect(json.status).toBe(0)
+		const parsed = JSON.parse(json.stdout) as { name: string }[]
+		expect(parsed).toHaveLength(40)
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
+})
+
+// AXI Scenario: an empty roster is a definitive empty state, not an error
+test('an empty roster is a definitive empty state', () => {
 	const root = makeMarketplace([])
 	try {
 		const result = runCli('--root', root)
 		expect(result.status).toBe(0)
-		expect(result.stdout).toMatch(/no crews/i)
+		expect(result.stdout).toContain('0 crews found')
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
+})
+
+// AXI Scenario: bare tavern shows the roster, not help; ends with a next-step on stderr
+test('bare tavern shows the roster with a next-step on stderr, not help', () => {
+	const root = makeMarketplace([
+		{ name: 'navigator', description: 'Navigator crew', source: './plugins/navigator', tags: ['crew'] },
+	])
+	try {
+		const result = runCli('--root', root)
+		expect(result.status).toBe(0)
+		expect(result.stdout).toContain('navigator')
+		expect(result.stdout).not.toMatch(/Usage:/)
+		expect(result.stderr.trim().endsWith('→ cyberplace add <name>')).toBe(true)
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
+})
+
+// AXI Scenario: an unknown flag fails loud
+test('an unknown flag fails loud', () => {
+	const root = makeMarketplace([
+		{ name: 'navigator', description: 'Navigator crew', source: './plugins/navigator', tags: ['crew'] },
+	])
+	try {
+		const result = runCli('--frobnicate', '--root', root)
+		expect(result.status).toBe(1)
+		expect(result.stderr).toContain('--frobnicate')
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
+})
+
+// AXI Scenario: tavern --help prints a concise reference
+test('tavern --help prints a concise reference', () => {
+	const result = runCli('--help')
+	expect(result.status).toBe(0)
+	expect(result.stdout).toMatch(/Usage:/)
+	expect(result.stdout).toContain('--format')
+	expect(result.stdout).toContain('Example:')
+})
+
+// Scenario: a present-but-malformed marketplace manifest fails loud
+test('a present-but-malformed marketplace manifest fails loud', () => {
+	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'tavern-malformed-'))
+	fs.mkdirSync(path.join(root, '.claude-plugin'), { recursive: true })
+	fs.writeFileSync(path.join(root, '.claude-plugin', 'marketplace.json'), '{ not valid json ')
+	try {
+		const result = runCli('--root', root)
+		expect(result.status).toBe(1)
+		expect(result.stderr).toMatch(/could not parse marketplace manifest/i)
+		expect(result.stdout).not.toContain('0 crews found')
 	} finally {
 		fs.rmSync(root, { recursive: true, force: true })
 	}
@@ -146,7 +245,7 @@ test('the tavern lists a crew but performs no recruit, install, or deployment', 
 		const before = fs.readdirSync(root, { recursive: true }).sort()
 		const result = runCli('--root', root)
 		expect(result.status).toBe(0)
-		expect(result.stdout).toMatch(/Recruit: cyberplace add navigator/)
+		expect(result.stdout).toContain('cyberplace add navigator')
 		// only prints the roster; no files created, nothing recruited/installed/deployed
 		const after = fs.readdirSync(root, { recursive: true }).sort()
 		expect(after).toEqual(before)

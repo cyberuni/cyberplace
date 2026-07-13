@@ -23,6 +23,30 @@ export function printTable<T>(items: T[], cols: { label: string; get: (item: T) 
 	}
 }
 
+function toonScalar(value: string): string {
+	// Quote a value that would otherwise break TOON row/field parsing.
+	if (value === '' || /[",:\n]/.test(value) || value !== value.trim()) {
+		return `"${value.replace(/"/g, '\\"')}"`
+	}
+	return value
+}
+
+/**
+ * Renders a list of records as a TOON tabular array — the AXI default output
+ * shape (../axi/README.md, #1). Emits a `<key>[<n>]{col,col,…}:` header
+ * followed by one indented comma-joined row per item; values containing
+ * delimiters are quoted. TOON is ~40% fewer tokens than JSON.
+ */
+export function renderToonTable<T>(
+	key: string,
+	items: T[],
+	cols: { label: string; get: (item: T) => string }[],
+): string {
+	const header = `${key}[${items.length}]{${cols.map((c) => c.label).join(',')}}:`
+	const rows = items.map((item) => `  ${cols.map((c) => toonScalar(c.get(item))).join(',')}`)
+	return [header, ...rows].join('\n')
+}
+
 function getFormat(): string | undefined {
 	const argv = process.argv
 	const fmtIdx = argv.indexOf('--format')
