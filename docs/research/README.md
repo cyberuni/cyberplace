@@ -28,6 +28,7 @@ Use `YYYY-MM-<topic>.md` (for example `2026-05-skill-ecosystem-landscape.md`). O
 | 2026-06 | [Impl-judge verification independence](2026-06-impl-judge-independence.md) | ADR-0016, SDD `mission/deliver/impl-judge` + `impl-producer` + conductor impl gate, `autonomy-rubric` |
 | 2026-07 | [Operator test migration coverage](2026-07-operator-test-migration-coverage.md) | Decision to skip a follow-up CR for `sdd-operator.test.mts` gaps; revisit at `plugins/sdd` → `plugins/sdd-new` cutover |
 | 2026-07 | [Waking an agent session on an inbox message](2026-07-agent-session-wake-mechanisms.md) | cyberfleet comms-wake PoC, inter-session messaging design, future fleet wake-seam ADR |
+| 2026-07 | [Work decomposition & CR-parallelism — prior art behind the mission graph](2026-07-work-decomposition.md) | ADR-0025 (mission compiler/scheduler model), ADR-0026 (mission-graph store), SDD `.agents/specs/sdd/mission-graph/` |
 
 ## Adding research
 
