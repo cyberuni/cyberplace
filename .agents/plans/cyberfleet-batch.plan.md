@@ -27,6 +27,10 @@ todos:
 > **Design is captured in `.agents/plans/cyberfleet-batch.design.md` — read it first.** This brief is
 > the actionable handoff. Concept renamed a long way from "cyberfleet batch verb": it is now an
 > **SDD-native system that compiles change-requests into a scheduled graph of executable missions.**
+>
+> **The big-picture Operation/Mission plan (hand-authored self-host seed) is in
+> `.agents/plans/cyberfleet-batch.operations.md`** — Op1 (self-hosting kernel) is active; Op2–5 are
+> far-horizon. The todos below drive Op1.M1 (the current mission).
 
 ## The model (one paragraph)
 
