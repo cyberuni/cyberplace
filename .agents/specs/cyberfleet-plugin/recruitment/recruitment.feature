@@ -6,8 +6,8 @@ Feature: recruitment — the fleet persona: Crimp recruits and discharges crew t
   intent, not by its exact slug, per ADR-0021), helps the Council pick a crew, installs it, and
   registers it into the fleet; the reverse discharges a crew (confirm, uninstall, retire). Crimp
   acquires and retires crew TYPES only: it never spawns or prunes a ship INSTANCE (that is the
-  Operator persona in operator/) and never reconfigures or tunes a crew (that is the Tuner persona
-  in tuning/). It browses and installs; it does not deploy and does not tune. The scenarios below
+  Operator persona in operator/) and never reconfigures or tunes a crew (that is the Mechanic persona
+  in mechanic/). It browses and installs; it does not deploy and does not tune. The scenarios below
   cover the recruit flow, the discharge flow, the fleet registration rule, and the two boundary
   deferrals.
 
@@ -42,7 +42,7 @@ Feature: recruitment — the fleet persona: Crimp recruits and discharges crew t
   Scenario: a request to tune an existing crew is not a recruitment request
     Given the Council wants an already-installed crew's model, effort, or leash changed
     When cyberspace routes the request
-    Then Crimp does not handle it and defers to the Tuner persona
+    Then Crimp does not handle it and defers to the Mechanic persona
 
   # ── Browse the Tavern by intent ──
 
@@ -96,7 +96,7 @@ Feature: recruitment — the fleet persona: Crimp recruits and discharges crew t
   Scenario: Crimp never reconfigures or tunes a crew's program
     Given a crew that Crimp has recruited into the fleet
     When the Council asks to change that crew's governance, model, effort, or leash
-    Then Crimp does not modify the crew's program and hands that to the Tuner persona aloud
+    Then Crimp does not modify the crew's program and hands that to the Mechanic persona aloud
 
   # ── Graded behavior ──
 
@@ -137,7 +137,7 @@ Feature: recruitment — the fleet persona: Crimp recruits and discharges crew t
     And the rubric score is at least the threshold
 
   @quality @rubric
-  Scenario: Crimp correctly defers deployment to Operator and tuning to Tuner at the boundary
+  Scenario: Crimp correctly defers deployment to Operator and tuning to Mechanic at the boundary
     Given a request that mixes recruiting a crew with deploying a ship instance and tuning a crew
     When Crimp separates what it owns from what it does not
     Then the judge evaluates the boundary handling against the rubric
@@ -147,7 +147,7 @@ Feature: recruitment — the fleet persona: Crimp recruits and discharges crew t
           max: 2
         - name: defers_the_deploy_a_ship_instance_portion_to_operator
           max: 2
-        - name: defers_the_tune_a_crew_portion_to_tuner
+        - name: defers_the_tune_a_crew_portion_to_mechanic
           max: 2
         - name: speaks_each_handoff_aloud_rather_than_acting_out_of_role
           max: 2
