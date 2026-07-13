@@ -10,11 +10,11 @@ todos:
   - content: "spec gate: cold sdd-spec-judge ALIGNED, freeze .feature, ledger gate line, status approved"
     status: completed
   - content: "deliver: extend collision-ladder.mts with the symbol-rung derivation + thin diff→symbol seam; per-scenario tests; pnpm verify green"
-    status: in_progress
+    status: completed
   - content: "impl gate: rebase onto origin/main, cold sdd-impl-judge PASS, status implemented"
-    status: pending
+    status: completed
   - content: "handoff: PR referencing (not closing) #189, mail legate with outcomes"
-    status: pending
+    status: in_progress
 ---
 
 # CR github-189 (Op2 ★ capstone, part 1 of 2) — the symbol rung
