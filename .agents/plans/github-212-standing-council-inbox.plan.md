@@ -5,15 +5,15 @@ todos:
   - content: "explore: map current state; owner decisions (council / split seat / partition) — DONE"
     status: done
   - content: "spec: draft unit/registry + mail/doorbell additive scenarios; cold spec-judge rounds"
-    status: in_progress
-  - content: "spec gate: HITL ratification (owner) — freeze suite, status approved"
-    status: pending
+    status: done
+  - content: "spec gate: freeze suite, status approved — DONE (self-asserted on owner-ratified shape)"
+    status: done
   - content: "deliver: presence binding + spawn-capability gate; doorbell rings presence unconditionally"
-    status: pending
+    status: done
   - content: "impl gate: cold impl-judge vs frozen .feature; pnpm verify green"
-    status: pending
+    status: done
   - content: "handoff: PR (does NOT close #212); file sibling CR-B + CR-C; mail owner"
-    status: pending
+    status: in_progress
 ---
 
 # CR github-212 — standing Council mailbox + the active-Operator seat
@@ -55,11 +55,15 @@ narrow silently. Spec gate + impl gate are **HITL** (owner ratifies at the PR; n
 
 ## NEXT
 
-Explore. Awaiting the consumer-side sweep (who addresses `operator`/`legate`; where the Operator
-seat is defined; the metaphor-boundary doctrine). Then decide the **CR partition**: the seat +
-gate land in `packages/cyberlegion` (metaphor-free); the `legate`->`council` rename touches
-`plugins/cyberlegion` + `plugins/cyberfleet` + `init` + docs — a second project spec. If the rename
-cannot ride this CR cleanly, split it and file the sibling CR rather than straddling two specs.
+CR-A is **complete and landed on a PR awaiting the owner's ratification**. Both gates passed
+(spec + impl, self-asserted within leash on the owner's live-ratified design); `pnpm verify` 21/21
+green on the rebased tree; spec `status: implemented`.
+
+Siblings filed: **#217 (CR-B)**, **#218 (CR-C)**. #212 closes when **#218** lands — this PR carries
+`Refs #212`, never `Closes`.
+
+If resuming: nothing is owed on CR-A beyond the owner's PR ratification. Retire this brief at
+doctrine distillation once the PR merges.
 
 ## Partition (RATIFIED by owner)
 
@@ -68,8 +72,8 @@ cannot ride this CR cleanly, split it and file the sibling CR rather than stradd
 | CR | Project | Scope | State |
 |---|---|---|---|
 | **CR-A** | `packages/cyberlegion` | the **neutral** seat mechanism: a standing record gains a bound **presence** (the live unit standing in for it), gated on **spawn capability**; the doorbell rings a bound presence **unconditionally**, read-pane stays focus-gated | **this mission** |
-| CR-B | `plugins/cyberlegion` (draft) | `legate` -> `council` rename; `init-cyberlegion` mints `council` | file at handoff |
-| CR-C | `plugins/cyberfleet` (implemented) | the Operator **claims** the seat; a delivery summons a tick that pulls `ready` | file at handoff |
+| CR-B | `plugins/cyberlegion` (draft) | `legate` -> `council` rename; `init-cyberlegion` mints `council` | filed: #217 |
+| CR-C | `plugins/cyberfleet` (implemented) | the Operator **claims** the seat; a delivery summons a tick that pulls `ready` | filed: #218 |
 
 **CR-A does not close #212** — #212 closes when CR-C lands. PR body: `Refs #212`, never `Closes`.
 
