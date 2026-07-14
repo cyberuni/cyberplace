@@ -13,12 +13,12 @@ todos:
     status: completed
   - content: "Handoff: PR #204 opened (Part of #190 — F3 store only, NOT Closes); verdict packet mailed to legate; impl gate ratified by human merge of #204 into main (52e14110); impl gate line recorded (seq 3, by:unional)"
     status: completed
-  - content: "headless-operator agent (cyberfleet agents/): the unattended fleet-level dispatch-loop driver — built (commit 03a50cb5); spec gate self-asserted (by:agent, seq 4), impl gate cold-judged PASS 8/8; HELD for HITL ratification (auto-spec leash, HIGH blast)"
-    status: in_progress
+  - content: "headless-operator agent (cyberfleet agents/): built (03a50cb5); spec gate self-asserted (by:agent seq 4); impl gate cold-judged PASS 8/8, RATIFIED by human merge of PR #205 into main (848dfc3a), impl gate line seq 5 by:unional"
+    status: completed
   - content: "PAUSED — lifecycle loop: merge in Operation-order -> tear down pod -> write graph -> dispatch next"
     status: pending
-  - content: "PAUSED — merge backstop (speculative-CI / bisection)"
-    status: pending
+  - content: "merge backstop (speculative-CI / bisection) — build the backstop's own mechanism/contract; headless-operator merges 'behind' it (specced as a collaborator, seam both judges flagged)"
+    status: in_progress
   - content: "PAUSED — Pod-boundary settle + end-to-end live dispatch (the capstone star)"
     status: pending
 ---
@@ -70,9 +70,18 @@ New stage `# ── The store home — the orphan ref (F3) ──`, boolean, ove
 
 ## NEXT
 
-**F3 store SHIPPED AND RATIFIED** (PR #204 merged `52e14110`; ledger seq 3 `by:unional`). Now UN-PAUSED
-(human said continue 2026-07-14) — building the **headless-operator** (todo 1, in_progress; todo 2
-"lifecycle loop" is its core behavior, not a separate deliverable).
+**headless-operator SHIPPED AND RATIFIED** (PR #205 merged `848dfc3a`; ledger seq 5 `by:unional`). Now
+building **todo 3 — the merge backstop** (human said continue todo 3, 2026-07-14).
+
+**Todo 3 — merge backstop.** The seam both judges flagged: headless-operator merges "behind the merge
+backstop" (specced as a collaborator in operator.feature S6), but the backstop's own mechanism/contract
+is unbuilt. Build it: speculative-CI / bisection so Operation-order merges don't land a broken main.
+Decide its home (a cyberlegion verb the loop calls, vs inline in the agent) — the judges left it
+implicit. Likely a new spec node + engine; scope it in explore first. NOTE: `mission-graph.mts` +
+`github-189-symbol-rung.plan.md` currently carry ANOTHER concurrent session's uncommitted work in this
+shared worktree — do NOT stage or disturb them.
+
+### (history below) headless-operator resume
 
 ### Decisions settled this resume (were the design's "Gap → F3" open item)
 
