@@ -8,12 +8,14 @@ todos:
   - content: "R7/R8 cold re-judge: B15/B16 verified; fixed index/placement-map + ADR amendment defects"
     status: completed
   - content: "★ PIVOT (#225): delete mode/init entirely — code, both frozen spec nodes, Pod's precondition"
+    status: completed
+  - content: "spec gate: HITL-ratified by unional across BOTH specs, gate lines written, status: approved"
+    status: completed
+  - content: "deliver: operator/pod SKILL.md + READMEs, ADR-0022 amendment, marketplace readme, website docs"
+    status: completed
+  - content: "impl gate: cold judge FAIL x2 (pod description could not discriminate the spawn row; 3 files outside touch set still asserted Pod fan-out) — both fixed, re-judge in flight"
     status: in_progress
-  - content: "re-judge cold post-pivot, then spec gate: HITL-ratify Clearance floor (2 specs now), freeze, ledger shard 440ca1"
-    status: pending
-  - content: "deliver: operator/pod SKILL.md + READMEs, ADR-0022 amendment, website docs"
-    status: pending
-  - content: "impl gate + handoff: pnpm verify, rebase main, commit units, PR (Closes #225), report operator by mail"
+  - content: "handoff: rebase main, PR (Closes #225), report operator by mail, file the 5 follow-ups"
     status: pending
 ---
 
@@ -89,38 +91,39 @@ for the website docs, carried inline per the `mechanic-rename-build-tune` preced
 5. Scope: specs + skills + ADR + website. `packages/cyberfleet/.agents/spec/**` is already correct
    and stays untouched — `cyberfleet mode` the command is unchanged; only *who calls it* changes.
 
-## Edit classes (drives the gate) — final, vs HEAD
+## Edit classes — SUPERSEDED by the pivot
 
-`added 16 / modified 8 / removed 11 / unchanged 22`. The gherkin diff is **title-keyed**, so every
-retitle reads remove+add; the genuine deletions are fewer than `removed` suggests.
+> The pre-pivot numbers (`added 16 / modified 8 / removed 11`) and the marker-drift sweep below are
+> **historical**. There is no marker to correct — it is deleted. Final edit class vs `a414b9cd`:
+> **17 added / 5 modified / 14 removed**; the ratified Clearance scope is recorded in the two `gate`
+> ledger lines, which are the durable record. Read those, not this section.
 
-**Genuine deletions → Clearance hard floor** (owner-authorized, still needs the ratifying write):
-- `operator.feature`: `Operator activates when there is no ship marker at this project root`,
-  `Operator defers to Pod when it is inside a ship` (ruling 1).
-- `pod.feature`: `Pod defers to Operator when it is not in a ship` (rewritten → refuse+commission).
-- `operator.feature`: `Operator does not fan out worktree-ships once inside a ship`,
-  `the loop's spawns are inter-mission, distinct from Pod's intra-mission fan-out`;
-  `pod.feature`: `concurrent work is spawned as a worktree-ship with a self-contained brief`
-  (all four moot under ruling 3).
-
-**Re-opens** (rewrites/retitles/factual corrections, none weakening a criterion): marker-name
-corrections (`.cyberfleet/config.json` → `.agents/cyberfleet/ship.json` — a path that was never
-implemented); `missions --json` → `--format json` (a flag that does not exist — R6 ran the CLI);
-`mail read` → `mail read --ack` in the pod README (bare read only peeks); the `@trigger` outline
-framings; both Feature narratives. Same justification shape as the github-173 stale-mechanic re-open.
-
-**Additive → self-clears, stays `@frozen`**: the refuse / commission-on-yes / decline-on-no trio,
-the two description scenarios, the seat scenarios, the worktree-before-commit gap scenario.
-
-## Marker drift to correct (sweep complete)
-
-`.cyberfleet/` + `.cyberfleet/config.json` (never implemented) and `.agents/cyberlegion/config.json`
-(ADR-0022 decision 8 is the source of this error) → all `.agents/cyberfleet/ship.json`.
-Also fix: `artifacts/adr/README.md` index says 0022 is `Proposed`; the file says `Accepted`.
-
-## Grill log (6 cold ACED rounds, both nodes each round)
+## Grill log (8 cold ACED rounds + the pivot)
 
 Every round found real defects. Design settled after R3 (spawn ruling); R4-R6 were my drafting.
+**R7/R8 and the owner's question are the important entries — read those first.**
+
+- **R7** — B15/B16 verified good *inside* the nodes, but the defects had moved **up**: the project
+  `spec.md` placement map still routed `commission a ship` → Operator while `pod.feature` froze Pod
+  doing it (jointly unsatisfiable); the index claimed both personas "offload all mechanics to the
+  `cyberfleet` CLI" (unscoped **and** the wrong CLI — `operator.feature` freezes cyberlegion); the
+  Operator index entry omitted **spawn**, the CR's headline ruling. Also: my `--at workspace`
+  rationale ("the cyberlegion primitive stays neutral") was **false against source** —
+  `session.ts:149` already defaults a new-worktree spawn to `workspace`. **Lesson: I swept the nodes
+  and never re-swept the index above them.**
+- **R8** — both judges independently flagged that ADR-0022 d8 was **unamended** while four sites
+  cited it "as amended". Plus `spec.md`/index attributed cyberlegion's whole verb set
+  (register/send/spawn/inbox) to the `cyberfleet` CLI — live drift I introduced by half-fixing the
+  adjacent paragraph. Plus four spec nodes named in both narratives (`messaging`, `identity`,
+  `spawn`, `surfacing`) **do not exist** — stale since the cyberlegion extraction.
+- **★ THE PIVOT** — owner asked the question 6 rounds of judges never did: *what reads the marker?*
+  Nothing. See the PIVOT section. **Lesson: every judge graded the loop's internal consistency;
+  none asked what the loop was for.** A spec can be perfectly self-consistent and still specify
+  nothing.
+- **Impl gate** — cold judge failed 2: Pod's `description` never said "spawn", so the frozen
+  `start a worktree … | no` row was underivable (the rule was in 5 places and missing from the one
+  line a router reads); and 3 files **outside the touch set** (`agents/headless-operator.md`,
+  `merge-backstop-governance/{SKILL,README}.md`) still asserted Pod's intra-mission fan-out.
 
 - **R1** — both nodes: I had changed the `.feature` and left the node `README.md` (which IS the
   spec.md — it carries `**Fit:**` + `## Use Cases`) declaring the deleted design. Also: illegal gate
@@ -139,46 +142,47 @@ Every round found real defects. Design settled after R3 (spawn ruling); R4-R6 we
   **never** been satisfiable — same bug class as #89. Fixed corpus-wide (6 files incl. ADR-0022).
   Also: bare `cyberlegion mail read` only peeks, does not ack (stale since #173) — README fixed.
 
-## Status at checkpoint
+## Commits so far (branch `cyberlegion/unit-73f3980d45c4d29f`)
 
-Suites parse (28 + 18 scenarios, 0 errors). Final edit class vs HEAD:
-`added 16 / modified 8 / removed 11 / unchanged 22`. Cross-node agreement verified by cold judges
-(the `start a worktree ...` row is byte-identical, yes in operator / no in pod). All code claims
-re-verified against source by the judges.
-
-**R6 returned ALIGNED false on both** — remaining:
-- `B14` (operator, **pre-existing F3 content, not mine**): the retirement conjunct fires
-  unconditionally on "mission reports done", but the backstop says a red stacked batch is held
-  *without* retiring. Same facts, opposite verdicts. → **follow-up CR**, do not fold in.
-- My `B15`/`B16` fixes (unscoped "every mechanic" now false for gh/git/CI; rubric dim
-  `first_brief_*` → `every_brief_*`; narrative/section still said "first") are **applied but
-  unverified** — they landed after R6 judged.
-
-## Follow-ups to file (do NOT fold into this CR)
-
-1. `B14` — operator.feature retirement-on-red-CI contradiction (pre-existing F3).
-2. `@rubric` titles claim "in voice" with no voice dimension — corpus-wide
-   (`operator.feature`, `pod.feature`); fix both together or neither.
-3. Pod HAL scenario's `never surfacing it when hal is false` branch is unfalsifiable from a
-   `hal true` Given.
-4. Weak trigger discriminator: operator's `send a message from here ...` vs pod's `send a note ...`
-   — thinnest near-miss pair in either suite (cf. #211 weak-discriminator hardening).
-5. `packages/cyberfleet/src/{init,mode}.ts` comments still call the marker "tracked"; `init.ts` never
-   `git add`s it. The spec-the-truth ruling makes those comments wrong.
+- `a414b9cd` — unwrap step continuations so both suites parse at all (pre-existing breakage).
+- `53cc5abd` — **delete mode/init**: `src/{mode,init}.ts` + tests + 2 CLI verbs; the `@frozen` `init/`
+  + `mode/` nodes; ADR-0022 amendment. `BREAKING CHANGE` (both v0, no consumers).
+- `27adefcb` — retire the mode guards from Pod and Operator; both descriptions; marketplace readme +
+  website docs.
+- `f06c7af7` — **spec gate**, HITL-ratified by unional across both specs; both → `status: approved`.
 
 ## NEXT
 
-1. Re-judge both nodes cold (verifies the unverified B15/B16 fixes). If clean → spec gate.
-2. **Spec gate needs HITL ratification from unional** — leash is `auto-none`: the CR deletes
-   acceptance scenarios from two `@frozen` suites (**Clearance hard floor**, not self-assertable)
-   and re-opens more. On approve: freeze both, write the `gate` line to shard
-   `ledger/cyberfleet-mode-pod-precondition.440ca1.jsonl`, set `status: approved`.
-3. Deliver (none of this is started): rewrite `plugins/cyberfleet/skills/{operator,pod}/SKILL.md`
-   (both still carry `Mode guard: run cyberfleet mode`, the location-conditioned `description`, and
-   pod's reversed fan-out rule) + their READMEs; `## Amendment` on `artifacts/adr/0022` covering all
-   three rulings; fix `artifacts/adr/README.md` index (says 0022 is `Proposed`, file says
-   `Accepted`); `apps/website/src/content/docs/cyberfleet/{overview,pod,operator}.md`.
-4. `pnpm verify` at the repo root, rebase onto main, impl gate, PR, report Operator by mail.
+1. **Impl-gate re-judge in flight.** Cold judge returned `IMPLEMENTATION_PASS false` on two:
+   - **D1** Pod's `description` never said "spawn", so the frozen `@trigger` row `start a worktree …
+     | no` was not derivable — a harness scoring Pod reads only Pod's description and never sees
+     Operator claim the spawn. Fixed: `… not spawning ships or worktrees, fleet-wide oversight, or
+     cross-ship routing.` **Lesson: "Pod never spawns" was in 5 places and missing from the only line
+     a router reads.**
+   - **D2** `agents/headless-operator.md` + `merge-backstop-governance/{SKILL,README}.md` still
+     asserted Pod's *intra-mission fan-out* — the scenario this CR deleted. They sat outside the
+     touch set (which was scoped to the two persona skills). Fixed by re-anchoring the boundary on
+     the Operator seat. **Lesson: grep the whole plugin, not the node under edit.**
+   - Judge's open advisory: `just refactor this file in the current session | no` is weakly held
+     ("bridge work on a project" ⊃ "any work on a project"). Asked the judge to rule FAIL vs
+     advisory — do NOT widen the CR on it; file as follow-up if advisory.
+2. On PASS: write the `impl` gate line to both shards, both specs → `status: implemented`, commit.
+3. Rebase onto `main`, PR (**Closes #225**), report Operator by mail.
+4. File the follow-ups below.
 
-Prior commit `a414b9cd` unwrapped step continuations so both suites parse at all — pre-existing
-breakage filed twice in the ledger, landed separately.
+## Follow-ups to file (do NOT fold in)
+
+1. `B14` — operator.feature retirement-on-red-CI contradiction (pre-existing F3).
+2. `@rubric` titles claim "in voice" with no voice dimension — corpus-wide (`operator.feature`,
+   `pod.feature`); fix both together or neither.
+3. Pod HAL scenario's `hal false` branch is unfalsifiable from a `hal true` Given.
+4. Weak trigger discriminator: operator's `send a message from here …` vs pod's `send a note …`
+   (cf. #211). Both judges independently flagged it; needs an explicit near-miss policy.
+5. `resync-local-plugins` after this lands — the installed marketplace pin still serves the OLD
+   descriptions ("when inside a ship (has .agents/cyberfleet/)"), i.e. the doctrine this CR deletes.
+6. A primary-checkout Pod can never earn the HAL tell — `missions.ts` joins ship→CR on
+   `worktree.branch`, and a primary registers with `branch: main`, matching no CR.
+7. `plugins/cyberfleet/readme.md` credits the `cyberfleet` console with identity/messaging/spawning —
+   all `cyberlegion`'s. Pre-existing drift on the marketplace front door.
+8. `packages/cyberfleet/.agents/spec` now has ZERO behavioral nodes; `missions` is the highest-value
+   backfill (it is the CLI's whole reason to exist and its `hal` field is load-bearing for Pod).

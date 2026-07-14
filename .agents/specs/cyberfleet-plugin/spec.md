@@ -1,5 +1,5 @@
 ---
-status: approved
+status: implemented
 project-path: plugins/cyberfleet
 approval:
   spec:
@@ -9,6 +9,14 @@ approval:
     why:
       leash: auto-none — HITL-ratified live in-session. The CR fires the **Clearance hard floor**: it deletes acceptance scenarios from two `@frozen` suites. Genuine deletions are the mode-switch pair (`Operator activates when there is no ship marker`, `Operator defers to Pod when it is inside a ship`), `Pod defers to Operator when it is not in a ship`, Operator's commission pair, and Pod's intra-mission fan-out — all moot once the switch is retired. The remaining `removed` rows are title-keyed retitles that preserved behavior. Edit class vs `a414b9cd`: 17 added / 5 modified / 14 removed. Pivoted mid-flight (#225) from "mode is Pod's precondition" to "mode is deleted": the marker held only `{version:1}`, its sole reader was `detectMode`, whose sole caller was the `cyberfleet mode` command, whose sole callers were these two personas' mode guards — a closed loop gating no capability. Membership already lives in `cyberlegion unit register` → `AgentRecord`, which is what `missions` enumerates. Durable record in the `ledger/` shard `cyberfleet-mode-pod-precondition.440ca1.jsonl`.
       basis: cold ACED spec-judges over 8 rounds; final judge oracle PASS + builder PASS, architect FAIL on 7 sweep misses — all fixed (incl. `plugins/cyberfleet/readme.md`, the marketplace front door, untouched by any prior round and still asserting Pod spawns) then grep-gated. `pnpm verify` 21/21 green. Companion shard on the sibling `packages/cyberfleet` spec — one CR, two touched specs.
+      cr: cyberfleet-mode-pod-precondition
+  impl:
+    verdict: approve
+    by: unional
+    cause: dimension
+    why:
+      leash: auto-none — HITL-ratified live in-session; no gate self-assertable. Both `SKILL.md` bodies conform to the frozen suites: no `Mode guard`, no probe, no marker, no commission; Operator's seat is asserted by invocation and Pod carries no precondition; all spawning is Operator's, so `unit spawn` left Pod's mechanic list. Both suites stay `@frozen`.
+      basis: cold ACED impl-judge IMPLEMENTATION_PASS true across all 44 frozen scenarios (16 pod + 28 operator), oracles independently re-derived per ADR-0016, blocker null. It failed the first pass on two and verified both fixes itself — (1) Pod's `description` omitted the word *spawn*, leaving the frozen `start a worktree … | no` row underivable (the rule was in 5 places in the spec and missing from the only line a router reads); (2) `agents/headless-operator.md` + `merge-backstop-governance/{SKILL,README}.md` still asserted Pod's intra-mission fan-out, outside the persona-scoped touch set. The judge retracted its own advisory to tighten "bridge work" on finding it would break a passing row. `pnpm verify` 21/21; 43 cyberfleet tests green. Follow-up: `resync-local-plugins` after merge — the installed pin still serves the deleted `inside a ship` precondition.
       cr: cyberfleet-mode-pod-precondition
 ---
 
@@ -74,7 +82,8 @@ Where a new concept lives — slot here, do not invent placement:
   program — governance/model/effort/leash — re-chip its loadout, hot-swap the unit) → `mechanic/`
   (the Mechanic persona).
 - **a new identity / message-queue / peer-launch / hook-injection CLI operation** → **not here** —
-  that is the `cyberfleet` CLI project (`packages/cyberfleet`).
+  that is the `cyberlegion` CLI project (`packages/cyberlegion`). A new mission-view / gate CLI
+  operation is the `cyberfleet` CLI project (`packages/cyberfleet`).
 - **a cross-capability persona e2e** (spans ≥2 persona nodes) → this project's own e2e; a future
   `acceptance/` node may formalize it.
 

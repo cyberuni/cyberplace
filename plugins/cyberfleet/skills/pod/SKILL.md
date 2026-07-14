@@ -1,7 +1,7 @@
 ---
 name: pod
 activation: per-situation
-description: "Use this skill for bridge work on a project — mission entry, inbox, and hailing specialist crew; not fleet-wide oversight or cross-ship routing."
+description: "Use this skill for bridge work on a project — mission entry, inbox, and hailing specialist crew; not spawning ships or worktrees, fleet-wide oversight, or cross-ship routing."
 metadata:
   persona: "true"
 ---

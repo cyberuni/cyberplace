@@ -1,5 +1,5 @@
 ---
-status: approved
+status: implemented
 project-path: packages/cyberfleet
 approval:
   spec:
@@ -9,6 +9,14 @@ approval:
     why:
       blast: medium — deletes the `init` and `mode` verbs from a v0 (unpublished) CLI, and with them the only two behavioral nodes this spec had. **Clearance hard floor**: the `@frozen` `init/` (4 scenarios) and `mode/` (4 scenarios) nodes are deleted outright from a `status: implemented` spec whose spec *and* impl gates were both ratified by unional personally under `cyberfleet-mode-init`. Justified (#225) because the capability gates nothing: `init` wrote `.agents/cyberfleet/ship.json` holding only `{version:1}`; its sole reader was `detectMode`; `detectMode`'s sole caller was the `mode` command itself; that command's sole callers were the two persona mode guards, deleted alongside. `missions`/`jump`/`pause`/`gate` never consulted mode, nor did any hook or statusline. Membership already lives in `cyberlegion unit register` → `AgentRecord` — the marker was a shadow registry with no readers. This spec becomes descriptive-only; the `missions`/`jump`/`pause`/`gate` backfill gap is declared and unchanged.
       basis: cold ACED spec-judge confirmed `mode`/`init` genuinely gone from the live CLI `--help`, zero `detectMode`/`initShip`/`ship.json` references left in any `.ts`/`.mts`, and no dangling pointer at the deleted node paths. 43 cyberfleet tests + root `pnpm verify` 21/21 green. Companion shard on the sibling `cyberfleet-plugin` spec — one CR, two touched specs.
+      cr: cyberfleet-mode-pod-precondition
+  impl:
+    verdict: approve
+    by: unional
+    cause: dimension
+    why:
+      blast: medium — the implementation is a deletion. `src/{mode,init}.ts`, their tests, and the `mode`/`init` CLI verbs are gone; `BREAKING CHANGE` on a v0 (unpublished) CLI whose only consumers were the two persona mode guards removed in the same CR. No behavior changed elsewhere — `missions`/`jump`/`pause`/`gate` untouched.
+      basis: cold ACED impl-judge verified against source that `mode`/`init` are absent from the live CLI `--help` (only `missions`/`jump`/`pause`/`gate` remain), that zero `detectMode`/`initShip`/`ship.json` references survive in any `.ts`/`.mts`, and that nothing in either persona, the marketplace readme, or the website docs still invokes them. No dangling pointer at the deleted node paths. 43 cyberfleet tests + root `pnpm verify` 21/21 green. This spec has no behavioral nodes to grade — descriptive-only by design; `missions` flagged as the highest-value backfill.
       cr: cyberfleet-mode-pod-precondition
 ---
 
