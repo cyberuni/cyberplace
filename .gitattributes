@@ -1,0 +1,9 @@
+# Treat source files as text so a stray control byte (e.g. a NUL used as a Map-key
+# delimiter) never makes git flag the whole file binary and hide its diff on GitHub.
+# `text` = normalize eol; `diff` = always render a textual diff (overrides git's
+# NUL-based binary auto-detection).
+*.ts   text diff
+*.mts  text diff
+*.mjs  text diff
+*.js   text diff
+*.cjs  text diff
