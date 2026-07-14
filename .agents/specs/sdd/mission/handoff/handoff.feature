@@ -128,6 +128,46 @@ Feature: The handoff phase — land the verified result in the declared delivery
     When the follow-up is filed
     Then it re-enters SDD as a new change request
 
+  # ---- File identified follow-ups autonomously ----
+
+  Scenario: handoff files an identified follow-up without waiting for approval
+    Given handoff identifies follow-up work that is out of scope for the mission
+    When handoff lands the verified result
+    Then it files an issue for the follow-up on the source's forge
+    And it does not wait for human approval to file
+
+  Scenario: each identified follow-up files its own issue
+    Given handoff identifies several distinct follow-ups
+    When handoff files them
+    Then it files one issue per follow-up
+
+  Scenario: handoff searches the open issues before filing a follow-up
+    Given an identified follow-up
+    When handoff files it
+    Then it first searches the source forge's open issues for a duplicate
+
+  Scenario: a follow-up matching an existing open issue is not filed again
+    Given an identified follow-up that matches an existing open issue
+    When handoff files the mission's follow-ups
+    Then it files no duplicate issue
+    And the existing open issue stands as that follow-up's record
+
+  Scenario: a source with no issue forge files nothing
+    Given a project whose source has no issue forge
+    When handoff identifies a follow-up
+    Then it files no issue
+    And the follow-up stays in the distilled public summary
+
+  Scenario: the distilled summary cites the issues handoff filed
+    Given handoff filed issues for the mission's follow-ups
+    When handoff writes the conclusion back to the source
+    Then the summary references the filed issues
+
+  Scenario: filing a follow-up raises no escalation
+    Given handoff identifies follow-up work
+    When it files the issues
+    Then it raises no mandatory human escalation for the filing
+
   # ---- No new floor, and the plan ----
 
   Scenario: handoff introduces no new mandatory escalation

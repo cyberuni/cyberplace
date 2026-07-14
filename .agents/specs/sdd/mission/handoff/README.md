@@ -36,6 +36,7 @@ Every scenario in [`handoff.feature`](./handoff.feature) maps to one of these be
 | **decompose by unit of work** | a multi-unit cycle lands as multiple commits / a unit-split PR, never one blob, never two unrelated concerns together |
 | **conditional status write-back** | when the source closes by reference, handoff writes the auto-close reference (`Closes #N`) into the PR body so the source closes on merge; a non-close-capable source gets none; direct-to-`main` work transitions the source to `done` on push |
 | **distilled public summary** | append an outward-facing conclusion + follow-ups (which re-enter as new CRs) to the source — not the combat log |
+| **file identified follow-ups** | file one issue per identified follow-up immediately and autonomously — no approval gate — deduping against the forge's open issues first; a source with no issue forge files none |
 | **no new floor** | handoff raises no new mandatory escalation; earlier hard floors already fired |
 | **the plan is kept, not landed, not retired** | the `.plan.md` stays in the PR as scratch, is not landed as a delivery artifact, and is not retired early |
 | **nudge the formation loop** | surface a reminder after landing that a corpus-wide formation pass is due (via `sdd:manage`) — spawn nothing, gate nothing |
@@ -137,7 +138,29 @@ live in `../../intake/README.md`):
   and any **follow-up tasks** (which re-enter SDD as new CRs) — is appended to the source. This
   is deliberately the *outward* distillate, not the internal combat log: it is part of the
   **public trail** the campaign / formation outer loops read forward via their cursor, so they
-  resume from conclusions instead of cold-scanning the product.
+  resume from conclusions instead of cold-scanning the product. The summary **cites the
+  follow-up issues handoff filed** (below) by reference, rather than restating them as prose.
+
+### Follow-ups are filed, not surfaced
+
+An **identified follow-up** is work the mission noticed but held out of scope. Handoff holds
+**standing authority to file it** — it opens one issue per follow-up **immediately and
+autonomously, with no approval gate**. An identified follow-up that waits for a gate is lost;
+filing is cheap and reversible, so the decision is **file now, close later** rather than drop the
+thread. This is a **grant, not a floor**: it removes a wait and adds no escalation, so the
+[no-new-floor](#no-handoff-layer-hard-floor) contract is unchanged.
+
+- **Dedupe before filing, never blind.** Handoff **searches the source forge's open issues** for a
+  match first. A follow-up matching an existing open issue **files nothing** — that issue already
+  stands as the follow-up's record. This is the behavior handoff must exhibit, not a delegation to
+  any particular repo's issue-filing tooling.
+- **One issue per follow-up.** Distinct follow-ups never merge into one omnibus issue — each
+  re-enters SDD as its own CR (`../../intake/README.md`), at the same one-concern grain as the
+  [unit of delivery](#the-unit-of-delivery).
+- **Forge-conditional.** Filing needs a source forge that supports issues (the same-forge case the
+  [status write-back](#conclusion-write-back-to-the-source) already scopes — GitHub, GitLab). A CR
+  whose source has **no** issue forge (a bare prompt, or a cross-system source) files **none**; its
+  follow-ups stay in the distilled summary only. SDD assumes no specific forge.
 
 ### The plan is a portable handoff artifact
 
