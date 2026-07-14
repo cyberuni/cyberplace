@@ -13,12 +13,12 @@ todos:
     status: completed
   - content: "Handoff: PR #204 opened (Part of #190 — F3 store only, NOT Closes); verdict packet mailed to legate; impl gate ratified by human merge of #204 into main (52e14110); impl gate line recorded (seq 3, by:unional)"
     status: completed
-  - content: "headless-operator agent (cyberfleet agents/): the unattended fleet-level dispatch-loop driver — built (commit 03a50cb5); spec gate self-asserted (by:agent, seq 4), impl gate cold-judged PASS 8/8; HELD for HITL ratification (auto-spec leash, HIGH blast)"
-    status: in_progress
+  - content: "headless-operator agent (cyberfleet agents/): built (03a50cb5); spec gate self-asserted (by:agent seq 4); impl gate cold-judged PASS 8/8, RATIFIED by human merge of PR #205 into main (848dfc3a), impl gate line seq 5 by:unional"
+    status: completed
   - content: "PAUSED — lifecycle loop: merge in Operation-order -> tear down pod -> write graph -> dispatch next"
     status: pending
-  - content: "PAUSED — merge backstop (speculative-CI / bisection)"
-    status: pending
+  - content: "merge backstop (speculative-CI / bisection) — BUILT as cyberfleet merge-backstop-governance (commit 19c92652); spec gate self-asserted (by:agent seq 6), impl gate cold-judged PASS 7/7; HELD for HITL ratification"
+    status: in_progress
   - content: "PAUSED — Pod-boundary settle + end-to-end live dispatch (the capstone star)"
     status: pending
 ---
@@ -70,9 +70,39 @@ New stage `# ── The store home — the orphan ref (F3) ──`, boolean, ove
 
 ## NEXT
 
-**F3 store SHIPPED AND RATIFIED** (PR #204 merged `52e14110`; ledger seq 3 `by:unional`). Now UN-PAUSED
-(human said continue 2026-07-14) — building the **headless-operator** (todo 1, in_progress; todo 2
-"lifecycle loop" is its core behavior, not a separate deliverable).
+**headless-operator SHIPPED AND RATIFIED** (PR #205 merged `848dfc3a`; ledger seq 5 `by:unional`). Now
+building **todo 3 — the merge backstop** (human said continue todo 3, 2026-07-14).
+
+**Todo 3 — merge backstop. EXPLORED (2026-07-14).** Design intent (design §Architecture-lessons ROB +
+§Ready-set→dispatcher): missions run OoO in parallel worktrees but **merge to trunk in Operation order**
+(in-order retirement) to keep trunk always-green; the **backstop = flush-on-misprediction** — before an
+Operation-order merge lands, **speculative CI** tests the merged result; on red, **bisection** finds the
+culprit, which is held/re-queued, never landed on trunk. It is a **dispatch-layer** concern (design:
+"the merge + backstop is the dispatcher's"; "keep a speculative/bisection merge backstop in the dispatch
+layer"), Operator-owned, listed as a "dispatch-consumer" deferral (NOT the store engine).
+
+**HOME FORK — SETTLED (A) by human choice 2026-07-14:** a cyberfleet **governance** (cyberfleet's
+first), `plugins/cyberfleet/skills/merge-backstop-governance/`, loaded by name by the headless-operator
+at its merge step — mechanics deferred to `gh`/git/CI, no new engine. (Rejected: (B) a cyberlegion verb
+— merge+CI+bisect is VCS/CI orchestration outside cyberlegion's inter-agent-comms remit; (C) a `.mts`
+engine — the design frames the backstop as a dispatch-layer protocol, not a store-grade engine.)
+
+**BUILT (commit 19c92652):** the governance SKILL+README (§Order Operation-order / §Gate green-only
+speculative CI on merged result / §Bisect hold-culprit-land-innocent / §Depth confidence-bounded /
+§The invariant always-green) + headless-operator wired to load it by name + 7 additive `@behavior`
+scenarios on the operator node (+50/-0, self-clearing) + README. Both cold judges PASS:
+- **Spec gate** — cold `aced-spec-validator` **ALIGNED true**. Self-asserted `by:agent`, ledger seq 6.
+- **Impl gate** — cold `aced-impl-judge` **IMPLEMENTATION_PASS 7/7**, no hollow passes, faithful to the
+  dispatch-governance partial-skill pattern. **HELD for HITL ratification** — human ratifies by merging.
+
+VERIFY CAVEAT: `pnpm verify` is red in the shared worktree ONLY from a concurrent session's unformatted
+`mission-graph.mts` WIP (+ its downstream knip), NOT this change. My files pass biome (markdown, not
+linted) and `verify:specs` in isolation; PR CI runs on a clean checkout so it will gate honestly.
+
+NOTE: `mission-graph.mts` + `github-189-symbol-rung.plan.md` carry ANOTHER concurrent session's
+uncommitted work in this shared worktree — do NOT stage or disturb them.
+
+### (history below) headless-operator resume
 
 ### Decisions settled this resume (were the design's "Gap → F3" open item)
 

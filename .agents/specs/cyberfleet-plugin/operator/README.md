@@ -55,6 +55,12 @@ enough to prune). All four eval layers carry signal.
   than running as a daemon. Its per-mission spawns are **inter-mission** dispatch from outside any ship,
   distinct from Pod's **intra-mission** worktree fan-out. It carries no logic Operator plus the
   mission-graph engine do not already hold — it is that flow, headless.
+- **Retire behind the merge backstop (F3)** — the loop merges completed missions to trunk through
+  **`merge-backstop-governance`** (`plugins/cyberfleet/skills/merge-backstop-governance/`): retire in
+  **Operation order** (a consumer never lands before its producer), land a merge only when **speculative
+  CI is green on the merged result**, **bisect** a red stacked batch to hold the culprit and land the
+  innocent, and bound speculation depth by **predictor confidence** — so **trunk stays always-green**.
+  The discipline is the dispatcher's; the mechanics (`gh`/git/CI) are offloaded, never re-implemented.
 
 **Non-goals** — running a mission or hailing specialist crew inside one specific ship (that is
 `pod`, from inside the ship — Operator routes the Council there instead of acting on the ship's
@@ -74,4 +80,5 @@ Every scenario in [`operator.feature`](./operator.feature) maps to one of these 
 | **sweep dead ships** | `cyberlegion unit prune` |
 | **offload + harness-agnostic + MCP-free** | every mechanic is a `cyberfleet` call; no MCP, no same-harness assumption |
 | **the lifecycle loop, headless (F3)** | headless-operator pulls `ready`, claims as single writer, spawns per mission (AFK/HITL, capacity K), retires in Operation order + re-derives; missions only report; summoned-ticks-exits; inter-mission spawns distinct from Pod's intra-mission fan-out |
+| **the merge backstop (F3)** | `merge-backstop-governance`: Operation-order retirement, land only on green speculative CI, bisect a red batch (hold culprit / land innocent), confidence-bounded speculation depth, always-green trunk; mechanics offloaded to `gh`/git/CI |
 </content>

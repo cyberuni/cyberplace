@@ -32,7 +32,7 @@ while capacity K and ready:
   mission-graph append node/edge ... (claim)   # SINGLE WRITER: status=in-progress, before spawn
   cyberlegion unit spawn <ship>                # AFK -> autonomous ship; HITL -> human channel
 on mission-done(m):                            # m reports through its existing HANDOFF relay
-  merge in Operation order (behind the merge backstop)
+  merge per merge-backstop-governance          # Operation order + speculative-CI gate + bisect-on-red
   cyberlegion unit prune / tear down the pod that ran it
   mission-graph append (retire + discovered edges/nodes)   # SINGLE WRITER
   # next `ready` reflects it -> re-derive on the next tick
@@ -48,9 +48,11 @@ on mission-done(m):                            # m reports through its existing 
 - **Capacity is the dispatcher's.** `ready` emits the full ranked frontier (what is *possible*); this
   loop applies K (issue width) and human-availability (what to *run*). A HITL mission goes to a human
   channel; an AFK mission goes to an autonomous ship. Overflow stays on the frontier for a later tick.
-- **Two orderings split.** `ready` governs **issue**; **retirement is Operation-ordered merge** — merge
-  in Operation-coherent order behind the merge backstop (speculative-CI / bisection, a
-  dispatch-consumer concern). The scheduler stays read-only; the merge + backstop is this loop's.
+- **Two orderings split.** `ready` governs **issue**; **retirement is Operation-ordered merge**. Load
+  **`merge-backstop-governance`** and run its discipline for the merge step: retire in Operation order,
+  land only on green speculative CI, bisect a red batch and hold the culprit, bound speculation depth by
+  confidence — so trunk stays always-green. The scheduler stays read-only; the merge + backstop is this
+  loop's, and its mechanics (`gh`/git/CI) are offloaded, never re-implemented here.
 
 ## Spawn boundary — inter-mission, not Pod's intra-mission fan-out
 

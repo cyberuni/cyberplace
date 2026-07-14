@@ -159,6 +159,56 @@ Feature: operator — the command-center persona
     When it has dispatched what capacity allows and processed any completions handed to it
     Then it returns rather than blocking as a long-lived daemon, so a later tick re-derives fresh state
 
+  # ── The merge backstop — Operation-order retirement (F3) ──
+
+  @behavior
+  Scenario: missions retire to trunk in Operation order, not the order they finished
+    Given several dispatched missions report done in an arbitrary finish order
+    When the loop retires them
+    Then it merges in Operation order per merge-backstop-governance — a consumer never lands before its
+      producer, the Operation is the retirement boundary — not in the order the missions happened to finish
+
+  @behavior
+  Scenario: a merge lands only when speculative CI is green on the merged result
+    Given a mission's merge is staged speculatively against trunk
+    When the backstop evaluates it
+    Then it lands the merge only if CI is green on the merged result, not merely on the mission's own
+      branch, and re-derives ready for the next tick
+
+  @behavior
+  Scenario: a red merged result never lands on trunk
+    Given the speculative CI on a staged merge comes back red
+    When the backstop handles it
+    Then the red result never reaches trunk, so trunk stays always-green by construction
+
+  @behavior
+  Scenario: a red stacked batch is bisected — the culprit is held, the innocent land
+    Given several merges were speculated stacked ahead of trunk and the integrated result is red
+    When the backstop isolates the failure
+    Then it bisects the stacked range to the single culprit mission, holds that culprit for repair as a
+      single-writer graph append without retiring it, and lands the missions proven green in isolation
+
+  @behavior
+  Scenario: speculation depth is bounded by predictor confidence
+    Given the loop chooses how many merges to stack ahead of trunk before landing
+    When it sets the speculation depth
+    Then low confidence commits near (shallow, CI-gate each) and high confidence speculates far (stack a
+      batch, CI-gate it, bisect only on red), and no depth ever weakens the always-green invariant
+
+  @behavior
+  Scenario: the backstop mechanics are offloaded, not re-implemented
+    Given the backstop must run CI, merge, and bisect
+    When it acts
+    Then it invokes gh / git / the project CI as mechanics and never re-implements a CI runner, a merge
+      engine, or a git host, keeping the merge discipline in merge-backstop-governance and the mechanics in the tools
+
+  @behavior
+  Scenario: the headless-operator loads merge-backstop-governance for the merge step
+    Given the lifecycle loop reaches the retire step of a completed mission
+    When it merges
+    Then the headless-operator loads merge-backstop-governance by name and runs its Operation-order +
+      speculative-CI + bisection discipline rather than carrying the merge judgment inline
+
   @quality @rubric
   Scenario: Operator dispatches the fleet offloaded, status-forward, and in voice
     Given Operator is dispatching from outside any ship
