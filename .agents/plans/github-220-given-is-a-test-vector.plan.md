@@ -3,20 +3,22 @@ cr: github-220-given-is-a-test-vector
 project: sdd
 status: active
 todos:
-  - content: "explore — suite-format: a Given is a test vector (semantic + spec-side authoring duty)"
-    status: pending
-  - content: "explore — impl-producer: owe the Then, not the Given + additive scenario"
-    status: pending
-  - content: "explore — impl-judge: absorption read (match=finding, mismatch=healthy, unclassifiable=escalate) + additive scenarios"
-    status: pending
-  - content: "spec gate — cold spec-judge; additive self-clears, stays @frozen; HITL ratify (high blast radius)"
-    status: pending
-  - content: "deliver — suite-format-governance + impl-producer-governance SKILL.md, sdd-impl-judge agent"
-    status: pending
-  - content: "impl gate — cold impl-judge; pnpm verify"
-    status: pending
-  - content: "handoff — PR closing #220; file prevalence-sweep follow-up CR"
-    status: pending
+  - content: "explore — suite-format: canonical rule (precondition vs apparatus + swap test)"
+    status: completed
+  - content: "explore — spec-producer: don't lift the artifact's examples into a Given (+4)"
+    status: completed
+  - content: "explore — impl-producer: owe the Then, not the apparatus (+5)"
+    status: completed
+  - content: "explore — impl-judge: absorption read; match=finding, mismatch=healthy, unclassifiable=escalate (+11)"
+    status: completed
+  - content: "spec gate — 3 cold judge rounds (R1 architect, R2 oracle+builder); R3 ALIGNED; HITL ratified"
+    status: completed
+  - content: "deliver — 4 governance/agent bodies + escalation routing; check-suite ref fix as own unit"
+    status: completed
+  - content: "impl gate — cold impl-judge 20/20, dogfood clean; HITL ratified; pnpm verify 21/21"
+    status: completed
+  - content: "handoff — rebase onto main, PR closing #220, file prevalence-sweep follow-up CR"
+    status: in_progress
 ---
 
 # CR github-220 — a Given is a test vector, not specification
@@ -115,6 +117,7 @@ first pass. The polarity must be stated explicitly in the impl-judge's absorptio
 
 ## NEXT
 
-Explore drafted across 4 nodes; 2 cold spec-judge rounds absorbed (R1 architect: section
-misgrouping; R2 builder/oracle: spec-producer coverage gap). Both fixed. Run a fresh cold
-spec-judge R3; on ALIGNED, present the verdict packet for HITL ratification (leash auto-none).
+Both gates ratified in-session by the Council. Three commits on the branch: spec unit (39b7c2e6),
+check-suite ref fix (8eaf2551), deliver unit (6e7ed110). Rebase onto main, push, open the PR
+closing #220, and file the prevalence-sweep follow-up CR (issue item 3). Keep this plan until the
+PR merges and is doctrine-distilled.
