@@ -13,8 +13,8 @@ todos:
     status: completed
   - content: "Handoff: pnpm verify, commit, PR Closes #237; record stage dogfooded and EXECUTED"
     status: completed
-  - content: "BLOCKED on owner: drain refused — 2 follow-ups recorded but unfiled; needs the standing filing rule or a human to file them"
-    status: pending
+  - content: "Drain: refused, then EXECUTED on retry once the owner named the act — filed #247 + #248"
+    status: completed
 ---
 
 # CR: handoff records follow-ups durably, classifies, proposes, drains
@@ -109,15 +109,27 @@ the record.
 denial cites **only** the unnamed act. The sensitive-detail objection is gone against a body composed
 under the new stricter outward floor. Only the permission gap remains.
 
+## ★★ The drain then EXECUTED — all four stages have run
+
+The owner named the filing act; the retry drained the durable record and filed both follow-ups, one
+issue each, **`blocking` and `backlog` alike** (class-agnostic, as frozen):
+
+- **#247** (`blocking`) — nothing admits a follow-up proposal to the mission graph. **Must be specced
+  before #196 lands.**
+- **#248** (`backlog`) — the standing filing permission rule itself.
+
+The retry re-derived what was outstanding by **dedupe against existing issues**, not from any stored
+filed-state — and the `followup` lines were deliberately **not** edited to mark them filed. The
+no-filed-state rule held under the one condition that would have tempted a violation.
+
+**Every stage of this doctrine has now run at least once: record, classify, propose, drain.** #230
+shipped a doctrine whose central act never executed; this one executed its own, on itself, including
+the refusal path *and* the recovery from it.
+
 ## NEXT
 
-Owner decision — the drain is owed, nothing else is:
+Owner ratification of the two self-asserted gates (PR #246). Nothing else is owed.
 
-1. **Grant the standing filing rule** (a Bash permission rule for the forge's create-issue act), then
-   re-run the drain from the durable record — it re-derives what is outstanding by dedupe, so a retry
-   is safe and idempotent. Or **file the two recorded follow-ups by hand** from the ledger shard.
-2. Recorded and outstanding (dedupe matched neither against existing issues, open or closed):
-   - **`blocking`** — nothing admits a follow-up proposal to the mission graph (the Operator's side).
-     **Must be specced before #196 lands**, or the loop closes with no classification and no
-     admission boundary.
-   - **`backlog`** — the standing filing permission rule itself.
+The standing permission rule (#248) remains the open question for unattended missions — until it
+exists, the drain runs only when a human is present to name the act, which is the case autonomy is
+meant to cover.
