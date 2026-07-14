@@ -33,7 +33,7 @@
 		"dev": "tsx src/cli.ts",
 		"prepack": "pnpm build",
 		"render:awesome-list": "pnpm build && node bin/cyberplace.mjs awesome render",
-		"test": "pnpm build && vitest run src",
+		"test": "vitest run src",
 		"test:watch": "vitest",
 		"typecheck": "tsc --noEmit"
 	},
