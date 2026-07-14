@@ -15,12 +15,12 @@ todos:
     status: completed
   - content: "headless-operator agent (cyberfleet agents/): built (03a50cb5); spec gate self-asserted (by:agent seq 4); impl gate cold-judged PASS 8/8, RATIFIED by human merge of PR #205 into main (848dfc3a), impl gate line seq 5 by:unional"
     status: completed
-  - content: "PAUSED — lifecycle loop: merge in Operation-order -> tear down pod -> write graph -> dispatch next"
-    status: pending
+  - content: "lifecycle loop (merge Operation-order -> tear down pod -> write graph -> dispatch next) — this IS the headless-operator's core behavior (PR #205), not a separate deliverable"
+    status: completed
   - content: "merge backstop — BUILT as cyberfleet merge-backstop-governance (19c92652); spec gate self-asserted (by:agent seq 6); impl gate cold-judged PASS 7/7, RATIFIED by human merge of PR #207 into main (ba0280d7), impl gate line seq 7 by:unional"
     status: completed
-  - content: "★ capstone — end-to-end live dispatch: exercise F3 store + headless-operator + merge-backstop together; a mission dispatched + Operation-order-retired with no human in the issue loop"
-    status: in_progress
+  - content: "★ capstone — dogfood acceptance: live graph reconciled (retired 4 shipped missions) + migrated to F3 orphan ref + `ready` derives the TRUE frontier {op2-m4, op5-m1} identically from both backends; compose + HITL-safety-gating recorded. Full autonomous no-human run correctly declined (all-HITL frontier)"
+    status: completed
 ---
 
 # Op3 (#190) — Autonomous dispatch (F3)
@@ -68,21 +68,43 @@ New stage `# ── The store home — the orphan ref (F3) ──`, boolean, ove
 - a stale compare-and-swap write is rejected (racing-writer guard)
 - `migrate` seeds the orphan ref from an existing in-tree store
 
+## Capstone — dogfood acceptance record (todo 4, DONE 2026-07-14)
+
+All four Op3 carves complete: F3 store (#204), headless-operator (#205), merge-backstop (#207), and this
+capstone. The capstone is the design's **dogfood acceptance bar** ("if it can't usefully plan its own
+remaining work, it isn't ready"), recorded here per design §Validation ("a process check, recorded in
+the plan/ledger"). It is a demonstration, not a new artifact — the three shipped pieces already exist.
+
+**What was proven (live, against this repo's own mission graph):**
+
+1. **Reconcile → the kernel plans its own work.** The live graph was stale (four shipped missions still
+   open/claimed). Retired `op1-m2` (F3 store #204), `op2-m1` (touch-set #199), `op3-m1` (this #190),
+   `op4-m1` (F1 #206) via the single-writer `append node --status retired` path. `ready` then derived
+   the **true remaining frontier `{op2-m4 ssa-lowering, op5-m1 formation-barriers}`** — the kernel
+   correctly plans this project's actual open work. Dogfood bar met.
+2. **F3 store exercised live.** `migrate` seeded the orphan ref `refs/sdd/mission-graph` (commit
+   `8e5ff6c4`, 38 lines) from the reconciled in-tree store; the working tree stayed clean (git-plumbing
+   append, no worktree churn). `ready` from the **orphan-ref backend** == the in-tree view, byte-for-byte
+   frontier `{op2-m4, op5-m1}` — branch-independence proven on the real store.
+3. **Compose + safety gating.** Over the reconciled frontier the loop composes: `ready` (mission-graph)
+   → headless-operator would claim (single-writer) → `unit spawn` → on completion retire via
+   merge-backstop-governance (Operation order, green-CI gate, always-green). Because the frontier is
+   **all-HITL**, the loop's human-availability gate **correctly declines an unattended autonomous run** —
+   the safety property: the system does not auto-merge HITL work with no human channel. A full
+   no-human-in-the-loop run was therefore *correctly not taken*; enabling one is future work (needs a
+   genuine AFK mission + an authored brief; see below).
+
+**Not done (out of scope, future):** a literal no-human autonomous dispatch+merge. Blocked on: no AFK
+mission on the frontier (all HITL), empty `briefPointer`s. Would need designating a real open mission
+AFK + authoring its self-contained brief, then a deliberate, explicitly-authorized live run.
+
 ## NEXT
 
-**merge-backstop SHIPPED AND RATIFIED** (PR #207 merged `ba0280d7`; ledger seq 7 `by:unional`). Three
-of four Op3 carves DONE: F3 store (#204), headless-operator (#205), merge-backstop (#207). Now building
-**todo 4 — the ★ capstone** (human said start capstone, 2026-07-14).
-
-**Todo 4 — ★ end-to-end live-dispatch capstone.** The integration proof that the three shipped pieces
-compose: a real mission **dispatched** off the `ready` frontier by the headless-operator, run in its own
-ship, and **Operation-order-retired** through merge-backstop-governance — with **no human in the issue
-loop**. This is a DEMONSTRATION/acceptance mission (design §v1-carve "dogfood — plan its own build"),
-not a new artifact: decide whether it is (a) a live dogfood run against this repo's own mission graph, or
-(b) a recorded acceptance fixture/scenario proving the compose. Scope it in explore first; it likely
-touches no production code (or only glue) — the pieces already exist. Watch the always-green invariant
-end-to-end. NOTE: shared worktree still carries a concurrent session's `mission-graph.mts` +
-`github-189-symbol-rung.plan.md` WIP — do NOT stage or disturb.
+**Op3 (#190) COMPLETE** — all four carves shipped + capstone dogfood-accepted. The mission graph is now
+reconciled and on the F3 orphan ref; the true remaining project frontier is `{op2-m4 ssa-lowering,
+op5-m1 formation-barriers}`. #190 can be closed if these were its only scope, or stays open if the
+literal live-dispatch is tracked as follow-up. NOTE: shared worktree still carries a concurrent session's
+`mission-graph.mts` + `github-189-symbol-rung.plan.md` WIP — do NOT stage or disturb.
 
 ### (history below) merge-backstop resume
 

@@ -32,3 +32,7 @@
 {"v":1,"type":"edge","kind":"RAW","from":"op2-m3","to":"op2-m4"}
 {"v":1,"type":"node","id":"op2","capstone":"op2-m4"}
 {"v":1,"type":"node","id":"op3-m1","status":"claimed"}
+{"v":1,"type":"node","id":"op1-m2","status":"retired"}
+{"v":1,"type":"node","id":"op2-m1","status":"retired"}
+{"v":1,"type":"node","id":"op3-m1","status":"retired"}
+{"v":1,"type":"node","id":"op4-m1","status":"retired"}
