@@ -13,7 +13,7 @@ todos:
     status: completed
   - content: "Handoff: PR #204 opened (Part of #190 — F3 store only, NOT Closes); verdict packet mailed to legate; impl gate ratified by human merge of #204 into main (52e14110); impl gate line recorded (seq 3, by:unional)"
     status: completed
-  - content: "headless-operator agent (cyberfleet agents/): the unattended fleet-level dispatch-loop driver — Pod-boundary settled, ready-surface confirmed present"
+  - content: "headless-operator agent (cyberfleet agents/): the unattended fleet-level dispatch-loop driver — built (commit 03a50cb5); spec gate self-asserted (by:agent, seq 4), impl gate cold-judged PASS 8/8; HELD for HITL ratification (auto-spec leash, HIGH blast)"
     status: in_progress
   - content: "PAUSED — lifecycle loop: merge in Operation-order -> tear down pod -> write graph -> dispatch next"
     status: pending
@@ -93,8 +93,24 @@ New stage `# ── The store home — the orphan ref (F3) ──`, boolean, ove
   (headless-legate keeps its muster loop inline too). Needs manifest wiring: add `"agents": "./agents"`
   to `plugins/cyberfleet/.plugin/plugin.json` (no agents key today).
 
+### headless-operator — BUILT, gates run (this resume)
+
+Delivered commit `03a50cb5`: agent def `plugins/cyberfleet/agents/headless-operator.md` + manifest
+`"agents": "./agents"` + operator persona headless pointer + 8 additive `@behavior` scenarios
+(+59/-0, self-clearing) + README. `pnpm verify` green (20/20). Both cold judges PASS:
+- **Spec gate** — cold `aced-spec-validator` **ALIGNED true** (oracle/builder/architect). Self-asserted
+  `by:agent` (auto-spec leash), ledger seq 4.
+- **Impl gate** — cold `aced-impl-judge` **IMPLEMENTATION_PASS 8/8**, no hollow passes, lean + faithful
+  to the headless-legate pattern. **HELD for HITL ratification** (HIGH blast) — the human ratifies by
+  merging the PR; impl `gate` line (`by:<human>`) written at ratification, as the F3 store did (seq 3).
+- **Seam both judges flagged (feeds todo 3):** where the merge-backstop MECHANISM lives (this agent vs a
+  cyberlegion verb) is left implicit; S6 satisfied as written ("merge behind the backstop"), but the
+  backstop's own contract is unbuilt — exactly todo 3.
+
 ### Remaining after headless-operator
-3. **merge backstop** — speculative-CI / bisection (dispatch-consumer concern, not the store engine).
+3. **merge backstop** — speculative-CI / bisection. The headless-operator merges "behind the merge
+   backstop" (specced as a collaborator); this todo builds the backstop's own mechanism/contract.
+   A dispatch-consumer concern, not the store engine.
 4. **★ capstone** — end-to-end live dispatch (a mission dispatched + Operation-order-retired with no
    human in the issue loop).
 
