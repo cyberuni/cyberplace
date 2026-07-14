@@ -26,4 +26,4 @@ Partial Skill: invoke by name only — the Operator's merge discipline. Not user
 
 - Never a CI runner, merge engine, or git host — those are `gh`/git/CI, invoked as mechanics.
 - Never the `ready` scheduler (read-only); this is the write/retire side the dispatcher owns.
-- Never the per-unit spawn mechanism (`cyberlegion unit spawn`) or intra-mission fan-out (that is Pod).
+- Never the per-unit spawn mechanism (`cyberlegion unit spawn`).

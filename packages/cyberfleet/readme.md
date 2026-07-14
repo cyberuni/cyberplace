@@ -22,9 +22,6 @@ npx cyberfleet@0.1.0 <command>
 ## Commands
 
 ```sh
-# Report ship (a spawned unit worktree) vs command-center, and the shared fleet root
-npx cyberfleet mode
-
 # Who needs the Council's hands — ships × mission × gate × leash, derived from SDD state
 npx cyberfleet missions
 npx cyberfleet missions --agents-root <path>

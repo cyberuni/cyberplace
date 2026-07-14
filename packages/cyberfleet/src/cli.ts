@@ -15,12 +15,10 @@ import {
 	toonObject,
 	touch,
 } from 'cyberlegion'
-import { initShip } from './init.ts'
 import { buildMissions, resolveAgentsRoot } from './missions.ts'
-import { detectMode } from './mode.ts'
 
 // cyberfleet — the fleet layer on top of cyberlegion's mechanism. It carries ONLY fleet-specific
-// logic: `missions` (the SDD-derived mission view), `mode` (ship vs command-center), `jump` (session
+// logic: `missions` (the SDD-derived mission view), `jump` (session
 // focus), `pause` (a status-only marker), and the `gate approve` stub. The mechanism verbs
 // (register/who/send/inbox/read/ack/spawn/prune/decommission/install) are NOT re-exposed here — they
 // live in the `cyberlegion` CLI, which cyberfleet depends up on. A fleet persona runs those directly
@@ -67,28 +65,6 @@ program
 	.name('cyberfleet')
 	.description('Fleet layer over cyberlegion — ships, missions, and the Council view')
 	.version('0.0.0')
-
-program
-	.command('init')
-	.description('commission this directory as a ship by writing the cyberfleet marker (.agents/cyberfleet/ship.json)')
-	.action(() => {
-		const result = initShip()
-		if (!result.created) {
-			console.log(`cyberfleet marker already present at ${result.root} — no-op`)
-			return
-		}
-		console.log(`wrote cyberfleet marker at ${result.root}`)
-	})
-
-rootOpts(program.command('mode'))
-	.description('report ship (has the .agents/cyberfleet/ marker) vs command-center, and the shared fleet root')
-	.action((opts) => {
-		const info = detectMode({ root: opts.root, space: opts.space })
-		emit(formatOf(opts), {
-			toon: toonObject({ mode: info.mode, cwdRoot: info.cwdRoot, fleetRoot: info.fleetRoot }),
-			json: info,
-		})
-	})
 
 rootOpts(program.command('missions'))
 	.description("who needs the Council's hands — ships × mission × gate × leash, derived from SDD state")

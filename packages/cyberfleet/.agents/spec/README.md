@@ -10,13 +10,13 @@ personas and the `crew` recruit/tune personas) is the sibling `cyberfleet-plugin
 (`../../.agents/specs/cyberfleet-plugin`, source `plugins/cyberfleet`), which calls this CLI by
 **intent**, never by its command slugs.
 
+A **ship** is a working session an agent runs a mission in — not a marked directory. There is no ship
+marker and no mode detection: `init` and `mode` were deleted (#225) because the marker gated no
+capability and its only reader was the command that reported it. A session joins the fleet by
+registering (`cyberlegion unit register`); that record is what `missions` enumerates.
+
 Fleet verbs (what cyberfleet owns):
 
-- **`cyberfleet init`** — commission a ship: write cyberfleet's own opt-in marker
-  `.agents/cyberfleet/ship.json`, idempotent.
-- **`cyberfleet mode`** — report ship (any directory carrying the `.agents/cyberfleet/` marker — git
-  primary, worktree, or non-git folder alike) vs command-center (off-ship), and the shared fleet root.
-  Keyed on cyberfleet's own marker, never cyberlegion's.
 - **`cyberfleet missions`** — the Council view: ships × mission × gate × leash, derived from SDD
   state (the one place cyberfleet reads SDD).
 - **`cyberfleet jump <peer>`** — focus a ship's session pane, or print its worktree path to `cd`
@@ -32,7 +32,7 @@ The mechanism — unit, mail, unit spawn/close, surfacing — was **extracted in
 spawn`/`close`. cyberfleet no longer describes them.
 
 Squad note: the fleet verbs are deterministic `cyberfleet` CLI behaviors (SDD-default + a script
-harness — boolean scenarios, no rubric). `init` and `mode` are captured as behavioral nodes
-(`init/`, `mode/`); `missions` / `jump` / `pause` / `gate approve` remain **implemented but not yet
-captured as behavioral nodes** (a known backfill gap — see `spec.md`). The agent-behavior nodes
-(ACED — activation and judgment) are in the `cyberfleet-plugin` project.
+harness — boolean scenarios, no rubric). This spec currently has **no behavioral nodes**: `init/` and
+`mode/` were deleted with their verbs (#225), and `missions` / `jump` / `pause` / `gate approve`
+remain **implemented but not captured as behavioral nodes** (a known backfill gap — see `spec.md`).
+The agent-behavior nodes (ACED — activation and judgment) are in the `cyberfleet-plugin` project.

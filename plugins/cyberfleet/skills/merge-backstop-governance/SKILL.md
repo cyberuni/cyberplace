@@ -79,5 +79,5 @@ speculation depth. Order is Operation-coherent; the culprit of a red batch is he
 
 Not a CI runner, a merge engine, or a git host — those are `gh`/git/CI, invoked as mechanics. Not the
 `ready` scheduler (read-only; this is the *write*/retire side the dispatcher owns). Not the per-unit
-spawn mechanism (`cyberlegion unit spawn`). Not intra-mission fan-out (that is Pod). The Operator is the
-single graph writer, so retirements appended here never race a claim.
+spawn mechanism (`cyberlegion unit spawn`). The Operator is the single graph writer, so retirements
+appended here never race a claim.

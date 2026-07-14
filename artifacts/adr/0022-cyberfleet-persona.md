@@ -2,7 +2,13 @@
 
 ## Status
 
-Accepted
+Accepted — **amended**, see [Amendment](#amendment--the-mode-switch-is-deleted-it-gated-nothing-cyberfleet-mode-pod-precondition-cr-225).
+
+Decision 8's mode-switch is **deleted, not reassigned**: `cyberfleet mode` and `cyberfleet init` are
+gone, there is no ship marker, and neither persona probes its folder. Fleet membership is the
+`cyberlegion unit register` record, which is what `missions` already enumerates. All spawning is
+Operator's. Text below records the decision as originally taken — including a marker path
+(`.agents/cyberlegion/config.json`) that was never implemented; read it against the Amendment.
 
 ## Context
 
@@ -84,14 +90,18 @@ Adopt **Option 3**.
    ratification only, never personified as a bridge character. No new persona layer is inserted
    between the user and this role.
 
-2. **Pod** is the ship's bridge automaton (NieR's Pod). A gateway skill that activates when the
-   working directory is a *ship* (see decision 8): it greets, checks the inbox, runs the mission
-   (dispatching to SDD's `start-mission`), and hails specialist crew when their concern comes up.
-   One Pod per ship.
+2. **Pod** is the ship's bridge automaton (NieR's Pod). A gateway skill for the ship's bridge work:
+   it greets, checks the inbox, runs the mission (dispatching to SDD's `start-mission`), and hails
+   specialist crew when their concern comes up. One Pod per ship. It is reached by what the Council
+   asked and probes nothing — see the [Amendment](#amendment--the-mode-switch-is-deleted-it-gated-nothing-cyberfleet-mode-pod-precondition-cr-225),
+   which retires the "activates when the working directory is a ship" framing this decision
+   originally carried, and leaves Pod with no location precondition at all.
 
-3. **Operator** is the command-center automaton (NieR Bunker's 6O/21O). A gateway skill that
-   activates when the working directory is **not** a ship — i.e., outside any ship (decision 8): it
-   oversees the fleet, inits or spawns a first ship, and routes messages across ships from outside.
+3. **Operator** is the command-center automaton (NieR Bunker's 6O/21O). A gateway skill for
+   fleet-level dispatch: it oversees the fleet, spawns ships, and routes messages across ships.
+   Invoking it is what seats it — see the [Amendment](#amendment--the-mode-switch-is-deleted-it-gated-nothing-cyberfleet-mode-pod-precondition-cr-225),
+   which retires the "activates when the working directory is **not** a ship" framing this decision
+   originally carried, and retires "init a first ship" with the `init` verb itself.
    SDD previously retired a role also named "Operator" (a spawned mission-runner with no channel to
    command, per `apps/website/src/content/docs/sdd/metaphor.md`). That word is free to reuse here
    because the new Operator is the opposite shape — always attended, always has the channel, never
@@ -120,7 +130,12 @@ Adopt **Option 3**.
    is a specific unattended-conductor role, not a persona. Do **not** reuse "Commander" for anything
    in this layer — SDD's Oracle actor already owns that fleet-role name.
 
-8. **Model: a ship is a git worktree carrying a tracked cyberlegion marker.** One Pod maps to
+8. **Model: a ship is a git worktree carrying a tracked cyberlegion marker.**
+   > **Amended** — see [Amendment](#amendment--the-mode-switch-is-deleted-it-gated-nothing-cyberfleet-mode-pod-precondition-cr-225).
+   > The marker path, the two-persona mode-switch, and the Pod-may-spawn clause below are all
+   > retired; the worktree/pane model and the marker-presence-alone detection rule stand.
+
+   One Pod maps to
    one pane/tab/window — the isolation boundary (a worktree) equals the presentation boundary (a
    terminal surface), matching how tmux, herdr, and orca already frame a running session. The
    marker is `.agents/cyberlegion/config.json` (reusing cyberlegion's own tracked hub marker,
@@ -147,7 +162,7 @@ Adopt **Option 3**.
    busy-state) as the two implemented adapters at MVP. Defer zellij and orca. Ship **no TUI** —
    copy firstmate's choice deliberately; the query-first view (decision 10) is the replacement.
 
-10. **Query-first, not dashboard-first.** `cyberfleet missions --json` derives its answer — ships ×
+10. **Query-first, not dashboard-first.** `cyberfleet missions --format json` derives its answer — ships ×
     worktrees × missions × gate-status × leash/autonomy state — from append-only state rather than
     tracking a mutable view; the field that matters most is "who needs the Council's hands." The
     view stays thin (an fzf picker, a status-bar segment, a pane title) while the actions remain
@@ -223,13 +238,59 @@ This lands spec-first, as change requests against `.agents/specs/cyberfleet/`, b
   worktree) and the `Operator` gateway skill (outside-any-ship-scoped), plus the shared
   `$CYBERLEGION_ROOT` pin (cyberlegion's own hub-root resolution) so queries from any ship span the
   whole fleet.
-- **The query + verbs + HAL tell** — `cyberfleet missions --json`, the shipped `mode` / `jump` /
+- **The query + verbs + HAL tell** — `cyberfleet missions --format json`, the shipped `mode` / `jump` /
   `pause` / `gate approve` verbs (an `ack` verb remains unbuilt), and the leash-crossing HAL flash
   (`packages/cyberfleet/src/sdd/hal.ts`) wired to the existing SDD leash derivation.
 
 All new tooling is TypeScript + `npx`-distributed, matching the rest of cyberspace/cyberplace;
 never Python. zellij, orca, a live `send` nudge, and a full TUI are explicitly deferred to future
 change requests or a future GitHub issue, not built as part of this decision.
+
+## Amendment — the mode-switch is deleted; it gated nothing (cyberfleet-mode-pod-precondition CR, #225)
+
+Decision 8 framed mode as a **switch between two personas**: Operator for a folder that is not a
+ship, Pod for one that is. The switch is **retired outright** — not reassigned. The persona
+identities and voices (decisions 1-7) and query-first (decision 10 — its principle and its
+shipped-verb list **minus `mode`**) stand — but the **activation clauses** decisions 2 and 3
+inherited from the switch ("Pod activates when the working directory is a ship", "Operator activates
+when it is **not**") are retired with it.
+
+1. **There is no mode, and no marker.** `cyberfleet mode` and `cyberfleet init` are deleted, along
+   with `.agents/cyberfleet/ship.json`. The marker held only `{"version": 1}` — no data. Its only
+   reader was `detectMode`; `detectMode`'s only caller was the `cyberfleet mode` command itself; that
+   command's only callers were the two persona mode guards; and the only thing Pod did when mode
+   reported `command-center` was offer to run `cyberfleet init`. The loop closed on itself and gated
+   no capability — `missions`, `jump`, `pause`, and `gate` never consulted it, nor did any hook or
+   statusline. (Decision 8 also named the marker `.agents/cyberlegion/config.json`, and an earlier
+   draft `.cyberfleet/config.json`; neither was ever implemented — the code always used
+   `.agents/cyberfleet/ship.json`. The path was wrong *and* the concept was empty.)
+
+2. **Fleet membership was already elsewhere.** A session joins the fleet by registering —
+   `cyberlegion unit register` writes the `AgentRecord`, and `cyberfleet missions` enumerates
+   **those**, joining ship→CR on `worktree.branch`. Never on markers. Pod already registers on entry,
+   so commissioning already happened every session; `ship.json` was a shadow registry with no
+   readers. A session is a ship because an agent is working in it, not because a file says so.
+
+3. **Neither persona probes.** Operator's command-center seat is asserted by invoking the skill. Pod
+   has **no precondition**: it does not check for a marker, does not report a mode, and never asks
+   whether to commission a folder. Its only setup step is the idempotent `register` it already ran.
+   Operator still routes mission and crew work to Pod — but by **topic**, on what was asked, never on
+   a probed location. Pod never hands off to Operator. The asymmetry is deliberate.
+
+4. **Descriptions name the work, never the location.** A skill `description` is all a harness reads
+   to route, and a harness cannot evaluate "outside a ship" — it would have to probe for a marker to
+   decide, reintroducing at the routing layer exactly the check ruling 1 deletes.
+
+5. **All spawning is Operator's; Pod does not spawn.** This reverses d8's "**Pod** ... may spawn
+   further worktree-ships for parallel work — spawning is a ship capability, not something reserved
+   for outside a ship." Spawning is fleet-level work the Council calls Operator for, including
+   parallel work on a project an agent is already working in. A spawn ask reaches Operator **by
+   description** — there is no explicit in-ship spawn logic anywhere. Pod loses fan-out.
+
+**Resulting charter**, which decision 8's marker had blurred: `cyberfleet` is the SDD-derived mission
+view + gates (`missions`, `jump`, `pause`, `gate`); `cyberlegion` is the sessions (identity, mail,
+spawn, mux). `mode`/`init` were metaphor residue — the ADR's own model-building leaking into shipped
+verbs. **Do not reintroduce an on-disk marker without a consumer that genuinely gates on it.**
 
 ## Related Decisions
 
