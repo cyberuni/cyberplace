@@ -250,9 +250,10 @@ change requests or a future GitHub issue, not built as part of this decision.
 
 Decision 8 framed mode as a **switch between two personas**: Operator for a folder that is not a
 ship, Pod for one that is. The switch is **retired outright** — not reassigned. The persona
-identities and voices (decisions 1-7) and query-first (decision 10) stand — but the **activation
-clauses** decisions 2 and 3 inherited from the switch ("Pod activates when the working directory is
-a ship", "Operator activates when it is **not**") are retired with it.
+identities and voices (decisions 1-7) and query-first (decision 10 — its principle and its
+shipped-verb list **minus `mode`**) stand — but the **activation clauses** decisions 2 and 3
+inherited from the switch ("Pod activates when the working directory is a ship", "Operator activates
+when it is **not**") are retired with it.
 
 1. **There is no mode, and no marker.** `cyberfleet mode` and `cyberfleet init` are deleted, along
    with `.agents/cyberfleet/ship.json`. The marker held only `{"version": 1}` — no data. Its only

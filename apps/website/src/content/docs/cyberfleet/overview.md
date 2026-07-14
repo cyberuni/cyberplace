@@ -11,10 +11,10 @@ You're the **Council** — the human. You give directions and make decisions; th
 
 A **ship** is a workspace: a folder, a repository, or a worktree. Your fleet is all the ships you've enlisted, across one project or many.
 
-| Automaton | Where it runs | What it does |
+| Automaton | Reached by | What it does |
 |---|---|---|
-| [**Pod**](/cyberfleet/pod/) | Inside a ship (has `.agents/cyberlegion/`) | The bridge-companion of a ship — greets you, clears the inbox, runs the mission, and launches a sister ship when the work should fan out |
-| [**Operator**](/cyberfleet/operator/) | Outside a ship, over the fleet | The dispatcher — commissions your first ship, lists who's out there, routes messages between ships, and sweeps away the dead ones |
+| [**Pod**](/cyberfleet/pod/) | The work asked — bridge work on a project | The bridge-companion of a ship — greets you, clears the inbox, and runs the mission. Never spawns. |
+| [**Operator**](/cyberfleet/operator/) | Invocation — asserts the command-center seat | The dispatcher — spawns every ship, lists who's out there, routes messages between ships, and sweeps away the dead ones |
 | [**Crimp**](/cyberfleet/crimp/) | The Tavern storefront | Recruits **crews** — installable specialist personas — signs them on, and discharges them |
 | [**Mechanic**](/cyberfleet/mechanic/) *(coming soon)* | The bench, over any automaton | Builds a new automaton and reconfigures existing ones — guidance, model, effort, loadout, and leash |
 
@@ -24,7 +24,6 @@ Under the automatons sits the `cyberfleet` **console** — the CLI. It's cold an
 
 | Command | What it does |
 |---|---|
-| `cyberfleet mode` | Report ship vs command-center, and the shared fleet root |
 | `cyberfleet missions` | Who needs the Council's hands — ships × mission × gate × leash, derived from SDD state |
 | `cyberfleet jump <peer>` | Select/focus a ship's session, or print its worktree path to `cd` into |
 | `cyberfleet pause <peer>` | Flip a ship's status marker (**not** the SDD `pause-mission` checkpoint) |

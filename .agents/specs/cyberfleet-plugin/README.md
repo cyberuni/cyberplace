@@ -6,9 +6,9 @@ as the `cyberfleet` plugin (`plugins/cyberfleet`), distributed to the marketplac
 
 Every node here is a per-situation persona gateway skill (ACED carries all four eval layers —
 activation and judgment). Each persona offloads its mechanics to a CLI — `cyberlegion` for identity,
-mail, and spawn; `cyberfleet` for mode, init, and missions — and keeps its voice only in what it says
-around them. Where a mechanic belongs to neither (the merge backstop's `gh`/git/CI), it is offloaded
-to that tool, never re-implemented.
+mail, and spawn; `cyberfleet` for missions — and keeps its voice only in what it says around them.
+Where a mechanic belongs to neither (the merge backstop's `gh`/git/CI), it is offloaded to that tool,
+never re-implemented.
 
 This project is the **plugin half**. The deterministic engines are two sibling CLI projects: the
 `cyberfleet` CLI (the SDD-derived mission view + gates — `../../packages/cyberfleet/.agents/spec`,

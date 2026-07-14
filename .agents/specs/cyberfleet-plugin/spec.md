@@ -35,9 +35,9 @@ The `cyberfleet` plugin ships the **persona layer** of the fleet: the agent-beha
 *when* and *how* an agent reaches for the fleet, recruits or discharges a crew, and builds or
 re-tunes an automaton. Every node here is a per-situation persona gateway skill (ACED carries all four
 eval layers — activation and judgment). Each persona offloads its mechanics to a CLI — `cyberlegion`
-for identity, mail, and spawn; `cyberfleet` for mode, init, and missions — and keeps its voice only
-in what it says around them. Where a mechanic belongs to neither (the merge backstop's `gh`/git/CI),
-it is offloaded to that tool, never re-implemented.
+for identity, mail, and spawn; `cyberfleet` for missions — and keeps its voice only in what it says
+around them. Where a mechanic belongs to neither (the merge backstop's `gh`/git/CI), it is offloaded
+to that tool, never re-implemented.
 
 The persona nodes depend on their CLIs by **intent** — register / send / spawn / inbox (the
 `cyberlegion` CLI) and the missions view (the `cyberfleet` CLI) for the fleet personas, and the

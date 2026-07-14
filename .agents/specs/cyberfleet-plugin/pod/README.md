@@ -82,4 +82,4 @@ Every scenario in [`pod.feature`](./pod.feature) maps to one of these behaviors:
 | **hail specialist crew aloud** | a specialist concern is handed off by name, visibly |
 | **never spawn — spawning is Operator's** | Pod tells the Council that spawning is Operator's work; a freshly spawned worktree's Pod just works, with nothing to inherit or commission |
 | **HAL tell, once, when earned** | reads its own `hal` field and speaks the tell once when true; never repeated, silent when false |
-| **offload + harness-agnostic + MCP-free** | identity and mail are `cyberlegion` calls; `mode`, `init`, `missions` are `cyberfleet` calls; no MCP, no same-harness assumption |
+| **offload + harness-agnostic + MCP-free** | identity and mail are `cyberlegion` calls; `missions` is a `cyberfleet` call; no MCP, no same-harness assumption |

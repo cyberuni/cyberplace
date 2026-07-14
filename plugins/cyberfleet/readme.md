@@ -9,12 +9,13 @@ autonomous and carries them out.
 
 The **Pod** is the bridge-companion automaton of a ship. A ship is a workspace: a folder, a
 repository, or a worktree; your fleet is all the ships you've enlisted, across one project or many.
-Pod greets you, clears the inbox, and runs the mission. When the work should fan out, it launches a
-sister ship to run a mission in parallel.
+Pod greets you, clears the inbox, and runs the mission. When the work should fan out, it tells you
+that spawning a sister ship is the Operator's job, which you invoke directly — Pod never spawns.
 
 ## Operator
 
-The **Operator** is the dispatcher automaton of the **fleet** — it commissions your first ship,
+The **Operator** is the dispatcher automaton of the **fleet** — it spawns every ship (your first, a
+new peer session, or a parallel worktree-ship on a project already in flight),
 lists who's out there, routes messages between ships, and sweeps away the dead ones.
 It's where you survey the fleet and decide what sails next.
 
