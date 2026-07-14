@@ -3,18 +3,20 @@ cr: https://github.com/cyberuni/cyberplace/issues/221
 status: active
 todos:
   - content: "Explore: audit all 11 @rubric scenarios, derive the discrimination property"
+    status: completed
+  - content: "Explore: rework dimensions+thresholds via aced-scenario-writer"
+    status: completed
+  - content: "Explore: confirm edit path — Clearance does NOT fire (#215 left node unfrozen)"
+    status: completed
+  - content: "Spec gate: cold aced-spec-validator ALIGNED, HITL-ratified, suite re-frozen (d6e38e1b)"
+    status: completed
+  - content: "Deliver: fix doctrine's stale self-description of its eval (b9c35510)"
+    status: completed
+  - content: "Impl gate: cold aced-impl-judge on real doctrine — must pass"
     status: in_progress
-  - content: "Explore: draft reworked dimensions+thresholds via aced-scenario-writer (Clearance path)"
-    status: pending
-  - content: "Explore: confirm genuine edit/Clearance path (not the additive path — see #226)"
-    status: pending
-  - content: "Spec gate: cold aced-spec-validator; Clearance is a hard floor → HITL ratify"
-    status: pending
-  - content: "Deliver: doctrine unchanged; build the mutant-doctrine discrimination evidence"
-    status: pending
-  - content: "Impl gate: cold aced-impl-judge — real doctrine passes AND mutant scores sub-threshold"
-    status: pending
-  - content: "Handoff: PR Closes #221; file ACED loseable-dimension bar as follow-up CR"
+  - content: "Measure discrimination: mutants A/B/C must fail NEW rubric where OLD passed"
+    status: in_progress
+  - content: "Handoff: PR Closes #221; file 3 follow-ups (fail-open, 5 unparseable suites, ACED bar)"
     status: pending
 ---
 
