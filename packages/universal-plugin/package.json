@@ -34,7 +34,7 @@
 		"knip": "knip",
 		"lint": "biome check .",
 		"prepack": "pnpm build",
-		"test": "pnpm build && vitest run src",
+		"test": "vitest run src",
 		"test:watch": "vitest",
 		"typecheck": "tsc --noEmit",
 		"verify": "pnpm typecheck && pnpm lint && pnpm test"
