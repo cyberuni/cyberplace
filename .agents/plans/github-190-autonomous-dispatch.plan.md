@@ -11,10 +11,10 @@ todos:
     status: completed
   - content: "Impl gate: cold impl-judge PASS (11/11 mutation-verified); rebase no-op (0 behind); pnpm verify 20/20 — HELD for HITL ratification (auto-spec leash)"
     status: completed
-  - content: "Handoff: PR opened (Part of #190 — F3 store only, NOT Closes); mail legate the verdict packet; await impl-gate ratification"
+  - content: "Handoff: PR #204 opened (Part of #190 — F3 store only, NOT Closes); verdict packet mailed to legate; impl gate ratified by human merge of #204 into main (52e14110); impl gate line recorded (seq 3, by:unional)"
+    status: completed
+  - content: "headless-operator agent (cyberfleet agents/): the unattended fleet-level dispatch-loop driver — built (commit 03a50cb5); spec gate self-asserted (by:agent, seq 4), impl gate cold-judged PASS 8/8; HELD for HITL ratification (auto-spec leash, HIGH blast)"
     status: in_progress
-  - content: "PAUSED — headless-operator agent (cyberfleet agents/): the unattended fleet-level dispatch-loop driver"
-    status: pending
   - content: "PAUSED — lifecycle loop: merge in Operation-order -> tear down pod -> write graph -> dispatch next"
     status: pending
   - content: "PAUSED — merge backstop (speculative-CI / bisection)"
@@ -70,20 +70,49 @@ New stage `# ── The store home — the orphan ref (F3) ──`, boolean, ove
 
 ## NEXT
 
-**F3 store SHIPPED to PR — awaiting human impl-gate ratification.** Spec gate self-asserted (auto-spec
-leash, `by:agent`); impl gate cold-judged PASS (11/11 mutation-verified) but HELD for human ratification
-(HITL, HIGH blast) — verdict packet mailed to the legate. On ratification: record the impl `gate` line
-(`by:<human>`, advance to implemented) and merge the PR.
+**F3 store SHIPPED AND RATIFIED** (PR #204 merged `52e14110`; ledger seq 3 `by:unional`). Now UN-PAUSED
+(human said continue 2026-07-14) — building the **headless-operator** (todo 1, in_progress; todo 2
+"lifecycle loop" is its core behavior, not a separate deliverable).
 
-Then **resume the PAUSED todos** (the rest of Op3) — each consumes the now-branch-independent F3 store:
-1. **headless-operator** — cyberfleet has no `agents/` dir today; build the unattended fleet-level
-   dispatch-loop driver as a cyberfleet agent. Settle its relationship to Pod-style spawns (design
-   §"Gap → F3": spawning parallel worktree-ships from inside a ship is Pod's job today).
-2. **lifecycle loop** — merge in Operation-order → tear down pod → write graph (single writer, via the
-   F3 store) → re-derive `ready` → dispatch next.
-3. **merge backstop** — speculative-CI / bisection (dispatch-consumer concern, not the store engine).
-4. **★ capstone** — Pod-boundary settle + end-to-end live dispatch (a mission dispatched +
-   Operation-order-retired with no human in the issue loop).
+### Decisions settled this resume (were the design's "Gap → F3" open item)
+
+- **Pod-boundary — SETTLED.** `Pod.spawn` = *intra*-mission fan-out (a ship parallelizes ITS OWN mission
+  with helper worktree-ships, from inside a ship). `headless-operator.spawn` = *inter*-mission dispatch
+  (the fleet loop reads `ready`, picks the next WHOLE mission off the frontier, spawns a ship for it,
+  on completion merges + retires + re-derives — from OUTSIDE any ship, single graph writer). No collide.
+  headless-operator = the **Operator persona realized headless** (Operator already owns spawn-from-
+  outside / list-fleet / route); remit widens from spawn/list/route to the full lifecycle loop driven by
+  `ready` instead of a live Council request. **No rule in Pod or Operator changes.**
+- **Dependencies confirmed PRESENT (not blocked):** `mission-graph.mts ready --format json` emits the
+  ranked frontier (id, node, operation, blast, hitlOrAfk, modelTier, briefPointer, rank); `append`
+  node/edge/tombstone is the single-writer path; `migrate` + orphan store shipped (F3); `cyberlegion
+  unit spawn` delivers the first turn (#188). The loop wires over these — no new engine.
+- **v1 shape = lean agent def, loop inline (mirrors [[headless-legate]]).** headless-operator carries the
+  lifecycle-loop pseudocode inline and defers MECHANISMS to the mission-graph engine (ready/append) +
+  cyberlegion CLI (unit spawn) + the Operator persona's existing spawn seat. NO new governance for v1
+  (headless-legate keeps its muster loop inline too). Needs manifest wiring: add `"agents": "./agents"`
+  to `plugins/cyberfleet/.plugin/plugin.json` (no agents key today).
+
+### headless-operator — BUILT, gates run (this resume)
+
+Delivered commit `03a50cb5`: agent def `plugins/cyberfleet/agents/headless-operator.md` + manifest
+`"agents": "./agents"` + operator persona headless pointer + 8 additive `@behavior` scenarios
+(+59/-0, self-clearing) + README. `pnpm verify` green (20/20). Both cold judges PASS:
+- **Spec gate** — cold `aced-spec-validator` **ALIGNED true** (oracle/builder/architect). Self-asserted
+  `by:agent` (auto-spec leash), ledger seq 4.
+- **Impl gate** — cold `aced-impl-judge` **IMPLEMENTATION_PASS 8/8**, no hollow passes, lean + faithful
+  to the headless-legate pattern. **HELD for HITL ratification** (HIGH blast) — the human ratifies by
+  merging the PR; impl `gate` line (`by:<human>`) written at ratification, as the F3 store did (seq 3).
+- **Seam both judges flagged (feeds todo 3):** where the merge-backstop MECHANISM lives (this agent vs a
+  cyberlegion verb) is left implicit; S6 satisfied as written ("merge behind the backstop"), but the
+  backstop's own contract is unbuilt — exactly todo 3.
+
+### Remaining after headless-operator
+3. **merge backstop** — speculative-CI / bisection. The headless-operator merges "behind the merge
+   backstop" (specced as a collaborator); this todo builds the backstop's own mechanism/contract.
+   A dispatch-consumer concern, not the store engine.
+4. **★ capstone** — end-to-end live dispatch (a mission dispatched + Operation-order-retired with no
+   human in the issue loop).
 
 ## Out of scope (paused — file as continuation of this mission or follow-up CRs)
 

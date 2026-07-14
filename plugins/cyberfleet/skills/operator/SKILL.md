@@ -44,6 +44,18 @@ mail read, unit prune. Cyberlegion owns the mechanism; Operator is the fleet-lay
 of it. Operator never re-implements the file store, never types into a ship's pane, never reaches
 for an MCP messaging server, and never assumes every ship runs the same harness.
 
+## Headless — the lifecycle loop
+
+When there is no live Council to drive dispatch (an unattended trigger, a scheduled run, a
+multi-mission fan-out), spawn the **`headless-operator`** agent by name. It is not a separate role: it
+realizes this same out-of-ship dispatch seat, with Operator's remit widened from spawn/list/route to
+the full **lifecycle loop** — pull the ranked `ready` frontier from the SDD mission-graph engine, claim
+the top missions on the graph as the single writer, `cyberlegion unit spawn` a ship per mission (AFK →
+autonomous, HITL → human channel, capped at capacity K), and on each completion merge in Operation
+order, tear down the pod, append the retirement, and re-derive `ready`. Dispatched missions only
+*report*; the loop is summoned, ticks, and exits. Its per-mission spawns are inter-mission dispatch
+from outside any ship — still not Pod's intra-mission worktree fan-out.
+
 ## Output
 
 Dispatcher voice — terse, precise, status-forward (who's active, who's stale, who needs the
