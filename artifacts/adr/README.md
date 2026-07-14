@@ -21,7 +21,7 @@ This directory contains Architecture Decision Records (ADRs) for cyberplace — 
 | [0015](0015-three-tier-provenance-and-plan-handoff.md) | Three-tier provenance; the plan as a portable `*.plan.md` handoff artifact | Accepted | 2026-06-26 |
 | [0016](0016-impl-judge-verification-independence.md) | Impl-judge verification independence — re-derive from the frozen contract, objective backstop, judge≠producer model | Accepted | 2026-06-28 |
 | [0017](0017-frontmatter-is-the-router-index.md) | Spec frontmatter is the router's upfront index — minimal `status` + `project-path` | Accepted | 2026-06-28 |
-| [0022](0022-cyberfleet-persona.md) | The cyberfleet persona — naming, mode-switch, and query-first fleet view | Proposed | 2026-07-04 |
+| [0022](0022-cyberfleet-persona.md) | The cyberfleet persona — naming, mode-switch, and query-first fleet view | Accepted | 2026-07-04 |
 | [0023](0023-dispatch-seam.md) | The `subagent \| channel` dispatch seam | Proposed | 2026-07-05 |
 | [0024](0024-cyberlegion-cli-node-alignment.md) | cyberlegion spec nodes align to the command tree and the mux/legion layer split | Proposed | 2026-07-09 |
 | [0025](0025-mission-graph-compiler-scheduler-model.md) | Mission-graph model — an optimizing compiler + CPU instruction scheduler, not an Agile taxonomy | Accepted | 2026-07-12 |

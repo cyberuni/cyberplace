@@ -1,5 +1,5 @@
 ---
-status: implemented
+status: draft
 project-path: plugins/cyberfleet
 approval:
   spec:
@@ -34,13 +34,15 @@ approval:
 The `cyberfleet` plugin ships the **persona layer** of the fleet: the agent-behavior that decides
 *when* and *how* an agent reaches for the fleet, recruits or discharges a crew, and builds or
 re-tunes an automaton. Every node here is a per-situation persona gateway skill (ACED carries all four
-eval layers — activation and judgment). Each persona offloads every mechanic to a `cyberfleet` CLI
-call (or another engine) and keeps its voice only in what it says around them.
+eval layers — activation and judgment). Each persona offloads its mechanics to a CLI — `cyberlegion`
+for identity, mail, and spawn; `cyberfleet` for mode, init, and missions — and keeps its voice only
+in what it says around them. Where a mechanic belongs to neither (the merge backstop's `gh`/git/CI),
+it is offloaded to that tool, never re-implemented.
 
-The persona nodes depend on the `cyberfleet` CLI (the sibling project) by **intent** — register /
-send / spawn / inbox for the fleet personas, and the Tavern query / define-agent / manage-model-
-runners for the crew personas — never by an exact command slug (ADR-0021). The dependency is
-one-way: the CLI knows nothing of these personas.
+The persona nodes depend on their CLIs by **intent** — register / send / spawn / inbox (the
+`cyberlegion` CLI) and the missions view (the `cyberfleet` CLI) for the fleet personas, and the
+Tavern query / define-agent / manage-model-runners for the crew personas — never by an exact command
+slug (ADR-0021). The dependency is one-way: neither CLI knows anything of these personas.
 
 ## Why this is its own project
 
@@ -57,8 +59,8 @@ under `plugins/cyberfleet` so it is not carried inside the distributed marketpla
 
 | Folder | Type | What |
 |---|---|---|
-| [`pod/`](./pod/README.md) | behavioral | the **Pod** persona — the in-ship bridge: greet, clear inbox, run the mission, hail crew, fan out worktree-ships, HAL tell |
-| [`operator/`](./operator/README.md) | behavioral | the **Operator** persona — the out-of-ship dispatcher: commission the first ship, list the fleet, route messages, prune dead ships |
+| [`pod/`](./pod/README.md) | behavioral | the **Pod** persona — the ship's bridge: greet, clear inbox, run the mission, hail crew, HAL tell; no precondition, no probe; never spawns |
+| [`operator/`](./operator/README.md) | behavioral | the **Operator** persona — the command-center dispatcher: any spawn, list the fleet, route messages, prune dead ships |
 | [`recruitment/`](./recruitment/README.md) | behavioral | the **Crimp** persona — recruit/discharge crew types from the Tavern (browse, install, register; uninstall, retire) |
 | [`mechanic/`](./mechanic/README.md) | behavioral | the **Mechanic** persona — build a new automaton or adjust an existing one's program (governance/model/effort/leash), re-chip its loadout, hot-swap the unit |
 
@@ -66,12 +68,14 @@ under `plugins/cyberfleet` so it is not carried inside the distributed marketpla
 
 Where a new concept lives — slot here, do not invent placement:
 
-- **a new in-ship bridge behavior** (mission entry, inbox etiquette, hailing crew, worktree fan-out,
-  the HAL tell — anything Pod does from inside a ship) → `pod/` (the Pod persona).
-- **a new out-of-ship dispatch behavior** (commission a ship, list the fleet, route between ships,
-  prune — anything Operator does from outside any ship) → `operator/` (the Operator persona).
-- **a shared mode-switch concern** (how the two personas hand off on `cyberfleet mode`) belongs to
-  whichever persona's activation it governs; each node carries its own half.
+- **a new bridge behavior** (mission entry, inbox etiquette, hailing crew, the HAL tell — anything
+  Pod does while working a ship) → `pod/` (the Pod persona).
+- **a new fleet-level dispatch behavior** (**any** spawn, list the fleet, route between ships, prune
+  — anything the Council calls Operator for) → `operator/` (the Operator persona).
+- **a "which persona am I" concern** → **nowhere — there is no such concern.** Neither persona probes
+  its folder. Operator's seat is asserted by invocation; Pod is reached by the Council's ask. The ship
+  marker and `cyberfleet mode` were deleted (#225) because the marker gated no capability and its only
+  reader was the command that reported it. Do not reintroduce a location check in either node.
 - **a new crew-acquisition persona behavior** (recruit/discharge a crew type — browse the Tavern,
   install/register, uninstall/retire) → `recruitment/` (the Crimp persona).
 - **a new automaton-workshop persona behavior** (build a new automaton, or adjust an existing one's

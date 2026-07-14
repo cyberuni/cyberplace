@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process'
-import { existsSync, mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -8,7 +8,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 // Exercises the actual built CLI entrypoint (bin → dist/cli.mjs) end-to-end. The mechanism verbs
 // (register/who/send/inbox/read/ack/spawn/decommission/install/prune) are NOT part of cyberfleet —
 // they live in, and are tested by, the sibling `cyberlegion` CLI. This file covers ONLY cyberfleet's
-// own fleet-layer verbs (mode/missions/jump/pause/gate approve) plus a basic wiring check. Ship
+// own fleet-layer verbs (missions/jump/pause/gate approve) plus a basic wiring check. Ship
 // records are written straight into the shared cyberlegion hub (no `cyberfleet register` exists).
 
 const BIN = fileURLToPath(new URL('../bin/cyberfleet.mjs', import.meta.url))
@@ -54,7 +54,7 @@ function seedShip(id: string, handle: string, extra: Record<string, unknown> = {
 describe('cli wiring', () => {
 	it('--help lists only the fleet verb surface (no mechanism verbs)', () => {
 		const out = execFileSync('node', [BIN, '--help'], { encoding: 'utf8' })
-		for (const verb of ['init', 'mode', 'missions', 'jump', 'pause', 'gate']) {
+		for (const verb of ['missions', 'jump', 'pause', 'gate']) {
 			expect(out).toContain(verb)
 		}
 		// the mechanism verbs were cut — they live in cyberlegion now. Assert on verbs whose strings
@@ -62,25 +62,6 @@ describe('cli wiring', () => {
 		for (const verb of ['register', 'inbox', 'decommission', 'install', 'prune']) {
 			expect(out).not.toContain(verb)
 		}
-	})
-})
-
-describe('mode', () => {
-	it('reports command-center with the shared fleet root (TOON output)', () => {
-		const out = cf(['mode'], {}, work)
-		expect(out).toContain('mode: command-center')
-		expect(out).toContain(`fleetRoot: ${root}`)
-	})
-})
-
-describe('init', () => {
-	it('writes the cyberfleet marker (fresh), then reports a no-op on re-run', () => {
-		const cwd = mkdtempSync(join(tmpdir(), 'cf-init-cli-'))
-		const first = execFileSync('node', [BIN, 'init'], { encoding: 'utf8', cwd })
-		expect(first).toContain('wrote cyberfleet marker')
-		expect(existsSync(join(cwd, '.agents', 'cyberfleet', 'ship.json'))).toBe(true)
-		const second = execFileSync('node', [BIN, 'init'], { encoding: 'utf8', cwd })
-		expect(second).toContain('already present')
 	})
 })
 

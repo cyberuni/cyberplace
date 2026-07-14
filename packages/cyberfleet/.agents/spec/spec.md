@@ -1,5 +1,5 @@
 ---
-status: implemented
+status: draft
 project-path: packages/cyberfleet
 approval:
   spec:
@@ -36,11 +36,13 @@ identify peers) into a **fleet** view: ships, missions, and the Council. It **de
 mailbox, identity/registry, and hook surfacing. cyberfleet adds nothing to that mechanism; it wraps
 it in the fleet's own operations.
 
-**Ship** and **command-center** are cyberfleet's own concepts, keyed on cyberfleet's own project-local
-marker `.agents/cyberfleet/` (written by `cyberfleet init`) — never inferred from cyberlegion's
-private `.agents/cyberlegion/` marker. A directory carrying the marker is a ship (git primary,
-worktree, or non-git folder alike); a directory without it is the command-center. **Fleet** (a group
-of ships) is a deferred concept — undefined until a command-center operation needs to act on one.
+A **ship** is a working session an agent runs a mission in. It is **not** a marked directory: there
+is no on-disk ship marker and no mode detection (#225 — `init`/`mode` deleted; the marker gated no
+capability and its only reader was the command that reported it). A session's fleet membership is its
+`cyberlegion unit register` record, which is what `missions` actually enumerates — the registry is
+the only membership fact, and there is no second one on disk. **Command-center** survives only as the
+Operator persona's seat, asserted by invoking that skill; it is not a detectable state of a folder.
+**Fleet** (a group of ships) is a deferred concept — undefined until an operation needs to act on one.
 
 The dependency is **by intent** (ADR-0021): cyberfleet imports `cyberlegion` as a workspace library
 for its own verbs, and a fleet persona runs the mechanism verbs against the `cyberlegion` CLI
@@ -54,8 +56,6 @@ Only the verbs with genuine fleet logic live here — everything else is `cyberl
 
 | Verb | What |
 |---|---|
-| `cyberfleet init` | commission a ship — write cyberfleet's own opt-in marker `.agents/cyberfleet/ship.json`; idempotent. See [`init/`](./init/README.md) |
-| `cyberfleet mode` | report **ship** (any directory carrying the `.agents/cyberfleet/` marker — git primary, worktree, or non-git folder) vs **command-center** (off-ship), and the shared fleet root. Keyed on cyberfleet's own marker, never `.agents/cyberlegion/`. See [`mode/`](./mode/README.md) |
 | `cyberfleet missions` | the Council view — ships × mission × gate × leash, **derived from SDD state** (the one place cyberfleet reads SDD) |
 | `cyberfleet jump <peer>` | select/focus a ship's session (tmux pane), or print its worktree path to `cd` into |
 | `cyberfleet pause <peer>` | flip a ship record to `status: paused` — a marker only (**not** a bridge to SDD's `pause-mission` checkpoint; that gap is flagged, never papered over) |
@@ -72,35 +72,31 @@ now; cyberfleet no longer owns or re-describes them.
 
 Where a new concept lives — slot here, do not invent placement:
 
-- **a new ship-commissioning operation** (writing/reading cyberfleet's own `.agents/cyberfleet/`
-  opt-in marker) → the `init` surface (create) / `mode` surface (read).
-- **a new fleet-status / mode operation** (ship vs command-center, the shared root) → the `mode`
-  surface. Ship/command-center is keyed on cyberfleet's **own** `.agents/cyberfleet/` marker, never
-  cyberlegion's `.agents/cyberlegion/`.
+- **a ship-commissioning or mode-detection operation** → **nowhere — the concept is retired** (#225).
+  There is no ship marker to write or read and no ship-vs-command-center state to report. A session
+  joins the fleet by registering with `cyberlegion unit register`; that record is the only membership
+  fact. Do not reintroduce an on-disk marker without a consumer that genuinely gates on it.
 - **a new Council/mission-view operation** (joining ships to SDD mission/gate/leash state) → the
   `missions` surface — the only place cyberfleet reads SDD.
 - **a new ship-navigation operation** (focus a pane, resolve a worktree path) → the `jump` surface.
 - **a new mechanism operation** (unit, mail, unit spawn/close, surfacing, dispatch, wake)
   → **not here** — that is `cyberlegion` (`packages/cyberlegion`). cyberfleet depends up on it.
-- **a new persona / mode-switch / crew behavior** (when to spawn, message etiquette, recruit or tune
-  a crew) → **not here** — that is the `cyberfleet-plugin` project (`plugins/cyberfleet`).
-- **a fleet-level operation over a group of ships** (act on a particular fleet from the
-  command-center) → **deferred** — the **fleet** grouping (which ships form a fleet) is not defined
-  until the first such verb needs it. `mode` reports only ship-vs-command-center, never a fleet.
+- **a new persona / crew behavior** (when to spawn, message etiquette, recruit or tune a crew) →
+  **not here** — that is the `cyberfleet-plugin` project (`plugins/cyberfleet`).
+- **a fleet-level operation over a group of ships** (act on a particular fleet) → **deferred** — the
+  **fleet** grouping (which ships form a fleet) is not defined until the first such verb needs it.
 
 ## Behavioral nodes
 
-| Node | What |
-|---|---|
-| [`init/`](./init/README.md) | commission a ship — write `.agents/cyberfleet/ship.json` (opt-in marker), idempotent |
-| [`mode/`](./mode/README.md) | ship vs command-center, keyed on cyberfleet's own `.agents/cyberfleet/` marker |
+**None.** This spec is descriptive-only. The `init/` and `mode/` nodes were deleted by #225 along
+with the verbs they specified; the remaining verbs are the backfill gap below.
 
 ## Backfill gap (known)
 
-`init` and `mode` are captured as behavioral nodes above (`cyberfleet-mode-init`). The remaining
-fleet verbs — `missions` / `jump` / `pause` / `gate approve` — are **implemented** (in `src/cli.ts`,
-`src/missions.ts`, with smoke coverage in `src/cli.test.ts`) but **not yet captured as behavioral
-nodes**. Backfilling them (with `.feature` suites) is a future change request; `pause` and
+Every fleet verb — `missions` / `jump` / `pause` / `gate approve` — is **implemented** (in
+`src/cli.ts`, `src/missions.ts`, with smoke coverage in `src/cli.test.ts`) but **not captured as a
+behavioral node**. Backfilling them (with `.feature` suites) is a future change request; `pause` and
 `gate approve` carry open design questions (dissolve-vs-bridge, the relayed-ratification seam) to
-settle at that time.
+settle at that time. `missions` is the highest-value backfill: it is now the CLI's whole reason to
+exist, and the `hal` field it derives is load-bearing for the Pod persona.
 
