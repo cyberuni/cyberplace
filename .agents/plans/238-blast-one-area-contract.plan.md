@@ -10,14 +10,14 @@ todos:
     status: done
   - content: "explore — narrowed :123; added the 1-area scenario; README reconciled + 2 judge gaps closed"
     status: done
-  - content: "spec gate — CLEARANCE floor: judge ALIGNED true; AWAITING unional's ratification"
-    status: in_progress
-  - content: "deliver — bind the additive 1-area scenario with a test; engine unchanged; pnpm verify"
-    status: pending
-  - content: "impl gate — cold sdd-impl-judge; STOP for human ratification"
-    status: pending
+  - content: "spec gate — judge ALIGNED true; HITL-ratified by unional (Clearance); gate seq 2"
+    status: done
+  - content: "deliver — size-1 test bound + mutation-proven; engine comment-only; rebased; verify 21/21"
+    status: done
+  - content: "impl gate — round 1 FAILED (false prose); round 2 PASS 22/22; ratified by unional; seq 3"
+    status: done
   - content: "handoff — PR against main, Closes #238; refs #192"
-    status: pending
+    status: in_progress
 ---
 
 # CR github-238 — blast-estimate's frozen suite is self-contradictory on a 1-area project
@@ -93,7 +93,28 @@ Three edits:
 - Leash `auto-none` + HITL ⇒ **do not self-assert past the Clearance gate**. Emit the verdict packet
   and leave the human ratification owed.
 
-## Gate state — SPEC GATE AWAITING HUMAN RATIFICATION
+## Gate state — BOTH GATES RATIFIED; PR OPEN
+
+**Spec gate: RATIFIED by unional in-session** (gate seq 2, Clearance) · **Impl gate: RATIFIED by
+unional in-session** (gate seq 3). Never self-asserted.
+
+**Impl gate round 1 FAILED — and the finding was this CR's own thesis turned on the conductor.** A
+change whose entire point is *"the prose must say what the code does"* shipped a **false claim** in its
+central reconciled paragraph: the README asserted, unqualified, that a 1-area project "computes `low`",
+dropping the frozen scenario's own qualifier (*with no fan-in and no sensitive marking*). Falsified
+against the engine — a lone area marked sensitive → `medium`, fan-in 6 → `medium`, marked + central →
+**`high`**, where the barrier and estimate *do* agree. **Root cause: the issue itself carries the same
+over-claim, and it was transcribed instead of checked** — a correlated blind spot inherited from the
+brief, the very failure mode this CR exists to fix. The engine claim had been spiked; the prose claim
+had not. Round 2 (fresh cold): **IMPLEMENTATION_PASS true**, 22/22.
+
+**The structural finding:** the `≥2` guard the contract now pins was itself **completely unprotected**
+before this CR — removing it fails exactly the one new test while the other 34 suite tests *and* the
+live-corpus smoke check (6/6) pass, since the real repo holds no 1-area project.
+
+## Superseded — the pre-gate record
+
+## Gate state — SPEC GATE (as ratified)
 
 Cold `sdd:sdd-spec-judge` **round 1: ALIGNED true** — oracle/builder/architect all PASS, no open markers.
 It verified every conductor claim independently rather than on report, and **strengthened two**:
@@ -125,13 +146,17 @@ is build-to-keep → a **hard condition on deliver**.
 Leash `auto-none` + HITL ⇒ **not self-asserted**. On ratification: gate line `by: unional`,
 `status` stays `approved` (node already frozen), commit staging the whole `.feature`, then deliver.
 
+## Candidate follow-ups — surfaced, NOT auto-filed
+
+Both are pre-existing and both judges said not to widen this CR. Owner's call:
+
+1. **This node's suite is hand-judged every gate.** `verify-scenarios` reports **0/22 BOUND** —
+   `junitTestcaseToResult` binds only via a `spec:<node>` suite segment, blast-estimate's tests are
+   flat `test('scenario: …')` calls, and no `.agents/sdd/scenario-bridge.toml` exists. Identical for
+   the 21 scenarios #192 shipped. The recurring cost the bridge exists to remove.
+2. **A 1-area project with cross-project fan-in computes `medium`, pinned by no scenario** — the added
+   scenario requires "no fan-in"; the project-wide one requires ≥2. A gap, not a contradiction.
+
 ## NEXT
-**STOP — spec gate needs unional's ratification** (Clearance: the `:123` narrowing).
-On approve: write the gate line to `ledger/github-238.f8a4cc.jsonl`, commit (staging the whole
-`.feature`), re-run `pnpm verify` to confirm align-spec goes green, then deliver:
-1. **Bind the added scenario with a size-1 test** — asserting `low` + `projectWide: []`. The judge's
-   hard condition: the harness's `seedFiller` is *built* to avoid size 1, so a frozen-but-unbound
-   scenario would read `UNBOUND` and never run. Engine unchanged.
-2. Reconcile the engine header comment (corpus-level prose → project-level code). Comment-only.
-3. Fix `blast-estimate.smoke.test.mts:11`'s stale "21 scenarios" → 22.
-Then impl gate (**STOP again**), then PR `Closes #238`.
+PR open against `main`, `Closes #238`. Retire this plan once merged and doctrine-distilled.
+A corpus-wide formation pass is due on-demand (`sdd:manage` → "audit the corpus structure").
