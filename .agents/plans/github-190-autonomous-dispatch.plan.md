@@ -11,8 +11,8 @@ todos:
     status: completed
   - content: "Impl gate: cold impl-judge PASS (11/11 mutation-verified); rebase no-op (0 behind); pnpm verify 20/20 — HELD for HITL ratification (auto-spec leash)"
     status: completed
-  - content: "Handoff: PR opened (Part of #190 — F3 store only, NOT Closes); mail legate the verdict packet; await impl-gate ratification"
-    status: in_progress
+  - content: "Handoff: PR #204 opened (Part of #190 — F3 store only, NOT Closes); verdict packet mailed to legate; impl gate ratified by human merge of #204 into main (52e14110); impl gate line recorded (seq 3, by:unional)"
+    status: completed
   - content: "PAUSED — headless-operator agent (cyberfleet agents/): the unattended fleet-level dispatch-loop driver"
     status: pending
   - content: "PAUSED — lifecycle loop: merge in Operation-order -> tear down pod -> write graph -> dispatch next"
@@ -70,12 +70,15 @@ New stage `# ── The store home — the orphan ref (F3) ──`, boolean, ove
 
 ## NEXT
 
-**F3 store SHIPPED to PR — awaiting human impl-gate ratification.** Spec gate self-asserted (auto-spec
-leash, `by:agent`); impl gate cold-judged PASS (11/11 mutation-verified) but HELD for human ratification
-(HITL, HIGH blast) — verdict packet mailed to the legate. On ratification: record the impl `gate` line
-(`by:<human>`, advance to implemented) and merge the PR.
+**F3 store SHIPPED AND RATIFIED.** PR #204 merged into `main` (`52e14110`, 2026-07-14) — the merge is the
+human impl-gate ratification. Impl `gate` line recorded (ledger seq 3, `by:unional`, node advances to
+implemented). The F3-store carve of Op3 is **DONE**.
 
-Then **resume the PAUSED todos** (the rest of Op3) — each consumes the now-branch-independent F3 store:
+**OPEN DECISION — resume or leave paused?** The remaining Op3 deliverables below are still marked PAUSED
+in the todos. The store (their dependency root) is now shipped, so nothing blocks them — but they were
+deliberately paused, and un-pausing is a scope call for the human. Do not start them without a go.
+
+The PAUSED todos (the rest of Op3) — each consumes the now-branch-independent F3 store:
 1. **headless-operator** — cyberfleet has no `agents/` dir today; build the unattended fleet-level
    dispatch-loop driver as a cyberfleet agent. Settle its relationship to Pod-style spawns (design
    §"Gap → F3": spawning parallel worktree-ships from inside a ship is Pod's job today).
