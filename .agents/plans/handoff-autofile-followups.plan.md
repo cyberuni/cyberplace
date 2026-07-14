@@ -13,7 +13,9 @@ todos:
     status: completed
   - content: "Handoff: pnpm verify, commit, PR, mail legate"
     status: completed
-  - content: "BLOCKED on owner: harness classifier denied `gh issue create` — the doctrine's central act cannot execute"
+  - content: "Harness classifier denied `gh issue create`; owner named the act -> filed #237, doctrine's first execution"
+    status: completed
+  - content: "Still unfiled: the mixed-case dedupe follow-up (needs the owner to name the act, same as #237)"
     status: pending
 ---
 
@@ -69,7 +71,37 @@ Both gates self-asserted within `auto-all` leash, each clean on round 1 (no corr
 Spec gate ALIGNED (oracle/builder/architect PASS); impl gate 7/7, IMPLEMENTATION_PASS true.
 `pnpm verify` green 21/21 on the `origin/main`-rebased tree. PR open for owner ratification.
 
-## ★ BLOCKED — the doctrine's central act cannot execute in this harness
+## ★ RESOLVED — the denial was the delivery mechanism, not the act
+
+**Diagnosis confirmed empirically.** The denial is the **harness** (the auto-mode classifier), but
+the condition it fired on — "no user message names filing an issue" — is a consequence of **how the
+brief was delivered**. cyberlegion has two paths to a pane and they carry different authority:
+
+| Path | Code | What the harness sees |
+|---|---|---|
+| spawn brief / mail surfacing | `inject-inbox.ts` → `hookSpecificOutput.additionalContext` | context — **not** a user message |
+| `nudge` / `mail send` to a live pane | `console/nudge.ts` → types into the input box, Enter | **a real user message** |
+
+The brief arrived by the first path. Once the owner named the act in a real user turn, the identical
+command filed **#237** — the doctrine's first successful execution.
+
+**★ Do not "fix" this with the nudge path.** It would work — `nudge` submits into the input box and
+the harness cannot distinguish that from a human typing. That is **forging the owner's voice**, and
+it is exactly #227 ("make relayed human authority unforgeable, not a judgment call"). The fleet has
+an unspecced privilege-escalation channel: any agent can grant any other agent user-level permission
+authority by typing into its pane. **Flagged, deliberately not used.** It should be closed, not
+relied on.
+
+**Still open for the owner:**
+
+1. **Permission.** A standing `gh issue create` rule, or the conductor's standing authority remains
+   spec-only whenever no human is in the seat (i.e. exactly the headless case the grant is for).
+2. **Issue-body floor.** The classifier's second objection (internal spec paths + ledger filenames
+   on a public tracker) stands regardless of path. The spec gives the *summary* an outward-distillate
+   floor and gives the follow-up **issue body** none. Model it on the combat log's safe-to-publish
+   floor. Out of scope here.
+
+## Superseded — the original blocked-state analysis
 
 Handoff tried to dogfood the new doctrine by filing its one identified follow-up (the mixed
 dedupe case, below). **The harness auto-mode classifier denied `gh issue create`**, reason:
