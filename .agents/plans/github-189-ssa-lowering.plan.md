@@ -10,11 +10,11 @@ todos:
   - content: "spec gate (HITL, high blast): spec-judge ALIGNED, freeze .feature, ledger gate line, status approved — user ratifies"
     status: completed
   - content: "deliver: write the doctrine skill against frozen suite (ACED impl-producer loop); rebase onto main"
-    status: pending
+    status: completed
   - content: "impl gate (HITL): aced-impl-judge N-run rubric-vs-threshold PASS per frozen scenario; status implemented — user ratifies"
-    status: pending
+    status: completed
   - content: "handoff: Warden placement pass; PR with Closes #189; append mission-graph op2-m4 retired + op2 close; plan retirement"
-    status: pending
+    status: in_progress
 ---
 
 # CR github-189-ssa-lowering (Op2 ★ capstone, part 2 of 2) — the SSA-lowering doctrine
@@ -65,14 +65,14 @@ is an **agent-configuration (skill)**; production chain = ACED (aced-scenario-wr
 
 ## NEXT
 
-**Spec gate PASSED — ratified by unional (2026-07-14).** `ssa-lowering.feature` is **@frozen** (17
-scenarios); gate line at `ledger/github-189-ssa-lowering.7d3a9c.jsonl` seq2. Cold spec-judge ALIGNED;
-2 flagged Oracle gaps (misaligned-kill, re-check-at-frontier) closed additively pre-freeze.
+**BOTH GATES PASSED — ratified by unional (2026-07-14).** Spec gate: `ssa-lowering.feature` @frozen (17
+scenarios), ledger seq2. Impl gate: cold aced-impl-judge IMPLEMENTATION_PASS true, all 18 frozen scenarios
+pass, no blocker, sound structural read; ledger seq3. `pnpm verify` green 21/21 on the origin/main-rebased
+tree; `mg cycles` empty. Delivered `plugins/sdd/skills/ssa-lowering/{SKILL.md,README.md}`, registered in
+sdd root spec.md. **op2-m4 retired → op2 progress 4/4** (capstone closed).
 
-Now **deliver**: write the doctrine **skill** at `plugins/sdd/skills/ssa-lowering/SKILL.md` against the
-frozen suite (ACED impl-producer loop — the skill body encodes the Oracle+Architect lenses + the SSA cut
-procedure so an agent running it produces a partition that scores over each `@rubric` threshold). Rebase
-onto origin/main. Then the **impl gate** (HITL): dispatch **aced-impl-judge** (N runs, rubric-vs-threshold
-collapsed to boolean per frozen scenario) — present its verdict for ratification (do not self-assert;
-leash auto-none). Note: ACED registry has `impl-producer: null` for the skill squad — the skill body is
-authored via the define-skill/aced-impl-producer diagnose-refine loop, judged by aced-impl-judge.
+**HANDOFF (in flight):** placement already final (node in its blessed `sdd/ssa-lowering` home, sibling of
+mission-graph/collision-ladder/touch-set-correction — no relocation). Push branch `sdd-ssa-lowering`, open
+PR with **Closes #189** (this is the ★ capstone / Op2 part-2-of-2 — closing #189 closes Op2). After merge:
+plan-retirement retires this brief. **Follow-up filed:** the judge's non-blocking weak-discriminator note
+(a few @rubric Givens echo the skill's worked examples) → an add-scenario hardening pass, not a gate defect.
