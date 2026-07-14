@@ -13,10 +13,10 @@ todos:
     status: completed
   - content: "deliver: operator/pod SKILL.md + READMEs, ADR-0022 amendment, marketplace readme, website docs"
     status: completed
-  - content: "impl gate: cold judge FAIL x2 (pod description could not discriminate the spawn row; 3 files outside touch set still asserted Pod fan-out) — both fixed, re-judge in flight"
-    status: in_progress
-  - content: "handoff: rebase main, PR (Closes #225), report operator by mail, file the 5 follow-ups"
-    status: pending
+  - content: "impl gate: cold judge FAIL x2 (pod description could not discriminate the spawn row; 3 files outside touch set still asserted Pod fan-out) — both fixed, re-judged PASS, HITL-ratified"
+    status: completed
+  - content: "handoff: rebased main, PR #231 (Closes #225), operator mailed, follow-ups #232-#235 filed"
+    status: completed
 ---
 
 # CR cyberfleet-mode-pod-precondition — mode is deleted; it gated nothing
@@ -151,38 +151,46 @@ Every round found real defects. Design settled after R3 (spawn ruling); R4-R6 we
   website docs.
 - `f06c7af7` — **spec gate**, HITL-ratified by unional across both specs; both → `status: approved`.
 
-## NEXT
+## NEXT — mission complete; the plan is retirable
 
-1. **Impl-gate re-judge in flight.** Cold judge returned `IMPLEMENTATION_PASS false` on two:
-   - **D1** Pod's `description` never said "spawn", so the frozen `@trigger` row `start a worktree …
-     | no` was not derivable — a harness scoring Pod reads only Pod's description and never sees
-     Operator claim the spawn. Fixed: `… not spawning ships or worktrees, fleet-wide oversight, or
-     cross-ship routing.` **Lesson: "Pod never spawns" was in 5 places and missing from the only line
-     a router reads.**
-   - **D2** `agents/headless-operator.md` + `merge-backstop-governance/{SKILL,README}.md` still
-     asserted Pod's *intra-mission fan-out* — the scenario this CR deleted. They sat outside the
-     touch set (which was scoped to the two persona skills). Fixed by re-anchoring the boundary on
-     the Operator seat. **Lesson: grep the whole plugin, not the node under edit.**
-   - Judge's open advisory: `just refactor this file in the current session | no` is weakly held
-     ("bridge work on a project" ⊃ "any work on a project"). Asked the judge to rule FAIL vs
-     advisory — do NOT widen the CR on it; file as follow-up if advisory.
-2. On PASS: write the `impl` gate line to both shards, both specs → `status: implemented`, commit.
-3. Rebase onto `main`, PR (**Closes #225**), report Operator by mail.
-4. File the follow-ups below.
+Both gates HITL-ratified by unional. **PR #231** open (Closes #225), rebased onto `main`,
+`pnpm verify` 21/21 green post-rebase. Operator reported by mail. Nothing is blocked.
 
-## Follow-ups to file (do NOT fold in)
+Remaining, none of it this CR's:
 
-1. `B14` — operator.feature retirement-on-red-CI contradiction (pre-existing F3).
-2. `@rubric` titles claim "in voice" with no voice dimension — corpus-wide (`operator.feature`,
-   `pod.feature`); fix both together or neither.
-3. Pod HAL scenario's `hal false` branch is unfalsifiable from a `hal true` Given.
-4. Weak trigger discriminator: operator's `send a message from here …` vs pod's `send a note …`
-   (cf. #211). Both judges independently flagged it; needs an explicit near-miss policy.
-5. `resync-local-plugins` after this lands — the installed marketplace pin still serves the OLD
-   descriptions ("when inside a ship (has .agents/cyberfleet/)"), i.e. the doctrine this CR deletes.
-6. A primary-checkout Pod can never earn the HAL tell — `missions.ts` joins ship→CR on
-   `worktree.branch`, and a primary registers with `branch: main`, matching no CR.
-7. `plugins/cyberfleet/readme.md` credits the `cyberfleet` console with identity/messaging/spawning —
-   all `cyberlegion`'s. Pre-existing drift on the marketplace front door.
-8. `packages/cyberfleet/.agents/spec` now has ZERO behavioral nodes; `missions` is the highest-value
-   backfill (it is the CLI's whole reason to exist and its `hal` field is load-bearing for Pod).
+1. **Merge #231.** Then **run `resync-local-plugins`** — the installed marketplace pin still serves
+   the OLD descriptions ("when inside a ship (has `.agents/cyberfleet/`)"), i.e. exactly the doctrine
+   this CR deletes. Until then the shipped artifact contradicts the frozen suite.
+2. Retire this plan via the Doctrine loop's gated `plan-retirement` step (not by hand).
+
+## Follow-ups — FILED
+
+- **#232** — Pod's description can't discriminate in-project change work (`make the change to this
+  project's auth capability` = yes) from plain single-session work (`just refactor this file` = no).
+  ⚠️ **Records the trap**: tightening `bridge work` → `fleet bridge work` breaks the passing row; the
+  fix is a *positive* term for in-project change work. Also carries the `send a message` / `send a
+  note` near-miss pair (cf. #211).
+- **#233** — `@rubric` titles claim "in voice" with no voice dimension (corpus-wide).
+- **#234** — backfill the `missions` node: `packages/cyberfleet/.agents/spec` now has ZERO behavioral
+  nodes, `missions` is the CLI's whole reason to exist, and its `hal` field is load-bearing for a
+  frozen Pod behavior. Also carries: a primary-checkout Pod can never earn the HAL tell
+  (`missions.ts` joins ship→CR on `worktree.branch`; a primary registers `branch: main` → matches no
+  CR), and `sdd/hal.ts:71`'s stale `missions --json` comment.
+- **#235** — `operator.feature` retires unconditionally on "done" vs the backstop holding a red batch
+  without retiring (pre-existing F3, `B14`). Also carries `plugins/cyberfleet/readme.md` crediting
+  the cyberfleet console with cyberlegion's verbs.
+
+## The lesson (the reason this CR is worth remembering)
+
+Eight rounds of cold ACED judges graded the mode-switch loop. **Every round found real defects** —
+marker paths that were never implemented, CLI flags that don't exist, jointly-unsatisfiable
+scenarios, an unamended ADR. Not one asked what the loop was **for**. The owner did, in one
+sentence, and the whole capability evaporated.
+
+**A spec can be perfectly self-consistent and still specify nothing.** Judges grade internal
+coherence; they do not ask whether the thing should exist. That question stays the Council's.
+
+Second-order lesson from the impl gate: "Pod never spawns" was written in the feature preamble, a
+dedicated scenario, `## Domain`, `## Delegation`, and `## Boundaries` — and was **missing from the
+`description`**, the only line a router actually reads. Restating a rule in prose is not the same as
+putting it where it is enforced.
