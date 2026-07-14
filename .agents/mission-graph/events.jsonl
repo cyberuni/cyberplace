@@ -36,3 +36,4 @@
 {"v":1,"type":"node","id":"op2-m1","status":"retired"}
 {"v":1,"type":"node","id":"op3-m1","status":"retired"}
 {"v":1,"type":"node","id":"op4-m1","status":"retired"}
+{"v":1,"type":"node","id":"op2-m4","status":"claimed"}
