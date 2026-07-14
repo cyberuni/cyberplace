@@ -17,10 +17,10 @@ todos:
     status: completed
   - content: "PAUSED — lifecycle loop: merge in Operation-order -> tear down pod -> write graph -> dispatch next"
     status: pending
-  - content: "merge backstop (speculative-CI / bisection) — BUILT as cyberfleet merge-backstop-governance (commit 19c92652); spec gate self-asserted (by:agent seq 6), impl gate cold-judged PASS 7/7; HELD for HITL ratification"
+  - content: "merge backstop — BUILT as cyberfleet merge-backstop-governance (19c92652); spec gate self-asserted (by:agent seq 6); impl gate cold-judged PASS 7/7, RATIFIED by human merge of PR #207 into main (ba0280d7), impl gate line seq 7 by:unional"
+    status: completed
+  - content: "★ capstone — end-to-end live dispatch: exercise F3 store + headless-operator + merge-backstop together; a mission dispatched + Operation-order-retired with no human in the issue loop"
     status: in_progress
-  - content: "PAUSED — Pod-boundary settle + end-to-end live dispatch (the capstone star)"
-    status: pending
 ---
 
 # Op3 (#190) — Autonomous dispatch (F3)
@@ -70,8 +70,21 @@ New stage `# ── The store home — the orphan ref (F3) ──`, boolean, ove
 
 ## NEXT
 
-**headless-operator SHIPPED AND RATIFIED** (PR #205 merged `848dfc3a`; ledger seq 5 `by:unional`). Now
-building **todo 3 — the merge backstop** (human said continue todo 3, 2026-07-14).
+**merge-backstop SHIPPED AND RATIFIED** (PR #207 merged `ba0280d7`; ledger seq 7 `by:unional`). Three
+of four Op3 carves DONE: F3 store (#204), headless-operator (#205), merge-backstop (#207). Now building
+**todo 4 — the ★ capstone** (human said start capstone, 2026-07-14).
+
+**Todo 4 — ★ end-to-end live-dispatch capstone.** The integration proof that the three shipped pieces
+compose: a real mission **dispatched** off the `ready` frontier by the headless-operator, run in its own
+ship, and **Operation-order-retired** through merge-backstop-governance — with **no human in the issue
+loop**. This is a DEMONSTRATION/acceptance mission (design §v1-carve "dogfood — plan its own build"),
+not a new artifact: decide whether it is (a) a live dogfood run against this repo's own mission graph, or
+(b) a recorded acceptance fixture/scenario proving the compose. Scope it in explore first; it likely
+touches no production code (or only glue) — the pieces already exist. Watch the always-green invariant
+end-to-end. NOTE: shared worktree still carries a concurrent session's `mission-graph.mts` +
+`github-189-symbol-rung.plan.md` WIP — do NOT stage or disturb.
+
+### (history below) merge-backstop resume
 
 **Todo 3 — merge backstop. EXPLORED (2026-07-14).** Design intent (design §Architecture-lessons ROB +
 §Ready-set→dispatcher): missions run OoO in parallel worktrees but **merge to trunk in Operation order**
