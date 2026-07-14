@@ -44,6 +44,17 @@ enough to prune). All four eval layers carry signal.
 - **Offload every mechanic, stay harness-agnostic and MCP-free** — spawn, who, send, inbox, read,
   prune are all `cyberlegion` calls; Operator never re-implements the file store, types into a ship's
   pane, reaches for an MCP messaging server, or assumes every ship runs the same harness.
+- **Drive the lifecycle loop headless (F3)** — when there is no live Council (an unattended or
+  scheduled trigger), the **headless-operator** agent (`plugins/cyberfleet/agents/headless-operator.md`)
+  realizes Operator's dispatch remit widened to the full lifecycle loop: pull the ranked `ready`
+  frontier from the mission-graph engine, claim the top mission on the graph as the **single writer**,
+  `cyberlegion unit spawn` a ship to run it (AFK → autonomous, HITL → human channel, capped at capacity
+  K), and on each completion merge in Operation order behind the merge backstop, tear down the pod,
+  append the retirement + discovered edges, and re-derive `ready` for the next tick. Dispatched
+  missions only **report** (they never write the graph); the loop is summoned, ticks, and exits rather
+  than running as a daemon. Its per-mission spawns are **inter-mission** dispatch from outside any ship,
+  distinct from Pod's **intra-mission** worktree fan-out. It carries no logic Operator plus the
+  mission-graph engine do not already hold — it is that flow, headless.
 
 **Non-goals** — running a mission or hailing specialist crew inside one specific ship (that is
 `pod`, from inside the ship — Operator routes the Council there instead of acting on the ship's
@@ -62,4 +73,5 @@ Every scenario in [`operator.feature`](./operator.feature) maps to one of these 
 | **route messages between ships** | `cyberlegion mail send` / `inbox` / `read`, always by handle |
 | **sweep dead ships** | `cyberlegion unit prune` |
 | **offload + harness-agnostic + MCP-free** | every mechanic is a `cyberfleet` call; no MCP, no same-harness assumption |
+| **the lifecycle loop, headless (F3)** | headless-operator pulls `ready`, claims as single writer, spawns per mission (AFK/HITL, capacity K), retires in Operation order + re-derives; missions only report; summoned-ticks-exits; inter-mission spawns distinct from Pod's intra-mission fan-out |
 </content>

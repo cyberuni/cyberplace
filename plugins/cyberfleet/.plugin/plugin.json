@@ -6,5 +6,6 @@
 	"author": { "name": "unional" },
 	"homepage": "https://github.com/cyberuni/cyberplace",
 	"repository": "https://github.com/cyberuni/cyberplace",
-	"skills": "./skills"
+	"skills": "./skills",
+	"agents": "./agents"
 }
