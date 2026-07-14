@@ -8,12 +8,12 @@ tier: opus
 todos:
   - content: "explore — blast-estimate node + formation barrier call-out authored; 5 judge rounds"
     status: done
-  - content: "spec gate — sdd-spec-judge ALIGNED true (round 5); AWAITING human ratification"
+  - content: "spec gate — sdd-spec-judge ALIGNED true (round 5); HITL-ratified by unional"
+    status: done
+  - content: "deliver — blast-estimate engine + 25 tests; rebased onto main; pnpm verify green"
+    status: done
+  - content: "impl gate — sdd-impl-judge PASS 21/21; 7 defects fixed; AWAITING human ratification"
     status: in_progress
-  - content: "deliver — blast-estimate engine + tests; pnpm verify green"
-    status: pending
-  - content: "impl gate — sdd-impl-judge; rebase onto main; emit verdict packet and STOP"
-    status: pending
   - content: "handoff — PR against main, Closes #192; mail legate that PR is ready to ratify"
     status: pending
 ---
@@ -66,15 +66,42 @@ sanctioned, not duplicates).
 - `touch-set-correction/` (#199) recovers work areas from a `git diff`; it never predicts a touch-set
   pre-work. blast-estimate **consumes** a touch-set; it does not produce one.
 
-## Gate state — SPEC GATE AWAITING HUMAN RATIFICATION
+## Gate state — IMPL GATE AWAITING HUMAN RATIFICATION
 Cold `sdd:sdd-spec-judge` **round 5: ALIGNED true** — oracle/builder/architect all PASS, no open markers.
 Rounds 1–4 each found real defects (all recorded in `192-barriers-and-blast.log.jsonl`). Mechanical:
 formation addOnly 5/0/0 · `mission-graph/` identical to main · `check-scenario-overlap` blocking[0] ·
 `check-spec-structure` blocking[0] · `check-suite` OK · all README citations resolve · `pnpm verify` green.
 
-Leash `auto-none` + HITL-for-barriers ⇒ **do not self-assert**. On ratification: add `@frozen` to
-`blast-estimate.feature`, append the `gate` line to `ledger/github-192.1f8ad6.jsonl` (seq 2), set
-`status: approved`, then deliver.
+**Spec gate: RATIFIED by unional in-session** (commit `e0470f97`) — `blast-estimate.feature` frozen,
+gate seq 2 in the ledger.
+
+**Impl gate: cold `sdd:sdd-impl-judge` → `IMPLEMENTATION_PASS: true`** (final round), 21/21 frozen
+scenarios re-derived on its own fixtures with a scoped-mutation backstop (each scenario killed by
+exactly the mutation naming it). It deferred the gate to the conductor with two prescribed changes,
+both applied (`96f0cebd`).
+
+**Seven impl defects were found and fixed across four rounds — every one invisible to the frozen
+suite**, whose preamble mandates constructed corpora: (1) breadth keyed on raw count not coverage;
+(2) invented node recovery instead of reusing `fileToNode` (owner's catch); (3) relative-root path
+corruption under `--root .`; (4) `readSensitivePaths` swallowing non-ENOENT reads → silent
+under-call; (5) TOML parser rejecting valid commented files; (6) centrality inoperative on the live
+corpus (56/62 at fan-in 0; `sdd/spec-gate` referenced by 79 files scoring 0 → **false `over-called`**);
+(7) duplicate touch-set entries inflating `count`, and an unvalidated `--declared` fabricating
+`under-called` from a typo.
+
+**The structural fix is `blast-estimate.smoke.test.mts`** — a live-corpus check outside the frozen
+suite, bound to no scenario, asserting properties not numbers. Its necessity is measured, not argued:
+mutate the matcher back and **the smoke check fails 3/6 while the frozen suite passes 30/30**
+(reproduced independently by the conductor).
+
+**Known limitations carried to the gate** (recorded in the combat log, not hidden): fan-in
+over-credits boilerplate (`sdd/acceptance`=15 is 100% one template sentence) — the precision floor of
+mention-based matching, and it fails **safe** because blast only *modulates* (over-calling demands more
+evidence; under-calling is the dangerous direction the old bug had). The `7+` hub tier is unpinned
+arithmetic with no contract protection. The smoke check catches a full but not a half regression.
+
+Leash `auto-none` + HITL ⇒ **do not self-assert**. On ratification: gate seq 3 (`by: unional`) →
+handoff → PR `Closes #192` (noting #224 fence, #238 1-area spec defect).
 
 ## Method
 - SDD self-spec → ACED recuses (precedent #130/#191) → SDD default chain; boolean process-Gherkin.
