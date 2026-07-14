@@ -18,7 +18,7 @@ todos:
   - content: "impl gate — cold impl-judge 20/20, dogfood clean; HITL ratified; pnpm verify 21/21"
     status: completed
   - content: "handoff — rebase onto main, PR closing #220, file prevalence-sweep follow-up CR"
-    status: in_progress
+    status: completed
 ---
 
 # CR github-220 — a Given is a test vector, not specification
@@ -80,7 +80,7 @@ since both directions are user-ratified.
 routes through the spec-judge's qualitative bars — which is how `suite-format` (a reference node)
 is designed to be enforced.
 
-**Prevalence (issue item 3) is deferred** to a follow-up CR filed at handoff. This CR stops *new*
+**Prevalence (issue item 3) is deferred** to a follow-up CR — filed at handoff as #241. This CR stops *new*
 absorption; measuring existing dead weight across already-frozen nodes is a retroactive corpus
 audit — a distinct capability needing its own node + suite. A naive lexical probe is unfit
 (shared 6-grams flag `ssa-lowering`'s legitimate Feature-description overlap and miss all three
@@ -117,7 +117,10 @@ first pass. The polarity must be stated explicitly in the impl-judge's absorptio
 
 ## NEXT
 
-Both gates ratified in-session by the Council. Three commits on the branch: spec unit (39b7c2e6),
-check-suite ref fix (8eaf2551), deliver unit (6e7ed110). Rebase onto main, push, open the PR
-closing #220, and file the prevalence-sweep follow-up CR (issue item 3). Keep this plan until the
-PR merges and is doctrine-distilled.
+SHIPPED — PR #240 open, Closes #220. Both gates HITL-ratified in-session; leash auto-none.
+Rebased onto main 3691786a; pnpm verify 21/21 and check:specs exit=0 on the rebased tree.
+Follow-up #241 filed (prevalence sweep, issue item 3).
+
+Four commits: spec unit, check-suite ref fix (own unit), deliver unit, gate records.
+
+Keep this plan until PR #240 merges and is doctrine-distilled at retro.
