@@ -81,4 +81,3 @@ Every scenario in [`operator.feature`](./operator.feature) maps to one of these 
 | **offload + harness-agnostic + MCP-free** | every mechanic is a `cyberfleet` call; no MCP, no same-harness assumption |
 | **the lifecycle loop, headless (F3)** | headless-operator pulls `ready`, claims as single writer, spawns per mission (AFK/HITL, capacity K), retires in Operation order + re-derives; missions only report; summoned-ticks-exits; inter-mission spawns distinct from Pod's intra-mission fan-out |
 | **the merge backstop (F3)** | `merge-backstop-governance`: Operation-order retirement, land only on green speculative CI, bisect a red batch (hold culprit / land innocent), confidence-bounded speculation depth, always-green trunk; mechanics offloaded to `gh`/git/CI |
-</content>

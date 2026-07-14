@@ -68,4 +68,3 @@ Every scenario in [`pod.feature`](./pod.feature) maps to one of these behaviors:
 | **fan out into worktree-ships** | concurrent work is spawned as a worktree-ship with a self-contained brief, addressed by handle |
 | **HAL tell, once, when earned** | reads its own `hal` field and speaks the tell once when true; never repeated, silent when false |
 | **offload + harness-agnostic + MCP-free** | every mechanic is a `cyberlegion` call; no MCP, no same-harness assumption |
-</content>

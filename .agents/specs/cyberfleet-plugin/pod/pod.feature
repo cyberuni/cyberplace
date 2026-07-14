@@ -18,11 +18,9 @@ Feature: pod — the ship's bridge persona
 
   @behavior
   Scenario: the primary checkout and a spawned worktree are both ships
-    Given the tracked .cyberfleet/config.json marker is present at a project root, whether that
-      root is the primary checkout or a worktree spawned from it
+    Given the tracked .cyberfleet/config.json marker is present at a project root, whether that root is the primary checkout or a worktree spawned from it
     When cyberfleet mode is checked at that root
-    Then it reports ship and the Pod skill activates there — there is no separate
-      flagship persona reserved for the primary checkout itself
+    Then it reports ship and the Pod skill activates there — there is no separate flagship persona reserved for the primary checkout itself
 
   @behavior
   Scenario: Pod defers to Operator when it is not in a ship
@@ -66,8 +64,7 @@ Feature: pod — the ship's bridge persona
   Scenario: Pod consumes its mission brief in one read-and-ack step
     Given Pod is entering a ship and its inbox holds an unread mission brief
     When Pod receives that brief
-    Then it reads the brief with cyberlegion mail read --ack so the brief is consumed in the same
-      step it is read, leaving no dangling unread mail behind
+    Then it reads the brief with cyberlegion mail read --ack so the brief is consumed in the same step it is read, leaving no dangling unread mail behind
 
   @behavior
   Scenario: handled mail is acked immediately
@@ -97,8 +94,7 @@ Feature: pod — the ship's bridge persona
   Scenario: concurrent work is spawned as a worktree-ship with a self-contained brief
     Given Pod is inside a ship and the Council wants concurrent work on this project
     When Pod delegates the parallel work
-    Then it runs cyberlegion unit spawn, which creates a new worktree-ship stamped with its own
-      .cyberfleet/config.json marker, handing it a brief that stands on its own and addressing it by handle
+    Then it runs cyberlegion unit spawn, which creates a new worktree-ship stamped with its own .cyberfleet/config.json marker, handing it a brief that stands on its own and addressing it by handle
 
   # ── HAL tell (ADR-0022 decision 6) ──
 
@@ -106,8 +102,7 @@ Feature: pod — the ship's bridge persona
   Scenario: Pod surfaces the HAL tell once when its own ship self-asserted above its leash
     Given cyberfleet missions --json reports this ship's own row with hal true
     When Pod checks its own row
-    Then it speaks the HAL tell once as a rare, earned signal and continues its work, never
-      repeating it for the same self-assertion and never surfacing it when hal is false
+    Then it speaks the HAL tell once as a rare, earned signal and continues its work, never repeating it for the same self-assertion and never surfacing it when hal is false
 
   # ── Offload + harness-agnostic + MCP-free ──
 
@@ -115,8 +110,7 @@ Feature: pod — the ship's bridge persona
   Scenario: every mechanic is a cyberlegion call and no peer's harness is assumed
     Given Pod is running the bridge and coordinating with peers
     When it registers, reads, sends, spawns, or lists missions
-    Then it invokes the cyberlegion CLI, never re-implements the file store or types into another
-      pane, never reaches for an MCP messaging server, and makes no same-harness assumption
+    Then it invokes the cyberlegion CLI, never re-implements the file store or types into another pane, never reaches for an MCP messaging server, and makes no same-harness assumption
 
   @quality @rubric
   Scenario: Pod runs the bridge offloaded, etiquette-complete, and in voice
@@ -136,4 +130,3 @@ Feature: pod — the ship's bridge persona
       threshold: 7
       """
     And the rubric score is at least the threshold
-</content>

@@ -53,4 +53,3 @@ persona e2e; a future `acceptance/` node may formalize it.
 Squad note: all four nodes are agent-behavior (ACED carries all four eval layers — activation and
 judgment). The deterministic CLI behaviors (SDD-default + a script harness — boolean scenarios, no
 rubric) are the sibling `cyberfleet` CLI project.
-</content>
