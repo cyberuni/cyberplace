@@ -65,7 +65,34 @@ doctrine is expected and is NOT the defect — the defect is the floor.
 - The judgment is not unit-testable; the discrimination claim must be **measured** (mutant run), not
   asserted.
 
+## Landed so far
+
+- `d6e38e1b` — the rework: all 11 rubrics re-dimensioned, thresholds `max-2` → `sum(max)-1`, parse fixed.
+- `b9c35510` — doctrine's stale self-description of its eval dropped (drift caused by the rework).
+- `e5953e6c` — Oracle-lens revert: `fleet-rebase-reasoned` → boolean guard (it graded an unstated rule).
+
+Follow-ups filed: **#243** fail-open + 6 unparseable suites · **#244** ACED loseable-dimension bar
+· **#245** `aced-case-judge` scalar output contract.
+
+## Findings that outlived the CR
+
+- **The suite had never parsed** (EPARSE line 8, since creation). Every mechanical check failed OPEN:
+  `check-suite` exit 0 "OK", `gherkin-cli diff` `addOnly:true`, `classify-edit-class`
+  `NO-CONTENT-CHANGE` — on a rewrite of every graded scenario. A check that cannot parse its input
+  must escalate, not exempt (#243). This is why #189's gate could sincerely record the thresholds as
+  "genuinely discriminating": no mechanical check has ever run here.
+- **Clearance never fired**: #215 removed `@frozen` and never restored it.
+- **The calibration anchor does not replicate**: `catches-misalignment` measured 2.33/3 then 3.00/3,
+  both against a *correct* doctrine. `sum-1` retained (the floor is what must be ~0), but the slack is
+  no longer reported as evidence-backed.
+
 ## NEXT
 
-Audit complete (all 11 scored). Draft the reworked dimensions via `aced-scenario-writer`, then
-classify the edit class structurally before any freeze.
+Measurement in flight (do not interrupt — a prior round returned partial and had to be redone):
+1. Full impl gate — all 11 `@rubric` at N=3 + `@trigger` + 7 boolean guards.
+2. Discrimination matrix — mutants A/B/C/D × OLD-vs-NEW rubric + real-doctrine controls.
+   **Cells C and D are decisive**: they are the only rubric-level discrimination (A and B prove only
+   boolean-guard-level). A CR titled "thresholds are non-binding" is judged on C and D.
+
+Then: verdict, impl gate, PR (`Closes #221`). If C/D refute the claim, say so — do not ship on
+inspection.
