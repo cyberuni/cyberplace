@@ -4,14 +4,16 @@ todos:
   - content: "Intake: locate handoff + combat-log nodes, classify edit-class, settle CR scope"
     status: completed
   - content: "Explore: draft handoff README + .feature delta (record/classify/propose/drain) + combat-log followup shape"
-    status: pending
+    status: completed
   - content: "Spec gate: cold sdd-spec-judge, freeze, ledger gate line"
-    status: pending
+    status: completed
   - content: "Deliver: start-mission Step 4 + combat-log-governance SKILL.md"
-    status: pending
+    status: completed
   - content: "Impl gate: cold sdd-impl-judge against the frozen .feature"
-    status: pending
-  - content: "Handoff: pnpm verify, commit, PR Closes #237, dogfood the doctrine on own follow-ups"
+    status: completed
+  - content: "Handoff: pnpm verify, commit, PR Closes #237; record stage dogfooded and EXECUTED"
+    status: completed
+  - content: "BLOCKED on owner: drain refused — 2 follow-ups recorded but unfiled; needs the standing filing rule or a human to file them"
     status: pending
 ---
 
@@ -79,6 +81,43 @@ against `cyberfleet-plugin` — which this mission dogfoods by recording it as `
 - If the drain cannot run headless here, that is **expected**: record stands, emit the gate verdict,
   leave the human ratification owed.
 
+## Outcome
+
+Both gates passed and are recorded. Spec gate: round 4 ALIGNED after three blocked rounds (each
+defect real, each closed additively, none refuted by a later round; the suite stayed 21 added /
+0 modified / 0 removed throughout, so the freeze self-cleared with no re-open). Impl gate:
+IMPLEMENTATION_PASS on all 21 frozen scenarios, after round 1 caught the doctrine's own
+`followup` write being silently denied by the canonical write-ownership matrix — the #229 pattern
+landing on the CR that specifies against it. `pnpm verify` green on the `origin/main`-rebased tree.
+
+## ★ The doctrine dogfooded itself — and the split held
+
+**Record EXECUTED.** Two `followup` lines are in this CR's ledger shard, written unconditionally
+before any filing was attempted. This is the act #230 specified and never once ran.
+
+**Drain REFUSED.** The harness classifier denied the forge create-issue act, exactly as it did to
+#230. Per the frozen denial path: the records **stand**, the refusal is **reported loudly**, and
+neither follow-up is reported as filed. Not worked around — the pane-typing channel would forge the
+owner's voice.
+
+**This is the design working, not failing.** #230 died here because filing was its primary act.
+Record-first means the same denial costs nothing: the thread is durable and the drain retries from
+the record.
+
+**Evidence requirement B does real work:** #230's denial cited *two* reasons — an unnamed filing act
+**and** excess sensitive detail (internal spec paths and ledger filenames on a public tracker). This
+denial cites **only** the unnamed act. The sensitive-detail objection is gone against a body composed
+under the new stricter outward floor. Only the permission gap remains.
+
 ## NEXT
 
-Explore: draft the handoff README + `.feature` delta and the combat-log `followup` entry shape.
+Owner decision — the drain is owed, nothing else is:
+
+1. **Grant the standing filing rule** (a Bash permission rule for the forge's create-issue act), then
+   re-run the drain from the durable record — it re-derives what is outstanding by dedupe, so a retry
+   is safe and idempotent. Or **file the two recorded follow-ups by hand** from the ledger shard.
+2. Recorded and outstanding (dedupe matched neither against existing issues, open or closed):
+   - **`blocking`** — nothing admits a follow-up proposal to the mission graph (the Operator's side).
+     **Must be specced before #196 lands**, or the loop closes with no classification and no
+     admission boundary.
+   - **`backlog`** — the standing filing permission rule itself.
