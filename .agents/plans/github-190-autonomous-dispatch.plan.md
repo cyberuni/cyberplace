@@ -13,8 +13,8 @@ todos:
     status: completed
   - content: "Handoff: PR #204 opened (Part of #190 — F3 store only, NOT Closes); verdict packet mailed to legate; impl gate ratified by human merge of #204 into main (52e14110); impl gate line recorded (seq 3, by:unional)"
     status: completed
-  - content: "PAUSED — headless-operator agent (cyberfleet agents/): the unattended fleet-level dispatch-loop driver"
-    status: pending
+  - content: "headless-operator agent (cyberfleet agents/): the unattended fleet-level dispatch-loop driver — Pod-boundary settled, ready-surface confirmed present"
+    status: in_progress
   - content: "PAUSED — lifecycle loop: merge in Operation-order -> tear down pod -> write graph -> dispatch next"
     status: pending
   - content: "PAUSED — merge backstop (speculative-CI / bisection)"
@@ -70,23 +70,33 @@ New stage `# ── The store home — the orphan ref (F3) ──`, boolean, ove
 
 ## NEXT
 
-**F3 store SHIPPED AND RATIFIED.** PR #204 merged into `main` (`52e14110`, 2026-07-14) — the merge is the
-human impl-gate ratification. Impl `gate` line recorded (ledger seq 3, `by:unional`, node advances to
-implemented). The F3-store carve of Op3 is **DONE**.
+**F3 store SHIPPED AND RATIFIED** (PR #204 merged `52e14110`; ledger seq 3 `by:unional`). Now UN-PAUSED
+(human said continue 2026-07-14) — building the **headless-operator** (todo 1, in_progress; todo 2
+"lifecycle loop" is its core behavior, not a separate deliverable).
 
-**OPEN DECISION — resume or leave paused?** The remaining Op3 deliverables below are still marked PAUSED
-in the todos. The store (their dependency root) is now shipped, so nothing blocks them — but they were
-deliberately paused, and un-pausing is a scope call for the human. Do not start them without a go.
+### Decisions settled this resume (were the design's "Gap → F3" open item)
 
-The PAUSED todos (the rest of Op3) — each consumes the now-branch-independent F3 store:
-1. **headless-operator** — cyberfleet has no `agents/` dir today; build the unattended fleet-level
-   dispatch-loop driver as a cyberfleet agent. Settle its relationship to Pod-style spawns (design
-   §"Gap → F3": spawning parallel worktree-ships from inside a ship is Pod's job today).
-2. **lifecycle loop** — merge in Operation-order → tear down pod → write graph (single writer, via the
-   F3 store) → re-derive `ready` → dispatch next.
+- **Pod-boundary — SETTLED.** `Pod.spawn` = *intra*-mission fan-out (a ship parallelizes ITS OWN mission
+  with helper worktree-ships, from inside a ship). `headless-operator.spawn` = *inter*-mission dispatch
+  (the fleet loop reads `ready`, picks the next WHOLE mission off the frontier, spawns a ship for it,
+  on completion merges + retires + re-derives — from OUTSIDE any ship, single graph writer). No collide.
+  headless-operator = the **Operator persona realized headless** (Operator already owns spawn-from-
+  outside / list-fleet / route); remit widens from spawn/list/route to the full lifecycle loop driven by
+  `ready` instead of a live Council request. **No rule in Pod or Operator changes.**
+- **Dependencies confirmed PRESENT (not blocked):** `mission-graph.mts ready --format json` emits the
+  ranked frontier (id, node, operation, blast, hitlOrAfk, modelTier, briefPointer, rank); `append`
+  node/edge/tombstone is the single-writer path; `migrate` + orphan store shipped (F3); `cyberlegion
+  unit spawn` delivers the first turn (#188). The loop wires over these — no new engine.
+- **v1 shape = lean agent def, loop inline (mirrors [[headless-legate]]).** headless-operator carries the
+  lifecycle-loop pseudocode inline and defers MECHANISMS to the mission-graph engine (ready/append) +
+  cyberlegion CLI (unit spawn) + the Operator persona's existing spawn seat. NO new governance for v1
+  (headless-legate keeps its muster loop inline too). Needs manifest wiring: add `"agents": "./agents"`
+  to `plugins/cyberfleet/.plugin/plugin.json` (no agents key today).
+
+### Remaining after headless-operator
 3. **merge backstop** — speculative-CI / bisection (dispatch-consumer concern, not the store engine).
-4. **★ capstone** — Pod-boundary settle + end-to-end live dispatch (a mission dispatched +
-   Operation-order-retired with no human in the issue loop).
+4. **★ capstone** — end-to-end live dispatch (a mission dispatched + Operation-order-retired with no
+   human in the issue loop).
 
 ## Out of scope (paused — file as continuation of this mission or follow-up CRs)
 
