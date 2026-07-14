@@ -7,15 +7,15 @@ leash: auto-none
 tier: fable
 todos:
   - content: "explore — author F1 doc-strengthening + F2 spec node + wire formation act"
-    status: in_progress
-  - content: "spec gate — sdd-spec-judge, then STOP for HITL ratification (doctrine)"
-    status: pending
-  - content: "deliver — build F2 detection engine + verifications against frozen suite"
-    status: pending
-  - content: "impl gate — sdd-impl-judge, then STOP for HITL ratification"
-    status: pending
-  - content: "handoff — Warden placement pass, PR against main referencing #191"
-    status: pending
+    status: done
+  - content: "spec gate — sdd-spec-judge ALIGNED true; HITL-ratified by unional"
+    status: done
+  - content: "deliver — F2 engine + tests + write-boundary guards; pnpm verify green"
+    status: done
+  - content: "impl gate — sdd-impl-judge PASS; rebased onto main; HITL-ratified by unional"
+    status: done
+  - content: "handoff — PR #206 against main, Closes #191; awaiting merge"
+    status: done
 ---
 
 # CR github-191 — Op4: corpus partitioning prerequisites F1 + F2
@@ -47,7 +47,7 @@ cross-node scenario-overlap detection + dedup (spec-level SSA).
 - Validate `pnpm verify` in this worktree before any gate commit/push.
 
 ## NEXT
-Explore: draft F2 `scenario-overlap` node README + `.feature` (deterministic candidates + `@rubric`
-overlap arm, mirror check-spec-structure); draft F1 spec-layout.md strengthening; add formation
-additive scenarios (F1 layout-quality signal + F2 dedup act). Then run sdd-spec-judge and STOP at
-spec gate for HITL.
+SHIPPED — PR #206 open against main (Closes #191), both gates HITL-ratified, `pnpm verify` green.
+Awaiting merge. On merge: the plan is retired at doctrine-distill. A corpus-wide formation pass is
+due (`sdd:manage` → "audit the corpus structure") — the new `check-scenario-overlap` station is now
+available to it; gate nothing on it.
