@@ -1,23 +1,15 @@
 ---
-status: draft
+status: approved
 project-path: plugins/cyberfleet
 approval:
   spec:
     verdict: approve
-    by: agent
+    by: unional
     cause: dimension
     why:
-      leash: within — renamed the `tuning/` node to `mechanic/` (Tuner persona → Mechanic) and widened its charter from reconfigure-only to build+tune the automaton artifact. The rename is a freeze-preserving reconcile (gherkin keys on title, so the retitle reads remove+add, but the rename-only scenario oracles are unchanged). Three coupled re-opens ratified under conductor leash — all the Council-pre-decided charter change: re-chip engine `define-agent`/`improve-agent-definition` → `define-skill`/`improve-skill` (an automaton is a gateway skill, not a subagent); the build-boundary polarity flip (Mechanic now builds a not-yet-existing automaton via `define-skill` instead of deferring authoring to Crimp); and the twin author-from-scratch trigger narrowing (a plain workflow skill still defers to `define-skill` directly). Peer-persona mentions in `recruitment.feature` and `tavern.feature` migrated as freeze-preserving reference-renames (Crimp/Tavern behavior unchanged). Durable record in the `ledger/` shard `mechanic-rename-build-tune.b4c1a2.jsonl`.
-      basis: independent cold judge ALIGNED true — confirmed the rename/additive/re-open split (11 freeze-preserving renames, 3 additive, 3 re-opens) and flagged the author-from-scratch scenario as the twin re-open (adopted). Floor: none (no acceptance scenario deleted or weakened outside the intended charter widening).
-      cr: mechanic-rename-build-tune
-  impl:
-    verdict: approve
-    by: agent
-    cause: dimension
-    why:
-      leash: within — `plugins/cyberfleet/skills/mechanic/SKILL.md` conforms to the frozen `mechanic.feature`: Jackass workshop-engineer voice with plug-in-chip identity; build → `define-skill`, re-chip → `define-skill`/`improve-skill` (never the subagent engines), model/effort → `manage-model-runners`, leash → autonomy rubric; advises-not-switches, confirms hot-swap, builds not-yet-existing automatons; thin in-session dispatcher. `mechanic.feature` stays `@frozen`.
-      basis: `pnpm verify` green (20/20 — gherkin parse + align-spec no drift + no leaks). README, website doc + nav slug, and Crimp/Tavern cross-refs migrated consistently. No changeset — no changeset-tracked package changed.
-      cr: mechanic-rename-build-tune
+      leash: auto-none — HITL-ratified live in-session. The CR fires the **Clearance hard floor**: it deletes acceptance scenarios from two `@frozen` suites. Genuine deletions are the mode-switch pair (`Operator activates when there is no ship marker`, `Operator defers to Pod when it is inside a ship`), `Pod defers to Operator when it is not in a ship`, Operator's commission pair, and Pod's intra-mission fan-out — all moot once the switch is retired. The remaining `removed` rows are title-keyed retitles that preserved behavior. Edit class vs `a414b9cd`: 17 added / 5 modified / 14 removed. Pivoted mid-flight (#225) from "mode is Pod's precondition" to "mode is deleted": the marker held only `{version:1}`, its sole reader was `detectMode`, whose sole caller was the `cyberfleet mode` command, whose sole callers were these two personas' mode guards — a closed loop gating no capability. Membership already lives in `cyberlegion unit register` → `AgentRecord`, which is what `missions` enumerates. Durable record in the `ledger/` shard `cyberfleet-mode-pod-precondition.440ca1.jsonl`.
+      basis: cold ACED spec-judges over 8 rounds; final judge oracle PASS + builder PASS, architect FAIL on 7 sweep misses — all fixed (incl. `plugins/cyberfleet/readme.md`, the marketplace front door, untouched by any prior round and still asserting Pod spawns) then grep-gated. `pnpm verify` 21/21 green. Companion shard on the sibling `packages/cyberfleet` spec — one CR, two touched specs.
+      cr: cyberfleet-mode-pod-precondition
 ---
 
 # cyberfleet-plugin — the fleet & crew personas (agent behavior)
