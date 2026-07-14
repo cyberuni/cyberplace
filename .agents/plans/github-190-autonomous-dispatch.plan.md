@@ -17,7 +17,7 @@ todos:
     status: completed
   - content: "PAUSED — lifecycle loop: merge in Operation-order -> tear down pod -> write graph -> dispatch next"
     status: pending
-  - content: "merge backstop (speculative-CI / bisection) — build the backstop's own mechanism/contract; headless-operator merges 'behind' it (specced as a collaborator, seam both judges flagged)"
+  - content: "merge backstop (speculative-CI / bisection) — BUILT as cyberfleet merge-backstop-governance (commit 19c92652); spec gate self-asserted (by:agent seq 6), impl gate cold-judged PASS 7/7; HELD for HITL ratification"
     status: in_progress
   - content: "PAUSED — Pod-boundary settle + end-to-end live dispatch (the capstone star)"
     status: pending
@@ -73,13 +73,34 @@ New stage `# ── The store home — the orphan ref (F3) ──`, boolean, ove
 **headless-operator SHIPPED AND RATIFIED** (PR #205 merged `848dfc3a`; ledger seq 5 `by:unional`). Now
 building **todo 3 — the merge backstop** (human said continue todo 3, 2026-07-14).
 
-**Todo 3 — merge backstop.** The seam both judges flagged: headless-operator merges "behind the merge
-backstop" (specced as a collaborator in operator.feature S6), but the backstop's own mechanism/contract
-is unbuilt. Build it: speculative-CI / bisection so Operation-order merges don't land a broken main.
-Decide its home (a cyberlegion verb the loop calls, vs inline in the agent) — the judges left it
-implicit. Likely a new spec node + engine; scope it in explore first. NOTE: `mission-graph.mts` +
-`github-189-symbol-rung.plan.md` currently carry ANOTHER concurrent session's uncommitted work in this
-shared worktree — do NOT stage or disturb them.
+**Todo 3 — merge backstop. EXPLORED (2026-07-14).** Design intent (design §Architecture-lessons ROB +
+§Ready-set→dispatcher): missions run OoO in parallel worktrees but **merge to trunk in Operation order**
+(in-order retirement) to keep trunk always-green; the **backstop = flush-on-misprediction** — before an
+Operation-order merge lands, **speculative CI** tests the merged result; on red, **bisection** finds the
+culprit, which is held/re-queued, never landed on trunk. It is a **dispatch-layer** concern (design:
+"the merge + backstop is the dispatcher's"; "keep a speculative/bisection merge backstop in the dispatch
+layer"), Operator-owned, listed as a "dispatch-consumer" deferral (NOT the store engine).
+
+**HOME FORK — SETTLED (A) by human choice 2026-07-14:** a cyberfleet **governance** (cyberfleet's
+first), `plugins/cyberfleet/skills/merge-backstop-governance/`, loaded by name by the headless-operator
+at its merge step — mechanics deferred to `gh`/git/CI, no new engine. (Rejected: (B) a cyberlegion verb
+— merge+CI+bisect is VCS/CI orchestration outside cyberlegion's inter-agent-comms remit; (C) a `.mts`
+engine — the design frames the backstop as a dispatch-layer protocol, not a store-grade engine.)
+
+**BUILT (commit 19c92652):** the governance SKILL+README (§Order Operation-order / §Gate green-only
+speculative CI on merged result / §Bisect hold-culprit-land-innocent / §Depth confidence-bounded /
+§The invariant always-green) + headless-operator wired to load it by name + 7 additive `@behavior`
+scenarios on the operator node (+50/-0, self-clearing) + README. Both cold judges PASS:
+- **Spec gate** — cold `aced-spec-validator` **ALIGNED true**. Self-asserted `by:agent`, ledger seq 6.
+- **Impl gate** — cold `aced-impl-judge` **IMPLEMENTATION_PASS 7/7**, no hollow passes, faithful to the
+  dispatch-governance partial-skill pattern. **HELD for HITL ratification** — human ratifies by merging.
+
+VERIFY CAVEAT: `pnpm verify` is red in the shared worktree ONLY from a concurrent session's unformatted
+`mission-graph.mts` WIP (+ its downstream knip), NOT this change. My files pass biome (markdown, not
+linted) and `verify:specs` in isolation; PR CI runs on a clean checkout so it will gate honestly.
+
+NOTE: `mission-graph.mts` + `github-189-symbol-rung.plan.md` carry ANOTHER concurrent session's
+uncommitted work in this shared worktree — do NOT stage or disturb them.
 
 ### (history below) headless-operator resume
 
