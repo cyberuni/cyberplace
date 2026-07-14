@@ -54,13 +54,13 @@ on mission-done(m):                            # m reports through its existing 
   confidence — so trunk stays always-green. The scheduler stays read-only; the merge + backstop is this
   loop's, and its mechanics (`gh`/git/CI) are offloaded, never re-implemented here.
 
-## Spawn boundary — inter-mission, not Pod's intra-mission fan-out
+## Spawn boundary — inter-mission dispatch from the Operator seat
 
 This loop's per-mission spawns are **inter-mission** dispatch: it picks a *whole mission* off the
-frontier and spawns a ship to run it, from **outside** any one ship — the Operator seat. This is
-distinct from **Pod**, whose spawns are **intra-mission** fan-out (a ship parallelizing *its own*
-mission with helper worktree-ships from *inside* a ship). Never invoke a rule of the in-ship Pod
-persona; never type into a dispatched ship's pane. Dispatch is `cyberlegion unit spawn` with a brief
+frontier and spawns a ship to run it. They are the same spawning remit Operator holds in-session —
+all spawning is Operator's, and **Pod never spawns**, so there is no intra-mission fan-out to
+contrast against. Never invoke a rule of the in-ship Pod persona; never type into a dispatched ship's
+pane. Dispatch is `cyberlegion unit spawn` with a brief
 that stands on its own (the new Pod starts cold and reads it through its own SessionStart hook) and
 `--at workspace` so each ship opens in its own workspace.
 

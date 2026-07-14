@@ -1,21 +1,21 @@
 ---
 title: Pod
-description: The bridge-companion automaton of a ship — mission entry, inbox, and crew from inside a workspace.
+description: The bridge-companion automaton of a ship — mission entry, inbox, and hailing specialist crew.
 ---
 
 Part of the [cyberfleet plugin](/cyberfleet/overview/) — see that page for install instructions.
 
-**Trigger:** invoked when you're **inside a ship** (a workspace with `.agents/cyberlegion/`) — mission entry, checking the inbox, working with the crew. Not for cross-ship routing (that's the [Operator](/cyberfleet/operator/)).
+**Trigger:** invoked for bridge work on a project — mission entry, checking the inbox, working with the crew. Pod has no location precondition: it's reached by what you ask, not by where you stand. Not for fleet-wide oversight or cross-ship routing (that's the [Operator](/cyberfleet/operator/)), and not for spawning (Operator's job — Pod never spawns).
 
-The **Pod** is the bridge-companion of a ship. It greets you when you board, clears the inbox, and runs the mission. When the work should fan out, it launches a sister ship to run a mission in parallel.
+The **Pod** is the bridge-companion of a ship. It greets you when you board, clears the inbox, and runs the mission.
 
 ## What it does
 
-- Reports the ship's `mode` and surfaces the mission state derived from [SDD](/sdd/overview/).
+- Surfaces the mission state derived from [SDD](/sdd/overview/).
 - Clears the ship's inbox — reads and acknowledges pending mail from other ships.
-- Drives the mission forward in-ship, and spawns a sister ship (its own worktree + pane) when the work parallelizes.
+- Drives the mission forward. When work should fan out, it tells you spawning a worktree-ship is the Operator's job, which you invoke directly.
 
 ## Related
 
-- [Operator](/cyberfleet/operator/) — the fleet-level counterpart, run from outside a ship
+- [Operator](/cyberfleet/operator/) — the fleet-level counterpart, invoked directly rather than handed off to
 - [cyberfleet Overview](/cyberfleet/overview/)
