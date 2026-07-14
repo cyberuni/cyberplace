@@ -10,6 +10,10 @@
 			"cache": false,
 			"outputs": []
 		},
+		"//#check:specs": {
+			"cache": false,
+			"outputs": []
+		},
 		"//#knip": {
 			"cache": false,
 			"outputs": []
@@ -37,6 +41,7 @@
 			"dependsOn": [
 				"//#check:ci",
 				"//#check:skills",
+				"//#check:specs",
 				"//#knip",
 				"//#verify:specs",
 				"build",
