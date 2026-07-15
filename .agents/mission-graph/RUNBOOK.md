@@ -12,8 +12,9 @@ git checkout main && git pull
 mg() { node plugins/sdd/skills/mission-graph/scripts/mission-graph.mts "$@"; }
 ```
 
-The store is `.agents/mission-graph/events.jsonl` (git-tracked, append-only). Each `mg append` is a
-tracked change — commit it (with the mission, or as a small `chore(mission-graph): …` commit).
+The store is the git orphan ref `refs/sdd/mission-graph` (append-only; migrated off the old in-tree
+`events.jsonl` seed). Each `mg append` commits straight into that ref — it is **not** a working-tree
+change, so there is nothing to `git commit` after an append.
 
 > If you drive via the marketplace-installed SDD skills rather than the loop below, first run the
 > `resync-local-plugins` skill so they reflect merged HEAD. Not needed to run the engine directly.
