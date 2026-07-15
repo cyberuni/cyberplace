@@ -14,8 +14,8 @@ todos:
     status: pending
   - content: 'impl gate: BLOCKED until gherkin-cli 0.0.2 is published (owner-held)'
     status: pending
-  - content: 'handoff: PR referencing #278 (draft, blocked on publish); follow-ups filed'
-    status: pending
+  - content: 'handoff: PR #286 (draft, Refs not Closes — blocked on publish); filed #287/#288/#289'
+    status: completed
 ---
 
 # CR github-278 — the edit-class classifier is blind to step-argument content
@@ -81,12 +81,15 @@ DataTable} x {says, written} + location) instead of patching each named site. Ro
 the matrix independently from the implementation, built nine mutants, and measured that each of the
 seven scenarios kills at least one while a pristine control survives all seven.
 
-## Not folded in (filed separately)
+## Not folded in (filed)
 
-- **`Rule:`-nested scenarios are invisible to the differ** (`scenarios: []` → the whole file reads
-  `no-content-change`), and `Background:` steps are never diffed. A different mechanism — traversal,
-  not signature. Corpus exposure: 0 files use `Rule:`, 8 use `Background:`. Latent, so filed, not
-  folded.
+- **#287** — `Rule:`-nested scenarios are invisible to the differ (`scenarios: []` → the whole file
+  reads `no-content-change`), and `Background:` steps are never diffed. Traversal, not signature.
+  Corpus exposure: 0 files use `Rule:`, 8 use `Background:`. Latent.
+- **#288** — tags / Examples / step keywords / scenario name are in the identity but frozen by no
+  scenario. Pre-dates this CR; same class reached from the opposite direction.
+- **#289** — the freeze covers a rewritten step argument but not a deleted one. Implementation is
+  already correct and upstream-tested; the claim is just unfrozen.
 - **#275** (rubric leaking to a blind simulator) — placement, not the freeze classifier. Per brief.
 
 ## The blocker
