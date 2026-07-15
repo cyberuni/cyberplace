@@ -11,7 +11,7 @@ todos:
   - content: "Deliver: engine --feature-root/--root split + per-project discovery, impl-judge step-0 doctrine update, new manage-scenario-bridge engine, tests, impl-judge"
     status: completed
   - content: "Impl gate; pnpm verify; handoff branch + PR"
-    status: in_progress
+    status: completed
 ---
 
 # scenario-bridge-monorepo-rooting — decouple feature-root from bridge/report-root
@@ -42,6 +42,8 @@ and silently falls back to full by-hand judging — confirmed only `packages/cyb
   same shape: writes only its one config file, no CR, no gate).
 
 ## NEXT
-Start explore: load spec-producer-governance + ownership-governance + suite-format-governance +
-spec-format-governance, grill spec.md diffs for both nodes + new manage engine's spec, draft
-`.feature` additive scenarios, run build-to-learn spike, cold spec-judge.
+Done — landed as PR #259 (https://github.com/cyberuni/cyberplace/pull/259), branch
+`sdd/scenario-bridge-monorepo-rooting`. Ledger: `.agents/specs/sdd/ledger/scenario-bridge-monorepo-rooting.0f4ead.jsonl`.
+One backlog follow-up recorded there (pre-existing `manage-ignore` omission from
+`.agents/specs/sdd/gateway/manage/README.md`, unrelated to this CR) — not filed as an issue, flagged
+to the user at handoff instead.
