@@ -12,14 +12,14 @@ todos:
     status: done
   - content: "prove discrimination — 5-condition ablation, blind-scored: reasoning 6/6 PASS, both memorizers 3/6 FAIL"
     status: done
-  - content: "spec gate — judge ALIGNED true after closing 2 README gaps + the title leak; AWAITING owner ratification"
+  - content: "spec gate — ALIGNED true; ratified by unional DIRECTLY (relay refused per the seam); gate seq 4"
+    status: done
+  - content: "deliver — no SKILL.md edit: the current doctrine already scores the reasoning read 6/6; rebased"
+    status: done
+  - content: "impl gate — PASS 20/20; judge separated production from scoring itself; ratified by unional; seq 8"
+    status: done
+  - content: "handoff — PR against main, Closes #222; filed #252/#253/#254/#255/#256"
     status: in_progress
-  - content: "deliver — SKILL.md conformance vs the new scenario; Givens-are-test-vectors: no absorption"
-    status: pending
-  - content: "impl gate — cold aced-impl-judge over the frozen suite; STOP and relay to owner"
-    status: pending
-  - content: "handoff — PR against main, Closes #222; refs #211"
-    status: pending
 ---
 
 # CR github-222 — ssa-lowering Oracle scenarios are unfailable by construction
@@ -82,13 +82,35 @@ loseable, so it is not free points.
 **First two mutants were duds** — the deleted branch's vocabulary survived elsewhere in the file, so
 the reads re-derived it. Rebuilt scrubbed before they measured anything.
 
+## Both gates ratified — by unional, DIRECTLY, on their own channel
+
+Not on the `4ea603` relay. The relayed-ratification seam bars a spawned session writing a
+human-attributed gate line off a coordinator's "the user approved", so the conductor stopped at
+each gate and asked the human instead. The peer's mail ratification was **declined as insufficient**
+at both gates. This is the seam working.
+
+## Impl gate — the judge defeated #252 rather than enduring it
+
+Briefed that it could mark the probe `CONTAMINATED` if it could not separate the roles, the cold
+impl-judge took neither out: it refused `aced-case-judge` for the new scenario and built the split
+itself — 3 producers given the SUBJECT + `Given`/`When` only (no title, no rubric, no `Then`, no
+siblings, no knowledge of being graded), then 3 cold scorers each reading one plan + the rubric,
+blind to the SUBJECT and each other. **6/6 × 3, zero variance**; all three scorers reached `(3,3)`
+by the correct route. 20/20 overall; the 19 pre-existing ran single-context and were reported as
+regression checks, not fresh evidence.
+
+Its orthogonal read **caught a real overclaim in the conductor's own prose** (fixed, `bc987a41`):
+the README bound "an impl-gate PASS is weaker than the table" to #252's contamination — a cause
+that very gate falsified by separating the roles. Left as written, a future pass that separates the
+roles reads the paragraph as *discharged* and equates its green gate with the table. Rebound to the
+structural axis: **a green gate says the doctrine still reasons; only an ablation says the probe can
+still fail.**
+
 ## NEXT
 
-**STOP — spec gate awaiting owner ratification.** Verdict packet relayed. Do not self-ratify.
-On ratify: freeze stays (additive, `addOnly: true`), write the gate line, then deliver — the impl
-gate must run the *current* SKILL.md against the frozen suite (the reasoning read already scores
-6/6, so no doctrine change is expected; a change would need care not to hand memorizers a new
-template).
+Handoff. PR against `main`, `Closes #222`. Then `unit clear` this mission's warm units.
 
-Outstanding: the second follow-up (Oracle sibling titles leak their branch — recorded in the ledger,
-**filing was DENIED by the permission classifier**, never filed). Drain it at handoff if permitted.
+Filed: **#252** (case-judge sees the answer key it scores), **#253** (sibling titles leak their
+branch), **#254** (direction-fit taught only from a declared slogan), **#255** (anti-over-merge never
+restated at the regroup step), **#256** (guards share vocabulary with the subject — 19 of 20
+scenarios still untested against a memorizing subject; the successor finding to #222).
