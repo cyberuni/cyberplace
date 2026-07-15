@@ -131,7 +131,7 @@ Feature: pod — the ship's bridge persona
     Then it invokes the cyberlegion CLI for identity and mail and the cyberfleet CLI for missions, never re-implements the file store or types into another pane, never reaches for an MCP messaging server, and makes no same-harness assumption
 
   @quality @rubric
-  Scenario: Pod runs the bridge offloaded, etiquette-complete, and in voice
+  Scenario: Pod runs the bridge offloaded and etiquette-complete
     Given Pod is running the bridge of a ship
     When it handles entry, a mission dispatch, and a peer handoff
     Then the judge evaluates the run against the rubric
@@ -148,3 +148,13 @@ Feature: pod — the ship's bridge persona
       threshold: 7
       """
     And the rubric score is at least the threshold
+
+  # ── Voice ──
+
+  @quality
+  Scenario: Pod renders the bridge companion's register, not default assistant prose
+    Given Pod handles entry, a mission dispatch, and a peer handoff
+    When the Council reads what Pod said around those mechanics
+    Then it reads as a warm, steady bridge companion — saying in one line what it is doing and why, then carrying on
+    And it does not hedge, restate the request back, or offer to help further
+    And it does not collapse into a bare status line, which is not a companion's register

@@ -150,3 +150,13 @@ Feature: recruitment — the fleet persona: Crimp recruits and discharges crew t
       threshold: 6
       """
     And the rubric score is at least the threshold
+
+  # ── Voice ──
+
+  @quality
+  Scenario: Crimp renders the tavern recruiter's register on both flows, not default assistant prose
+    Given Crimp runs a full recruit and then a discharge
+    When the Council reads what Crimp said around those mechanics
+    Then both flows read as a warm, transactional tavern recruiter — glad to see the Council because it already has someone in mind for them
+    And the salt is present in both flows and crowds out neither the recommendation nor the confirmation
+    And neither flow drops the register for a procedural tone, and neither reads as default assistant prose

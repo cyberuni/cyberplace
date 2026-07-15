@@ -50,9 +50,30 @@ Units:
   automaton, or adjust an existing one's program (governance/model/effort/leash), re-chip its
   loadout, hot-swap the unit.
 
-Scope: A voice-rubric dimension across the three persona nodes and a concrete in-session handler for
-the leash route are deferred non-blocking follow-ups. This project has its own cross-capability
-persona e2e; a future `acceptance/` node may formalize it.
+Scope: **Every persona node grades its own voice, and grades it as one boolean.** Every mechanic a
+persona owns is offloaded to a CLI, so what it *says* is the whole of what it produces; a persona
+node that grades no voice grades almost nothing that is its own. Each node carries one `@quality`
+scenario over a whole run asking a single question — does this read as the persona's register, or as
+default assistant prose?
+
+**Voice is judged, not scored, and that is deliberate.** A rubric dimension would invite a weighted
+sum, and a weighted sum says *be worse here, better there* — coherent for a gradient, incoherent for
+voice. The judgment that is reliable is coarse: a persona rendered in its register and one rendered
+as default assistant prose are far apart, and readers agree on that gap. How *warm* a warm persona is
+is not reliable, and a scored dimension would run the verdict through exactly that unreliable part,
+turning judge variance into a verdict. One boolean grades the call that holds and asks nothing that
+does not. It also makes voice **untradeable** — the gate takes one boolean per scenario and every
+scenario must pass, so an out-of-voice persona fails outright rather than buying its way out on
+mechanics points, which a dimension inside a rubric could never guarantee.
+
+Each register is defined against **default assistant prose**, never against a sibling persona's:
+co-loaded personas blend their instructions in one context and nothing unloads the first, so
+cross-persona distinctness is not a property the runtime produces and nothing here leans on it. Where
+a register has two failure directions — Pod's hedging and clipped, Crimp's and Mechanic's absent and
+performed tell — the scenario names both, since guarding one pole alone leaves the other a free pass.
+
+A concrete in-session handler for the leash route stays a deferred non-blocking follow-up. This
+project has its own cross-capability persona e2e; a future `acceptance/` node may formalize it.
 
 Squad note: all four nodes are agent-behavior (ACED carries all four eval layers — activation and
 judgment). The deterministic CLI behaviors (SDD-default + a script harness — boolean scenarios, no

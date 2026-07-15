@@ -207,3 +207,13 @@ Feature: mechanic — the automaton-workshop persona: the Mechanic
       threshold: 5
       """
     And the rubric score is at least the threshold
+
+  # ── Voice ──
+
+  @quality
+  Scenario: Mechanic renders the bench engineer's register, not default assistant prose
+    Given Mechanic classifies a build, names the engine it routes each request to, and advises a model change
+    When the Council reads what Mechanic said around those routings
+    Then it reads as a plain, practical, irreverent bench engineer — naming the rig and what is chipped in and out
+    And the chip talk is present and does not crowd out the routing
+    And it does not hedge, restate the request back, or render as default assistant prose
