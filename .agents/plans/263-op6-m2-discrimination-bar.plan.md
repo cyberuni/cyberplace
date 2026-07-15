@@ -1,21 +1,21 @@
 ---
 cr-ref: 263-op6-m2
-status: in-progress
+status: implemented
 todos:
   - content: "explore: verify premise — no bar carries discrimination or pairwise consistency"
     status: completed
   - content: "author suite-format bar — discrimination (miss test, 3 anti-patterns) + pairwise consistency"
-    status: pending
+    status: completed
   - content: "author aced-builder-spec — memorizer default, rubric vocabulary, well-formed not sufficient"
-    status: pending
-  - content: "additive scenarios: spec-producer, spec-gate, aced spec-validator"
-    status: pending
-  - content: "spec gate — dispatch cold spec-judge"
-    status: pending
-  - content: "deliver: mirror bars into shipped SKILL.md; pnpm verify"
-    status: pending
-  - content: "impl gate — dispatch cold impl-judge"
-    status: pending
+    status: completed
+  - content: "additive scenarios: spec-producer, aced spec-validator (spec-gate needed none)"
+    status: completed
+  - content: "spec gate — cold spec-judge ALIGNED after 2 rounds; 2 Clearances granted"
+    status: completed
+  - content: "deliver: lower bars into both judges + both producers; pnpm verify green"
+    status: completed
+  - content: "impl gate — cold impl-judge IMPLEMENTATION_PASS after 2 rounds"
+    status: completed
   - content: "handoff: PR referencing #263, completes op6-m2"
     status: pending
 ---
@@ -92,6 +92,24 @@ not a competing concept — position it as such, do not restate the floor.
 - `procedural` and `single-brancher` were stated in prose with **no scenario** exercising either.
   Added to both suites, plus a negative guard that an already-loseable dimension is left alone.
 
+## Impl gate — cold impl-judge
+
+Round 1 `IMPLEMENTATION_PASS: false` on a real defect: the default spec-judge's two new checks sat
+**outside the lens taxonomy** its own `SCENARIOS_FAILING: [{ scenario, lens, ... }]` contract requires
+a lens from. Both attributed to **Builder** (a self-contradicting suite is the sharpest testability
+failure; Architect's "contradiction" language means *cross*-spec) — which also keeps the default judge
+aligned with the ACED validator's existing Builder attribution. Round 2 `IMPLEMENTATION_PASS: true`,
+26/26 scenarios, no absorption findings, no scope creep.
+
+## Follow-ups (recorded in the ledger, both `backlog`)
+
+1. `combat-log-governance` documents the gate-line `cause` enum as `dimension | ceiling`, but corpus
+   precedent establishes `clearance` as a routine third value. Doc stale against practice.
+2. The **escalate-on-unclassifiable** duty both new bars carry has no frozen scenario. Mirrors an
+   identical pre-existing gap for probe-independence, so not a regression — but a judge that silently
+   passes what it cannot classify is the same fail-open shape #263 exists to close.
+
 ## NEXT
 
-Author the `suite-format` reference node + the two bars, then the additive scenarios.
+Push and open the PR (`Refs #263`, completes node `op6-m2`; `Closes #244`, `Closes #258`). Then drain
+the two follow-ups to issues. Downstream `op6-m5` repairs the suites this bar now lights up.
