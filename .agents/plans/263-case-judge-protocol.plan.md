@@ -133,9 +133,58 @@ Three cold spec-judge rounds. Each found something real; node 1 reached **ALIGNE
 - The spec gate has **no ablation step**: `check-suite` proves form, the cold judge reads. Neither
   asks "does a `Given` exist under which this `Then` fails?"
 
+## Spec gate — RATIFIED by unional (Clearance). Both suites frozen, `status: approved`.
+
+## The same defect class recurred THREE times, each time inside the fix for the last one
+
+This is the mission's real lesson. Record it.
+
+1. **The suite could not fail.** Cold R1: an impl could spawn the blind simulator, **discard its
+   return**, and simulate-and-score in the rubric-aware context — passing all five blindness
+   scenarios. Closed by binding the scored artifact to the returned transcript.
+2. **The engine's suite could not fail.** Cold R3 proved by ablation: 15/15 green against a
+   *leaking* engine, because a canonical rubric's lines never open with a step keyword — the
+   `Given`'s apparatus made the `Then` unable to discriminate. Then the **mutation sweep** found
+   **13 of 24 mutations survived** — including `an And under a Given is emitted`, which only ever
+   asserted a *parse-level* field and never the output.
+3. **The must-not-do gate could not fire.** An independent non-ACED reader: the fix severed the
+   `Then` from the **scoring** context as well as the simulating one. Guards live only in `Then`
+   steps, so the one hard fail in the frozen contract had **no input** and failed **green**.
+
+## Engine defects found by building it (all fixed, all ablation-proven)
+
+1. **The docstring leak.** A rubric ladder line opening with a step keyword parsed as a real step →
+   leaked into the brief **and** overwrote `lastKeyword`, so the collapsing `And` leaked too. The
+   first implementation's 17 tests all passed; its fixtures had no such line.
+2. **The docstring over-correction** (found by the independent reader). Skipping docstrings wholesale
+   gutted a `Given`'s docstring — routinely *the prompt under test* — at exit 0 with a non-empty
+   brief, catching neither guard. Docstrings now inherit their owning step's fate.
+3. **Fail-open on an orphaned `And`** → defaulted to `Given` = emitted.
+4. **Empty-but-plausible brief** — exited 0 emitting `## Situation`.
+5. **`in file order` was false** — output regrouped `given[]` then `when[]`.
+6. **The CLI guard never fired on the declared Node floor.** `import.meta.main` is Node >=24.2;
+   `engines.node` is `>=22`, where it is `undefined` → print nothing, **exit 0**. `case-judge` keyed
+   its BLOCKER on a non-zero exit ⇒ silent empty brief. Moved to the portable form.
+
+## Residuals (filed as follow-ups, not fixed here)
+
+- A `Given`/`When` that itself leaks the verdict defeats the structural rule (`op6-m5`).
+- **Retrieval**: a simulating context with file tools can read the rubric off disk. `judge.feature`
+  states a dispatch *requirement*; enforcement awaits a tool-restricted transport. Note a warm unit
+  can never satisfy it — tool restriction needs an agent def, which binds subagents only.
+- `check-suite`'s `RUBRIC_EXEMPT_RE` is lexical with an accidental escape hatch (a step clears it by
+  containing `pass`/`verdict` anywhere).
+- **The spec gate has no ablation step** — `check-suite` proves form, the cold judge reads. Neither
+  asks "does a `Given` exist under which this `Then` fails?" All three recurrences above hid there.
+- **No node fences the results-JSON contract** between `run` (producer) and `report`/`compare`
+  (consumers) — the artifact this CR reshaped hardest, and where its only cross-node break landed.
+- ~23 repo scripts use the `import.meta.main` guard against a `>=22` engines floor.
+- `apps/website/src/content/docs/aced/{run,report,overview}.md` publish the removed scalar contract.
+- The impl-judge's independence is structurally degraded whenever `aced-case-judge` is the subject:
+  its prescribed method is to invoke it. It correctly refused and read by hand — but that is weaker
+  than the measurement its own bar calls for.
+
 ## NEXT
 
-Round-4 mutation sweep on node 2 is running. Then: spec-gate HITL ratify (Clearance + node-2
-recusal), freeze both `.feature`s, `status: approved`. Then deliver — rewrite the `case-judge` body
-to the per-dimension + blind two-pass contract, and reconcile the caller prose in
-`aced-impl-judge` / `run` / `compare` / `aced-builder-impl`.
+Impl gate round 3 on the current tree (rounds 1–2 graded stale trees). Then handoff: PR against
+main, refs #263, states it completes node op6-m3; file the follow-ups above.
