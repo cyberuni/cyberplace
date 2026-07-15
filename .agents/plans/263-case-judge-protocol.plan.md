@@ -10,16 +10,16 @@ todos:
     status: done
   - content: "explore — judge.feature: 2 Clearance rewrites + 13 additive; node 1 ALIGNED at round 3"
     status: done
-  - content: "explore — NEW node extract-situation (owner-requested engine); built, 26 tests, 2 real bugs fixed"
+  - content: "explore — NEW node extract-situation (owner-requested engine); built, 88 tests, 6 real bugs fixed"
+    status: done
+  - content: "spec gate — RATIFIED by unional (Clearance); both suites frozen; node 2 recused from ACED grading"
+    status: done
+  - content: "deliver — case-judge body rewritten; run/compare/report/impl-judge/builder-impl/glossary reconciled"
+    status: done
+  - content: "impl gate — R4 30/30 + 27/27; RATIFIED by unional; independence DEGRADED (circular method, read not measured)"
+    status: done
+  - content: "handoff — PR refs #263, completes node op6-m3; 8 follow-ups recorded, drain pending"
     status: in_progress
-  - content: "spec gate — HITL ratify (Clearance); node 2 recused from ACED grading (boolean, node:test-bound)"
-    status: pending
-  - content: "deliver — rewrite case-judge body; reconcile impl-judge/run/compare/builder-impl prose"
-    status: pending
-  - content: "impl gate — cold judge; note the self-reference (judge grades its own scorer)"
-    status: pending
-  - content: "handoff — PR refs #263, completes node op6-m3; file 4 follow-ups"
-    status: pending
 ---
 
 # CR github-263-op6-m3 — the case-judge protocol cannot express its rubrics, and sees its own answer key
@@ -184,7 +184,23 @@ This is the mission's real lesson. Record it.
   its prescribed method is to invoke it. It correctly refused and read by hand — but that is weaker
   than the measurement its own bar calls for.
 
+## The judging itself — what it did and did not reach
+
+- **Nobody ever executed the protocol.** All 30 `judge.feature` verdicts, across four impl rounds, are a
+  **static contract-binding read**. The impl-judge's method is to invoke `aced-case-judge`, which IS
+  the subject, so it refused as circular. That circularity is narrow and **solvable** (drive it from a
+  non-ACED subagent, or grade with the previous version from `main`) — filed **blocking**.
+- **Reading has low yield; mutation has high yield.** Reading found 1–2 per pass. Mutation sweeps found
+  **13, 16, and 28**. Every one of the six recurrences died to mutation and survived every read.
+- **The seam migrated each round**: rendering → `formatJson` → the CLI error path. That is why the loop
+  was stopped at convergence-of-*artifact* (3 rounds, 0 engine/body defects) rather than at zero findings.
+- **Ablation-by-author has a blind spot.** My own ablations held, and I also wrote an equivalence claim
+  (`includes('|')` is equivalent) that a 97-mutation sweep agreed with and a cold judge refuted in one
+  shot: comments are legal anywhere, and a commented-out `Examples` row is a standard idiom — my
+  rationale ("no step line follows an `Examples:` block") never considered that a comment is not a step
+  line. **Mutants must not come from the author.**
+
 ## NEXT
 
-Impl gate round 3 on the current tree (rounds 1–2 graded stale trees). Then handoff: PR against
-main, refs #263, states it completes node op6-m3; file the follow-ups above.
+Handoff: PR against `main`, refs #263, states it completes node `op6-m3`. Drain the 8 recorded
+follow-ups into issues (dedupe against open AND closed first).
