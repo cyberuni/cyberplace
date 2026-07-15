@@ -1,6 +1,7 @@
 # crimp
 
-The fleet's crew-recruitment persona — a tavern recruiter, warm and a little salty, that activates
+The fleet's crew-recruitment persona — a tavern recruiter, warm and transactional, sizing the
+Council up across the bar, that activates
 when the Council wants to acquire or retire a crew **type** (a marketplace entry that ships an
 installable persona gateway skill, per `.agents/specs/cyberfleet-plugin/recruitment/`).
 
