@@ -10,11 +10,11 @@ todos:
     status: completed
   - content: 'spec gate: cold sdd-spec-judge ALIGNED round 4 (3 FAIL rounds); gate approve recorded (shard 9f3e1a)'
     status: completed
-  - content: 'deliver: BLOCKED — repin 0.0.1 -> 0.0.2 + live regression test, after the owner publishes'
-    status: pending
-  - content: 'impl gate: BLOCKED until gherkin-cli 0.0.2 is published (owner-held)'
-    status: pending
-  - content: 'handoff: PR #286 (draft, Refs not Closes — blocked on publish); filed #287/#288/#289'
+  - content: 'deliver: 0.0.2 published; repinned the 10 plugins/sdd sites; 7 live tests bound + pin-ablated'
+    status: completed
+  - content: 'impl gate: cold sdd-impl-judge 7/7 PASS, re-ran the ablation itself; impl approve recorded (shard 9f3e1a seq6)'
+    status: completed
+  - content: 'handoff: PR #286 un-drafted, Closes #278; filed #287/#288/#289; ONE follow-up REFUSED, unfiled'
     status: completed
 ---
 
@@ -92,25 +92,30 @@ seven scenarios kills at least one while a pristine control survives all seven.
   already correct and upstream-tested; the claim is just unfrozen.
 - **#275** (rubric leaking to a blind simulator) — placement, not the freeze classifier. Per brief.
 
-## The blocker
+## The blocker — CLEARED
 
-This repo's fix arrives **only** via the version pin. The classifier's tests drive the real
-`npx gherkin-cli@<pin>` subprocess, so the regression test cannot pass until **0.0.2 is published**
-(owner-held). The mission stops at the impl gate until then; the PR opens as a draft.
+`gherkin-cli@0.0.2` published by the owner. Verified through npm (not the local build) that the
+published package closes the original repro. Repinned, bound, both gates passed.
+
+## Impl gate — 7/7 PASS, first round
+
+The cold impl-judge re-derived every oracle before reading the tests, **re-ran the pin ablation
+itself** rather than trusting the claim, and dumped all nine fixture pairs to confirm each differs
+only in the axis its scenario names — the tag-delta contamination that slipped past an earlier
+ablation in this mission is absent.
+
+Its orthogonal read improved on the producer's own reasoning: the `universal-plugin` strings were
+left alone as "test fixtures", but they are also bound by **that project's own frozen suite**, whose
+`Then` asserts the string comes back untouched — bumping them would have been a narrowing edit on
+another project's freeze.
 
 ## NEXT
 
-**Blocked on the owner publishing `gherkin-cli@0.0.2`** (the fix is committed in the sibling repo on
-`fix/step-argument-signature` with a changeset; run `changeset version` + `changeset publish` there).
+Mission complete through both gates. PR #286 (`Closes #278`) awaiting review/merge.
 
-Once published, in this repo:
-
-1. Repin `gherkin-cli@0.0.1` -> `@0.0.2` at the ten sites under `plugins/sdd/` — NOT the
-   `universal-plugin` fixtures, and NOT the historical plan briefs.
-2. Bind the seven frozen scenarios with live regression tests in
-   `plugins/sdd/skills/spec-gate/scripts/classify-edit-class.test.mts`. That suite drives the real
-   `npx gherkin-cli@<pin>` subprocess in temp git repos, so the tests are meaningful — a mocked
-   differ would prove nothing, which is why the defect survived the existing suite.
-3. Ablate the new tests against the old pin: a rubric-gutting fixture must classify `NARROWING`
-   with the fix and `NO-CONTENT-CHANGE` without it.
-4. Run the impl gate (cold `sdd-impl-judge`), then `pnpm verify`.
+**Outstanding — one follow-up recorded but NOT filed.** Filing was refused, so ledger seq 7 stands as
+the durable record and a later drain re-derives it by dedupe: *a shipped classifier script cites a
+spec-tree design note by a path that resolves to nothing* — pre-existing, and not a one-line repair,
+since the spec tree is unpublished so any repo-resolving path dangles for installed users. Options
+are drop the pointer, route it through a governance, or name the document without a path; sweep every
+shipped script that references the spec tree rather than fixing the one site found.
