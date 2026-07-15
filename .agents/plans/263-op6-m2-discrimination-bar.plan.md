@@ -16,8 +16,8 @@ todos:
     status: completed
   - content: "impl gate — cold impl-judge IMPLEMENTATION_PASS after 2 rounds"
     status: completed
-  - content: "handoff: PR referencing #263, completes op6-m2"
-    status: pending
+  - content: "handoff: PR #266; follow-ups drained to #267, #268"
+    status: completed
 ---
 
 # op6-m2 — close the authoring bars against the eval-cannot-fail class
@@ -103,13 +103,17 @@ aligned with the ACED validator's existing Builder attribution. Round 2 `IMPLEME
 
 ## Follow-ups (recorded in the ledger, both `backlog`)
 
-1. `combat-log-governance` documents the gate-line `cause` enum as `dimension | ceiling`, but corpus
+1. **#267** — `combat-log-governance` documents the gate-line `cause` enum as `dimension | ceiling`, but corpus
    precedent establishes `clearance` as a routine third value. Doc stale against practice.
-2. The **escalate-on-unclassifiable** duty both new bars carry has no frozen scenario. Mirrors an
+2. **#268** — the **escalate-on-unclassifiable** duty both new bars carry has no frozen scenario. Mirrors an
    identical pre-existing gap for probe-independence, so not a regression — but a judge that silently
    passes what it cannot classify is the same fail-open shape #263 exists to close.
 
 ## NEXT
 
-Push and open the PR (`Refs #263`, completes node `op6-m2`; `Closes #244`, `Closes #258`). Then drain
-the two follow-ups to issues. Downstream `op6-m5` repairs the suites this bar now lights up.
+**Landed — PR #266** (`Refs #263`, completes node `op6-m2`; `Closes #244`, `Closes #258`). Follow-ups
+drained to **#267** and **#268**. Awaiting review + merge; nothing else outstanding on this node.
+
+Downstream: **`op6-m5`** repairs the suites this bar now lights up (the 11 `ssa-lowering` `@rubric`
+scenarios are the known first casualty — the bar was strengthened knowing they fail it). `op6-m3`
+(#245/#252, the case-judge protocol) is independent and unblocked.
