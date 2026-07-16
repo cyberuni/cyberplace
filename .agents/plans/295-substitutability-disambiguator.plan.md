@@ -15,8 +15,12 @@ todos:
     status: completed
   - content: Mirror bar edits into the shipped suite-format-governance + spec-producer-governance SKILL.md
     status: completed
-  - content: Spec gate — cold judge charged to attack the over-fire and the #282 boundary
-    status: pending
+  - content: Spec gate — four judge rounds, three floors found and closed; ALIGNED
+    status: completed
+  - content: Impl gate — cold impl-judge 8/8 PASS, producer-writes/judge-ignores split clean
+    status: completed
+  - content: Land PR #296; file follow-ups #297-#299 + #282 comment
+    status: completed
 ---
 
 # 295 — the substitutability test's boundary case
@@ -178,4 +182,8 @@ recording forces threshold re-derivation (it changes no `max` and no cut — **s
 
 ## NEXT
 
-Final confirmation judge running. Then: commit, PR, report to legate, drain the 6 recorded follow-ups.
+**LANDED.** PR #296 — https://github.com/cyberuni/cyberplace/pull/296. Both gates self-asserted
+(auto-spec leash), spec gate ALIGNED after four judge rounds, impl gate 8/8 PASS. Follow-ups drained:
+#297 (completeness precondition omits selection + record), #298 (retired rubric syntax drift), #299
+(the record is unspecified/unfrozen/unenforced — the lint half depends on #282), and a `threshold ==
+sum` signal commented on #282. Keep this plan until #296 merges and doctrine-distills.
