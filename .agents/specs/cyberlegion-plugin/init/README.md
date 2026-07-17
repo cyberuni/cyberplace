@@ -78,19 +78,19 @@ is covered by the `@trigger` outline and the routing-defer scenarios.
   the user names a harness; otherwise plain `cyberlegion init`.
 - **Idempotent hook registration.** Re-running on an already-set-up session is a clean no-op
   (`already present`), never a duplicate or an error.
-- **The CLI version is read from the plugin's bundled deps record, never invented.** Before
-  registering the hook, `init-cyberlegion` resolves which `cyberlegion` CLI version to run by reading
-  the plugin's own bundled `${CLAUDE_PLUGIN_ROOT}/.plugin/deps.json`, which records what the
-  `cyberlegion` dependency resolved to when the plugin was released. It never invents a version number
-  or scrapes one out of prose — the prose may legitimately carry a range, which says nothing about
-  what shipped.
-- **The recorded resolution is threaded into `init --pin`.** When `.plugin/deps.json` records a
-  resolution for `cyberlegion`, the skill runs `cyberlegion init --pin <version>` with that version, so
-  the installed hook is version-pinned.
-- **A missing or unreadable record falls back to the unpinned CLI.** If `.plugin/deps.json` is absent,
-  does not manage `cyberlegion`, records no resolution for it, or is malformed (an unreleased workspace
-  checkout or a corrupt file), the skill invokes the unpinned `cyberlegion` CLI and passes no `--pin` —
-  it never invents a version number to fill the gap.
+- **The CLI version comes from the skill's own pinned invocation, set at develop time, never
+  invented.** This skill's `cyberlegion` calls are themselves managed dependencies: when the plugin is
+  prepared for release, `universal-plugin plugin deps up` converts this skill's own
+  `npx cyberlegion@<version>` placeholder into a concrete exact pin (`npx cyberlegion@0.1.9`). At init
+  time the skill therefore reads the concrete version **from its own already-pinned invocation** —
+  never from a separate map, and never invents one. (`deps.json` carries no versions to read.)
+- **The pinned version is threaded into `init --pin`.** When the skill's own invocation carries a
+  concrete version, it runs `cyberlegion init --pin <version>` with that version, so the installed
+  hook is pinned to the same version the plugin ships.
+- **An unpinned invocation falls back to the unpinned CLI.** If this skill's own `cyberlegion`
+  invocation is still a placeholder (`@<version>`) or bare — the plugin was never prepared with
+  `deps up`, e.g. an unreleased workspace checkout — the skill invokes the unpinned `cyberlegion` CLI
+  and passes no `--pin`, never inventing a version number to fill the gap.
 - **Root detection gates the bind ask.** Only a root session (`!spawnedBy`, derived from the probe /
   self-id) is ever offered the bind. A spawned unit stops after the hook.
 - **Never bind silently.** The skill mints the `legate` owner and binds the pane **only** after an

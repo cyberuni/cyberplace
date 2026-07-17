@@ -293,36 +293,75 @@ rather than absent.
 
 ## NEXT — resume here
 
-**The node is DRAFTED and at the spec gate. Round 8 of the cold spec-judge is the live frontier.**
+**The node is DRAFTED on the FIVE-FORMS model and at the spec gate. Round 10 (fresh cold judge on the
+simplified model) is the live frontier.**
 
-State: `plugin/deps/` authored on the allowlist model (71 scenarios), `cyberlegion-plugin/init`
-retargeted to `.plugin/deps.json`, root maps + concept index updated, `status: draft` on
-`universal-plugin` (the legal state for a Clearance re-open — see R7). All mechanical checks green:
-`check-suite`, `check-spec-state` (both projects), `pnpm check:specs`, 0 open markers.
+State: `plugin/deps/` authored on the **five-forms** model (60 scenarios — see the ledger's
+simplification leash and `## The five-forms model`), `cyberlegion-plugin/init` retargeted to
+`.plugin/deps.json`, root maps + concept index updated, `status: draft` on `universal-plugin` (the
+legal state for a Clearance re-open — see R7). All mechanical checks green: `check-suite`,
+`check-spec-state` (both projects), `pnpm check:specs`, 0 open markers.
 
-**Do NOT read green mechanical checks as evidence here** — see the edit-class finding below.
+**Do NOT read green mechanical checks as evidence here** — the edit-class guard reads this whole
+rewrite as additive (measured, R7 note below), so only the owner's Clearance grant gates it.
 
-Round 8 returned ALIGNED false (builder); its findings are cleared by the **closed form** — see
-`## Convergence ledger`, which also carries the next tripwire. **Round 9 is dispatched.**
+Rounds 1–9 all graded **superseded** models (see `## Convergence ledger`): the prose-classifier
+(R1–R5), the allowlist-with-adopt (R6–R8), the closed-form table (R9). The owner replaced the last of
+these with the five-forms model. **Round 10 is the first judge pass against what is actually on disk.**
 
-If round 9 returns ALIGNED false: read `## Convergence ledger` FIRST and honor its tripwire before
-patching. If ALIGNED true: the gate still needs **HITL ratification** (Clearance) — do not
-self-assert. Then proceed to the deliver todos, where `## Grill notes`' release-flow item and the
-blocking ledger followup about `package.json`/`release.yml` are ATOMIC with retiring `plugin bundle`.
+If round 10 returns ALIGNED false: read `## Convergence ledger` FIRST — three generations of churn all
+had ONE lesson (do not classify an open input space). Weigh a new finding against whether it re-opens
+that, and bring a model-level defect to the owner rather than patching. If ALIGNED true: the gate still
+needs **HITL ratification** (Clearance) — do not self-assert. Then proceed to the deliver todos, where
+`## Grill notes`' release-flow item and the blocking ledger followup about `package.json`/`release.yml`
+are ATOMIC with retiring `plugin bundle`.
 
-The node to build — **the allowlist is the selector**, not any property of the prose:
+## The five-forms model — what is ON DISK (authoritative; supersedes the allowlist-classification text below)
+
+Two selectors, both closed, neither classifies an open input space:
+
+**`deps.json` records NO versions** — it is `{ $schema, dependencies: [names], ignore: [paths] }`,
+`dependencies` a plain array of managed names. The lock/`resolved` field is DROPPED (owner cut; see the
+`scope-cut` ledger correction). The shipped version lives in the prose `up` writes; a range is left to
+re-resolve at run time. Two selectors, both closed, neither classifies an open input space:
+
+1. **The allowlist** picks which *names* are managed (`dependencies`). Unchanged.
+2. **The five forms** pick which *references* to a managed name are recognized. A managed name's
+   reference is one of exactly five, and anything else is ignored:
+   - **prose** (`npx pkg`, no `@`) → **warned**, never rewritten
+   - **placeholder** (`@<version>`) → **converted to exact** by `up` (the authoring seed form)
+   - **exact** (`@x`) → a pin; bare `up` leaves it, `--latest` moves it
+   - **tilde** (`@~x`) / **caret** (`@^x`) → range; **left in place** (npx re-resolves at run time);
+     `--latest` bumps the floor
+   - `x` = major | major.minor | major.minor.patch
+   - **anything else** (`@latest`, `@>=1`, `@*`, git/tarball/`npm:`/`file:`) → **ignored**, not error
+3. `deps scan` — surface `npx <name>` references that are **not** managed. Load-bearing (below).
+4. `deps ls` reads the **files** (never a registry): status `pinned`/`unpinned`/`unused`/`divergent`,
+   bare prose as a warning count. `deps up` resolves from a registry and writes **skill files only**,
+   never `deps.json`. Managed names only.
+5. **`ignore`** (a path escape, evaluated first) protects the one real illustration file. **Divergence**
+   is a simple guard grounded on **authoring hygiene** (not a lock): two exact/tilde/caret references
+   with different specs → `up` exits 1; prose and placeholders carry no constraint and never diverge.
+6. **Init relay decoupled** — `cyberlegion-plugin/init` no longer reads `deps.json`; `deps up` pins its
+   own `npx cyberlegion@<version>` at develop time, and init reads that. (owner: develop-time
+   management is the way to go.)
+
+> The numbered list *below* (`the allowlist is the selector` … `the placeholder rule`) describes the
+> **superseded** allowlist-with-classification model (R6–R8). It is kept only as history — build to the
+> five-forms model above and to the node README, not to it.
+
+Then re-judge. **The judge brief must carry NO scope facts** — point it at the node's Non-goals and the
+ledger and say so. Anything briefed around is something the spec fails to say.
+
+### The superseded allowlist-classification model (history — do NOT build to this)
 
 1. `.plugin/deps.json` declares **which packages are managed**. A name not on the list is never looked
    for. This is the whole fix; everything else narrows to it.
 2. `deps add <pkg>[@spec]` / `deps remove <pkg>` — how a name gets on and off the list.
 3. `deps scan` — surface `npx <name>` references that are **not** managed. Load-bearing (below).
 4. `deps ls` reads the lock; `deps up` resolves from a registry and writes. Both act on managed names only.
-5. Keep the **extraction boundary** (a reference ends at whitespace or a Markdown/sentence delimiter;
-   the delimiter is never part of the spec) and the **placeholder rule** (a managed package can still
-   appear as `@<version>` in prose). Both survive; their blast radius collapses to managed names.
-
-Then re-judge. **The judge brief must carry NO scope facts** — point it at the node's Non-goals and the
-ledger and say so. Anything briefed around is something the spec fails to say.
+5. Keep the **extraction boundary** and the **placeholder rule** (a managed package can appear as
+   `@<version>` in prose). *(Superseded: `@<version>` is now CONVERTED to exact, not left in place.)*
 
 ### Blocking / decided
 
@@ -348,7 +387,8 @@ reconsider the model rather than patch again.
 | R6 | ALIGNED false | bare `up` vs an already-versioned reference unspecified | my **original allowlist draft** |
 | R7 | ALIGNED false ×3 + blocker | ① release-glue claim false ② init Non-goals self-contradiction ③ bare-vs-declared unreachable ④ `status: implemented` illegal | ① my original draft · ② **pre-existing on main**, untouched by this CR · ③ **the R6 fix** (one-spec-per-package was introduced there) · ④ my original omission |
 | R8 | ALIGNED false (oracle PASS, architect PASS, builder FAIL) | ignore×divergence · placeholder×divergence · 3+ references | **the R6/R7 fixes** — every finding was a hole in a rule those fixes added |
-| R9 | *pending* | judging the **closed form** | — |
+| R9 | ALIGNED false (oracle PASS, architect PASS, builder FAIL) | `ls` catch-all · **dist-tags swallowed by a negative test** · malformed-json · 3 coverage holes | the **closed-form model itself** — a third generation |
+| R10 | *pending* | judging the **five-forms** model | — |
 
 **The stop rule FIRED at R8, and the re-examination it forced changed the diagnosis.** R6→R7→R8 was
 not three defects; it was **one defect found three times**, and the fix loop itself was regenerating
@@ -376,6 +416,17 @@ replaced. R6–R8 died on a second root cause (participation stated by exception
 Both were *single* root causes wearing many masks, which is why neither looked like divergence from
 inside a single round. **If R9 finds a defect inside the closed form itself, that is a third
 generation — question the model, not the prose, and bring it to the owner rather than patching.**
+
+**R9 WAS a third generation, and the tripwire fired as written.** The dist-tag finding was the
+closed-form model's *negative* participation test (`spec is not valid semver → placeholder`) silently
+swallowing `@latest` as documentation — the same negative-test error class a prior feedback memory
+already names. Rather than patch, the model went to the owner, who **replaced it**: support a small,
+CLOSED set of five reference forms and IGNORE everything else (see `## The five-forms model` and the
+ledger's simplification leash). A positive, closed enumeration cannot misclassify an unrecognized
+form. This deleted the adopt rule (R7), placeholder-as-invisible (R8), and the six-status precedence
+(R9) in one move — three generations of churn collapsed by narrowing the problem instead of widening
+the classifier. **Trend closed: the lesson across all three generations is the same — do not classify
+an open input space; either enumerate a closed set (forms) or gate on an explicit list (the allowlist).**
 
 ### Findings the diff will not show
 
