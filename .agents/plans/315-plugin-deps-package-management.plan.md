@@ -7,11 +7,11 @@ hitl: true
 leash: auto-none
 todos:
   - content: "explore — author plugin/deps node on the ALLOWLIST model (ls|up|add|remove|scan)"
-    status: in_progress
+    status: completed
   - content: "explore — rename pins.json -> deps.json in cyberlegion-plugin init (3 frozen scenarios)"
-    status: pending
+    status: completed
   - content: "spec gate — sdd-spec-judge ALIGNED on BOTH specs; HITL ratification required"
-    status: pending
+    status: in_progress
   - content: "deliver — registry source, deps CRUD + detection, retire bundle, rewire release flow"
     status: pending
   - content: "deliver — seed each plugin's managed list from detection (ATOMIC with the rule)"
@@ -145,12 +145,42 @@ is not in the prose at all, so `deps.json` becomes its only source.
   `origin/changeset-release/main`, commit `a6cc6cc4`), so its one reader has always hit the fallback. If
   that release PR merges first, the artifact ships and the rename gets expensive.
 
-## Open at draft
+## Resolved at draft (2026-07-17) — settled IN THE SPEC, re-open only on judge evidence
 
-- Whether `deps outdated` splits from `deps ls`.
-- The `plugin/build` sibling's framing once the dev-vs-release axis dissolves.
-- Node placement: `plugin/bundle/` → `plugin/deps/`? (provisional; Warden finalizes at handoff)
-- `deps.json` staleness rule when a range is written through (npx re-resolves at run time).
+Each of these was open at draft and is now a written contract in `plugin/deps/`. They are the
+producer's calls, not the owner's — a judge FAIL on any is a real finding, not a re-litigation.
+
+- **`deps outdated` does NOT split from `ls`** — `ls` carries a `status` per managed name, so
+  `outdated` would be a second view of one row. *(closes the open)*
+- **Staleness rule** — a recorded resolution that no longer satisfies the spec the prose declares is
+  `ls` status `stale`. This is the answer to "what does a written-through range resolve to now", and
+  it is why `ls` exists at all. *(closes the open)*
+- **Node placement** — `plugin/deps/`, confirmed, with the root placement map rewritten to route on
+  *"an op over the packages a plugin's skills invoke through npx"* rather than on release timing.
+  Warden still finalizes at handoff.
+- **`plugin/build` framing** — the dev-vs-release axis is gone, so `build`'s boundary prose now
+  carves against **the dependency concern**, not against a release step. `build` derives manifests;
+  `deps` manages what the skills invoke. No release-timing words left in either node.
+- **`deps.json` shape** — `{ $schema, dependencies: { <name>: { resolved } }, ignore: [<path>] }`.
+  A key under `dependencies` **is** the managed declaration; `{}` = managed, never resolved. This
+  makes the cyberlegion-plugin `init` read a *recorded resolution*, per that shard's correction.
+- **`add <pkg>@<spec>` ≡ `add <pkg>` + `up <pkg>@<spec>`** — pnpm-faithful (`pnpm add pkg@^2` writes
+  both the manifest and the lock). Bare `add` only records the name; the spec never moves into
+  `deps.json`, which is the whole point of the narrow allowlist.
+- **`up` is all-or-nothing** — every managed name resolves before anything is written; any failure
+  writes nothing and exits 1. A half-pinned plugin is a shipped defect, so a transient registry
+  failure must not manufacture one. *(New: nothing settled this; the network dependency created it.)*
+- **`--latest` keeps the declared form** — a range keeps its operator (`^2.0.0` → `^3.1.0`), a bare
+  or exact reference gets exact newest; `--exact` overrides. Consistent with "range written through;
+  the user opted in".
+- **Extraction boundary** — a reference ends at whitespace or at a delimiter that cannot appear in a
+  version spec (trailing `.` `?` `,` `)`, backtick, quote). Note this means `@1.5.0?` extracts as
+  `1.5.0`, a **valid** declaration — so form does NOT protect it and `ignore` must. That is exactly
+  the `upgrade-universal-plugin` case, and it is why `ignore` is a path escape and not a form rule.
+
+## Still open at draft
+
+- **The grill notes are unchanged** — see `## Grill notes`; none were settled by drafting.
 
 ## Follow-ups (record, do not act)
 
@@ -169,7 +199,9 @@ This branch is `sdd/github-315-plugin-deps`, cut fresh from `main`. What carried
 grants, five judge rounds, the refuted premise, and the doc-example corruption finding. The abandoned
 attempt is tagged `sdd-315-superseded-attempt` if any of its drafting is ever wanted.
 
-**State on this branch:** `plugin/bundle/` is intact and `@frozen` as on main. Nothing is drafted yet.
+**State on this branch (updated 2026-07-17):** the node is **drafted**. `plugin/bundle/` →
+`plugin/deps/` via `git mv`, README + `deps.feature` rewritten on the allowlist model (2 commits,
+`748c90d6` + `7cbce942`). See `## Resolved at draft`.
 
 ## ⚠ DIRECTION CHANGE (round 5) — an allowlist replaces prose classification
 
@@ -243,7 +275,11 @@ rather than absent.
 ## Grill notes (raised with the owner, not yet settled)
 
 - `up` refreshes the lock for **every** dep always, even where the manifest doesn't move.
-- `deps up nonesuch@1.0.0` fails loud — pnpm would *add*; there is no `add` verb here.
+- ~~`deps up nonesuch@1.0.0` fails loud — pnpm would *add*; there is no `add` verb here.~~
+  **Settled by the direction change**: `add` now exists, so fail-loud is the right answer and the
+  divergence from pnpm is deliberate — `up` never grows the allowlist as a side effect, because a
+  list that grows implicitly is the false-positive class coming back through the write path. `up`
+  and `remove` on an unmanaged name exit 1 pointing at `deps add`. **Spec'd.**
 - **Unspec'd:** the release-flow rewiring (root `package.json` `version` script + `release.yml`). Listed
   as a node non-goal — may need its own home, or may be pure deliver work.
 
@@ -281,6 +317,15 @@ ledger and say so. Anything briefed around is something the spec fails to say.
 - **Still unsettled** — see `## Grill notes`.
 
 ### Findings the diff will not show
+
+- **The edit-class guard fails GREEN on this CR — now MEASURED on the real diff, not predicted.**
+  The ledger's blocking followup called this from a draft; re-run against the landed rename:
+  `classify-edit-class --files …/deps/deps.feature --base main` → **53 added / 0 modified / 0 removed
+  → ADDITIVE**, the class that self-clears and needs no re-open. The 24 deleted `bundle.feature`
+  scenarios are **invisible** to it. Pointing it at the old path is not a workaround —
+  `…/bundle/bundle.feature` returns `EGIT` / UNCLASSIFIABLE (`spawnSync git ENOENT` on a deleted
+  path). **So nothing mechanical will stop this gate; only the owner's live Clearance grant does.**
+  Do not read a green edit-class check as evidence here.
 
 - **The doc-example corruption is live and queued.** It is already committed to the pending
   `changeset-release/main` PR and ships on merge. The release bot regenerates that PR from `main`, so it
