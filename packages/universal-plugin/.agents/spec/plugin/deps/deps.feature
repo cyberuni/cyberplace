@@ -256,6 +256,27 @@ Feature: plugin deps — manage the plugin's npx package dependencies
     Then the exit code is 0
     And stdout is TOON with a row for "cyberlegion" whose "status" is "unchanged"
 
+  Scenario: two declarations disagreeing inside one file is divergent
+    Given ".plugin/deps.json" manages "universal-plugin"
+    And a skill "skills/upgrade/SKILL.md" contains "npx universal-plugin@1.2.3" and "npx universal-plugin@1.5.0"
+    And the registry resolves "universal-plugin" at latest to "0.2.1"
+    When I run "universal-plugin plugin deps up"
+    Then the exit code is 1
+    And stderr contains "universal-plugin"
+    And "skills/upgrade/SKILL.md" contains "npx universal-plugin@1.2.3"
+    And "skills/upgrade/SKILL.md" contains "npx universal-plugin@1.5.0"
+
+  Scenario: ignoring that file clears the divergence and leaves it untouched
+    Given ".plugin/deps.json" manages "universal-plugin" and ignores "skills/upgrade/SKILL.md"
+    And a skill "skills/upgrade/SKILL.md" contains "npx universal-plugin@1.2.3" and "npx universal-plugin@1.5.0"
+    And a skill "skills/other/SKILL.md" contains "npx universal-plugin governance show"
+    And the registry resolves "universal-plugin" to "0.2.1"
+    When I run "universal-plugin plugin deps up"
+    Then the exit code is 0
+    And "skills/upgrade/SKILL.md" contains "npx universal-plugin@1.2.3"
+    And "skills/upgrade/SKILL.md" contains "npx universal-plugin@1.5.0"
+    And "skills/other/SKILL.md" contains "npx universal-plugin@0.2.1 governance show"
+
   Scenario: an ignored path's spec never diverges from a real declaration
     Given ".plugin/deps.json" manages "universal-plugin" and ignores "skills/upgrade/SKILL.md"
     And a skill "skills/upgrade/SKILL.md" contains "npx universal-plugin@1.2.3"
