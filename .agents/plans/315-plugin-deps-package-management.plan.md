@@ -253,9 +253,14 @@ rather than absent.
 thesis and the last verdict, round 5, is ALIGNED false on it):
 1. `deps.json` gains the managed-name list; only listed names are ever scanned for.
 2. `deps add <pkg>[@spec]` / `deps remove <pkg>` — the CRUD that maintains the list.
-3. A detection command — surface candidate `npx <name>` references that are NOT managed, so the list is
-   seeded from evidence. Proposed name `deps scan` (`ls` = what I manage, like `npm ls`; scan = what is
-   out there). Confirm with the owner.
+3. **`deps scan`** (CONFIRMED by the owner) — surface candidate `npx <name>` references that are NOT
+   managed, so the list is seeded from evidence. `ls` = what I manage (like `npm ls`); `scan` = what is
+   out there. Kept separate from `ls` deliberately: `ls` already answers declarations + placeholders +
+   ignored paths, and unmanaged candidates is a different question.
+   **`scan` is load-bearing, not a convenience** — the same bootstrapping failure has hit this node
+   twice (the `pin-exempt` marker was never applied to the one skill it existed for; an allowlist nobody
+   seeds fails identically). If `add` is the only path onto the list, the marker problem is rebuilt under
+   a new name. The corpus seeding must RUN `scan`, not be a human grep plus a promise in a brief.
 4. Narrow every existing rule to managed names; keep the extraction boundary + placeholder rule.
 5. Re-judge — brief carries NO scope facts (the spec + ledger must speak for themselves).
 
