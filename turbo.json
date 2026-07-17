@@ -34,7 +34,21 @@
 			"persistent": true
 		},
 		"verify": {
-			"dependsOn": ["//#check:ci", "//#check:skills", "//#check:specs", "//#knip", "build", "typecheck", "lint", "test"]
+			"dependsOn": [
+				"//#check:ci",
+				"//#check:skills",
+				"//#check:specs",
+				"//#knip",
+				"build",
+				"typecheck",
+				"lint",
+				"test",
+				"check:spec"
+			]
+		},
+		"check:spec": {
+			"cache": false,
+			"outputs": []
 		}
 	}
 }
