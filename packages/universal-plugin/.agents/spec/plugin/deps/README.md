@@ -88,11 +88,15 @@ filled in — neither sets a version the package must satisfy. From that:
 - **Prose is only ever warned about**, so a forgotten `npx cyberlegion` is surfaced without being
   silently rewritten into a pin.
 
-`ignore` still escapes a **path** (evaluated first, before any form): a reference in an ignored file
-is invisible entirely — never warned, never converted, never counted. This is what protects the one
+`ignore` still escapes a **path** (evaluated first, before any form, for **every** verb — `up`, `ls`,
+and `scan` alike): a reference in an ignored file is invisible entirely — never warned, never
+converted, never counted, and never surfaced by `scan` as a candidate. This is what protects the one
 real illustration file (`upgrade-universal-plugin` prints `npx universal-plugin@2.4.1` as sample
-output, an exact form `up` would otherwise pin). A reference ends at whitespace or a trailing
-delimiter (`.`, `?`, `,`, `)`, a backtick, a quote) that is never part of the spec.
+output, an exact form `up` would otherwise pin) — and it protects it against `scan` too: an ignored
+file's *unmanaged* `npx <name>` illustrations are not surfaced as candidates straight out of
+documentation text, which is exactly the false-positive class this node exists to eliminate. A
+reference ends at whitespace or a trailing delimiter (`.`, `?`, `,`, `)`, a backtick, a quote) that is
+never part of the spec.
 
 ## Use Cases
 
@@ -109,7 +113,9 @@ with output per the AXI contract.
 - **`deps scan`** — reports the `npx <name>` references across the plugin's skills whose name is
   **not** managed, one row per candidate name with how many files carry it, so the managed list is
   built from evidence rather than memory. `scan` classifies nothing and writes nothing; the reader
-  decides, once, and `deps add` records the decision. Everything managed → a definitive empty state.
+  decides, once, and `deps add` records the decision. An `ignore`d path is skipped here as by every
+  other verb — its illustrations are never surfaced as candidates. Everything managed → a definitive
+  empty state.
 - **`deps ls`** — one row per managed name: its constraint (the exact/tilde/caret spec its references
   share, or `—` for none) and a status:
 

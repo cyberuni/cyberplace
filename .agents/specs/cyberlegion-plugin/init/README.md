@@ -84,13 +84,16 @@ is covered by the `@trigger` outline and the routing-defer scenarios.
   `npx cyberlegion@<version>` placeholder into a concrete exact pin (`npx cyberlegion@0.1.9`). At init
   time the skill therefore reads the concrete version **from its own already-pinned invocation** —
   never from a separate map, and never invents one. (`deps.json` carries no versions to read.)
-- **The pinned version is threaded into `init --pin`.** When the skill's own invocation carries a
-  concrete version, it runs `cyberlegion init --pin <version>` with that version, so the installed
-  hook is pinned to the same version the plugin ships.
-- **An unpinned invocation falls back to the unpinned CLI.** If this skill's own `cyberlegion`
-  invocation is still a placeholder (`@<version>`) or bare — the plugin was never prepared with
-  `deps up`, e.g. an unreleased workspace checkout — the skill invokes the unpinned `cyberlegion` CLI
-  and passes no `--pin`, never inventing a version number to fill the gap.
+- **Only a concrete exact reference is threaded into `init --pin`.** When the skill's own invocation
+  carries a concrete **exact** version (`npx cyberlegion@0.1.9`), it runs `cyberlegion init --pin
+  <version>` with that version, so the installed hook is pinned to the same version the plugin ships.
+- **Every other form of its own invocation falls back to the unpinned CLI.** If this skill's own
+  `cyberlegion` invocation is anything but a concrete exact pin — bare, a placeholder (`@<version>`),
+  or a **range** (`@^0.1` / `@~0.1`, which `deps up` deliberately never resolves to exact) — the skill
+  invokes the unpinned `cyberlegion` CLI and passes no `--pin`, never inventing a version number to
+  fill the gap. A range is not a concrete pin, so it takes the fallback like any other non-exact form;
+  the recommended seed for this skill's own invocation is the `@<version>` placeholder, which `deps
+  up` converts to exact at develop time.
 - **Root detection gates the bind ask.** Only a root session (`!spawnedBy`, derived from the probe /
   self-id) is ever offered the bind. A spawned unit stops after the hook.
 - **Never bind silently.** The skill mints the `legate` owner and binds the pane **only** after an

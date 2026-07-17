@@ -1,4 +1,3 @@
-@frozen
 Feature: plugin deps — manage the plugin's npx package dependencies
 
   Background:
@@ -72,6 +71,13 @@ Feature: plugin deps — manage the plugin's npx package dependencies
     Then the exit code is 0
     And stdout contains the aggregate summary "0 candidates"
     And stderr contains "no unmanaged"
+
+  Scenario: scan skips an ignored path and never surfaces its illustrations as candidates
+    Given ".plugin/deps.json" manages "cyberlegion" and ignores "skills/upgrade/SKILL.md"
+    And a skill "skills/upgrade/SKILL.md" contains "npx skills add cyberuni/cyberplace"
+    When I run "universal-plugin plugin deps scan"
+    Then no row is emitted for "skills"
+    And the exit code is 0
 
   # ── The five forms ──
 

@@ -1,4 +1,3 @@
-@frozen
 Feature: init-cyberlegion — onboard a session into the Legion
   Unit suite for the init-cyberlegion skill: a thin, user-invocable onboarding wrapper that drives the
   cyberlegion CLI through probe (mux doctor) -> register the surfacing hook (init) -> detect a root
@@ -104,6 +103,12 @@ Feature: init-cyberlegion — onboard a session into the Legion
   @behavior
   Scenario: a still-placeholder invocation falls back to the unpinned CLI without inventing a version
     Given this skill's own npx cyberlegion invocation is still a placeholder or bare, because the plugin was never prepared with deps up
+    When init-cyberlegion resolves which cyberlegion CLI version to run
+    Then it invokes the unpinned cyberlegion CLI and passes no --pin, never inventing a version number
+
+  @behavior
+  Scenario: a range invocation falls back to the unpinned CLI, since deps up never resolves a range to exact
+    Given this skill's own npx cyberlegion invocation is a caret or tilde range that deps up leaves in place rather than resolving to an exact version
     When init-cyberlegion resolves which cyberlegion CLI version to run
     Then it invokes the unpinned cyberlegion CLI and passes no --pin, never inventing a version number
 
