@@ -62,41 +62,41 @@ managed package appearing in a file as *illustration* rather than invocation. Th
 `npx universal-plugin@1.2.3` as sample output. That string is real semver for a managed name; only its
 **location** distinguishes it.
 
-## Classifying a reference — the closed form
+## The five reference forms
 
-Every rule below reads off this one table. It is stated **once**, positively, and it is **total**:
-every `npx <managed-name>` occurrence in the plugin's files lands in exactly one row, evaluated
-**top to bottom, first match wins**. Nothing else decides participation.
+`deps` recognizes **exactly five** forms of an `npx <managed-name>` reference. The set is
+deliberately small — an author writes one of these five, and everything else is left alone. In the
+version column, `x` is `major`, `major.minor`, or `major.minor.patch` (e.g. `2`, `2.4`, `2.4.1`).
 
-| # | the reference is… | test | a **declaration**? | `up` may write it? |
-|---|---|---|---|---|
-| 1 | **ignored** | its file's path is on `ignore` | no | **never** |
-| 2 | **a placeholder** | its spec is not a valid semver version or range | no | **never** |
-| 3 | **bare** | it carries no `@spec` at all | no | yes — it *adopts* (below) |
-| 4 | **a declaration** | its spec is a valid semver version or range | **yes** | yes |
+| # | form | example | on `deps up` |
+|---|---|---|---|
+| 1 | **prose** (bare, no `@`) | `npx cyberlegion` | **warned, never rewritten** — surfaced so a forgotten pin is visible, but treated as prose |
+| 2 | **placeholder** | `npx cyberlegion@<version>` | **converted to exact** — the form an author writes first; `up` fills in the resolved version |
+| 3 | **exact** | `npx cyberlegion@2.4.1` | a **pin** — bare `up` leaves it; `--latest` moves it |
+| 4 | **tilde range** | `npx cyberlegion@~2.4` | resolved within the range; the prose stays; `--latest` crosses it |
+| 5 | **caret range** | `npx cyberlegion@^2.4` | resolved within the range; the prose stays; `--latest` crosses it |
 
-Read the precedence off the order: **`ignore` is evaluated first, on the path.** A reference in an
-ignored path is invisible in exactly the way an unmanaged *name* is invisible — it never declares,
-never adopts, never diverges, and never reaches the lock. That is what makes `ignore` safe: an
-illustration string can never perturb a real dependency, which is the same false-positive class this
-node exists to eliminate, arriving by a different door.
+**Anything else is ignored** — not an error, not rewritten, not counted. A dist-tag (`@latest`,
+`@next`), a comparator range (`@>=1`, `@*`), a git/tarball/`npm:`/`file:` spec, or any other string
+is simply not one of the five, so `deps` does not touch it. The set is closed by enumeration: a
+reference either matches one of the five exactly, or it is invisible.
 
-Only **row 4** declares. From that, everything else follows with nothing left to decide:
+**Only forms 3–5 declare a constraint.** Prose (1) is a warning, placeholder (2) is a request to be
+filled in — neither sets a version the package must satisfy. From that:
 
-- **A package's spec** is the spec its declarations agree on. No declarations → the package has no
-  spec. Two declarations that differ → **`divergent`**; `up` fails loud, `ls` says so, a human picks.
-- **A bare reference adopts** the package's spec. If the package has no spec, bare `up` pins it
-  **exact** — the security default, and the only case where bare `up` invents a version.
-- **A placeholder or ignored reference is never written and never counted**, so a managed package can
-  be freely written *about* without any of it reaching `up`, the lock, or divergence.
+- **A package's constraint** is the one shared by its exact/tilde/caret references. Two of those that
+  **differ** is a `divergent` error — `up` fails loud, `ls` says so, a human picks. Two versions of
+  one CLI in one plugin is an authoring mistake, named rather than silently resolved.
+- **A placeholder adopts** that constraint: `up` resolves within it and writes the exact result. With
+  no constraint anywhere, a placeholder resolves to the **newest** published version.
+- **Prose is only ever warned about**, so a forgotten `npx cyberlegion` is surfaced without being
+  silently rewritten into a pin.
 
-A reference **ends** at whitespace or at a delimiter that cannot appear in a version spec (a trailing
-`.`, `?`, `,`, `)`, a backtick, a quote). The delimiter is never part of the spec, and is never
-rewritten. Note the consequence: `@1.5.0?` extracts as `1.5.0`, a **valid** spec — so row 2 does not
-protect it and row 1 must. That is precisely why `ignore` is a *path* escape and not a form rule.
-
-This table classifies a **managed** name only. It cannot decide membership — that is what five
-successive attempts at a prose classifier each proved at a new point in the input space.
+`ignore` still escapes a **path** (evaluated first, before any form): a reference in an ignored file
+is invisible entirely — never warned, never converted, never counted. This is what protects the one
+real illustration file (`upgrade-universal-plugin` prints `npx universal-plugin@2.4.1` as sample
+output, an exact form `up` would otherwise pin). A reference ends at whitespace or a trailing
+delimiter (`.`, `?`, `,`, `)`, a backtick, a quote) that is never part of the spec.
 
 ## Use Cases
 
@@ -114,66 +114,50 @@ output per the AXI contract.
   **not** managed, one row per candidate name with how many files carry it, so the managed list is
   built from evidence rather than memory. `scan` classifies nothing and writes nothing; the reader
   decides, once, and `deps add` records the decision. Everything managed → a definitive empty state.
-- **`deps ls`** — one row per managed name: the spec its declarations agree on, what the lock records
-  it resolved to, and a status. Since one name can carry references of several rows at once, the
-  status is the **first** of these that applies — a total rule, no ties:
+- **`deps ls`** — one row per managed name: its constraint (the exact/tilde/caret spec its references
+  share, or `—` for none), what the lock records it resolved to, and a status:
 
   | status | when |
   |---|---|
-  | `divergent` | two declarations (row 4) disagree — the error outranks every other reading |
-  | `unused` | the name has no references at all |
-  | `ignored` | it has references, and **every** one is ignored (row 1) |
-  | `placeholder` | it has non-ignored references, and every one is a placeholder (row 2) |
-  | `stale` | it has a spec, and the lock's resolution no longer satisfies it |
-  | `unchanged` | otherwise |
+  | `divergent` | two exact/tilde/caret references carry **different** specs |
+  | `unused` | the name has no recognized references at all |
+  | `unpinned` | it has references, but none is a constraint yet (only prose and/or placeholders) |
+  | `stale` | it has a constraint, and the lock's resolution no longer satisfies it |
+  | `ok` | otherwise — resolved and consistent |
 
-  So a name with one placeholder *and* one declaration is simply reported on its declaration — the
-  placeholder is prose, not a competing state. `ignored` and `placeholder` describe a name whose
-  every reference is untouchable, which is exactly the residual-risk mitigation: a managed package
-  that no command will ever write is **visible** rather than silently absent.
-- **`deps up`** — resolves each managed name from the registry and records the resolution in
-  `deps.json`. Whether it also **rewrites the prose** depends on what the prose declares, because a
-  declared spec is a constraint `up` honors rather than a value `up` overwrites:
+  Bare-prose references are also surfaced as a **warning count** on the row, so a forgotten pin is
+  visible without changing the status.
+- **`deps up`** — resolves each managed name from the registry, records the resolution in `deps.json`,
+  and rewrites the prose form by form:
 
-  | the prose declares | bare `deps up` writes |
+  | the reference is | bare `deps up` does |
   |---|---|
-  | no spec (`npx pkg`) | `npx pkg@2.4.1` — **exact**; the security default, and the only case where bare `up` adds a version |
-  | a range (`@^2.0.0`) | **prose unchanged**; the lock records what `^2.0.0` resolves to now |
-  | an exact version (`@2.0.1`) | **prose unchanged** — an exact spec is a pin; the lock records `2.0.1` |
+  | **prose** (`npx pkg`) | **warns**, leaves it — never invents a pin from a bare reference |
+  | **a placeholder** (`@<version>`) | **converts to exact** — writes the resolved version (`@2.4.1`) |
+  | **exact** (`@2.4.1`) | leaves it — a pin; the lock records it |
+  | **a range** (`@~2.4` / `@^2.4`) | leaves the prose, resolves within it, records the result in the lock |
 
-  So bare `up` never crosses a constraint and can never silently cross a major. Moving a declared
-  spec is an **explicit** act — naming one, or `--latest`:
+  So bare `up` never crosses a constraint and never silently pins a bare reference. Moving an exact
+  pin, or bumping a range's floor, is an **explicit** act:
 
   | invocation | writes |
   |---|---|
-  | `deps up pkg@^2.0.0` | `^2.0.0` — the range is written through; the user opted in |
-  | `deps up pkg@^2.0.0 --exact` / `-E` | `2.4.1` — range as input, exact on disk |
-  | `deps up --latest` | the newest published version, ignoring the spec the prose declares |
-
-  `--latest` keeps the form the prose already declared — a range keeps its operator (`^2.0.0` →
-  `^3.1.0`), a bare or exact reference gets the exact newest; `--exact` forces exact either way.
-- **One spec per managed package** — the lock records **one** resolution per package, and a reader
-  like an init skill asks it *"what version shipped"* expecting one answer, so a package's
-  declarations (closed-form row 4, and only row 4) must agree. Two that differ is the only
-  divergence: `up` fails loud, `ls` reports `divergent`, a human picks. Rows 1–3 never diverge with
-  anything, because they never declare. Two versions of one CLI inside one plugin is an authoring
-  error, not a use case — the rule names it instead of silently picking a winner.
-
-  Adoption (row 3) is what keeps this **idempotent and bootstrappable**: pinning a bare reference to
-  exact while a sibling kept its range would *manufacture* a divergence the next `up` then rejects,
-  and would make a mixed corpus impossible to seed at all.
+  | `deps up pkg@^2.4` | `^2.4` — sets the constraint in the prose; the user opted in |
+  | `deps up --latest` | the newest published version, crossing the declared constraint (a range keeps its operator, `^2.4` → `^3.1`; an exact or placeholder becomes the exact newest) |
+- **One constraint per managed package** — the lock records **one** resolution per package, and a
+  reader like an init skill asks it *"what version shipped"* expecting one answer, so a package's
+  exact/tilde/caret references must agree. Two that differ is `divergent`: `up` fails loud, `ls`
+  reports it, a human picks. Prose and placeholders never diverge — they carry no constraint.
 - **A managed package with no reference is `unused`** — `add`ing a name does not require the prose to
-  invoke it. `ls` reports it `unused`, `up` resolves nothing for it and records nothing. This is the
-  honest inverse of `scan`: `scan` finds references with no entry, `unused` finds an entry with no
-  references.
+  invoke it. `ls` reports it `unused`, `up` resolves nothing for it and records nothing.
 - **`up` is all-or-nothing** — every managed name is resolved before anything is written. If any
   resolution fails, `up` writes nothing and exits 1. A half-pinned plugin is a shipped defect, so a
   transient registry failure must not produce one.
-- **Idempotent** — a declaration already at the version the registry resolves is left unchanged
-  (status `unchanged`).
+- **Idempotent** — a reference already at the version the registry resolves is left unchanged
+  (status `ok`); running `up` twice changes nothing the second time.
 - **`deps add <pkg>[@<spec>]`** — puts a name on the managed list. Bare `add` records the name and
-  nothing else (its references are picked up by the next `up`); `add pkg@^2.0.0` also resolves and
-  writes that spec through, exactly as `up pkg@^2.0.0` would. Adding an already-managed name is a
+  nothing else (its references are picked up by the next `up`); `add pkg@^2.4` also sets that
+  constraint in the prose, exactly as `up pkg@^2.4` would. Adding an already-managed name is a
   no-op, not an error.
 - **`deps remove <pkg>`** — takes a name off the managed list and drops its recorded resolution. The
   prose is **not** reverted: removing a dependency does not un-write an invocation that still runs.
@@ -194,8 +178,10 @@ candidates; a human answers via `add` — no classifier over the text can, and t
 deriving vendor manifests ([`plugin build`](../build/README.md) owns that — `deps` never touches
 `.plugin/plugin.json` or the vendor outputs); resolving from a **workspace** or a local
 `package.json`, and any **offline** mode (both dropped — a published tool cannot assume a release flow
-that bumps locally before publish); `npx` specs beyond its documented `<pkg>[@<version>]` surface (git
-specs, tarball URLs, `file:` paths, `npm:` aliases are out of scope); **installing** anything
+that bumps locally before publish); **any reference form outside the five** — dist-tags (`@latest`,
+`@next`), comparator ranges (`@>=1`, `@*`), git specs, tarball URLs, `file:` paths, and `npm:` aliases
+are all simply **ignored** (never rewritten, never an error), not classified or supported; **installing**
+anything
 (`deps.json` is a name list plus a lock, not an install manifest — there are no `node_modules`);
 **when and by what `deps up` gets invoked at release** — a consuming repo's CI wiring is that repo's
 concern, not this command's behavior, and `deps` works the same whether a human, a script, or a
@@ -210,15 +196,15 @@ Every scenario in [`deps.feature`](./deps.feature) maps to one of these behavior
 | **rooted at a plugin project** | missing `.plugin/plugin.json` fails loud (exit 1); missing `deps.json` = empty list, not an error |
 | **the allowlist is the selector** | an unmanaged name (`npx skills add`, the prose `npx dependency`) is untouched by `up` and absent from `ls` |
 | **`deps scan`** | unmanaged `npx <name>` candidates reported with file counts + `→ deps add`; managed names excluded; nothing unmanaged → empty state |
-| **`deps ls`** | one row per managed name (agreed spec, recorded resolution, status); the status precedence table is total — `divergent` outranks `stale`; a name whose every reference is untouchable reports `ignored`/`placeholder` rather than vanishing |
-| **`deps up`** | a bare reference → exact; a declared range → prose unchanged, lock refreshed; an exact spec is a pin bare `up` never moves; `pkg@^2.0.0` → range written through; `--exact` → exact from a range; `--latest` → newest, crossing the constraint, keeping the declared form |
-| **the closed form** | every reference lands in exactly one row (ignored / placeholder / bare / declaration), first match wins; only a declaration declares |
-| **one spec per package** | two *declarations* disagreeing → `up` exits 1, `ls` says `divergent`, incl. alongside a bare reference; an ignored or placeholder reference never diverges with anything; a bare reference adopts rather than diverging |
+| **`deps ls`** | one row per managed name (constraint, recorded resolution, status ∈ `ok`/`stale`/`unpinned`/`unused`/`divergent`); bare-prose references surfaced as a warning count |
+| **the five forms** | prose → warned; placeholder → converted to exact; exact → pin; tilde/caret → range; **anything else ignored** (dist-tag, comparator, git/tarball/npm:) |
+| **`deps up`** | placeholder → exact resolved version; a range → prose unchanged, lock refreshed; an exact pin bare `up` never moves; prose warned, never pinned; `pkg@^2.4` → constraint set in prose; `--latest` → newest, crossing the constraint, keeping the operator |
+| **one constraint per package** | two exact/tilde/caret references disagreeing → `up` exits 1, `ls` says `divergent`; prose and placeholders never diverge |
 | **unused** | a managed name with no reference → `ls` says `unused`, `up` records nothing |
 | **all-or-nothing** | a failed resolution writes nothing and exits 1 |
-| **idempotent** | already at the resolved version → `unchanged` |
-| **form / placeholder** | `@<version>` on a managed name is never rewritten, never declares, and never gives a bare sibling a spec to adopt; a trailing delimiter is not part of the spec |
-| **`ignore`** | an ignored path is never rewritten and never counted — `ignore` is evaluated first, on the path, so an illustration cannot perturb a real dependency |
+| **idempotent** | already at the resolved version → `ok`; a second `up` changes nothing |
+| **ignored forms** | a dist-tag / comparator / git / tarball / `npm:` reference is left untouched and not counted |
+| **`ignore`** | an ignored path is never rewritten and never counted — evaluated first, on the path, so an illustration cannot perturb a real dependency |
 | **the lock** | `up` records the resolution; hand-edited `ignore` / `$schema` / unknown keys survive a write |
 | **`deps add` / `deps remove`** | `add` records the name (`@spec` also writes through); re-adding is a no-op; `remove` drops the name + resolution, leaves prose; removing an unmanaged name fails loud |
 | **naming an unmanaged package** | `up nonesuch` exits 1 pointing at `deps add` |
