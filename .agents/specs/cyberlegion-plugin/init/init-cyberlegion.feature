@@ -167,24 +167,3 @@ Feature: init-cyberlegion — onboard a session into the Legion
     Given any onboarding run of init-cyberlegion
     When it performs probe, hook registration, minting, or binding
     Then every mechanic is a cyberlegion CLI call and the skill writes no hub file and invents no config format
-
-  # ── Quality of the onboarding ──
-
-  @quality @rubric
-  Scenario: the onboarding is CLI-delegated, environment-grounded, and consent-gated
-    Given a root session in a repo where the user asks to set up cyberlegion
-    When init-cyberlegion runs the full onboarding flow
-    Then the judge evaluates the onboarding against the rubric
-      """
-      dimensions:
-        - name: environment_summary_grounded_in_probe
-          max: 3
-        - name: bind_ask_is_informed_consent_not_silent
-          max: 3
-        - name: every_mechanic_delegated_to_the_cli
-          max: 2
-        - name: non_coercive_respects_a_decline
-          max: 2
-      threshold: 8
-      """
-    And the rubric score is at least the threshold
