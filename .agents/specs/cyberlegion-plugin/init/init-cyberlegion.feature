@@ -5,10 +5,10 @@ Feature: init-cyberlegion — onboard a session into the Legion
   session (!spawnedBy) -> ask before binding this pane as the durable legate owner inbox -> on an
   explicit yes, mint the owner (unit register --standing --handle legate) and bind the pane (attach).
   Every mechanic is a cyberlegion CLI call; the skill writes no hub state and invents no config format
-  (its only filesystem read is the plugin's own bundled ${CLAUDE_PLUGIN_ROOT}/.plugin/pins.json version
-  map, to resolve the CLI pin). Spawning/mailing/dispatching a peer is legate; reading or acking
-  owner mail is manage-inbox; the CLI mechanics themselves live in the sibling packages/cyberlegion
-  project and are out of scope here.
+  (its only filesystem read is the plugin's own bundled ${CLAUDE_PLUGIN_ROOT}/.plugin/deps.json, to read
+  the version its cyberlegion dependency resolved to at release). Spawning/mailing/dispatching a peer is
+  legate; reading or acking owner mail is manage-inbox; the CLI mechanics themselves live in the sibling
+  packages/cyberlegion project and are out of scope here.
 
   # ── Triggering ──
 
@@ -87,23 +87,29 @@ Feature: init-cyberlegion — onboard a session into the Legion
     When init-cyberlegion registers the surfacing hook
     Then it runs cyberlegion init without an --agent flag
 
-  # ── Version pin read from the plugin's bundled map ──
+  # ── Version pin read from the plugin's bundled deps record ──
 
   @behavior
-  Scenario: the pinned version is read from the plugin's bundled map, not invented
-    Given the plugin ships a .plugin/pins.json mapping cyberlegion to a version
+  Scenario: the pinned version is read from the plugin's bundled deps record, not invented
+    Given the plugin ships a .plugin/deps.json recording what its cyberlegion dependency resolved to
     When init-cyberlegion resolves which cyberlegion CLI version to run
-    Then it reads that version from ${CLAUDE_PLUGIN_ROOT}/.plugin/pins.json rather than inventing a number or scraping prose
+    Then it reads that version from ${CLAUDE_PLUGIN_ROOT}/.plugin/deps.json rather than inventing a number or scraping prose
 
   @behavior
-  Scenario: the resolved version is threaded into init --pin
-    Given .plugin/pins.json maps cyberlegion to a version
+  Scenario: the recorded resolution is threaded into init --pin
+    Given .plugin/deps.json records a resolution for cyberlegion
     When init-cyberlegion registers the surfacing hook
     Then it runs cyberlegion init --pin with that version so the installed hook is version-pinned
 
   @behavior
-  Scenario: a missing or unreadable map falls back to the unpinned CLI without inventing a version
-    Given no .plugin/pins.json is present, or it carries no cyberlegion entry, or it is malformed (an unbundled workspace checkout or a corrupt map)
+  Scenario: a range in the prose is never read as the version that shipped
+    Given .plugin/deps.json records a resolution for cyberlegion and a skill's prose invokes npx cyberlegion at a range
+    When init-cyberlegion resolves which cyberlegion CLI version to run
+    Then it uses the recorded resolution and never the range the prose declares
+
+  @behavior
+  Scenario: a missing or unreadable record falls back to the unpinned CLI without inventing a version
+    Given no .plugin/deps.json is present, or it does not manage cyberlegion, or it records no resolution for cyberlegion, or it is malformed (an unreleased workspace checkout or a corrupt file)
     When init-cyberlegion resolves which cyberlegion CLI version to run
     Then it invokes the unpinned cyberlegion CLI and passes no --pin, never inventing a version number
 
