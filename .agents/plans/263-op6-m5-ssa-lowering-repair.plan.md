@@ -51,13 +51,37 @@ instrument.
   ⇒ not a stale-mistake ⇒ escalate.
 - **#256 / #241 — LIVE, converge.** 19/20 scenarios never ablated. Both are the same measurement.
 
-## The spine
+## The spine — PROPOSED, THEN MEASURED FALSE (half of it)
 
-**#254 and #255 are instrument defects in disguise, not subject gaps.** A dimension whose rule the
-doctrine never states is a dimension **bound to nothing** — it grades the agent's general competence.
-`catches-misalignment` (2/3) and `disjoint-nodes-not-fused` (2/3) are both in that state. Stating each
-rule *where the act happens* converts an **unbound** dimension into a **bound** one, provable by
-ablation. That is why these belong in an instrument-repair mission and are not score-chasing.
+**Proposed:** "#254/#255 are instrument defects in disguise. A dimension whose rule the doctrine never
+states is bound to nothing; stating the rule where the act happens binds it, provable by ablation."
+
+**#254: REFUTED by measurement. The rule was NOT landed.** Ablated properly — stripped the doctrine's
+telemetry worked example (the pattern-match crutch), then ran two arms × N=3 blind producers on the
+`misaligned` probe:
+
+| arm | doctrine | verdicts | score |
+|---|---|---|---|
+| A — no example, **no rule** | competence only | reshape, kill, reshape | **3/3 PASS (6/6)** |
+| B — no example, **+ the #254 rule** | rule supplied | reshape, kill, kill | **3/3 PASS (6/6)** |
+
+**Δ = 0.** The rule is dead weight. I ran the control and it survived — the exact trap of ablating your
+own fix and reading survival as a pass. Not landed.
+
+**The real defect #254 misdiagnosed.** `catches-misalignment` is unloseable **via its `Given`**, not via
+a missing rule. The situation states the direction three redundant times — *"read-only"*, *"no write
+credentials"*, *"README promises it will never open a pull request or touch a branch"*. There is no
+direction left to infer; the dimension measures whether the model can read, not what the doctrine
+teaches. **No rule added to the doctrine can fix a situation that already contains the answer.**
+
+This is the identical shape README:276-283 already flagged on `irreducible` — *"its situation ... hands
+over **both** answers the rubric grades"* — the suite's self-declared weakest rubric. `catches-misalignment`
+has the same defect and it was never noticed. That reclassifies #254: **a cued `Given` = a SUITE defect
+needing a frozen `Given` edit ⇒ Clearance**, not the subject gap it was filed as.
+
+**#255: ablating before deciding.** Same claim, and I just watched it fail once. Note the asymmetry that
+makes #255 more promising: single-writer does **not** entail non-fusion (one Mission owning X, Y and Z
+is still single-writer), so unlike `cohesion` the dimension is not entailed — it may genuinely bind.
 
 ## Hazards
 
