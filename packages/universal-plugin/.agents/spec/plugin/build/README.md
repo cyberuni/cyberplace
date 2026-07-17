@@ -13,10 +13,10 @@ fields over the shared fields (vendor wins on conflict) and stripping `vendorExt
 from the output.
 
 Build is the **dev-consumable** derivation — it runs constantly while authoring a plugin, is
-deterministic, and needs no network. Producing the **release form** — pinning the `npx <cli>@<version>`
-references a plugin's skills carry to the versions being shipped — is a separate release-time step that
-lives in [`plugin bundle`](../bundle/README.md), not here (root `spec.md` placement map). Build does
-not touch skill pins.
+deterministic, and needs no network. Managing the `npx <pkg>[@<spec>]` package dependencies a
+plugin's skills invoke — resolving them and writing the versions being shipped — is a separate concern
+that lives in [`plugin deps`](../deps/README.md), not here (root `spec.md` placement map). Build does
+not touch those references.
 
 Follows the AXI output contract ([../../axi/](../../axi/README.md)).
 
@@ -52,8 +52,8 @@ Follows the AXI output contract ([../../axi/](../../axi/README.md)).
 **Non-goals** — checking a manifest without deriving output (`plugin validate`); scaffolding a new
 project (`plugin init`); publishing or installing manifests (the `cyberplace` package); the shared
 output-contract mechanics themselves ([`../../axi/`](../../axi/README.md) owns those); **resolving or
-pinning the `npx <cli>@<version>` references a plugin's skills carry** — that is the release-time
-[`plugin bundle`](../bundle/README.md) step, not a build step. Build derives manifests only.
+rewriting the `npx <pkg>[@<spec>]` references a plugin's skills invoke** — that is the
+[`plugin deps`](../deps/README.md) group's job, not a build step. Build derives manifests only.
 
 Every scenario in [`build.feature`](./build.feature) maps to one of these behaviors:
 

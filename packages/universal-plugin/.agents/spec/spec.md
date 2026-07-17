@@ -41,10 +41,10 @@ CLI turns that canonical manifest into what each AI-agent runtime (Claude Code, 
 Copilot CLI) expects, and resolves shared governance documents by name. Two concerns:
 
 - **The `plugin` command group** — `universal-plugin plugin build` **derives** per-vendor manifests
-  from the canonical one; `plugin bundle` **materializes** the release form (pins the plugin's skill
-  `npx <cli>@<version>` references to the shipping workspace versions); `plugin validate` **checks** the
-  canonical manifest against the schema and each vendor's rules; `plugin init` **scaffolds** a new
-  plugin project.
+  from the canonical one; `plugin deps` **manages** the `npx <pkg>[@<spec>]` package dependencies the
+  plugin's skills invoke (`ls` / `up` / `add` / `remove` / `scan`, against the managed list
+  `.plugin/deps.json` declares); `plugin validate` **checks** the canonical manifest against the schema
+  and each vendor's rules; `plugin init` **scaffolds** a new plugin project.
 - **`governance`** — `universal-plugin governance show <name>` / `list` **resolves** governance
   documents by name across a fixed scope precedence, so agents reference governance by name, not by a
   fragile filesystem path.
@@ -82,9 +82,9 @@ is a peer of the `cyberfleet` CLI.
 
 | Folder | Type | What |
 |---|---|---|
-| [`plugin/`](./plugin/README.md) | group | the `plugin` command group — build / bundle / validate / init |
+| [`plugin/`](./plugin/README.md) | group | the `plugin` command group — build / deps / validate / init |
 | [`plugin/build/`](./plugin/build/README.md) | behavioral | `universal-plugin plugin build [--vendor] [--dry-run] [--clean]` — derive per-vendor manifests from the canonical `.plugin/plugin.json` (dev-consumable form; no pins) |
-| [`plugin/bundle/`](./plugin/bundle/README.md) | behavioral | `universal-plugin plugin bundle [--dry-run] [--full] [--format]` — materialize the release form: pin the `npx <cli>@<version>` references in the plugin's skills to their shipping workspace versions |
+| [`plugin/deps/`](./plugin/deps/README.md) | behavioral | `universal-plugin plugin deps ls \| up \| add \| remove \| scan [--exact] [--latest] [--registry] [--dry-run] [--full] [--format]` — manage the `npx <pkg>[@<spec>]` package dependencies the plugin's skills invoke; `.plugin/deps.json` declares which packages are managed and records what each resolved to |
 | [`plugin/validate/`](./plugin/validate/README.md) | behavioral | `universal-plugin plugin validate [--vendor] [--strict]` — check the canonical manifest against schema + vendor rules |
 | [`plugin/init/`](./plugin/init/README.md) | behavioral | `universal-plugin plugin init [--name] [--vendor] [--scaffold] [--force] [--yes]` — scaffold a new plugin project |
 | [`governance/`](./governance/README.md) | behavioral | `universal-plugin governance show <name>` / `list` — resolve governance documents by name across scopes |
@@ -96,13 +96,13 @@ Where a new concept lives — slot here, do not invent placement (strategy = **c
 
 - **a new canonical-manifest op** (derive / check / scaffold the `.plugin/plugin.json`) →
   `plugin/<verb>/` (a new unit node under the `plugin` group).
-- **a new op resolving/pinning the version pins in the plugin's own skills** (the
-  `npx <cli>@<version>` references a plugin's skills carry) → **`plugin/bundle/`** — pinning is a
-  release-time **materialization** step (resolve each workspace CLI to the version in its local
-  `packages/<pkg>/package.json` at `changeset version`, skipping doc-example and external pins),
-  distinct from `build`'s dev-time manifest derivation. `build` no longer touches pins. It is **not**
-  the `self-update` hook-file concern (updating `universal-plugin`'s own pin across a project's hook
-  files departs with the sync engine — see the non-goals below).
+- **a new op over the packages a plugin's skills invoke through `npx`** (list, resolve, rewrite, add
+  to or remove from the managed set, or surface candidates) → **`plugin/deps/`** — these references
+  are dependencies, managed like a package manager manages any dependency, against the allowlist
+  `.plugin/deps.json` declares and versions resolved from a registry. `build` does not touch them. It
+  is **not** the `self-update` hook-file concern (updating `universal-plugin`'s own reference across a
+  project's hook files departs with the sync engine — see the non-goals below), and it is **not** the
+  release-flow glue that invokes `deps up` after publish (this repo's CI wiring, not a capability).
 - **a new name→document resolution op** (resolve or list governance by name across scopes) →
   `governance/`.
 - **a new shared output / CLI convention** (TOON shape, aggregate, next-step, empty-state,
@@ -117,7 +117,7 @@ Where a new concept lives — slot here, do not invent placement (strategy = **c
 - **post-install artifact-copy (`prepare`)** → **dropped** — not chartered in this spec.
 
 The nesting rule: capabilities at the top; a command group (`plugin/`) may hold unit nodes
-(`plugin/build/`, `plugin/bundle/`), but no node is three deep — any further sub-grouping is a
+(`plugin/build/`, `plugin/deps/`), but no node is three deep — any further sub-grouping is a
 `concept:` tag, not a folder. The `plugin/` group index carries no `spec-type` marker (it is a descriptive index, not a
 scanned node).
 
@@ -129,9 +129,9 @@ scanned node).
 
 | Concept | Facets |
 |---|---|
-| `axi` | `axi/` (reference) · `governance/` (behavior) · `plugin/build/` (behavior) · `plugin/bundle/` (behavior) · `plugin/init/` (behavior) · `plugin/validate/` (behavior) |
+| `axi` | `axi/` (reference) · `governance/` (behavior) · `plugin/build/` (behavior) · `plugin/deps/` (behavior) · `plugin/init/` (behavior) · `plugin/validate/` (behavior) |
 | `canonical-manifest` | `plugin/build/` (behavior) · `plugin/init/` (behavior) · `plugin/validate/` (behavior) |
+| `dependencies` | `plugin/deps/` (behavior) |
 | `governance` | `governance/` (behavior) |
-| `release` | `plugin/bundle/` (behavior) |
 
 <!-- END generated: by-concept -->

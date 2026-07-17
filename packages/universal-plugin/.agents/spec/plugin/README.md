@@ -1,12 +1,14 @@
-# plugin — the manifest command group
+# plugin — the plugin-project command group
 
-The `plugin` command group is the canonical-manifest engine. One canonical `.plugin/plugin.json` is
-the source of truth; these verbs turn it into what each vendor expects and keep it well-formed:
+The `plugin` command group operates on a plugin project. One canonical `.plugin/plugin.json` is the
+source of truth for what the plugin *is*; `build` / `validate` / `init` turn it into what each vendor
+expects and keep it well-formed, and `deps` manages what the plugin *depends on*:
 
 - [`build/`](./build/README.md) — `universal-plugin plugin build` derives per-vendor manifests
   (dev-consumable form; no pins).
-- [`bundle/`](./bundle/README.md) — `universal-plugin plugin bundle` materializes the release form,
-  pinning the plugin's skill `npx <cli>@<version>` references to their shipping workspace versions.
+- [`deps/`](./deps/README.md) — `universal-plugin plugin deps ls | up | add | remove | scan` manages
+  the `npx <pkg>[@<spec>]` package dependencies the plugin's skills invoke, against the managed list
+  `.plugin/deps.json` declares.
 - [`validate/`](./validate/README.md) — `universal-plugin plugin validate` checks the canonical
   manifest against the schema and vendor rules.
 - [`init/`](./init/README.md) — `universal-plugin plugin init` scaffolds a new plugin project.
