@@ -20,6 +20,9 @@ importers:
       '@commitlint/config-conventional':
         specifier: ^21.0.1
         version: 21.0.1
+      '@cyberplace/sdd-plugin':
+        specifier: workspace:*
+        version: link:plugins/sdd
       '@repobuddy/biome':
         specifier: ^2.3.1
         version: 2.3.1(@biomejs/biome@2.4.15)
@@ -169,6 +172,18 @@ importers:
       vitest:
         specifier: ^4.1.7
         version: 4.1.7(@types/node@24.12.4)(vite@8.0.14(@types/node@24.12.4)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0))
+
+  plugins/aced: {}
+
+  plugins/cyberfleet: {}
+
+  plugins/cyberlegion: {}
+
+  plugins/cyberspace: {}
+
+  plugins/quill: {}
+
+  plugins/sdd: {}
 
 packages:
 

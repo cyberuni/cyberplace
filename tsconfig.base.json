@@ -9,6 +9,5 @@
 		"noEmit": true,
 		"skipLibCheck": true,
 		"allowImportingTsExtensions": true
-	},
-	"include": ["plugins/**/*.mts"]
+	}
 }

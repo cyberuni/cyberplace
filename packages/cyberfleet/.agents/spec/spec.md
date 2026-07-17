@@ -100,3 +100,13 @@ behavioral node**. Backfilling them (with `.feature` suites) is a future change 
 settle at that time. `missions` is the highest-value backfill: it is now the CLI's whole reason to
 exist, and the `hal` field it derives is load-bearing for the Pod persona.
 
+<!-- BEGIN generated: by-concept (project-spec/concept-index) -->
+
+## By concept
+
+> Generated from `concept:` frontmatter by `project-spec/concept-index` — do not edit by hand.
+
+| Concept | Facets |
+|---|---|
+
+<!-- END generated: by-concept -->

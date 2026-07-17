@@ -1,6 +1,11 @@
 {
 	"$schema": "https://unpkg.com/knip@6/schema.json",
-	"ignore": [".vscode/cucumber-glue.js", "artifacts/specs/**/verify-*.mts", "scripts/legion-mail-hook.mjs"],
+	"ignore": [
+		".vscode/cucumber-glue.js",
+		"artifacts/specs/**/verify-*.mts",
+		"artifacts/specs/**/*.test.mts",
+		"scripts/legion-mail-hook.mjs"
+	],
 	"ignoreDependencies": ["husky"],
 	"workspaces": {
 		"plugins/sdd": {
