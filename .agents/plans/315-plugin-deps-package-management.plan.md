@@ -10,10 +10,10 @@ todos:
     status: completed
   - content: "explore — retarget cyberlegion-plugin init to deps.json, then DECOUPLE it (init reads its own develop-time pin, not deps.json)"
     status: completed
-  - content: "spec gate — fresh cold sdd-spec-judge on the NO-LOCK five-forms model (rounds 1-9 graded superseded models); HITL ratification required"
-    status: in_progress
+  - content: "spec gate — fresh cold sdd-spec-judge on the NO-LOCK five-forms model (rounds 1-9 graded superseded models); HITL ratification required. R10-R13 done: oracle+architect PASS (R11-R13), every CR-introduced Builder gap closed. APPROVED by owner (Clearance ratified live): status:approved on universal-plugin, both suites frozen, gate lines in both shards, rubric DELETED per owner. cyberlegion-plugin root stays draft (untouched by this CR — init node only)"
+    status: completed
   - content: "deliver — registry source, deps CRUD + detection, retire bundle, rewire release flow"
-    status: pending
+    status: in_progress
   - content: "deliver — seed each plugin's managed list from detection (ATOMIC with the rule)"
     status: pending
   - content: "deliver — fix the doc-example corruption; verify the release PR regenerates clean"
@@ -291,7 +291,63 @@ rather than absent.
 - **Unspec'd:** the release-flow rewiring (root `package.json` `version` script + `release.yml`). Listed
   as a node non-goal — may need its own home, or may be pure deliver work.
 
+## Spec-gate judge history on the no-lock five-forms model (2026-07-17)
+
+Four fresh cold `sdd-spec-judge` rounds, each briefed with NO scope facts (pointed at Non-goals +
+ledger shards). Provenance tracked per finding — NOT diverging: model PASSes oracle+architect from
+R11 on; each Builder gap was independent (mostly pre-existing or a new completeness point), and only
+one traced to a prior fix (an incomplete fix, not a regenerated defect).
+
+| round | judge | oracle | architect | builder | findings → disposition |
+|---|---|---|---|---|---|
+| R10 | aaba030 | FAIL | FAIL | FAIL | scan had 0 scenarios; spec.md stale `--exact`+lock; init README self-contradiction → **all fixed** (commit 5e54edc8) |
+| R11 | aba6c647 | PASS | FAIL | FAIL | ignore×scan unstated; range×init undefined; @frozen-at-draft violation → **all fixed** (d2490c8b): ignore total over verbs, init total over forms, unfroze both suites |
+| R12 | adc0268 | PASS | PASS | FAIL | ls×ignore gap (my R11 prose); divergence "differ" undefined; **rubric Selection (pre-existing on main)** → 2 in-scope fixed (f53d3fbe: ls×ignore scenario, divergence=byte-identity); rubric DEFERRED |
+| R13 | a1b3577 | PASS | PASS | FAIL | missing-manifest tested only for ls (CR-introduced); **rubric 3rd boolean dim (pre-existing)** → manifest reframed as shared pre-dispatch gate (f4c2b9d7); rubric DEFERRED |
+
+**Stopped the loop at R13** — model proven (oracle+architect PASS ×3), every CR-introduced Builder
+gap closed. The suite is 67 deps scenarios + 22 init. Remaining Builder item is the **pre-existing
+rubric** (below), an owner call, not a producer fix.
+
+## The pre-existing rubric — HELD for the owner
+
+`init-cyberlegion.feature`'s `@quality @rubric` scenario ("the onboarding is CLI-delegated,
+environment-grounded, and consent-gated") **exists unchanged on main** (empty diff in that region —
+verified). 3 of its 4 dimensions restate boolean floors already frozen as pass/fail scenarios in the
+same file (`bind_ask_is_informed_consent_not_silent` ≙ :132-135, `non_coercive_respects_a_decline` ≙
+:138-141, `every_mechanic_delegated_to_the_cli` ≙ :166-169), then re-admit them into a compensatory
+sum — a Selection defect (a boolean floor is untradeable). Only `environment_summary_grounded_in_probe`
+is a genuine gradient. Out of THIS CR's scope (pre-existing, R7 precedent = note-not-fix), but the
+init feature is touched+frozen here, so surfaced at the gate. **Owner options:** delete the rubric
+(radical-simplification read — init is boolean process-Gherkin), repair it (keep only the one real
+gradient), or defer to a follow-up issue.
+
 ## NEXT — resume here
+
+**SPEC GATE PASSED (2026-07-17) — owner ratified live (Clearance). Now in DELIVER.**
+
+- `universal-plugin` root `status: approved`, `approval.spec: { verdict: approve, by: unional, cr:
+  github-315 }` (the stale `build-bundle-split` spec block was overwritten; `approval.impl`
+  github-89-build-axi left for the impl gate to overwrite). `deps.feature` (67 scen) + `init-
+  cyberlegion.feature` (21 scen) both `@frozen`. Human gate lines in both ledger shards.
+- `cyberlegion-plugin` root **stays `draft`** — it was already draft on main and this CR never touched
+  the root spec.md (init NODE only); do NOT flip it.
+- Owner decisions at the gate: **approve**; **delete** the pre-existing rubric (done, `by` owner call);
+  **do NOT** save the "radical simplification" preference (answered — drop the open question).
+
+**Next action — DELIVER (implementation), the todos in order.** The frozen contract is now the spec.
+Build the `plugin deps` CLI (registry source, `ls|up|add|remove|scan`, five-forms engine, allowlist,
+`ignore` as shared pre-dispatch + per-verb escape, byte-identity divergence, `--dry-run/--full/
+--format`) + seed each plugin's `dependencies` from `deps scan` (ATOMIC with the rule sweep) + the
+doc-example corruption fix. **ATOMIC with retiring `plugin bundle`:** root `package.json`'s `version`
+script (`changeset version && pnpm run bundle`) and `.github/workflows/release.yml` still invoke
+`plugin bundle` ×6 — removing the verb without rewiring breaks release. Delegate build units to
+sonnet subagents per the delegation table.
+
+**Impl gate:** re-derive each frozen scenario's oracle independently (ADR-0016), run the impl-
+producer's verification, per-scenario PASS/FAIL. This CR's impl gate overwrites `approval.impl`.
+
+--- superseded resume instructions below (spec gate is DONE; kept for provenance) ---
 
 **Next action:** dispatch a **fresh cold `sdd-spec-judge`** over the spec gate for this CR — brief it
 with NO scope facts (point it at the two nodes' Non-goals + both ledger shards, say so). Grade

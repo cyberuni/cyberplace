@@ -1,18 +1,12 @@
 ---
-status: draft
+status: approved
 name: universal-plugin
 project-path: packages/universal-plugin
 approval:
   spec:
     verdict: approve
-    by: agent
-    cause: dimension
-    why:
-      floor: Clearance — narrows `plugin/build/`, deleting the pin-resolution scenarios + the `--registry`/`--range`/`--package`/`--allow-major`/`--skip-pins` flags from the frozen `build.feature` (pin resolution relocates to the new `plugin/bundle/` node). PRE-AUTHORIZED by the user in-session this run; `build.feature` re-opened for the narrowing and re-frozen at this gate. Compatibility n/a (impl unbuilt this CR — no shipped semver bump). Conflict none — the root maps route pins to `bundle` only and narrowed `build.feature` retains zero pin references.
-      blast: moderate — one narrowed node (`plugin/build/`) + one new node (`plugin/bundle/`) + root capability/placement/concept maps. The pin machinery relocates via the existing `RegistryClient` DIP seam (a workspace-version source reading local `packages/<pkg>/package.json`); workspace-only, offline — removes build's former network dependency rather than adding one.
-      novelty: moderate — a structural `build`/`bundle` split along the dev-vs-release axis (new verb) realizing #84's "pinning belongs to release, not build" thesis; the pin mechanics themselves are established (relocated, not invented). Workspace resolution fixes the off-by-one registry lookup at `changeset version` time; a doc-example ignore protects `upgrade-universal-plugin`'s illustration strings; external (non-workspace) pins are skipped.
-      confidence: high — cold sdd-spec-judge 3-lens {oracle, builder, architect} ALIGNED true (all three PASS first round). check-spec-state OK / check-suite OK (boolean throughout, correct sectioning) / concept-index updated (new `release` concept), 0 open markers. One non-blocking coverage gap (bundle lacked build's missing-manifest precondition) closed with a mirror scenario before freeze. Self-asserted (by agent) — ratify or kick back.
-      cr: build-bundle-split
+    by: unional
+    cr: github-315
   impl:
     verdict: approve
     by: agent

@@ -1,3 +1,4 @@
+@frozen
 Feature: plugin deps — manage the plugin's npx package dependencies
 
   Background:

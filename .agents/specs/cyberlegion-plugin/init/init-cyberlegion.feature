@@ -1,3 +1,4 @@
+@frozen
 Feature: init-cyberlegion — onboard a session into the Legion
   Unit suite for the init-cyberlegion skill: a thin, user-invocable onboarding wrapper that drives the
   cyberlegion CLI through probe (mux doctor) -> register the surfacing hook (init) -> detect a root
