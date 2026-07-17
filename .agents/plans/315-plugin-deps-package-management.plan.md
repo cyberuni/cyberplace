@@ -247,26 +247,55 @@ rather than absent.
 - **Unspec'd:** the release-flow rewiring (root `package.json` `version` script + `release.yml`). Listed
   as a node non-goal — may need its own home, or may be pure deliver work.
 
-## NEXT
+## NEXT — resume here
 
-**Rewrite the node against the allowlist model** (the current suite is written against the refuted
-thesis and the last verdict, round 5, is ALIGNED false on it):
-1. `deps.json` gains the managed-name list; only listed names are ever scanned for.
-2. `deps add <pkg>[@spec]` / `deps remove <pkg>` — the CRUD that maintains the list.
-3. **`deps scan`** (CONFIRMED by the owner) — surface candidate `npx <name>` references that are NOT
-   managed, so the list is seeded from evidence. `ls` = what I manage (like `npm ls`); `scan` = what is
-   out there. Kept separate from `ls` deliberately: `ls` already answers declarations + placeholders +
-   ignored paths, and unmanaged candidates is a different question.
-   **`scan` is load-bearing, not a convenience** — the same bootstrapping failure has hit this node
-   twice (the `pin-exempt` marker was never applied to the one skill it existed for; an allowlist nobody
-   seeds fails identically). If `add` is the only path onto the list, the marker problem is rebuilt under
-   a new name. The corpus seeding must RUN `scan`, not be a human grep plus a promise in a brief.
-4. Narrow every existing rule to managed names; keep the extraction boundary + placeholder rule.
-5. Re-judge — brief carries NO scope facts (the spec + ledger must speak for themselves).
+**Author the `plugin/deps/` node against the allowlist model.** Nothing is drafted on this branch:
+`plugin/bundle/` is intact and `@frozen` as on `main`. Run `start-mission` (this brief is its input),
+`git mv packages/universal-plugin/.agents/spec/plugin/bundle packages/universal-plugin/.agents/spec/plugin/deps`,
+write `README.md` + `deps.feature`, then gate-check with
+`node plugins/sdd/skills/spec-gate/scripts/check-suite.mts --root packages/universal-plugin/.agents/spec`.
 
-Gate still needs HITL ratification — Clearance. **Do not ratify on an unjudged model.**
+The node to build — **the allowlist is the selector**, not any property of the prose:
 
-## Superseded NEXT (round 5)
+1. `.plugin/deps.json` declares **which packages are managed**. A name not on the list is never looked
+   for. This is the whole fix; everything else narrows to it.
+2. `deps add <pkg>[@spec]` / `deps remove <pkg>` — how a name gets on and off the list.
+3. `deps scan` — surface `npx <name>` references that are **not** managed. Load-bearing (below).
+4. `deps ls` reads the lock; `deps up` resolves from a registry and writes. Both act on managed names only.
+5. Keep the **extraction boundary** (a reference ends at whitespace or a Markdown/sentence delimiter;
+   the delimiter is never part of the spec) and the **placeholder rule** (a managed package can still
+   appear as `@<version>` in prose). Both survive; their blast radius collapses to managed names.
 
-Cold `sdd-spec-judge` dispatched over BOTH specs (independent, one each). Fold verdicts + any
-`open` markers, then the spec gate. **Gate needs HITL ratification — Clearance; do not self-assert.**
+Then re-judge. **The judge brief must carry NO scope facts** — point it at the node's Non-goals and the
+ledger and say so. Anything briefed around is something the spec fails to say.
+
+### Blocking / decided
+
+- **Gate needs HITL ratification — Clearance.** Do **not** self-assert, and **do not ratify on an
+  unjudged model**: the last verdict (round 5) is `ALIGNED false` against the thesis this replaces.
+- **`deps scan` is confirmed** as the detection verb, and is **load-bearing, not a convenience**. The
+  same bootstrapping failure has hit this node twice: the `pin-exempt` marker was never applied to the
+  one skill it existed for, and an allowlist nobody seeds fails identically. If `add` is the only path
+  onto the list, the marker problem is rebuilt under a new name — **the corpus seeding must RUN `scan`**,
+  not be a human grep plus a promise in this brief.
+- **Still unsettled** — see `## Grill notes`.
+
+### Findings the diff will not show
+
+- **The doc-example corruption is live and queued.** It is already committed to the pending
+  `changeset-release/main` PR and ships on merge. The release bot regenerates that PR from `main`, so it
+  is fixed by fixing the cause on `main` — not by editing the PR. Independent of this CR's timeline.
+- **Why the allowlist, and not a better classifier.** Five judge rounds each refuted the previous fix at
+  a new point in the input space. The premise itself was wrong: `npx skills add …` (29 files, a real
+  published CLI) and the English phrase *"shipping an npx dependency"* (3 governance docs, `dependency`
+  is a real package) are indistinguishable from declarations **by the string alone**. Do not re-open this
+  by proposing a smarter rule.
+- **`npx` accepts ranges natively** (measured: `cyberlegion@^0.1.0` → `0.1.0`), which is why a range in
+  prose is a real invocation and the lock must record what it resolved to.
+- The abandoned first attempt is tagged `sdd-315-superseded-attempt` (11 commits, refuted premise).
+
+### Do not relearn
+
+`## Settled with the owner` · `## The init relay` · `## Subsumes #315` (both of the issue's own
+hypotheses are refuted — do not transcribe them) · `## DIRECTION CHANGE (round 5)` · the ledger shards,
+which carry the two Clearance grants, five judge rounds, and the refuted premise.
