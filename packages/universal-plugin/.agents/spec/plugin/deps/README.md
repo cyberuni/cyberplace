@@ -105,7 +105,9 @@ never part of the spec.
 with output per the AXI contract.
 
 - **Rooted at a plugin project** — every verb operates on a plugin project rooted at
-  `.plugin/plugin.json`; a missing manifest fails loud (exit 1), like `build`. A missing
+  `.plugin/plugin.json`. This is a **shared pre-dispatch gate**: before any verb (`ls`, `up`, `add`,
+  `remove`, `scan`) does its own work, a missing manifest fails loud (exit 1) and writes nothing, like
+  `build` — so a write verb never touches a skill file when the root is invalid. A missing
   `.plugin/deps.json` is an empty managed list, not an error — nothing is managed yet.
 - **The allowlist is the selector** — every verb acts on the names under `dependencies` and on nothing
   else. An `npx` reference to an unmanaged name is never read, rewritten, or counted; `scan` is the

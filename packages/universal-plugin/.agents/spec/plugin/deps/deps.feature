@@ -5,11 +5,19 @@ Feature: plugin deps — manage the plugin's npx package dependencies
 
   # ── Preconditions ──
 
-  Scenario: missing .plugin/plugin.json fails
+  Scenario: missing .plugin/plugin.json fails before ls runs
     Given the project root has no ".plugin/plugin.json"
     When I run "universal-plugin plugin deps ls"
     Then the exit code is 1
     And stderr contains "No .plugin/plugin.json found"
+
+  Scenario: missing .plugin/plugin.json fails before a write verb runs too
+    Given the project root has no ".plugin/plugin.json"
+    And a skill "skills/x/SKILL.md" contains "npx cyberlegion@<version>"
+    When I run "universal-plugin plugin deps up"
+    Then the exit code is 1
+    And stderr contains "No .plugin/plugin.json found"
+    And "skills/x/SKILL.md" contains "npx cyberlegion@<version>"
 
   Scenario: a missing .plugin/deps.json is an empty managed list, not an error
     Given the project root has no ".plugin/deps.json"
