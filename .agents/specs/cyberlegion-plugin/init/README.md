@@ -49,8 +49,11 @@ mint + pane bind, narrating the environment and asking before any durable identi
 **Non-goals** — the CLI mechanics themselves (`mux doctor`, `init`, `unit register --standing`,
 `attach` — the sibling `packages/cyberlegion` project); spawning, mailing, or dispatching
 a peer (that is `legate`); reading or acking owner mail (that is `manage-inbox`); initializing a git
-repo, an npm package, or commit discipline (unrelated skills). This node never touches the filesystem
-or hub state directly and never invents a config format — every mechanic is a CLI call.
+repo, an npm package, or commit discipline (unrelated skills). This node never touches hub state
+directly and never invents a config format — every mechanic is a CLI call, with exactly one
+filesystem exception: it **reads** its own plugin's bundled `${CLAUDE_PLUGIN_ROOT}/.plugin/deps.json`
+to learn what version its `cyberlegion` dependency resolved to. It reads that file and writes
+nothing.
 
 | Use case | Trigger | Inputs | Outcome |
 |---|---|---|---|

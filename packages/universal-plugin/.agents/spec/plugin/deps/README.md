@@ -125,10 +125,14 @@ output per the AXI contract.
 
   `--latest` keeps the form the prose already declared — a range keeps its operator (`^2.0.0` →
   `^3.1.0`), a bare or exact reference gets the exact newest; `--exact` forces exact either way.
-- **One spec per managed package** — a managed package declares the **same** spec everywhere it
-  appears. Two skills declaring different specs for one package is an error (`up` fails loud, `ls`
-  reports `divergent`): the lock records one resolution per package, and a reader like an init skill
-  asks it "what version shipped" expecting one answer.
+- **One spec per managed package** — a package's spec is the one its declarations **agree on**, and
+  the lock records one resolution for it. A **bare** reference declares nothing, so it never
+  conflicts: it **adopts** the package's declared spec if any reference declares one, and is pinned
+  exact only when no reference anywhere does. Two references declaring **different** specs is the
+  only divergence — `up` fails loud, `ls` reports `divergent`, and a human picks. Nothing is
+  guessed, and `up` never invents a divergence it would then reject: adopting (rather than pinning
+  a bare reference to exact while a sibling keeps its range) is what makes `up` idempotent and lets
+  a mixed corpus be seeded at all.
 - **A managed package with no reference is `unused`** — `add`ing a name does not require the prose to
   invoke it. `ls` reports it `unused`, `up` resolves nothing for it and records nothing. This is the
   honest inverse of `scan`: `scan` finds references with no entry, `unused` finds an entry with no
@@ -164,9 +168,9 @@ deriving vendor manifests ([`plugin build`](../build/README.md) owns that — `d
 that bumps locally before publish); `npx` specs beyond its documented `<pkg>[@<version>]` surface (git
 specs, tarball URLs, `file:` paths, `npm:` aliases are out of scope); **installing** anything
 (`deps.json` is a name list plus a lock, not an install manifest — there are no `node_modules`);
-the **release-flow glue** that invokes `deps up` with explicit `pkg@version` pairs after
-`changeset publish` (the root `package.json` `version` script and `.github/workflows/release.yml` are
-this repo's wiring, not this command's behavior); updating `universal-plugin`'s own reference across a
+**when and by what `deps up` gets invoked at release** — a consuming repo's CI wiring is that repo's
+concern, not this command's behavior, and `deps` works the same whether a human, a script, or a
+release job runs it; updating `universal-plugin`'s own reference across a
 project's hook files (`self-update`, part of the sync engine destined to leave this package);
 refreshing **stale prose** in other plugins' skills, which is a content change.
 
@@ -179,7 +183,7 @@ Every scenario in [`deps.feature`](./deps.feature) maps to one of these behavior
 | **`deps scan`** | unmanaged `npx <name>` candidates reported with file counts + `→ deps add`; managed names excluded; nothing unmanaged → empty state |
 | **`deps ls`** | one row per managed name (declared spec, recorded resolution, status); a resolution outside the declared range is `stale`; placeholder + ignored references stay visible |
 | **`deps up`** | a bare reference → exact; a declared range → prose unchanged, lock refreshed; an exact spec is a pin bare `up` never moves; `pkg@^2.0.0` → range written through; `--exact` → exact from a range; `--latest` → newest, crossing the constraint, keeping the declared form |
-| **one spec per package** | two skills declaring different specs for one package → `up` exits 1, `ls` says `divergent` |
+| **one spec per package** | two skills declaring *different* specs → `up` exits 1, `ls` says `divergent`; a bare reference declares nothing and adopts a sibling's declared spec rather than diverging from it |
 | **unused** | a managed name with no reference → `ls` says `unused`, `up` records nothing |
 | **all-or-nothing** | a failed resolution writes nothing and exits 1 |
 | **idempotent** | already at the resolved version → `unchanged` |

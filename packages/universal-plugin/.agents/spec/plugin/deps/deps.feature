@@ -233,6 +233,36 @@ Feature: plugin deps — manage the plugin's npx package dependencies
     Then stdout is TOON with a row for "cyberlegion" whose "status" is "divergent"
     And the exit code is 0
 
+  Scenario: a bare reference adopts a sibling's declared range rather than diverging from it
+    Given ".plugin/deps.json" manages "cyberlegion"
+    And a skill "skills/a/SKILL.md" contains "npx cyberlegion mail hook"
+    And a skill "skills/b/SKILL.md" contains "npx cyberlegion@^2.0.0"
+    And the registry resolves "cyberlegion@^2.0.0" to "2.4.1"
+    When I run "universal-plugin plugin deps up"
+    Then the exit code is 0
+    And "skills/a/SKILL.md" contains "npx cyberlegion@^2.0.0 mail hook"
+    And "skills/b/SKILL.md" contains "npx cyberlegion@^2.0.0"
+    And ".plugin/deps.json" records "cyberlegion" resolved "2.4.1"
+
+  Scenario: a bare reference adopts a sibling's declared exact pin
+    Given ".plugin/deps.json" manages "cyberlegion"
+    And a skill "skills/a/SKILL.md" contains "npx cyberlegion mail hook"
+    And a skill "skills/b/SKILL.md" contains "npx cyberlegion@0.0.9"
+    And the registry resolves "cyberlegion" at latest to "3.1.0"
+    When I run "universal-plugin plugin deps up"
+    Then the exit code is 0
+    And "skills/a/SKILL.md" contains "npx cyberlegion@0.0.9 mail hook"
+    And "skills/b/SKILL.md" contains "npx cyberlegion@0.0.9"
+
+  Scenario: adopting leaves nothing for a second up to change
+    Given ".plugin/deps.json" manages "cyberlegion" with resolved "2.4.1"
+    And a skill "skills/a/SKILL.md" contains "npx cyberlegion@^2.0.0 mail hook"
+    And a skill "skills/b/SKILL.md" contains "npx cyberlegion@^2.0.0"
+    And the registry resolves "cyberlegion@^2.0.0" to "2.4.1"
+    When I run "universal-plugin plugin deps up"
+    Then the exit code is 0
+    And stdout is TOON with a row for "cyberlegion" whose "status" is "unchanged"
+
   Scenario: the same spec declared in two skills is not divergent
     Given ".plugin/deps.json" manages "cyberlegion" with resolved "0.1.0"
     And a skill "skills/a/SKILL.md" contains "npx cyberlegion@^0.1.0"
