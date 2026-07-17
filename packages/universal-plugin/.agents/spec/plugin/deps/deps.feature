@@ -176,25 +176,99 @@ Feature: plugin deps — manage the plugin's npx package dependencies
     Then "skills/x/SKILL.md" contains "npx cyberlegion@^3.1.0"
     And the exit code is 0
 
-  Scenario: a declaration already at the resolved version is left unchanged
-    Given ".plugin/deps.json" manages "cyberlegion"
-    And a skill "skills/x/SKILL.md" contains "npx cyberlegion@0.1.0"
-    And the registry resolves "cyberlegion" to "0.1.0"
+  Scenario: a bare up leaves a declared range in the prose and refreshes the lock
+    Given ".plugin/deps.json" manages "cyberlegion" with resolved "0.1.0"
+    And a skill "skills/x/SKILL.md" contains "npx cyberlegion@^0.1.0"
+    And the registry resolves "cyberlegion@^0.1.0" to "0.1.9"
     When I run "universal-plugin plugin deps up"
-    Then "skills/x/SKILL.md" contains "npx cyberlegion@0.1.0"
+    Then "skills/x/SKILL.md" contains "npx cyberlegion@^0.1.0"
+    And ".plugin/deps.json" records "cyberlegion" resolved "0.1.9"
+    And the exit code is 0
+
+  Scenario: a bare up never moves an exact pin, even when a newer version exists
+    Given ".plugin/deps.json" manages "cyberlegion"
+    And a skill "skills/x/SKILL.md" contains "npx cyberlegion@0.0.9"
+    And the registry resolves "cyberlegion" at latest to "3.1.0"
+    When I run "universal-plugin plugin deps up"
+    Then "skills/x/SKILL.md" contains "npx cyberlegion@0.0.9"
+    And ".plugin/deps.json" records "cyberlegion" resolved "0.0.9"
+    And the exit code is 0
+
+  Scenario: --latest is how an exact pin moves
+    Given ".plugin/deps.json" manages "cyberlegion"
+    And a skill "skills/x/SKILL.md" contains "npx cyberlegion@0.0.9"
+    And the registry resolves "cyberlegion" at latest to "3.1.0"
+    When I run "universal-plugin plugin deps up --latest"
+    Then "skills/x/SKILL.md" contains "npx cyberlegion@3.1.0"
+    And the exit code is 0
+
+  Scenario: a declaration already at the resolved version is left unchanged
+    Given ".plugin/deps.json" manages "cyberlegion" with resolved "0.1.0"
+    And a skill "skills/x/SKILL.md" contains "npx cyberlegion@^0.1.0"
+    And the registry resolves "cyberlegion@^0.1.0" to "0.1.0"
+    When I run "universal-plugin plugin deps up"
+    Then "skills/x/SKILL.md" contains "npx cyberlegion@^0.1.0"
     And stdout is TOON with a row for "cyberlegion" whose "status" is "unchanged"
+    And the exit code is 0
+
+  # ── One spec per managed package ──
+
+  Scenario: two skills declaring different specs for one managed package fails loud
+    Given ".plugin/deps.json" manages "cyberlegion"
+    And a skill "skills/a/SKILL.md" contains "npx cyberlegion@^0.1.0"
+    And a skill "skills/b/SKILL.md" contains "npx cyberlegion@^2.0.0"
+    And the registry resolves "cyberlegion@^0.1.0" to "0.1.9"
+    And the registry resolves "cyberlegion@^2.0.0" to "2.4.1"
+    When I run "universal-plugin plugin deps up"
+    Then the exit code is 1
+    And stderr contains "cyberlegion"
+    And "skills/a/SKILL.md" contains "npx cyberlegion@^0.1.0"
+    And "skills/b/SKILL.md" contains "npx cyberlegion@^2.0.0"
+
+  Scenario: ls reports divergent specs for one managed package
+    Given ".plugin/deps.json" manages "cyberlegion" with resolved "0.1.0"
+    And a skill "skills/a/SKILL.md" contains "npx cyberlegion@^0.1.0"
+    And a skill "skills/b/SKILL.md" contains "npx cyberlegion@^2.0.0"
+    When I run "universal-plugin plugin deps ls"
+    Then stdout is TOON with a row for "cyberlegion" whose "status" is "divergent"
+    And the exit code is 0
+
+  Scenario: the same spec declared in two skills is not divergent
+    Given ".plugin/deps.json" manages "cyberlegion" with resolved "0.1.0"
+    And a skill "skills/a/SKILL.md" contains "npx cyberlegion@^0.1.0"
+    And a skill "skills/b/SKILL.md" contains "npx cyberlegion@^0.1.0"
+    And the registry resolves "cyberlegion@^0.1.0" to "0.1.9"
+    When I run "universal-plugin plugin deps up"
+    Then the exit code is 0
+    And ".plugin/deps.json" records "cyberlegion" resolved "0.1.9"
+
+  # ── A managed package with no reference ──
+
+  Scenario: ls reports a managed package with no reference as unused
+    Given ".plugin/deps.json" manages "gherkin-cli"
+    And no skill contains an "npx gherkin-cli" reference
+    When I run "universal-plugin plugin deps ls"
+    Then stdout is TOON with a row for "gherkin-cli" whose "status" is "unused"
+    And the exit code is 0
+
+  Scenario: up records nothing for a managed package with no reference
+    Given ".plugin/deps.json" manages "gherkin-cli"
+    And no skill contains an "npx gherkin-cli" reference
+    And the registry resolves "gherkin-cli" to "0.1.5"
+    When I run "universal-plugin plugin deps up"
+    Then ".plugin/deps.json" does not record a resolution for "gherkin-cli"
     And the exit code is 0
 
   # ── deps up — all-or-nothing ──
 
   Scenario: a managed package the registry cannot resolve writes nothing and fails
     Given ".plugin/deps.json" manages "cyberlegion" and "cyberfleet"
-    And a skill "skills/x/SKILL.md" contains "npx cyberlegion@0.0.9" and "npx cyberfleet@0.0.1"
+    And a skill "skills/x/SKILL.md" contains "npx cyberlegion mail hook" and "npx cyberfleet@0.0.1"
     And the registry resolves "cyberlegion" to "0.1.0"
     And the registry cannot resolve "cyberfleet"
     When I run "universal-plugin plugin deps up"
     Then the exit code is 1
-    And "skills/x/SKILL.md" contains "npx cyberlegion@0.0.9"
+    And "skills/x/SKILL.md" contains "npx cyberlegion mail hook"
     And stderr contains "cyberfleet"
 
   Scenario: a failed resolution leaves the lock untouched
@@ -218,26 +292,26 @@ Feature: plugin deps — manage the plugin's npx package dependencies
   Scenario: a trailing sentence delimiter is not part of the version spec
     Given ".plugin/deps.json" manages "cyberlegion"
     And a skill "skills/x/SKILL.md" contains "Run npx cyberlegion@0.0.9."
-    And the registry resolves "cyberlegion" to "0.1.0"
-    When I run "universal-plugin plugin deps up"
+    And the registry resolves "cyberlegion" at latest to "0.1.0"
+    When I run "universal-plugin plugin deps up --latest"
     Then "skills/x/SKILL.md" contains "Run npx cyberlegion@0.1.0."
     And the exit code is 0
 
   Scenario: a backtick closing an inline code span is not part of the version spec
     Given ".plugin/deps.json" manages "cyberlegion"
     And a skill "skills/x/SKILL.md" contains "`npx cyberlegion@0.0.9`"
-    And the registry resolves "cyberlegion" to "0.1.0"
-    When I run "universal-plugin plugin deps up"
+    And the registry resolves "cyberlegion" at latest to "0.1.0"
+    When I run "universal-plugin plugin deps up --latest"
     Then "skills/x/SKILL.md" contains "`npx cyberlegion@0.1.0`"
     And the exit code is 0
 
   # ── ignore ──
 
-  Scenario: an ignored path is never rewritten even for a managed package at real semver
+  Scenario: an ignored path is never rewritten even when --latest would cross its pin
     Given ".plugin/deps.json" manages "universal-plugin" and ignores "skills/upgrade/SKILL.md"
     And a skill "skills/upgrade/SKILL.md" contains "npx universal-plugin@1.2.3"
-    And the registry resolves "universal-plugin" to "0.2.1"
-    When I run "universal-plugin plugin deps up"
+    And the registry resolves "universal-plugin" at latest to "0.2.1"
+    When I run "universal-plugin plugin deps up --latest"
     Then "skills/upgrade/SKILL.md" contains "npx universal-plugin@1.2.3"
     And the exit code is 0
 
@@ -245,8 +319,8 @@ Feature: plugin deps — manage the plugin's npx package dependencies
     Given ".plugin/deps.json" manages "universal-plugin" and ignores "skills/upgrade/SKILL.md"
     And a skill "skills/upgrade/SKILL.md" contains "npx universal-plugin@1.2.3"
     And a skill "skills/other/SKILL.md" contains "npx universal-plugin@0.0.9"
-    And the registry resolves "universal-plugin" to "0.2.1"
-    When I run "universal-plugin plugin deps up"
+    And the registry resolves "universal-plugin" at latest to "0.2.1"
+    When I run "universal-plugin plugin deps up --latest"
     Then "skills/other/SKILL.md" contains "npx universal-plugin@0.2.1"
     And "skills/upgrade/SKILL.md" contains "npx universal-plugin@1.2.3"
 
@@ -254,20 +328,22 @@ Feature: plugin deps — manage the plugin's npx package dependencies
 
   Scenario: up records what each managed package resolved to
     Given ".plugin/deps.json" manages "cyberlegion"
-    And a skill "skills/x/SKILL.md" contains "npx cyberlegion@0.0.9"
+    And a skill "skills/x/SKILL.md" contains "npx cyberlegion mail hook"
     And the registry resolves "cyberlegion" to "0.1.0"
     When I run "universal-plugin plugin deps up"
     Then ".plugin/deps.json" records "cyberlegion" resolved "0.1.0"
+    And "skills/x/SKILL.md" contains "npx cyberlegion@0.1.0 mail hook"
     And the exit code is 0
 
   Scenario: up preserves the hand-edited keys it does not own
     Given ".plugin/deps.json" manages "cyberlegion", ignores "skills/upgrade/SKILL.md", and carries a "$schema" key
-    And a skill "skills/x/SKILL.md" contains "npx cyberlegion@0.0.9"
+    And a skill "skills/x/SKILL.md" contains "npx cyberlegion mail hook"
     And the registry resolves "cyberlegion" to "0.1.0"
     When I run "universal-plugin plugin deps up"
     Then ".plugin/deps.json" still ignores "skills/upgrade/SKILL.md"
     And ".plugin/deps.json" still carries its "$schema" key
     And ".plugin/deps.json" records "cyberlegion" resolved "0.1.0"
+    And "skills/x/SKILL.md" contains "npx cyberlegion@0.1.0 mail hook"
 
   # ── deps add / deps remove ──
 
@@ -354,20 +430,20 @@ Feature: plugin deps — manage the plugin's npx package dependencies
   # ── Write control ──
 
   Scenario: --dry-run reports without writing the skills or the lock
-    Given ".plugin/deps.json" manages "cyberlegion" with resolved "0.0.9"
-    And a skill "skills/x/SKILL.md" contains "npx cyberlegion@0.0.9"
-    And the registry resolves "cyberlegion" to "0.1.0"
+    Given ".plugin/deps.json" manages "cyberlegion" with resolved "0.1.0"
+    And a skill "skills/x/SKILL.md" contains "npx cyberlegion@^0.1.0"
+    And the registry resolves "cyberlegion@^0.1.0" to "0.1.9"
     When I run "universal-plugin plugin deps up --dry-run"
-    Then "skills/x/SKILL.md" contains "npx cyberlegion@0.0.9"
-    And ".plugin/deps.json" records "cyberlegion" resolved "0.0.9"
-    And stdout is TOON with a row carrying "package" "cyberlegion", "declared" "0.0.9", "resolved" "0.1.0"
+    Then "skills/x/SKILL.md" contains "npx cyberlegion@^0.1.0"
+    And ".plugin/deps.json" records "cyberlegion" resolved "0.1.0"
+    And stdout is TOON with a row carrying "package" "cyberlegion", "declared" "^0.1.0", "resolved" "0.1.9"
     And the exit code is 0
 
   # ── AXI output contract ──
 
   Scenario: an up prints TOON rows and a pre-computed aggregate
     Given ".plugin/deps.json" manages "cyberlegion" and "cyberfleet"
-    And a skill "skills/x/SKILL.md" contains "npx cyberlegion@0.0.9" and "npx cyberfleet@0.0.1"
+    And a skill "skills/x/SKILL.md" contains "npx cyberlegion mail hook" and "npx cyberfleet@0.0.1"
     And the registry resolves "cyberlegion" to "0.1.0"
     And the registry resolves "cyberfleet" to "0.0.1"
     When I run "universal-plugin plugin deps up"
@@ -377,7 +453,7 @@ Feature: plugin deps — manage the plugin's npx package dependencies
 
   Scenario: --format json returns a structured deps result
     Given ".plugin/deps.json" manages "cyberlegion"
-    And a skill "skills/x/SKILL.md" contains "npx cyberlegion@0.0.9"
+    And a skill "skills/x/SKILL.md" contains "npx cyberlegion mail hook"
     And the registry resolves "cyberlegion" to "0.1.0"
     When I run "universal-plugin plugin deps up --format json"
     Then stdout is JSON with a "deps" array
@@ -386,7 +462,7 @@ Feature: plugin deps — manage the plugin's npx package dependencies
 
   Scenario: --format toon names the default explicitly
     Given ".plugin/deps.json" manages "cyberlegion"
-    And a skill "skills/x/SKILL.md" contains "npx cyberlegion@0.0.9"
+    And a skill "skills/x/SKILL.md" contains "npx cyberlegion mail hook"
     And the registry resolves "cyberlegion" to "0.1.0"
     When I run "universal-plugin plugin deps up --format toon"
     Then stdout is TOON with one row per package
@@ -414,14 +490,14 @@ Feature: plugin deps — manage the plugin's npx package dependencies
 
   Scenario: a successful up ends with a next-step suggestion
     Given ".plugin/deps.json" manages "cyberlegion"
-    And a skill "skills/x/SKILL.md" contains "npx cyberlegion@0.0.9"
+    And a skill "skills/x/SKILL.md" contains "npx cyberlegion mail hook"
     And the registry resolves "cyberlegion" to "0.1.0"
     When I run "universal-plugin plugin deps up"
     Then stderr ends with a "→" next-step suggestion
 
   Scenario: deps never prompts interactively
     Given ".plugin/deps.json" manages "cyberlegion"
-    And a skill "skills/x/SKILL.md" contains "npx cyberlegion@0.0.9"
+    And a skill "skills/x/SKILL.md" contains "npx cyberlegion mail hook"
     And the registry resolves "cyberlegion" to "0.1.0"
     When I run "universal-plugin plugin deps up"
     Then no interactive prompts are shown

@@ -66,8 +66,11 @@ managed package appearing in a file as *illustration* rather than invocation. Th
 
 Once a name is managed, the **version form** in the prose classifies that one reference:
 
-- **bare** (`npx cyberlegion`) — a declaration with no spec; `up` writes an exact version.
-- **a semver version or range** (`@0.1.0`, `@^0.1.0`, `@~1.2`) — a declaration; `up` honors it.
+- **bare** (`npx cyberlegion`) — a declaration with no constraint; `up` writes an exact version.
+- **a semver version or range** (`@0.1.0`, `@^0.1.0`, `@~1.2`) — a declaration **and a constraint**,
+  exactly like a range in a `package.json`. `up` resolves within it and never crosses it. An exact
+  spec is therefore a **pin**: `up` will not move it — only `--latest`, or an explicitly named spec,
+  will.
 - **a placeholder** (`@<version>`, `@<exact>`, `@<old-version>`) — not a valid semver spec, therefore
   **documentation**: invisible to `up`, by construction, with nothing to remember. A managed package
   can still be written about.
@@ -97,22 +100,39 @@ output per the AXI contract.
   built from evidence rather than memory. `scan` classifies nothing and writes nothing; the reader
   decides, once, and `deps add` records the decision. Everything managed → a definitive empty state.
 - **`deps ls`** — reports one row per managed name: the spec its prose declares, what the lock records
-  it resolved to, and a status. A recorded resolution that no longer satisfies the declared spec is
-  `stale` (a written-through range re-resolves at run time). Placeholder and ignored references for a
-  managed name are reported too, so a reference that no command will touch is **visible** rather than
-  absent.
-- **`deps up`** — resolves each managed name from the registry, rewrites its declarations in the
-  plugin's skills, and records the resolution in `deps.json`. Write semantics follow the invocation:
+  it resolved to, and a status ∈ `unchanged | stale | placeholder | ignored | unused | divergent`. A
+  recorded resolution that no longer satisfies the declared spec is `stale` (a written-through range
+  re-resolves at run time). Placeholder and ignored references for a managed name are reported too, so
+  a reference that no command will touch is **visible** rather than absent.
+- **`deps up`** — resolves each managed name from the registry and records the resolution in
+  `deps.json`. Whether it also **rewrites the prose** depends on what the prose declares, because a
+  declared spec is a constraint `up` honors rather than a value `up` overwrites:
+
+  | the prose declares | bare `deps up` writes |
+  |---|---|
+  | no spec (`npx pkg`) | `npx pkg@2.4.1` — **exact**; the security default, and the only case where bare `up` adds a version |
+  | a range (`@^2.0.0`) | **prose unchanged**; the lock records what `^2.0.0` resolves to now |
+  | an exact version (`@2.0.1`) | **prose unchanged** — an exact spec is a pin; the lock records `2.0.1` |
+
+  So bare `up` never crosses a constraint and can never silently cross a major. Moving a declared
+  spec is an **explicit** act — naming one, or `--latest`:
 
   | invocation | writes |
   |---|---|
-  | `deps up` (bare) | **exact** — the security default (`npx pkg` → `npx pkg@2.4.1`) |
   | `deps up pkg@^2.0.0` | `^2.0.0` — the range is written through; the user opted in |
   | `deps up pkg@^2.0.0 --exact` / `-E` | `2.4.1` — range as input, exact on disk |
   | `deps up --latest` | the newest published version, ignoring the spec the prose declares |
 
   `--latest` keeps the form the prose already declared — a range keeps its operator (`^2.0.0` →
   `^3.1.0`), a bare or exact reference gets the exact newest; `--exact` forces exact either way.
+- **One spec per managed package** — a managed package declares the **same** spec everywhere it
+  appears. Two skills declaring different specs for one package is an error (`up` fails loud, `ls`
+  reports `divergent`): the lock records one resolution per package, and a reader like an init skill
+  asks it "what version shipped" expecting one answer.
+- **A managed package with no reference is `unused`** — `add`ing a name does not require the prose to
+  invoke it. `ls` reports it `unused`, `up` resolves nothing for it and records nothing. This is the
+  honest inverse of `scan`: `scan` finds references with no entry, `unused` finds an entry with no
+  references.
 - **`up` is all-or-nothing** — every managed name is resolved before anything is written. If any
   resolution fails, `up` writes nothing and exits 1. A half-pinned plugin is a shipped defect, so a
   transient registry failure must not produce one.
@@ -158,7 +178,9 @@ Every scenario in [`deps.feature`](./deps.feature) maps to one of these behavior
 | **the allowlist is the selector** | an unmanaged name (`npx skills add`, the prose `npx dependency`) is untouched by `up` and absent from `ls` |
 | **`deps scan`** | unmanaged `npx <name>` candidates reported with file counts + `→ deps add`; managed names excluded; nothing unmanaged → empty state |
 | **`deps ls`** | one row per managed name (declared spec, recorded resolution, status); a resolution outside the declared range is `stale`; placeholder + ignored references stay visible |
-| **`deps up`** | bare → exact; `pkg@^2.0.0` → range written through; `--exact` → exact from a range; `--latest` → newest, keeping the declared form |
+| **`deps up`** | a bare reference → exact; a declared range → prose unchanged, lock refreshed; an exact spec is a pin bare `up` never moves; `pkg@^2.0.0` → range written through; `--exact` → exact from a range; `--latest` → newest, crossing the constraint, keeping the declared form |
+| **one spec per package** | two skills declaring different specs for one package → `up` exits 1, `ls` says `divergent` |
+| **unused** | a managed name with no reference → `ls` says `unused`, `up` records nothing |
 | **all-or-nothing** | a failed resolution writes nothing and exits 1 |
 | **idempotent** | already at the resolved version → `unchanged` |
 | **form / placeholder** | `@<version>` on a managed name is never rewritten; a trailing delimiter is not part of the spec |
