@@ -147,9 +147,14 @@ with output per the AXI contract.
   | `deps up pkg@^2.4` | `^2.4` — sets the constraint in the prose; the user opted in |
   | `deps up --latest` | the newest published version, crossing the declared constraint (a range keeps its operator, `^2.4` → `^3.1`; an exact or placeholder becomes the exact newest) |
 - **One constraint per managed package** — a package's exact/tilde/caret references must agree; two
-  that differ is `divergent` and `up` fails loud (`ls` reports it, a human picks). This is authoring
-  hygiene: two different versions of one CLI in one plugin is a mistake worth stopping, not silently
-  shipping both. Prose and placeholders never diverge — they carry no constraint.
+  that differ is `divergent` and `up` fails loud (`ls` reports it, a human picks). Two references
+  **agree** only when their spec strings are **byte-identical** (`@^0.1` and `@^0.1`); any difference
+  is divergent — a different operator (`@^0.1` vs `@~0.1`), a different value (`@2.4.1` vs `@2.4.2`),
+  or the same value written two ways (`@2` vs `@2.0.0`). This is a **string** check, not a
+  semver-compatibility check: the rule is authoring hygiene (write the one CLI's version the same way
+  everywhere), and no version resolution is consulted to decide it. This is why two different versions
+  of one CLI in one plugin is a mistake worth stopping, not silently shipping both. Prose and
+  placeholders never diverge — they carry no constraint.
 - **A managed package with no reference is `unused`** — `add`ing a name does not require the prose to
   invoke it. `ls` reports it `unused`, `up` does nothing for it.
 - **`up` is all-or-nothing** — every managed name is resolved before any skill file is written. If any

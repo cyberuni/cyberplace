@@ -213,6 +213,22 @@ Feature: plugin deps — manage the plugin's npx package dependencies
     Then the exit code is 0
     And "skills/a/SKILL.md" contains "npx cyberlegion@^0.1.0"
 
+  Scenario: two different reference forms are byte-different and diverge
+    Given ".plugin/deps.json" manages "cyberlegion"
+    And a skill "skills/a/SKILL.md" contains "npx cyberlegion@0.1.0"
+    And a skill "skills/b/SKILL.md" contains "npx cyberlegion@~0.1.0"
+    When I run "universal-plugin plugin deps up"
+    Then the exit code is 1
+    And stderr contains "cyberlegion"
+
+  Scenario: the same version written two ways is not byte-identical and diverges
+    Given ".plugin/deps.json" manages "cyberlegion"
+    And a skill "skills/a/SKILL.md" contains "npx cyberlegion@2"
+    And a skill "skills/b/SKILL.md" contains "npx cyberlegion@2.0.0"
+    When I run "universal-plugin plugin deps up"
+    Then the exit code is 1
+    And stderr contains "cyberlegion"
+
   Scenario: a placeholder adopts a sibling's constraint and is pinned within it
     Given ".plugin/deps.json" manages "cyberlegion"
     And a skill "skills/a/SKILL.md" contains "npx cyberlegion@<version>"
@@ -322,6 +338,13 @@ Feature: plugin deps — manage the plugin's npx package dependencies
     And no network is available
     When I run "universal-plugin plugin deps ls"
     Then stdout is TOON with a row carrying "package" "cyberlegion" and "constraint" "0.1.0"
+    And the exit code is 0
+
+  Scenario: ls does not count a reference in an ignored path
+    Given ".plugin/deps.json" manages "cyberlegion" and ignores "skills/upgrade/SKILL.md"
+    And a skill "skills/upgrade/SKILL.md" contains "npx cyberlegion@0.1.0"
+    When I run "universal-plugin plugin deps ls"
+    Then stdout is TOON with a row for "cyberlegion" whose "status" is "unused"
     And the exit code is 0
 
   Scenario: nothing managed is a definitive empty state
