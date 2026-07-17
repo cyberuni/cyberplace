@@ -27,7 +27,9 @@ todos:
 # CR github-315 — plugin deps: manage the plugin's npx package dependencies
 
 CR link: https://github.com/cyberuni/cyberplace/issues/315
-Target node: `packages/universal-plugin/.agents/spec/plugin/bundle/` (spec `status: implemented`, suite `@frozen`).
+Target node: `packages/universal-plugin/.agents/spec/plugin/deps/` — drafted this run, `git mv`'d from
+the retired `plugin/bundle/`. Root spec `status: draft` (the legal state for a Clearance re-open of an
+`implemented` spec — R7); suite `@frozen`, re-frozen at the gate.
 Branch: `sdd/github-315-plugin-deps`, cut from `main` (the first attempt is abandoned — see Restarted below).
 Ledger: `plugin-deps-package-management` shards (carry the Clearance grants, 5 judge rounds, and the refuted premise).
 
@@ -58,7 +60,7 @@ Managing those references is a package manager's job, so model it on one (`pnpm 
   the glob machinery. (Round 5 note: the replacement selector is an **allowlist**, not the declared
   range — see the direction change below.)
 - **Registry version source** — `--registry`, default npmjs.org. Offline support **dropped** (owner).
-- **Write semantics** (settled with the owner):
+- **Write semantics** (settled with the owner; **DISAMBIGUATED at R6 — read the node, not this table**):
 
   | invocation | writes |
   |---|---|
@@ -66,6 +68,12 @@ Managing those references is a package manager's job, so model it on one (`pnpm 
   | `deps up pkg@^2.0.0` | `^2.0.0` — range written through; user opted in |
   | `deps up pkg@^2.0.0 --exact` / `-E` | `2.4.1` — range as input, exact on disk |
   | `deps up --latest` | newest, ignoring declared ranges |
+
+  > **R6:** this table's first row is **ambiguous** — its column says *invocation* (`deps up` bare) but
+  > its example is a bare **reference** (`npx pkg`). Owner settled it live: **prose is the constraint.**
+  > Bare `up` resolves *within* what the prose declares and never crosses it; an exact spec is a **pin**
+  > bare `up` will not move. Only a spec-less `npx pkg` gets a version written by bare `up`. The table
+  > was never wrong, only under-specified — the authority is now `plugin/deps/README.md`.
 
 `npx pkg@^0.1.0` is natively supported by npx (**measured**: `cyberlegion@^0.1.0` → `0.1.0`), so a range
   in prose is a real invocation. It re-resolves at **run** time, which is exactly why the lock must record
@@ -285,11 +293,19 @@ rather than absent.
 
 ## NEXT — resume here
 
-**Author the `plugin/deps/` node against the allowlist model.** Nothing is drafted on this branch:
-`plugin/bundle/` is intact and `@frozen` as on `main`. Run `start-mission` (this brief is its input),
-`git mv packages/universal-plugin/.agents/spec/plugin/bundle packages/universal-plugin/.agents/spec/plugin/deps`,
-write `README.md` + `deps.feature`, then gate-check with
-`node plugins/sdd/skills/spec-gate/scripts/check-suite.mts --root packages/universal-plugin/.agents/spec`.
+**The node is DRAFTED and at the spec gate. Round 8 of the cold spec-judge is the live frontier.**
+
+State: `plugin/deps/` authored on the allowlist model (64 scenarios), `cyberlegion-plugin/init`
+retargeted to `.plugin/deps.json`, root maps + concept index updated, `status: draft` on
+`universal-plugin` (the legal state for a Clearance re-open — see R7). All mechanical checks green:
+`check-suite`, `check-spec-state` (both projects), `pnpm check:specs`, 0 open markers.
+
+**Do NOT read green mechanical checks as evidence here** — see the edit-class finding below.
+
+If round 8 returns ALIGNED false: read `## Convergence ledger` FIRST and honor its stop rule before
+patching. If ALIGNED true: the gate still needs **HITL ratification** (Clearance) — do not
+self-assert. Then proceed to the deliver todos, where `## Grill notes`' release-flow item and the
+blocking ledger followup about `package.json`/`release.yml` are ATOMIC with retiring `plugin bundle`.
 
 The node to build — **the allowlist is the selector**, not any property of the prose:
 
@@ -315,6 +331,32 @@ ledger and say so. Anything briefed around is something the spec fails to say.
   onto the list, the marker problem is rebuilt under a new name — **the corpus seeding must RUN `scan`**,
   not be a human grep plus a promise in this brief.
 - **Still unsettled** — see `## Grill notes`.
+
+### Convergence ledger — count findings AND who introduced them
+
+The CR's history is eight judge rounds, each finding a NEW defect at a NEW point in the input space.
+That pattern is the reason to track *provenance* of each finding, not just the count: a defect
+introduced by the **previous fix** means the loop is diverging, and the answer is to stop and
+reconsider the model rather than patch again.
+
+| round | verdict | findings | introduced by |
+|---|---|---|---|
+| R1–R5 | ALIGNED false ×5 | one per round, each a new input-space point | the **prose-classifier premise** — refuted, model replaced (allowlist) |
+| R6 | ALIGNED false | bare `up` vs an already-versioned reference unspecified | my **original allowlist draft** |
+| R7 | ALIGNED false ×3 + blocker | ① release-glue claim false ② init Non-goals self-contradiction ③ bare-vs-declared unreachable ④ `status: implemented` illegal | ① my original draft · ② **pre-existing on main**, untouched by this CR · ③ **the R6 fix** (one-spec-per-package was introduced there) · ④ my original omission |
+| R8 | *pending* | judging the **adopt** rule — introduced by the R7 fix | — |
+
+**Read on the trend:** R7's builder finding came from R6's own fix, and R8 is being asked to attack a
+rule R7's fix invented. That is one link of a diverging chain, not yet two. **If R8 finds a real
+defect *inside the adopt rule*, stop patching** — that would be two consecutive rounds where the fix
+manufactured the next defect, and the honest move is to re-examine whether "one spec per managed
+package" is the right constraint at all (the alternative: let the lock hold a resolution *per
+reference*, which costs the init relay its single answer — the reason the rule exists).
+
+Mitigating evidence that this is *not* the R1–R5 pattern repeating: R1–R5 all died on the **same**
+root cause (a classifier over a string that lacks the information), which is why the model had to be
+replaced. R6–R7 findings are unrelated to each other and each was closed by a rule that holds under
+its own ablation. R7 also cleared a defect that predates this CR entirely.
 
 ### Findings the diff will not show
 
