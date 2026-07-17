@@ -6,11 +6,11 @@ blast: high
 hitl: true
 leash: auto-none
 todos:
-  - content: "explore — author plugin/deps node on the ALLOWLIST model (ls|up|add|remove|scan)"
+  - content: "explore — author plugin/deps node (FIVE-FORMS model, no lock; ls|up|add|remove|scan)"
     status: completed
-  - content: "explore — rename pins.json -> deps.json in cyberlegion-plugin init (3 frozen scenarios)"
+  - content: "explore — retarget cyberlegion-plugin init to deps.json, then DECOUPLE it (init reads its own develop-time pin, not deps.json)"
     status: completed
-  - content: "spec gate — sdd-spec-judge ALIGNED on BOTH specs; HITL ratification required"
+  - content: "spec gate — fresh cold sdd-spec-judge on the NO-LOCK five-forms model (rounds 1-9 graded superseded models); HITL ratification required"
     status: in_progress
   - content: "deliver — registry source, deps CRUD + detection, retire bundle, rewire release flow"
     status: pending
@@ -293,28 +293,49 @@ rather than absent.
 
 ## NEXT — resume here
 
-**The node is DRAFTED on the FIVE-FORMS model and at the spec gate. Round 10 (fresh cold judge on the
-simplified model) is the live frontier.**
+**Next action:** dispatch a **fresh cold `sdd-spec-judge`** over the spec gate for this CR — brief it
+with NO scope facts (point it at the two nodes' Non-goals + both ledger shards, say so). Grade
+`git diff main...HEAD`. Then hold at the gate for **HITL ratification** (Clearance) — do not
+self-assert. Concretely: judge `packages/universal-plugin/.agents/spec/plugin/deps/{README.md,deps.feature}`
+(primary) + `.agents/specs/cyberlegion-plugin/init/{README.md,init-cyberlegion.feature}` (companion),
+against `packages/universal-plugin/.agents/spec/ledger/plugin-deps-package-management.e4b71c.jsonl` and
+`.agents/specs/cyberlegion-plugin/ledger/plugin-deps-package-management.e4b71c.jsonl`.
 
-State: `plugin/deps/` authored on the **five-forms** model (60 scenarios — see the ledger's
-simplification leash and `## The five-forms model`), `cyberlegion-plugin/init` retargeted to
-`.plugin/deps.json`, root maps + concept index updated, `status: draft` on `universal-plugin` (the
-legal state for a Clearance re-open — see R7). All mechanical checks green: `check-suite`,
-`check-spec-state` (both projects), `pnpm check:specs`, 0 open markers.
+**What is on disk (NO-LOCK five-forms model — the last two commits, `befde5bb` + the deps.json
+field-name/drop-lock work):**
+- `plugin/deps/` — 58 scenarios. `deps.json` = `{ $schema, dependencies: [names], ignore: [paths] }`,
+  **no versions recorded**. Five recognized reference forms (prose→warn, placeholder→exact, exact→pin,
+  tilde/caret→left in place), everything else ignored. `ls` reads files only (status
+  `pinned`/`unpinned`/`unused`/`divergent` + bare-prose warning count); `up` writes skill files only.
+  Divergence + placeholder-adopt on authoring hygiene. See `## The five-forms model`.
+- `cyberlegion-plugin/init` — **decoupled from `deps.json`**: init reads the version from its own
+  `npx cyberlegion@<version>` invocation that `deps up` pins at develop time; falls back unpinned when
+  still a placeholder.
+- `status: draft` on `universal-plugin` (legal for a Clearance re-open — R7). All mechanical checks
+  green (`check-suite` both projects, `check-spec-state` both, `pnpm check:specs`, 0 open markers).
 
-**Do NOT read green mechanical checks as evidence here** — the edit-class guard reads this whole
-rewrite as additive (measured, R7 note below), so only the owner's Clearance grant gates it.
+**Blocking / decided:**
+- **HITL ratification required (Clearance).** Do **not** self-assert. The edit-class guard reads this
+  whole rewrite as additive (measured, R7) — a green mechanical check is NOT evidence; only the owner's
+  live grant gates it.
+- **Rounds 1–9 are STALE** — each graded a superseded model (prose-classifier R1–R5, allowlist+adopt
+  R6–R8, closed-form R9). Do not carry their verdicts. This is the first judge pass on the no-lock
+  five-forms model.
+- **If the judge finds a defect INSIDE the five-forms/no-lock model** (not a scenario gap): read
+  `## Convergence ledger` — three prior generations each had one lesson (do not classify an open input
+  space). Bring a model-level defect to the owner, do not patch.
+- **Open working preference to confirm with the owner:** whether to save "lean toward radical
+  simplification / closed sets over general machinery" as a durable preference (raised at pause, not
+  yet answered).
 
-Rounds 1–9 all graded **superseded** models (see `## Convergence ledger`): the prose-classifier
-(R1–R5), the allowlist-with-adopt (R6–R8), the closed-form table (R9). The owner replaced the last of
-these with the five-forms model. **Round 10 is the first judge pass against what is actually on disk.**
+**After the gate (deliver):** `## Grill notes`' release-flow rewiring and the blocking ledger followup
+about `package.json`/`.github/workflows/release.yml` are **ATOMIC** with retiring `plugin bundle` —
+removing the verb without rewiring breaks release at the least observable moment (verified: root
+`package.json` still runs `plugin bundle` ×6).
 
-If round 10 returns ALIGNED false: read `## Convergence ledger` FIRST — three generations of churn all
-had ONE lesson (do not classify an open input space). Weigh a new finding against whether it re-opens
-that, and bring a model-level defect to the owner rather than patching. If ALIGNED true: the gate still
-needs **HITL ratification** (Clearance) — do not self-assert. Then proceed to the deliver todos, where
-`## Grill notes`' release-flow item and the blocking ledger followup about `package.json`/`release.yml`
-are ATOMIC with retiring `plugin bundle`.
+**Do not relearn** — see `## The five-forms model` (authoritative), `## Convergence ledger` (why the
+model is what it is), `## Settled with the owner`, and the ledger shards (Clearance grants, the
+drop-lock `scope-cut` correction, field-name ruling).
 
 ## The five-forms model — what is ON DISK (authoritative; supersedes the allowlist-classification text below)
 
