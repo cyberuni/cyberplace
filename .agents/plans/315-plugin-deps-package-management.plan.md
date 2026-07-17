@@ -295,14 +295,17 @@ rather than absent.
 
 **The node is DRAFTED and at the spec gate. Round 8 of the cold spec-judge is the live frontier.**
 
-State: `plugin/deps/` authored on the allowlist model (64 scenarios), `cyberlegion-plugin/init`
+State: `plugin/deps/` authored on the allowlist model (71 scenarios), `cyberlegion-plugin/init`
 retargeted to `.plugin/deps.json`, root maps + concept index updated, `status: draft` on
 `universal-plugin` (the legal state for a Clearance re-open — see R7). All mechanical checks green:
 `check-suite`, `check-spec-state` (both projects), `pnpm check:specs`, 0 open markers.
 
 **Do NOT read green mechanical checks as evidence here** — see the edit-class finding below.
 
-If round 8 returns ALIGNED false: read `## Convergence ledger` FIRST and honor its stop rule before
+Round 8 returned ALIGNED false (builder); its findings are cleared by the **closed form** — see
+`## Convergence ledger`, which also carries the next tripwire. **Round 9 is dispatched.**
+
+If round 9 returns ALIGNED false: read `## Convergence ledger` FIRST and honor its tripwire before
 patching. If ALIGNED true: the gate still needs **HITL ratification** (Clearance) — do not
 self-assert. Then proceed to the deliver todos, where `## Grill notes`' release-flow item and the
 blocking ledger followup about `package.json`/`release.yml` are ATOMIC with retiring `plugin bundle`.
@@ -344,19 +347,35 @@ reconsider the model rather than patch again.
 | R1–R5 | ALIGNED false ×5 | one per round, each a new input-space point | the **prose-classifier premise** — refuted, model replaced (allowlist) |
 | R6 | ALIGNED false | bare `up` vs an already-versioned reference unspecified | my **original allowlist draft** |
 | R7 | ALIGNED false ×3 + blocker | ① release-glue claim false ② init Non-goals self-contradiction ③ bare-vs-declared unreachable ④ `status: implemented` illegal | ① my original draft · ② **pre-existing on main**, untouched by this CR · ③ **the R6 fix** (one-spec-per-package was introduced there) · ④ my original omission |
-| R8 | *pending* | judging the **adopt** rule — introduced by the R7 fix | — |
+| R8 | ALIGNED false (oracle PASS, architect PASS, builder FAIL) | ignore×divergence · placeholder×divergence · 3+ references | **the R6/R7 fixes** — every finding was a hole in a rule those fixes added |
+| R9 | *pending* | judging the **closed form** | — |
 
-**Read on the trend:** R7's builder finding came from R6's own fix, and R8 is being asked to attack a
-rule R7's fix invented. That is one link of a diverging chain, not yet two. **If R8 finds a real
-defect *inside the adopt rule*, stop patching** — that would be two consecutive rounds where the fix
-manufactured the next defect, and the honest move is to re-examine whether "one spec per managed
-package" is the right constraint at all (the alternative: let the lock hold a resolution *per
-reference*, which costs the init relay its single answer — the reason the rule exists).
+**The stop rule FIRED at R8, and the re-examination it forced changed the diagnosis.** R6→R7→R8 was
+not three defects; it was **one defect found three times**, and the fix loop itself was regenerating
+it. The node never said WHICH REFERENCES PARTICIPATE — participation was defined *negatively and
+piecemeal* across four places, so each cold judge picked a different **pair** of rules and asked "does
+this one count?", and each answer needed a new rule. `declaration` was overloaded four ways: README:69
+called a bare reference "a declaration with no constraint" while README:129 said it "declares
+nothing" — a flat self-contradiction **no judge named across three rounds**.
 
-Mitigating evidence that this is *not* the R1–R5 pattern repeating: R1–R5 all died on the **same**
-root cause (a classifier over a string that lacks the information), which is why the model had to be
-replaced. R6–R7 findings are unrelated to each other and each was closed by a rule that holds under
-its own ablation. R7 also cleared a defect that predates this CR entirely.
+**Verdict of the re-examination: the constraint STANDS, the method was the defect.** "One spec per
+managed package" is right — the lock must stay single-valued for the init relay, and two versions of
+one CLI in one plugin is an authoring error, not a use case. The alternative (a resolution *per
+reference*) is rejected: it costs the init relay its single answer, which is the whole reason the
+rule exists. So the fix was not another scenario — it is to state the discriminator **once**,
+positively, as a total first-match-wins table (ignored → placeholder → bare → declaration), with
+every other rule *reading off it* rather than deciding anything. The interaction class is now
+**unreachable**, not merely enumerated: there is no pair left to ask about.
+
+**Durable lesson (also in the ledger as a `method-defect` correction):** a rule stated by its
+**exceptions** invites one judge round per exception pair. State the discriminator once, positively,
+closed — then a new case is decided by *reading the table*, not by adding a rule.
+
+**Trend:** R1–R5 died on one root cause (a classifier over a string lacking the information) → model
+replaced. R6–R8 died on a second root cause (participation stated by exceptions) → method replaced.
+Both were *single* root causes wearing many masks, which is why neither looked like divergence from
+inside a single round. **If R9 finds a defect inside the closed form itself, that is a third
+generation — question the model, not the prose, and bring it to the owner rather than patching.**
 
 ### Findings the diff will not show
 
