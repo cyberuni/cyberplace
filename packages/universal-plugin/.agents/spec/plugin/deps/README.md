@@ -66,15 +66,16 @@ managed package appearing in a file as *illustration* rather than invocation. Th
 
 `deps` recognizes **exactly five** forms of an `npx <managed-name>` reference. The set is
 deliberately small — an author writes one of these five, and everything else is left alone. In the
-version column, `x` is `major`, `major.minor`, or `major.minor.patch` (e.g. `2`, `2.4`, `2.4.1`).
+examples below, `x` is a version — `major`, `major.minor`, or `major.minor.patch` (e.g. `2`, `2.4`,
+`2.4.1`).
 
 | # | form | example | on `deps up` |
 |---|---|---|---|
 | 1 | **prose** (bare, no `@`) | `npx cyberlegion` | **warned, never rewritten** — surfaced so a forgotten pin is visible, but treated as prose |
 | 2 | **placeholder** | `npx cyberlegion@<version>` | **converted to exact** — the form an author writes first; `up` fills in the resolved version |
-| 3 | **exact** | `npx cyberlegion@2.4.1` | a **pin** — bare `up` leaves it; `--latest` moves it |
-| 4 | **tilde range** | `npx cyberlegion@~2.4` | resolved within the range; the prose stays; `--latest` crosses it |
-| 5 | **caret range** | `npx cyberlegion@^2.4` | resolved within the range; the prose stays; `--latest` crosses it |
+| 3 | **exact** | `npx cyberlegion@x` (e.g. `@2.4.1`) | a **pin** — bare `up` leaves it; `--latest` moves it |
+| 4 | **tilde range** | `npx cyberlegion@~x` (e.g. `@~2.4`) | resolved within the range; the prose stays; `--latest` crosses it |
+| 5 | **caret range** | `npx cyberlegion@^x` (e.g. `@^2.4`) | resolved within the range; the prose stays; `--latest` crosses it |
 
 **Anything else is ignored** — not an error, not rewritten, not counted. A dist-tag (`@latest`,
 `@next`), a comparator range (`@>=1`, `@*`), a git/tarball/`npm:`/`file:` spec, or any other string
