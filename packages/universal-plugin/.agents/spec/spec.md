@@ -84,7 +84,7 @@ is a peer of the `cyberfleet` CLI.
 |---|---|---|
 | [`plugin/`](./plugin/README.md) | group | the `plugin` command group — build / deps / validate / init |
 | [`plugin/build/`](./plugin/build/README.md) | behavioral | `universal-plugin plugin build [--vendor] [--dry-run] [--clean]` — derive per-vendor manifests from the canonical `.plugin/plugin.json` (dev-consumable form; no pins) |
-| [`plugin/deps/`](./plugin/deps/README.md) | behavioral | `universal-plugin plugin deps ls \| up \| add \| remove \| scan [--exact] [--latest] [--registry] [--dry-run] [--full] [--format]` — manage the `npx <pkg>[@<spec>]` package dependencies the plugin's skills invoke; `.plugin/deps.json` declares which packages are managed and records what each resolved to |
+| [`plugin/deps/`](./plugin/deps/README.md) | behavioral | `universal-plugin plugin deps ls \| up \| add \| remove \| scan [--latest] [--registry] [--dry-run] [--full] [--format]` — manage the `npx <pkg>[@<spec>]` package dependencies the plugin's skills invoke; `.plugin/deps.json` declares which packages are managed and records **no** versions (the shipped version lives in the prose `up` writes) |
 | [`plugin/validate/`](./plugin/validate/README.md) | behavioral | `universal-plugin plugin validate [--vendor] [--strict]` — check the canonical manifest against schema + vendor rules |
 | [`plugin/init/`](./plugin/init/README.md) | behavioral | `universal-plugin plugin init [--name] [--vendor] [--scaffold] [--force] [--yes]` — scaffold a new plugin project |
 | [`governance/`](./governance/README.md) | behavioral | `universal-plugin governance show <name>` / `list` — resolve governance documents by name across scopes |

@@ -37,6 +37,42 @@ Feature: plugin deps — manage the plugin's npx package dependencies
     Then no row is emitted for "gherkin-cli"
     And the exit code is 0
 
+  # ── deps scan — surface unmanaged candidates ──
+
+  Scenario: scan reports an unmanaged npx candidate with a file count and writes nothing
+    Given ".plugin/deps.json" manages "cyberlegion"
+    And a skill "skills/a/SKILL.md" contains "npx skills add cyberuni/cyberplace"
+    And a skill "skills/b/SKILL.md" contains "npx skills add cyberuni/cyberplace"
+    When I run "universal-plugin plugin deps scan"
+    Then stdout is TOON with a row carrying "package" "skills" and "files" "2"
+    And "skills/a/SKILL.md" contains "npx skills add cyberuni/cyberplace"
+    And the exit code is 0
+
+  Scenario: scan excludes managed names and reports only the unmanaged
+    Given ".plugin/deps.json" manages "cyberlegion"
+    And a skill "skills/x/SKILL.md" contains "npx cyberlegion@0.1.0"
+    And a skill "skills/y/SKILL.md" contains "npx skills add cyberuni/cyberplace"
+    When I run "universal-plugin plugin deps scan"
+    Then no row is emitted for "cyberlegion"
+    And stdout is TOON with a row carrying "package" "skills" and "files" "1"
+    And the exit code is 0
+
+  Scenario: scan points the reader at deps add
+    Given ".plugin/deps.json" manages "cyberlegion"
+    And a skill "skills/a/SKILL.md" contains "npx skills add cyberuni/cyberplace"
+    When I run "universal-plugin plugin deps scan"
+    Then stderr contains "deps add"
+    And the exit code is 0
+
+  Scenario: everything managed is a definitive empty state for scan
+    Given ".plugin/deps.json" manages "cyberlegion"
+    And a skill "skills/x/SKILL.md" contains "npx cyberlegion@0.1.0"
+    And no skill contains an unmanaged "npx" reference
+    When I run "universal-plugin plugin deps scan"
+    Then the exit code is 0
+    And stdout contains the aggregate summary "0 candidates"
+    And stderr contains "no unmanaged"
+
   # ── The five forms ──
 
   Scenario: a placeholder is converted to the exact resolved version

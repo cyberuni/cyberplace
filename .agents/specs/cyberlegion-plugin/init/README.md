@@ -50,10 +50,10 @@ mint + pane bind, narrating the environment and asking before any durable identi
 `attach` — the sibling `packages/cyberlegion` project); spawning, mailing, or dispatching
 a peer (that is `legate`); reading or acking owner mail (that is `manage-inbox`); initializing a git
 repo, an npm package, or commit discipline (unrelated skills). This node never touches hub state
-directly and never invents a config format — every mechanic is a CLI call, with exactly one
-filesystem exception: it **reads** its own plugin's bundled `${CLAUDE_PLUGIN_ROOT}/.plugin/deps.json`
-to learn what version its `cyberlegion` dependency resolved to. It reads that file and writes
-nothing.
+directly and never invents a config format — every mechanic is a CLI call. The `cyberlegion` CLI
+version it runs comes from its **own** develop-time-pinned `npx cyberlegion@<version>` invocation
+(the pin `universal-plugin plugin deps up` writes into this skill), never from a separate map —
+`.plugin/deps.json` carries no versions to read. It reads its own invocation and writes nothing.
 
 | Use case | Trigger | Inputs | Outcome |
 |---|---|---|---|
