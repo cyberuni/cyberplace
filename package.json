@@ -21,10 +21,8 @@
 		"repair:private-skills": "node plugins/aced/skills/repair-private-skills/scripts/repair-private-skills.mts --root . repair",
 		"test": "turbo test",
 		"typecheck": "turbo typecheck",
-		"typecheck:specs": "tsc -p tsconfig.specs.json",
 		"un": "pnpm run --filter=universal-plugin",
 		"verify": "turbo verify",
-		"verify:specs": "pnpm typecheck:specs && node --experimental-strip-types --test 'plugins/**/scripts/*.test.mts'",
 		"version": "changeset version && pnpm run bundle",
 		"web": "pnpm run --filter=website"
 	},
