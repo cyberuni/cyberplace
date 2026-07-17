@@ -118,13 +118,6 @@ Feature: plugin deps — manage the plugin's npx package dependencies
     Then stdout is TOON with a row for "cyberlegion" whose "status" is "placeholder"
     And the exit code is 0
 
-  Scenario: ls keeps a managed name's ignored reference visible
-    Given ".plugin/deps.json" manages "universal-plugin" and ignores "skills/upgrade/SKILL.md"
-    And a skill "skills/upgrade/SKILL.md" contains "npx universal-plugin@1.2.3"
-    When I run "universal-plugin plugin deps ls"
-    Then stdout is TOON with a row for "universal-plugin" whose "status" is "ignored"
-    And the exit code is 0
-
   Scenario: nothing managed is a definitive empty state
     Given ".plugin/deps.json" manages no packages
     When I run "universal-plugin plugin deps ls"
@@ -262,6 +255,81 @@ Feature: plugin deps — manage the plugin's npx package dependencies
     When I run "universal-plugin plugin deps up"
     Then the exit code is 0
     And stdout is TOON with a row for "cyberlegion" whose "status" is "unchanged"
+
+  Scenario: an ignored path's spec never diverges from a real declaration
+    Given ".plugin/deps.json" manages "universal-plugin" and ignores "skills/upgrade/SKILL.md"
+    And a skill "skills/upgrade/SKILL.md" contains "npx universal-plugin@1.2.3"
+    And a skill "skills/other/SKILL.md" contains "npx universal-plugin@^2.0.0"
+    And the registry resolves "universal-plugin@^2.0.0" to "2.4.1"
+    When I run "universal-plugin plugin deps up"
+    Then the exit code is 0
+    And ".plugin/deps.json" records "universal-plugin" resolved "2.4.1"
+    And "skills/upgrade/SKILL.md" contains "npx universal-plugin@1.2.3"
+
+  Scenario: ls reports a name on its real declaration, not on its ignored reference
+    Given ".plugin/deps.json" manages "universal-plugin" with resolved "2.4.1" and ignores "skills/upgrade/SKILL.md"
+    And a skill "skills/upgrade/SKILL.md" contains "npx universal-plugin@1.2.3"
+    And a skill "skills/other/SKILL.md" contains "npx universal-plugin@^2.0.0"
+    When I run "universal-plugin plugin deps ls"
+    Then stdout is TOON with a row carrying "package" "universal-plugin" and "declared" "^2.0.0"
+    And stdout is TOON with a row for "universal-plugin" whose "status" is "unchanged"
+    And the exit code is 0
+
+  Scenario: a placeholder never diverges from a real declaration
+    Given ".plugin/deps.json" manages "cyberlegion"
+    And a skill "skills/a/SKILL.md" contains "npx cyberlegion@<version>"
+    And a skill "skills/b/SKILL.md" contains "npx cyberlegion@^2.0.0"
+    And the registry resolves "cyberlegion@^2.0.0" to "2.4.1"
+    When I run "universal-plugin plugin deps up"
+    Then the exit code is 0
+    And "skills/a/SKILL.md" contains "npx cyberlegion@<version>"
+    And ".plugin/deps.json" records "cyberlegion" resolved "2.4.1"
+
+  Scenario: a placeholder does not give a bare reference a spec to adopt
+    Given ".plugin/deps.json" manages "cyberlegion"
+    And a skill "skills/a/SKILL.md" contains "npx cyberlegion@<version>"
+    And a skill "skills/b/SKILL.md" contains "npx cyberlegion mail hook"
+    And the registry resolves "cyberlegion" to "0.1.0"
+    When I run "universal-plugin plugin deps up"
+    Then "skills/b/SKILL.md" contains "npx cyberlegion@0.1.0 mail hook"
+    And "skills/a/SKILL.md" contains "npx cyberlegion@<version>"
+    And the exit code is 0
+
+  Scenario: two declarations disagreeing is divergent even alongside a bare reference
+    Given ".plugin/deps.json" manages "cyberlegion"
+    And a skill "skills/a/SKILL.md" contains "npx cyberlegion mail hook"
+    And a skill "skills/b/SKILL.md" contains "npx cyberlegion@^0.1.0"
+    And a skill "skills/c/SKILL.md" contains "npx cyberlegion@^2.0.0"
+    When I run "universal-plugin plugin deps up"
+    Then the exit code is 1
+    And stderr contains "cyberlegion"
+    And "skills/a/SKILL.md" contains "npx cyberlegion mail hook"
+
+  Scenario: three references agreeing on one spec is not divergent
+    Given ".plugin/deps.json" manages "cyberlegion"
+    And a skill "skills/a/SKILL.md" contains "npx cyberlegion mail hook"
+    And a skill "skills/b/SKILL.md" contains "npx cyberlegion@^2.0.0"
+    And a skill "skills/c/SKILL.md" contains "npx cyberlegion@^2.0.0"
+    And the registry resolves "cyberlegion@^2.0.0" to "2.4.1"
+    When I run "universal-plugin plugin deps up"
+    Then the exit code is 0
+    And "skills/a/SKILL.md" contains "npx cyberlegion@^2.0.0 mail hook"
+
+  Scenario: ls reports a name whose every reference is ignored as ignored
+    Given ".plugin/deps.json" manages "universal-plugin" with resolved "0.2.1" and ignores "skills/upgrade/SKILL.md"
+    And a skill "skills/upgrade/SKILL.md" contains "npx universal-plugin@1.2.3"
+    And no other skill contains an "npx universal-plugin" reference
+    When I run "universal-plugin plugin deps ls"
+    Then stdout is TOON with a row for "universal-plugin" whose "status" is "ignored"
+    And the exit code is 0
+
+  Scenario: divergent outranks stale
+    Given ".plugin/deps.json" manages "cyberlegion" with resolved "9.9.9"
+    And a skill "skills/a/SKILL.md" contains "npx cyberlegion@^0.1.0"
+    And a skill "skills/b/SKILL.md" contains "npx cyberlegion@^2.0.0"
+    When I run "universal-plugin plugin deps ls"
+    Then stdout is TOON with a row for "cyberlegion" whose "status" is "divergent"
+    And the exit code is 0
 
   Scenario: the same spec declared in two skills is not divergent
     Given ".plugin/deps.json" manages "cyberlegion" with resolved "0.1.0"
