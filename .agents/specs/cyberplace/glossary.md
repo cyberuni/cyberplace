@@ -1,8 +1,3 @@
----
-spec-type: reference
-concept: [discovery]
----
-
 # glossary — cyberplace terms
 
 ## Subject

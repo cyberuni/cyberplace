@@ -1,8 +1,3 @@
----
-spec-type: reference
-concept: [glossary]
----
-
 # glossary — cyberspace ubiquitous language
 
 The harness-agnostic agent-config vocabulary: the terms every cyberspace capability and its specs use with one

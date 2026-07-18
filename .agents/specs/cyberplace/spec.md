@@ -99,6 +99,6 @@ capability is a `concept:` tag recovered by the by-concept index, not a third fo
 |---|---|
 | `acquire` | `marketplace/registry/` (behavior) |
 | `axi` | `axi/` (reference) · `marketplace/awesome-list/` (behavior) · `marketplace/registry/` (behavior) · `marketplace/tavern/` (behavior) |
-| `discovery` | `glossary/` (reference) · `marketplace/awesome-list/` (behavior) · `marketplace/tavern/` (behavior) |
+| `discovery` | `marketplace/awesome-list/` (behavior) · `marketplace/tavern/` (behavior) |
 
 <!-- END generated: by-concept -->
