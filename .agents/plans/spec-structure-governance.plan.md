@@ -121,13 +121,53 @@ Every runtime consumer needs **taxonomy + placement together**, because placemen
 The last two **enforce**; the first four **apply**. Those are different consumers — conflating them
 is what produced the superseded "tree-only" scope above.
 
+## Finding — the declared strategy is written but not honored
+
+Surfaced in review. The strategy is a **per-project decision**, so consumers do not need the menu —
+they need the project's **chosen** strategy. The recording place already exists and is fully
+designed (`spec-layout.md:185-208`): the **placement map** in the body of the root `spec.md`
+(deliberately not frontmatter, per ADR-0017), naming the primary strategy
+(`capability-first | mirror-source | bounded-context | layered | doc-envelope`) plus a routing table
+and tie-break rules. `backfill` writes it — "the only step that *decides* the layout (it ran
+detection + the compass with the user)".
+
+**Defect 1 — the designed readers do not read it.** `spec-layout.md` names `start-mission`'s
+explore, the handoff Warden, and the post-mission Warden as readers. Mentions of "placement map":
+`start-mission` **0**, `formation-loop` **0**, `sdd-warden` **0**. Only `place-node` reads it and
+`backfill` writes it. The decision is made with the user, recorded, then ignored.
+
+**Defect 2 — `place-node` contradicts itself and the design.** `place-node:14` says it "reads the
+project-spec's **declared placement map**"; `place-node:28` says the home is "**derived** from the
+project-spec's own `concept:` tags, **never a stored routing list** (the `corpus/discovery` no-drift
+rule)" and hardcodes "Homes are **capability folders** — the capability-first partition is strongly
+recommended". `spec-layout.md:197` says the opposite: "A **lookup**, not a derivation." Practical
+consequence: a project that chose `mirror-source` still gets capability-first placement.
+
+**Proposed reconciliation (needs owner ratification before the governance states it):** the two
+principles are each right about a different thing — **strategy is policy, homes are data**.
+
+- The **strategy** is a decision made once with the user; a choice cannot be derived, so it is
+  **declared** in the placement map and **read**.
+- The **homes** are facts about the current tree; a stored home list rots, so they stay **derived**
+  from `concept:` tags (`corpus/discovery`'s no-drift rule holds).
+
+The declared strategy tells `place-node` *how* to derive; capability-first stops being hardcoded.
+
 ## NEXT — resume here
 
 **Next action:** todo 1 — file the issue capturing the problem statement above, then author the spec
 node (todo 2). No implementation before the spec node exists.
 
-**Open question not yet settled with the owner:** how much of `spec-layout.md`'s **strategy menu**
-(S1 capability-first, S2 mirror-the-source-tree, the composition rule, the selection compass) belongs
-in the shipped governance versus staying model-only. `backfill` is the one consumer that genuinely
-chooses a strategy; the other three only need capability-first + screaming + depth cap. Raise before
-writing todo 3.
+**Settled by the finding above:** the **strategy menu** stays model-only — `backfill` is the sole
+decider and runs the compass with the user. What the governance must carry instead is the rule that
+the choice is **declared in the placement map and read, never re-assumed**. The other consumers
+never need the menu; they need the project's recorded choice.
+
+**Open decision (owner) — blocks todo 3:** ratify the "strategy is policy, homes are data"
+reconciliation above. The governance cannot state the placement law without resolving the
+lookup-vs-derivation contradiction, and resolving it changes `place-node` (drop the hardcoded
+capability-first) and wires three readers that currently ignore the placement map.
+
+**Scope question that follows:** fixing defects 1 and 2 may be its own CR — this one is "give the
+law a shipped home", and rewiring the placement-map readers is a behavior change to `place-node`,
+`start-mission`, and the Warden. Decide split-or-absorb before starting todo 3.
