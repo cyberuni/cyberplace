@@ -189,6 +189,27 @@ Also corrected: the evidence-mode question is scoped to the **project**, not the
 in an existing monorepo is a greenfield *project* in a populated *repo* — intent mode still reads the
 surrounding repo for shape and conventions.
 
+**Fourth Clearance under the same grant — nesting is not the hoist test.** Re-cut:
+`a greenfield project nested in a repo has its spec hoisted` -> `a greenfield agentic plugin has its
+spec hoisted`, and `a greenfield project at the repo root keeps its spec colocated` -> `a greenfield
+nested package keeps its spec colocated`.
+
+Both encoded **nested -> hoist**, inherited from `project-unit.md`'s "a nested project's spec is
+lifted out of its (possibly shippable) package dir". That over-generalizes a **plugin-specific**
+constraint. The stated reason is "plugin install copies the whole plugin directory **with no
+include/exclude mechanism**" — which npm does not share: `packages/cyberplace/package.json` carries
+`"files": ["bin","dist","governances"]`, an allowlist, so a colocated `.agents/spec/` would never
+ship. Counter-example in this repo: **cyberplace is a nested npm package whose spec is hoisted
+although it need not be.**
+
+**Rule as corrected (owner):** *colocate by default; hoist only when the spec cannot be kept out of
+what ships* — i.e. the dir is copied wholesale. The one identified case is the **agentic plugin**.
+Narrowed in `project-unit.md`, `scaffold-project-spec` step 2, the decision graph, and the two
+scenarios above.
+
+**Not migrated:** existing hoisted specs stay put. `cyberplace` could colocate under the corrected
+rule; moving it is a separate call, not a silent consequence of narrowing the rule.
+
 Not changed, deliberately: "backfill" used as a **verb** for the existing-project path (e.g. `a
 monorepo is detected and a repo-wide backfill is offered`) stays accurate for detection mode, and
 `spec-producer`'s unrelated **backfill mode** was untouched by the sweep.
