@@ -1,35 +1,53 @@
 ---
-cr-ref: spec-structure-governance
+cr-ref: spec-organization-rebuild
 status: draft
 target: .agents/specs/sdd/ (project spec: plugins/sdd)
 touches:
   - plugins/sdd/skills/spec-structure-governance/          # NEW — the shipped bar (taxonomy + placement)
   - .agents/specs/sdd/common-governances/spec-structure/   # NEW — its spec node
-  - plugins/sdd/skills/place-node/SKILL.md                 # drop inline copy, load the bar
+  - plugins/sdd/skills/decide-spec-layout/                 # NEW (proposed) — the shared decider, two evidence modes
+  - .agents/specs/sdd/authoring/decide-spec-layout/        # NEW — its spec node
+  - plugins/sdd/skills/place-node/SKILL.md                 # drop inline copy + hardcoded capability-first; read the declared strategy
+  - plugins/sdd/skills/start-mission/SKILL.md              # wire the placement-map read (defect 1)
+  - plugins/sdd/skills/formation-loop/SKILL.md             # drop inline copy; wire the placement-map read (defect 1)
+  - plugins/sdd/agents/sdd-warden.md                       # wire the placement-map read (defect 1)
   - plugins/sdd/skills/architect-spec-governance/SKILL.md  # drop inline copy, reference the bar
-  - plugins/sdd/skills/formation-loop/SKILL.md             # drop inline copy, load the bar
-  - plugins/sdd/skills/backfill-project-spec/SKILL.md      # load the bar for placement; keep envelope + spec-type stamping
+  - plugins/sdd/skills/backfill-project-spec/SKILL.md      # load the bar; delegate the decision to decide-spec-layout
   - plugins/sdd/skills/spec-format-governance/SKILL.md     # fix dangling `design/spec-structure.md` pointer
   - plugins/sdd/skills/check-scenario-overlap/SKILL.md     # same dangling pointer
   - plugins/sdd/skills/manage/SKILL.md                     # same dangling pointer
+  - .agents/specs/sdd/design/spec-layout.md                # correct "backfill is the only step that decides"
 sources:
   - (no issue filed yet — see todo 1)
 todos:
-  - content: "File the issue: no shipped home for the project-spec organization law; 4 inline copies + 3 dangling pointers"
+  - content: "File the issue: project-spec organization has no shipped home, its declared strategy is never read, and greenfield has no decider"
     status: pending
-  - content: "Author the spec node .agents/specs/sdd/common-governances/spec-structure/README.md (spec-type: reference, ## Subject)"
+  - content: "OWNER: ratify or reject 'strategy is policy, homes are data' — blocks every downstream todo"
     status: pending
-  - content: "Write plugins/sdd/skills/spec-structure-governance/SKILL.md + README.md — taxonomy + placement law, SDD-specific tree EXCLUDED"
+  - content: "Author the spec node common-governances/spec-structure/README.md (spec-type: reference, ## Subject)"
     status: pending
-  - content: "Retire the 4 inline copies: place-node, architect-spec, formation-loop, backfill (backfill keeps envelope + spec-type stamping)"
+  - content: "Write skills/spec-structure-governance/ SKILL.md + README.md — taxonomy + placement law, SDD-specific tree EXCLUDED"
     status: pending
-  - content: "Fix the 3 dangling `design/spec-structure.md` pointers in shipped SKILL.mds -> the governance name"
+  - content: "Defect 0: extract the layout decision into decide-spec-layout (detection mode + intent mode); backfill delegates to it"
+    status: pending
+  - content: "Defect 2: place-node reads the declared strategy; drop hardcoded capability-first; keep homes derived from concept tags"
+    status: pending
+  - content: "Defect 1: wire the placement-map readers — start-mission explore, handoff Warden, post-mission Warden"
+    status: pending
+  - content: "Retire the 4 inline copies: place-node, architect-spec, formation-loop, backfill"
+    status: pending
+  - content: "Fix the 3 dangling `design/spec-structure.md` pointers -> the governance name; correct spec-layout.md's sole-decider claim"
     status: pending
   - content: "Spec gate + handoff"
     status: pending
 ---
 
-# CR: spec-structure-governance — a shipped home for the project-spec organization law
+# CR: spec-organization-rebuild — the project-spec organization system
+
+**Scope note.** This began as "give the organization law a shipped home" and was **folded into a
+system rebuild** by owner decision: the three defects below are not follow-ups, they are the work.
+A governance stating "read the declared strategy" is meaningless while no consumer reads it, no
+greenfield project declares one, and `place-node` hardcodes a different answer.
 
 ## The problem
 
@@ -141,7 +159,8 @@ decomposition is **discernible**" and mirror-source "when `src/` is **already** 
 project has none of those signals, so no branch fires — **a new project never gets a declared
 strategy**. Note the deciding *procedure* also differs in kind: backfill decides by **detection**
 (what the code shows), greenfield can only decide by **intent** (what the project will do), so it is
-not a matter of relaxing backfill's inputs. Likely its own CR; the law below holds for both paths.
+not a matter of relaxing backfill's inputs. **Folded into this CR** (see Scope note); the law below
+holds for both paths.
 
 **Defect 1 — the designed readers do not read it.** `spec-layout.md` names `start-mission`'s
 explore, the handoff Warden, and the post-mission Warden as readers. Mentions of "placement map":
@@ -167,19 +186,29 @@ The declared strategy tells `place-node` *how* to derive; capability-first stops
 
 ## NEXT — resume here
 
-**Next action:** todo 1 — file the issue capturing the problem statement above, then author the spec
-node (todo 2). No implementation before the spec node exists.
+**Next action:** todo 1 — file the issue covering all three defects plus the missing shipped home.
+Then todo 2, the ratification, which gates the rest. No implementation before the spec node exists.
 
 **Settled by the finding above:** the **strategy menu** stays model-only — only a *deciding* step
 needs it, and it runs the compass with the user. What the governance must carry instead is the rule
 that the choice is **declared in the placement map and read, never re-assumed**. The non-deciding
 consumers never need the menu; they need the project's recorded choice.
 
-**Open decision (owner) — blocks todo 3:** ratify the "strategy is policy, homes are data"
-reconciliation above. The governance cannot state the placement law without resolving the
-lookup-vs-derivation contradiction, and resolving it changes `place-node` (drop the hardcoded
-capability-first) and wires three readers that currently ignore the placement map.
+**Scope: SETTLED — fold in.** Owner decision: defects 0/1/2 are absorbed into this CR, not split out.
+This is a rebuild of the organization system, not a doc move.
 
-**Scope question that follows:** fixing defects 1 and 2 may be its own CR — this one is "give the
-law a shipped home", and rewiring the placement-map readers is a behavior change to `place-node`,
-`start-mission`, and the Warden. Decide split-or-absorb before starting todo 3.
+**Open decision (owner) — todo 2, blocks everything downstream:** ratify or reject "strategy is
+policy, homes are data". It is load-bearing three times over — the governance states it, `place-node`
+is rewritten to it, and `decide-spec-layout` exists because of it. It is still **my proposal**, not a
+recorded grant; do not treat the fold-in decision as having ratified it.
+
+**Proposed shape for Defect 0 (needs owner sign-off with todo 2).** Extract the layout decision out
+of `backfill` into a shared partial skill, `decide-spec-layout`, with **two evidence modes**:
+
+- **detection mode** (existing project) — today's backfill steps 1-3, driven by source signals.
+- **intent mode** (greenfield) — driven by what the project *will* do; no source to read, so the
+  compass runs off stated capabilities rather than `src/` shape.
+
+Both end at the same act: write the placement map naming the chosen strategy. `backfill` becomes a
+caller rather than the owner of the decision. This keeps one decision procedure with one output,
+instead of two skills that each half-declare a strategy.
