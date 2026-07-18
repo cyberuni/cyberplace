@@ -83,7 +83,7 @@ here; do not invent placement:
 - a new **hook** behavior (register, run, extract) → future `hooks/`.
 - a new **registry** behavior → future `registry/`.
 - a new **skill-authoring** behavior (scaffold, validate, lifecycle) → future `skill-authoring/`.
-- a **cross-capability e2e outcome** (spans ≥2 capabilities) → `acceptance/`.
+- a **cross-capability workflow outcome** (spans ≥2 capabilities) → `workflows/`.
 
 The nesting rule: capabilities at the top; any layering nests *inside* a capability, never as a
 top-level folder. A node is `<capability>/<unit>` and **never three deep** — a sub-grouping inside a

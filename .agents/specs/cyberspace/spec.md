@@ -56,7 +56,7 @@ spans several fixed source folders — the accepted spec↔source divergence (`.
 | [`bootstrap/`](./bootstrap/README.md) | descriptive index | initialize harness-agnostic agent config for a project — `init` |
 | [`plugin/`](./plugin/README.md) | descriptive index | author, publish, and upgrade a cross-vendor plugin via the `universal-plugin` CLI — `universal-plugin`, `publish-universal-plugin`, `upgrade-universal-plugin` |
 | [`design/`](./design/README.md) | descriptive | the foundation model + the `decisions/` ADR log |
-| [`acceptance/`](./acceptance/README.md) | descriptive | the e2e behavior suite (init → author → publish → upgrade) |
+| [`workflows/`](./workflows/README.md) | descriptive | the workflows suite (cross-capability usage flows: init → author → publish → upgrade) |
 | [`glossary/`](./glossary/README.md) | reference | the harness-agnostic agent-config vocabulary |
 
 ## Placement map
@@ -73,7 +73,7 @@ Where a new concept lives — slot here, do not invent placement (`../sdd/design
 - **a rule or model** (the harness-agnostic mapping, a baseline-config convention) → `design/` (descriptive); a
   **decision + its rationale** → `design/decisions/` (ADR); a **unit's design fork** → that unit's
   `<unit>.solution.md`.
-- **a cross-capability outcome** (spans ≥2 folders) → `acceptance/`, never a capability folder.
+- **a cross-capability outcome** (spans ≥2 folders) → `workflows/`, never a capability folder.
 - **a term** → `glossary/`.
 
 The nesting rule: capabilities at the top; any layering or doc-section structure nests *inside* a capability,
