@@ -210,6 +210,20 @@ scenarios above.
 **Not migrated:** existing hoisted specs stay put. `cyberplace` could colocate under the corrected
 rule; moving it is a separate call, not a silent consequence of narrowing the rule.
 
+**Fifth Clearance under the same grant — the unscaffoldable Given.** Re-cut:
+`a project with no discernible decomposition and no feature-first layout takes the default` ->
+`a layer-organized project takes the capability-first default`, with the `Given` split into
+`a project in detection mode` + `its src/ is organized by layer rather than by feature`.
+
+The old `Given` failed three ways at once: **evaluative** (*discernible* — each reader supplies their
+own threshold), **doubly absent** (a state defined by what is missing has infinitely many fixtures,
+so it cannot be built), and a **conjunction** (two conditions in one step, so neither is reusable).
+Researched against BDD practice rather than invented; the failure mode is documented — vague steps
+produce defensive step definitions carrying flags and branches, and two readers picture different
+setups, which is exactly the impl-producer/impl-judge churn predicted. The general rule now lives in
+`suite-format-governance` as "a `Given` must be a scaffoldable state", with the build test: *could
+two people, given only this line, construct the same fixture?*
+
 Not changed, deliberately: "backfill" used as a **verb** for the existing-project path (e.g. `a
 monorepo is detected and a repo-wide backfill is offered`) stays accurate for detection mode, and
 `spec-producer`'s unrelated **backfill mode** was untouched by the sweep.
