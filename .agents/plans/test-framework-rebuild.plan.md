@@ -84,6 +84,21 @@ Basis: the rename already landed in `concept-index.mts` (`workflows/` path match
 `4a38a937`); these two frozen scenarios are the last sites still asserting the pre-rename
 vocabulary, so they diverge from live behavior. No behavior is being widened.
 
+## Clearance — ssa-lowering (2026-07-18, under the owner's standing grant)
+
+- **#305 — the Oracle gate was all kills (ADDITIVE, self-clears, no Clearance needed).** Its four
+  scenarios were stale->killed, misaligned->reshaped, two-asks->judged, killed->zero missions. Nothing
+  asserted an **aligned** CR passing the gate, so a coordinator that killed everything scored full
+  marks on all four. Added `a change request that fits the product direction clears the Oracle gate
+  and is lowered`, with `clears-the-gate` + `lowers-the-work` dimensions — the positive companion
+  driving the same path in its firing direction.
+- **#306 — the Given was unbuildable (Clearance).** `two change requests that each touch the shared
+  authentication spec-node **from a different angle**` fails the scaffoldable-`Given` bar: "a
+  different angle" is evaluative, so two readers build different fixtures, and the disjoint nodes the
+  `disjoint-nodes-not-fused` dimension grades were never named. Re-cut to name both touch-sets
+  concretely (authentication+billing / authentication+search), and the rubric comment now names
+  billing and search rather than gesturing at "the two nodes only one CR touches".
+
 ## NEXT — resume here
 
 **Next action:** todo 7 — **engines**: the scenario-map coverage lint in `check-suite`, then the
