@@ -13,7 +13,7 @@ todos:
   - content: "spec gate — fresh cold sdd-spec-judge on the NO-LOCK five-forms model (rounds 1-9 graded superseded models); HITL ratification required. R10-R13 done: oracle+architect PASS (R11-R13), every CR-introduced Builder gap closed. APPROVED by owner (Clearance ratified live): status:approved on universal-plugin, both suites frozen, gate lines in both shards, rubric DELETED per owner. cyberlegion-plugin root stays draft (untouched by this CR — init node only)"
     status: completed
   - content: "deliver — registry source, deps CRUD + detection, retire bundle, rewire release flow"
-    status: in_progress
+    status: pending
   - content: "deliver — seed each plugin's managed list from detection (ATOMIC with the rule)"
     status: pending
   - content: "deliver — fix the doc-example corruption; verify the release PR regenerates clean"
@@ -335,17 +335,66 @@ gradient), or defer to a follow-up issue.
 - Owner decisions at the gate: **approve**; **delete** the pre-existing rubric (done, `by` owner call);
   **do NOT** save the "radical simplification" preference (answered — drop the open question).
 
-**Next action — DELIVER (implementation), the todos in order.** The frozen contract is now the spec.
-Build the `plugin deps` CLI (registry source, `ls|up|add|remove|scan`, five-forms engine, allowlist,
-`ignore` as shared pre-dispatch + per-verb escape, byte-identity divergence, `--dry-run/--full/
---format`) + seed each plugin's `dependencies` from `deps scan` (ATOMIC with the rule sweep) + the
-doc-example corruption fix. **ATOMIC with retiring `plugin bundle`:** root `package.json`'s `version`
-script (`changeset version && pnpm run bundle`) and `.github/workflows/release.yml` still invoke
-`plugin bundle` ×6 — removing the verb without rewiring breaks release. Delegate build units to
-sonnet subagents per the delegation table.
+**Next action — DELIVER unit 1: build `packages/universal-plugin/src/deps/`** to the frozen
+`deps.feature` (67 scen). This is a good sonnet-delegation unit (large, frozen contract). Nothing was
+built yet — the session paused right before dispatch. The codebase is already mapped (below); do not
+re-explore.
+
+**Deliver-phase orientation (mapped 2026-07-17 — do not re-explore):**
+- **CLI pattern** (`packages/universal-plugin/src/`): commander; each command is `src/<domain>/cli.ts`
+  exporting `xCommand()`, added to the `plugin` group in `src/cli.ts` (today: `buildCommand()` +
+  `bundleCommand()`). Clean arch (package `CLAUDE.md`): `cli.ts` (interface, side effects) →
+  `<domain>.ts` (pure domain, no I/O) → `fs.ts` (infra).
+- **Reuse:** `src/pin/pin.ts` `extractPins` (the `npx pkg@spec` extractor + trailing-delimiter strip —
+  EXTEND to also capture bare `npx pkg` prose refs, needed for warnings + `scan`); `src/pin/fs.ts`
+  (`realPinFs`, `resolveSkillsDir`, `PinFs`); `src/output.ts` (`output`/`printTable`/`printFields`);
+  `src/cli-options.ts` (`ROOT_OPTION`, `resolveRoot`); `src/build/build.ts` (`readManifest`).
+  `src/bundle/{cli,bundle,fs}.ts` + `bundle.test.ts` is the closest SHAPE reference — mirror it, do
+  not depend on it (it retires in unit 2). `src/source-registry/` is plugin-SOURCE resolution, NOT a
+  version client — do not reuse for `deps up`.
+- **New infra:** a registry client resolving a managed name → concrete version (default npmjs.org,
+  `--registry`; range → highest satisfying, measured `^0.1.0`→`0.1.0`). Must be a DIP seam
+  (`interface DepsRegistry`) so tests mock it; real adapter fetches the packument.
+- **Test harness (per #322):** `src/bundle/bundle.test.ts` is the model — Vitest, a `fakeFs` + injected
+  source (add a `fakeRegistry`), one `it` per frozen scenario tagged `// Scenario: <title>`, sections
+  mirroring the `.feature` banners. Cover all 67; THEN add exhaustive pure-unit tests for the inner-rule
+  combinatorics (five-forms classifier table, divergence byte-identity, extraction boundary) — the
+  acceptance suite intentionally does not enumerate them.
+- **`src/deps/` layout:** `deps.ts` (pure domain: five-forms classifier, allowlist, ignore path-escape,
+  byte-identity divergence, up-rewrite, ls-status, scan, add/remove) + `fs.ts` (deps.json read/write,
+  preserving unknown keys) + `registry.ts` (real `DepsRegistry`) + `cli.ts` (`depsCommand()`, 5 subs) +
+  `deps.test.ts`. Wire into `src/cli.ts` alongside bundle (coexist).
+
+**Deliver units (each commit green):**
+1. Build `src/deps/` + wire `cli.ts` (bundle still present).
+2. **Retire `src/bundle/` + rewire release — OUTWARD-FACING, checkpoint with owner first.** Delete
+   `src/bundle/` (+ `src/pin/` if now unused), drop from `src/cli.ts`. Root `package.json`: the
+   `bundle` script runs `plugin bundle --root <plugin>` ×6 (aced, cyberfleet, cyberlegion, cyberspace,
+   quill, sdd); `version` = `changeset version && pnpm run bundle`. **CORRECTION:** `.github/workflows/
+   release.yml` has **NO** bundle refs (verified) — the wiring is entirely the root `package.json`
+   `version`→`bundle` script.
+3. Seed each plugin's `.plugin/deps.json` via `deps scan`→`deps add` (ATOMIC with the rule sweep).
+4. Fix the doc-example corruption; verify the release PR regenerates clean.
+Then impl gate → rebase onto main → handoff PR.
+
+**OPEN decision — settle with owner BEFORE building unit 2 (release rewire):** under the no-lock
+five-forms model `deps up` resolves from the REGISTRY, so pinning must run AFTER `changeset publish`
+(the just-published versions must be live to resolve). The old flow bundled at `changeset version`
+(pre-publish, workspace source). So the `version` script likely DROPS `bundle` and a NEW post-publish
+CI step runs `plugin deps up --root <plugin>` ×6. The plan's earlier "release passes explicit
+pkg@version pairs" note (see `## Settled with the owner`) predates the no-lock model — reconcile it.
+
+**Build to the #322/#323 doctrine** (filed this session; being implemented on branch
+`suite-format-governance-split`): suite screams intents; `.feature` = acceptance/boundary only; inner
+combinatorics → unit tests owned by the impl-producer. That is exactly how `src/deps/` should be built.
 
 **Impl gate:** re-derive each frozen scenario's oracle independently (ADR-0016), run the impl-
 producer's verification, per-scenario PASS/FAIL. This CR's impl gate overwrites `approval.impl`.
+
+> **Branch note (2026-07-17):** the worktree was checked out off this branch mid-session and the
+> `sdd/github-315-plugin-deps` ref was deleted; all commits were intact and the ref was restored at
+> `e9f59a9a`. If the branch is missing again, recreate it: `git branch sdd/github-315-plugin-deps
+> e9f59a9a` (or its latest descendant).
 
 --- superseded resume instructions below (spec gate is DONE; kept for provenance) ---
 
