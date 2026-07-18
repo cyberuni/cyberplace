@@ -140,30 +140,28 @@ the record rather than correct doctrine.
 
 ## NEXT — resume here
 
-**Next action:** todo 7 — **engines**: the scenario-map coverage lint in `check-suite`, then the
-confirm-read engine + wiring into the 5 roles. Both blocking decisions are RESOLVED and executed
-(`86082a1e` record, `5bf88bfa` rename, `d753e189` actor bars); `pnpm verify` GREEN 34/34.
+**State: gate-ready except one open decision.** Todos 1-6 and 8-9 are done. Todo 7 is **half** done —
+the scenario-map binding lint landed in `check-suite`; **`confirm-read` is deliberately unbuilt**
+(see the finding above: it needs four design decisions that exist nowhere).
 
-**Then:** ssa-lowering #304/#305/#306 (all Clearance — needs the same grant->record->edit flow used
-for the rename re-cuts) -> corpus sweep -> spec gate + handoff.
+**Next action — owner:**
+1. **Decide `confirm-read`** — build it, or stop `suite-format-governance` claiming it. Until one of
+   those, the bar names a check that does not exist, which is the exact toothlessness this CR fixed
+   for the map lint.
+2. **Gate both CRs together** with `spec-organization-rebuild` (owner decision: one gate, one
+   handoff). Not self-asserted while unattended — see below.
 
-**How a Clearance clears the align-spec engine (learned this session):** `align-spec.mts` diffs
-scenarios against `DEFAULT_BASE = 'HEAD'`, so a ratified re-cut shows as a drift FAIL until it is
-committed — committing after the recorded ratification IS the clearance step, not a suppression.
-Do not chase it as a regression.
+**Why the gate was not self-asserted.** The skill permits self-assertion in leash, and the owner
+pre-authorized Clearance, so the floor would not have blocked it. It was still left alone: todo 7 is
+open (gating freezes suites while a todo is live — the thing this CR argued against), the CR carries
+six-plus Clearance narrowings including a **scenario deletion** (#304), and running a gate on my own
+work with a judge I spawn, unattended, is the independence the producer!=judge split exists to
+prevent. The digest exists so a human sees what they approve.
 
-**`confirm-read` is unbuilt and under-specified — decide before claiming it.** It appears in exactly
-one sentence (`suite-format-governance:212`: "verifies a role's read-attestation covers each point
-below, in its own words") and nowhere else in the corpus — no spec node, no design doc, no engine.
-Ten governances do carry `## Key points (read-check)`, so the *inputs* exist; the check does not.
-
-Building it needs four decisions that are not made anywhere: what an attestation **is** (format, and
-where it lives), how "in its own words" is verified (**semantic** — a judge, not a lint, since a lint
-can only detect verbatim copying), **which** roles attest and at which gate, and whether a shortfall
-**blocks**. Left unbuilt deliberately rather than invented.
-
-Same class as the scenario-map lint this CR just fixed: a governance naming a mechanical check that
-does not exist. The options are symmetrical — **build it**, or **stop claiming it** until built.
+**Clearance ledger for the gate** (all under the owner's standing grant, each recorded above):
+`concept-index` + `backfill` re-cuts (rename) · gateway/gateway-manage/workflows identifier renames ·
+"consolidated spec" retirement · the nested-vs-hoist re-cut · the unscaffoldable `Given` · ssa-lowering
+#306 `Given` · ssa-lowering #304 **deletion** of the `@trigger` outline.
 
 **Findings the diff won't show:**
 - The `.md`-only blast estimate MISSED the rename's code + frozen-suite dependency; the propagation

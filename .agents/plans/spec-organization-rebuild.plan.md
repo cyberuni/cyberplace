@@ -296,7 +296,10 @@ The declared strategy tells `place-node` *how* to derive; capability-first stops
 
 ## NEXT — resume here
 
-**Next action:** spec gate. Every build todo is done; nothing is left but the gate and handoff.
+**Next action:** spec gate — **jointly with `test-framework-rebuild`** (owner decision: gate them
+together). Every build todo here is done. The joint gate waits on that CR's one open decision
+(`confirm-read`: build it, or stop claiming it). Not self-asserted while unattended — the reasoning
+is recorded in that plan's `## NEXT`.
 
 **Landed:** ratification recorded · spec node · governance skill (SDD's own tree verified absent) ·
 greenfield evidence mode (0a) · rename to `scaffold-project-spec` (0b) · formation Warden judges the
