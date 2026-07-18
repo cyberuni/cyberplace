@@ -3,7 +3,7 @@ cr-ref: spec-structure-governance
 status: draft
 target: .agents/specs/sdd/ (project spec: plugins/sdd)
 touches:
-  - plugins/sdd/skills/spec-structure-governance/          # NEW — the shipped bar
+  - plugins/sdd/skills/spec-structure-governance/          # NEW — the shipped bar (taxonomy + placement)
   - .agents/specs/sdd/common-governances/spec-structure/   # NEW — its spec node
   - plugins/sdd/skills/place-node/SKILL.md                 # drop inline copy, load the bar
   - plugins/sdd/skills/architect-spec-governance/SKILL.md  # drop inline copy, reference the bar
@@ -19,7 +19,7 @@ todos:
     status: pending
   - content: "Author the spec node .agents/specs/sdd/common-governances/spec-structure/README.md (spec-type: reference, ## Subject)"
     status: pending
-  - content: "Write plugins/sdd/skills/spec-structure-governance/SKILL.md + README.md — tree-placement law only, SDD-specific tree EXCLUDED"
+  - content: "Write plugins/sdd/skills/spec-structure-governance/SKILL.md + README.md — taxonomy + placement law, SDD-specific tree EXCLUDED"
     status: pending
   - content: "Retire the 4 inline copies: place-node, architect-spec, formation-loop, backfill (backfill keeps envelope + spec-type stamping)"
     status: pending
@@ -65,19 +65,29 @@ scenario in `backfill-project-spec.feature` for exactly this reason.
   consumers across four capabilities, so it is cross-cutting. `lifecycle` is the exact precedent:
   `design/lifecycle-model.md` (model) + `common-governances/lifecycle/` (bar spec) +
   `skills/lifecycle-governance/` (shipped skill).
-- **Scope: tree-placement ONLY — no node-taxonomy governance.** A concern earns a governance when
-  multiple consumers must **load** it consistently. Tree placement has four runtime loaders
-  (`place-node`, `architect-spec`, formation Warden, `backfill`). Node taxonomy has **zero** — it is
-  enforced in code by `spec-gate/scripts/check-spec-state.mts:13-14` (`reference => ## Subject and
-  no sibling .feature; behavioral => ## Use Cases`), modeled in `design/spec-structure.md`, and its
-  authoring consequence already stated in `spec-format-governance`. A fourth home would be pure
-  duplication.
+- **Scope: node taxonomy AND placement, together — they are ONE rule.** The placement law is the
+  taxonomy *applied to folders* and cannot be stated without it: `spec-structure.md:96` reads
+  "a rule and the behavior that enacts it live in different places — **the descriptive/behavioral
+  split above, applied across the project-spec**" (rules -> `design/` as descriptive; behaviors ->
+  capability folders as behavioral; reference artifacts -> the capability that owns them). So
+  `place-node` cannot place without the type, and `architect-spec` cannot judge placement without it
+  — a descriptive doc in `design/` is correct where a behavioral node there is a defect, and the
+  folder alone does not say which.
+  **Superseded reasoning (recorded so it is not re-tried):** an earlier pass scoped this to
+  "tree-placement only, node taxonomy has zero runtime loaders". That counted who *enforces* the
+  taxonomy (`check-spec-state.mts`) and missed who must *know* it to **apply** placement — which is
+  all four consumers. Enforcement and application are different consumers.
+  Still no **separate** node governance: the taxonomy rides with its consequence in one home.
 - **Do NOT merge the design trio.** `project-unit.md` / `spec-structure.md` / `spec-layout.md` stay
   separate. Evidence: 13 of 20 commits touched exactly one; `project-unit.md` is nearly disjoint
   (zero hits on screaming / descriptive / behavioral / strategy); `spec-layout.md` **references**
   `spec-structure.md` as the taxonomy owner four times rather than restating it. They are
   coincidental resemblance, not knowledge duplication — the case the architect bar's two-kinds rule
   protects. The missing piece was never a merge; it was a **front door**.
+- **`spec-structure.md` is internally coherent — do not re-cut it.** An earlier pass called it "two
+  concerns fused" (node taxonomy + folder anatomy) and proposed splitting along that line. That was
+  wrong for the same reason as above: the two halves are one rule, since placement is expressed in
+  taxonomy terms. The doc is correct as it stands.
 - **`design/spec-structure.md` stays put** as the model (the *why*). The skill carries the loadable
   law. Same split as lifecycle.
 - **`backfill` loads the bar rather than baking in placement.** Loading a governance by name is the
@@ -88,25 +98,28 @@ scenario in `backfill-project-spec.feature` for exactly this reason.
 
 ## Non-goals
 
-- A node-taxonomy governance (see above — zero runtime loaders).
-- Merging or re-cutting the `design/` trio.
+- A **separate** node-taxonomy governance — the taxonomy ships inside this one, as the vocabulary
+  the placement law is written in. Splitting them would hand every consumer half a rule.
+- Merging or re-cutting the `design/` trio, or re-cutting `spec-structure.md` internally.
 - **Shipping SDD's own tree.** `spec-structure.md`'s "The folder skeleton maps to the loops"
   section (`gateway/`, `intake/`, `mission/`, `campaign/`, …) is SDD self-spec, NOT a law for a
   user's project. It must not enter the shipped governance.
 
 ## Consumers (settled)
 
-| Consumer | Needs | Loads at runtime |
-| --- | --- | --- |
-| `place-node` | tree placement | yes — the production-time helper |
-| `architect-spec` bar | tree placement (screaming) | yes |
-| formation Warden | tree placement | yes |
-| `backfill-project-spec` | tree + node taxonomy | yes (after this CR) |
-| `check-spec-structure` | reads `spec-type` as a signal only | **no** — audit engine, findings are `untagged-node` + `oversized-node` |
-| `check-spec-state.mts` | node taxonomy | **no** — encodes it |
+Every runtime consumer needs **taxonomy + placement together**, because placement is type-conditioned:
 
-`place-node` produces and `check-spec-structure` audits against the same law — one rule, one home,
-one producer and one auditor.
+| Consumer | Why it needs the type | Loads at runtime |
+| --- | --- | --- |
+| `place-node` | "`design/` or a capability folder?" **is** the type question | yes — the production-time helper |
+| `architect-spec` bar | a descriptive doc in `design/` is correct; a behavioral node there is a defect | yes |
+| formation Warden | audits that shape corpus-wide | yes |
+| `backfill-project-spec` | creates nodes and stamps each `spec-type` | yes (after this CR) |
+| `check-spec-structure` | reads `spec-type` as a signal only | **no** — audit engine, findings are `untagged-node` + `oversized-node` |
+| `check-spec-state.mts` | enforces the section consequence | **no** — encodes it |
+
+The last two **enforce**; the first four **apply**. Those are different consumers — conflating them
+is what produced the superseded "tree-only" scope above.
 
 ## NEXT — resume here
 
