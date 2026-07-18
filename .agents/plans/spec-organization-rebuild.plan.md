@@ -255,10 +255,28 @@ strategy**. Note the deciding *procedure* also differs in kind: backfill decides
 not a matter of relaxing backfill's inputs. **Folded into this CR** (see Scope note); the law below
 holds for both paths.
 
-**Defect 1 — the designed readers do not read it.** `spec-layout.md` names `start-mission`'s
-explore, the handoff Warden, and the post-mission Warden as readers. Mentions of "placement map":
-`start-mission` **0**, `formation-loop` **0**, `sdd-warden` **0**. Only `place-node` reads it and
-`backfill` writes it. The decision is made with the user, recorded, then ignored.
+**Defect 1 — RESOLVED, and the original finding was mostly WRONG.** It claimed all three readers
+`spec-layout.md` names were missing, from a grep for "placement map" (space). `start-mission` writes
+**"placement-map"** (hyphen), so the grep read 0 where there were 2. Corrected picture:
+
+| Reader | Spec | Impl |
+|---|---|---|
+| `start-mission` explore | had it | had it (`:39`) |
+| handoff Warden pass | had it (`handoff.feature`) | had it (`:86` — handoff lives inside `start-mission`, there is no handoff skill dir) |
+| **post-mission Warden (formation)** | **missing** | **missing** |
+
+So the real gap was **one** reader, absent on both sides. Fixed: `formation/README.md` +4 scenarios
+in `formation.feature` (additive, self-clearing), and the read wired into `formation-loop/SKILL.md`
+and `agents/sdd-warden.md`.
+
+**The behavior specified**, not merely "reads it": the Warden judges structural fit **against the
+declared strategy**, never a default, and **never infers the strategy from the tree** — inference
+makes the audit circular (the shape the corpus has becomes the standard it is judged by) and on a
+half-migrated corpus judges it against the layout it is migrating away from. A map naming no
+strategy is judged against capability-first, and the omission is itself a finding.
+
+**Lesson:** a hyphen defeated the grep that produced the finding. A negative grep result is a
+hypothesis about vocabulary, not a fact about behavior.
 
 **Defect 2 — `place-node` contradicts itself and the design.** `place-node:14` says it "reads the
 project-spec's **declared placement map**"; `place-node:28` says the home is "**derived** from the

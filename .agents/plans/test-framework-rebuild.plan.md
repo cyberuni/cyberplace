@@ -14,7 +14,7 @@ sources:
 todos:
   - content: "9 governances rebuilt (acceptance-only/decision-graph; axis-2 level on impl bars; @pinned; key-points)"
     status: completed
-  - content: "spec-format node model: ## What / ## Use Cases (=impl entry point) / ## Logic (shared graph) / ## Scenario map (1:1, grouped by use case); plain-language a gate bar"
+  - content: "spec-format node model: ## What / ## Use Cases / ## Logic / ## Scenario map / optional ## References; plain-language a gate bar. AMENDED post-pilot: (path class, edge) unit + Path column, collapse rule, invariant-cut retired, scaffoldable Given"
     status: completed
   - content: ".feature->suite sweep across all 9 governances (verify green)"
     status: completed
@@ -46,7 +46,21 @@ todos:
 - **`@pinned`** — user-owned seed scenario; agent proposes, never executes change/removal without
   in-session user authorization; grounded in ownership (not freeze); a pin seeds graph growth.
 - **Node model** — `## What` / `## Use Cases` (each named to its impl surface — CLI verb / function /
-  endpoint) / `## Logic` (shared decision graph) / `## Scenario map` (1:1, grouped by use case).
+  endpoint) / `## Logic` (shared decision graph) / `## Scenario map` (grouped by use case) / optional
+  `## References` last.
+  **Amended after the pilot (see `spec-organization-rebuild.plan.md`):**
+  - the map unit is a **(path class, edge)** pair, not an edge — `Given` = path, `When` = edge. The
+    map is 1:1 **scenario<->row** and gains a **`Path`** column; one edge may carry several rows
+    (permutation coverage). Duplicate = same edge **and** same path class.
+  - **reconverged paths collapse** where the outcome does not differ; an over-specific `Given`
+    manufactures a false permutation.
+  - the invariant-cut heuristic is **retired** — the filter is "can you name the edge"; a constraint
+    holding across every path is the **convergence** shape, not an invariant.
+  - a `Given` must be a **scaffoldable state** (observable not evaluative, present not absent, one
+    condition per step).
+  - `## References` (optional, any spec-type) cites research backing a decision.
+  - **Open:** "each use case named to its impl surface" does not fit a procedural skill, whose
+    surface is one invocation; the pilot named them by entry condition instead.
 - **Actors judge the PROJECT** (capability), not the document's prose (that's spec/suite-format).
 - **Vocabulary** — "suite" = scenarios-as-behavior; "`.feature`" = the file/format only.
 - **workflows/** (was acceptance/) — project-level workflow suite; a workflow is the project-level
