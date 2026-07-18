@@ -24,8 +24,8 @@ todos:
     status: completed
   - content: "acceptance/ -> workflows/ rename: COMPLETE. git mv x5 + 43 .md refs + concept-index code/label (e2e->workflow) + 2 ratified frozen re-cuts + 52 .feature comment no-ops + regenerated index; verify 34/34"
     status: completed
-  - content: "Engines: scenario-map coverage lint in check-suite; confirm-read engine + wiring into the 5 roles"
-    status: pending
+  - content: "Engine: scenario-map binding lint LANDED in check-suite (orphan/dangling/duplicate; coverage stays judged). confirm-read NOT built — see the finding below"
+    status: in_progress
   - content: "Apply to ssa-lowering: #305 positive Oracle-gate companion + Given re-cut; #306 disjoint Given re-cut; #304 activation off node freeze (all Clearance)"
     status: pending
   - content: "Corpus sweep: new suite bar over every behavioral .feature (over-fire check) + the old-doctrine 'acceptance boundary/level' prose the subagent deliberately left"
@@ -97,6 +97,19 @@ for the rename re-cuts) -> corpus sweep -> spec gate + handoff.
 scenarios against `DEFAULT_BASE = 'HEAD'`, so a ratified re-cut shows as a drift FAIL until it is
 committed — committing after the recorded ratification IS the clearance step, not a suppression.
 Do not chase it as a regression.
+
+**`confirm-read` is unbuilt and under-specified — decide before claiming it.** It appears in exactly
+one sentence (`suite-format-governance:212`: "verifies a role's read-attestation covers each point
+below, in its own words") and nowhere else in the corpus — no spec node, no design doc, no engine.
+Ten governances do carry `## Key points (read-check)`, so the *inputs* exist; the check does not.
+
+Building it needs four decisions that are not made anywhere: what an attestation **is** (format, and
+where it lives), how "in its own words" is verified (**semantic** — a judge, not a lint, since a lint
+can only detect verbatim copying), **which** roles attest and at which gate, and whether a shortfall
+**blocks**. Left unbuilt deliberately rather than invented.
+
+Same class as the scenario-map lint this CR just fixed: a governance naming a mechanical check that
+does not exist. The options are symmetrical — **build it**, or **stop claiming it** until built.
 
 **Findings the diff won't show:**
 - The `.md`-only blast estimate MISSED the rename's code + frozen-suite dependency; the propagation
