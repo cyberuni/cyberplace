@@ -156,6 +156,22 @@ contract narrowing. No behavior was narrowed: the same skill is referenced under
 per-file `.feature` **move** itself was a pure `git mv` (git `R`), which preserves the freeze at the
 same baseline (`lifecycle-governance:142`) — only the in-scenario identifier text tripped the engine.
 
+**Second Clearance under the same grant — the shippable test was wrong.** Removed:
+`intent mode asks for the spec location it cannot detect` ("Then it asks whether the project will be
+shippable rather than detecting a plugin layout").
+
+It encoded a test `project-unit.md` does not use. The spec-location discriminator is **nested vs
+outer**, not shippable — "a nested project's spec is lifted out of its *(possibly shippable)*
+package dir … the outer / repo-level project's is not". A nested package that ships nothing is still
+hoisted, so a shippable question returns the wrong answer for it. Replaced by five scenarios that
+ask for the **project path** (which step 5 must write as `project-path`, and which cannot be read in
+a greenfield project) and then **derive** the location from it, matching the existing rule that the
+location mode is derived from `project-path`, never stored.
+
+Also corrected: the evidence-mode question is scoped to the **project**, not the repo. A new package
+in an existing monorepo is a greenfield *project* in a populated *repo* — intent mode still reads the
+surrounding repo for shape and conventions.
+
 Not changed, deliberately: "backfill" used as a **verb** for the existing-project path (e.g. `a
 monorepo is detected and a repo-wide backfill is offered`) stays accurate for detection mode, and
 `spec-producer`'s unrelated **backfill mode** was untouched by the sweep.
