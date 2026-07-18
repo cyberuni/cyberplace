@@ -128,8 +128,20 @@ they need the project's **chosen** strategy. The recording place already exists 
 designed (`spec-layout.md:185-208`): the **placement map** in the body of the root `spec.md`
 (deliberately not frontmatter, per ADR-0017), naming the primary strategy
 (`capability-first | mirror-source | bounded-context | layered | doc-envelope`) plus a routing table
-and tie-break rules. `backfill` writes it — "the only step that *decides* the layout (it ran
-detection + the compass with the user)".
+and tie-break rules. `backfill` writes it for an **existing** project — `spec-layout.md` calls it
+"the only step that *decides* the layout (it ran detection + the compass with the user)", but see
+Defect 0: that claim silently assumes every project arrives with source to detect.
+
+**Defect 0 — greenfield has no decider at all.** `backfill-project-spec` is scoped to "lay out an
+**existing** project's spec", entered "when `start-mission` explore finds an **existing project**
+with no consolidated spec". Its whole decision flow is detection-driven and cannot run without
+source: step 1 reads `.plugin/` / `apps/`+`packages/` / whether `src/` is feature- or layer-organized
+/ framework markers / `CODEOWNERS`; step 3 recommends capability-first "when a capability
+decomposition is **discernible**" and mirror-source "when `src/` is **already** feature-first". A new
+project has none of those signals, so no branch fires — **a new project never gets a declared
+strategy**. Note the deciding *procedure* also differs in kind: backfill decides by **detection**
+(what the code shows), greenfield can only decide by **intent** (what the project will do), so it is
+not a matter of relaxing backfill's inputs. Likely its own CR; the law below holds for both paths.
 
 **Defect 1 — the designed readers do not read it.** `spec-layout.md` names `start-mission`'s
 explore, the handoff Warden, and the post-mission Warden as readers. Mentions of "placement map":
@@ -158,10 +170,10 @@ The declared strategy tells `place-node` *how* to derive; capability-first stops
 **Next action:** todo 1 — file the issue capturing the problem statement above, then author the spec
 node (todo 2). No implementation before the spec node exists.
 
-**Settled by the finding above:** the **strategy menu** stays model-only — `backfill` is the sole
-decider and runs the compass with the user. What the governance must carry instead is the rule that
-the choice is **declared in the placement map and read, never re-assumed**. The other consumers
-never need the menu; they need the project's recorded choice.
+**Settled by the finding above:** the **strategy menu** stays model-only — only a *deciding* step
+needs it, and it runs the compass with the user. What the governance must carry instead is the rule
+that the choice is **declared in the placement map and read, never re-assumed**. The non-deciding
+consumers never need the menu; they need the project's recorded choice.
 
 **Open decision (owner) — blocks todo 3:** ratify the "strategy is policy, homes are data"
 reconciliation above. The governance cannot state the placement law without resolving the
