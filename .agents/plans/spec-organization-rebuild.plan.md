@@ -18,12 +18,10 @@ touches:
   - plugins/sdd/skills/manage/SKILL.md                     # same dangling pointer
   - .agents/specs/sdd/design/spec-layout.md                # correct "backfill is the only step that decides"
 sources:
-  - (no issue filed yet — see todo 1)
+  - (none — owner waived the issue; work lands on branch test-framework-rebuild)
 todos:
-  - content: "File the issue: project-spec organization has no shipped home, its declared strategy is never read, and greenfield has no decider"
-    status: pending
-  - content: "OWNER: ratify or reject 'strategy is policy, homes are data' — blocks every downstream todo"
-    status: pending
+  - content: "OWNER: ratify 'strategy is policy, homes are data' — RATIFIED 2026-07-18; no issue/CR filed by owner decision"
+    status: completed
   - content: "Author the spec node common-governances/spec-structure/README.md (spec-type: reference, ## Subject)"
     status: pending
   - content: "Write skills/spec-structure-governance/ SKILL.md + README.md — taxonomy + placement law, SDD-specific tree EXCLUDED"
@@ -186,8 +184,9 @@ The declared strategy tells `place-node` *how* to derive; capability-first stops
 
 ## NEXT — resume here
 
-**Next action:** todo 1 — file the issue covering all three defects plus the missing shipped home.
-Then todo 2, the ratification, which gates the rest. No implementation before the spec node exists.
+**Next action:** author the spec node `common-governances/spec-structure/README.md`, then the
+governance skill. Spec before implementation — no defect fix lands before the bar it is measured
+against exists.
 
 **Settled by the finding above:** the **strategy menu** stays model-only — only a *deciding* step
 needs it, and it runs the compass with the user. What the governance must carry instead is the rule
@@ -197,10 +196,37 @@ consumers never need the menu; they need the project's recorded choice.
 **Scope: SETTLED — fold in.** Owner decision: defects 0/1/2 are absorbed into this CR, not split out.
 This is a rebuild of the organization system, not a doc move.
 
-**Open decision (owner) — todo 2, blocks everything downstream:** ratify or reject "strategy is
-policy, homes are data". It is load-bearing three times over — the governance states it, `place-node`
-is rewritten to it, and `decide-spec-layout` exists because of it. It is still **my proposal**, not a
-recorded grant; do not treat the fold-in decision as having ratified it.
+**RATIFIED 2026-07-18 (owner): "strategy is policy, homes are data."** Recorded grant — the
+governance states it, `place-node` is rewritten to it, and `decide-spec-layout` exists because of it.
+
+The doctrine, as ratified:
+
+- The **strategy** (`capability-first | mirror-source | …`) is a **choice**: two people can
+  legitimately disagree, so it cannot be observed and must be **declared** in the placement map and
+  **read**. Proof it is not derivable: a greenfield project has no tree yet still has a strategy.
+  Deriving it is circular on a healthy tree (it launders a past decision as an observation) and
+  actively wrong on a half-migrated one (it perpetuates the layout being migrated away from).
+- The **homes** (which folder a concept sits in) are **facts** about the current tree, observable
+  from `concept:` tags and changing as the tree changes. A stored home list is a second source that
+  rots — so homes stay **derived**, never stored.
+- They compose: **the declared strategy parameterizes the derivation.** `capability-first` groups
+  `concept:` tags by capability; `mirror-source` mirrors the source path. `place-node` keeps
+  deriving, but asks the placement map *which* derivation to run.
+
+**This is not a new doctrine — it is the existing one applied consistently.**
+`corpus/discovery/README.md:8-16` already makes the same split: the three fixed conventions "are
+always scanned and **need no registry**" (derived), while extra anchors are "a **declared** second
+source that can drift, so it is opt-in and **curated** … **rather than derived**". So the no-drift
+rule means "do not store what you can observe", never "do not declare a choice". `place-node:28`
+cited that rule to reject a declared strategy, which inverts it.
+
+**Accepted cost.** The placement map can go stale against the tree (a project declares
+`capability-first`, drifts layered in practice, and the declaration lies). Mitigation is curation,
+matching discovery's `spec-anchors` answer: the Warden owns placement-map rewrites during deliberate
+reorganization, already specified at `spec-layout.md:206`.
+
+**Process: no separate CR, no issue.** Owner decision — the work lands on the current branch
+(`test-framework-rebuild`) alongside that CR rather than opening a new one.
 
 **Proposed shape for Defect 0 (needs owner sign-off with todo 2).** Extract the layout decision out
 of `backfill` into a shared partial skill, `decide-spec-layout`, with **two evidence modes**:
