@@ -5,14 +5,14 @@ target: .agents/specs/sdd/ (project spec: plugins/sdd)
 touches:
   - plugins/sdd/skills/spec-structure-governance/          # NEW — the shipped bar (taxonomy + placement)
   - .agents/specs/sdd/common-governances/spec-structure/   # NEW — its spec node
-  - plugins/sdd/skills/scaffold-project-spec/              # RENAMED from backfill-project-spec + intent mode
+  - plugins/sdd/skills/scaffold-project-spec/              # RENAMED from scaffold-project-spec + intent mode
   - .agents/specs/sdd/authoring/scaffold-project-spec/     # RENAMED spec node + .feature (Clearance)
   - plugins/sdd/skills/place-node/SKILL.md                 # drop inline copy + hardcoded capability-first; read the declared strategy
   - plugins/sdd/skills/start-mission/SKILL.md              # wire the placement-map read (defect 1)
   - plugins/sdd/skills/formation-loop/SKILL.md             # drop inline copy; wire the placement-map read (defect 1)
   - plugins/sdd/agents/sdd-warden.md                       # wire the placement-map read (defect 1)
   - plugins/sdd/skills/architect-spec-governance/SKILL.md  # drop inline copy, reference the bar
-  - plugins/sdd/skills/backfill-project-spec/SKILL.md      # load the bar; add intent mode (becomes scaffold-project-spec)
+  - plugins/sdd/skills/scaffold-project-spec/SKILL.md      # load the bar; add intent mode (becomes scaffold-project-spec)
   - plugins/sdd/skills/spec-format-governance/SKILL.md     # fix dangling `design/spec-structure.md` pointer
   - plugins/sdd/skills/check-scenario-overlap/SKILL.md     # same dangling pointer
   - plugins/sdd/skills/manage/SKILL.md                     # same dangling pointer
@@ -28,7 +28,7 @@ todos:
     status: pending
   - content: "Defect 0a: generalize backfill steps 1-3 on evidence mode (detection | intent); steps 4-6 unchanged"
     status: pending
-  - content: "Defect 0b: rename backfill-project-spec -> scaffold-project-spec (separate commit; 30 md + 4 frozen .feature = Clearance)"
+  - content: "Defect 0b: rename scaffold-project-spec -> scaffold-project-spec (separate commit; 30 md + 4 frozen .feature = Clearance)"
     status: pending
   - content: "Defect 2: place-node reads the declared strategy; drop hardcoded capability-first; keep homes derived from concept tags"
     status: pending
@@ -66,7 +66,7 @@ There is **no shippable artifact** describing how a project spec is organized.
   `formation-loop:67` ("a layered / framework-first layout scatters a capability").
 
 Four copies of one rule drift. The `acceptance/` -> `workflows/` rename already left a stale frozen
-scenario in `backfill-project-spec.feature` for exactly this reason.
+scenario in `scaffold-project-spec.feature` for exactly this reason.
 
 ## Resolved decisions (do not relitigate)
 
@@ -132,12 +132,37 @@ Every runtime consumer needs **taxonomy + placement together**, because placemen
 | `place-node` | "`design/` or a capability folder?" **is** the type question | yes — the production-time helper |
 | `architect-spec` bar | a descriptive doc in `design/` is correct; a behavioral node there is a defect | yes |
 | formation Warden | audits that shape corpus-wide | yes |
-| `backfill-project-spec` | creates nodes and stamps each `spec-type` | yes (after this CR) |
+| `scaffold-project-spec` | creates nodes and stamps each `spec-type` | yes (after this CR) |
 | `check-spec-structure` | reads `spec-type` as a signal only | **no** — audit engine, findings are `untagged-node` + `oversized-node` |
 | `check-spec-state.mts` | enforces the section consequence | **no** — encodes it |
 
 The last two **enforce**; the first four **apply**. Those are different consumers — conflating them
 is what produced the superseded "tree-only" scope above.
+
+## Clearance — recorded owner ratification (2026-07-18)
+
+Owner granted Clearance ("clearance allowed") and authorized the rename ("go ahead and rename the
+file/folder instead of keeping it as backfill"). Under it, these **frozen** scenarios changed:
+
+| Node | Scenario | Change |
+|---|---|---|
+| `gateway/` | `no spec found for a target offers manage-spec-anchors` | `Then` step: identifier `backfill-project-spec` -> `scaffold-project-spec` |
+| `gateway/manage/` | `a setup request loads backfill-project-spec` | title + `Then` step: same identifier rename |
+| `workflows/` | `a CR whose target project has no spec routes to backfill` | `Then` step: same identifier rename |
+
+**These are mechanically flagged, semantically neutral.** `align-spec` classifies each as a
+"narrowing (clearance)" because its scenario-diff cannot distinguish an identifier rename from a
+contract narrowing. No behavior was narrowed: the same skill is referenced under its new name. The
+per-file `.feature` **move** itself was a pure `git mv` (git `R`), which preserves the freeze at the
+same baseline (`lifecycle-governance:142`) — only the in-scenario identifier text tripped the engine.
+
+Not changed, deliberately: "backfill" used as a **verb** for the existing-project path (e.g. `a
+monorepo is detected and a repo-wide backfill is offered`) stays accurate for detection mode, and
+`spec-producer`'s unrelated **backfill mode** was untouched by the sweep.
+
+Note: the sibling `test-framework-rebuild.plan.md` Clearance record had its file pointer swept from
+`backfill-project-spec.feature` to `scaffold-project-spec.feature` — a pointer to a renamed file, not
+a rewrite of what was ratified.
 
 ## Finding — the declared strategy is written but not honored
 
@@ -150,7 +175,7 @@ and tie-break rules. `backfill` writes it for an **existing** project — `spec-
 "the only step that *decides* the layout (it ran detection + the compass with the user)", but see
 Defect 0: that claim silently assumes every project arrives with source to detect.
 
-**Defect 0 — greenfield has no decider at all.** `backfill-project-spec` is scoped to "lay out an
+**Defect 0 — greenfield has no decider at all.** `scaffold-project-spec` is scoped to "lay out an
 **existing** project's spec", entered "when `start-mission` explore finds an **existing project**
 with no consolidated spec". Its whole decision flow is detection-driven and cannot run without
 source: step 1 reads `.plugin/` / `apps/`+`packages/` / whether `src/` is feature- or layer-organized
@@ -233,7 +258,7 @@ reorganization, already specified at `spec-layout.md:206`.
 **Shape for Defect 0 — SETTLED (owner, 2026-07-18): generalize the whole skill, rename to
 `scaffold-project-spec`, rename inside this CR.**
 
-`backfill-project-spec` becomes `scaffold-project-spec`: **one** skill, one entry, with steps 1-3
+`scaffold-project-spec` becomes `scaffold-project-spec`: **one** skill, one entry, with steps 1-3
 branching on **evidence mode** and steps 4-6 shared unchanged.
 
 - **detection mode** (source exists) — today's steps 1-3, driven by source signals. Unchanged.
@@ -253,5 +278,5 @@ is the larger shared part.
 
 **Sequencing (deliberate).** Generalize under the existing name first, then rename in a **separate
 commit**. Mixing a semantic change with a 34-file mechanical sweep is what let today's stale
-`backfill-project-spec.feature` scenario slip through. Rename blast measured: **30 `.md`, 4
+`scaffold-project-spec.feature` scenario slip through. Rename blast measured: **30 `.md`, 4
 `.feature` (frozen -> Clearance), 0 code.**

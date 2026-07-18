@@ -64,7 +64,7 @@ Owner ratified re-cutting two frozen scenarios as part of completing the `accept
 
 - `concept-index.feature` — "acceptance/ node annotated as e2e" (~lines 33-44) -> `workflows/`
   node annotated as `workflow`.
-- `backfill-project-spec.feature` (`:78`) — scaffolds `design/, acceptance/, …` -> `workflows/`.
+- `scaffold-project-spec.feature` (`:78`) — scaffolds `design/, acceptance/, …` -> `workflows/`.
 
 Basis: the rename already landed in `concept-index.mts` (`workflows/` path match, commit
 `4a38a937`); these two frozen scenarios are the last sites still asserting the pre-rename
