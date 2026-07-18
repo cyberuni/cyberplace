@@ -99,6 +99,20 @@ vocabulary, so they diverge from live behavior. No behavior is being widened.
   concretely (authentication+billing / authentication+search), and the rubric comment now names
   billing and search rather than gesturing at "the two nodes only one CR touches".
 
+- **#304 — activation taken off the node freeze (Clearance).** Removed the `@trigger` Scenario
+  Outline from `ssa-lowering.feature`. The issue's finding is now settled *by this CR's own rebuilt
+  doctrine*: activation is owned by (description prose x harness x sibling set) and the node controls
+  one of the three, so it is a **co-owned seam** — and `suite-format-governance` already says a
+  co-owned seam ("activation/routing — does this config fire?") is **out of scope** for a per-node
+  frozen suite. The outline froze a property the node cannot honour alone. A comment marks the spot
+  so the removal reads as doctrine, not loss, and the spec README's structural claim was updated to
+  match.
+  **Corpus-wide implication, NOT swept:** 14 suites still carry `@trigger`. The same argument applies
+  to every one, but sweeping them is a corpus-scale removal of frozen scenarios and belongs to an
+  owner decision, not to this scoped todo. Trigger accuracy has a real instrument (`test-skill`'s
+  labeled query corpus); until those suites move to it, removing their outlines would drop the
+  measurement rather than relocate it.
+
 ## NEXT — resume here
 
 **Next action:** todo 7 — **engines**: the scenario-map coverage lint in `check-suite`, then the
