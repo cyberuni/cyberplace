@@ -28,8 +28,8 @@ todos:
     status: in_progress
   - content: "Apply to ssa-lowering: #305 positive Oracle-gate companion + Given re-cut; #306 disjoint Given re-cut; #304 activation off node freeze (all Clearance)"
     status: pending
-  - content: "Corpus sweep: new suite bar over every behavioral .feature (over-fire check) + the old-doctrine 'acceptance boundary/level' prose the subagent deliberately left"
-    status: pending
+  - content: "Corpus sweep DONE: over-fire check measured 0 findings across 78 suites in 7 projects; old-doctrine 'acceptance/boundary' prose reframed on the two axes (ADR left as history)"
+    status: completed
   - content: "Spec gate + handoff: Closes #304/#305/#306; drain follow-ups"
     status: pending
 ---
@@ -112,6 +112,31 @@ vocabulary, so they diverge from live behavior. No behavior is being widened.
   owner decision, not to this scoped todo. Trigger accuracy has a real instrument (`test-skill`'s
   labeled query corpus); until those suites move to it, removing their outlines would drop the
   measurement rather than relocate it.
+
+## Corpus sweep — measured, not asserted
+
+**Over-fire check: 0 findings across 78 suites in 7 projects** (aced 24, sdd 42, cyberfleet 4,
+cyberlegion 3, cyberplace 3, cyberspace 2, quill 0). The rebuilt bar — including the new
+scenario-map binding lint — does **not** over-fire on the existing corpus. The map lint contributes
+zero because it skips specs with no `## Scenario map`, which is 36 of 37 sdd behavioral nodes; it
+activates per node as the format lands, so this number will move as the node-format migration
+proceeds and is not evidence about those nodes.
+
+**Old-doctrine prose reframed** on the two axes, at the two sites that stated it as current doctrine:
+
+- `authoring/suite-format/README.md` — "Test levels — the `.feature` is acceptance/boundary only"
+  rewritten as "Two axes": the suite specifies **acceptance** and is silent on level; the
+  **verification level** is a test implementation detail owned by the impl bars. "Boundary" is a
+  *level*, not a category of scenario — naming one in the contract leaks axis 2 into axis 1. The
+  combinatorics-move-down rule survives on a better reason: a suite is a decision graph, not a
+  combinatorial cover.
+- `mission/impl-producer/README.md` — "Two test levels — acceptance boundary + inner-rule units"
+  reframed; the inner boundary is now the honest substitute where a higher level is infeasible, not
+  the default the contract prescribes.
+
+**Left as history:** `aced/design/decisions/0002-boundary-vs-surface-more.md` states the old framing,
+but a decision record is an append-only account of what was decided when — rewriting it would forge
+the record rather than correct doctrine.
 
 ## NEXT — resume here
 
