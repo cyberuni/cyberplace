@@ -5,14 +5,13 @@ target: .agents/specs/sdd/ (project spec: plugins/sdd)
 touches:
   - plugins/sdd/skills/spec-structure-governance/          # NEW — the shipped bar (taxonomy + placement)
   - .agents/specs/sdd/common-governances/spec-structure/   # NEW — its spec node
-  - plugins/sdd/skills/scaffold-project-spec/              # RENAMED from scaffold-project-spec + intent mode
+  - plugins/sdd/skills/scaffold-project-spec/              # RENAMED from backfill-project-spec + intent mode
   - .agents/specs/sdd/authoring/scaffold-project-spec/     # RENAMED spec node + .feature (Clearance)
   - plugins/sdd/skills/place-node/SKILL.md                 # drop inline copy + hardcoded capability-first; read the declared strategy
   - plugins/sdd/skills/start-mission/SKILL.md              # wire the placement-map read (defect 1)
   - plugins/sdd/skills/formation-loop/SKILL.md             # drop inline copy; wire the placement-map read (defect 1)
   - plugins/sdd/agents/sdd-warden.md                       # wire the placement-map read (defect 1)
   - plugins/sdd/skills/architect-spec-governance/SKILL.md  # drop inline copy, reference the bar
-  - plugins/sdd/skills/scaffold-project-spec/SKILL.md      # load the bar; add intent mode (becomes scaffold-project-spec)
   - plugins/sdd/skills/spec-format-governance/SKILL.md     # fix dangling `design/spec-structure.md` pointer
   - plugins/sdd/skills/check-scenario-overlap/SKILL.md     # same dangling pointer
   - plugins/sdd/skills/manage/SKILL.md                     # same dangling pointer
@@ -23,17 +22,17 @@ todos:
   - content: "OWNER: ratify 'strategy is policy, homes are data' — RATIFIED 2026-07-18; no issue/CR filed by owner decision"
     status: completed
   - content: "Author the spec node common-governances/spec-structure/README.md (spec-type: reference, ## Subject)"
-    status: pending
+    status: completed
   - content: "Write skills/spec-structure-governance/ SKILL.md + README.md — taxonomy + placement law, SDD-specific tree EXCLUDED"
     status: pending
-  - content: "Defect 0a: generalize backfill steps 1-3 on evidence mode (detection | intent); steps 4-6 unchanged"
-    status: pending
-  - content: "Defect 0b: rename scaffold-project-spec -> scaffold-project-spec (separate commit; 30 md + 4 frozen .feature = Clearance)"
-    status: pending
+  - content: "Defect 0a: generalize steps 1-3 on evidence mode (detection | intent); steps 4-6 unchanged"
+    status: completed
+  - content: "Defect 0b: rename backfill-project-spec -> scaffold-project-spec (53 refs / 34 files; .feature move was a pure git mv so the freeze held)"
+    status: completed
   - content: "Defect 2: place-node reads the declared strategy; drop hardcoded capability-first; keep homes derived from concept tags"
     status: pending
-  - content: "Defect 1: wire the placement-map readers — start-mission explore, handoff Warden, post-mission Warden"
-    status: pending
+  - content: "Defect 1: post-mission Warden judges against the declared strategy (the only reader actually missing; the other two were a grep false positive)"
+    status: completed
   - content: "Retire the 4 inline copies: place-node, architect-spec, formation-loop, backfill"
     status: pending
   - content: "Fix the 3 dangling `design/spec-structure.md` pointers -> the governance name; correct spec-layout.md's sole-decider claim"
@@ -66,7 +65,7 @@ There is **no shippable artifact** describing how a project spec is organized.
   `formation-loop:67` ("a layered / framework-first layout scatters a capability").
 
 Four copies of one rule drift. The `acceptance/` -> `workflows/` rename already left a stale frozen
-scenario in `scaffold-project-spec.feature` for exactly this reason.
+scenario in what is now `scaffold-project-spec.feature` for exactly this reason.
 
 ## Resolved decisions (do not relitigate)
 
@@ -297,9 +296,18 @@ The declared strategy tells `place-node` *how* to derive; capability-first stops
 
 ## NEXT — resume here
 
-**Next action:** author the spec node `common-governances/spec-structure/README.md`, then the
-governance skill. Spec before implementation — no defect fix lands before the bar it is measured
-against exists.
+**Next action:** write `skills/spec-structure-governance/` (SKILL.md + README.md) — the taxonomy +
+placement law, SDD's own folder skeleton **excluded**. It is the artifact the remaining todos consume:
+`place-node` (defect 2) and the three inline-copy sites should **load** it rather than each restating
+the rule, so writing it first collapses two todos into one edit each.
+
+**Done so far:** ratification recorded · spec node authored · greenfield evidence mode (defect 0a) ·
+rename to `scaffold-project-spec` (0b) · formation Warden judges against the declared strategy
+(defect 1) · glossary mandate + corpus migration · the (path class, edge) doctrine + scaffoldable
+`Given` + `## References`, piloted on the `scaffold-project-spec` node.
+
+**Left:** the governance skill, defect 2 (`place-node`), the 4 inline copies, the 3 dangling
+`design/spec-structure.md` pointers, `spec-layout.md`'s sole-decider claim, then spec gate + handoff.
 
 **Settled by the finding above:** the **strategy menu** stays model-only — only a *deciding* step
 needs it, and it runs the compass with the user. What the governance must carry instead is the rule
