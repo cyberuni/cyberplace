@@ -23,20 +23,20 @@ todos:
     status: completed
   - content: "Author the spec node common-governances/spec-structure/README.md (spec-type: reference, ## Subject)"
     status: completed
-  - content: "Write skills/spec-structure-governance/ SKILL.md + README.md — taxonomy + placement law, SDD-specific tree EXCLUDED"
-    status: pending
+  - content: "Write skills/spec-structure-governance/ SKILL.md + README.md — taxonomy + placement law, SDD-specific tree EXCLUDED (verified absent)"
+    status: completed
   - content: "Defect 0a: generalize steps 1-3 on evidence mode (detection | intent); steps 4-6 unchanged"
     status: completed
   - content: "Defect 0b: rename backfill-project-spec -> scaffold-project-spec (53 refs / 34 files; .feature move was a pure git mv so the freeze held)"
     status: completed
-  - content: "Defect 2: place-node reads the declared strategy; drop hardcoded capability-first; keep homes derived from concept tags"
-    status: pending
+  - content: "Defect 2: place-node stops RECOMMENDING a strategy — it need not read one, since deriving from live concept tags is strategy-neutral"
+    status: completed
   - content: "Defect 1: post-mission Warden judges against the declared strategy (the only reader actually missing; the other two were a grep false positive)"
     status: completed
-  - content: "Retire the 4 inline copies: place-node, architect-spec, formation-loop, backfill"
-    status: pending
-  - content: "Fix the 3 dangling `design/spec-structure.md` pointers -> the governance name; correct spec-layout.md's sole-decider claim"
-    status: pending
+  - content: "Retire the inline copies (4 sites load the bar); architect bars + formation signal now judge the DECLARED layout, not the default"
+    status: completed
+  - content: "Repoint the dangling pointers (3 refs, all in spec-format-governance) -> sdd:spec-structure-governance; correct spec-layout's sole-decider claim"
+    status: completed
   - content: "Spec gate + handoff"
     status: pending
 ---
@@ -296,18 +296,26 @@ The declared strategy tells `place-node` *how* to derive; capability-first stops
 
 ## NEXT — resume here
 
-**Next action:** write `skills/spec-structure-governance/` (SKILL.md + README.md) — the taxonomy +
-placement law, SDD's own folder skeleton **excluded**. It is the artifact the remaining todos consume:
-`place-node` (defect 2) and the three inline-copy sites should **load** it rather than each restating
-the rule, so writing it first collapses two todos into one edit each.
+**Next action:** spec gate. Every build todo is done; nothing is left but the gate and handoff.
 
-**Done so far:** ratification recorded · spec node authored · greenfield evidence mode (defect 0a) ·
-rename to `scaffold-project-spec` (0b) · formation Warden judges against the declared strategy
-(defect 1) · glossary mandate + corpus migration · the (path class, edge) doctrine + scaffoldable
-`Given` + `## References`, piloted on the `scaffold-project-spec` node.
+**Landed:** ratification recorded · spec node · governance skill (SDD's own tree verified absent) ·
+greenfield evidence mode (0a) · rename to `scaffold-project-spec` (0b) · formation Warden judges the
+declared strategy (defect 1) · `place-node` stops recommending one (defect 2) · inline copies retired
+· pointers repointed · `spec-layout`'s sole-decider claim corrected · glossary mandate + corpus
+migration + SDD's own glossary · the (path class, edge) doctrine, scaffoldable `Given`, and
+`## References`, piloted on `scaffold-project-spec`.
 
-**Left:** the governance skill, defect 2 (`place-node`), the 4 inline copies, the 3 dangling
-`design/spec-structure.md` pointers, `spec-layout.md`'s sole-decider claim, then spec gate + handoff.
+**Finding-accuracy note for the gate.** Four of this CR's findings were overstated and corrected in
+place: the "8 invariants to prune" (most had edges), defect 1 ("all three readers" — a hyphen in the
+grep), defect 2 ("self-contradicts and hardcodes" — the engine is strategy-neutral; only the prose
+overreached), and the "3 dangling pointers in 3 skills" (3 refs in **one** skill; the others matched
+`check-spec-structure`, the engine). Common cause: substring greps read as behavioral facts. Treat
+the findings list as hypotheses and re-verify against the artifact before acting.
+
+**Carried, not done (deliberate):** `cyberfleet-plugin` and `cyberlegion-plugin` have no glossary
+(advisory) · `cyberplace` is hoisted though the corrected rule would colocate it · 36 of 37 sdd
+behavioral nodes still use the pre-rebuild node format (that is `test-framework-rebuild`'s sweep) ·
+"use case named to its impl surface" does not fit a procedural skill.
 
 **Settled by the finding above:** the **strategy menu** stays model-only — only a *deciding* step
 needs it, and it runs the compass with the user. What the governance must carry instead is the rule
