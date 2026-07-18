@@ -35,6 +35,13 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - run: pnpm install
+
+      # Warm the gherkin-cli npx cache serially once, so the parallel `turbo verify`
+      # tasks reuse a single install instead of racing to populate ~/.npm/_npx
+      # concurrently (the ENOTEMPTY cache-corruption the clear step above guards against).
+      - name: Warm gherkin-cli npx cache
+        run: npx -y gherkin-cli@0.0.2 --help > /dev/null 2>&1 || true
+
       - run: pnpm verify
 
   all-checks:
