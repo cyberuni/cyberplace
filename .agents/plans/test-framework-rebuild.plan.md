@@ -52,25 +52,37 @@ todos:
 - **workflows/** (was acceptance/) — project-level workflow suite; a workflow is the project-level
   analog of a use case (a path through the composed capabilities); the capability map is the
   project's logic graph. `ledger/` is a fourth folder kind (provenance data, not a spec node).
+- **Rename: COMPLETE (not revert)** — owner-decided 2026-07-18. Finish the facet label
+  `'e2e'` -> `'workflow'`, the 2 frozen re-cuts, and the `.feature` comment sweep.
+- **Actor-bar reframe: propagate to ALL THREE** — owner-decided 2026-07-18. `oracle-spec`,
+  `builder-spec`, `architect-impl` join `architect-spec` on project-framing + two-kinds duplication.
+
+## Clearance — recorded owner ratification (2026-07-18)
+
+Owner ratified re-cutting two frozen scenarios as part of completing the `acceptance/` ->
+`workflows/` rename (a narrowing that realigns the frozen contract with landed code):
+
+- `concept-index.feature` — "acceptance/ node annotated as e2e" (~lines 33-44) -> `workflows/`
+  node annotated as `workflow`.
+- `backfill-project-spec.feature` (`:78`) — scaffolds `design/, acceptance/, …` -> `workflows/`.
+
+Basis: the rename already landed in `concept-index.mts` (`workflows/` path match, commit
+`4a38a937`); these two frozen scenarios are the last sites still asserting the pre-rename
+vocabulary, so they diverge from live behavior. No behavior is being widened.
 
 ## NEXT — resume here
 
-**Next action:** resolve the two open decisions with the owner (below), then execute. Governance
-rebuild is committed (`77fd05a8`); everything since is UNCOMMITTED in the working tree.
+**Next action:** both blocking decisions are RESOLVED (see Resolved decisions + Clearance above).
+Execute in order: (1) finish the rename, (2) propagate the actor-bar reframe to the 3 remaining
+bars, then the pending todos (engines -> ssa-lowering -> corpus sweep -> gate).
 
-**Blocking decisions (owner):**
-1. **Rename complete-vs-revert.** The `acceptance/`->`workflows/` rename grew teeth beyond the
-   "placeholder" premise. Already done + GREEN: git mv x5, 43 .md refs, and `concept-index.mts`
-   path match (`workflows/`) + `.test.mts` + regenerated index. REMAINING to COMPLETE: (a) facet
-   label `'e2e'` -> `'workflow'` in `concept-index.mts` + README + its frozen scenario; (b) re-cut
-   2 frozen scenarios — `concept-index.feature` ("acceptance/ node annotated as e2e", ~lines 33-44)
-   and `backfill-project-spec.feature` (":78", creates `design/, acceptance/, …`) — a **Clearance**
-   narrowing needing owner ratification; (c) sweep ~25 `.feature` header comments `../acceptance/`
-   -> `../workflows/` (comment-only = freeze-safe no-op). Alternative: revert the whole rename to a
-   follow-up CR and keep only the spec-structure model updates.
-2. **Propagate the actor-bar reframe** (project-framing + two-kinds duplication) from architect-spec
-   to `oracle-spec` (two concerns -> two capabilities), `builder-spec` (is the capability fully &
-   testably specified), and `architect-impl` (two-kinds duplication). Awaiting confirm.
+**State correction (2026-07-18):** the plan previously said work since `77fd05a8` was UNCOMMITTED.
+That is STALE — checkpoint commit `4a38a937` captured it and the working tree is CLEAN.
+
+**Rename — remaining work (owner: COMPLETE):**
+   (a) facet label `'e2e'` -> `'workflow'` in `concept-index.mts` (`:22` type, `:95` map, `:69`
+       test) + README; (b) the 2 ratified frozen re-cuts; (c) sweep 58 `.feature` comment refs
+       `../acceptance/` -> `../workflows/` (comment-only = freeze-safe no-op).
 
 **Findings the diff won't show:**
 - The `.md`-only blast estimate MISSED the rename's code + frozen-suite dependency; the propagation
