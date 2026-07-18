@@ -41,7 +41,7 @@ lifecycle. One published package (`packages/cyberplace`, `bin: cyberplace`) ship
 
 ## Backfill scope note (flagged)
 
-This project had no consolidated spec. It is backfilled **narrow**: only the **`marketplace`**
+This project had no project spec. It is backfilled **narrow**: only the **`marketplace`**
 capability — the curated awesome-list discovery plus the **Tavern** crew storefront — is scaffolded,
 because that is where the requested change landed; the `marketplace/tavern` node has since carried a
 frozen `.feature` through two mission CRs to `status: implemented`. The remaining source domains

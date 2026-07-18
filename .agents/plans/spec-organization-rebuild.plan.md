@@ -168,6 +168,23 @@ ask for the **project path** (which step 5 must write as `project-path`, and whi
 a greenfield project) and then **derive** the location from it, matching the existing rule that the
 location mode is derived from `project-path`, never stored.
 
+**Third Clearance under the same grant — "consolidated spec" is vestigial.** Re-cut:
+`a project that already has a consolidated spec is not backfilled` ->
+`a project that already has a project spec is not scaffolded`.
+
+"Consolidated spec" appeared 12 times and is **defined nowhere**. The defined term is
+**`project-spec`** (`TERMINOLOGY.md:39` — "one project's whole durable spec — one `spec.md`, one
+suite, one gate/freeze"). "Consolidated" is a leftover from the **spec-fleet** era
+(`mission/README.md:134` — "Spec-fleet assumption in the sources — RESOLVED (project-spec model)"),
+when a project could carry a fleet of per-feature specs and "consolidated" meant unified-into-one.
+The project-spec model made that an invariant (`project-unit.md`: "ONE spec, ONE behavior suite, ONE
+gate/freeze baseline … never by splitting into sibling specs"), so **a non-consolidated spec is a
+state the model now forbids** — the qualifier marks a distinction that no longer exists, and being
+undefined, a reader cannot discover that. Swept to "project spec" / "no spec yet" across 6 files.
+
+Left intact: `mission/README.md:134` itself, where "consolidated" describes the historical
+transition and is apt.
+
 Also corrected: the evidence-mode question is scoped to the **project**, not the repo. A new package
 in an existing monorepo is a greenfield *project* in a populated *repo* — intent mode still reads the
 surrounding repo for shape and conventions.
