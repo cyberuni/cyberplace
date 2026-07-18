@@ -5,14 +5,14 @@ target: .agents/specs/sdd/ (project spec: plugins/sdd)
 touches:
   - plugins/sdd/skills/spec-structure-governance/          # NEW — the shipped bar (taxonomy + placement)
   - .agents/specs/sdd/common-governances/spec-structure/   # NEW — its spec node
-  - plugins/sdd/skills/decide-spec-layout/                 # NEW (proposed) — the shared decider, two evidence modes
-  - .agents/specs/sdd/authoring/decide-spec-layout/        # NEW — its spec node
+  - plugins/sdd/skills/scaffold-project-spec/              # RENAMED from backfill-project-spec + intent mode
+  - .agents/specs/sdd/authoring/scaffold-project-spec/     # RENAMED spec node + .feature (Clearance)
   - plugins/sdd/skills/place-node/SKILL.md                 # drop inline copy + hardcoded capability-first; read the declared strategy
   - plugins/sdd/skills/start-mission/SKILL.md              # wire the placement-map read (defect 1)
   - plugins/sdd/skills/formation-loop/SKILL.md             # drop inline copy; wire the placement-map read (defect 1)
   - plugins/sdd/agents/sdd-warden.md                       # wire the placement-map read (defect 1)
   - plugins/sdd/skills/architect-spec-governance/SKILL.md  # drop inline copy, reference the bar
-  - plugins/sdd/skills/backfill-project-spec/SKILL.md      # load the bar; delegate the decision to decide-spec-layout
+  - plugins/sdd/skills/backfill-project-spec/SKILL.md      # load the bar; add intent mode (becomes scaffold-project-spec)
   - plugins/sdd/skills/spec-format-governance/SKILL.md     # fix dangling `design/spec-structure.md` pointer
   - plugins/sdd/skills/check-scenario-overlap/SKILL.md     # same dangling pointer
   - plugins/sdd/skills/manage/SKILL.md                     # same dangling pointer
@@ -26,7 +26,9 @@ todos:
     status: pending
   - content: "Write skills/spec-structure-governance/ SKILL.md + README.md — taxonomy + placement law, SDD-specific tree EXCLUDED"
     status: pending
-  - content: "Defect 0: extract the layout decision into decide-spec-layout (detection mode + intent mode); backfill delegates to it"
+  - content: "Defect 0a: generalize backfill steps 1-3 on evidence mode (detection | intent); steps 4-6 unchanged"
+    status: pending
+  - content: "Defect 0b: rename backfill-project-spec -> scaffold-project-spec (separate commit; 30 md + 4 frozen .feature = Clearance)"
     status: pending
   - content: "Defect 2: place-node reads the declared strategy; drop hardcoded capability-first; keep homes derived from concept tags"
     status: pending
@@ -228,13 +230,28 @@ reorganization, already specified at `spec-layout.md:206`.
 **Process: no separate CR, no issue.** Owner decision — the work lands on the current branch
 (`test-framework-rebuild`) alongside that CR rather than opening a new one.
 
-**Proposed shape for Defect 0 (needs owner sign-off with todo 2).** Extract the layout decision out
-of `backfill` into a shared partial skill, `decide-spec-layout`, with **two evidence modes**:
+**Shape for Defect 0 — SETTLED (owner, 2026-07-18): generalize the whole skill, rename to
+`scaffold-project-spec`, rename inside this CR.**
 
-- **detection mode** (existing project) — today's backfill steps 1-3, driven by source signals.
-- **intent mode** (greenfield) — driven by what the project *will* do; no source to read, so the
-  compass runs off stated capabilities rather than `src/` shape.
+`backfill-project-spec` becomes `scaffold-project-spec`: **one** skill, one entry, with steps 1-3
+branching on **evidence mode** and steps 4-6 shared unchanged.
 
-Both end at the same act: write the placement map naming the chosen strategy. `backfill` becomes a
-caller rather than the owner of the decision. This keeps one decision procedure with one output,
-instead of two skills that each half-declare a strategy.
+- **detection mode** (source exists) — today's steps 1-3, driven by source signals. Unchanged.
+- **intent mode** (greenfield) — no source to read, so the compass runs off the project's stated
+  capabilities rather than `src/` shape.
+
+**Why generalize rather than extract a decider.** Only steps 1-3 are mode-dependent; steps 4-6
+(scaffold envelope + skeleton, declare the organization, hand back stubs) are already generic.
+Extracting only the decision would leave greenfield needing 4-6 too — either duplicating them or
+calling into a skill named "backfill". And the mode is **detectable, not a user choice**:
+`start-mission` finds no spec, then asks only "is there source to read?". `workflows/cr-lifecycle.feature:27`
+already fixes the single entry ("a CR whose target project has no spec routes to backfill").
+
+**Superseded (do not re-try):** an earlier pass proposed extracting `decide-spec-layout` as a shared
+decider that `backfill` would call. Rejected — it shares the decision but not the scaffolding, which
+is the larger shared part.
+
+**Sequencing (deliberate).** Generalize under the existing name first, then rename in a **separate
+commit**. Mixing a semantic change with a 34-file mechanical sweep is what let today's stale
+`backfill-project-spec.feature` scenario slip through. Rename blast measured: **30 `.md`, 4
+`.feature` (frozen -> Clearance), 0 code.**
