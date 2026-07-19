@@ -19,9 +19,11 @@ todos:
     status: completed
   - content: "Impl gate"
     status: completed
+  - content: "REFUTED by 37fe2b0c (ssa-lowering restore) — rule reverted, ledger corrected"
+    status: completed
   - content: "Handoff: PR + Clearance verdict packet (incl. dispatch re-tag)"
     status: completed
-  - content: "COUNCIL: adjudicate the 3 Clearance asks (dispatch re-tag / ssa-lowering / promote to blocking)"
+  - content: "COUNCIL: adjudicate Ask 1 only — the dispatch re-tag (Asks 2+3 retracted)"
     status: pending
 ---
 
@@ -161,115 +163,90 @@ therefore a **mirror of an established in-node shape**, not a new mechanism: wid
 `spec-gate/README.md` carries **no `## Scenario map`**, so `checkScenarioMap` skips it — new
 scenarios carry no map obligation.
 
-## Delivered (2026-07-19) — the additive half, ablated
+## REFUTED 2026-07-19 — the rule was landed, then reverted the same session
 
-| Commit | Unit |
-| --- | --- |
-| `b79f4dec` | spec: 5 scenarios frozen in `spec-gate.feature` + node prose + summary-table sweep |
-| `c95346b5` | impl: advisory tier (`{findings, violations}`) + `checkTriggerContract` |
-| `7ed52e0c` | governance: the contract + two tiers in `suite-format-governance` |
-| `bf4e1ed8` | impl-gate blocker: the runbooks still said "exit 0 = form clean" |
+The sections above (`## The issue's proposed mechanism is DOMINATED`, `## Scope`, and the
+re-measurement) are **explore-phase reasoning kept for provenance**. Two of their conclusions are
+now retracted; the ledger's `correction` line is authoritative.
 
-**Ablation — 7 mutants, all killed, baseline green in every arm.** Delta on the real corpus is
-5 -> 0 (non-zero). Control: the **10 canonical outlines stay unflagged in every arm**.
+**What refuted it: `37fe2b0c`, on main, landed the same day inside #329** — the merge this branch is
+rebased onto. A CR deleted `ssa-lowering`'s `@trigger` outline citing #304's ownership argument. The
+**spec gate blocked it, the block was ruled right, and the outline was restored**, with the
+adjudication now written into the `.feature` itself:
 
-Two results worth keeping:
+- #304's argument targets **harness activation** — a model matching `description` prose to a user
+  query. That is co-owned (description × harness × sibling set); the node holds one of three.
+- `ssa-lowering`'s outline is a **coordinator applicability decision**: an agent reading the doctrine
+  decides whether it governs the situation. No harness in the loop, the deciding input is the node's
+  own content — **the node owns it**, which is the exception `suite-format-governance` already grants
+  ("where the node genuinely owns the routing decision").
+- Standing rule from that restore: *"whether a node owns its routing decision is a **per-node
+  question**, and a blanket sweep either way would repeat this error at scale."*
 
-1. **The corpus cannot discriminate `require both columns` from `require either`** — both arms
-   report the same 5, because every one of the 5 is missing *both*. Only the unit tests kill those
-   two mutants. A corpus-only ablation would have scored this rule "fine" while it was half wrong.
-2. **`drop isOutline guard` initially SURVIVED.** Its test named the guard but its fixture (a plain
-   `Scenario` with no `Examples` table) was absorbed by the *no-table* clause, so the test never
-   reached the guard it was named for — it passed for another clause's reason. The pinned parser
-   *accepts* a plain `Scenario:` carrying an `Examples:` table (verified, 0 errors), so the binding
-   fixture is reachable; with it, the mutant dies. **A test named for a clause is not a test of it.**
+**Three consequences:**
 
-### Impl gate: 5/5 scenarios PASS; one structural blocker, accepted and closed
+1. The landed check fired an advisory finding **against an owner-ratified decision**, hours after it
+   was ratified. `situation`/`should_apply` is the *correct* shape for an owned applicability case.
+2. It **contradicted an exception this CR's own governance rewrite kept** three sections away — the
+   exact fault the restore commit charged to the previous CR.
+3. **A mechanical form check is that blanket sweep, automated.** Harness-activation and
+   owned-applicability differ only in *who decides*, never in step form. **Judged, never linted.**
 
-The cold judge passed every scenario but blocked on a gap the scenarios could not see: the *design*
-docs described the new tier while the *operational runbooks* still read "Exit `0` = form clean". An
-actor following them literally reports clean and never relays the `⚠` lines — defeating the
-surfaced-for-judgment behavior the scenarios specify. Treated as a **rule, not a site**: swept every
-doc stating the exit contract and found **two more** beyond the one the judge named, including
-`spec-producer-governance` — the actor that authors `@trigger` outlines, and the only point where
-the free repair is still free (before freeze).
+### Retracted
+
+- **"Eligibility is DOMINATED, Δ=0"** — ill-posed. The two mechanisms answer different questions.
+  Form caught `ssa-lowering` only because its author *also* used a non-canonical shape: one
+  coincident sample is not domination. Under the restore, `ssa-lowering` is not a defect at all, so
+  neither mechanism has a live target.
+- **Ask 2 (ssa-lowering)** — withdrawn; already adjudicated on main.
+- **Ask 3 (promote to blocking)** — moot.
+- The impl-gate approve — it graded an implementation that no longer exists.
+
+### What #304 looks like now
+
+- **M4 (the outlier)** — resolved by the restore, in the opposite direction from the issue's read.
+- **M2 (statistical vs deterministic)** — **weakened** by the two-axis doctrine (#322/#323, in #329):
+  the suite freezes the *criterion*; the measurement *level* is the judge's implementation, so
+  `Then invocation is "no"` may be measured as a rate < 0.5 over N runs and collapsed to one boolean.
+- **M1 (the real instrument has never run)** — **stands.** Nine corpora still orphaned;
+  `test-skill` (`plugins/cyberspace/`) still specifies the rate design.
+- **M3 (cross-node negative rows)** — **strengthened.** Per-project `check-scenario-overlap` reports
+  **10 exact-duplicate `@trigger` sibling-deference scenarios** (cyberfleet-plugin 6, aced 3,
+  cyberspace 1); #314 holds that check out of the per-project set until the Clearance-bound cleanup
+  lands.
+
+## What this branch actually ships
+
+Engine and spec node are **byte-identical to main**. What remains is vocabulary:
+
+- **Tag-set index** in `suite-format-governance/SKILL.md`, framed by **DIP** (owner's call): SDD
+  defines what a tag **means**; the resolved plugin (ACED for agent-config domains) owns run counts,
+  thresholds, corpora and pass bars. Carries the **two-deciders test** for `@trigger` vs `@behavior`
+  and states the classification is judged, never linted.
+- **Glossary**: `layer tag`, `owned routing decision`, `rubric`, `pin`. The invented
+  "at most one layer tag" rule is gone — it came from misreading ACED's four *config-eval* layers as
+  BDD stages.
+
+## VERDICT PACKET — one ask
+
+**Ask 1 — re-tag the 4 `cyberlegion-plugin/dispatch` outlines `@trigger` → `@behavior`.**
+They select *what an already-invoked Legate does* — strategy, wake sub-mode, transport, verdict —
+not *whether anything engages*. Under the two-deciders test they are conduct, not engagement, and
+neither decider applies. Content-preserving: the tag changes, no scenario line and no Examples row.
+Still Clearance, because it edits a frozen file. **Recommend grant.**
+
+This is a **per-node judged call**, offered as such — consistent with the restore standard, not a
+sweep. The other 11 suites stay untouched, deliberately.
+
+**Counter-argument, recorded:** the negative rows *do* encode real design intent. No deletion is
+asked for here. Any future deletion must land that intent in the subject's **description prose** —
+the only field the node owns — in the same change.
 
 ## NEXT
 
-**STOPPED AT THE CLEARANCE FLOOR.** The additive half has landed and is ablated. Everything that
-remains narrows a frozen scenario, so it is the Council's call — see the verdict packet below.
-Nothing past this line is self-asserted.
+Council: Ask 1 only. Everything else on this branch is additive vocabulary that self-clears.
 
-## VERDICT PACKET — for the Council
-
-The check now names 5 mis-tagged outlines, advisory. Each needs a disposition. **The finding is
-not in dispute; only the repair is** — which is precisely why the tier is advisory.
-
-### Ask 1 — re-tag the 4 `cyberlegion-plugin/dispatch` outlines `@trigger` -> `@behavior`
-
-These grade deterministic decision tables (strategy / wake-mode / transport / verdict), not
-activation. They are intra-node, fully owned, and correctly frozen — the issue's cross-node thesis
-does not reach them, and blanket-deleting "the @trigger outlines" as #304 reads would **destroy 4
-sound contracts**.
-
-- **Content-preserving:** the tag changes, not one scenario line, not one Examples row.
-- Their use of `Scenario Outline` is *sanctioned* by suite-format `:598` (a genuinely uniform
-  enumerated set). Only the tag is wrong.
-- **Why it is still Clearance:** it edits a frozen file. Recommend **grant**. This is the cheapest
-  correct repair on the table.
-
-### Ask 2 — `sdd/ssa-lowering`'s outline (`situation` / `should_apply`)
-
-The one outlier #304 correctly identified. Two live options; **this mission does not pick**:
-
-| Option | Cost |
-| --- | --- |
-| **(a)** re-tag `@behavior`, keep as-is | content-preserving, same shape as Ask 1 |
-| **(b)** adopt the `query`/`should_trigger` contract | rewrites the Examples rows — a **narrowing** |
-
-Recommend **(a)** unless the Council wants ssa-lowering genuinely graded for activation, which is
-the harder claim: it would need a query corpus that does not exist for this subject.
-
-### Ask 3 — promoting the rule from advisory to blocking
-
-**Do not grant yet.** It is only safe once Asks 1 and 2 land — until then it reds main. Sequencing,
-not a separate judgment. It belongs to whichever CR closes the last mis-tag.
-
-### The counter-argument, recorded (as the brief requires, BEFORE any deletion is granted)
-
-The negative rows in the 10 canonical outlines **do encode real design intent** ("this config is for
-X, not Y"). That is a genuine cost of deletion and is why no deletion is asked for here. Recording
-intent is not the same as freezing a boolean the harness never promised: the intent belongs in the
-**subject's description prose** — the field the harness actually routes on, and the only field the
-node owns — with the **README** carrying the sibling-deference rationale. Any future ask to delete
-the canonical outlines must land that prose in the same change, or the intent is simply lost.
-
-### Explicitly NOT done, and why
-
-- **The issue's proposed mechanism (eligibility flags) is DOMINATED — it was not landed.** It
-  catches 1 of 5, needs the corpus's first spec->implementation crossing, and cannot resolve 3 of 12
-  subjects. Its marginal delta over the form check measures **zero** on the real corpus. Routing on
-  the form invariant catches 5 of 5, pure spec-side. #304 should be updated to say so.
-- **The issue's premise "query-corpus files in this repo: zero" is FALSE** — nine tracked files
-  exist for 3 subjects with a real 60/40 split. They are **orphaned, not absent**; wiring them is a
-  separate node (#304's split 2), not this mission.
-
-## Superseded plan (kept for provenance)
-
-Explore is done (see the re-measurement above). Freeze scenarios in
-`.agents/specs/sdd/authoring/spec-gate/spec-gate.feature`, under the existing
-`# ---- Feature-form pre-filter ----` section, for two units:
-
-**Unit 1 — advisory tier** (mirrors `check-spec-state`'s settled shape):
-- an advisory feature-form finding is surfaced for judgment, not hard-blocked
-- positive companion (the tier must not swallow blocking): a form violation still fails closed —
-  already frozen at `:160`/`:166`, so the negative is NOT orphaned
-
-**Unit 2 — the `@trigger` form rule:**
-- a `@trigger` outline whose Examples carry no `query`/`should_trigger` column is surfaced advisory
-- **control that MUST survive:** a `@trigger` outline carrying both columns raises no finding
-- **scope guard:** an *untagged* Scenario Outline is not held to the activation contract (this is
-  what keeps the 4 dispatch tables clean once re-tagged, and every non-trigger outline clear)
-
-Then ablate: revert the rule, prove delta != 0 (5 findings -> 0); control = the 10 canonical
-outlines stay unflagged in both arms.
+Then **#304 gets its own node**, as the issue asks ("a corpus-wide change and wants its own node; it
+blocks nothing currently in flight"), scoped to what survived: **M1** — adopt the nine orphaned
+corpora + `test-skill`'s rate design — and **M3** — the 10 duplicates, then wire
+`check-scenario-overlap` into the per-project set.
