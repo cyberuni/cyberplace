@@ -26,8 +26,8 @@ todos:
     status: completed
   - content: "Engine: scenario-map binding lint LANDED in check-suite (orphan/dangling/duplicate; coverage stays judged)"
     status: completed
-  - content: "read-check (was confirm-read): rename + spec + build the read-attestation. OWNER-DECIDED 2026-07-18: build it in this CR. Mechanism absent in ALL 9 governances, not just suite-format"
-    status: in_progress
+  - content: "read-check: DROPPED 2026-07-19 (owner). Spec node + engine removed; the claim that named it removed. Relocated to universal-plugin#9 (governance loader, where a script-served fetch is observable)"
+    status: completed
   - content: "Apply to ssa-lowering: #305 positive Oracle-gate companion + Given re-cut; #306 disjoint Given re-cut; #304 activation off node freeze (all Clearance)"
     status: completed
   - content: "Corpus sweep DONE: over-fire check measured 0 findings across 78 suites in 7 projects; old-doctrine 'acceptance/boundary' prose reframed on the two axes (ADR left as history)"
@@ -40,9 +40,9 @@ todos:
 
 > **Branch `test-framework-rebuild` carries THREE CRs that gate together** —
 > `test-framework-rebuild`, `spec-organization-rebuild`, `partition-quality`.
-> Read all three plan briefs before gating. Blocking decision: `confirm-read`
-> (build it, or stop `suite-format-governance` claiming it) — recorded in
-> `test-framework-rebuild.plan.md`.
+> Read all three plan briefs before gating. **No blocking decision remains** — the former
+> `confirm-read`/`read-check` question was resolved 2026-07-19 by dropping it from this CR and
+> relocating it to `cyberuni/universal-plugin#9`; see this plan's read-check section.
 
 
 ## Resolved decisions (do not relitigate — see also commit 77fd05a8)
@@ -122,59 +122,52 @@ vocabulary, so they diverge from live behavior. No behavior is being widened.
   labeled query corpus); until those suites move to it, removing their outlines would drop the
   measurement rather than relocate it.
 
-## read-check — RATIFIED 2026-07-18 (owner): build the attestation in this CR
+## read-check — DROPPED 2026-07-19 (owner). Relocated to universal-plugin#9
 
-**The rename answers itself.** **Ten** governances already head the section `## Key points
-(read-check)`; only `suite-format-governance:212` called the mechanism `confirm-read`. That one-off
-name is renamed to **`read-check`**, agreeing with the ten headings. No new vocabulary.
+**Outcome: no read-check in this CR.** The spec node, the engine, and the claim that named the check
+are all removed. The `## Key points (read-check)` headings stay in the ten governances as a section
+label for the load-bearing directives; nothing now claims an executing check.
 
-> **Count correction.** An earlier pass of this section said "nine" twice, from an eyeballed grep
-> that dropped `impl-producer-governance:66`. Measured: **10** files carry the heading —
-> architect-spec, architect-impl, builder-spec, builder-impl, oracle-spec, impl-producer, ownership,
-> spec-format, spec-structure, suite-format. Six governances carry **no** such heading
-> (`lifecycle`, `gate-validation`, `combat-log`, `plugin-contract`, `solution-producer`,
-> `spec-producer`) — so "every governance has key points" is false, and read-check must define what
-> it does when the section is absent.
+**Why it was dropped, not deferred.** The mechanism was unsound at its foundation, and the fix does
+not belong in this repo:
 
-**The finding the plan understated.** The gap is not "one governance names an unbuilt check". Grep
-for anything collecting an attestation — `spec-gate`, `sdd-spec-judge`, `sdd-impl-judge` — returns
-**nothing**. All ten `## Key points (read-check)` sections are inert content; no role is ever asked
-to restate them. `suite-format` merely *named* the missing check, which made a corpus-wide hole look
-local. Any fix scoped to `suite-format` alone would have left nine silent instances.
+1. **Self-reported loading is not evidence.** Measured: given only a governance's *name*, a capable
+   agent produced six fluent, confident "key points" that scored **1/4** against the real document —
+   it got the guessable rule right, actively contradicted a real one (claimed freeze transfers
+   ownership; the real rule is nobody writes a frozen `.feature`), and missed the two most
+   load-bearing directives entirely.
+2. **The engine could not tell genuine from fabricated.** Both produced byte-identical verdicts. It
+   measured verbatim overlap to catch copying, but fabrication has *low* overlap — same as an honest
+   paraphrase. It tested the wrong axis. An **empty** attestation also passed clean.
+3. **No lexical check can fix that.** Distinctive-term coverage was measured at **8/30 genuine vs
+   6/30 fabricated** — no separation. An honest restatement deliberately avoids the source's
+   vocabulary, which is exactly what defeats term matching *and* exactly what the parroting check
+   rewards. The two checks want opposite things.
+4. **The sound fix is observability, not attestation.** If a governance is served by a *script*, the
+   fetch is an event a third party can record. That belongs to the governance **loader**, which
+   lives in `universal-plugin`, not here.
 
-**Constraint from `design/governance-resolution.md` (must not be broken).** The fixed-universal bars
-are declared in the role/agent definition and loaded **lazily** — "a full governance **body** is read
-**only at the decision or gate that invokes it**". So read-check must attest **what the role actually
-loaded for the decisions it made**, never force eager loading of every declared bar; a rule demanding
-attestation for all bars would silently convert lazy loading into eager loading.
+**Filed:** `cyberuni/universal-plugin#9` — resolve governances across **project > plugin > global >
+package**. Follow-up to that repo's #3, which specifies `governance show` with a three-tier chain
+that has **no plugin tier**, while plugin-owned governances (SDD's 16) use a different on-disk shape
+(`skills/<name>-governance/SKILL.md`, not `governances/<name>.md`).
 
-**Purpose (owner's framing).** The check is not a comprehension grade — it verifies the agent was
-**honest that it loaded and read** the governance. "In its own words" is the anti-parroting proof of
-reading, not a paraphrase-quality score.
+**Do not port `cyberplace`'s implementation.** `packages/cyberplace/src/governance/load.ts:14`
+resolves exactly one source (`getPackageRoot()/governances`) — no project, global, or plugin lookup,
+no precedence. It ships 5 documents and cannot see the SDD plugin's 16. It predates the layered
+model. Prior art to replace, not to lift.
 
-**Split, per this CR's own form-vs-judged doctrine:** attestation **presence** and **parroting** are
-mechanical and linted; whether a restatement tracks the directive's **meaning** is judged. A green
-lint clears no honesty question.
+**Known limit recorded for whoever picks this up:** while a governance is reachable by *both* a
+script call and a direct skill/file read, only one path is observable, so a missing fetch record
+cannot distinguish "never loaded" from "loaded the other way". Whether governances become
+script-only is a real design decision and is noted in #9.
 
-**Why parroting is lintable but comprehension is not.** Verbatim overlap is certain evidence in one
-direction only: high overlap proves copying, low overlap proves nothing. So the lint may fail on
-overlap without judgment, while the positive direction must be judged. Linting a similarity score as
-if it measured understanding would rebuild the toothlessness this CR removed, dressed as a number.
-
-**LANDED (commits `d089f209` spec, `438e0946` engine).**
-- Spec node `mission/read-check/` — placement derived by running `place-node` (concept `resolution`
-  -> `mission/`), landing it beside `mission/resolution`, its exact sibling. New node format.
-- Engine `plugins/sdd/skills/read-check/scripts/read-check.mts` — zero-dep `.mts`, JSON attestation,
-  parroting via word 6-gram overlap (>= 0.25). 25/25 colocated tests; `pnpm verify` 34/34.
-
-**Verified independently of the builder, with mutants I authored** (the builder ablating its own work
-proves little): verbatim copy -> fails · genuine own-words paraphrase -> passes · no-key-points
-governance named alone -> passes · key-points governance unrestated -> fails, naming it · **light-edit
-copy (the realistic cheat, not the strawman verbatim one) -> fails.**
-
-**STILL OPEN — wiring.** The engine is standalone. No role emits an attestation and no gate calls it
-yet. Until that lands, `read-check` is a working check nobody runs — the same toothlessness in a new
-place, so this todo is NOT done.
+**Errors made here, worth not repeating:** the engine's every mutant probed *malformed* attestations
+and never a *sparse* one, so an empty attestation passing went unnoticed — over-permission fails
+green. A later "distinctive anchor" probe scored 4/4 vs 1/4 and looked decisive, but the alternations
+were hand-written while looking at both texts; a derived version showed no separation. And a proposed
+"key points eager, bodies lazy" split would have certified the exact behavior the check existed to
+prevent — the harness has only two load tiers (name, or whole body), not three.
 
 ## Follow-up to file at handoff — ADR number collisions (PRE-EXISTING, not this CR)
 
@@ -220,23 +213,22 @@ the record rather than correct doctrine.
 
 ## NEXT — resume here
 
-**State: gate-ready except one open decision.** Todos 1-6 and 8-9 are done. Todo 7 is **half** done —
-the scenario-map binding lint landed in `check-suite`; **`confirm-read` is deliberately unbuilt**
-(see the finding above: it needs four design decisions that exist nowhere).
+**State: GATE-READY. No open decision remains.** Every build todo is done. The last open question
+(`confirm-read` / `read-check`) was resolved 2026-07-19 by **dropping it** from this CR and
+relocating it to `cyberuni/universal-plugin#9` — see the read-check section above for the
+measurements behind that call. `suite-format-governance` no longer claims a check that does not
+exist, so the toothlessness this CR set out to remove is fully removed.
 
-**Next action — owner:**
-1. **Decide `confirm-read`** — build it, or stop `suite-format-governance` claiming it. Until one of
-   those, the bar names a check that does not exist, which is the exact toothlessness this CR fixed
-   for the map lint.
-2. **Gate both CRs together** with `spec-organization-rebuild` (owner decision: one gate, one
-   handoff). Not self-asserted while unattended — see below.
+**Next action — owner:** **gate all THREE CRs together** (`test-framework-rebuild`,
+`spec-organization-rebuild`, `partition-quality`) — one gate, one handoff. Not self-asserted while
+unattended; the reasoning is below.
 
 **Why the gate was not self-asserted.** The skill permits self-assertion in leash, and the owner
 pre-authorized Clearance, so the floor would not have blocked it. It was still left alone: todo 7 is
 open (gating freezes suites while a todo is live — the thing this CR argued against), the CR carries
 six-plus Clearance narrowings including a **scenario deletion** (#304), and running a gate on my own
 work with a judge I spawn, unattended, is the independence the producer!=judge split exists to
-prevent. The digest exists so a human sees what they approve.
+prevent (the todo-open reason no longer applies; the other two stand). The digest exists so a human sees what they approve.
 
 **Clearance ledger for the gate** (all under the owner's standing grant, each recorded above):
 `concept-index` + `backfill` re-cuts (rename) · gateway/gateway-manage/workflows identifier renames ·
@@ -254,5 +246,6 @@ prevent. The digest exists so a human sees what they approve.
 - Doctrine-term "acceptance" still stands corpus-wide (prose about the acceptance *level*), by
   design. That is todo 9's corpus sweep, and it must NOT be treated as leftover rename debt.
 
-**Remaining CR work after the two decisions:** engines (scenario-map lint, confirm-read) -> ssa-lowering
-#304/#305/#306 (Clearance) -> corpus sweep -> spec gate + handoff.
+**Remaining CR work: the gate and handoff only.** Engines (scenario-map lint), ssa-lowering
+#304/#305/#306, and the corpus sweep are all landed. At handoff, file the ADR number-collision
+follow-up (0019 and 0025 each name two files) recorded above.

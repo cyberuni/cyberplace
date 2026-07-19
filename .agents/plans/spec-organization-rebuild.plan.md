@@ -45,9 +45,9 @@ todos:
 
 > **Branch `test-framework-rebuild` carries THREE CRs that gate together** —
 > `test-framework-rebuild`, `spec-organization-rebuild`, `partition-quality`.
-> Read all three plan briefs before gating. Blocking decision: `confirm-read`
-> (build it, or stop `suite-format-governance` claiming it) — recorded in
-> `test-framework-rebuild.plan.md`.
+> Read all three plan briefs before gating. **No blocking decision remains** — the former
+> `confirm-read`/`read-check` question was resolved 2026-07-19 by dropping it from this CR and
+> relocating it to `cyberuni/universal-plugin#9`; see this plan's read-check section.
 
 
 **Scope note.** This began as "give the organization law a shipped home" and was **folded into a
@@ -304,9 +304,10 @@ The declared strategy tells `place-node` *how* to derive; capability-first stops
 ## NEXT — resume here
 
 **Next action:** spec gate — **jointly with `test-framework-rebuild`** (owner decision: gate them
-together). Every build todo here is done. The joint gate waits on that CR's one open decision
-(`confirm-read`: build it, or stop claiming it). Not self-asserted while unattended — the reasoning
-is recorded in that plan's `## NEXT`.
+together). Every build todo here is done. That CR's last open decision (`confirm-read` /
+`read-check`) was resolved 2026-07-19 by dropping it and relocating it to
+`cyberuni/universal-plugin#9`, so **nothing blocks the joint gate**. Not self-asserted while
+unattended — the reasoning is recorded in that plan's `## NEXT`.
 
 **Landed:** ratification recorded · spec node · governance skill (SDD's own tree verified absent) ·
 greenfield evidence mode (0a) · rename to `scaffold-project-spec` (0b) · formation Warden judges the

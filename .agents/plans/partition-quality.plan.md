@@ -26,9 +26,9 @@ todos:
 
 > **Branch `test-framework-rebuild` carries THREE CRs that gate together** —
 > `test-framework-rebuild`, `spec-organization-rebuild`, `partition-quality`.
-> Read all three plan briefs before gating. Blocking decision: `confirm-read`
-> (build it, or stop `suite-format-governance` claiming it) — recorded in
-> `test-framework-rebuild.plan.md`.
+> Read all three plan briefs before gating. **No blocking decision remains** — the former
+> `confirm-read`/`read-check` question was resolved 2026-07-19 by dropping it from this CR and
+> relocating it to `cyberuni/universal-plugin#9`; see this plan's read-check section.
 
 
 ## Why
