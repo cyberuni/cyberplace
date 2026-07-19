@@ -1,6 +1,6 @@
 ---
 cr-ref: spec-organization-rebuild
-status: draft
+status: approved
 target: .agents/specs/sdd/ (project spec: plugins/sdd)
 touches:
   - plugins/sdd/skills/spec-structure-governance/          # NEW — the shipped bar (taxonomy + placement)
@@ -41,8 +41,8 @@ todos:
     status: completed
   - content: "Spec gate — round 5 ALIGNED: true (cold judge, 0 spec/.feature findings); touches: under-scope fixed"
     status: completed
-  - content: "OWNER: ratify the joint gate for all three CRs (positional — cannot be self-asserted)"
-    status: pending
+  - content: "OWNER: ratify the joint gate for all three CRs — RATIFIED 2026-07-19 (by: unional); status approved, 64 suites frozen"
+    status: completed
 ---
 
 # CR: spec-organization-rebuild — the project-spec organization system
@@ -499,6 +499,41 @@ these two paths.
 This is the CR's own round-2/round-4 sweep lesson applied to *bookkeeping* rather than content — a
 hand-kept list under-fires exactly the way a token sweep does. A gate diff scoped to `touches:` would
 have judged neither path; the judge only reached them because this brief's prose happened to name one.
+
+## SPEC GATE — 2026-07-19: **APPROVED** (human verdict, `by: unional`)
+
+Owner ratified in-session. Not self-asserted and not relayed — the positional channel held it.
+
+**What the ratification was taken to cover** (stated explicitly so it can be corrected): the joint
+gate for all three CRs, **including** the extension of the rule-wide evaluative-`Given` grant to
+`:100` and `:186`. That extension was the one open question put to the owner immediately before the
+ratification, so the flat "ratify" is read as answering it. If that is wrong, the two lines need an
+explicit ruling and this record amended.
+
+**Clearance ledger cleared at this gate** — the edit-class classifier routed four files off the
+self-clearing path, each covered by a recorded grant:
+
+| file | class | grant |
+|---|---|---|
+| `gateway/gateway.feature` | NARROWING | 2026-07-18, identifier rename |
+| `gateway/manage/manage.feature` | MIXED | 2026-07-18, identifier rename |
+| `project-spec/concept-index.feature` | MIXED | 2026-07-18, `acceptance/` -> `workflows/` rename |
+| `ssa-lowering.feature` | MIXED | standing grant, #306 unbuildable `Given` |
+
+The other 60 touched suites classified `ADDITIVE` (7) or `NO-CONTENT-CHANGE` (53) and self-cleared.
+All 64 already carried `@frozen`, so the freeze verb was a no-op on tag state — the Clearance path
+had re-frozen each after its re-cut.
+
+**Two anomalies recorded rather than silently resolved** (also in `ledger/joint-gate-note.9f0e23.jsonl`):
+
+1. **The root `spec.md` was never re-opened `implemented` -> `draft`** when these behavior-changing
+   CRs started. This gate therefore records `implemented` -> `approved`, a transition the lifecycle
+   state machine does not list. The end state is what the approve verb specifies; the missing
+   re-open is a gap in the recorded history, not a fresh decision.
+2. **Per-CR attribution of the 64-file freeze footprint is approximate where the CRs overlap** — the
+   `backfill` -> `scaffold` identifier renames are recorded in *both* this CR's and
+   `test-framework-rebuild`'s Clearance ledgers. That is the branch-hygiene debt (three CRs on one
+   branch is not one revertable unit), which this gate does not resolve.
 
 ## NEXT — resume here
 

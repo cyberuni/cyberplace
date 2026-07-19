@@ -1,6 +1,6 @@
 ---
 cr-ref: partition-quality
-status: draft
+status: approved
 target: .agents/specs/sdd/ (project spec: plugins/sdd)
 touches:
   - plugins/sdd/skills/check-partition-quality/            # NEW — the engine + skill
