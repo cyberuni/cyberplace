@@ -276,3 +276,44 @@ attempt at binding this one scenario, by the same method that has now failed twi
 **Status consequence.** `partition-quality` does **not** reach `implemented`. Because all three CRs
 target the one project spec, and a spec carries one `status`, the root `spec.md` stays `approved`
 even though `test-framework-rebuild` and `spec-organization-rebuild` both passed their impl gates.
+
+## HALT LIFTED — owner re-plan 2026-07-19: the `main` boundary takes a context
+
+Owner ruled the design question the rule-4 halt escalated: **`main(argv, context = { readHistory })`**
+— dependencies enter at the CLI boundary, clean-architecture style, and everything below `main` stays
+pure over the history it is handed. Chosen over the extraction shape the halt record proposed.
+
+**Mocking was ruled out first, by experiment rather than by assertion.** `readHistory` is already
+exported, so module mocking looks available — but `main` calls it through its own module-local
+binding, which `mock.module` cannot intercept. Proven on a two-file scratch repro:
+
+```
+mocked export readHistory() -> FAKE
+real main() internally got  -> REAL
+```
+
+So there was no seam to test against, which is why "just add a test" had failed twice. The context
+parameter creates one.
+
+**Landed:** an exported `Context` type, `main(argv, context = { readHistory })`, and the single call
+site now reading `context.readHistory(...)`. The default keeps every existing caller and the CLI
+entry (`main(process.argv.slice(2))`) working untouched.
+
+**The scenario is now bound at the level its `When` names.** The test drives the real `main()` with
+two `--partition` candidates and a recording stub, then asserts the tool read **once** and that the
+single read carried the same repo, limit, and scope filter both candidates are scored under.
+
+**Ablated — including the mutant that previously SURVIVED:**
+
+| mutant | before (round 2) | now |
+|---|---|---|
+| re-read history per candidate, differing limit | **survived 23/23** | **1 fail** |
+| read once but drop the scope filter | not run | **1 fail** |
+
+Control that must survive: unmodified implementation passes 23/23. Root `pnpm verify` 34/34.
+
+**Standing lesson: an exported function is not a seam.** Within one module a call resolves to the
+local binding, so exporting a dependency does nothing for a same-module caller and module mocking
+cannot reach it. The seam has to be a parameter. Test the claim with a five-line repro before
+building on it — "it's exported, so we can mock it" was wrong here and would have produced a third
+round of tests that pass without binding anything.
