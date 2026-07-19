@@ -423,6 +423,47 @@ this CR made exactly this mistake.
 `:128`, and `:190` — this is that granted work executed correctly, not new scope. No scenario is
 added or removed; each keeps its `When`, `Then`, and branch.
 
+## Round-4 gate — converged; two pre-existing findings, and a lesson about sweeps
+
+**Round 3's divergence is broken.** The judge independently verified both round-3 fixes correct with
+**zero** new defects: all 42 scenario titles match all 42 map rows 1:1, and `:93`/`:128`/`:190` now
+match their map `Path` cells verbatim. No finding this round traces to the previous round's fix.
+
+**Both findings were PRE-EXISTING — and both are indictments of the sweep method, not the fixes.**
+
+| finding | why every prior sweep missed it |
+|---|---|
+| `scaffold-project-spec.feature:100` — `Given a project whose capabilities can be derived` | the word-list sweep matched `discernible`/`valid`/`strongly`…; **"can be derived" contains none of them.** The scenario *title* says "discernible"; the `Given` does not |
+| `plugins/sdd/skills/ssa-lowering/SKILL.md:82` — a **sixth** inline copy of the placement rule | the sweep grepped `capability-first`; this copy says **"screaming architecture"**. A synonym, so the token missed |
+
+**The method was wrong, twice, in the same way: a token sweep has false NEGATIVES.** Earlier rounds
+recorded that the naive word list *over*-fires (`valid JSON` is a decidable predicate). What went
+unrecorded is that it also *under*-fires — a synonym walks straight through. The counts have now been
+wrong three times running: inline copies **4 -> 5 -> 6**; evaluative `Given`s **3 -> 4 -> 5**.
+
+**Replaced with exhaustive enumeration where the set is bounded.** Every `Given`/`And` step in the
+pilot node (54 of them) was listed and read rather than matched. That found the judge's `:100` **and a
+second instance it did not name** — `:186`, `a hoisted or nested project whose name is not reliably
+derivable`. Both re-cut to observable state. The placement rule was re-swept on **synonyms**
+(`screaming architecture|screaming placement|placed by the capability|never by a technical layer`),
+which surfaced the sixth copy; `crimp`'s "by intent" was inspected and **ruled out** (marketplace
+query, different domain).
+
+**One rule, three files.** The `capabilities can be derived` defect lived in the `.feature` step, the
+map's `Path` cell, **and** the `## Logic` graph's `D4` edge label — the judge caught that the graph
+carried the same vagueness. All three are now reconciled. The two-file rule for a `Given` re-cut is
+really *however many files state it*; enumerate them rather than assume two.
+
+## Clearance — extension of the 2026-07-19 rule-wide grant (recorded before the edit)
+
+The owner granted the evaluative-`Given` re-cut **rule-wide** ("all three, fix the rule"), choosing
+that over the judge-named line alone. `:100` and `:186` are two further instances of **that same
+rule**, found after the grant. They are re-cut under it, keeping each scenario's `When`, `Then`, and
+branch — only the `Given`'s observability changes; nothing is added or removed.
+
+**Flagged for ratification rather than assumed:** if the owner reads the grant as covering only the
+three lines named at the time, these two need an explicit extension.
+
 ## NEXT — resume here
 
 **Next action:** spec gate — **jointly with `test-framework-rebuild`** (owner decision: gate them
