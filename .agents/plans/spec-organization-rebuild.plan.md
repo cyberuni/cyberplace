@@ -669,3 +669,42 @@ implementation was narrower than it.
 **Standing lesson: a consumer that delegates to a bar inherits the bar's silences.** Four of the six
 gaps were invisible at the consumer because the consumer correctly said "the rule lives there." When
 a judge names a consumer, check whether the rule it loads actually states the thing being judged.
+
+## IMPL GATE round 2 — 2026-07-19: **PASS** (`IMPLEMENTATION_PASS: true`)
+
+Cold impl-judge, round 2, on the round-1 remediation. `formation.feature:115` now holds: both of the
+Warden's governing documents state the disjunction verbatim, so the scenario is satisfied without
+relying on any delegation chain. The judge confirmed the edits were **purely additive** in all three
+files (no prior sentence deleted or reworded), so the three sibling `formation` scenarios are
+undisturbed, and it verified the commit touched **no** `.feature`.
+
+**The root-cause claim was verified, not taken on trust.** `architect-spec-governance` and
+`ssa-lowering` were untouched by the fix and still cite `sdd:spec-structure-governance` by name; the
+bar they cite now carries the two-part-map rule. The judge re-ran the consumer sweep independently
+and reconciled to the same six — **no seventh consumer**, and it re-confirmed that
+`touch-set-correction`/`blast-estimate`'s `capability-first` hits are the unrelated "capability =
+first path segment" convention.
+
+**No regression:** the three edited artifacts are the same three round 1 diagnosed, and every edit is
+additive.
+
+**Two non-blocking gaps recorded, both pre-existing (untouched by the fix), both the same shape —
+narrative prose describing a behavior the `.feature` now specifies more precisely:**
+
+- `.agents/specs/sdd/formation/README.md:95` — the "judged against the declared strategy" narrative
+  omits the routing-table disjunct.
+- `plugins/sdd/skills/architect-spec-governance/README.md:22` — its summary table restates
+  "placement matches the declared layout" without the exception.
+
+Neither is the loaded governance an agent follows (that is the `SKILL.md` / agent `.md` pair, which
+are correct), so neither changes a frozen scenario's outcome. **Both are the two-file lesson this CR
+already learned at the spec gate, recurring on the README side:** a rule stated in a `SKILL.md` and
+summarized in its `README` is stated in as many files as state it. Left for a reconciliation pass
+rather than swept now, because this CR's impl gate is closed and the sweep belongs with the sibling
+`formation` README debt.
+
+**Structural note from the judge, for future spec authors (not a gap in this gate):** the
+inherit-by-named-reference mechanism this fix relies on is unverifiable by static reading — it
+depends on an agent actually invoking the named skill rather than reading the citation as a
+footnote. No frozen scenario exercises `architect-spec-governance`'s or `ssa-lowering`'s placement
+judgment against a routing-table-placed node.

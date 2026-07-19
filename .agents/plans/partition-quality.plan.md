@@ -232,3 +232,47 @@ can actually move before trusting a threshold test written on it.
 that the engine's own control flags that partition `explainsNothing` (margin -2.4%, reproduced by
 the judge at 3.9% on current history). The judge confirmed the **engine** always attaches the control
 verdict automatically, so this is a ledger-prose defect, not an implementation one.
+
+## IMPL GATE round 2 — 2026-07-19: **HALT under rule 4 (diverging, no round 3 attempted)**
+
+Cold impl-judge, round 2. It reproduced both prior ablations **exactly** (`control := 0` -> the same
+3 tests fail; render line removed -> the same 1 test fails) and then wrote **its own** mutants,
+independent of both the producer and the conductor:
+
+| its mutant | result |
+|---|---|
+| `collisionRate`: `if (b.has(n))` -> `if (!b.has(n))` | killed 7 tests |
+| margin: `control - rate` -> `rate - control` | killed 2 |
+| headline: `parallelizableShare: 1 - rate` -> `rate` | killed 3 |
+| `render()`'s "best" comparator flipped | killed 1 |
+| **`main()`'s candidate mapping — re-read history per candidate with a different scope** | **SURVIVED 23/23** |
+
+**Five of six scenarios are now genuinely bound. The sixth is not, and that is a REGRESSION.**
+
+`two candidate partitions are compared on the same history` — its `When` names the tool's compare
+operation, and the `Then` asserts both candidates are measured over the **same commits and the same
+scope**. The round-1 remediation added a test that *looks* like it covers this but hand-builds one
+shared `cs` array and calls `measure()` twice directly. That proves a property of `measure()` given
+an already-shared array; it never reaches `main()`'s single `readHistory` call, which is the wiring
+the scenario is about. No test in the suite drives `main()` with more than one `--partition`
+candidate. So a mutation to exactly the asserted behavior survives.
+
+**Rule 4 fires: this finding's artifact is one the previous round's fix commit (`0afaf9b1`) itself
+changed.** A defect introduced or left by the last remediation is the signal that the loop is no
+longer converging. **Stopping here rather than opening a round 3.** The judge independently reached
+the same recommendation.
+
+**Why this one is worth a halt rather than a quick patch.** It is the *same defect class* the round-1
+gate existed to catch — a check that passes without exercising the behavior it names — recurring
+**inside the commit written to fix that class**. Patching it again mechanically would be the third
+attempt at binding this one scenario, by the same method that has now failed twice.
+
+**The re-plan, for the owner.** Two shapes, and this is a design call, not a repair:
+1. drive `main()` with two `--partition` candidates against a synthetic `readHistory` stub or a
+   fixture repo — tests the real wiring, needs an injection seam that does not exist yet; or
+2. extract `main()`'s candidate-mapping into a separately named, directly testable function — a
+   small refactor of shipped code, which is why it is not the conductor's call to make unattended.
+
+**Status consequence.** `partition-quality` does **not** reach `implemented`. Because all three CRs
+target the one project spec, and a spec carries one `status`, the root `spec.md` stays `approved`
+even though `test-framework-rebuild` and `spec-organization-rebuild` both passed their impl gates.
