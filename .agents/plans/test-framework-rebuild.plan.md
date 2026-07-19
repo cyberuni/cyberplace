@@ -24,10 +24,12 @@ todos:
     status: completed
   - content: "acceptance/ -> workflows/ rename: COMPLETE. git mv x5 + 43 .md refs + concept-index code/label (e2e->workflow) + 2 ratified frozen re-cuts + 52 .feature comment no-ops + regenerated index; verify 34/34"
     status: completed
-  - content: "Engine: scenario-map binding lint LANDED in check-suite (orphan/dangling/duplicate; coverage stays judged). confirm-read NOT built — see the finding below"
+  - content: "Engine: scenario-map binding lint LANDED in check-suite (orphan/dangling/duplicate; coverage stays judged)"
+    status: completed
+  - content: "read-check (was confirm-read): rename + spec + build the read-attestation. OWNER-DECIDED 2026-07-18: build it in this CR. Mechanism absent in ALL 9 governances, not just suite-format"
     status: in_progress
   - content: "Apply to ssa-lowering: #305 positive Oracle-gate companion + Given re-cut; #306 disjoint Given re-cut; #304 activation off node freeze (all Clearance)"
-    status: pending
+    status: completed
   - content: "Corpus sweep DONE: over-fire check measured 0 findings across 78 suites in 7 projects; old-doctrine 'acceptance/boundary' prose reframed on the two axes (ADR left as history)"
     status: completed
   - content: "Spec gate + handoff: Closes #304/#305/#306; drain follow-ups"
@@ -119,6 +121,40 @@ vocabulary, so they diverge from live behavior. No behavior is being widened.
   owner decision, not to this scoped todo. Trigger accuracy has a real instrument (`test-skill`'s
   labeled query corpus); until those suites move to it, removing their outlines would drop the
   measurement rather than relocate it.
+
+## read-check — RATIFIED 2026-07-18 (owner): build the attestation in this CR
+
+**The rename answers itself.** **Ten** governances already head the section `## Key points
+(read-check)`; only `suite-format-governance:212` called the mechanism `confirm-read`. That one-off
+name is renamed to **`read-check`**, agreeing with the ten headings. No new vocabulary.
+
+> **Count correction.** An earlier pass of this section said "nine" twice, from an eyeballed grep
+> that dropped `impl-producer-governance:66`. Measured: **10** files carry the heading —
+> architect-spec, architect-impl, builder-spec, builder-impl, oracle-spec, impl-producer, ownership,
+> spec-format, spec-structure, suite-format. Six governances carry **no** such heading
+> (`lifecycle`, `gate-validation`, `combat-log`, `plugin-contract`, `solution-producer`,
+> `spec-producer`) — so "every governance has key points" is false, and read-check must define what
+> it does when the section is absent.
+
+**The finding the plan understated.** The gap is not "one governance names an unbuilt check". Grep
+for anything collecting an attestation — `spec-gate`, `sdd-spec-judge`, `sdd-impl-judge` — returns
+**nothing**. All ten `## Key points (read-check)` sections are inert content; no role is ever asked
+to restate them. `suite-format` merely *named* the missing check, which made a corpus-wide hole look
+local. Any fix scoped to `suite-format` alone would have left nine silent instances.
+
+**Constraint from `design/governance-resolution.md` (must not be broken).** The fixed-universal bars
+are declared in the role/agent definition and loaded **lazily** — "a full governance **body** is read
+**only at the decision or gate that invokes it**". So read-check must attest **what the role actually
+loaded for the decisions it made**, never force eager loading of every declared bar; a rule demanding
+attestation for all bars would silently convert lazy loading into eager loading.
+
+**Purpose (owner's framing).** The check is not a comprehension grade — it verifies the agent was
+**honest that it loaded and read** the governance. "In its own words" is the anti-parroting proof of
+reading, not a paraphrase-quality score.
+
+**Split, per this CR's own form-vs-judged doctrine:** attestation **presence** (a role named the
+governances it loaded and produced a restatement) is mechanical and linted; **non-parroting** is
+judged. A green lint clears no honesty question.
 
 ## Corpus sweep — measured, not asserted
 
