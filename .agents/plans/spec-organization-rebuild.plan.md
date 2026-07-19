@@ -635,3 +635,37 @@ is the larger shared part.
 commit**. Mixing a semantic change with a 34-file mechanical sweep is what let today's stale
 `scaffold-project-spec.feature` scenario slip through. Rename blast measured: **30 `.md`, 4
 `.feature` (frozen -> Clearance), 0 code.**
+
+## IMPL GATE round 1 — 2026-07-19: **NOT PASSED**, remediated
+
+Cold `sdd-impl-judge`. `IMPLEMENTATION_PASS: false` on **one** frozen scenario; the other 45 in scope
+passed independent re-derivation (all 42 `scaffold-project-spec` scenarios, 3 of the 4 new
+`formation` ones), and the judge verified the rename sweep, the retired sixth inline copy, and the
+repointed pointer independently.
+
+**Failing scenario:** `formation.feature:115` — `a node contradicting the declared layout is reported
+as misplaced`. Its `Then` is a **disjunction**: misplaced only when a node *neither* mirrors the
+source tree *nor* matches the **routing table**. Neither `formation-loop/SKILL.md` nor
+`agents/sdd-warden.md` — the Warden's only two governing documents — mentioned a routing table at
+all. A Warden following them would report a routing-table-placed node as misplaced.
+
+**The judge named two files; the defect was in a third.** Sweeping all eight placement consumers
+found six that read the placement map but never mention its routing table — and the root cause is
+that **`spec-structure-governance`, the single shipped home for the placement law, defined the map
+as strategy-only.** `place-node` and `start-mission` honor the routing table only because they carry
+it locally; `architect-spec-governance` and `ssa-lowering` delegate to the bar ("the rule lives
+there"), so they inherited the omission silently.
+
+**Fixed at the root, not at the cited lines.** The bar now states that the placement map has **two
+parts** — the declared strategy and the routing table (the "concept of kind K lives in home H"
+taxonomy plus its human tie-break rows) — and that a placement judgment must consult both, because
+the table records decisions the strategy alone does not settle. `architect-spec-governance` and
+`ssa-lowering` pick this up by reference. `formation-loop` and `sdd-warden` restate the rule locally
+per the self-containment convention, so each carries the disjunct explicitly.
+
+The frozen `.feature` was **not** touched and no scenario changed — the contract was right and the
+implementation was narrower than it.
+
+**Standing lesson: a consumer that delegates to a bar inherits the bar's silences.** Four of the six
+gaps were invisible at the consumer because the consumer correctly said "the rule lives there." When
+a judge names a consumer, check whether the rule it loads actually states the thing being judged.

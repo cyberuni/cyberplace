@@ -190,3 +190,45 @@ parallelizable share. That is the finding; the decimals never were.
 **Branch hygiene — flagged, not resolved.** This lands on `test-framework-rebuild` alongside two
 CRs already awaiting a joint gate, per the owner's standing "land it here" call. The branch now
 carries three CRs and is not one revertable unit; a split before the gate would be cleaner.
+
+## IMPL GATE round 1 — 2026-07-19: **NOT PASSED**, remediated
+
+Cold `sdd-impl-judge`. `IMPLEMENTATION_PASS: false` — 9 of 15 scenarios passed on independent
+re-derivation; **6 failed for want of a check that exercises what they assert.** The judge confirmed
+and **widened** the suspected defect: it ablated the control itself (`const control =
+shuffledControl(...)` -> `const control = 0`) and **all 18 tests still passed**.
+
+| scenario | why it did not bind |
+|---|---|
+| `every run reports a shuffled control alongside the measurement` | no test reached the field through `measure()`/`render()`; the one control test called `shuffledControl()` directly, so the wiring was never checked |
+| `a partition no better than its control is flagged as explaining nothing` | fixture pinned `collisionRate` at 1.0, so `margin <= 0` for **any** control value — it could not discriminate a real shuffle from `0` |
+| `a partition better than its control reports the margin` | zero coverage; `margin` appeared nowhere in the test file |
+| `two candidate partitions are compared on the same history` | no test drove the multi-candidate compare path |
+| `the comparison reports the parallelizable share of each candidate` | same |
+| `a partition of one node collides with itself on every pair` | the numeric half bound; the second `Then` ("names it as permitting no parallel work") had **no matching text in `renderOne()`** |
+
+**Remediated in the implementation only — the frozen `.feature` was not touched and no scenario
+changed.** These were gaps in the producer's *verification*, not in the contract. Tests 18 -> 23,
+plus one implementation addition: `renderOne()` now emits the no-parallel-work line the sixth
+scenario's `Then` requires.
+
+**The fix was ablated by the conductor, not only by its author** (mutants must not come from the
+author). Two independent mutants, run after the producer reported:
+
+| mutant | before | after |
+|---|---|---|
+| `const control = 0` — the exact ablation that passed **18/18** | 23/23 pass | **3 fail** |
+| the new no-parallel-work render line removed | 23/23 pass | **1 fail** |
+
+Control that must survive: the unmodified implementation passes 23/23. Root `pnpm verify` 34/34.
+
+**Standing lesson: a control that cannot fail registers no miss.** The suite had a control *field*
+and a test that computed a control, but nothing tied the reported control to a real shuffle — so the
+engine's own guard against a meaningless partition was itself unguarded. A fixture that pins the
+measured quantity at its extreme makes every comparison against it vacuous; check that the fixture
+can actually move before trusting a threshold test written on it.
+
+**Not addressed here (observation, owner: strategist):** this brief's `role` 4.1% figure still omits
+that the engine's own control flags that partition `explainsNothing` (margin -2.4%, reproduced by
+the judge at 3.9% on current history). The judge confirmed the **engine** always attaches the control
+verdict automatically, so this is a ledger-prose defect, not an implementation one.
