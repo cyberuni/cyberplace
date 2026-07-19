@@ -32,6 +32,8 @@ todos:
     status: completed
   - content: "Corpus sweep DONE: over-fire check measured 0 findings across 78 suites in 7 projects; old-doctrine 'acceptance/boundary' prose reframed on the two axes (ADR left as history)"
     status: completed
+  - content: "Remediation doctrine: a change verdict is EVIDENCE, not a work order. Frozen in workflows/gate-verdicts.feature E5-E8 (additive); both producer governances; spec-gate SKILL + node; start-mission both gates. OWNER-DECIDED 2026-07-19: fold into this CR"
+    status: completed
   - content: "Spec gate + handoff: Closes #304/#305/#306; drain follow-ups"
     status: pending
 ---
@@ -204,6 +206,43 @@ A `user-invocable: false` skill's description is not a trigger — it is invoked
 there buys nothing at match time, which is exactly the rationale of the active
 `sdd-trim-internal-descriptions` CR. The short form is the intended direction. (Measurement note:
 8 were shortened by this CR; `suite-format` was already short at the merge-base.)
+
+## Remediation doctrine — folded in 2026-07-19 (owner)
+
+**The loop, not the lint, was the cause.** Across three gate rounds the producer treated each judge
+verdict as a task list and remediated the cited lines. Round 1's fixes were narrow, so round 2 found
+adjacent instances; round 2's fix was narrow *and wrong*, so round 3 found two defects the fix itself
+introduced. The loop specified the **verdict** and then went silent — `change` said only "revise the
+diff; nothing freezes; stays `draft`" — and that silence is what list-executing filled.
+
+**Proof it was the process and not missing knowledge:** commit `105e5efc` updated
+`partition-quality`'s scenario map when removing its rows **and**, in the same commit, edited
+`scaffold-project-spec.feature` **without** touching its map. The rule was known, applied once, and
+not generalized one file over. No tool would have caught it either — `check-suite` binds on scenario
+*name* (unchanged), `align-spec` does a mechanical scenario-diff only, and `touch-set-correction`
+detects **over**-declaration, the opposite direction.
+
+**What now binds (the four rules):**
+
+1. **Substantiate before acting.** A finding is a hypothesis. One that does not survive inspection is
+   **contested with evidence**, not edited away. (This session: one finding the owner rejected
+   outright, one a judge retracted itself.)
+2. **State the rule; sweep for its instances.** A judge names an instance; the defect is the rule.
+   Sweep in a script and report the **ruled-out** candidates too.
+3. **Re-derive the correction against the rule governing the artifact.** "Does it still trip the
+   finding?" is the weak question; "is what it now says **true**?" is the one that matters. This is
+   the rule the `:93` re-cut broke — it cleared the finding and contradicted `spec-structure-governance`.
+4. **Account for findings by provenance, every round.** All pre-existing ⇒ **converging**, continue.
+   Any finding introduced by the last round's remediation ⇒ **diverging** — halt and re-plan. Round 3
+   met this trigger and the producer opened another round anyway.
+
+**Landed at five sites** (swept, not guessed): `workflows/gate-verdicts.feature` (6 scenarios,
+**additive ⇒ self-clears**; each negative carries its positive companion) · `workflows/README.md`
+seed rows E5-E8 · `authoring/spec-gate/README.md` · `spec-gate/SKILL.md`'s `change` row ·
+`spec-producer-governance` + `impl-producer-governance` · `start-mission/SKILL.md` at **both** gates.
+
+**Consequence for this gate:** `test-framework-rebuild` was ALIGNED at round 2. Folding this in
+**reopens it** — it needs a fresh judge before it can gate.
 
 ## NEXT — resume here
 
