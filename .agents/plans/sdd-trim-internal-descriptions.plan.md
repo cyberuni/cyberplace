@@ -4,7 +4,7 @@ status: active
 todos:
   - content: "sweep 39 user-invocable:false SKILL.md descriptions → identity + caller only (3 sonnet agents by plugin: sdd governances 15, sdd non-gov 14, aced+cyberlegion 10)"
     status: completed
-  - content: "review: description-line-only (verified), pnpm verify 19/19 GREEN. EXCLUDED as false positives (whole-file grep matched body prose, not frontmatter): sdd:manage + aced:define-governance are genuinely USER-FACING (Use-this-skill-when, no user-invocable:false). Also excluded plan-retirement (#121) + backfill-project-spec (already minimal)."
+  - content: "review: description-line-only (verified), pnpm verify 19/19 GREEN. EXCLUDED as false positives (whole-file grep matched body prose, not frontmatter): sdd:manage + aced:define-governance are genuinely USER-FACING (Use-this-skill-when, no user-invocable:false). Also excluded plan-retirement (#121) + scaffold-project-spec (already minimal)."
     status: completed
   - content: "commit + PR"
     status: in_progress
@@ -41,7 +41,7 @@ enum lists, file paths, predicates, step-by-step — that all already lives in t
 
 All `user-invocable: false` SKILL.md across `plugins/sdd`, `plugins/aced`, `plugins/cyberlegion`
 (41 files). **Exclude:** `plugins/sdd/skills/plan-retirement` (already trimmed in PR #121) and
-`plugins/sdd/skills/backfill-project-spec` (already 41 chars, minimal). Leave any other file whose
+`plugins/sdd/skills/scaffold-project-spec` (already 41 chars, minimal). Leave any other file whose
 description is already ≤~140 chars and formula-shaped.
 
 ## Guard (per skill)

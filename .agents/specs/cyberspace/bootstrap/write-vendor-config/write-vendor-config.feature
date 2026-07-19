@@ -4,7 +4,7 @@ Feature: write-vendor-config — write per-harness agent config directly
   AGENTS.md by hand, without the universal-plugin CLI — the fallback init routes to when the user declines npx,
   and a standalone by-hand entry. The preferred CLI-offload wiring is init's own step; authoring AGENTS.md is
   init; publishing or upgrading a cross-vendor plugin is publish-universal-plugin / upgrade-universal-plugin.
-  Cross-capability e2e scenarios live in ../../acceptance/.
+  Cross-capability e2e scenarios live in ../../workflows/.
 
   # ── Triggering ──
 

@@ -41,7 +41,7 @@ lifecycle. One published package (`packages/cyberplace`, `bin: cyberplace`) ship
 
 ## Backfill scope note (flagged)
 
-This project had no consolidated spec. It is backfilled **narrow**: only the **`marketplace`**
+This project had no project spec. It is backfilled **narrow**: only the **`marketplace`**
 capability — the curated awesome-list discovery plus the **Tavern** crew storefront — is scaffolded,
 because that is where the requested change landed; the `marketplace/tavern` node has since carried a
 frozen `.feature` through two mission CRs to `status: implemented`. The remaining source domains
@@ -83,7 +83,7 @@ here; do not invent placement:
 - a new **hook** behavior (register, run, extract) → future `hooks/`.
 - a new **registry** behavior → future `registry/`.
 - a new **skill-authoring** behavior (scaffold, validate, lifecycle) → future `skill-authoring/`.
-- a **cross-capability e2e outcome** (spans ≥2 capabilities) → `acceptance/`.
+- a **cross-capability workflow outcome** (spans ≥2 capabilities) → `workflows/`.
 
 The nesting rule: capabilities at the top; any layering nests *inside* a capability, never as a
 top-level folder. A node is `<capability>/<unit>` and **never three deep** — a sub-grouping inside a
@@ -99,6 +99,6 @@ capability is a `concept:` tag recovered by the by-concept index, not a third fo
 |---|---|
 | `acquire` | `marketplace/registry/` (behavior) |
 | `axi` | `axi/` (reference) · `marketplace/awesome-list/` (behavior) · `marketplace/registry/` (behavior) · `marketplace/tavern/` (behavior) |
-| `discovery` | `glossary/` (reference) · `marketplace/awesome-list/` (behavior) · `marketplace/tavern/` (behavior) |
+| `discovery` | `marketplace/awesome-list/` (behavior) · `marketplace/tavern/` (behavior) |
 
 <!-- END generated: by-concept -->
