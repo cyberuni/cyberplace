@@ -337,6 +337,34 @@ and its Fifth Clearance worked example both prescribe.
 Basis: a **narrowing to the CR's own ratified rule**, not a behavior change — the scenario tests the
 same branch with the same outcome; only the `Given`'s step structure changes. No contract is widened.
 
+## Round-2 gate corrections — 2026-07-19
+
+**The "retire the inline copies (4 sites)" todo was incomplete: there were FIVE.**
+`plugins/sdd/skills/start-mission/SKILL.md:39` still recommended `capability-first` unconditionally
+and called a layered placement discouraged, with no read of the declared placement map and no mention
+of `mirror-source` — contradicting the doctrine this CR ratified and shipped in every sibling
+consumer (`place-node`, `spec-structure-governance`, `architect-spec-governance`, `formation-loop`).
+Corrected to judge placement *within* the declared layout. Pre-existing (the line predates the
+merge-base), surfaced only by a corpus sweep rather than by re-reading the four named sites.
+
+> **Method note — why the round-1 fixes were too narrow.** Round 1 named one instance of each defect;
+> the fixes edited exactly those lines. A judge naming an instance means the finding is the **rule**,
+> and the rule needed a scripted sweep. Round 2 surfaced two adjacent instances the narrow fix could
+> never have reached — both pre-existing, neither a regression. The sweep is now run; its result is
+> recorded below rather than left as "checked it".
+
+**Sweep result — evaluative `Given` steps, corpus-wide.** Three sit in the pilot node itself:
+`scaffold-project-spec.feature:93` ("whose shape allows more than one **valid** location"), `:128`
+("a **strongly** layered project"), `:190` ("whose repo-root name is already **correct**"). The other
+sweep hits are **not** defects: "valid JSON" / "valid gitignore pattern" are decidable predicates,
+not judgment calls — the word alone does not make a `Given` evaluative, so the naive word list
+over-fires and must be read, not trusted.
+
+**Plan-accuracy correction.** This brief's "Landed" list claims "`## References` … piloted on
+`scaffold-project-spec`". The shipped README has **no** `## References` section, and no BDD source is
+cited for the scaffoldable-`Given` rule's claimed research basis. An empty section is correctly
+omitted per governance — the defect is the brief's claim, now withdrawn.
+
 ## NEXT — resume here
 
 **Next action:** spec gate — **jointly with `test-framework-rebuild`** (owner decision: gate them
@@ -347,7 +375,8 @@ unattended — the reasoning is recorded in that plan's `## NEXT`.
 
 **Landed:** ratification recorded · spec node · governance skill (SDD's own tree verified absent) ·
 greenfield evidence mode (0a) · rename to `scaffold-project-spec` (0b) · formation Warden judges the
-declared strategy (defect 1) · `place-node` stops recommending one (defect 2) · inline copies retired
+declared strategy (defect 1) · `place-node` stops recommending one (defect 2) · inline copies retired (**four** at the time; a **fifth** at `start-mission/SKILL.md:39` was missed and
+is corrected at the round-2 gate — see below)
 · pointers repointed · `spec-layout`'s sole-decider claim corrected · glossary mandate + corpus
 migration + SDD's own glossary · the (path class, edge) doctrine, scaffoldable `Given`, and
 `## References`, piloted on `scaffold-project-spec`.
