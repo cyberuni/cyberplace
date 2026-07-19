@@ -10,15 +10,15 @@ todos:
   - content: "BLOCKED: land plugins-as-projects refactor first (owner decision)"
     status: completed
   - content: "Explore: grill spec + suite for the advisory tier + @trigger form rule"
-    status: in_progress
+    status: completed
   - content: "Spec gate: freeze the suite, record gate line"
-    status: pending
+    status: completed
   - content: "Deliver: advisory tier in check-suite, then the @trigger form rule"
-    status: pending
+    status: completed
   - content: "Ablate: revert the rule, prove delta != 0; control (10 canonical outlines) MUST survive"
-    status: pending
+    status: completed
   - content: "Impl gate"
-    status: pending
+    status: completed
   - content: "Handoff: PR + Clearance verdict packet (incl. dispatch re-tag)"
     status: pending
 ---
@@ -159,7 +159,100 @@ therefore a **mirror of an established in-node shape**, not a new mechanism: wid
 `spec-gate/README.md` carries **no `## Scenario map`**, so `checkScenarioMap` skips it — new
 scenarios carry no map obligation.
 
+## Delivered (2026-07-19) — the additive half, ablated
+
+| Commit | Unit |
+| --- | --- |
+| `b79f4dec` | spec: 5 scenarios frozen in `spec-gate.feature` + node prose + summary-table sweep |
+| `c95346b5` | impl: advisory tier (`{findings, violations}`) + `checkTriggerContract` |
+| `7ed52e0c` | governance: the contract + two tiers in `suite-format-governance` |
+| `bf4e1ed8` | impl-gate blocker: the runbooks still said "exit 0 = form clean" |
+
+**Ablation — 7 mutants, all killed, baseline green in every arm.** Delta on the real corpus is
+5 -> 0 (non-zero). Control: the **10 canonical outlines stay unflagged in every arm**.
+
+Two results worth keeping:
+
+1. **The corpus cannot discriminate `require both columns` from `require either`** — both arms
+   report the same 5, because every one of the 5 is missing *both*. Only the unit tests kill those
+   two mutants. A corpus-only ablation would have scored this rule "fine" while it was half wrong.
+2. **`drop isOutline guard` initially SURVIVED.** Its test named the guard but its fixture (a plain
+   `Scenario` with no `Examples` table) was absorbed by the *no-table* clause, so the test never
+   reached the guard it was named for — it passed for another clause's reason. The pinned parser
+   *accepts* a plain `Scenario:` carrying an `Examples:` table (verified, 0 errors), so the binding
+   fixture is reachable; with it, the mutant dies. **A test named for a clause is not a test of it.**
+
+### Impl gate: 5/5 scenarios PASS; one structural blocker, accepted and closed
+
+The cold judge passed every scenario but blocked on a gap the scenarios could not see: the *design*
+docs described the new tier while the *operational runbooks* still read "Exit `0` = form clean". An
+actor following them literally reports clean and never relays the `⚠` lines — defeating the
+surfaced-for-judgment behavior the scenarios specify. Treated as a **rule, not a site**: swept every
+doc stating the exit contract and found **two more** beyond the one the judge named, including
+`spec-producer-governance` — the actor that authors `@trigger` outlines, and the only point where
+the free repair is still free (before freeze).
+
 ## NEXT
+
+**STOPPED AT THE CLEARANCE FLOOR.** The additive half has landed and is ablated. Everything that
+remains narrows a frozen scenario, so it is the Council's call — see the verdict packet below.
+Nothing past this line is self-asserted.
+
+## VERDICT PACKET — for the Council
+
+The check now names 5 mis-tagged outlines, advisory. Each needs a disposition. **The finding is
+not in dispute; only the repair is** — which is precisely why the tier is advisory.
+
+### Ask 1 — re-tag the 4 `cyberlegion-plugin/dispatch` outlines `@trigger` -> `@behavior`
+
+These grade deterministic decision tables (strategy / wake-mode / transport / verdict), not
+activation. They are intra-node, fully owned, and correctly frozen — the issue's cross-node thesis
+does not reach them, and blanket-deleting "the @trigger outlines" as #304 reads would **destroy 4
+sound contracts**.
+
+- **Content-preserving:** the tag changes, not one scenario line, not one Examples row.
+- Their use of `Scenario Outline` is *sanctioned* by suite-format `:598` (a genuinely uniform
+  enumerated set). Only the tag is wrong.
+- **Why it is still Clearance:** it edits a frozen file. Recommend **grant**. This is the cheapest
+  correct repair on the table.
+
+### Ask 2 — `sdd/ssa-lowering`'s outline (`situation` / `should_apply`)
+
+The one outlier #304 correctly identified. Two live options; **this mission does not pick**:
+
+| Option | Cost |
+| --- | --- |
+| **(a)** re-tag `@behavior`, keep as-is | content-preserving, same shape as Ask 1 |
+| **(b)** adopt the `query`/`should_trigger` contract | rewrites the Examples rows — a **narrowing** |
+
+Recommend **(a)** unless the Council wants ssa-lowering genuinely graded for activation, which is
+the harder claim: it would need a query corpus that does not exist for this subject.
+
+### Ask 3 — promoting the rule from advisory to blocking
+
+**Do not grant yet.** It is only safe once Asks 1 and 2 land — until then it reds main. Sequencing,
+not a separate judgment. It belongs to whichever CR closes the last mis-tag.
+
+### The counter-argument, recorded (as the brief requires, BEFORE any deletion is granted)
+
+The negative rows in the 10 canonical outlines **do encode real design intent** ("this config is for
+X, not Y"). That is a genuine cost of deletion and is why no deletion is asked for here. Recording
+intent is not the same as freezing a boolean the harness never promised: the intent belongs in the
+**subject's description prose** — the field the harness actually routes on, and the only field the
+node owns — with the **README** carrying the sibling-deference rationale. Any future ask to delete
+the canonical outlines must land that prose in the same change, or the intent is simply lost.
+
+### Explicitly NOT done, and why
+
+- **The issue's proposed mechanism (eligibility flags) is DOMINATED — it was not landed.** It
+  catches 1 of 5, needs the corpus's first spec->implementation crossing, and cannot resolve 3 of 12
+  subjects. Its marginal delta over the form check measures **zero** on the real corpus. Routing on
+  the form invariant catches 5 of 5, pure spec-side. #304 should be updated to say so.
+- **The issue's premise "query-corpus files in this repo: zero" is FALSE** — nine tracked files
+  exist for 3 subjects with a real 60/40 split. They are **orphaned, not absent**; wiring them is a
+  separate node (#304's split 2), not this mission.
+
+## Superseded plan (kept for provenance)
 
 Explore is done (see the re-measurement above). Freeze scenarios in
 `.agents/specs/sdd/authoring/spec-gate/spec-gate.feature`, under the existing
