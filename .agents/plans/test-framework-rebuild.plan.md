@@ -333,6 +333,42 @@ have **never been ratified** — the gate returned `change` on them. `align-spec
 as a narrowing against `HEAD`; that is remediation of unratified material, not a narrowing of an
 approved contract.
 
+## Form 1 clarified — the trace, not the verb (2026-07-19, owner-directed)
+
+The round that failed the remediation scenarios cited `suite-format-governance` Form 1's ban on
+asserting "the authoring process". Investigating the design question the judge left open — *does
+meta-process belong in `workflows/` at all?* — showed the **rule was imprecise, not the scenarios'
+subject matter**.
+
+**Evidence: asserting an agent act is long-established in `workflows/`, and frozen.**
+
+| file | frozen `Then` |
+|---|---|
+| `resolve-squad` | `Then it reads the role-to-agent map from the registry` |
+| `resolve-squad` | `Then the conductor authors inline and records produced-by as sdd:automaton` |
+| `cr-lifecycle` | `Then it locates the project spec by discovering specs at the spec locations` |
+| `escalation-floor` | `Then it self-clears both gates with no human stop` |
+
+`Then it reads the role-to-agent map` is the **same shape** as the rejected `Then it sweeps the
+corpus`. By the letter of the old rule, four frozen scenarios were violations.
+
+**The real distinction is the trace.** `reads the registry` is settleable — the resolved squad is
+checkable against the registry. `sweeps the corpus` was settleable by nothing, until the
+`REMEDIATION` trace existed. Form 1's own examples ("co-developed", "written test-first") are
+unobservable for the same reason: no artifact records them. One principle covers all three, and the
+old wording named a **category of verb** where the operative test is **observability**.
+
+**So the design question resolves: meta-process belongs.** `workflows/` is SDD's own process,
+hand-judged by design (`workflows/README.md`, `## Source` — there is no verification bridge for the
+folder). What was wrong was the missing trace, and that is fixed.
+
+**Landed at five sites** (swept, not guessed): Form 1 in `suite-format-governance/SKILL.md`, rewritten
+as directives an agent can follow · its `## Key points` gains item 8 · the governance README ·
+`authoring/suite-format/README.md` (whose wording already grounded the rule in observability) ·
+`spec-producer-governance`'s restatement.
+
+**Consequence:** `test-framework-rebuild` had just returned ALIGNED. This reopens it.
+
 ## NEXT — resume here
 
 **State: GATE-READY. No open decision remains.** Every build todo is done. The last open question
