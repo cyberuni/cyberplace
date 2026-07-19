@@ -11,6 +11,8 @@ touches:
   - plugins/sdd/skills/start-mission/SKILL.md              # wire the placement-map read (defect 1)
   - plugins/sdd/skills/formation-loop/SKILL.md             # drop inline copy; wire the placement-map read (defect 1)
   - plugins/sdd/agents/sdd-warden.md                       # wire the placement-map read (defect 1)
+  - .agents/specs/sdd/formation/                           # the Warden's spec node + .feature (defect 1, additive)
+  - plugins/sdd/skills/ssa-lowering/SKILL.md               # retire the SIXTH inline placement copy ("screaming architecture")
   - plugins/sdd/skills/architect-spec-governance/SKILL.md  # drop inline copy, reference the bar
   - plugins/sdd/skills/spec-format-governance/SKILL.md     # fix dangling `design/spec-structure.md` pointer
   - plugins/sdd/skills/check-scenario-overlap/SKILL.md     # same dangling pointer
@@ -37,7 +39,9 @@ todos:
     status: completed
   - content: "Repoint the dangling pointers (3 refs, all in spec-format-governance) -> sdd:spec-structure-governance; correct spec-layout's sole-decider claim"
     status: completed
-  - content: "Spec gate + handoff"
+  - content: "Spec gate — round 5 ALIGNED: true (cold judge, 0 spec/.feature findings); touches: under-scope fixed"
+    status: completed
+  - content: "OWNER: ratify the joint gate for all three CRs (positional — cannot be self-asserted)"
     status: pending
 ---
 
@@ -464,10 +468,49 @@ branch — only the `Given`'s observability changes; nothing is added or removed
 **Flagged for ratification rather than assumed:** if the owner reads the grant as covering only the
 three lines named at the time, these two need an explicit extension.
 
+## Round-5 gate — 2026-07-19: **ALIGNED: true**, `{oracle: pass, builder: pass, architect: pass}`
+
+Cold spec-judge, pointed at this ledger and the diff. **Zero findings against `spec.md` or the
+`.feature`.** Structural band ran green first (`check-spec-state --root`, `check-suite` on the six
+touched suites, `check-spec-state --files --base <merge-base>`).
+
+**The two producer-self-reported fixes in `655149d2` survived a cold read.** The judge verified them
+independently rather than trusting the commit message: `:100` and `:186` are now buildable fixtures
+and reconciled in **all three** sites the rule is stated (`.feature` step, README `Path` cell, and
+the `## Logic` graph's `D4` edge label); the sixth inline placement copy is gone from
+`ssa-lowering/SKILL.md`. It re-ran the synonym sweep independently and found **no seventh copy** —
+every remaining hit is SDD's root `spec.md` *using* its own placement map, `touch-set-correction`'s
+unrelated "capability = first path segment" convention, or historical ledger prose. It also read all
+42 `Given`/`And` steps in the pilot node end-to-end rather than grepping, and found no further
+evaluative or conjunctive step beyond the four granted Clearances.
+
+**Both findings were bookkeeping, one rule twice: `touches:` under-scoped the actual diff.**
+
+| finding | path | status |
+|---|---|---|
+| NEW | `plugins/sdd/skills/ssa-lowering/SKILL.md` (modified by `655149d2` itself) | added to `touches:` |
+| pre-existing | `.agents/specs/sdd/formation/` (README + `.feature`, 44 lines, the defect-1 fix) | added to `touches:` |
+
+Ownership checked against both sibling briefs before claiming: `test-framework-rebuild` owns
+the `ssa-lowering` **`.feature`** and `plugins/sdd/skills/*-governance/SKILL.md` — neither covers
+these two paths.
+
+**Standing lesson: re-derive `touches:` from `git diff --stat`, never from the hand-maintained list.**
+This is the CR's own round-2/round-4 sweep lesson applied to *bookkeeping* rather than content — a
+hand-kept list under-fires exactly the way a token sweep does. A gate diff scoped to `touches:` would
+have judged neither path; the judge only reached them because this brief's prose happened to name one.
+
 ## NEXT — resume here
 
-**Next action:** spec gate — **jointly with `test-framework-rebuild`** (owner decision: gate them
-together). Every build todo here is done. That CR's last open decision (`confirm-read` /
+**Next action:** **owner ratification of the joint gate.** All three CRs on this branch are now
+ALIGNED (this one as of round 5, above). Every build todo here is done. Ratification is **positional**
+— it belongs to the human holding the session channel, and must not be self-asserted or relayed, so
+`status:` stays `draft` and no `approval` is written until the owner rules.
+
+**The one question outstanding for the owner** (carried, not new): the evaluative-`Given` re-cut grant
+was given rule-wide ("all three, fix the rule"). `:100` and `:186` were found *after* that grant and
+re-cut under it. If the owner reads the grant as covering only the three lines named at the time,
+those two need an explicit extension. Recorded above under the Clearance extension section. That CR's last open decision (`confirm-read` /
 `read-check`) was resolved 2026-07-19 by dropping it and relocating it to
 `cyberuni/universal-plugin#9`, so **nothing blocks the joint gate**. Not self-asserted while
 unattended — the reasoning is recorded in that plan's `## NEXT`.
