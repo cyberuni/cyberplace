@@ -1,6 +1,6 @@
 ---
 cr-ref: test-framework-rebuild
-status: approved
+status: implemented
 target: .agents/specs/sdd/ (project spec: plugins/sdd)
 touches:
   - plugins/sdd/skills/*-governance/SKILL.md   # the 9 rebuilt test-framework governances

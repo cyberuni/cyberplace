@@ -1,6 +1,6 @@
 ---
 cr-ref: spec-organization-rebuild
-status: approved
+status: implemented
 target: .agents/specs/sdd/ (project spec: plugins/sdd)
 touches:
   - plugins/sdd/skills/spec-structure-governance/          # NEW — the shipped bar (taxonomy + placement)

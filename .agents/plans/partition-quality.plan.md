@@ -1,6 +1,6 @@
 ---
 cr-ref: partition-quality
-status: approved
+status: implemented
 target: .agents/specs/sdd/ (project spec: plugins/sdd)
 touches:
   - plugins/sdd/skills/check-partition-quality/            # NEW — the engine + skill
@@ -359,3 +359,31 @@ Unmodified implementation passes 23/23. Root `pnpm verify` 34/34.
 "Read once" is a means; "measured over the same commits and scope" is the end. A test on the means
 leaves every way of corrupting the value *after* the read uncaught — and a fixture must be able to
 *exhibit* the difference the `Then` forbids, or the strongest assertion still reads a constant.
+
+## IMPL GATE round 4 — 2026-07-19: **PASS** (`IMPLEMENTATION_PASS: true`), converged
+
+Cold impl-judge, round 4. It re-derived the scenario, confirmed the four previously-known mutants all
+die, and — the real test of this round — wrote **five new mutant classes nobody had run**:
+candidate-mismapping (`candidates[(i+1)%len]`), `toJson` dropping its `...rest` spread, output-key
+aliasing via a shared mutable accumulator, partial application on the wrong variable (`repo` for
+`scope`), and an argument swap (`limit` for `floor`). **Every one died.** (It also noted one
+argv-parsing off-by-one that is an *equivalent* mutant — no behavior change — and correctly discarded
+it rather than reporting a false finding.)
+
+No implementation defect: `e4272e85` touched only the test file, so the implementation is byte-identical
+to the round-3 boundary version.
+
+**Convergence call (judge): solid — no round 5.** The rounds were diagnostic, not chaotic: each found
+one nameable class of gap (no compare test → hand-shared array → asserted the read not the measurement
+→ shallow boundary) and each fix closed exactly that class without opening another of the same shape.
+Round 4 is the first adversarial hunt across five distinct new corruption classes to produce zero
+survivors.
+
+**Residual risk the judge named and I am recording rather than chasing:** the test computes its
+"expected" per-candidate values by calling the same `measure`/`toJson`/`PARTITIONS` the code calls, so
+a defect embedded *uniformly inside those shared functions* (e.g. a wrong `second-folder` grouping
+boundary) is invisible to this scenario's test. That is not a gap in this scenario's `Then` (same
+commits/scope) — it would be a scenario about the partition definitions themselves, which the frozen
+`.feature` does not specify at that granularity. Out of scope for this gate; a candidate follow-up.
+
+**IMPL GATE — PASSED.** All 15 scenarios genuinely bound. Root `pnpm verify` 34/34.
