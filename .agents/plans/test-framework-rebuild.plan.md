@@ -224,10 +224,17 @@ six-plus Clearance narrowings including a **scenario deletion** (#304), and runn
 work with a judge I spawn, unattended, is the independence the producer!=judge split exists to
 prevent (the todo-open reason no longer applies; the other two stand). The digest exists so a human sees what they approve.
 
-**Clearance ledger for the gate** (all under the owner's standing grant, each recorded above):
+**Clearance ledger for the gate** (each recorded above; the standing grant covers all but the last
+two, which the owner granted in-session on 2026-07-19):
 `concept-index` + `backfill` re-cuts (rename) · gateway/gateway-manage/workflows identifier renames ·
 "consolidated spec" retirement · the nested-vs-hoist re-cut · the unscaffoldable `Given` · ssa-lowering
-#306 `Given` · ssa-lowering #304 **deletion** of the `@trigger` outline.
+#306 `Given` · `scaffold-project-spec.feature`'s conjunctive `Given` split ·
+`partition-quality.feature`'s two `BOUNDARY` scenarios removed.
+
+> **Removed from this ledger 2026-07-19: ssa-lowering #304's deletion of the `@trigger` outline.**
+> The deletion was **withdrawn** and the outline **restored** — see the #304 record above. A restore
+> is additive and self-clears, so there is no Clearance to ratify. Leaving it listed would have asked
+> the owner to approve a narrowing that no longer exists. **No scenario deletion remains in this CR.**
 
 **Findings the diff won't show:**
 - The `.md`-only blast estimate MISSED the rename's code + frozen-suite dependency; the propagation
