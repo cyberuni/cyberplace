@@ -152,9 +152,46 @@ attestation for all bars would silently convert lazy loading into eager loading.
 **honest that it loaded and read** the governance. "In its own words" is the anti-parroting proof of
 reading, not a paraphrase-quality score.
 
-**Split, per this CR's own form-vs-judged doctrine:** attestation **presence** (a role named the
-governances it loaded and produced a restatement) is mechanical and linted; **non-parroting** is
-judged. A green lint clears no honesty question.
+**Split, per this CR's own form-vs-judged doctrine:** attestation **presence** and **parroting** are
+mechanical and linted; whether a restatement tracks the directive's **meaning** is judged. A green
+lint clears no honesty question.
+
+**Why parroting is lintable but comprehension is not.** Verbatim overlap is certain evidence in one
+direction only: high overlap proves copying, low overlap proves nothing. So the lint may fail on
+overlap without judgment, while the positive direction must be judged. Linting a similarity score as
+if it measured understanding would rebuild the toothlessness this CR removed, dressed as a number.
+
+**LANDED (commits `d089f209` spec, `438e0946` engine).**
+- Spec node `mission/read-check/` — placement derived by running `place-node` (concept `resolution`
+  -> `mission/`), landing it beside `mission/resolution`, its exact sibling. New node format.
+- Engine `plugins/sdd/skills/read-check/scripts/read-check.mts` — zero-dep `.mts`, JSON attestation,
+  parroting via word 6-gram overlap (>= 0.25). 25/25 colocated tests; `pnpm verify` 34/34.
+
+**Verified independently of the builder, with mutants I authored** (the builder ablating its own work
+proves little): verbatim copy -> fails · genuine own-words paraphrase -> passes · no-key-points
+governance named alone -> passes · key-points governance unrestated -> fails, naming it · **light-edit
+copy (the realistic cheat, not the strawman verbatim one) -> fails.**
+
+**STILL OPEN — wiring.** The engine is standalone. No role emits an attestation and no gate calls it
+yet. Until that lands, `read-check` is a working check nobody runs — the same toothlessness in a new
+place, so this todo is NOT done.
+
+## Follow-up to file at handoff — ADR number collisions (PRE-EXISTING, not this CR)
+
+`ls artifacts/adr/ | grep -oE '^[0-9]{4}' | sort | uniq -d` returns **0019 and 0025** — two ADRs
+share each number:
+
+- `0025-mission-graph-compiler-scheduler-model.md` and `0025-session-adapter-verify-effect-or-fail-loud.md`
+- (same collision at 0019)
+
+The governances cite bare **"ADR-0025"** for the partition stake (`architect-spec-governance`,
+`architect-impl-governance`, and `project-spec/partition-quality/README.md`). The citation
+**resolves by content** to the mission-graph ADR — it is the one that argues the scheduler/partition
+case — so no claim on this branch is wrong. But the reference is ambiguous to any reader who
+resolves it by number.
+
+**Not fixed here.** Renumbering is a corpus-scale change that must land as a single atomic pass, and
+it is unrelated to this CR's subject. Filing it beats smuggling it into a test-doctrine CR.
 
 ## Corpus sweep — measured, not asserted
 
