@@ -126,6 +126,33 @@ the introducing commit, `88.8% / 11.3%` at HEAD). The qualitative gap (~90% vs ~
 holds. But on a CR whose premise is replacing assertion with measurement, its own numbers were
 asserted. Re-measure and restate before re-gating.
 
+## Clearance — granted by owner in-session 2026-07-19 (frozen re-cut)
+
+Owner authorized the spec-gate re-cut. Recorded before the edit, per grant -> record -> edit.
+
+**`partition-quality.feature` — remove the `# ── Boundary ──` section, both scenarios (spec-judge
+BLOCKER 1).** `the engine writes nothing to the repository` and `the measurement renders no verdict
+on the layout` are **invariants, not decisions**: neither sits on a branch drawn in `## Logic` (the
+graph has no `BOUNDARY` node), and neither can be lost by a plausible wrong subject — the engine has
+no write-capable code path at all, and the "renders no verdict" behavior does not vary with its
+`Given`. Both fail the miss test structurally. `suite-format-governance`'s acceptance-only-strict
+rule bars them: an unmappable statement is an invariant, "covered by the implementation's own tests".
+
+> **Correction to this record (made before committing).** A first draft of this Clearance claimed
+> "the engine's unit suite does cover both". **It covered only one.** `the report renders no verdict
+> on the layout` exists at `check-partition-quality.test.mts:144`; `writes nothing to the repository`
+> had **no** test — it was merely true by construction. Removing it would have been a drop, not a
+> relocation, which is the exact fault this gate raised against #304. So the guard was **relocated**:
+> a new unit test pins that the engine imports no write API and shells out to no git subcommand other
+> than read-only `log`. Ablated both ways (introduce a file write -> fails; swap `log` for `gc` ->
+> fails), control green at 17/17.
+
+The two matching `BOUNDARY` rows come out of the `## Scenario map` in the same edit, preserving the
+1:1 scenario<->row binding `check-suite` lints.
+
+Basis: a **narrowing** — removes two frozen scenarios, widens nothing. The behaviors remain true and
+remain tested at unit level; only the frozen acceptance contract stops asserting them.
+
 ## NEXT — resume here
 
 **Next action:** spec gate — now the third CR on this branch awaiting the joint gate.

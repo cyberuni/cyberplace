@@ -324,6 +324,19 @@ nodes while `spec-format-governance` states it as a **universal** bar. Both brie
 deliberate debt, but only in transient `plan.md` files that retire at handoff — no durable trace
 distinguishes tracked migration from an undetected violation.
 
+## Clearance — granted by owner in-session 2026-07-19 (frozen re-cut)
+
+Owner authorized the spec-gate re-cut. Recorded before the edit, per grant -> record -> edit.
+
+**`scaffold-project-spec.feature` — the conjunctive `Given` (spec-judge BLOCKER).** Line 115-116 read
+`Given a project in detection mode whose src/ is organized by layer`, bundling two independently
+varying conditions in one step. Split to the two-step form its own sibling scenarios (`:110-111`,
+`:137-138`) already use for the identical fact pair, and which this CR's scaffoldable-`Given` rule
+and its Fifth Clearance worked example both prescribe.
+
+Basis: a **narrowing to the CR's own ratified rule**, not a behavior change — the scenario tests the
+same branch with the same outcome; only the `Given`'s step structure changes. No contract is widened.
+
 ## NEXT — resume here
 
 **Next action:** spec gate — **jointly with `test-framework-rebuild`** (owner decision: gate them
