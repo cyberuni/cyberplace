@@ -43,6 +43,13 @@ todos:
 
 # CR: spec-organization-rebuild — the project-spec organization system
 
+> **Branch `test-framework-rebuild` carries THREE CRs that gate together** —
+> `test-framework-rebuild`, `spec-organization-rebuild`, `partition-quality`.
+> Read all three plan briefs before gating. Blocking decision: `confirm-read`
+> (build it, or stop `suite-format-governance` claiming it) — recorded in
+> `test-framework-rebuild.plan.md`.
+
+
 **Scope note.** This began as "give the organization law a shipped home" and was **folded into a
 system rebuild** by owner decision: the three defects below are not follow-ups, they are the work.
 A governance stating "read the declared strategy" is meaningless while no consumer reads it, no

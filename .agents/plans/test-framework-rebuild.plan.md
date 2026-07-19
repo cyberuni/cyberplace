@@ -36,6 +36,13 @@ todos:
 
 # CR: test-framework rebuild — two-axis test doctrine
 
+> **Branch `test-framework-rebuild` carries THREE CRs that gate together** —
+> `test-framework-rebuild`, `spec-organization-rebuild`, `partition-quality`.
+> Read all three plan briefs before gating. Blocking decision: `confirm-read`
+> (build it, or stop `suite-format-governance` claiming it) — recorded in
+> `test-framework-rebuild.plan.md`.
+
+
 ## Resolved decisions (do not relitigate — see also commit 77fd05a8)
 
 - **Axis 1** — a suite specifies **acceptance** only, STRICT: the capability's **decision graph**

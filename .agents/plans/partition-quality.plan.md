@@ -24,6 +24,13 @@ todos:
 
 # CR: partition-quality — measure whether a layout actually permits parallel work
 
+> **Branch `test-framework-rebuild` carries THREE CRs that gate together** —
+> `test-framework-rebuild`, `spec-organization-rebuild`, `partition-quality`.
+> Read all three plan briefs before gating. Blocking decision: `confirm-read`
+> (build it, or stop `suite-format-governance` claiming it) — recorded in
+> `test-framework-rebuild.plan.md`.
+
+
 ## Why
 
 The doctrine says capability-first is strongly recommended because the mission scheduler cuts one
