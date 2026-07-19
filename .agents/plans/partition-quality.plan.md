@@ -317,3 +317,45 @@ local binding, so exporting a dependency does nothing for a same-module caller a
 cannot reach it. The seam has to be a parameter. Test the claim with a five-line repro before
 building on it — "it's exported, so we can mock it" was wrong here and would have produced a third
 round of tests that pass without binding anything.
+
+## IMPL GATE round 3 — 2026-07-19: judge found the boundary test too shallow; test deepened
+
+Cold impl-judge, round 3. It confirmed the `Context` boundary was progress — the re-read-per-candidate
+and drop-read-scope mutants now die — but found the new test still **too shallow** and produced **two
+surviving mutants**, both in the `results = candidates.map(...)` block (which `cae1571a` did not
+touch, so **not a rule-4 regression** — a pre-existing gap first reachable now that a test finally
+calls `main()` with two candidates):
+
+| judge mutant | why it survived |
+|---|---|
+| score the candidates over different commit **subsets** after the one read | the test asserted on the `readHistory` **call args**, never on what each candidate was measured **over** |
+| score the candidates under different **scopes** after the one read | same — the read was shared, the measurement was not checked |
+
+**The judge was right, and my round-3 commit message ("bound at the level its `When` names") was
+overstated.** The `Then` is about what each candidate is **measured** over; asserting on the read
+alone checks the plumbing upstream of the measurement, not the measurement. I reproduced mutant A
+independently (survived 23/23) before accepting the finding.
+
+**Fix — deepen the test to the `Then`, no implementation change.** It now captures the two-candidate
+`main()`'s JSON output and asserts each candidate's reported measurement **equals an independent
+recomputation** over the same history under the same scope, plus that both agree on the pair count.
+And the fixture was made **scope-sensitive** — files share a first path segment but vary in the
+second (`src/cap{i%5}/unit{i%3}/…`), so a wrong scope changes the *grouping*, not merely node labels.
+The prior fixture (all files two levels deep) grouped identically under `scope` and `""`, which is
+exactly why mutant B slipped through — a byte-identical measurement.
+
+**Ablated — all four known mutants now die, control survives:**
+
+| mutant | round 2 | round 3 (boundary) | round 3 (deepened) |
+|---|---|---|---|
+| re-read history per candidate | survived | **dies** | dies |
+| drop read-scope filter | — | **dies** | dies |
+| score over different commit subsets (judge A) | — | **survived** | **dies** |
+| score under different scopes (judge B) | — | **survived** | **dies** |
+
+Unmodified implementation passes 23/23. Root `pnpm verify` 34/34.
+
+**Standing lesson: assert on the postcondition the `Then` names, not the plumbing upstream of it.**
+"Read once" is a means; "measured over the same commits and scope" is the end. A test on the means
+leaves every way of corrupting the value *after* the read uncaught — and a fixture must be able to
+*exhibit* the difference the `Then` forbids, or the strongest assertion still reads a constant.
