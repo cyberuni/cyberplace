@@ -157,11 +157,35 @@ remain tested at unit level; only the frozen acceptance contract stops asserting
 
 **Next action:** spec gate — now the third CR on this branch awaiting the joint gate.
 
-**Built and verified.** The engine reproduces the design-time measurement on this repo:
-`second-folder` 87.8% parallelizable vs `role` 11.8%, and `role`'s own output demonstrates the
-confound in the wild — 67.2% within-node co-change (looks good) against 11.8% parallelizable
-(terrible). Both ablations bite: headlining the confounded metric fails 5 tests, dropping the control
-fails 3.
+**Built and verified — numbers RESTATED 2026-07-19 after the spec gate re-measured them.**
+
+The original entry claimed the engine "reproduces the design-time measurement on this repo:
+`second-folder` 87.8% vs `role` 11.8%", and that "headlining the confounded metric fails 5 tests,
+dropping the control fails 3". **None of those four numbers reproduce.** Re-measured directly, each
+with a control that must survive:
+
+| claim | stated | measured |
+|---|---|---|
+| ablation: headline := confounded metric | 5 tests fail | **2 fail** |
+| ablation: drop the control | 3 tests fail | **1 fail** |
+| control: unablated suite | — | **18 pass / 0 fail** |
+
+| `parallelizable share` at HEAD | `second-folder` | `role` |
+|---|---|---|
+| whole repo | 77.3% | 32.3% |
+| `--scope .agents/specs` | 79.9% | 4.1% |
+| `--scope plugins` | 72.1% | 13.3% |
+
+**Why the headline figures were never reproducible: the metric reads git history, and history grows.**
+The number is a function of (commit, scope), so it drifts with every commit landed — the gate found
+88.2% / 11.7% at the introducing commit `e666fe44` against 87.8% / 11.8% recorded here. Any figure
+quoted without both coordinates is unreproducible **by construction**, which is a poor look on a CR
+whose whole premise is replacing assertion with measurement.
+
+**What is durable — and it is the part the CR actually rests on:** the *ordering and magnitude* of
+the gap. `second-folder` beats `role` by a wide margin at every scope tried, and `role` demonstrates
+the confound in the wild — a healthy-looking within-node co-change (~54%) against a terrible
+parallelizable share. That is the finding; the decimals never were.
 
 **Branch hygiene — flagged, not resolved.** This lands on `test-framework-rebuild` alongside two
 CRs already awaiting a joint gate, per the owner's standing "land it here" call. The branch now
