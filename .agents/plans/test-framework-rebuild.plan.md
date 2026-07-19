@@ -244,6 +244,53 @@ seed rows E5-E8 · `authoring/spec-gate/README.md` · `spec-gate/SKILL.md`'s `ch
 **Consequence for this gate:** `test-framework-rebuild` was ALIGNED at round 2. Folding this in
 **reopens it** — it needs a fresh judge before it can gate.
 
+## HALT — loop diverging, invoked under rule 4 (2026-07-19)
+
+**No remediation was attempted this round. This is the rule working, applied to its own author.**
+
+The reopened gate returned 7 findings; **6 are NEW**, introduced by the remediation-doctrine commit
+`7055757e` itself. Rule 4 — committed in that same commit — says any finding introduced by the
+previous round's remediation means the loop is **diverging**, which halts iteration and forces a
+re-plan rather than another remediation round. That trigger is met at its maximum, so the findings
+below are **recorded, not fixed**.
+
+**Writing a doctrine against list-executing, the producer violated four of its own rules:**
+
+| rule | violation |
+|---|---|
+| 2 — state the rule, sweep for instances | `Director` (should be `Oracle`) sits ~40 lines above the new scenarios **in the same file being edited**, already fixed twice in this corpus (ledger seq 9, seq 24) and contradicted by `workflows/README.md`'s own E1 row |
+| 3 — re-derive against the governing rule | `Then it sweeps the corpus…` asserts **production process**, which `suite-format-governance` Form 1 bars by name |
+| this CR's #305/#306 doctrine | `a correction is re-derived against the rule that governs it` is an **orphaned negative** — only the reject path is scenarioed, no companion shows a compliant correction being accepted |
+| this CR's #306 fix | rule 4's own `Given`s ("a finding the previous round's remediation introduced") are **unscaffoldable** — evaluative causal judgments with no derivation method at any of the six sites |
+| architect: knowledge duplication | the 25-line "Responding to a `change` verdict" section is **byte-identical** in both producer governances — copy-paste, not a shared bar; the exact one-file-edit failure (`105e5efc`) the doctrine's origin story blames |
+
+Plus a terminology collision: `start-mission:49` already uses "converging" for a different criterion
+(has the grill loop reached ALIGNED); the new material overloads it for finding provenance, unreconciled.
+
+### The structural reason, which a repair pass would have missed
+
+Two root causes, neither reachable by fixing findings one at a time:
+
+1. **The doctrine tries to freeze producer PROCESS as acceptance behavior.** `workflows/` is
+   outcome-level by definition. "It sweeps", "it states the rule", "it reports the loop as diverging"
+   are authoring steps, not observable end-states. Rules 2-4 may not be freezable **in this form at
+   all** — which is a design question, not a wording bug.
+2. **Rule 4 is unspecifiable because the record it depends on does not exist.** Determining that a
+   finding was "introduced by the previous round" requires the previous round's findings to be
+   durable. A `change` verdict writes **no ledger line** (`gate-validation-governance`), so prior
+   findings survive only in conversational memory. **The missing capability is the record, not the
+   rule.** Build the record and rule 4 becomes measurable; leave it out and rule 4 is aspiration
+   frozen as contract — the toothlessness this CR exists to remove, rebuilt one level up.
+
+**Also flagged, pre-existing and unswept:** `combat-log-governance`'s existing `correction` line
+(`correction-kind: judge-iteration`, already carrying a per-round `cause`) is the natural home for
+provenance. The new doctrine invented parallel machinery without referencing it — a strong hint that
+option (2) above is a **reconcile**, not a new build.
+
+**Two scenarios survived** and are sound: `a finding the producer cannot substantiate is contested
+rather than edited away` and `a substantiated finding is remediated` — rule 1, the only rule stated
+as an outcome rather than a process.
+
 ## NEXT — resume here
 
 **State: GATE-READY. No open decision remains.** Every build todo is done. The last open question
