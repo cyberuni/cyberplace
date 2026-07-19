@@ -291,6 +291,48 @@ option (2) above is a **reconcile**, not a new build.
 rather than edited away` and `a substantiated finding is remediated` — rule 1, the only rule stated
 as an outcome rather than a process.
 
+## Remediation round — the judge's own findings, swept and answered (2026-07-19)
+
+Owner directed remediation despite the rule-4 halt. The doctrine was applied to itself this time:
+**sweep first, fix the rule, record the ruled-out candidates.**
+
+| finding | rule derived | sweep | fix |
+|---|---|---|---|
+| `Director` at `gate-verdicts:9` | a **retired term** must not be *used* in the live spec | corpus-wide, word-boundary + scope aware | 2 instances fixed **and the term recorded** in `glossary.md` |
+| process-`Then` (`it sweeps…`) | a `Then` asserts an **observable outcome**, never the authoring act | all of `workflows/` — only the 5 I wrote; no pre-existing instance | re-cut to assert the **returned remediation**, which the `Output` now carries |
+| orphaned negative (re-derive) | a guard edge needs a **positive companion** | the 6 new scenarios | split into reject + accept |
+| unscaffoldable `Given` (rule 4) | a `Given` is **buildable state** | both provenance scenarios | provenance re-cut as **derived from the diff** |
+| duplicated 25-line block | knowledge has **one home** | both producer governances | extracted to `sdd:remediation-governance`; both now reference it |
+| `converging` collision | one word, one meaning per file | `start-mission` | provenance sense renamed **regression** |
+
+**The sweep's negative half — what a blanket replace would have destroyed.** `Director` has 40+ hits
+outside `.agents/specs/`. Every one is correctly **excluded**:
+
+- `artifacts/specs/motive-model/` uses **Director** for a *different concept* — one of four **motives**
+  (intend / generate / structure / accumulate), not a gate lens. A blanket rename corrupts it.
+- `artifacts/specs/` is a **separate 48-spec legacy tree**, not this project spec.
+- `ledger/0000-legacy.jsonl` seq 9 and seq 24 **record the rename as history** — append-only, never
+  rewritten to match current vocabulary.
+- ~30 hits are `isDirectory()` — substring matches, not instances. Word boundaries are not optional.
+
+This is the use/mention + scope distinction in the wild, and it is why the retired-term check filed as
+**cyberuni/cyberplace#328** must be scope-aware rather than a grep.
+
+**Rule 4's `Given` is now derivable, which was the judge's sharpest finding.** "A finding the previous
+round introduced" was evaluative with no method. The method existed all along — the round-3 judge used
+it: **git**. A finding naming an artifact the previous round's commits changed is a **regression**; one
+naming an artifact that predates them is **pre-existing**. Both are `git diff` questions, so the
+`Given` is buildable and the obligation is falsifiable.
+
+**Trace added.** Both producers' `Output` now carries `REMEDIATION:` (verdict · rule · swept ·
+ruled-out · provenance). Without it the scenarios asserted acts nobody could check — the toothlessness
+this CR exists to delete.
+
+**Flagged, not hidden:** the six scenarios re-cut here were added by this same CR hours earlier and
+have **never been ratified** — the gate returned `change` on them. `align-spec` will report the re-cut
+as a narrowing against `HEAD`; that is remediation of unratified material, not a narrowing of an
+approved contract.
+
 ## NEXT — resume here
 
 **State: GATE-READY. No open decision remains.** Every build todo is done. The last open question
