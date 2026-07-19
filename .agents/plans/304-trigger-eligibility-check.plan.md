@@ -8,9 +8,9 @@ todos:
   - content: "Locate the check's correct home (check-suite, not check-spec-structure)"
     status: completed
   - content: "BLOCKED: land plugins-as-projects refactor first (owner decision)"
-    status: pending
+    status: completed
   - content: "Explore: grill spec + suite for the advisory tier + @trigger form rule"
-    status: pending
+    status: in_progress
   - content: "Spec gate: freeze the suite, record gate line"
     status: pending
   - content: "Deliver: advisory tier in check-suite, then the @trigger form rule"
@@ -25,9 +25,10 @@ todos:
 
 # CR 304 — the @trigger form check
 
-> **PAUSED 2026-07-16.** Owner chose to land the plugins-as-projects refactor first
-> (`check-suite` / `check-spec-structure` CI scopes are hardcoded, sdd-only, and miss the nested
-> specs). Resume after that lands — the form rule is a small change once scopes are per-project.
+> **UNBLOCKED 2026-07-19.** The plugins-as-projects refactor landed: `plugins/*` are pnpm
+> workspace members, each carrying its own `check:spec` -> `sdd-check-specs`, and turbo runs
+> `check:spec` per project. `check-project-specs.mts:34` dispatches `check-suite` with
+> `--root <project dir>`, so the sdd-only hardcoded scope is gone. Mission resumed.
 
 Issue #304: `@trigger` outlines freeze activation = (description prose x harness x sibling set);
 a node owns only the prose. Twelve suites carry one.
@@ -109,11 +110,71 @@ a boolean the harness never promised. Intent lands in the **subject's descriptio
 the harness actually routes on, and the only one the node owns) with the **README** carrying the
 sibling-deference rationale prose. Verdict packet must carry this before deletion is granted.
 
+## Re-measured on rebased HEAD (2026-07-19) — the 2026-07-16 numbers HOLD
+
+94 commits landed since the pause; every count above re-measured unchanged. 14 files grep
+`@trigger`, 2 prose-only (`aced/sdd-roles/{impl-judge,scenario-writer}`), **12 suites / 15
+outlines**. Baseline `check-suite --root .agents/specs` is **green**.
+
+### The discriminator is sharper than recorded — THREE independent signals, all 10/0 vs 0/5
+
+| Signal | 10 canonical | ssa-lowering | dispatch x4 |
+| --- | --- | --- | --- |
+| `Given a user query "<query>"` | all 10 | `the situation "<situation>"` | none |
+| `Then invocation is "<should_trigger>"` | all 10 | `applying the doctrine is "<should_apply>"` | `the chosen strategy is`, ... |
+| Examples header | `query \| should_trigger` | `situation \| should_apply` | `warm\|interactive\|mux\|seat\|strategy`, ... |
+
+Route on the **Examples-column contract** (`query` + `should_trigger`): it is the least prose-fragile
+of the three and it is the contract the governance already names.
+
+### The rule is NOT an aesthetic convention — it has a mechanical consequence
+
+`aced/sdd-roles/impl-judge` freezes: *"Given a frozen scenario tagged as a trigger-layer case / When
+impl-judge runs it / Then it runs the scenario under the trigger-run policy"*. `@trigger` is a
+**dispatch instruction to the impl-judge**, not a label. An outline tagged `@trigger` that carries no
+`query`/`should_trigger` columns routes the judge into a policy it cannot execute. That is the
+invariant the check defends.
+
+`suite-format/README.md:597-611` already names it: layer tags are *"the evaluation layer a resolved
+judge routes it through"*, and the sanctioned outline is *"a trigger-query corpus of `{ query,
+should_trigger }`"*. The rule **lints a contract the governance already states in prose** — it adds
+no new doctrine.
+
+### Corollary: dispatch's OUTLINE is sanctioned; only its TAG is wrong
+
+`:598` legitimizes a `Scenario Outline` for *any* genuinely uniform enumerated set — dispatch's four
+decision tables qualify. So the defect is **only the `@trigger` tag**, and the fix is exactly the
+recorded owner call: re-tag `@trigger` -> `@behavior`, scenarios untouched. This narrows the
+Clearance ask.
+
+### The advisory tier already has a precedent in its own sibling — mirror, don't invent
+
+`check-spec-state.mts` (same `spec-gate/scripts/` dir) already runs a two-tier check: the
+referenced-artifact check returns `{ findings, violations }`; `findings` print `⚠` to stdout and do
+not touch the exit code, `violations` print `✗` to stderr and exit 1. Frozen at
+`spec-gate.feature:218` ("surfaced for judgment, not hard-blocked"). The prerequisite unit is
+therefore a **mirror of an established in-node shape**, not a new mechanism: widen `checkSuite` /
+`checkFilePaths` from `string[]` to `{ findings, violations }`.
+
+`spec-gate/README.md` carries **no `## Scenario map`**, so `checkScenarioMap` skips it — new
+scenarios carry no map obligation.
+
 ## NEXT
 
-**Blocked** on the plugins-as-projects refactor (plan approved 2026-07-16; it makes every project run
-its own `check:spec`, closing the sdd-only / nested-spec scope gaps this CR kept tripping over).
+Explore is done (see the re-measurement above). Freeze scenarios in
+`.agents/specs/sdd/authoring/spec-gate/spec-gate.feature`, under the existing
+`# ---- Feature-form pre-filter ----` section, for two units:
 
-When it lands: explore the `authoring/spec-gate` node — grill spec + `.feature` for (1) the advisory
-tier, (2) the `@trigger` form rule. Then ablate: revert the rule, prove delta != 0 (5 findings ->
-0), control = the 10 canonical outlines must stay unflagged.
+**Unit 1 — advisory tier** (mirrors `check-spec-state`'s settled shape):
+- an advisory feature-form finding is surfaced for judgment, not hard-blocked
+- positive companion (the tier must not swallow blocking): a form violation still fails closed —
+  already frozen at `:160`/`:166`, so the negative is NOT orphaned
+
+**Unit 2 — the `@trigger` form rule:**
+- a `@trigger` outline whose Examples carry no `query`/`should_trigger` column is surfaced advisory
+- **control that MUST survive:** a `@trigger` outline carrying both columns raises no finding
+- **scope guard:** an *untagged* Scenario Outline is not held to the activation contract (this is
+  what keeps the 4 dispatch tables clean once re-tagged, and every non-trigger outline clear)
+
+Then ablate: revert the rule, prove delta != 0 (5 findings -> 0); control = the 10 canonical
+outlines stay unflagged in both arms.
