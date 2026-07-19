@@ -387,6 +387,42 @@ Basis: a **narrowing to this CR's own ratified rule**. Each scenario keeps its `
 and the branch it tests; only the `Given`'s observability changes. No contract is widened, and no
 scenario is removed.
 
+## Round-3 gate — the loop DIVERGED, and the producer caused it
+
+Rounds 1 and 2 found only pre-existing defects; every fix was clean. **Round 3 found two NEW defects,
+both traceable to the round-2 fix commit `cc078e8e`.** Recording that plainly, because a defect
+introduced by the previous round's fix is the signal that a repair loop is no longer converging —
+and it is the first time in this CR's gate history that it happened.
+
+**New defect 1 — the `:93` re-cut replaced a vague `Given` with a WRONG one.** It became
+`a package nested in a monorepo that is itself an agentic plugin / And the spec could sit hoisted at
+the repo root or colocated beside the package`. Two faults: "could sit … or …" is the same
+unbuildable hedge as the "valid" it replaced, and — worse — it contradicts this CR's own shipped bar.
+`spec-structure-governance:78-83` says hoist applies only when "the spec cannot be kept out of what
+ships", names the agentic plugin as "**the one identified case**", and states "**nesting is never the
+reason**". So that fact pattern is **deterministically hoisted**, exactly as sibling scenarios
+`:40-44` and `:65-68` already assert. The pre-fix wording was too vague to contradict anything; the
+fix concretized it into a contradiction.
+
+**Corrected** to `an agentic plugin, for which the hoist rule leaves exactly one legal location`.
+Reading the governance properly, **no** ambiguous fact pattern exists — a plugin hoists, an npm
+package colocates. The scenario's real content is therefore the stronger, non-contradictory claim:
+the choice is surfaced **even when the rules leave one legal answer**. A convergence, not a branch.
+
+**New defect 2 — the scenario map was never reconciled.** `cc078e8e` touched only the `.feature` and
+this plan; `README.md`'s map still described the pre-fix `Given` text in three `Path` cells.
+`check-suite` passed throughout because it binds on scenario **name**, which never changed — the lint
+structurally cannot see a stale `Path` description. All three cells are now reconciled.
+
+**Standing lesson: re-cutting a `Given` is a TWO-FILE edit.** The `.feature` carries the step; the
+`README` scenario map describes it in the `Path` column. Changing one without the other produces
+spec-vs-suite drift that the mechanical binding lint cannot catch. Both round-2 `Given` re-cuts in
+this CR made exactly this mistake.
+
+**Clearance basis:** these corrections sit **inside** the owner's 2026-07-19 grant to re-cut `:93`,
+`:128`, and `:190` — this is that granted work executed correctly, not new scope. No scenario is
+added or removed; each keeps its `When`, `Then`, and branch.
+
 ## NEXT — resume here
 
 **Next action:** spec gate — **jointly with `test-framework-rebuild`** (owner decision: gate them
