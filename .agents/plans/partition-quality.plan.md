@@ -93,6 +93,39 @@ metric is the hard part; computing it is not.
   choice with the project's own numbers) and the formation loop (the layout-quality signal it
   already describes but has never computed).
 
+## SPEC GATE — 2026-07-19: **NOT APPROVED** (cold spec-judge, ALIGNED: false)
+
+Lenses `{oracle: pass, builder: FAIL, architect: FAIL}`. The underlying design decision is sound and
+was independently re-derived: the confound math reproduces, all three `## References` citations were
+fetched and verified against source text (not merely topically adjacent), and "not a gate" holds by
+code inspection. The failures are in the suite and in this brief's evidentiary claims.
+
+**BLOCKER 1 — two `BOUNDARY` map rows bind to nothing and measure nothing.** `## Logic`'s graph has
+no `BOUNDARY` node, so those rows pair with no drawn branch. Both scenarios are invariants, not
+decisions: `the engine writes nothing to the repository` is true by construction (no write path
+exists anywhere), and `the measurement renders no verdict` does not vary by its `Given`. Neither can
+be lost by a plausible wrong subject — they fail the miss test structurally. Acceptance-only-strict
+bars them. Removal is a frozen re-cut ⇒ **Clearance required.**
+
+**BLOCKER 2 — the confound label is format-dependent.** `--format text` emits
+`diagnostics (CONFOUNDED by node count …)`; `--format json` emits bare numbers with **no**
+annotation, indistinguishable from the headline. The scenario states the claim universally, and the
+suite never scenario-tests `--format` at all despite the CLI shipping it.
+
+**BLOCKER 3 — this brief's self-verification does not reproduce.** Re-measured independently, with a
+control that must survive:
+
+| ablation | brief claimed | measured |
+|---|---|---|
+| headline := confounded metric | 5 fail | **2 fail** |
+| drop the control | 3 fail | **1 fail** |
+| restored | — | **16 pass / 0 fail** |
+
+The headline figures did not reproduce exactly either (`87.8% / 11.8%` claimed; `88.2% / 11.7%` at
+the introducing commit, `88.8% / 11.3%` at HEAD). The qualitative gap (~90% vs ~10-30%) is real and
+holds. But on a CR whose premise is replacing assertion with measurement, its own numbers were
+asserted. Re-measure and restate before re-gating.
+
 ## NEXT — resume here
 
 **Next action:** spec gate — now the third CR on this branch awaiting the joint gate.

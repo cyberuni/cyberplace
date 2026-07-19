@@ -189,8 +189,21 @@ it is unrelated to this CR's subject. Filing it beats smuggling it into a test-d
 ## Corpus sweep — measured, not asserted
 
 **Over-fire check: 0 findings across 78 suites in 7 projects** (aced 24, sdd 42, cyberfleet 4,
-cyberlegion 3, cyberplace 3, cyberspace 2, quill 0). The rebuilt bar — including the new
-scenario-map binding lint — does **not** over-fire on the existing corpus. The map lint contributes
+cyberlegion 3, cyberplace 3, cyberspace 2, quill 0) — **for the MECHANICAL bar only.**
+
+> **Scope correction (spec-judge, 2026-07-19).** The framing "measured, not asserted" overstated what
+> ran. The executed tool is `check-suite`, which implements Gherkin validity, boolean-`Then` form,
+> rubric structure, and scenario-map binding — and **none** of this CR's *qualitative* rules
+> (scaffoldable `Given`, the duplication reframe, decision-graph strictness). Those are judged, not
+> linted, by the governance's own words, so no executed check backs a "0 findings" claim about them.
+> Spot-checked candidates a strict qualitative pass would plausibly flag already exist in the
+> untouched corpus: `spec-producer.feature:68` ("the correct reading cannot be established"),
+> `scaffold-project-spec.feature:93` ("allows more than one valid location"), `aced/skillify.feature:75`
+> ("whose scope is unclear"). The mechanical result stands; the qualitative sweep was **not run**.
+> (The 78-vs-79 count gap is benign — a sibling CR added `partition-quality.feature` afterward.)
+
+The rebuilt bar — including the new scenario-map binding lint — does **not** over-fire mechanically
+on the existing corpus. The map lint contributes
 zero because it skips specs with no `## Scenario map`, which is 36 of 37 sdd behavioral nodes; it
 activates per node as the format lands, so this number will move as the node-format migration
 proceeds and is not evidence about those nodes.
@@ -210,6 +223,33 @@ proceeds and is not evidence about those nodes.
 **Left as history:** `aced/design/decisions/0002-boundary-vs-surface-more.md` states the old framing,
 but a decision record is an append-only account of what was decided when — rewriting it would forge
 the record rather than correct doctrine.
+
+## SPEC GATE — 2026-07-19: **NOT APPROVED** (cold spec-judge, ALIGNED: false)
+
+Lenses `{oracle: FAIL, builder: pass, architect: pass}`. Structural band was clean
+(`check-spec-state`, `check-suite` over 64 touched suites, referenced-artifact over 101 `.md`);
+the Clearance ledger verified complete. The failure is judgment, not form.
+
+**BLOCKER — #304 dropped a measurement it argued must be relocated.** The deleted `@trigger`
+Scenario Outline was ssa-lowering's only frozen check on its own activation accuracy, and nothing
+replaced it. `suite-format-governance`'s rule reads "Oracle **relocates or kills** it" — and this
+plan's own text, arguing why the **14 sibling** `@trigger` suites must not be swept, says removing
+them "would **drop the measurement rather than relocate it**". The CR states that principle and then
+violates it for itself, distinguished only by effort-scope, not by any actual relocation. The cited
+substitute (`test-skill`'s labeled query corpus) measures **model-triggered skill invocation**, which
+does not transfer to a **coordinator-invoked** doctrine like ssa-lowering. **Owner decision needed.**
+
+**FIXED at the gate:** the "0 over-fire findings across 78 suites" claim was scope-corrected — the
+executed tool (`check-suite`) implements only the mechanical bar; the qualitative rules this CR
+introduces are judged, not linted, and that sweep was never run.
+
+**REJECTED — the judge's description finding does not hold.** It flagged the 9 governance
+`description:` fields shortened to `"Partial Skill: invoke by name only"` as a regression against a
+convention requiring identity + caller. **Owner ruled otherwise (2026-07-19): do not expand them.**
+A `user-invocable: false` skill's description is not a trigger — it is invoked by name — so detail
+there buys nothing at match time, which is exactly the rationale of the active
+`sdd-trim-internal-descriptions` CR. The short form is the intended direction. (Measurement note:
+8 were shortened by this CR; `suite-format` was already short at the merge-base.)
 
 ## NEXT — resume here
 

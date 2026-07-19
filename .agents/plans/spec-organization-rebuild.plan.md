@@ -301,6 +301,29 @@ principles are each right about a different thing — **strategy is policy, home
 
 The declared strategy tells `place-node` *how* to derive; capability-first stops being hardcoded.
 
+## SPEC GATE — 2026-07-19: **NOT APPROVED** (cold spec-judge, ALIGNED: false)
+
+Lenses `{oracle: pass, builder: FAIL, architect: FAIL}`.
+
+**FIXED at the gate — `place-node/SKILL.md:13` asserted a read that never happens.** Its opening said
+the engine "reads the project-spec's declared placement map + capability layout", contradicting both
+its own body ("This tool therefore neither reads nor recommends a strategy") and the engine, which
+only scans `concept:` frontmatter and never opens `spec.md`. Defect 2 was marked `completed`, but the
+fix rewrote the paragraph below and left this sentence — the contradiction was relocated, not
+resolved. Corrected to describe what the engine actually does.
+
+**BLOCKER — the pilot node violates the rule it was chosen to pilot.**
+`scaffold-project-spec.feature:115-116` reads `Given a project in detection mode whose src/ is
+organized by layer` — the conjunctive `Given` this CR's own Fifth Clearance and the scaffoldable-
+`Given` rule exist to ban. Sibling scenarios at `:110-111` and `:137-138` split the **identical**
+fact pair correctly. `check-suite` cannot catch it (semantic, not mechanical). Re-cutting a frozen
+scenario is a narrowing ⇒ **Clearance required.**
+
+**Observation (not blocking):** the four-section node format is live on only 2 of 38 sdd behavioral
+nodes while `spec-format-governance` states it as a **universal** bar. Both briefs record this as
+deliberate debt, but only in transient `plan.md` files that retire at handoff — no durable trace
+distinguishes tracked migration from an undetected violation.
+
 ## NEXT — resume here
 
 **Next action:** spec gate — **jointly with `test-framework-rebuild`** (owner decision: gate them
