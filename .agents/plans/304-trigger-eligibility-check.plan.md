@@ -1,7 +1,7 @@
 ---
 cr-ref: 304
 source: https://github.com/cyberuni/cyberplace/issues/304
-status: paused
+status: awaiting-clearance
 todos:
   - content: "Re-measure the corpus; validate issue's 4 measurements before scoping"
     status: completed
@@ -20,6 +20,8 @@ todos:
   - content: "Impl gate"
     status: completed
   - content: "Handoff: PR + Clearance verdict packet (incl. dispatch re-tag)"
+    status: completed
+  - content: "COUNCIL: adjudicate the 3 Clearance asks (dispatch re-tag / ssa-lowering / promote to blocking)"
     status: pending
 ---
 
