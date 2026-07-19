@@ -28,7 +28,7 @@ todos:
     status: completed
   - content: "read-check: DROPPED 2026-07-19 (owner). Spec node + engine removed; the claim that named it removed. Relocated to universal-plugin#9 (governance loader, where a script-served fetch is observable)"
     status: completed
-  - content: "Apply to ssa-lowering: #305 positive Oracle-gate companion + Given re-cut; #306 disjoint Given re-cut; #304 activation off node freeze (all Clearance)"
+  - content: "Apply to ssa-lowering: #305 positive Oracle-gate companion (additive); #306 disjoint Given re-cut (Clearance). #304 deletion WITHDRAWN 2026-07-19 — outline restored, it was the node's own routing decision"
     status: completed
   - content: "Corpus sweep DONE: over-fire check measured 0 findings across 78 suites in 7 projects; old-doctrine 'acceptance/boundary' prose reframed on the two axes (ADR left as history)"
     status: completed
@@ -108,83 +108,37 @@ vocabulary, so they diverge from live behavior. No behavior is being widened.
   concretely (authentication+billing / authentication+search), and the rubric comment now names
   billing and search rather than gesturing at "the two nodes only one CR touches".
 
-- **#304 — activation taken off the node freeze (Clearance).** Removed the `@trigger` Scenario
-  Outline from `ssa-lowering.feature`. The issue's finding is now settled *by this CR's own rebuilt
-  doctrine*: activation is owned by (description prose x harness x sibling set) and the node controls
-  one of the three, so it is a **co-owned seam** — and `suite-format-governance` already says a
-  co-owned seam ("activation/routing — does this config fire?") is **out of scope** for a per-node
-  frozen suite. The outline froze a property the node cannot honour alone. A comment marks the spot
-  so the removal reads as doctrine, not loss, and the spec README's structural claim was updated to
-  match.
-  **Corpus-wide implication, NOT swept:** 14 suites still carry `@trigger`. The same argument applies
-  to every one, but sweeping them is a corpus-scale removal of frozen scenarios and belongs to an
-  owner decision, not to this scoped todo. Trigger accuracy has a real instrument (`test-skill`'s
-  labeled query corpus); until those suites move to it, removing their outlines would drop the
-  measurement rather than relocate it.
+- **#304 — WITHDRAWN 2026-07-19. The deletion was wrong; the outline is restored.**
+  This CR removed `ssa-lowering.feature`'s `@trigger` Scenario Outline, reasoning that activation is
+  owned by (description prose x harness x sibling set) and the node controls only one, making it a
+  co-owned seam that `suite-format-governance` puts out of scope.
 
-## read-check — DROPPED 2026-07-19 (owner). Relocated to universal-plugin#9
+  **That misread the category.** The out-of-scope rule targets *harness* activation — "does this
+  config fire?", where a model matches a description to a user's query. The deleted outline's `When`
+  is `the coordinator decides whether to apply the SSA-lowering doctrine`: an **applicability**
+  decision made by an agent **reading this doctrine**. No harness is in the loop, and the deciding
+  input is the node's own content. The node owns it.
 
-**Outcome: no read-check in this CR.** The spec node, the engine, and the claim that named the check
-are all removed. The `## Key points (read-check)` headings stay in the ten governances as a section
-label for the load-bearing directives; nothing now claims an executing check.
+  **This CR's own governance says so.** `suite-format-governance:177-178` admits the tag for exactly
+  this case — layer tags include "`@trigger`, **where the node genuinely owns the routing decision**".
+  The deletion contradicted an exception written in the same CR.
 
-**Why it was dropped, not deferred.** The mechanism was unsound at its foundation, and the fix does
-not belong in this repo:
+  **And it dropped a measurement rather than relocating one** — the standard this very plan invokes
+  as the reason NOT to sweep the 14 sibling `@trigger` suites. The cited substitute (a labeled query
+  corpus, `test-skill`) measures *model-triggered skill invocation*, which does not transfer to a
+  coordinator-invoked doctrine. Nothing replaced the 8 balanced examples (4 apply / 4 do not).
 
-1. **Self-reported loading is not evidence.** Measured: given only a governance's *name*, a capable
-   agent produced six fluent, confident "key points" that scored **1/4** against the real document —
-   it got the guessable rule right, actively contradicted a real one (claimed freeze transfers
-   ownership; the real rule is nobody writes a frozen `.feature`), and missed the two most
-   load-bearing directives entirely.
-2. **The engine could not tell genuine from fabricated.** Both produced byte-identical verdicts. It
-   measured verbatim overlap to catch copying, but fabrication has *low* overlap — same as an honest
-   paraphrase. It tested the wrong axis. An **empty** attestation also passed clean.
-3. **No lexical check can fix that.** Distinctive-term coverage was measured at **8/30 genuine vs
-   6/30 fabricated** — no separation. An honest restatement deliberately avoids the source's
-   vocabulary, which is exactly what defeats term matching *and* exactly what the parroting check
-   rewards. The two checks want opposite things.
-4. **The sound fix is observability, not attestation.** If a governance is served by a *script*, the
-   fetch is an event a third party can record. That belongs to the governance **loader**, which
-   lives in `universal-plugin`, not here.
+  **Corroborating evidence the deletion was incomplete:** `ssa-lowering/README.md:316-325` still
+  cited the outline as a live frozen claim ("the `@trigger` row asserts…", "Both frozen claims
+  survive"), leaving a dangling reference to a scenario the CR had removed.
 
-**Filed:** `cyberuni/universal-plugin#9` — resolve governances across **project > plugin > global >
-package**. Follow-up to that repo's #3, which specifies `governance show` with a three-tier chain
-that has **no plugin tier**, while plugin-owned governances (SDD's 16) use a different on-disk shape
-(`skills/<name>-governance/SKILL.md`, not `governances/<name>.md`).
+  **Restored** with its Examples table intact (additive -> self-clears, no Clearance needed), plus a
+  comment recording why it sits there. The README's structural claim is corrected to match.
 
-**Do not port `cyberplace`'s implementation.** `packages/cyberplace/src/governance/load.ts:14`
-resolves exactly one source (`getPackageRoot()/governances`) — no project, global, or plugin lookup,
-no precedence. It ships 5 documents and cannot see the SDD plugin's 16. It predates the layered
-model. Prior art to replace, not to lift.
-
-**Known limit recorded for whoever picks this up:** while a governance is reachable by *both* a
-script call and a direct skill/file read, only one path is observable, so a missing fetch record
-cannot distinguish "never loaded" from "loaded the other way". Whether governances become
-script-only is a real design decision and is noted in #9.
-
-**Errors made here, worth not repeating:** the engine's every mutant probed *malformed* attestations
-and never a *sparse* one, so an empty attestation passing went unnoticed — over-permission fails
-green. A later "distinctive anchor" probe scored 4/4 vs 1/4 and looked decisive, but the alternations
-were hand-written while looking at both texts; a derived version showed no separation. And a proposed
-"key points eager, bodies lazy" split would have certified the exact behavior the check existed to
-prevent — the harness has only two load tiers (name, or whole body), not three.
-
-## Follow-up to file at handoff — ADR number collisions (PRE-EXISTING, not this CR)
-
-`ls artifacts/adr/ | grep -oE '^[0-9]{4}' | sort | uniq -d` returns **0019 and 0025** — two ADRs
-share each number:
-
-- `0025-mission-graph-compiler-scheduler-model.md` and `0025-session-adapter-verify-effect-or-fail-loud.md`
-- (same collision at 0019)
-
-The governances cite bare **"ADR-0025"** for the partition stake (`architect-spec-governance`,
-`architect-impl-governance`, and `project-spec/partition-quality/README.md`). The citation
-**resolves by content** to the mission-graph ADR — it is the one that argues the scheduler/partition
-case — so no claim on this branch is wrong. But the reference is ambiguous to any reader who
-resolves it by number.
-
-**Not fixed here.** Renumbering is a corpus-scale change that must land as a single atomic pass, and
-it is unrelated to this CR's subject. Filing it beats smuggling it into a test-doctrine CR.
+  **The 14 sibling `@trigger` suites: still NOT swept, and now for a better reason.** The question is
+  per-node — does *that* node own its routing decision? — not a corpus-wide yes or no. Some are
+  genuine harness activation and out of scope; some, like this one, are the node's own. Filed as
+  follow-up work; a blanket sweep in either direction would repeat this error at scale.
 
 ## Corpus sweep — measured, not asserted
 
@@ -230,7 +184,7 @@ Lenses `{oracle: FAIL, builder: pass, architect: pass}`. Structural band was cle
 (`check-spec-state`, `check-suite` over 64 touched suites, referenced-artifact over 101 `.md`);
 the Clearance ledger verified complete. The failure is judgment, not form.
 
-**BLOCKER — #304 dropped a measurement it argued must be relocated.** The deleted `@trigger`
+**BLOCKER — #304 dropped a measurement it argued must be relocated. RESOLVED 2026-07-19 by restoring the outline; see the #304 record above.** The deleted `@trigger`
 Scenario Outline was ssa-lowering's only frozen check on its own activation accuracy, and nothing
 replaced it. `suite-format-governance`'s rule reads "Oracle **relocates or kills** it" — and this
 plan's own text, arguing why the **14 sibling** `@trigger` suites must not be swept, says removing
