@@ -365,6 +365,28 @@ over-fires and must be read, not trusted.
 cited for the scaffoldable-`Given` rule's claimed research basis. An empty section is correctly
 omitted per governance — the defect is the brief's claim, now withdrawn.
 
+## Clearance — granted by owner in-session 2026-07-19 (frozen re-cut, second grant)
+
+Recorded before the edit, per grant -> record -> edit. Distinct from the earlier grant covering
+`scaffold-project-spec.feature:115`; this one covers three further `Given` steps in the same file,
+one named by the round-2 judge and two found by the sweep that judge's finding required.
+
+Each fails the scaffoldable-`Given` bar (observable, not evaluative) and is re-cut to the state a
+fixture can actually build:
+
+| line | was | becomes |
+|---|---|---|
+| `:93` | `a project whose shape allows more than one **valid** location` | the two concrete locations that shape admits, named |
+| `:128` | `a **strongly** layered project` | the split form its three siblings already use |
+| `:190` | `whose repo-root name is **already correct**` | the repo-root directory name equals the derived project name |
+
+**Owner chose the rule-wide cut over the judge-named line alone** — the narrow fix is exactly what
+produced the round-2 findings, and `:93` had independently been flagged by a round-1 judge as well.
+
+Basis: a **narrowing to this CR's own ratified rule**. Each scenario keeps its `When`, its `Then`,
+and the branch it tests; only the `Given`'s observability changes. No contract is widened, and no
+scenario is removed.
+
 ## NEXT — resume here
 
 **Next action:** spec gate — **jointly with `test-framework-rebuild`** (owner decision: gate them
