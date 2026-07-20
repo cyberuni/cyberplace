@@ -1,16 +1,16 @@
 ---
 cr-ref: 304-m1-define-governance
 source: https://github.com/cyberuni/cyberplace/issues/304
-status: draft
+status: done
 todos:
   - content: "Assess each legacy case for CURRENT relevance against the live skill (reference only)"
     status: completed
   - content: "Grill the relevant-and-uncovered behaviors into new scenarios on the live suite"
-    status: in_progress
+    status: completed
   - content: "Spec gate: freeze the added scenarios, record gate line"
-    status: pending
-  - content: "Impl gate, then handoff: PR referencing #304 (this spec only, issue stays open)"
-    status: pending
+    status: completed
+  - content: "Impl gate ratified; follow-ups filed. PR deferred - batching with later specs"
+    status: completed
 ---
 
 # CR 304-M1 — build up define-governance's suite
@@ -71,9 +71,12 @@ and one rejecting link-only content describe behavior the skill does not impleme
 wanted it belongs in the SKILL.md first, then earns one scenario — not three scenarios inventing a
 contract the implementation never made.
 
-The six that survive are each backed by a line in the current implementation: the five gather
-questions, asking about an unclear scope, mixed criteria-and-steps content, atomic rule splitting,
-kebab-case name normalization, and reporting quality findings below the fix bar.
+Each survivor is backed by a line in the current implementation. Six were authored; the
+mixed-criteria-and-steps one was dropped at the first grill round (see below) and two more were added
+during grilling to close discrimination holes, so **eight** scenarios landed: asking for the
+unsupplied requirements, holding the draft until they are gathered, asking about an unclear scope,
+three rule-atomicity cases, kebab-case name normalization, and reporting quality findings below the
+fix bar.
 
 ## Grill round 1 — judge verdict
 
@@ -161,3 +164,44 @@ place would hide it everywhere else.
 ## NEXT
 
 Targeted re-judge of the corrected README, then the spec gate.
+
+## Outcome — landed on the branch, PR deferred
+
+Both gates cleared; the impl gate was ratified by the owner rather than self-asserted, since the run
+leash reserved it. Eight scenarios added, nothing modified or removed, so the freeze held throughout
+and no clearance was ever entered. The one reopened scenario was an Oracle-lens revert of a scenario
+this same mission had frozen minutes earlier.
+
+**PR deliberately deferred** — the owner is batching several specs into one pull request rather than
+one per node. The branch carries the work; handoff completes when the batch is ready.
+
+Five follow-ups filed against the source forge, all recorded in the ledger before filing so the
+records stand whether or not filing succeeds.
+
+## What the mission actually produced, beyond the scenarios
+
+- **Three implementation gaps**, each found by an added scenario on its first run: a drafting gate the
+  skill never stated, an over-split the atomicity rule left unbarred, and a report line a rollup could
+  satisfy while hiding failures below the fix bar.
+- **One routing defect**, found by drawing the control-flow graph. Two improve-shaped requests had
+  been blurred in prose; an edge must terminate somewhere, so the graph forced them apart. Fixed by
+  naming the object this node owns rather than the verb its sibling owns — in a description shorter
+  than the one it replaced, because a description is a trigger surface, not a spec.
+- **Seven legacy cases rejected rather than migrated.** Three were stale enough to penalize a correct
+  agent today: one demands the agent name a skill that no longer exists, two assert a naming prefix a
+  later change request reversed corpus-wide. Four described behavior the implementation does not have,
+  where writing a scenario would have specified aspiration as contract.
+- **A held-out fixture.** Two of the three atomicity fixtures appear verbatim in the implementation as
+  its worked examples, so they test transcription. The third appears nowhere in it and passed
+  unanimously, which is what shows the rule generalizes.
+
+## Method notes worth carrying to the next spec
+
+- A legacy case is a **claim to verify against the current implementation**, never evidence of current
+  behavior. Three of fourteen asserted rules the corpus had already reversed.
+- A finding that a scenario's criterion **does not decide its own example** is a failure prediction,
+  not a stylistic note. Under-weighting one cost a full gate cycle here.
+- A refuted fixture may still be sound **in the other direction** — the one reverted here was a bad
+  keep-whole case and a uniquely valuable split case, and deleting it outright removed evidence.
+- Two fixtures cannot isolate a criterion when they differ on several axes at once; a cheap proxy will
+  survive. Hold the other axes fixed and move one.
