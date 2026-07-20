@@ -11,10 +11,13 @@ jobs:
         node-version: ['22', '24']
     steps:
       - uses: actions/checkout@v5
+      # pnpm must be on PATH BEFORE setup-node: v5 reads `packageManager` from
+      # package.json and invokes that manager, so the reverse order fails with
+      # "Unable to locate executable file: pnpm". v4 did not, hence the old order.
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-      - uses: pnpm/action-setup@v4
 
       # Clear npm exec cache to work around gherkin-cli npm cache corruption
       - name: Clear npm exec cache
