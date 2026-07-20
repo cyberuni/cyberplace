@@ -7,8 +7,8 @@ todos:
     status: completed
   - content: "define-skill: build up suite, draw CFG, both gates — DONE (33->41, #340-#344)"
     status: completed
-  - content: "contribute-skill: re-read suite vs impl, draw CFG, gates — DONE (21->23, #345)"
-    status: completed
+  - content: "contribute-skill: RE-DRIVE scenarios from CFG (first pass used wrong ordering — patched not re-derived; committed db1f24cc but impl gate NOT ratified)"
+    status: in_progress
   - content: "manage, manage-model-runners, skillify: same, one at a time"
     status: pending
   - content: "Open PR(s) against main referencing #304 (do NOT close — issue stays open for later specs)"
@@ -25,14 +25,16 @@ retired corpus as reference only** — nothing migrated.
 
 ## NEXT — resume here
 
-**Next action:** start the fourth node, `manage`, then `manage-model-runners`, then `skillify` —
-**one at a time**. For each: re-read the colocated `.feature` against its implementation (the near-1:1
-corpus is *not* proof the suite is healthy — every real defect on the first three nodes came from the
-re-read + drawing the CFG, not the corpus), add only real-and-uncovered behavior as *additive*
-scenarios, rebuild the node README to the four-section shape (What / Use Cases / Logic-with-mermaid-CFG
-/ Scenario map, every edge bound 1:1), run `pnpm --filter @cyberplace/aced-plugin check:spec` after
-suite edits, self-assert the spec gate within leash with a fresh COLD spec-judge, run a focused COLD
-impl-judge on any newly-added scenarios, then commit `feat(aced)` per node.
+**Next action:** re-drive `contribute-skill` under the CORE METHOD above (its first pass used the
+wrong ordering — patched the suite instead of re-deriving from the CFG; impl gate NOT yet ratified),
+then `manage`, then `manage-model-runners`, then `skillify` — **one at a time**. For each, follow the
+CORE METHOD: update spec + draw CFG → re-derive the full scenario set from the CFG (each edge drives
+its scenario) → reference `artifacts/specs/<node>/golden-set/` → reconcile against the frozen suite
+(additive self-clears, narrowing needs Clearance) → rebuild the README to the four-section shape (What
+/ Use Cases / Logic-with-mermaid-CFG / Scenario map, every edge bound 1:1) → run `pnpm --filter
+@cyberplace/aced-plugin check:spec` → self-assert the spec gate within leash with a fresh COLD
+spec-judge → run a focused COLD impl-judge on any changed/added scenarios → commit `feat(aced)` per
+node → surface the impl gate to the owner for ratification.
 
 Node paths: `.agents/specs/aced/manage/`, `.agents/specs/aced/config-authoring/manage-model-runners/`,
 `.agents/specs/aced/config-authoring/skillify/`. NOTE: `skillify`'s check already shows "2 added"
@@ -48,7 +50,20 @@ loop. The cold spec-judge caught that the multi-skill scenario was mapped to the
 in-pass. Its pre-existing `@rubric` Selection concern (does `scoped_to_skills_tree` duplicate the
 write-scope boolean guard?) is frozen/out-of-scope → filed #345, not touched.
 
-**Method — do not relearn (proven on two nodes):**
+**⚠️ CORE METHOD (owner-directed 2026-07-20 — applies to EVERY node in this mission):**
+The CFG is the source of truth, not the existing suite. Per node, in this order:
+1. **Update the spec** (README) and **draw/finalize the CFG** first.
+2. **Re-derive the whole scenario set FROM the CFG** — walk every edge and let it drive its scenario;
+   do NOT read the current suite and merely patch gaps (that was the earlier mistake — it leaves stale
+   scenarios in place and only catches what a diff notices).
+3. **Use `artifacts/specs/<node>/golden-set/` as the REFERENCE** for each re-derived scenario's
+   behavior/wording (reference only — a legacy case is still a claim to verify against the current
+   impl, never migrated wholesale).
+Reconcile the re-derived set against the frozen suite: additive scenarios self-clear; any
+narrowing/rewrite of a frozen scenario is Clearance-bound (owner ratification recorded BEFORE the edit,
+bounded to named scenarios).
+
+**Supporting method — do not relearn (proven on two nodes):**
 1. A legacy case is a **claim to verify against the current `SKILL.md`**, never evidence of current
    behavior — corpora are stale by default. On both nodes, cases asserted rules the implementation had
    reversed and would have penalized a correct agent.
