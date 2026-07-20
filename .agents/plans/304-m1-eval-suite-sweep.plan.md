@@ -11,8 +11,10 @@ todos:
     status: completed
   - content: "manage: re-driven from CFG (15 edges 1:1), README rebuilt to four-section shape, cold spec-judge ALIGNED; suite CFG-complete so ZERO scenario changes → docs-only, no impl gate. Commit a304435e. Fit:strong-vs-boolean tension filed #347."
     status: completed
-  - content: "manage-model-runners, skillify: same, one at a time"
-    status: pending
+  - content: "manage-model-runners: re-driven from CFG; drawing the RESOLVE fork surfaced 2 unbound edges (explicit branch + curated-over-default precedence) the disjunctive frozen scenario left open — 2 mutants survived. Added 2 additive scenarios (12->14), README rebuilt, cold spec-judge ALIGNED, focused cold impl-judge PASS. Commit 1ef60a37. Impl gate AWAITS OWNER RATIFICATION (ledger 5e0520)."
+    status: completed
+  - content: "skillify: re-driven from CFG; drawing the two 3-way classifier forks (placement, pattern) showed each bound only ONE arm (folded into one Given) — arm-collapse mutants survived. Added 2 additive scenarios binding a 2nd arm each (18->20), README rebuilt, cold spec-judge ALIGNED (not over-speccing), focused cold impl-judge PASS. Commit 6754bfeb. Impl gate AWAITS OWNER RATIFICATION. (Stale plan note about '2 added drift' was already reconciled by the rebase — clean baseline.)"
+    status: completed
   - content: "Open PR(s) against main referencing #304 (do NOT close — issue stays open for later specs)"
     status: pending
 ---
