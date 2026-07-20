@@ -42,7 +42,11 @@ Node paths: `.agents/specs/aced/manage/`, `.agents/specs/aced/config-authoring/m
 (pre-existing snapshot drift, unrelated to this sweep) — expect its suite to already carry
 uncommitted-vs-fingerprint delta; reconcile it as part of that node.
 
-**No blocking decisions open.** Three nodes shipped and gated; nothing mid-flight.
+**No blocking decisions open.** Three nodes shipped and gated; nothing mid-flight. The backfill
+doctrine + `incomplete-node` check **landed on `main` (PR #346)**; this branch is rebased onto it and
+the three rebuilt nodes were reconciled `## Logic` → `## Control Flow` (commit `0b0f3137`) so they
+pass the new advisory check. The remaining `[U]`-only nodes still trip `incomplete-node` (advisory) —
+clearing them is exactly this sweep; flip the check to blocking once done.
 
 **contribute-skill retro (proves method #2 again):** corpus was 16/16 covered, yet the re-read + CFG
 found a missing fork positive-companion (an "always fork" mutant survived) and an uncovered multi-skill
@@ -51,18 +55,19 @@ loop. The cold spec-judge caught that the multi-skill scenario was mapped to the
 in-pass. Its pre-existing `@rubric` Selection concern (does `scoped_to_skills_tree` duplicate the
 write-scope boolean guard?) is frozen/out-of-scope → filed #345, not touched.
 
-**⚠️ CORE METHOD (owner-directed 2026-07-20 — applies to EVERY node in this mission):**
-The CFG is the source of truth, not the existing suite. Per node, in this order:
-1. **Update the spec** (README) and **draw/finalize the CFG** first.
-2. **Re-derive the whole scenario set FROM the CFG** — walk every edge and let it drive its scenario;
-   do NOT read the current suite and merely patch gaps (that was the earlier mistake — it leaves stale
-   scenarios in place and only catches what a diff notices).
-3. **Use `artifacts/specs/<node>/golden-set/` as the REFERENCE** for each re-derived scenario's
-   behavior/wording (reference only — a legacy case is still a claim to verify against the current
-   impl, never migrated wholesale).
+**⚠️ CORE METHOD — now canonical doctrine (landed on `main`, PR #346 / ADR-0029):**
+The backfill method is no longer a plan-local note; it is governance every producer inherits:
+- **`sdd:spec-format-governance`** — on backfill the four sections stay mandatory; draw the
+  `## Control Flow` CFG and `## Scenario map` from the code, never stop at `## Use Cases`.
+- **`sdd:suite-format-governance`** — re-derive the whole scenario set FROM the CFG's edges (one per
+  path-class/edge, guards paired with positive companions); the standing `.feature` / retired
+  `artifacts/specs/<node>/golden-set/` is **reference only** — a claim to verify against the current
+  impl, never the baseline to patch.
+- **`check-spec-structure`'s `incomplete-node`** (advisory) flags a behavioral leaf that skips a
+  required section; flip it to blocking (follow-up) once this sweep clears the corpus.
 Reconcile the re-derived set against the frozen suite: additive scenarios self-clear; any
 narrowing/rewrite of a frozen scenario is Clearance-bound (owner ratification recorded BEFORE the edit,
-bounded to named scenarios).
+bounded to named scenarios). Section name is **`## Control Flow`** (post-#333 rename) — not `## Logic`.
 
 **Supporting method — do not relearn (proven on two nodes):**
 1. A legacy case is a **claim to verify against the current `SKILL.md`**, never evidence of current
