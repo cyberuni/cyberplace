@@ -7,8 +7,8 @@ todos:
     status: completed
   - content: "define-skill: build up suite, draw CFG, both gates — DONE (33->41, #340-#344)"
     status: completed
-  - content: "contribute-skill: RE-DRIVE scenarios from CFG (first pass used wrong ordering — patched not re-derived; committed db1f24cc but impl gate NOT ratified)"
-    status: in_progress
+  - content: "contribute-skill: re-driven from CFG (23 edges walked vs golden-set) — suite confirmed CFG-complete, 21->23, #345; impl gate awaits owner ratification"
+    status: completed
   - content: "manage, manage-model-runners, skillify: same, one at a time"
     status: pending
   - content: "Open PR(s) against main referencing #304 (do NOT close — issue stays open for later specs)"
@@ -25,9 +25,8 @@ retired corpus as reference only** — nothing migrated.
 
 ## NEXT — resume here
 
-**Next action:** re-drive `contribute-skill` under the CORE METHOD above (its first pass used the
-wrong ordering — patched the suite instead of re-deriving from the CFG; impl gate NOT yet ratified),
-then `manage`, then `manage-model-runners`, then `skillify` — **one at a time**. For each, follow the
+**Next action:** `manage`, then `manage-model-runners`, then `skillify` — **one at a time**.
+(`contribute-skill` is re-driven and confirmed CFG-complete; its impl gate awaits owner ratification.) For each, follow the
 CORE METHOD: update spec + draw CFG → re-derive the full scenario set from the CFG (each edge drives
 its scenario) → reference `artifacts/specs/<node>/golden-set/` → reconcile against the frozen suite
 (additive self-clears, narrowing needs Clearance) → rebuild the README to the four-section shape (What
