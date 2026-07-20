@@ -1,18 +1,18 @@
 ---
 cr-ref: 304-m1-define-skill
 source: https://github.com/cyberuni/cyberplace/issues/304
-status: awaiting-clearance
+status: done
 todos:
   - content: "Assess each legacy case for CURRENT relevance against the live skill (reference only)"
     status: completed
   - content: "CLEARANCE: a frozen scenario demands behavior the implementation deliberately removed"
-    status: pending
+    status: completed
   - content: "Additive repairs: companions for the do-nothing-passing scenarios, the unspecified severity band"
-    status: pending
+    status: completed
   - content: "Rebuild the node spec to the four-section shape; draw the control flow; bind every edge"
-    status: pending
+    status: completed
   - content: "Gates, then handoff (PR batched with the other specs, per owner)"
-    status: pending
+    status: completed
 ---
 
 # CR 304-M1 — build up define-skill's suite
@@ -66,3 +66,24 @@ penalizes correct behavior, so both can wait rather than joining this ask.
 
 Owner decides the Clearance ask below. The additive repairs and the control-flow rebuild proceed
 either way, since neither touches a frozen scenario.
+
+## Outcome — landed on the branch, PR batched
+
+Both gates cleared; the impl gate was ratified by the owner (auto-spec leash). Two clearances, each
+recorded before editing, held their bounds — removed=3, modified=1 — across five grill rounds with no
+creep. The node spec was rebuilt to the four-section shape and its control-flow graph bound one-to-one
+to the 41 scenarios.
+
+Five follow-ups filed: #340 (no fail-loud catch-all for a future entry mode), #341 (fill-out vs
+diagnose boundary invisible to description-only routing), #342 (two procedure-not-outcome scenarios),
+#343 (mistitled severity band), #344 (add / add-scenario naming drift). All recorded in the ledger
+before filing.
+
+## The finding that generalizes across the corpus
+
+The retired corpus yielded zero new scenarios — seventeen of nineteen cases already covered — yet the
+node held a frozen scenario that FAILED a correct implementation, an uncovered entry point, and a
+stale spec row. A well-mined corpus is not evidence of a healthy suite; it is a reason nobody re-read
+the suite against the implementation. Every real defect on this node came from that re-read and from
+drawing the control-flow graph, not from the corpus. The reset instruction — build the current suite
+up using the old one as reference only — is what surfaced them.
