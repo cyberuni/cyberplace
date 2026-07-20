@@ -1,7 +1,7 @@
 ---
 cr-ref: 304-m1-eval-suite-sweep
 source: https://github.com/cyberuni/cyberplace/issues/304
-status: in_progress
+status: completed
 todos:
   - content: "define-governance: build up suite, draw CFG, both gates — DONE (18->26, #334-#338)"
     status: completed
@@ -15,8 +15,8 @@ todos:
     status: completed
   - content: "skillify: re-driven from CFG; drawing the two 3-way classifier forks (placement, pattern) showed each bound only ONE arm (folded into one Given) — arm-collapse mutants survived. Added 2 additive scenarios binding a 2nd arm each (18->20), README rebuilt, cold spec-judge ALIGNED (not over-speccing), focused cold impl-judge PASS. Commit 6754bfeb. Impl gate AWAITS OWNER RATIFICATION. (Stale plan note about '2 added drift' was already reconciled by the rebase — clean baseline.)"
     status: completed
-  - content: "Open PR(s) against main referencing #304 (do NOT close — issue stays open for later specs)"
-    status: pending
+  - content: "PR #348 opened against main (refs #304, NOT closed). All 6 nodes' impl gates ratified by owner; retired golden-set corpora removed (commit bddcbc3b). M1 COMPLETE. 16 ACED behavioral-leaf specs remain for later tracks (config-authoring 5, eval-run 3, sdd-roles 5, suite-authoring 2, registry 1)."
+    status: completed
 ---
 
 # CR 304-M1 — ACED eval-suite corpus sweep
@@ -29,7 +29,15 @@ retired corpus as reference only** — nothing migrated.
 
 ## NEXT — resume here
 
-**Next action:** start `manage-model-runners` — re-drive its suite from the CFG via `start-mission`
+**✅ M1 COMPLETE (PR #348).** All 6 scoped nodes re-driven from their CFGs, both gates cleared, impl
+gates owner-ratified, retired golden-set corpora removed. #304 stays OPEN for later tracks: 16 ACED
+behavioral-leaf specs still lack `## Control Flow` — config-authoring (define-agent, improve-skill,
+list-skills, manage-skill-dirs, repair-private-skills), eval-run (compare, report, run), sdd-roles
+(extract-situation, impl-judge, judge, scenario-writer, spec-validator), suite-authoring (add-scenario,
+improve), registry. A future M2 track applies the same CORE METHOD below to a chosen batch. Nothing in
+M1 is mid-flight.
+
+**(Historical) Next action:** start `manage-model-runners` — re-drive its suite from the CFG via `start-mission`
 on `.agents/specs/aced/config-authoring/manage-model-runners/`, using
 `artifacts/specs/manage-model-runners/golden-set/` as reference. Then `skillify` — **one at a time**.
 (`manage` is done: re-driven, 15 edges bound 1:1, cold spec-judge ALIGNED, suite CFG-complete so
