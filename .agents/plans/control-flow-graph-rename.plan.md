@@ -14,10 +14,10 @@ todos:
     status: done
   - content: "deliver — no gate script keys on the old heading; root pnpm verify 34/34"
     status: done
-  - content: "impl gate — cold judge round 1 CHANGE (prose rewrap only, substance PASS); round 2 clean"
-    status: in_progress
-  - content: "handoff — PR against main"
-    status: pending
+  - content: "impl gate — cold judge round 1 CHANGE (prose rewrap only, substance PASS); ratified by unional"
+    status: done
+  - content: "handoff — PR #333 against main"
+    status: done
 ---
 
 # CR control-flow-graph-rename — one name for the capability's internal decision structure
@@ -111,4 +111,6 @@ half-rename this CR exists to prevent. Sweep whitespace-normalized, not line-by-
 
 ## NEXT
 
-Owner ratification of the impl gate, then merge.
+Merge PR #333. No follow-ups filed: the one residual observation (the new concept noun shares the
+word "control flow" with the website page naming SDD's *process* control flow) is recorded as a
+distinction in the glossary entry itself, which is where a reintroduction would be caught.
