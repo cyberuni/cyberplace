@@ -7,8 +7,8 @@ todos:
     status: completed
   - content: "define-skill: build up suite, draw CFG, both gates — DONE (33->41, #340-#344)"
     status: completed
-  - content: "contribute-skill: re-read suite vs impl, draw CFG, gates"
-    status: pending
+  - content: "contribute-skill: re-read suite vs impl, draw CFG, gates — DONE (21->23, #345)"
+    status: completed
   - content: "manage, manage-model-runners, skillify: same, one at a time"
     status: pending
   - content: "Open PR(s) against main referencing #304 (do NOT close — issue stays open for later specs)"
@@ -25,14 +25,28 @@ retired corpus as reference only** — nothing migrated.
 
 ## NEXT — resume here
 
-**Next action:** start the third node, `contribute-skill`. Run its mission via `start-mission` on
-`.agents/specs/aced/contribute/contribute-skill/` — assess the 16 legacy cases at
-`artifacts/specs/contribute-skill/golden-set/` for CURRENT relevance (not migration), add only
-real-and-uncovered behavior as scenarios, then rebuild the node README to the four-section shape and
-draw its control-flow graph. Run `pnpm verify:specs` (or the per-project spec check) after suite
-edits.
+**Next action:** start the fourth node, `manage`, then `manage-model-runners`, then `skillify` —
+**one at a time**. For each: re-read the colocated `.feature` against its implementation (the near-1:1
+corpus is *not* proof the suite is healthy — every real defect on the first three nodes came from the
+re-read + drawing the CFG, not the corpus), add only real-and-uncovered behavior as *additive*
+scenarios, rebuild the node README to the four-section shape (What / Use Cases / Logic-with-mermaid-CFG
+/ Scenario map, every edge bound 1:1), run `pnpm --filter @cyberplace/aced-plugin check:spec` after
+suite edits, self-assert the spec gate within leash with a fresh COLD spec-judge, run a focused COLD
+impl-judge on any newly-added scenarios, then commit `feat(aced)` per node.
 
-**No blocking decisions open.** The two shipped nodes are gated and committed; nothing is mid-flight.
+Node paths: `.agents/specs/aced/manage/`, `.agents/specs/aced/config-authoring/manage-model-runners/`,
+`.agents/specs/aced/config-authoring/skillify/`. NOTE: `skillify`'s check already shows "2 added"
+(pre-existing snapshot drift, unrelated to this sweep) — expect its suite to already carry
+uncommitted-vs-fingerprint delta; reconcile it as part of that node.
+
+**No blocking decisions open.** Three nodes shipped and gated; nothing mid-flight.
+
+**contribute-skill retro (proves method #2 again):** corpus was 16/16 covered, yet the re-read + CFG
+found a missing fork positive-companion (an "always fork" mutant survived) and an uncovered multi-skill
+loop. The cold spec-judge caught that the multi-skill scenario was mapped to the wrong CFG edge
+(`COLLECT` self-loop, but its `When` is "pushes the contribution" → a `COMMIT` permutation) — fixed
+in-pass. Its pre-existing `@rubric` Selection concern (does `scoped_to_skills_tree` duplicate the
+write-scope boolean guard?) is frozen/out-of-scope → filed #345, not touched.
 
 **Method — do not relearn (proven on two nodes):**
 1. A legacy case is a **claim to verify against the current `SKILL.md`**, never evidence of current
@@ -67,11 +81,13 @@ edits.
 **Shipped, for reference (commits on this branch):**
 - `define-governance` — 18->26 scenarios, CFG drawn, both gates, follow-ups #334-#338.
 - `define-skill` — 33->41 scenarios under two clearances, CFG drawn, both gates, follow-ups #340-#344.
+- `contribute-skill` — 21->23 scenarios (both additive, self-clear), README rebuilt + CFG drawn, both
+  gates, follow-up #345. Commit `db1f24cc`.
 - Step 1 of #304 (the outline-fingerprint fix + per-project wiring) already merged on `main` (#332).
 
-**Remaining frontier after contribute-skill:** `manage`, `manage-model-runners`, `skillify` — each
-has a near-1:1 corpus (little new behavior expected), so the value there is the re-read plus the CFG
-rebuild. Then batch the PR(s).
+**Remaining frontier:** `manage`, `manage-model-runners`, `skillify` — each has a near-1:1 corpus
+(little new behavior expected), so the value there is the re-read plus the CFG rebuild. Then batch the
+PR(s) against `main` referencing #304 (do NOT close #304 — issue stays open for later specs).
 
 **Superseded, do not resurrect:** the corpus-wide scenario<->case mapping contract + bulk migration.
 It bound tests to suites that were themselves wrong; the per-node re-read is what catches that.
