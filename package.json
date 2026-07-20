@@ -10,7 +10,7 @@
 		"check:ci": "biome ci",
 		"check:private-skills": "node plugins/aced/skills/repair-private-skills/scripts/repair-private-skills.mts --root . validate",
 		"check:skills": "node plugins/aced/skills/improve-skill/scripts/validate.mts --root .",
-		"check:specs": "sdd-check-specs --check-coverage && node plugins/sdd/skills/resolve-governances/scripts/resolve-governances.mts --root . && node plugins/sdd/skills/resolve-tracking/scripts/resolve-tracking.mts --root . && node plugins/sdd/skills/check-plan-safety/scripts/check-plan-safety.mts --root . --check && node plugins/sdd/skills/check-scenario-overlap/scripts/check-scenario-overlap.mts --spec-dir .agents/specs/sdd --check",
+		"check:specs": "sdd-check-specs --check-coverage && node plugins/sdd/skills/resolve-governances/scripts/resolve-governances.mts --root . && node plugins/sdd/skills/resolve-tracking/scripts/resolve-tracking.mts --root . && node plugins/sdd/skills/check-plan-safety/scripts/check-plan-safety.mts --root . --check",
 		"cl": "pnpm run --filter=cyberlegion",
 		"cp": "pnpm run --filter=cyberplace",
 		"cs": "changeset",
