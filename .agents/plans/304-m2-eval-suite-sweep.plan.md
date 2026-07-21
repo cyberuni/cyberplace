@@ -6,8 +6,8 @@ ledger-hash: c38aa5
 todos:
   - content: "define-agent: DONE — 4 additive scenarios + 1 owner-cleared re-open (scn 24 stale eval-suite), README 4-section, SKILL B9 broadened to positive form; both gates green (impl owner-ratified)"
     status: completed
-  - content: "improve-skill: same method"
-    status: pending
+  - content: "improve-skill: DONE — docs-only (59 scenarios already CFG-complete, 1:1, no additive/re-open); README rebuilt; cold judge ALIGNED CFG faithful. 2 pre-existing SKILL.md drifts filed as backlog followups. Spec gate self-asserted, no impl gate."
+    status: completed
   - content: "list-skills: same method"
     status: pending
   - content: "manage-skill-dirs: same method"
@@ -74,12 +74,16 @@ brief after each node. Hard `/clear` + `resume-mission` every ~2 nodes to keep t
 the impl gate on a cold impl-judge PASS with clean scope + no frozen rewrite; STOP for owner ratification
 only on a Clearance/re-open or a CHANGE verdict.
 
-Start **node 2 = improve-skill** (`.agents/specs/aced/config-authoring/improve-skill/`). Dispatch a
-spec-producer subagent (brief mirrors node 1: read `plugins/aced/skills/improve-skill/SKILL.md` for
-control flow, draw CFG, re-derive scenarios per edge, additive-only unless a stale frozen scenario forces
-a re-open, rebuild README to the 4-section shape mirroring `define-skill/README.md`, run check:spec).
-Then cold spec-judge → self-assert spec gate → cold impl-judge → self-assert impl gate if clean, else
-stop. Then proceed one at a time.
+**Nodes 1-2 DONE + committed** (define-agent: both gates; improve-skill: docs-only, spec gate only).
+
+Start **node 3 = list-skills** (`.agents/specs/aced/config-authoring/list-skills/`). Same method: dispatch
+a spec-producer subagent (read `plugins/aced/skills/list-skills/SKILL.md` for control flow, draw CFG,
+re-derive scenarios per edge, additive-only unless a stale frozen scenario forces a re-open, rebuild
+README to the 4-section shape mirroring `define-skill/README.md`, run check:spec). Then cold spec-judge →
+self-assert spec gate → if scenarios changed, cold impl-judge → self-assert impl gate if clean, else stop.
+Then node 4 = manage-skill-dirs, node 5 = repair-private-skills, then eval-run (compare, report, run),
+suite-authoring (add-scenario, improve), sdd-roles (extract-situation, impl-judge, judge, scenario-writer,
+spec-validator), registry. One at a time.
 
 Order: config-authoring 5 (define-agent, improve-skill, list-skills, manage-skill-dirs,
 repair-private-skills) → eval-run 3 (compare, report, run) → suite-authoring 2 (add-scenario, improve) →
