@@ -16,8 +16,8 @@ todos:
     status: completed
   - content: "compare: DONE — 3 additive edges (defer to add-scenario completes the trigger near-miss bucket; report never averages raw totals across scenarios = safety-dual of net-change; regression gate fires on a dimension drop while case still passes = the SKILL's central branch, suite had only the pass->fail flip). README rebuilt 4-section (18-row map, mermaid CFG) + Fit:strong (cold spec-judge caught the missing Fit decl). Both gates self-asserted (cold spec-judge ALIGNED 3/3 lenses; cold impl-judge PASS 3/3 additive). Commit 19876610."
     status: completed
-  - content: "report: same method"
-    status: pending
+  - content: "report: DONE — 5 additive edges (mean normalizes per scenario %max never raw-total avg SKILL 28-32; no-rubric suite renders mean --; full-detail mode lists a named suite's failing cases; degraded->run for detail SKILL 72 the 5-class map bound only 4; needs-attention names the worst failing case SKILL 24/58-59). README rebuilt 4-section (18-row map, mermaid CFG, Fit:strong). Both gates self-asserted (cold spec-judge ALIGNED 3/3; cold impl-judge PASS 5/5, 5th judged in a focused round). 1 backlog followup: trending-down modeled as exclusive class vs SKILL's overlay-flag example — needs re-open, deferred. Commit d97df408."
+    status: completed
   - content: "run: same method"
     status: pending
   - content: "add-scenario: same method"
@@ -73,20 +73,28 @@ brief after each node. Hard `/clear` + `resume-mission` every ~2 nodes to keep t
 **Impl-gate cadence (owner):** **auto-all** — self-assert the impl gate on a cold impl-judge PASS with
 clean scope + no frozen rewrite; STOP for owner ratification only on a Clearance/re-open or a CHANGE.
 
-**config-authoring 5/5 DONE + eval-run 1/3 DONE** (define-agent both gates; improve-skill docs-only;
-list-skills 39caafda; manage-skill-dirs 3445ac34; repair-private-skills b6275195; **compare 19876610**).
-**6 of 16 nodes swept.**
+**config-authoring 5/5 DONE + eval-run 2/3 DONE** (define-agent both gates; improve-skill docs-only;
+list-skills 39caafda; manage-skill-dirs 3445ac34; repair-private-skills b6275195; compare 19876610;
+**report d97df408**). **7 of 16 nodes swept.**
 
-Start **node 7 = report** (`.agents/specs/aced/eval-run/report/`) — second of the eval-run 3. Same
-method: read the node's README + `.feature` + the real ACED skill it specs (`plugins/aced/skills/report/
-SKILL.md` + any bundled script) for control flow, draw CFG, re-derive scenarios per edge, additive-only
-unless a stale frozen scenario forces a re-open, rebuild README to the 4-section shape (What / Use Cases
-+**Fit:** line / Control Flow with mermaid CFG / Scenario map 1:1). **README map MUST be a 3-column
-table `| Edge | Path (Given) | Scenario |` with the scenario backtick-wrapped in col 3** — the
-check-suite parser skips any row that isn't exactly 3 cells (learned on compare). Run check:spec. Then
-cold spec-judge → self-assert spec gate → if scenarios changed, cold impl-judge → self-assert impl gate
-if clean (auto-all). Then node 8 = run, then suite-authoring 2 (add-scenario, improve), sdd-roles 5
-(extract-situation, impl-judge, judge, scenario-writer, spec-validator), registry 1. One at a time.
+Start **node 8 = run** (`.agents/specs/aced/eval-run/run/`) — last of the eval-run 3. Same method:
+read the node's README + `.feature` + the real ACED skill it specs (`plugins/aced/skills/run/SKILL.md`
++ any bundled script) for control flow, draw CFG, re-derive scenarios per edge, additive-only unless a
+stale frozen scenario forces a re-open, rebuild README to the 4-section shape (What / Use Cases +
+**Fit:** line / Control Flow with mermaid CFG / Scenario map). Run check:spec. Then cold spec-judge →
+self-assert spec gate → if scenarios changed, cold impl-judge → self-assert impl gate if clean
+(auto-all). Then suite-authoring 2 (add-scenario, improve), sdd-roles 5 (extract-situation, impl-judge,
+judge, scenario-writer, spec-validator), registry 1. One at a time.
+
+**Two hard-won mechanics (both cost a cycle):**
+1. **README scenario-map MUST be a 3-column table `| Edge | Path (Given) | Scenario |`** with the
+   scenario backtick-wrapped in col 3 — check-suite's `parseScenarioMap` skips any row that isn't
+   exactly 3 cells (`plugins/sdd/skills/spec-gate/scripts/check-suite.mts:447`). A 2-col map fails
+   every scenario as "not on the scenario map."
+2. **Every node README needs a `**Fit:**` line** (strong/partial/hybrid) inside Use Cases, between the
+   Non-goals prose and the table — the cold spec-judge flags its absence as a CONTENT_GAP.
+Also: append gate verdicts + any followups to the ledger shard **as part of each node's commit** (don't
+defer — compare's got backfilled a node late).
 
 **Method note (nodes 1-5):** authoring the CFG + reconciliation INLINE (conductor) then dispatching
 only the two COLD judges works well and keeps derivation quality under conductor control — judges MUST
