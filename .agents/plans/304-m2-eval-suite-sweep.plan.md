@@ -18,10 +18,10 @@ todos:
     status: completed
   - content: "report: DONE — 5 additive edges (mean normalizes per scenario %max never raw-total avg SKILL 28-32; no-rubric suite renders mean --; full-detail mode lists a named suite's failing cases; degraded->run for detail SKILL 72 the 5-class map bound only 4; needs-attention names the worst failing case SKILL 24/58-59). README rebuilt 4-section (18-row map, mermaid CFG, Fit:strong). Both gates self-asserted (cold spec-judge ALIGNED 3/3; cold impl-judge PASS 5/5, 5th judged in a focused round). 1 backlog followup: trending-down modeled as exclusive class vs SKILL's overlay-flag example — needs re-open, deferred. Commit d97df408."
     status: completed
-  - content: "run: same method"
-    status: pending
-  - content: "add-scenario: same method"
-    status: pending
+  - content: "run: DONE — 7 additive edges (untagged->behavior layer default; blind-judge pass path+name never body; trigger outline once per Examples row; trigger layer over eval.trigger.runs; totals vs own max never raw-mean; inline pass bar overrides default; behavior judged once unless N). Last two close the cold spec-judge's 1:1 asymmetry (trigger side had 2 run-count scenarios, non-trigger once-branch had 0). README rebuilt 4-section (23-row map, mermaid CFG w/ threshold node, Fit:strong). Both gates self-asserted (cold spec-judge ALIGNED 3/3; cold impl-judge PASS 7/7). 1 backlog followup (per-shape collect distinction). Commit 1633e25b. eval-run track COMPLETE."
+    status: completed
+  - content: "add-scenario: SPEC DONE + committed (923af59f) — RE-OPEN under owner Clearance: frozen suite specced the RETIRED golden-set-dir model but SKILL.md was migrated to the .feature-append model (commit 9f515205). Rewrote 4 stale scenarios to append-model + scrubbed golden-set vocab; added 6 additive edges (3 scaffold shapes + check-suite + behavior/quality layer inference). Suite 17->24. Cold spec-judge ALIGNED (after fixing 2 flagged gaps: half-migrated header, unbound layer edges); cold impl-judge PASS 10/10 (SKILL.md unchanged, already conforms). check:spec green post-commit (align-spec re-open flag cleared vs HEAD). IMPL GATE SURFACED — awaiting owner ratification (re-open stops per auto-all leash)."
+    status: in_progress
   - content: "improve: same method"
     status: pending
   - content: "extract-situation: same method"
@@ -73,18 +73,25 @@ brief after each node. Hard `/clear` + `resume-mission` every ~2 nodes to keep t
 **Impl-gate cadence (owner):** **auto-all** — self-assert the impl gate on a cold impl-judge PASS with
 clean scope + no frozen rewrite; STOP for owner ratification only on a Clearance/re-open or a CHANGE.
 
-**config-authoring 5/5 DONE + eval-run 2/3 DONE** (define-agent both gates; improve-skill docs-only;
-list-skills 39caafda; manage-skill-dirs 3445ac34; repair-private-skills b6275195; compare 19876610;
-**report d97df408**). **7 of 16 nodes swept.**
+**config-authoring 5/5 + eval-run 3/3 DONE; suite-authoring 1/2 spec-done** (define-agent both gates;
+improve-skill docs-only; list-skills 39caafda; manage-skill-dirs 3445ac34; repair-private-skills
+b6275195; compare 19876610; report d97df408; run 1633e25b; **add-scenario 923af59f — spec done, IMPL
+GATE AWAITING OWNER RATIFICATION**). **9 of 16 nodes swept.**
 
-Start **node 8 = run** (`.agents/specs/aced/eval-run/run/`) — last of the eval-run 3. Same method:
-read the node's README + `.feature` + the real ACED skill it specs (`plugins/aced/skills/run/SKILL.md`
-+ any bundled script) for control flow, draw CFG, re-derive scenarios per edge, additive-only unless a
-stale frozen scenario forces a re-open, rebuild README to the 4-section shape (What / Use Cases +
-**Fit:** line / Control Flow with mermaid CFG / Scenario map). Run check:spec. Then cold spec-judge →
-self-assert spec gate → if scenarios changed, cold impl-judge → self-assert impl gate if clean
-(auto-all). Then suite-authoring 2 (add-scenario, improve), sdd-roles 5 (extract-situation, impl-judge,
-judge, scenario-writer, spec-validator), registry 1. One at a time.
+**BLOCKING (surface first on resume):** add-scenario (node 9) was a re-open under owner Clearance and
+its impl gate is surfaced but NOT yet owner-ratified. The impl-judge PASS'd 10/10 and SKILL.md was
+unchanged (already conforms — the spec was the stale side), so ratification is a formality, but per the
+auto-all leash a Clearance/re-open STOPS for the owner. Get the owner's impl-gate nod, then record the
+impl-gate approve (by:unional) in the ledger to fully close node 9.
+
+Start **node 10 = improve** (`.agents/specs/aced/suite-authoring/improve/`) — last of suite-authoring.
+Same method: read the node's README + `.feature` + the real ACED skill it specs
+(`plugins/aced/skills/improve/SKILL.md` + any bundled script) for control flow, draw CFG, re-derive
+scenarios per edge, additive-only unless a stale frozen scenario forces a re-open (WATCH for the same
+golden-set-vs-.feature staleness that hit add-scenario — improve diagnoses eval failures, may reference
+the retired model), rebuild README to the 4-section shape. Run check:spec. Then cold spec-judge →
+self-assert spec gate → cold impl-judge → self-assert impl gate if clean (auto-all; STOP on re-open).
+Then sdd-roles 5 (extract-situation, impl-judge, judge, scenario-writer, spec-validator), registry 1.
 
 **Two hard-won mechanics (both cost a cycle):**
 1. **README scenario-map MUST be a 3-column table `| Edge | Path (Given) | Scenario |`** with the
