@@ -22,8 +22,8 @@ todos:
     status: completed
   - content: "add-scenario: SPEC DONE + committed (923af59f) — RE-OPEN under owner Clearance: frozen suite specced the RETIRED golden-set-dir model but SKILL.md was migrated to the .feature-append model (commit 9f515205). Rewrote 4 stale scenarios to append-model + scrubbed golden-set vocab; added 6 additive edges (3 scaffold shapes + check-suite + behavior/quality layer inference). Suite 17->24. Cold spec-judge ALIGNED (after fixing 2 flagged gaps: half-migrated header, unbound layer edges); cold impl-judge PASS 10/10 (SKILL.md unchanged, already conforms). check:spec green post-commit (align-spec re-open flag cleared vs HEAD). IMPL GATE SURFACED — awaiting owner ratification (re-open stops per auto-all leash)."
     status: completed
-  - content: "improve: same method"
-    status: pending
+  - content: "improve: DONE — 5 additive edges (defer-to-define new-scaffold near-miss; defer-to-improve-skill audit near-miss; artifact-type identified+read-in-full; untracked->general-review = the whole not-tracked branch aced-fit+builder-bar the suite omitted; untracked->no-fabricated-verdict verify safety-dual). SKILL was broader than the suite (grew a not-tracked branch); all additive, no re-open. Suite 14->19. README rebuilt 4-section (mermaid CFG w/ tracked-vs-untracked fork, Fit:strong). Both gates self-asserted (cold spec-judge ALIGNED 3/3; cold impl-judge PASS 5/5). golden-set vocab scn 22 deferred to 304-M3. Commit 8d28830d. suite-authoring track COMPLETE."
+    status: completed
   - content: "extract-situation: same method"
     status: pending
   - content: "impl-judge: same method"
@@ -98,14 +98,23 @@ locate step — lesson: hand the impl-judge the LOCATE/discovery scenarios too, 
 Broader golden-set migration (glossary, frozen near-miss vocab, legacy artifacts/specs dirs, ~140
 fixtures) filed as a corpus-wide backlog followup — a dedicated migration mission after M2.
 
-Start **node 10 = improve** (`.agents/specs/aced/suite-authoring/improve/`) — last of suite-authoring.
-Same method: read the node's README + `.feature` + the real ACED skill it specs
-(`plugins/aced/skills/improve/SKILL.md` + any bundled script) for control flow, draw CFG, re-derive
-scenarios per edge, additive-only unless a stale frozen scenario forces a re-open (WATCH for the same
-golden-set-vs-.feature staleness that hit add-scenario — improve diagnoses eval failures, may reference
-the retired model), rebuild README to the 4-section shape. Run check:spec. Then cold spec-judge →
-self-assert spec gate → cold impl-judge → self-assert impl gate if clean (auto-all; STOP on re-open).
-Then sdd-roles 5 (extract-situation, impl-judge, judge, scenario-writer, spec-validator), registry 1.
+**config-authoring 5/5 + eval-run 3/3 + suite-authoring 2/2 DONE. 10 of 16 nodes swept.** Remaining:
+sdd-roles 5 (extract-situation, impl-judge, judge, scenario-writer, spec-validator), registry 1.
+
+Start **node 11 = extract-situation** (`.agents/specs/aced/sdd-roles/extract-situation/`). Same method:
+read README + `.feature` + the real ACED agent/skill it specs (`plugins/aced/skills/extract-situation/`
+or the agent def) for control flow, draw CFG, re-derive scenarios per edge, additive-only unless a stale
+frozen scenario forces a re-open, rebuild README to the 4-section shape (What / Use Cases + **Fit:** /
+Control Flow with mermaid CFG / Scenario map, 3-col `| Edge | Path | Scenario |` backtick col 3). Run
+check:spec. Then cold spec-judge → self-assert spec gate → cold impl-judge → self-assert impl gate if
+clean (auto-all; STOP on re-open). Then node 12 judge, 13 impl-judge, 14 scenario-writer, 15
+spec-validator, 16 registry.
+
+**WATCH on every remaining node:** (1) golden-set vocabulary in frozen scenarios — do NOT scrub it
+(Clearance-bound rewrite, tracked in 304-M3); just log any occurrence to the M3 vocab todo. (2) stale
+`artifacts/specs/` location in the SKILL/agent impl — that model is retired (fixed for the 7 skills in
+9894d33c); if a remaining node's impl still references it, note whether it needs the same location fix.
+(3) do NOT create eval.md (that is the 304-M3 mission).
 
 **Two hard-won mechanics (both cost a cycle):**
 1. **README scenario-map MUST be a 3-column table `| Edge | Path (Given) | Scenario |`** with the
