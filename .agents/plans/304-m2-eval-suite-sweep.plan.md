@@ -26,9 +26,9 @@ todos:
     status: completed
   - content: "extract-situation: DONE — 4 additive edges re-derived from the engine CFG (leading-And doesn't inherit across a scenario boundary = the lastKeyword reset the orphan-And scenario is blind to; malformed --row fails closed = main arg guard, distinct from RowOutOfRange table check; json emits regrouped by keyword; json withholds the answer key = 2nd leak surface, positive companion = json-emit). Suite 28->32. README rebuilt 4-section (added Control Flow mermaid CFG + 32-row 3-col map; NO Fit line — deterministic node:test engine, not an ACED subject). Both gates self-asserted (cold spec-judge ALIGNED 3/3; cold impl-judge PASS 4/4). Impl-judge ablation caught the malformed-row backing test was under-bound (crash also exits!=0); STRENGTHENED test:1395 to assert the guard's stderr, re-ablation confirms red-on-neuter. 88/88 tests. Commit cf559cff. No stale vocab in this node."
     status: completed
+  - content: "judge: DONE — 4 additive edges re-derived from the aced-case-judge agent-def CFG (thin-transcript-scored-as-is = bars augmenting the returned thin transcript, distinct from never-simulate-own scn 10; boolean output shape = completes the @rubric/@trigger/boolean output triple; rubric-name-format-collision blocker = 3rd fail-closed; non-zero-extractor-exit blocker = completes the 2-arm extractor blocker, the cold spec-judge's OWN flagged gap). Suite 30->34. README rebuilt 4-section (added Control Flow mermaid two-pass CFG + 34-row 3-col map; Fit:partial kept — LLM-graded role). Both gates self-asserted (cold spec-judge ALIGNED 3/3 on first 3, 4th is its own recommended edge; cold impl-judge PASS 4/4 against exact agent-def imperatives, incl a mutation-distinctness proof for the non-zero-exit/empty-brief pair). Commit 090c8fc3. No stale vocab."
+    status: completed
   - content: "impl-judge: same method"
-    status: pending
-  - content: "judge: same method"
     status: pending
   - content: "scenario-writer: same method"
     status: pending
@@ -98,29 +98,39 @@ locate step — lesson: hand the impl-judge the LOCATE/discovery scenarios too, 
 Broader golden-set migration (glossary, frozen near-miss vocab, legacy artifacts/specs dirs, ~140
 fixtures) filed as a corpus-wide backlog followup — a dedicated migration mission after M2.
 
-**config-authoring 5/5 + eval-run 3/3 + suite-authoring 2/2 + sdd-roles 1/5 DONE. 11 of 16 nodes
-swept.** Remaining: sdd-roles 4 (judge, impl-judge, scenario-writer, spec-validator), registry 1.
+**config-authoring 5/5 + eval-run 3/3 + suite-authoring 2/2 + sdd-roles 2/5 DONE. 12 of 16 nodes
+swept.** Remaining: sdd-roles 3 (impl-judge, scenario-writer, spec-validator), registry 1.
 
-**Node 11 extract-situation DONE** (commit cf559cff, both gates self-asserted). NOTE for the remaining
-sdd-roles engines: `extract-situation` is a deterministic node:test-backed ENGINE, not an ACED subject,
-so its README correctly carries **NO `**Fit:**` line** — check each remaining node's nature before
-assuming Fit applies. `judge`, `impl-judge`, `scenario-writer`, `spec-validator` ARE the graded roles
-(LLM-judged), so they likely DO carry Fit; `registry` may be an engine like extract-situation.
+**Nodes 11 extract-situation (cf559cff) + 12 judge (090c8fc3) DONE**, both gates self-asserted, full
+`pnpm verify` green after node 11. NODE-NATURE NOTE: `extract-situation` is a deterministic
+node:test-backed ENGINE (NO `**Fit:**` line); `judge` is LLM-graded (`Fit: partial`). Check each
+remaining node's nature: `impl-judge`, `scenario-writer`, `spec-validator` ARE graded roles (impls are
+`plugins/aced/agents/aced-impl-judge.md` + skill defs / the scenario-writer + spec-validator
+agent/skill defs) so they likely carry Fit; `registry` may be an engine like extract-situation (check
+`plugins/aced/skills/…` for a script vs an agent def).
 
-Start **node 12 = judge** (`.agents/specs/aced/sdd-roles/judge/`). Same method: read README + `.feature`
-+ the real ACED agent/skill it specs (the `judge` role — likely `plugins/aced/agents/aced-case-judge.md`
-or a skill; extract-situation serves it) for control flow, draw CFG, re-derive scenarios per edge,
-additive-only unless a stale frozen scenario forces a re-open, rebuild README to the 4-section shape
-(What / Use Cases + **Fit:** if graded / Control Flow with mermaid CFG / Scenario map, 3-col
-`| Edge | Path | Scenario |` backtick col 3). Run check:spec. Then cold spec-judge → self-assert spec
-gate → cold impl-judge → self-assert impl gate if clean (auto-all; STOP on re-open). Then node 13
-impl-judge, 14 scenario-writer, 15 spec-validator, 16 registry.
+Start **node 13 = impl-judge** (`.agents/specs/aced/sdd-roles/impl-judge/`). Impl is
+`plugins/aced/agents/aced-impl-judge.md` (the aced-impl-judge subagent def; it runs the frozen suite
+over N runs and collapses per-scenario). Same method: read README + `.feature` + the agent def for
+control flow, draw CFG, re-derive scenarios per edge, additive-only unless a stale frozen scenario
+forces a re-open, rebuild README to the 4-section shape (What / Use Cases + **Fit:** if graded /
+Control Flow with mermaid CFG / Scenario map, 3-col `| Edge | Path | Scenario |` backtick col 3). Run
+check:spec. Then cold spec-judge → self-assert spec gate → cold impl-judge → self-assert impl gate if
+clean (auto-all; STOP on re-open). Then node 14 scenario-writer, 15 spec-validator, 16 registry.
 
-**LESSON from node 11 (worth carrying):** hand the cold impl-judge license to run ABLATION controls on
-the backing tests, not just re-derive oracles — it caught that the malformed-row node:test was
-under-bound (a downstream crash satisfied the same exit!=0 + empty-stdout postcondition). A frozen
-scenario is only as good as the test that binds it; strengthen the test to assert the fix's SPECIFIC
-signature (here: the guard's stderr) so ablating the fix turns it red. See [[feedback_a_binding_test_can_itself_fail_to_bind]].
+**TWO LESSONS worth carrying (both landed real edges):**
+1. (node 11) Hand the cold impl-judge license to run ABLATION controls on the backing tests, not just
+   re-derive oracles — it caught the malformed-row node:test was under-bound (a downstream crash
+   satisfied the same exit!=0 + empty-stdout postcondition). Strengthen the test to assert the fix's
+   SPECIFIC signature so ablating the fix turns it red. See [[feedback_a_binding_test_can_itself_fail_to_bind]].
+2. (node 12) When the cold spec-judge flags a "pre-existing / out-of-scope" coverage gap that is
+   actually a real CFG edge the impl SPELLS OUT (e.g. a two-arm blocker where the suite froze only one
+   arm), ADD it now — deferring it to a followup IS the "read the suite and patch gaps later"
+   anti-pattern. Complete the CFG-derived set; a focused cold judge on just the added edge keeps the
+   gate honest. See [[feedback_cfg_drives_scenarios_not_the_reverse]].
+
+**CHECKPOINT: this is the ~2-node boundary — /clear + resume-mission before node 13 to keep the
+conductor context lean.**
 
 **WATCH on every remaining node:** (1) golden-set vocabulary in frozen scenarios — do NOT scrub it
 (Clearance-bound rewrite, tracked in 304-M3); just log any occurrence to the M3 vocab todo. (2) stale
