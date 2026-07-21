@@ -14,11 +14,11 @@ todos:
   - content: Spec gate — cold spec-judge over the three-node diff, freeze touched .feature files
     status: completed
   - content: Deliver — implement governances_loaded declaration + relay + judge check
-    status: pending
+    status: completed
   - content: Impl gate — rebase onto main, cold impl-judge per frozen scenario
-    status: pending
+    status: completed
   - content: Handoff — PR (Closes #349), mail owner, clear warm units
-    status: pending
+    status: in_progress
 ---
 
 # CR: spec-judge governance provenance check via dispatch channel (#349)
@@ -60,17 +60,15 @@ without loading `sdd:spec-format-governance` and `sdd:suite-format-governance` f
 
 ## NEXT
 
-Spec gate PASSED clean (cold `sdd:sdd-spec-judge`, ALIGNED: true, all 3 lenses pass, no open
-markers, no findings). All 3 `.feature` edits classified ADDITIVE by the structural differ
-(self-clear, stayed `@frozen`, no Clearance). Ledger shard written
-(`ledger/github-349-governance-provenance-check.8f5f10.jsonl`): run-start `leash` block +
-self-asserted `gate: spec, approve` line.
+Both gates PASS. Spec gate: cold `sdd:sdd-spec-judge`, ALIGNED true, all 3 lenses pass, 12
+scenarios frozen (ADDITIVE, self-cleared). Deliver: implemented in `plugins/sdd/skills/
+spec-producer-governance/SKILL.md`, `plugins/sdd/skills/start-mission/SKILL.md`,
+`plugins/sdd/agents/sdd-spec-judge.md` — no changeset needed (`@cyberplace/sdd-plugin` is in the
+changeset `ignore` glob). `pnpm verify`: 34/34. Rebased clean onto main (no conflicts). Impl gate:
+cold `sdd:sdd-impl-judge` re-derived all 12 scenarios by hand (no runtime code — pure
+agent-instruction prose), 12/12 pass, no blockers. One non-blocking wording observation recorded as
+a `backlog` followup ledger line (seq 4).
 
-Next: **deliver** — implement the mechanism against the frozen suite:
-- `plugins/sdd/skills/spec-producer-governance/` — emit `governances_loaded` in structured output.
-- `plugins/sdd/skills/start-mission/` (the conductor procedure) — relay
-  `producer_governances_declared` through the dispatch brief/mail envelope.
-- `plugins/sdd/agents/sdd-spec-judge.md` — derive expected set, check `expected ⊆ declared`,
-  emit `change` + finding-kind `governance-preflight-missing` before lens analysis.
-- One verification per the 12 frozen scenarios added across the 3 `.feature` files.
-- Then rebase onto main, cold impl-judge, handoff (PR `Closes #349`).
+Handoff: no node relocation needed (nodes already at their established homes). Next: push branch,
+open PR with `Closes #349`, mail owner, clear warm units (none were spawned this mission besides
+the cold judges, already exited). Keep this plan until the PR merges and is doctrine-distilled.
