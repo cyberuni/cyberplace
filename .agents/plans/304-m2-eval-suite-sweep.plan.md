@@ -10,10 +10,10 @@ todos:
     status: completed
   - content: "list-skills: DONE — 1 additive scenario (absent-source tolerance, the !existsSync(dir) guard; positive companions = the 4 source scans), README rebuilt 4-section; both gates self-asserted (cold spec-judge ALIGNED 3/3, cold impl-judge PASS at list-skills.mts:121). 1 backlog followup (malformed skill.json tolerance, subsumed by scn 14). Commit 39caafda."
     status: completed
-  - content: "manage-skill-dirs: same method"
-    status: pending
-  - content: "repair-private-skills: same method"
-    status: pending
+  - content: "manage-skill-dirs: DONE — 3 additive guard-edge scenarios (induce ..-escape; induce single-segment→literal-only; edit-to-fixed-root reject) + 1 new node:test; README rebuilt 4-section (28-row map, edit-old-fixed edge added); both gates self-asserted (cold spec-judge ALIGNED 3/3, cold impl-judge PASS all 3, 29/29 tests). 1 backlog followup (@rubric A_and_B dim name, needs re-open). Commit 3445ac34."
+    status: completed
+  - content: "repair-private-skills: DONE — 4 additive scenarios (validate absent-dir; repair absent-dir twin; repair skipped_missing_skill; repair existing-metadata-block insert) + 3 new node:tests; README rebuilt 4-section (18-row map, shared terminals back validate+repair each); both gates self-asserted (cold spec-judge ALIGNED 3/3, cold impl-judge PASS, 24/24 tests). Spec-judge's flagged repair-absent asymmetry closed in-node. Commit b6275195."
+    status: completed
   - content: "compare: same method"
     status: pending
   - content: "report: same method"
@@ -74,23 +74,30 @@ brief after each node. Hard `/clear` + `resume-mission` every ~2 nodes to keep t
 the impl gate on a cold impl-judge PASS with clean scope + no frozen rewrite; STOP for owner ratification
 only on a Clearance/re-open or a CHANGE verdict.
 
-**Nodes 1-3 DONE + committed** (define-agent: both gates; improve-skill: docs-only, spec gate only;
-list-skills: 1 additive scenario, both gates self-asserted, commit 39caafda).
+**config-authoring 5/5 DONE + committed** (define-agent both gates; improve-skill docs-only;
+list-skills +1 additive 39caafda; manage-skill-dirs +3 additive 3445ac34; repair-private-skills
++4 additive b6275195). **All 5 config-authoring leaves swept.**
 
-Start **node 4 = manage-skill-dirs** (`.agents/specs/aced/config-authoring/manage-skill-dirs/`). Same
-method: read the node's README + `.feature` + the real ACED skill it specs (`plugins/aced/skills/
-manage-skill-dirs/SKILL.md` + any bundled script) for control flow, draw CFG, re-derive scenarios per
-edge, additive-only unless a stale frozen scenario forces a re-open, rebuild README to the 4-section
-shape (What / Use Cases / Control Flow with mermaid CFG / Scenario map 1:1), run check:spec. Then cold
-spec-judge → self-assert spec gate → if scenarios changed, cold impl-judge → self-assert impl gate if
-clean (auto-all: additive PASS self-asserts; stop only on Clearance/re-open/CHANGE). Then node 5 =
-repair-private-skills, then eval-run (compare, report, run), suite-authoring (add-scenario, improve),
-sdd-roles (extract-situation, impl-judge, judge, scenario-writer, spec-validator), registry. One at a time.
+Start **node 6 = compare** (`.agents/specs/aced/eval-run/compare/`) — first of the eval-run 3
+(compare, report, run). Same method: read the node's README + `.feature` + the real ACED skill it
+specs (`plugins/aced/skills/compare/SKILL.md` + any bundled script) for control flow, draw CFG,
+re-derive scenarios per edge, additive-only unless a stale frozen scenario forces a re-open, rebuild
+README to the 4-section shape (What / Use Cases / Control Flow with mermaid CFG / Scenario map 1:1),
+run check:spec. Then cold spec-judge → self-assert spec gate → if scenarios changed, cold impl-judge →
+self-assert impl gate if clean (auto-all: additive PASS self-asserts; stop only on Clearance/re-open/
+CHANGE). Then node 7 = report, node 8 = run, then suite-authoring 2 (add-scenario, improve), sdd-roles
+5 (extract-situation, impl-judge, judge, scenario-writer, spec-validator), registry 1. One at a time.
 
-**Method note (nodes 1-3):** authoring the CFG + reconciliation INLINE (conductor) then dispatching only
-the two COLD judges has worked well and keeps derivation quality under conductor control — judges MUST
-stay cold/independent regardless. Consider `/clear` + resume-mission after node 4 (2 nodes since last
-clear) to keep context lean.
+**Method note (nodes 1-5):** authoring the CFG + reconciliation INLINE (conductor) then dispatching
+only the two COLD judges works well and keeps derivation quality under conductor control — judges MUST
+stay cold/independent regardless. When a node has an impl script + test file, ADD a node:test for any
+new deterministic scenario that lacks one (mirrors existing test style) so the frozen scenario is
+node:test-backed. The cold spec-judge has twice caught real README/CFG asymmetries (manage-skill-dirs
+mermaid edge; repair-private-skills repair-absent twin) — resolve them in-node.
+
+**Next resume should `/clear` + resume-mission first** (5 nodes since session start) to keep the
+conductor context lean before the eval-run track. Also run `pnpm verify` (full gate) at the next
+natural checkpoint — impl test files were touched in nodes 4-5.
 
 Order: config-authoring 5 (define-agent, improve-skill, list-skills, manage-skill-dirs,
 repair-private-skills) → eval-run 3 (compare, report, run) → suite-authoring 2 (add-scenario, improve) →
