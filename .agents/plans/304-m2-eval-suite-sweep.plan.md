@@ -21,7 +21,7 @@ todos:
   - content: "run: DONE — 7 additive edges (untagged->behavior layer default; blind-judge pass path+name never body; trigger outline once per Examples row; trigger layer over eval.trigger.runs; totals vs own max never raw-mean; inline pass bar overrides default; behavior judged once unless N). Last two close the cold spec-judge's 1:1 asymmetry (trigger side had 2 run-count scenarios, non-trigger once-branch had 0). README rebuilt 4-section (23-row map, mermaid CFG w/ threshold node, Fit:strong). Both gates self-asserted (cold spec-judge ALIGNED 3/3; cold impl-judge PASS 7/7). 1 backlog followup (per-shape collect distinction). Commit 1633e25b. eval-run track COMPLETE."
     status: completed
   - content: "add-scenario: SPEC DONE + committed (923af59f) — RE-OPEN under owner Clearance: frozen suite specced the RETIRED golden-set-dir model but SKILL.md was migrated to the .feature-append model (commit 9f515205). Rewrote 4 stale scenarios to append-model + scrubbed golden-set vocab; added 6 additive edges (3 scaffold shapes + check-suite + behavior/quality layer inference). Suite 17->24. Cold spec-judge ALIGNED (after fixing 2 flagged gaps: half-migrated header, unbound layer edges); cold impl-judge PASS 10/10 (SKILL.md unchanged, already conforms). check:spec green post-commit (align-spec re-open flag cleared vs HEAD). IMPL GATE SURFACED — awaiting owner ratification (re-open stops per auto-all leash)."
-    status: in_progress
+    status: completed
   - content: "improve: same method"
     status: pending
   - content: "extract-situation: same method"
@@ -78,9 +78,13 @@ improve-skill docs-only; list-skills 39caafda; manage-skill-dirs 3445ac34; repai
 b6275195; compare 19876610; report d97df408; run 1633e25b; **add-scenario 923af59f — spec done, IMPL
 GATE AWAITING OWNER RATIFICATION**). **9 of 16 nodes swept.**
 
-**BLOCKING (surface first on resume):** add-scenario (node 9) impl gate is surfaced but NOT yet
-owner-ratified (re-open carries a Clearance → stops per auto-all). Get the owner's impl-gate nod, then
-record the impl-gate approve (by:unional) in the ledger to close node 9.
+**Node 9 add-scenario CLOSED** — impl gate ratified (owner directed "continue the sweep as-is" after
+the location fix; recorded by:unional). **9 of 16 nodes done.**
+
+**Eval-artifact migration is a SEPARATE mission:** owner call — continue the M2 sweep as-is (README +
+`.feature` per node, NO eval.md created here). The eval.md colocation + legacy-target migration + vocab
+cleanup are tracked in `304-m3-eval-artifact-migration.plan.md` (same CR, status: draft, blocked on an
+owner design decision about which nodes are runnable eval targets). Do NOT create eval.md in M2 nodes.
 
 **Location-model correction (commit 9894d33c) — DONE.** During node-9 ratification the owner caught
 that the ACED skills hardcoded the RETIRED suite location `artifacts/specs/<feature-name>/`. Owner
