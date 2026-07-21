@@ -9,7 +9,7 @@ todos:
     status: pending
   - content: "Gap B — migrate the 2 legacy eval targets out of artifacts/specs into project-spec nodes: aced-create-spec (subject plugins/aced/skills/create-spec/SKILL.md) and sdd-orchestrator (subject plugins/sdd/agents/sdd-orchestrator.md). Move eval.md into the node dir, port/retire golden-set/ + trigger/ into the frozen .feature (@rubric inline + @trigger Examples), retire the artifacts/specs dir."
     status: pending
-  - content: "Vocabulary/glossary cleanup: .agents/specs/aced/glossary.md still defines 'eval suite' as eval.md + golden-set/ (rewrite to the .feature model). Frozen suites carrying golden-set near-miss vocab (define-agent:36, define-skill:52/58, define-governance:31, scenario-writer:29/91, skillify:27/37, contribute-skill:29/48, workflows/eval-loop:8) — each a Clearance-bound re-open."
+  - content: "Vocabulary/glossary cleanup: .agents/specs/aced/glossary.md still defines 'eval suite' as eval.md + golden-set/ (rewrite to the .feature model). Frozen suites carrying golden-set near-miss vocab (define-agent:36, define-skill:52/58, define-governance:31, scenario-writer:29/91, skillify:27/37, contribute-skill:29/48, improve:22, workflows/eval-loop:8) — each a Clearance-bound re-open."
     status: pending
   - content: "Docs + fixtures (Quill domain): ~140 golden-set/*.md fixtures + website/docs advertising the retired 1-5 scalar contract (apps/website .../aced/{run,report,overview,add-scenario}.md, docs/specs/aced/design.md, artifacts/specs/aced-plugin/spec.md) — tracked in github-263-op6-m3; likely a Quill node."
     status: pending
