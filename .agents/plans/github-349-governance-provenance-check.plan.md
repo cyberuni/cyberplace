@@ -18,7 +18,7 @@ todos:
   - content: Impl gate — rebase onto main, cold impl-judge per frozen scenario
     status: completed
   - content: Handoff — PR (Closes #349), mail owner, clear warm units
-    status: in_progress
+    status: completed
 ---
 
 # CR: spec-judge governance provenance check via dispatch channel (#349)
@@ -69,6 +69,7 @@ cold `sdd:sdd-impl-judge` re-derived all 12 scenarios by hand (no runtime code �
 agent-instruction prose), 12/12 pass, no blockers. One non-blocking wording observation recorded as
 a `backlog` followup ledger line (seq 4).
 
-Handoff: no node relocation needed (nodes already at their established homes). Next: push branch,
-open PR with `Closes #349`, mail owner, clear warm units (none were spawned this mission besides
-the cold judges, already exited). Keep this plan until the PR merges and is doctrine-distilled.
+Handoff done: no node relocation needed (nodes already at their established homes). Branch pushed,
+PR opened: https://github.com/cyberuni/cyberplace/pull/351 (`Closes #349`). No warm units to clear
+(only cold judge dispatches this mission). Keep this plan until the PR merges and is
+doctrine-distilled — nothing else to do here until then.
