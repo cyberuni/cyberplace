@@ -3,7 +3,7 @@ cr-ref: 304-m3-eval-artifact-migration
 source: https://github.com/cyberuni/cyberplace/issues/304
 status: draft
 todos:
-  - content: "DESIGN DECISION (owner): which project-spec behavioral-leaf nodes are runnable ACED eval targets and so get a colocated eval.md? All ACED skill nodes (self-dogfood)? Only real external subjects? Decide the population before creating any eval.md."
+  - content: "DESIGN DECISION (owner): which project-spec behavioral-leaf nodes are runnable ACED eval targets and so get a colocated eval.md? All ACED skill nodes (self-dogfood)? Only real external subjects? Decide the population before creating any eval.md. INPUT from PR #355 review (issue #356): (a) `results/` is NOT a reserved spec-tree dir — decide where run-output lives (in-tree with reserved/ignored status vs out-of-tree; run/SKILL.md:89 currently writes results/ inside the node dir); (b) do NOT hard-restrict eval-target discovery to `.agents/specs` — owner: 'for known case we are ok' but it could backfire, define the discovery contract without pinning that path. Both are enhancements, not blockers for #355."
     status: pending
   - content: "Gap A — colocate eval.md per eval-target node: create .agents/specs/<project>/…/<node>/eval.md (subject = the target config's path; run policy = eval.layers / judge.model / judge.default_threshold / trigger.{activation_threshold,runs}). Default run-policy template from the two legacy targets: layers [trigger, behavior], judge sonnet, default_threshold 4, trigger.runs 3 — confirm per node."
     status: pending
