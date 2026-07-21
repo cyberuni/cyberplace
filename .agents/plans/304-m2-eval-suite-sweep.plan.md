@@ -34,8 +34,8 @@ todos:
     status: completed
   - content: "spec-validator: DONE — suite was already very thorough (38); 6 additive edges re-derived from CFG gaps (wrong-squad recusal ROUTE to SDD-default builder+script harness; selection NO per-dim-minimum remedy=conjunctive; discrimination grades-PRESENCE the unbound 3rd arm of presence/restatement/procedure; discrimination NEVER over-fire on one-point cSEM margin; discrimination-side escalate-unclassifiable distinct from selection-side; trigger-context partial-fit N/A = cold spec-judge's flagged asymmetry vs bound trigger-balance partial-N/A, added). Suite 38->44. README rebuilt 4-section (Control Flow mermaid CFG w/ Fit branches + structure->selection->discrimination pipeline + 44-row 3-col map; Fit: partial). Both gates self-asserted (cold spec-judge ALIGNED oracle+builder+architect on first 5, its trigger-context-partial-N/A gap closed in-node; cold impl-judge PASS 6/6 w/ per-scenario ablation+distinctness). Commit cf0a222d. No stale vocab."
     status: completed
-  - content: "registry: same method"
-    status: pending
+  - content: "registry: DONE — 2 additive edges re-derived from the init-aced SKILL.md CFG (array-absent->create-array-then-append = SKILL:27 'create the array if absent' arm, distinct snapshot from missing-file scn5 which creates {} via SKILL:14 and from array-present append scn4; legacy-role-key->rewrite = SKILL:27 names TWO legacy arms joined by 'or', suite bound only the domains[] arm so the scenario-advisor/implementer role-key arm was the unbound asymmetric sibling). Suite 12->14. registry is Fit: STRONG (init-aced = agent-executed mechanical skill making a genuine activation decision register vs run vs start-mission, NO script/node:test, boolean process-Gherkin) — analog of `manage`, NOT a deterministic engine like extract-situation. README rebuilt 4-section (Control Flow mermaid CFG + 14-row 3-col map, Fit: strong). Both gates self-asserted (cold aced-spec-validator ALIGNED oracle+builder+architect PASS, no remaining unbound edge, no vocab/artifacts-specs leak; cold aced-impl-judge IMPLEMENTATION_PASS both w/ distinctness ablation, both mandated by SKILL:27, no break in the other 12). Commit <pending>. M2 COMPLETE 16/16."
+    status: completed
 ---
 
 # CR 304-M2 — ACED eval-suite corpus sweep (remaining 16 leaves)
@@ -69,6 +69,15 @@ Dispatch per-node produce + judges to subagents (fresh context, compact verdict 
 brief after each node. Hard `/clear` + `resume-mission` every ~2 nodes to keep the conductor context lean.
 
 ## NEXT — resume here
+
+**✅ M2 COMPLETE — 16/16 nodes swept.** Node 16 registry DONE (both gates self-asserted, additive-only).
+All ACED behavioral-leaf specs now carry `## Control Flow` + a CFG-re-derived suite. Remaining after
+this branch lands: run full `pnpm verify` (done at M2 close), open/append the PR, and the SEPARATE
+follow-on missions — **304-M3 eval-artifact migration** (eval.md colocation + golden-set vocab scrub +
+retired `artifacts/specs/` cleanup, `304-m3-eval-artifact-migration.plan.md`, blocked on owner design
+decision) and the corpus-wide golden-set/fixture migration backlog. No further M2 node work.
+
+
 
 **Impl-gate cadence (owner):** **auto-all** — self-assert the impl gate on a cold impl-judge PASS with
 clean scope + no frozen rewrite; STOP for owner ratification only on a Clearance/re-open or a CHANGE.
