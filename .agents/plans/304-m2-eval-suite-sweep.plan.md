@@ -78,11 +78,21 @@ improve-skill docs-only; list-skills 39caafda; manage-skill-dirs 3445ac34; repai
 b6275195; compare 19876610; report d97df408; run 1633e25b; **add-scenario 923af59f — spec done, IMPL
 GATE AWAITING OWNER RATIFICATION**). **9 of 16 nodes swept.**
 
-**BLOCKING (surface first on resume):** add-scenario (node 9) was a re-open under owner Clearance and
-its impl gate is surfaced but NOT yet owner-ratified. The impl-judge PASS'd 10/10 and SKILL.md was
-unchanged (already conforms — the spec was the stale side), so ratification is a formality, but per the
-auto-all leash a Clearance/re-open STOPS for the owner. Get the owner's impl-gate nod, then record the
-impl-gate approve (by:unional) in the ledger to fully close node 9.
+**BLOCKING (surface first on resume):** add-scenario (node 9) impl gate is surfaced but NOT yet
+owner-ratified (re-open carries a Clearance → stops per auto-all). Get the owner's impl-gate nod, then
+record the impl-gate approve (by:unional) in the ledger to close node 9.
+
+**Location-model correction (commit 9894d33c) — DONE.** During node-9 ratification the owner caught
+that the ACED skills hardcoded the RETIRED suite location `artifacts/specs/<feature-name>/`. Owner
+decided the canonical model is EVERYTHING IN THE PROJECT SPEC: a target's node under
+`.agents/specs/<project>/…/<node>/` holds the frozen `<node>.feature` + colocated `eval.md` (subject +
+run policy) + `results/`; `artifacts/specs/` retired; discovery via the SDD spec tree. Swept 7 skills +
+report spec-README (location-only; frozen suites are path-neutral so conformance-preserving, no re-open).
+add-scenario's 2 LOCATE scenarios re-judged PASS against the corrected SKILL. This means node 9's impl
+is NOW genuinely correct (my first node-9 impl-judge scoped to scaffold/append and missed the stale
+locate step — lesson: hand the impl-judge the LOCATE/discovery scenarios too, not just the changed ones).
+Broader golden-set migration (glossary, frozen near-miss vocab, legacy artifacts/specs dirs, ~140
+fixtures) filed as a corpus-wide backlog followup — a dedicated migration mission after M2.
 
 Start **node 10 = improve** (`.agents/specs/aced/suite-authoring/improve/`) — last of suite-authoring.
 Same method: read the node's README + `.feature` + the real ACED skill it specs
