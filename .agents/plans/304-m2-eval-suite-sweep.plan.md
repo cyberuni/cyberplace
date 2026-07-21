@@ -28,8 +28,8 @@ todos:
     status: completed
   - content: "judge: DONE — 4 additive edges re-derived from the aced-case-judge agent-def CFG (thin-transcript-scored-as-is = bars augmenting the returned thin transcript, distinct from never-simulate-own scn 10; boolean output shape = completes the @rubric/@trigger/boolean output triple; rubric-name-format-collision blocker = 3rd fail-closed; non-zero-extractor-exit blocker = completes the 2-arm extractor blocker, the cold spec-judge's OWN flagged gap). Suite 30->34. README rebuilt 4-section (added Control Flow mermaid two-pass CFG + 34-row 3-col map; Fit:partial kept — LLM-graded role). Both gates self-asserted (cold spec-judge ALIGNED 3/3 on first 3, 4th is its own recommended edge; cold impl-judge PASS 4/4 against exact agent-def imperatives, incl a mutation-distinctness proof for the non-zero-exit/empty-brief pair). Commit 090c8fc3. No stale vocab."
     status: completed
-  - content: "impl-judge: same method"
-    status: pending
+  - content: "impl-judge: DONE — 7 additive edges re-derived from the aced-impl-judge agent-def CFG (blind-the-judge = step3 never pass steps/Then/rubric, the answer-key guard; trigger-Outline once-per-Examples-row w/ zero-based ROW self-aggregating; inline-threshold-overrides-default + no-inline->default = the two arms of step2's binary, the 2nd was the cold spec-judge's OWN flagged unbound branch H2, added not deferred; trigger-collapses-on-activation-accuracy vs total; must-not-do-fails-outright 'whatever the total'; failing-reports-per-dimension not total-alone). Suite 12->19. README rebuilt 4-section (Control Flow mermaid CFG + 19-row 3-col map; Fit: partial kept, LLM-graded role). Both gates self-asserted (cold spec-judge ALIGNED 3/3, its H2 gap closed in-node; cold impl-judge PASS 7/7 w/ per-scenario ablation, 3-vs-4 binary proved distinct). NOTE: threshold-verdict Thens must carry a pass/fail/not exempt token (check-suite RUBRIC_EXEMPT_RE) or check-suite flags 'embeds a rubric/score'. Commit <hash>. No stale vocab."
+    status: completed
   - content: "scenario-writer: same method"
     status: pending
   - content: "spec-validator: same method"
@@ -101,22 +101,30 @@ fixtures) filed as a corpus-wide backlog followup — a dedicated migration miss
 **config-authoring 5/5 + eval-run 3/3 + suite-authoring 2/2 + sdd-roles 2/5 DONE. 12 of 16 nodes
 swept.** Remaining: sdd-roles 3 (impl-judge, scenario-writer, spec-validator), registry 1.
 
-**Nodes 11 extract-situation (cf559cff) + 12 judge (090c8fc3) DONE**, both gates self-asserted, full
-`pnpm verify` green after node 11. NODE-NATURE NOTE: `extract-situation` is a deterministic
-node:test-backed ENGINE (NO `**Fit:**` line); `judge` is LLM-graded (`Fit: partial`). Check each
-remaining node's nature: `impl-judge`, `scenario-writer`, `spec-validator` ARE graded roles (impls are
-`plugins/aced/agents/aced-impl-judge.md` + skill defs / the scenario-writer + spec-validator
-agent/skill defs) so they likely carry Fit; `registry` may be an engine like extract-situation (check
-`plugins/aced/skills/…` for a script vs an agent def).
+**Nodes 11 extract-situation (cf559cff) + 12 judge (090c8fc3) + 13 impl-judge DONE**, both gates
+self-asserted each. NODE-NATURE NOTE: `extract-situation` is a deterministic node:test-backed ENGINE
+(NO `**Fit:**` line); `judge` and `impl-judge` are LLM-graded (`Fit: partial`, impls are agent defs,
+static-inspection impl gate). Check each remaining node's nature: `scenario-writer`, `spec-validator`
+ARE graded roles (the scenario-writer + spec-validator agent/skill defs) so they likely carry Fit;
+`registry` may be an engine like extract-situation (check `plugins/aced/skills/…` for a script vs an
+agent def).
 
-Start **node 13 = impl-judge** (`.agents/specs/aced/sdd-roles/impl-judge/`). Impl is
-`plugins/aced/agents/aced-impl-judge.md` (the aced-impl-judge subagent def; it runs the frozen suite
-over N runs and collapses per-scenario). Same method: read README + `.feature` + the agent def for
-control flow, draw CFG, re-derive scenarios per edge, additive-only unless a stale frozen scenario
-forces a re-open, rebuild README to the 4-section shape (What / Use Cases + **Fit:** if graded /
-Control Flow with mermaid CFG / Scenario map, 3-col `| Edge | Path | Scenario |` backtick col 3). Run
-check:spec. Then cold spec-judge → self-assert spec gate → cold impl-judge → self-assert impl gate if
-clean (auto-all; STOP on re-open). Then node 14 scenario-writer, 15 spec-validator, 16 registry.
+**13 of 16 nodes done. CHECKPOINT: this is the ~2-node boundary (12+13) — /clear + resume-mission
+before node 14 to keep the conductor context lean.**
+
+Start **node 14 = scenario-writer** (`.agents/specs/aced/sdd-roles/scenario-writer/`). Impl is the
+aced-scenario-writer agent/skill def (`plugins/aced/agents/aced-scenario-writer.md` — verify path).
+Same method: read README + `.feature` + the agent def for control flow, draw CFG, re-derive scenarios
+per edge, additive-only unless a stale frozen scenario forces a re-open, rebuild README to the
+4-section shape (What / Use Cases + **Fit:** if graded / Control Flow with mermaid CFG / Scenario map,
+3-col `| Edge | Path | Scenario |` backtick col 3). Run check:spec. Then cold spec-judge → self-assert
+spec gate → cold impl-judge → self-assert impl gate if clean (auto-all; STOP on re-open). Then node 15
+spec-validator, 16 registry.
+
+**LESSON (node 13):** a threshold/score-verdict `Then` in a boolean scenario MUST carry an exempt
+token (`pass`/`fail`/`failing`/`not`/`no`/`never`/`verdict`/…) or check-suite's `RUBRIC_EXEMPT_RE`
+flags it as "embeds a rubric/score in its assertion" (`\b(score|threshold|rubric)\b`). Phrase collapse
+edges as pass/fail verdicts, e.g. "decides the scenario's pass or fail against … threshold".
 
 **TWO LESSONS worth carrying (both landed real edges):**
 1. (node 11) Hand the cold impl-judge license to run ABLATION controls on the backing tests, not just
