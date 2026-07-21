@@ -71,5 +71,14 @@ a `backlog` followup ledger line (seq 4).
 
 Handoff done: no node relocation needed (nodes already at their established homes). Branch pushed,
 PR opened: https://github.com/cyberuni/cyberplace/pull/351 (`Closes #349`). No warm units to clear
-(only cold judge dispatches this mission). Keep this plan until the PR merges and is
-doctrine-distilled — nothing else to do here until then.
+(only cold judge dispatches this mission).
+
+Post-ship design review (Council/user): added a spec-honesty pass — `spec-gate/README.md` now states
+the check is a self-reported declaration not an attestation (catches honest omission, not skip-and-
+claim; expected set is guessable), and that no portable cross-harness load-telemetry exists (4-harness
+survey). Softened the "close that" overclaim in `sdd-spec-judge.md`. Recorded 2 backlog followups
+(ledger seq 5-6): portable provenance via a repo-owned loader seam; tighten the judge's expected-set
+oracle to the producer's required set. `pnpm verify` 34/34.
+
+Keep this plan until the PR merges and is doctrine-distilled. Open question for the owner: file the
+two backlog followups as GitHub issues, or leave them ledger-only until a later mission picks them up.
