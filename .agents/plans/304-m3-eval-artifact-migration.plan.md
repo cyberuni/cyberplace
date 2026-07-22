@@ -64,24 +64,27 @@ So `eval.md` is not created "along the way" by M2; M3 owns it.
 
 Gap-B migrations and frozen-suite vocab rewrites are Clearance-bound re-opens; surface each to the owner.
 
+## Progress
+
+- **Unit 1 (results-location infra) — DONE & RATIFIED.** `setup/ignore-run-output/` deterministic node
+  (append-last-wins engine + colocated node:test, 248/248 in plugin glob) + `run` additive scenario for the
+  shared `.agents/aced/results/<target>/` location. Spec gate + impl gate both ratified (`by: unional`).
+  Commits `991b526c`..`804c64a7`. ADR-0030 landed (multi-capability skill doctrine, refined with the
+  deterministic-node test-colocation rule). Issue #358 (SDD-governance follow-up) filed.
+
 ## NEXT — resume here
 
-**Unit 1 (results-location infra) — SPEC GATE PASSED (both units), now DELIVER.**
+**Unit 2 — Gap B: migrate `aced-create-spec`.** The richest legacy eval target (`artifacts/specs/aced-create-spec/`:
+`eval.md` + 21 golden-set + 3 trigger fixtures; subject `plugins/aced/skills/create-spec/SKILL.md`). Migrate to a
+project-spec node: colocate `eval.md` (subject + run policy only — layers/judge/threshold/trigger), port golden-set +
+trigger into the frozen `.feature` (`@rubric` inline + `@trigger` Examples), retire the `artifacts/specs/aced-create-spec/`
+dir. This is an ACED-graded node → ACED chain (aced-scenario-writer / aced-spec-validator / aced-impl-judge). The
+golden-set→`.feature` rewrite is Clearance-adjacent (porting the old scalar contract) — surface to owner.
 
-Spec gate done: `setup/ignore-run-output/` frozen (9 scenarios), `run` additive scenario frozen (self-clears).
-Cold aced-spec-validator ALIGNED round 2. Gate lines + judge-iteration correction recorded. ADR-0030 landed;
-init-aced multi-facet doctrine settled (registry/ = role-map, setup/ = ignore-setup, each 1:1 subject).
+Remaining after unit 2: unit 3 (Gap B migrate `sdd-orchestrator`), unit 4 (Gap A eval.md on self-dogfood ACED
+skill nodes), unit 5 (vocab/glossary cleanup), unit 6 (retire `artifacts/specs/`).
 
-Deliver (build-to-keep against the frozen suites):
-1. Write `plugins/aced/skills/init-aced/scripts/ensure-results-ignored.mts` — append `.agents/aced/results/`
-   as the LAST line of root `.gitignore` (create if absent; no-op if already effectively ignored via
-   `git check-ignore`; fail-closed pre-write on no-repo / unwritable). Last-match-wins guarantees the ignore.
-2. Write its colocated deterministic test `.agents/specs/aced/setup/ignore-run-output/ignore-run-output.test.mts`
-   (one verification per frozen scenario + mutation controls).
-3. `init-aced/SKILL.md` — add one glue step invoking the engine.
-4. `run/SKILL.md:89` — change output path from the node's `results/` to `.agents/aced/results/<target>/`.
-5. Rebase onto latest main, then IMPL GATE — leash is `auto-spec`, so STOP and surface the impl gate to the
-   owner for ratification (unless owner raises the leash to auto-all, as in M2).
+Landing model: like M2 (PR #355), accumulate all M3 units on this branch, then ONE PR referencing #304 (does NOT
+close it — #304 is the M1-M6 umbrella). No PR yet.
 
 Leash: `auto-spec`, by user (ledger `304-m3-eval-artifact-migration.7935ff.jsonl`).
-Then units 2-5 per the sequence above (Gap B migrations, Gap A eval.md colocation, vocab cleanup, retire artifacts/specs/).
