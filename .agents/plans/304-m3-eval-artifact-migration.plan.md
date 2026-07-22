@@ -216,15 +216,16 @@ gate re-open. Pilot commit b8aaf466 + batch commit (this).
 ## NEXT — resume here — remaining M3 units
 
 Gap A + Gap B + Unit 1 + vocab-redefine all DONE. Remaining M3:
-- **Vocab/glossary cleanup (frozen-suite scope)** — glossary.md 'eval suite' def + frozen suites still
-  carrying golden-set near-miss vocab (define-agent:36, define-skill:52/58, define-governance:31,
-  scenario-writer:29/91, skillify:27/37, contribute-skill:29/48, improve:22, workflows/eval-loop:8). EACH
-  frozen-suite rewrite is a Clearance-bound spec-gate re-open → STOP for owner ratification. OPEN QUESTION
-  for owner: is this even needed? The completed vocab-redefine todo (7fc7d2f3) REDEFINED 'golden set' = the
-  scenarios in the frozen .feature and verified all frozen usages valid under the redefinition — so these
-  may already be consistent and need NO rewrite. Confirm with owner before opening any frozen suite.
+- **Vocab/glossary cleanup (frozen-suite scope) — CLOSED as NO-OP (audited 2026-07-21).** Glossary already
+  fully redefined (golden set / test case / threshold / eval suite — line 25 even references eval.md). Frozen
+  suites audited exhaustively: (a) ZERO assert a `golden-set/` directory path; (b) ZERO assert the 1-5 scalar;
+  (c) every "golden set" usage is consistent — either kept user-phrasing (improve:21, skillify:27/37,
+  define-*/contribute-skill Givens, compare, eval-loop:8/12 = golden set means the scenarios) OR scenario-writer
+  scenarios that ENFORCE the new model (:5/:26/:29 rubric-inline-no-separate-golden-set, :74 "retired golden
+  set" legacy framing, :111 boolean-Then-not-golden-set-must-list). Rewriting the scenario-writer ones would
+  BREAK the enforcement. No Clearance-bound re-open needed. Confirms the completed vocab-redefine conclusion.
 - **Docs + fixtures (Quill domain)** — ~140 golden-set/*.md fixtures + website/docs advertising the retired
-  1-5 scalar contract (github-263-op6-m3). Likely a Quill node / separate mission.
+  1-5 scalar contract (github-263-op6-m3). Likely a Quill node / separate mission. THE ONLY M3 UNIT LEFT.
 
 Landing: accumulate all M3 units on this branch, then ONE PR referencing #304 (does NOT close it — #304 is
 the M1-M6 umbrella). No PR yet.
