@@ -164,7 +164,23 @@ behavior (omitted/null/zero-match) is the resolution UNIT's territory; the condu
 Net additive diff: conductor.feature +2 (005 explore-from-freeze, 009 observations-from-several-producers);
 resolution.feature +1 (010 present-no-match). Both parse clean; check:specs green. RE-JUDGE in flight.
 
-## NEXT — resume here — AWAIT re-judge verdict, then spec-gate ratify (additive→self-clears under auto-spec)
+## SPEC GATE RATIFIED + IMPL GATE ROUND 1 (2026-07-21)
+
+Spec gate ALIGNED (round 2, all 3 lenses) → committed `beaab080` (additive→self-clears, auto-spec).
+Impl gate (cold sdd-impl-judge): scn 1 (explore-from-freeze) PASS, scn 3 (present-no-match, resolution)
+PASS with a new binding test in resolve-governances.test.mts (50/50). Scn 2 (observation aggregation)
+FAILED — ADR-0016 catch: the frozen scenario's multi-producer/no-loss/no-self-spawn guarantee had NO
+executable-config backing (start-mission SKILL only specified single-producer explore-only routing; the
+README stated the full guarantee but that's spec-restating-spec). FIX (impl-gate change action, feature
+untouched): generalized start-mission/SKILL.md "Route observations" bullet to every producer across a
+segment + explicit no-drop/no-filter/no-self-spawn; sdd-automaton inherits. RE-VERIFY of scn 2 in flight.
+
+## NEXT — resume here — AWAIT scn-2 re-verify, then commit impl-gate unit 2
+
+On PASS: commit the impl unit (start-mission config fix + resolve-governances binding test). Then Unit 3:
+port aced-create-spec 008 + 017 into start-mission's suite — but FIRST run check-scenario-overlap / scan
+ALL sibling nodes (round-1 lesson: the audit missed the resolution node). Then retire
+artifacts/specs/{aced-create-spec,sdd-orchestrator}/ + confirm no ACED runtime reads that tree.
 
 On ALIGNED: commit the conductor+resolution spec-gate unit (additive port). Then Unit 3: port aced-create-spec
 008 (artifact-not-found/zero-match) + 017 (multi-file-name-match) into start-mission's frozen SDD suite —
