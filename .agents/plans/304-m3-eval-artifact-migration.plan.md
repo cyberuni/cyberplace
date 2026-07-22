@@ -66,8 +66,22 @@ Gap-B migrations and frozen-suite vocab rewrites are Clearance-bound re-opens; s
 
 ## NEXT — resume here
 
-**Unit 1 (results-location infra), explore phase.** Nodes: `run` (revise), `init-aced` (scaffold-or-not
-open question). Run resolve-governances (ACED plugin chain: aced-scenario-writer / aced-spec-validator /
-aced-impl-judge). Collect seed intent, then grill.
+**Unit 1 (results-location infra) — SPEC GATE PASSED (both units), now DELIVER.**
 
-Leash: `auto-spec`, by user (ledger `304-m3-eval-artifact-migration.7935ff.jsonl`). Ledger shard created.
+Spec gate done: `setup/ignore-run-output/` frozen (9 scenarios), `run` additive scenario frozen (self-clears).
+Cold aced-spec-validator ALIGNED round 2. Gate lines + judge-iteration correction recorded. ADR-0030 landed;
+init-aced multi-facet doctrine settled (registry/ = role-map, setup/ = ignore-setup, each 1:1 subject).
+
+Deliver (build-to-keep against the frozen suites):
+1. Write `plugins/aced/skills/init-aced/scripts/ensure-results-ignored.mts` — append `.agents/aced/results/`
+   as the LAST line of root `.gitignore` (create if absent; no-op if already effectively ignored via
+   `git check-ignore`; fail-closed pre-write on no-repo / unwritable). Last-match-wins guarantees the ignore.
+2. Write its colocated deterministic test `.agents/specs/aced/setup/ignore-run-output/ignore-run-output.test.mts`
+   (one verification per frozen scenario + mutation controls).
+3. `init-aced/SKILL.md` — add one glue step invoking the engine.
+4. `run/SKILL.md:89` — change output path from the node's `results/` to `.agents/aced/results/<target>/`.
+5. Rebase onto latest main, then IMPL GATE — leash is `auto-spec`, so STOP and surface the impl gate to the
+   owner for ratification (unless owner raises the leash to auto-all, as in M2).
+
+Leash: `auto-spec`, by user (ledger `304-m3-eval-artifact-migration.7935ff.jsonl`).
+Then units 2-5 per the sequence above (Gap B migrations, Gap A eval.md colocation, vocab cleanup, retire artifacts/specs/).
