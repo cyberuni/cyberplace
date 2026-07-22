@@ -28,7 +28,7 @@ ACED applies spec-driven development (SDD) to agent configurations. In SDD, a sp
 ## 2. Goals
 
 - **G1** — Define a test case format for agent configurations that captures scenario, expected behaviors, prohibited behaviors, and a scoring rubric.
-- **G2** — Specify a golden set convention: a curated directory of test cases per agent configuration that serves as ground truth.
+- **G2** — Specify a golden set convention: the scenarios in a configuration's frozen `.feature` — boolean, `@rubric`, and `@trigger` scenarios together — serve as ground truth.
 - **G3** — Specify an eval run protocol: for each test case, score agent behavior against the rubric using an LLM judge, and produce a structured result.
 - **G4** — Specify a regression gate: detect when an agent configuration change drops scores below a threshold before committing.
 - **G5** — Specify a report format for project-wide eval health across all agent configurations.
@@ -61,60 +61,59 @@ The collective term for all instruction agent configurations an agent runtime lo
 
 A category of behavior being tested. Layers are ordered from cheapest to most expensive:
 
-| Layer | Question | Scored by | Input format |
+| Layer | Question | Scored by | Evidence |
 |---|---|---|---|
 | **Structural** | Does the agent configuration have required fields and format? | `audit-skill` (static) | — |
-| **Trigger** | Does the agent correctly decide when to invoke this agent configuration? | trigger rate (run-based) | `eval_queries.json` |
-| **Behavior** | When invoked, does the agent follow the steps and rules? | `aced-judge` (rubric + assertions) | `golden-set/*.md` |
-| **Quality** | Is the output the agent produces actually good? | `aced-judge` (rubric + assertions) | `golden-set/*.md` |
+| **Trigger** | Does the agent correctly decide when to invoke this agent configuration? | trigger accuracy (run-based) | `@trigger` `Scenario Outline` `Examples` rows |
+| **Behavior** | When invoked, does the agent follow the steps and rules? | `aced-case-judge` (inline rubric / boolean `Then`) | boolean and `@rubric` scenarios in the `.feature` |
+| **Quality** | Is the output the agent produces actually good? | `aced-case-judge` (inline rubric) | `@rubric` scenarios in the `.feature` |
 
-The structural layer delegates to `audit-skill` and runs free. The trigger layer uses a different mechanism from behavior/quality: it runs real queries against the agent and measures whether the skill was invoked (trigger rate), not LLM simulation. Behavior and quality layers use `aced-judge`.
+The structural layer delegates to `audit-skill` and runs free. The trigger layer uses a different mechanism from behavior/quality: it runs real queries against the agent (one per `Examples` row) and measures whether the skill was invoked, not LLM simulation. Behavior and quality layers use `aced-case-judge`, which reads each scenario's inline rubric or boolean `Then` from the frozen `.feature`.
 
 ### 4.3 Test case
 
-A single scenario that exercises one aspect of one agent configuration at one layer. A test case specifies:
+A single scenario in the frozen `.feature` that exercises one aspect of one agent configuration at one layer. A test case is one of three shapes:
 
-- Which layer it tests
-- A concrete situation description
-- A list of expected behaviors (observable actions or outputs)
-- A list of prohibited behaviors
-- Optional assertions: verifiable pass/fail checks on observable outputs
-- A rubric (1–5 scoring criteria)
-- A pass threshold (default: 4)
+- Which layer it tests (from its `@trigger` / `@behavior` / `@quality` tag)
+- A concrete situation description (the `Given` / `When`)
+- A **boolean** scenario whose `Then` asserts an observable action (a must-not-do guard is a `Then` asserting the agent *does not* do the prohibited action), **or**
+- A **`@rubric`** scenario carrying its rubric inline — named dimensions, each with its own `max`, plus one `threshold`, **or**
+- A **`@trigger`** `Scenario Outline` whose `Examples` rows each pair a query with its expected invoke decision
 
-Assertions and rubric are complementary. Assertions check mechanical properties objectively ("output includes a bar chart file"); the rubric scores holistic quality. When assertions are present, a failed assertion caps the rubric score at 3 — the agent configuration cannot score 4 or 5 if a must-pass check failed.
+Boolean scenarios and graded scenarios are complementary. A boolean `Then` checks a mechanical property objectively ("stages only the related files"); a `@rubric` scenario scores holistic quality across its dimensions. A violated must-not-do prohibition (asserted as a boolean `Then` step) fails the case outright, whatever the rubric total.
 
 ### 4.4 Golden set
 
-The complete test suite for one agent configuration:
-- **Trigger queries**: stored in `artifacts/aced/<subject-path>/trigger/eval_queries.json` — a JSON array of `{query, should_trigger}` pairs, split into `train_queries.json` (60%) and `validation_queries.json` (40%) for optimization without overfitting.
-- **Behavior/quality cases**: stored in `artifacts/aced/<subject-path>/golden-set/*.md` — markdown test cases with scenarios, assertions, and rubric.
+The complete test suite for one agent configuration is the set of scenarios in its frozen `.feature` — its boolean, `@rubric`, and `@trigger` scenarios together. The `.feature` is the single eval source; there is no separate directory of case files.
 
-Both are version-controlled and grow over time as new failure modes are discovered.
+- **Trigger cases**: the `Examples` rows of the `.feature`'s `@trigger` `Scenario Outline` — each row a `{query, should_trigger}` pair, including near-misses.
+- **Behavior/quality cases**: the boolean `Then` scenarios and the `@rubric` scenarios (rubric authored inline) in the same `.feature`.
+
+The `.feature` is version-controlled and `@frozen`; it grows over time as new failure modes are discovered (adding a scenario is additive and self-clears).
 
 Coverage targets:
 
-| Layer | Min cases | Composition |
+| Layer | Min scenarios | Composition |
 |---|---|---|
-| Trigger | ~20 queries | 8–10 should-trigger, 8–10 should-not-trigger; include near-misses |
-| Behavior | 15–25 | 1 per major rule/step + 3–5 edge cases + 2–3 must-not-do cases |
+| Trigger | ~20 `Examples` rows | 8–10 should-trigger, 8–10 should-not-trigger; include near-misses |
+| Behavior | 15–25 | 1 per major rule/step + 3–5 edge cases + 2–3 must-not-do guards |
 | Quality | optional | End-to-end output quality checks |
 
 ### 4.5 Eval run
 
-A single execution of the eval suite against the current agent configuration. Two run types:
-- **Trigger run**: executes each query in `eval_queries.json` N times, measures trigger rate per query, produces a trigger result JSON.
-- **Behavior/quality run**: for each test case in `golden-set/`, invokes `aced-judge`, collecting scores, assertion results, and timing. Produces a behavior result JSON.
+A single execution of the eval suite against the current agent configuration. Two run shapes:
+- **Trigger run**: executes each `@trigger` `Examples` row `eval.trigger.runs` times, measures invoke accuracy per row against `eval.trigger.activation_threshold`.
+- **Behavior/quality run**: for each boolean or `@rubric` scenario in the `.feature`, invokes `aced-case-judge` blind, collecting per-dimension scores (for `@rubric`) or a pass/fail (for boolean), plus the judge's `WHAT WORKED` / `WHAT FAILED`.
 
-Results are timestamped and stored in `artifacts/aced/<subject-path>/results/`. `benchmark.json` is rewritten after each run with aggregate stats.
+Results are timestamped and written to `.agents/aced/results/<target-slug>/<ISO8601>.json` — the shared, git-ignored ACED results directory at the repo root, keyed by the target.
 
 ### 4.6 Pass threshold
 
-A score cutoff (1–5) that classifies a test case as passing or failing. Default: 4. Configurable per agent configuration in `eval.md` and overridable per test case in its frontmatter.
+The total at which a case counts as passing: the per-scenario boolean collapse `total ≥ threshold`, where the total sums every rubric dimension's score against its own `max`. Set per configuration as `eval.judge.default_threshold` in `eval.md` and overridable per scenario by an inline `threshold` in its `@rubric`. A violated must-not-do fails the case outright, whatever the total.
 
 ### 4.7 Regression gate
 
-A check run by `aced-compare` that blocks an agent configuration change if any test case's score drops vs. the previous version. A regression is a pass→fail flip or a score drop of ≥2 on any case.
+A check run by `compare` that blocks an agent configuration change if any scenario regresses vs. the previous version. A regression is a scenario that dropped from passing to failing, or lost points on any dimension, between two versions.
 
 ---
 
@@ -230,16 +229,21 @@ Example: the `aced` plugin's `create-spec` skill lives at `artifacts/aced/aced/s
 
 ### 6.1 `eval.md` schema
 
+`eval.md` carries only the subject binding and run policy — never a rubric or case list, which live inline in the frozen `.feature`.
+
 ```markdown
 ---
-target: <relative path to agent configuration, or "AGENTS.md#section-heading">
-judge_model: claude-sonnet-4-6
-threshold: 4           # rubric pass threshold (1–5); default 4
-trigger_threshold: 0.5 # fraction of runs that must trigger for a should-trigger query to pass
-trigger_runs: 3        # number of times each trigger query is executed
-layers:
-  - trigger
-  - behavior
+subject: <relative path to agent configuration, or "AGENTS.md#section-heading">
+eval:
+  layers:                    # which layers run
+    - trigger
+    - behavior
+  judge:
+    model: claude-sonnet-4-6
+    default_threshold: 4     # fallback total; an inline @rubric threshold overrides it
+  trigger:
+    activation_threshold: 0.5 # fraction of runs that must invoke for a should-trigger row to pass
+    runs: 3                   # number of times each @trigger Examples row is executed
 ---
 ```
 
@@ -601,7 +605,7 @@ Invoked by `aced-run` after `aced-executor`. Grades the simulated execution agai
 - Score what the agent configuration would cause an agent to do — not what the grader considers ideal
 - The rubric is the authority; do not override it
 - Ambiguous agent configuration language that produces inconsistent behavior should lower the score
-- Any failed assertion caps the score at 3 — cannot score 4 or 5 if a must-pass check failed
+- A violated must-not-do (a boolean `Then` asserting a prohibited action did not happen) fails the case outright, whatever the rubric total
 - Extract implicit claims from the simulated execution and verify them (catches issues that predefined assertions miss)
 - Flag assertions that would trivially pass regardless of skill quality — this is `eval_feedback`
 
@@ -699,13 +703,13 @@ ARTIFACTS_DIR: artifacts/aced/<subject-path>/
 
 Agent behavior is not structurally checkable. The output of following an agent configuration is natural language behavior, not a typed value. An LLM judge is the only practical scorer at the behavior and quality layers.
 
-ACED uses a hybrid: verifiable **assertions** (pass/fail, graded by `aced-grader` with evidence) handle mechanical properties; the **rubric** (1–5) handles holistic quality. Assertions cap the rubric score at 3 when they fail — objective checks take precedence.
+ACED uses a hybrid: verifiable **boolean `Then` steps** (pass/fail, graded by `aced-case-judge`) handle mechanical properties; a **`@rubric`** (named dimensions, each scored against its own `max`) handles holistic quality. A violated must-not-do — a boolean `Then` asserting the agent does not do a prohibited action — fails the case outright, whatever the rubric total; objective checks take precedence.
 
 **Tradeoff:** LLM judges are non-deterministic and can be wrong. Mitigations: temperature 0 on judge calls; rubrics are the authority; `aced-grader` critiques its own assertions (`eval_feedback`) so weak evals are caught. The alternative (code assertions only) can't handle behavior that emerges from instruction-following.
 
 ### 10.2 Pointwise scoring, not pairwise
 
-Each test case is scored independently (1–5), not compared against a reference output. Pairwise is more reliable but requires a reference output for every case, which is expensive to maintain.
+Each test case is scored independently — per rubric dimension against its own `max`, collapsed to pass/fail at the threshold — not compared against a reference output. Pairwise is more reliable but requires a reference output for every case, which is expensive to maintain.
 
 **Tradeoff:** Pointwise scores are noisier. Rubrics compensate by being specific. Pairwise comparison is used in `aced-compare` (before vs. after), where a reference naturally exists.
 
