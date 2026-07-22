@@ -5,8 +5,8 @@ status: draft
 todos:
   - content: "[SETTLED by owner] DESIGN DECISION (todo 1). (1) Population = external subjects + self-dogfood ACED skill nodes, delivered ONE NODE AT A TIME (304-M2 cadence). (2) Run output at .agents/aced/results/<target>/ — OUT of the spec tree, git-ignored, ignore rule written idempotently by init-aced (issue #356 a). (3) Discovery reuses SDD spec-location conventions (ADR-0019 anchors) + eval.md marker; no ACED-specific path constant (issue #356 b). Recorded in ledger 304-m3-eval-artifact-migration.7935ff.jsonl."
     status: completed
-  - content: "Gap A — colocate eval.md per eval-target node: create .agents/specs/<project>/…/<node>/eval.md (subject = the target config's path; run policy = eval.layers / judge.model / judge.default_threshold / trigger.{activation_threshold,runs}). Default run-policy template from the two legacy targets: layers [trigger, behavior], judge sonnet, default_threshold 4, trigger.runs 3 — confirm per node."
-    status: pending
+  - content: "Gap A — colocate eval.md per gradable ACED node. OWNER DECIDED (2026-07-21): roster = ALL 21 strong+partial nodes (12 strong + 9 partial), one at a time; pilot = define-skill. PILOT DONE: .agents/specs/aced/config-authoring/define-skill/eval.md — subject repo-root-relative (create-spec precedent), layers DERIVED from the node's own .feature tags (define-skill untagged → [behavior] only; NOT the legacy [trigger,behavior] template), judge claude-sonnet-4-6 / default_threshold 4 (== runtime defaults, stated explicitly). verify 34/34 green (SDD node model accepts colocated eval.md). LESSON: layers are per-node — 7 suites (skillify, manage-skill-dirs, improve-skill, impl-judge, scenario-writer, spec-validator, contribute-skill) carry @trigger/@rubric → those eval.md must list trigger/quality + the trigger.{activation_threshold,runs} block; the other 14 are behavior-only. REMAINING 20 nodes pending."
+    status: in_progress
   - content: "[DONE] Gap B (RETIRE-not-migrate; both subjects DELETED). Of the owner's 'port all 7', rigorous PER-NODE verification found only 3 genuinely uncovered → ported+ratified: 005 explore-from-freeze + 009 observation-aggregation → conductor.feature; 010 present-registry-no-match → resolution.feature (commits beaab080 spec gate, fadb5dbf impl gate). Dropped: 002/003 (verbatim dups of resolution.feature, caught by cold spec-judge), 007 (obsolete — aligned/domain-plugin retired ADR-0017). aced-create-spec 008/017 BOTH already frozen (017→discovery.feature:85,136 + cr-lifecycle:21; 008→backfill cr-lifecycle:27) → nothing to port. Both dirs retired (a2e3fdee sdd-orchestrator, 93cca442 aced-create-spec). LESSON: the coverage audit missed sibling nodes (resolution/discovery/cr-lifecycle) TWICE — always run check-scenario-overlap / scan ALL nodes, not one file."
     status: completed
   - content: "[DONE] Vocab cleanup. Owner confirmed: REDEFINE 'golden set' (= the scenarios in the frozen .feature), keep near-miss rows as realistic user phrasing. Glossary redefined (7fc7d2f3: golden set / test case / eval suite / must-not-do → .feature model). pnpm verify fixed (b731db0f — a Unit-1 regression: run.feature scenario missing its scenario-map row; NOW 34/34 green). ZERO frozen re-opens needed: all frozen 'golden set' usages are valid under the redefinition (compare/eval-loop/improve/scenario-writer) or consistent with local node vocabulary. judge.feature:118 ('must-not-do list') VERIFIED consistent with its own node (README:39 'must-not-do lists', :71 'live in its Then steps' = the set of must-not-do Then steps) — NOT the retired file-format, so NOT stale; a trial edit broke check:spec and was reverted. Near-miss rows kept per owner."
@@ -188,7 +188,24 @@ pnpm verify now 34/34 green (was red since Unit 1). Glossary redefined; no froze
 confirmed redefine + keep near-miss phrasing; judge.feature:118 verified NOT stale). Remaining M3: Gap A
 + docs/fixtures (Quill). Owner ordered vocab BEFORE Gap A — vocab now done, so Gap A is next on resume.
 
-## NEXT — resume here — Gap A (eval.md colocation on ACED self-dogfood nodes)
+## GAP A PILOT DONE (2026-07-21) — define-skill eval.md landed; batch the other 20
+
+Owner decided roster = ALL 21 strong+partial gradable ACED nodes (from the `**Fit:**` lines), one at a
+time, pilot = define-skill. Pilot landed: `define-skill/eval.md` (behavior-only, subject repo-root-relative,
+defaults explicit). verify 34/34. Per-node RULE for the batch: **derive `layers` from that node's own
+`.feature` tags** — behavior-only nodes → `[behavior]`; the 7 tagged nodes (skillify, manage-skill-dirs,
+improve-skill, impl-judge, scenario-writer, spec-validator, contribute-skill) → include `trigger`/`quality`
+and the `eval.trigger.{activation_threshold, runs}` block. Judge = claude-sonnet-4-6 / default_threshold 4.
+Subject = repo-root-relative path to each node's config (SKILL.md for skills; agents/*.md for the 5 sdd-roles
+subagents). eval.md is additive (no frozen .feature touched) → NOT Clearance-bound → self-clears.
+
+Full roster (21): STRONG(12) = define-skill✓, define-agent, define-governance, skillify, contribute-skill,
+compare, report, run, manage, registry, add-scenario, improve. PARTIAL(9) = improve-skill, list-skills,
+manage-model-runners, manage-skill-dirs, repair-private-skills, impl-judge, judge, scenario-writer,
+spec-validator. (Excluded: ignore-run-output = wrong-squad/node:test; workflows ×2 = orchestration, no Fit;
+extract-situation = MISSING Fit line — classify before binding, side-gap.)
+
+## NEXT — resume here — Gap A batch (remaining 20 nodes)
 
 Remaining M3 units (each still its own explore→spec gate→deliver→impl gate):
 - **Gap A** — colocate `eval.md` (subject + run policy only) on the chosen self-dogfood ACED skill nodes
