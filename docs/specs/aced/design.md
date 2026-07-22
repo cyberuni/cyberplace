@@ -28,7 +28,7 @@ ACED applies spec-driven development (SDD) to agent configurations. In SDD, a sp
 ## 2. Goals
 
 - **G1** — Define a test case format for agent configurations that captures scenario, expected behaviors, prohibited behaviors, and a scoring rubric.
-- **G2** — Specify a golden set convention: a curated directory of test cases per agent configuration that serves as ground truth.
+- **G2** — Specify a golden set convention: the scenarios in a configuration's frozen `.feature` — boolean, `@rubric`, and `@trigger` scenarios together — serve as ground truth.
 - **G3** — Specify an eval run protocol: for each test case, score agent behavior against the rubric using an LLM judge, and produce a structured result.
 - **G4** — Specify a regression gate: detect when an agent configuration change drops scores below a threshold before committing.
 - **G5** — Specify a report format for project-wide eval health across all agent configurations.
@@ -53,68 +53,67 @@ The collective term for all instruction agent configurations an agent runtime lo
 | Artifact | When loaded | Examples |
 |---|---|---|
 | `AGENTS.md` section | Every session (always-on) | Commit discipline, coding conventions |
-| Skill (`SKILL.md`) | On demand when triggered | `create-skill`, `aced-run` |
-| Subagent definition | When explicitly invoked as sub-task | `aced-judge`, a researcher agent |
+| Skill (`SKILL.md`) | On demand when triggered | `create-skill`, `run` |
+| Subagent definition | When explicitly invoked as sub-task | `aced-case-judge`, a researcher agent |
 | Command | When user invokes named slash command | `/commit-work`, `/code-review` |
 
 ### 4.2 Eval layer
 
 A category of behavior being tested. Layers are ordered from cheapest to most expensive:
 
-| Layer | Question | Scored by | Input format |
+| Layer | Question | Scored by | Evidence |
 |---|---|---|---|
 | **Structural** | Does the agent configuration have required fields and format? | `audit-skill` (static) | — |
-| **Trigger** | Does the agent correctly decide when to invoke this agent configuration? | trigger rate (run-based) | `eval_queries.json` |
-| **Behavior** | When invoked, does the agent follow the steps and rules? | `aced-judge` (rubric + assertions) | `golden-set/*.md` |
-| **Quality** | Is the output the agent produces actually good? | `aced-judge` (rubric + assertions) | `golden-set/*.md` |
+| **Trigger** | Does the agent correctly decide when to invoke this agent configuration? | trigger accuracy (run-based) | `@trigger` `Scenario Outline` `Examples` rows |
+| **Behavior** | When invoked, does the agent follow the steps and rules? | `aced-case-judge` (inline rubric / boolean `Then`) | boolean and `@rubric` scenarios in the `.feature` |
+| **Quality** | Is the output the agent produces actually good? | `aced-case-judge` (inline rubric) | `@rubric` scenarios in the `.feature` |
 
-The structural layer delegates to `audit-skill` and runs free. The trigger layer uses a different mechanism from behavior/quality: it runs real queries against the agent and measures whether the skill was invoked (trigger rate), not LLM simulation. Behavior and quality layers use `aced-judge`.
+The structural layer delegates to `audit-skill` and runs free. The trigger layer uses a different mechanism from behavior/quality: it runs real queries against the agent (one per `Examples` row) and measures whether the skill was invoked, not LLM simulation. Behavior and quality layers use `aced-case-judge`, which reads each scenario's inline rubric or boolean `Then` from the frozen `.feature`.
 
 ### 4.3 Test case
 
-A single scenario that exercises one aspect of one agent configuration at one layer. A test case specifies:
+A single scenario in the frozen `.feature` that exercises one aspect of one agent configuration at one layer. A test case is one of three shapes:
 
-- Which layer it tests
-- A concrete situation description
-- A list of expected behaviors (observable actions or outputs)
-- A list of prohibited behaviors
-- Optional assertions: verifiable pass/fail checks on observable outputs
-- A rubric (1–5 scoring criteria)
-- A pass threshold (default: 4)
+- Which layer it tests (from its `@trigger` / `@behavior` / `@quality` tag)
+- A concrete situation description (the `Given` / `When`)
+- A **boolean** scenario whose `Then` asserts an observable action (a must-not-do guard is a `Then` asserting the agent *does not* do the prohibited action), **or**
+- A **`@rubric`** scenario carrying its rubric inline — named dimensions, each with its own `max`, plus one `threshold`, **or**
+- A **`@trigger`** `Scenario Outline` whose `Examples` rows each pair a query with its expected invoke decision
 
-Assertions and rubric are complementary. Assertions check mechanical properties objectively ("output includes a bar chart file"); the rubric scores holistic quality. When assertions are present, a failed assertion caps the rubric score at 3 — the agent configuration cannot score 4 or 5 if a must-pass check failed.
+Boolean scenarios and graded scenarios are complementary. A boolean `Then` checks a mechanical property objectively ("stages only the related files"); a `@rubric` scenario scores holistic quality across its dimensions. A violated must-not-do prohibition (asserted as a boolean `Then` step) fails the case outright, whatever the rubric total.
 
 ### 4.4 Golden set
 
-The complete test suite for one agent configuration:
-- **Trigger queries**: stored in `artifacts/aced/<subject-path>/trigger/eval_queries.json` — a JSON array of `{query, should_trigger}` pairs, split into `train_queries.json` (60%) and `validation_queries.json` (40%) for optimization without overfitting.
-- **Behavior/quality cases**: stored in `artifacts/aced/<subject-path>/golden-set/*.md` — markdown test cases with scenarios, assertions, and rubric.
+The complete test suite for one agent configuration is the set of scenarios in its frozen `.feature` — its boolean, `@rubric`, and `@trigger` scenarios together. The `.feature` is the single eval source; there is no separate directory of case files.
 
-Both are version-controlled and grow over time as new failure modes are discovered.
+- **Trigger cases**: the `Examples` rows of the `.feature`'s `@trigger` `Scenario Outline` — each row a `{query, should_trigger}` pair, including near-misses.
+- **Behavior/quality cases**: the boolean `Then` scenarios and the `@rubric` scenarios (rubric authored inline) in the same `.feature`.
+
+The `.feature` is version-controlled and `@frozen`; it grows over time as new failure modes are discovered (adding a scenario is additive and self-clears).
 
 Coverage targets:
 
-| Layer | Min cases | Composition |
+| Layer | Min scenarios | Composition |
 |---|---|---|
-| Trigger | ~20 queries | 8–10 should-trigger, 8–10 should-not-trigger; include near-misses |
-| Behavior | 15–25 | 1 per major rule/step + 3–5 edge cases + 2–3 must-not-do cases |
+| Trigger | ~20 `Examples` rows | 8–10 should-trigger, 8–10 should-not-trigger; include near-misses |
+| Behavior | 15–25 | 1 per major rule/step + 3–5 edge cases + 2–3 must-not-do guards |
 | Quality | optional | End-to-end output quality checks |
 
 ### 4.5 Eval run
 
-A single execution of the eval suite against the current agent configuration. Two run types:
-- **Trigger run**: executes each query in `eval_queries.json` N times, measures trigger rate per query, produces a trigger result JSON.
-- **Behavior/quality run**: for each test case in `golden-set/`, invokes `aced-judge`, collecting scores, assertion results, and timing. Produces a behavior result JSON.
+A single execution of the eval suite against the current agent configuration. Two run shapes:
+- **Trigger run**: executes each `@trigger` `Examples` row `eval.trigger.runs` times, measures invoke accuracy per row against `eval.trigger.activation_threshold`.
+- **Behavior/quality run**: for each boolean or `@rubric` scenario in the `.feature`, invokes `aced-case-judge` blind, collecting per-dimension scores (for `@rubric`) or a pass/fail (for boolean), plus the judge's `WHAT WORKED` / `WHAT FAILED`.
 
-Results are timestamped and stored in `artifacts/aced/<subject-path>/results/`. `benchmark.json` is rewritten after each run with aggregate stats.
+Results are timestamped and written to `.agents/aced/results/<target-slug>/<ISO8601>.json` — the shared, git-ignored ACED results directory at the repo root, keyed by the target.
 
 ### 4.6 Pass threshold
 
-A score cutoff (1–5) that classifies a test case as passing or failing. Default: 4. Configurable per agent configuration in `eval.md` and overridable per test case in its frontmatter.
+The total at which a case counts as passing: the per-scenario boolean collapse `total ≥ threshold`, where the total sums every rubric dimension's score against its own `max`. Set per configuration as `eval.judge.default_threshold` in `eval.md` and overridable per scenario by an inline `threshold` in its `@rubric`. A violated must-not-do fails the case outright, whatever the total.
 
 ### 4.7 Regression gate
 
-A check run by `aced-compare` that blocks an agent configuration change if any test case's score drops vs. the previous version. A regression is a pass→fail flip or a score drop of ≥2 on any case.
+A check run by `compare` that blocks an agent configuration change if any scenario regresses vs. the previous version. A regression is a scenario that dropped from passing to failing, or lost points on any dimension, between two versions.
 
 ---
 
@@ -122,564 +121,98 @@ A check run by `aced-compare` that blocks an agent configuration change if any t
 
 ### 5.1 Backfill path (current scope)
 
-The backfill path starts with an existing agent configuration that has no spec yet.
+An existing agent configuration that has no spec yet gets one through `sdd:start-mission`, which resolves ACED's production chain (§8) for the artifact type:
 
-```
-create-spec
-  └─ per agent configuration (sequential):
-       ├─ aced-spec-designer (iteration 0)
-       │    ├─ audit-skill        → structural issues (surfaced, not blocking)
-       │    ├─ eval.md            → suite config
-       │    ├─ trigger/           → eval_queries.json, train/validation splits
-       │    └─ golden-set/        → 001-*.md … NNN-*.md
-       └─ quality loop (max 3 iterations):
-            ├─ aced-spec-validator   → overall: pass | fail + user_questions
-            │    pass  → exit loop
-            │    fail  → (ask user questions if any) → aced-spec-designer (next iteration)
-            └─ after 3 iterations without pass → accepted-pending-review
-
-         ↓
-
-run
-  ├─ aced-executor (per test case)   → simulated execution transcript
-  ├─ aced-grader  (per test case)    → score, assertion results, eval_feedback
-  └─ results/<timestamp>.json        → benchmark.json updated
-
-         ↓
-
-[all cases pass?]
-  yes → done
-  no  → improve → compare → run  (repeat until passing or accepted)
-```
-
-**Step-by-step:**
-
-1. **`create-spec`** — scan for unevaluated agent configurations (or resolve a named one); for each, invoke `aced-spec-designer` (iteration 0), then run a quality loop (max 3 iterations): invoke `aced-spec-validator`, exit on pass, otherwise surface any `user_questions` to the user and re-invoke `aced-spec-designer` with validator feedback and collected answers; report file counts, structural issues, quality gate outcome, and iteration count.
-
-2. **`run`** — execute trigger queries against the live agent (trigger layer) and simulate behavior cases through `aced-executor` + `aced-grader` (behavior/quality layers); write result JSONs and update `benchmark.json`.
-
-3. **Review** — examine failing cases, scores, and `eval_feedback` suggestions from `aced-grader`.
-
-4. **`improve`** (if failing cases) — invoke `aced-analyzer` to identify failure patterns; present proposed agent configuration diffs; apply after user approval.
-
-5. **`compare`** (after edits) — blind A/B comparison via `aced-comparator`; reports improved / regressed / unchanged per case.
-
-6. Repeat from step 2 until all cases pass or the pass rate is acceptable.
+1. **Author the spec** — the SDD conductor dispatches `aced-scenario-writer` (spec-producer) to write the node's `README.md` and its frozen `<node>.feature` (boolean, inline `@rubric`, and `@trigger` scenarios), and the impl-producer (`define-*` / `improve`) to author the colocated `eval.md` (subject + run policy). `aced-spec-validator` grades the suite at the spec gate.
+2. **`run`** — score each scenario in the frozen `.feature` against the current configuration, blind, via `aced-case-judge`; write a timestamped result under `.agents/aced/results/<target>/`.
+3. **Review** the failing scenarios (worst-by-margin first).
+4. **`improve`** (if failing) — diagnose the failure pattern (§9) and propose configuration edits; apply after user approval.
+5. **`compare`** (after edits) — blind A/B over the same suite; block on any regression.
+6. Repeat from step 2 until the suite passes or the pass rate is acceptable.
 
 ### 5.2 Forward path (future scope)
 
-The forward path writes the spec before the agent configuration exists — full SDD: spec first, then implement.
-
-1. **`create-spec`** for a not-yet-implemented agent configuration — generates behavioral spec from a description or requirements document.
-2. **Implement** the agent configuration (write `SKILL.md`, `AGENTS.md` section, etc.) to satisfy the golden set.
-3. **`run`** to verify the implementation passes its spec.
-4. **`add-scenario`** to extend coverage as new edge cases surface.
+Full SDD — spec before implementation: author the `.feature` for a not-yet-built configuration, implement the configuration to pass it, `run` to verify, `add-scenario` to extend coverage.
 
 ### 5.3 Ongoing maintenance
 
 After the initial spec is established:
 
-- **`add-scenario`** — add a case when a production failure or new edge case is discovered.
+- **`add-scenario`** — append a scenario to the frozen `.feature` when a production failure or new edge case surfaces.
 - **`run`** — re-run after any agent configuration edit to catch regressions.
 - **`compare`** — verify an agent configuration change didn't regress before committing.
-- **`report`** — project-wide health dashboard across all agent configuration specs.
+- **`report`** — project-wide health across all agent-config specs.
 
 ---
 
 ## 6. File Layout
 
-```
-artifacts/aced/
-  <subject-path>/
-    eval.md                          ← suite config
-    trigger/
-      eval_queries.json              ← full trigger query set
-      train_queries.json             ← 60% split for optimization
-      validation_queries.json        ← 40% split for generalization check
-    golden-set/
-      001-<slug>.md                  ← behavior/quality test cases
-      002-<slug>.md
-      ...
-    results/
-      trigger-<timestamp>.json       ← trigger run results
-      behavior-<timestamp>.json      ← behavior/quality run results
-    benchmark.json                   ← latest aggregate stats (overwritten each run)
-    feedback.json                    ← latest human review notes (overwritten each iteration)
-```
-
-Artifact path conventions:
-
-| Artifact type | Path |
-|---|---|
-| `AGENTS.md` section | `<section-slug>/` (e.g., `commit-discipline/`) |
-| Skill | `skills/<skill-name>/` (e.g., `skills/create-skill/`) |
-| Subagent definition | `agents/<agent-name>/` (e.g., `agents/aced-judge/`) |
-| Command | `commands/<command-name>/` |
-
-For agent configurations that belong to a plugin, nest under the plugin name:
+An agent configuration's eval lives entirely in its project-spec node, discovered through the SDD spec tree:
 
 ```
-artifacts/aced/
-  <plugin-name>/
-    skills/<skill-name>/
-    agents/<agent-name>/
-    commands/<command-name>/
+.agents/specs/<project>/…/<node>/
+  README.md             ← what the node specifies
+  <node>.feature        ← the golden set: boolean, @rubric (inline), and @trigger scenarios; @frozen
+  eval.md               ← subject + run policy (see §6.1)
 ```
 
-Example: the `aced` plugin's `create-spec` skill lives at `artifacts/aced/aced/skills/create-spec/`.
+The node's `eval.md` names the `subject` (the agent configuration under test). Run output is written **outside** the spec tree — to the shared, git-ignored ACED results directory at the repo root, keyed by the target: `.agents/aced/results/<target>/<ISO8601-timestamp>.json`.
 
 ### 6.1 `eval.md` schema
 
-```markdown
----
-target: <relative path to agent configuration, or "AGENTS.md#section-heading">
-judge_model: claude-sonnet-4-6
-threshold: 4           # rubric pass threshold (1–5); default 4
-trigger_threshold: 0.5 # fraction of runs that must trigger for a should-trigger query to pass
-trigger_runs: 3        # number of times each trigger query is executed
-layers:
-  - trigger
-  - behavior
----
-```
-
-### 6.2 Trigger query format (`eval_queries.json`)
-
-```json
-[
-  {
-    "id": 1,
-    "query": "I have a CSV of monthly sales data in data/sales.csv — can you find the top 3 months by revenue?",
-    "should_trigger": true
-  },
-  {
-    "id": 2,
-    "query": "write a python script that reads a csv and uploads each row to postgres",
-    "should_trigger": false
-  }
-]
-```
-
-Good trigger queries vary phrasing (formal/casual), explicitness (names the domain vs. describes the need indirectly), and detail level. Should-not-trigger queries should be **near-misses** — same domain keywords, different intent — not obviously irrelevant prompts. `train_queries.json` and `validation_queries.json` are the same format, generated by `aced-spec-designer` as a 60/40 random split of `eval_queries.json`.
-
-### 6.3 Behavior/quality test case format
+`eval.md` carries only the subject binding and run policy — never a rubric or case list, which live inline in the frozen `.feature`.
 
 ```markdown
 ---
-name: <slug>
-layer: behavior | quality
-threshold: 4
+subject: <relative path to agent configuration, or "AGENTS.md#section-heading">
+eval:
+  layers:                    # which layers run
+    - trigger
+    - behavior
+  judge:
+    model: claude-sonnet-4-6
+    default_threshold: 4     # fallback total; an inline @rubric threshold overrides it
+  trigger:
+    activation_threshold: 0.5 # fraction of runs that must invoke for a should-trigger row to pass
+    runs: 3                   # number of times each @trigger Examples row is executed
 ---
-
-## Scenario
-
-<Concrete situation. Who is the user, what did they say or do, what is the
-state of the working tree / repo / files. Specific enough for an agent to
-simulate the situation without ambiguity.>
-
-## Expected behaviors
-
-- <Concrete observable action or output>
-- <Another action>
-
-## Must NOT do
-
-- <Prohibited action>
-
-## Assertions
-
-- <Verifiable pass/fail check on the output — e.g., "output file is valid JSON">
-- <Another mechanical check>
-
-## Rubric
-
-Score 1–5:
-5 — <description of perfect execution>
-4 — <acceptable with minor deviation>
-3 — <partial execution or significant deviation>
-2 — <major miss>
-1 — <complete failure or opposite behavior>
 ```
-
-`Assertions` is optional. Good assertions are objectively verifiable ("output includes exactly 3 items", "no debug logging in output"). Avoid assertions that restate the rubric at 5 or that are too brittle (exact string matches). When assertions are present, any failed assertion caps the rubric score at 3.
-
-### 6.4 Trigger result JSON (`trigger-<timestamp>.json`)
-
-```json
-{
-  "timestamp": "2026-06-13T14:22:00Z",
-  "target": "skills/create-skill/SKILL.md",
-  "trigger_threshold": 0.5,
-  "runs_per_query": 3,
-  "split": "train",
-  "pass_rate": 0.80,
-  "queries": [
-    {
-      "id": 1,
-      "query": "...",
-      "should_trigger": true,
-      "trigger_count": 3,
-      "trigger_rate": 1.0,
-      "pass": true
-    },
-    {
-      "id": 2,
-      "query": "...",
-      "should_trigger": false,
-      "trigger_count": 1,
-      "trigger_rate": 0.33,
-      "pass": true
-    }
-  ]
-}
-```
-
-### 6.5 Behavior/quality result JSON (`behavior-<timestamp>.json`)
-
-```json
-{
-  "timestamp": "2026-06-13T14:22:00Z",
-  "target": "skills/create-skill/SKILL.md",
-  "pass_rate": 0.82,
-  "mean_score": 3.9,
-  "std_dev": 0.8,
-  "threshold": 4,
-  "cases": [
-    {
-      "name": "001-creates-skill-file",
-      "layer": "behavior",
-      "score": 5,
-      "pass": true,
-      "total_tokens": 4200,
-      "duration_ms": 18500,
-      "assertion_results": [
-        {
-          "text": "SKILL.md file was created",
-          "passed": true,
-          "evidence": "File written to .agents/skills/my-skill/SKILL.md"
-        }
-      ],
-      "what_worked": "...",
-      "what_failed": "nothing"
-    }
-  ]
-}
-```
-
-### 6.6 `benchmark.json`
-
-Aggregate stats across the latest run, rewritten after each `aced-run`:
-
-```json
-{
-  "updated": "2026-06-13T14:22:00Z",
-  "trigger": {
-    "pass_rate": { "mean": 0.80, "stddev": 0.0 },
-    "split": "train"
-  },
-  "behavior": {
-    "pass_rate": { "mean": 0.82, "stddev": 0.06 },
-    "mean_score": { "mean": 3.9, "stddev": 0.8 },
-    "time_seconds": { "mean": 18.5, "stddev": 3.2 },
-    "tokens": { "mean": 4200, "stddev": 310 }
-  },
-  "delta": {
-    "behavior_pass_rate": 0.15
-  }
-}
-```
-
-`delta` compares the latest run against the previous result file. Empty on first run.
-
-### 6.7 `feedback.json`
-
-Human review notes per test case, rewritten after each review iteration:
-
-```json
-{
-  "001-creates-skill-file": "",
-  "002-audits-on-create": "Skill was created but audit step was skipped — not surfaced in output at all."
-}
-```
-
-Empty string means output looked fine. Non-empty is actionable feedback for `aced-improve`.
-
-### 6.8 agentskills.io compatibility
-
-Skills that already have an `evals/evals.json` file (the [agentskills.io](https://agentskills.io) format) can be imported by `aced-spec-designer`. The mapping:
-
-| agentskills.io field | ACED target |
-|---|---|
-| `evals[].prompt` | `## Scenario` |
-| `evals[].expected_output` | first `## Expected behaviors` bullet |
-| `evals[].assertions[]` | `## Assertions` list |
-| `evals[].files[]` | noted in `## Scenario` as input files |
-| `evals[].id` | zero-padded filename prefix |
-
-`aced-spec-designer` reads `evals/evals.json`, generates `golden-set/*.md` files from it, and leaves the original file in place. Subsequent `add-scenario` calls append to the golden set, not to `evals.json`.
 
 ---
 
 ## 7. Skills
 
-### 7.1 `create-spec`
+User-facing ACED capabilities (full reference: the ACED plugin docs). Each is specified by its own node under `.agents/specs/aced/` with a frozen `.feature`.
 
-**Trigger:** User asks to create evals / a spec for one or more agent configurations.
-
-**Steps:**
-1. Scan the project for agent configurations (skills, `AGENTS.md` sections, subagent definitions, commands) that have no `artifacts/aced/` entry yet
-2. If a specific agent configuration is named in the request, resolve it directly — skip scanning
-3. If multiple unevaluated agent configurations are found, list them and ask the user to select one, several, or all
-4. For each selected agent configuration, process sequentially:
-   - **Iteration 0 (draft):** invoke `aced-spec-designer` with `SUBJECT`, `SUBJECT_PATH`, `AGENTSKILLS_EVALS`, `PRIOR_VALIDATOR_FEEDBACK: null`, `USER_ANSWERS: null`
-   - **Quality loop (max 3 iterations):**
-     1. Invoke `aced-spec-validator` with `SUBJECT`, `SUBJECT_PATH`, `ARTIFACTS_DIR`
-     2. If `overall == "pass"` → exit loop with quality gate `pass`
-     3. If `user_questions` non-empty → ask the user those questions and collect answers
-     4. Re-invoke `aced-spec-designer` with `PRIOR_VALIDATOR_FEEDBACK` set to the validator output and `USER_ANSWERS` set to collected answers (or null)
-     5. Repeat
-   - If the loop completes 3 iterations without pass → quality gate `accepted-pending-review`
-5. Report: agent configurations processed, file counts, structural issues found, quality gate outcome per configuration, unresolved dimension failures (if `accepted-pending-review`), iteration count, next step (`aced:run`)
-
-**Output:** One `artifacts/aced/<subject-path>/` per selected agent configuration, each populated and ready for `run`.
-
----
-
-### 7.2 `run`
-
-**Trigger:** User asks to run evals or validate after editing an agent configuration.
-
-**Steps:**
-1. Locate `eval.md` (from user context or by scan)
-2. Read the current agent configuration in full
-3. **Trigger layer** (if configured):
-   - Run each query in `train_queries.json` `trigger_runs` times; detect whether the skill was invoked each time
-   - Compute `trigger_rate` per query; a query passes if its rate meets `trigger_threshold`
-   - Write `trigger-<timestamp>.json`
-4. **Behavior/quality layers** (if configured):
-   - For each test case in `golden-set/`, invoke `aced-judge`; record score, assertion results, timing
-   - Write `behavior-<timestamp>.json`
-5. Update `benchmark.json` with aggregate stats and delta vs. previous run
-6. Report: trigger pass rate, behavior pass rate, failing cases (worst first), token/time cost
-
-**Output:** Result JSON(s) + updated `benchmark.json` + console report.
-
----
-
-### 7.3 `add-scenario`
-
-**Trigger:** User describes a new scenario, a production failure, or an edge case to cover.
-
-**Steps:**
-1. Accept free-text description or pasted agent transcript
-2. Classify layer (trigger / behavior / quality)
-3. Draft test case, show to user for confirmation
-4. Write to `golden-set/` with next sequence number
-
-**Output:** New test case file.
-
----
-
-### 7.4 `compare`
-
-**Trigger:** User wants to know if an edit improved or regressed behavior.
-
-**Steps:**
-1. Identify two versions: default is working tree vs. last git revision; `--baseline` flag compares with-agent configuration vs. without-agent configuration
-2. Run behavior/quality golden set against both versions **blind**: label outputs A and B without revealing which is which
-3. Invoke `aced-comparator` for each test case to pick a winner; then unblind and compute per-case change type: `improved`, `regressed`, `unchanged`, `now-passing`, `now-failing`
-4. If trigger layer configured: run `train_queries.json` against both versions, compare trigger rates
-5. Report net pass rate delta, comparator winner breakdown, improved and regressed cases
-6. If any regression: warn, recommend resolving before committing
-
-**Output:** Diff report. No result JSON written unless requested.
-
----
-
-### 7.5 `improve`
-
-**Trigger:** Eval results have failing cases; user wants to fix the agent configuration.
-
-**Steps:**
-1. Load latest behavior result from `results/`, read failing test cases and `feedback.json`
-2. Invoke `aced-analyzer` with failing cases, feedback notes, and current agent configuration to extract improvement patterns
-3. Group by pattern (see §9) and prioritize by impact
-4. Present proposed diffs to the agent configuration — do not auto-apply
-5. After approval, apply edits and run `compare` to verify
-
-**Output:** Proposed agent configuration edits + post-edit comparison.
-
----
-
-### 7.6 `report`
-
-**Trigger:** User wants project-wide eval health.
-
-**Steps:**
-1. Scan all `artifacts/aced/*/results/` for latest and second-latest runs
-2. Compute per-suite: pass rate, mean score, trend (vs. previous run)
-3. Classify health: `healthy` (≥90%), `degraded` (70–89%), `critical` (<70%), `no-data`, `trending-down` (≥10% drop)
-4. Print summary table, call out suites needing attention
-
-**Output:** Console dashboard.
+| Skill | Purpose |
+|---|---|
+| `run` | Score a configuration's frozen `.feature` against its current text, blind, via `aced-case-judge`; report pass rate and failing scenarios. |
+| `compare` | Blind A/B of two versions over the same suite; gate on regressions. |
+| `improve` | Diagnose failing scenarios into patterns (§9) and propose configuration edits. |
+| `add-scenario` | Append a new scenario to a frozen `.feature`. |
+| `report` | Project-wide eval health across all configuration specs. |
+| `define-agent` / `define-skill` / `define-governance` | Author a new configuration; as SDD impl-producer, co-author its `eval.md` against the frozen `.feature`. |
 
 ---
 
 ## 8. Internal Agents
 
-Five internal agents handle evaluation. None are user-triggered.
+ACED's production chain for an agent-config artifact type, resolved by the SDD conductor. None are user-triggered.
 
-### 8.1 `aced-spec-designer`
+| Agent | Role |
+|---|---|
+| `aced-scenario-writer` | Spec-producer — in explore, classifies the subject's fit tier and writes the node's `README.md` / `spec.md` body and its frozen `.feature` (boolean, inline `@rubric`, `@trigger` `Scenario Outline`), rubric authored inline. |
+| `aced-spec-validator` | Spec-judge — at the spec gate, grades the `.feature` against the agent-scenario criteria for the subject's declared fit tier. |
+| `aced-case-judge` | Case scorer — simulates the agent **blind** (given the situation, never the scenario name, `Then`, or rubric), then scores that returned simulation in a separate context: one score per named dimension plus pass/fail and `WHAT WORKED` / `WHAT FAILED`. |
+| `aced-impl-judge` | Impl-judge — at the impl gate, runs the frozen suite over N runs (each scenario judged blind by `aced-case-judge`) and collapses each to a boolean. |
 
-Invoked by `create-spec` for each selected agent configuration. Analyzes the agent configuration and produces the full eval suite.
-
-**Input:**
-```
-SUBJECT: <full agent configuration text>
-SUBJECT_PATH: <resolved path>
-AGENTSKILLS_EVALS: <contents of evals/evals.json if present, else null>
-PRIOR_VALIDATOR_FEEDBACK: <aced-spec-validator output JSON from previous iteration, else null>
-USER_ANSWERS: <answers to user_questions from previous validator run, else null>
-```
-
-**Steps:**
-1. Run structural layer (`audit-skill`) — surface issues before writing behavioral tests
-2. Create `artifacts/aced/<subject-path>/` directory and `eval.md` (using path conventions from §6)
-3. If `evals/evals.json` (agentskills.io format) provided: import it as initial golden set cases (see §6.8)
-4. Generate trigger queries in `trigger/eval_queries.json`:
-   - ~20 queries: 8–10 should-trigger, 8–10 should-not-trigger (near-misses, not obviously irrelevant)
-   - Randomly split into `train_queries.json` (60%) and `validation_queries.json` (40%)
-5. Generate initial golden set (if not imported from evals.json):
-   - 15–25 behavior cases (one per rule/step + edge cases + must-not-do guards)
-
-**Output:** Populated `artifacts/aced/<subject-path>/` directory. Returns a summary (file count, structural issues found) to `create-spec`.
-
----
-
-### 8.2 `aced-executor`
-
-Invoked by `aced-run` for each behavior/quality test case. Simulates agent behavior given a scenario and agent configuration, producing a structured output for grading.
-
-**Input:**
-```
-SUBJECT: <full agent configuration text>
-SCENARIO: <scenario from test case>
-EXPECTED BEHAVIORS: <list>
-MUST NOT DO: <list>
-```
-
-**Output:** Simulated execution log — what the agent did step-by-step, what output it produced, whether it consulted the agent configuration and which parts. Saved alongside each case result so `aced-grader` can examine the "transcript".
-
-### 8.3 `aced-grader`
-
-Invoked by `aced-run` after `aced-executor`. Grades the simulated execution against assertions and rubric; also critiques the test case itself.
-
-**Input:** Executor transcript + test case (scenario, assertions, rubric, threshold)
-
-**Output JSON:**
-```json
-{
-  "score": 4,
-  "pass": true,
-  "what_worked": "...",
-  "what_failed": "nothing",
-  "assertion_results": [
-    { "text": "...", "passed": true, "evidence": "..." }
-  ],
-  "claims": [
-    { "claim": "...", "type": "factual", "verified": true, "evidence": "..." }
-  ],
-  "eval_feedback": {
-    "suggestions": [
-      { "assertion": "...", "reason": "Would pass even for a wrong output — consider tightening" }
-    ]
-  }
-}
-```
-
-**Grading principles:**
-- Score what the agent configuration would cause an agent to do — not what the grader considers ideal
-- The rubric is the authority; do not override it
-- Ambiguous agent configuration language that produces inconsistent behavior should lower the score
-- Any failed assertion caps the score at 3 — cannot score 4 or 5 if a must-pass check failed
-- Extract implicit claims from the simulated execution and verify them (catches issues that predefined assertions miss)
-- Flag assertions that would trivially pass regardless of skill quality — this is `eval_feedback`
-
-### 8.4 `aced-comparator`
-
-Invoked by `aced-compare`. Receives two outputs labeled A and B — without knowing which version produced which — and judges which is better using a content + structure rubric.
-
-**Input:** Two simulated execution outputs (A and B) + test case prompt + assertions
-
-**Output JSON:**
-```json
-{
-  "winner": "A",
-  "reasoning": "...",
-  "scores": { "A": 8.5, "B": 6.0 },
-  "assertion_results": { "A": { "pass_rate": 0.9 }, "B": { "pass_rate": 0.7 } }
-}
-```
-
-After all cases are judged, `aced-compare` unblids the results to attribute A/B to the actual agent configuration versions.
-
-### 8.5 `aced-analyzer`
-
-Invoked by `aced-improve`. Given failing cases, `feedback.json`, and the current agent configuration, produces prioritized improvement suggestions by examining which instruction gaps caused failures.
-
-**Output JSON:**
-```json
-{
-  "patterns": [
-    {
-      "pattern": "Ambiguous rule",
-      "cases": ["002-...", "007-..."],
-      "priority": "high",
-      "suggestion": "Replace '...' with explicit decision rule: ...",
-      "expected_impact": "..."
-    }
-  ]
-}
-```
-
----
-
-### 8.6 `aced-spec-validator`
-
-Invoked by `create-spec` after each `aced-spec-designer` iteration. Validates the generated eval suite against coverage and quality dimensions; optionally surfaces questions the spec-designer needs answered to improve.
-
-**Input:**
-```
-SUBJECT: <full agent configuration text>
-SUBJECT_PATH: <resolved path>
-ARTIFACTS_DIR: artifacts/aced/<subject-path>/
-```
-
-**Output JSON:**
-```json
-{
-  "overall": "pass | fail",
-  "dimensions": {
-    "trigger_coverage": { "pass": true, "notes": "" },
-    "negative_coverage": { "pass": true, "notes": "" },
-    "behavior_coverage": { "pass": false, "notes": "No must-not-do cases for the scan step" },
-    "rubric_specificity": { "pass": true, "notes": "" },
-    "scenario_concreteness": { "pass": true, "notes": "" }
-  },
-  "user_questions": [
-    "Should the golden set include a case where the user invokes the skill with no test framework configured?",
-    "Are there known failure modes on monorepo setups that should be covered?"
-  ]
-}
-```
-
-`overall` is `"pass"` only when all dimensions pass. `user_questions` is a list of questions for the user when the validator cannot resolve ambiguities from the subject alone — answered in the next designer iteration via `USER_ANSWERS`. Empty list when no questions are needed.
+The structural layer delegates to `audit-skill` (§10.4); ACED does not re-implement it.
 
 ---
 
 ## 9. Failure Patterns
 
-`aced-improve` groups failing cases into these patterns:
+`improve` groups failing cases into these patterns:
 
 | Pattern | Definition | Fix direction |
 |---|---|---|
@@ -699,15 +232,15 @@ ARTIFACTS_DIR: artifacts/aced/<subject-path>/
 
 Agent behavior is not structurally checkable. The output of following an agent configuration is natural language behavior, not a typed value. An LLM judge is the only practical scorer at the behavior and quality layers.
 
-ACED uses a hybrid: verifiable **assertions** (pass/fail, graded by `aced-grader` with evidence) handle mechanical properties; the **rubric** (1–5) handles holistic quality. Assertions cap the rubric score at 3 when they fail — objective checks take precedence.
+ACED uses a hybrid: verifiable **boolean `Then` steps** (pass/fail, graded by `aced-case-judge`) handle mechanical properties; a **`@rubric`** (named dimensions, each scored against its own `max`) handles holistic quality. A violated must-not-do — a boolean `Then` asserting the agent does not do a prohibited action — fails the case outright, whatever the rubric total; objective checks take precedence.
 
-**Tradeoff:** LLM judges are non-deterministic and can be wrong. Mitigations: temperature 0 on judge calls; rubrics are the authority; `aced-grader` critiques its own assertions (`eval_feedback`) so weak evals are caught. The alternative (code assertions only) can't handle behavior that emerges from instruction-following.
+**Tradeoff:** LLM judges are non-deterministic and can be wrong. Mitigations: temperature 0 on judge calls; rubrics are the authority; the spec gate grades the suite (`aced-spec-validator`) so weak evals are caught before they run. The alternative (code assertions only) can't handle behavior that emerges from instruction-following.
 
 ### 10.2 Pointwise scoring, not pairwise
 
-Each test case is scored independently (1–5), not compared against a reference output. Pairwise is more reliable but requires a reference output for every case, which is expensive to maintain.
+Each test case is scored independently — per rubric dimension against its own `max`, collapsed to pass/fail at the threshold — not compared against a reference output. Pairwise is more reliable but requires a reference output for every case, which is expensive to maintain.
 
-**Tradeoff:** Pointwise scores are noisier. Rubrics compensate by being specific. Pairwise comparison is used in `aced-compare` (before vs. after), where a reference naturally exists.
+**Tradeoff:** Pointwise scores are noisier. Rubrics compensate by being specific. Pairwise comparison is used in `compare` (before vs. after), where a reference naturally exists.
 
 ### 10.3 Golden set is versioned, not generated on demand
 
@@ -717,31 +250,25 @@ Test cases are committed to the repo alongside the agent configuration. They are
 
 ### 10.4 Structural layer delegates to `audit-skill`
 
-ACED does not re-implement structural checks. `aced-spec-designer` runs `audit-skill` first and surfaces failures before writing behavioral tests.
+ACED does not re-implement structural checks. The spec-producer (`aced-scenario-writer`) runs `audit-skill` first and surfaces structural failures before writing behavioral scenarios.
 
 **Tradeoff:** Depends on `audit-skill` being available. In environments without it, structural layer is skipped with a warning.
 
-### 10.5 `aced-compare` does not write results by default
+### 10.5 `compare` does not write results by default
 
 Compare is a diff operation, not a recorded eval run. Writing a result for "before" would pollute the history with a result that doesn't reflect the current agent configuration state.
 
-### 10.6 Blind comparison in `aced-compare`
+### 10.6 Blind comparison in `compare`
 
-`aced-compare` uses `aced-comparator`, which judges A vs. B without knowing which version is which. This prevents the judge from being biased toward whatever it believes is "newer" or "better" before seeing the output.
+`compare` scores both versions **blind** via `aced-case-judge` — judging A vs. B without knowing which version is which. This prevents the judge from being biased toward whatever it believes is "newer" or "better" before seeing the output.
 
-**Tradeoff:** Adds a round-trip through `aced-comparator` for each test case. Justified because bias in comparison scoring produces unreliable regression detection — the signal that drives whether to block a commit.
+**Tradeoff:** Adds a round-trip through `aced-case-judge` for each scenario. Justified because bias in comparison scoring produces unreliable regression detection — the signal that drives whether to block a commit.
 
 ### 10.7 Trigger layer uses run-based detection, not simulation
 
 For trigger testing, ACED actually runs the queries and detects skill invocation — it does not simulate with an LLM. This is more accurate because triggering depends on the agent runtime's skill selection logic, not on what any judge thinks is "correct".
 
-**Tradeoff:** Trigger runs are more expensive (real agent calls × `trigger_runs` per query). Mitigated by train/validation split: you only optimize against the 60% train set, preserving the 40% validation set as an honest generalization check. Overfitting the description to the train set produces inflated metrics that the validation set catches.
-
-### 10.8 agentskills.io format as first-class import
-
-Skills that ship `evals/evals.json` (the agentskills.io format) can be imported by `aced-spec-designer` without rewriting test cases. This ensures ACED is additive — authors who already have eval coverage don't need to duplicate it.
-
-**Tradeoff:** The agentskills.io format has no `layer` field or rubric. Imported cases default to `behavior` layer with a generic rubric. The author is expected to enrich them after import.
+**Tradeoff:** Trigger runs are more expensive (real agent calls × `eval.trigger.runs` per `@trigger` `Examples` row).
 
 ---
 
@@ -749,12 +276,6 @@ Skills that ship `evals/evals.json` (the agentskills.io format) can be imported 
 
 | # | Question | Impact |
 |---|---|---|
-| OQ1 | Should `aced-run` support running a subset of layers (e.g., trigger only)? | Affects `eval.md` schema and run performance |
-| OQ2 | Should results be gitignored by default or committed? Results are useful for trend tracking but add noise to PRs. | Affects `aced-report` trend feature |
 | OQ4 | Should the threshold be global (in `eval.md`) or per-layer? Some layers are harder to score consistently. | Affects `eval.md` schema |
-| OQ5 | Should `aced-compare` accept a git ref as "before" (not just HEAD~1)? | Affects `aced-compare` skill body |
-| OQ6 | Should `aced-improve` auto-run `aced-compare` after edits, or wait for user to invoke it manually? | Affects `aced-improve` workflow |
-| OQ7 | Should the trigger eval script be bundled as a `scripts/` file inside the ACED skill, or generated per-skill by `aced-spec-designer`? Bundled is reusable; generated can be customized per client. | Affects portability across agent runtimes |
-| OQ8 | Should `aced-executor` output a structured execution log or freeform prose? Structured is grader-friendly; prose is closer to what real agent sessions produce. | Affects `aced-grader` input parsing |
-| OQ9 | Should `eval_feedback` suggestions from `aced-grader` trigger a review flow (user confirms before the next run uses updated evals), or just be advisory notes? | Affects iteration workflow |
-| OQ10 | Should the validation set be used only for final selection (as in agentskills.io), or run every iteration for tracking? Running every iteration burns more calls but gives earlier signal on overfitting. | Affects cost and optimization loop design |
+| OQ5 | Should `compare` accept a git ref as "before" (not just HEAD~1)? | Affects the `compare` skill body |
+| OQ6 | Should `improve` auto-run `compare` after edits, or wait for the user to invoke it manually? | Affects the `improve` workflow |
