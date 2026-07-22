@@ -11,10 +11,10 @@ todos:
     status: completed
   - content: "[DONE] Vocab cleanup. Owner confirmed: REDEFINE 'golden set' (= the scenarios in the frozen .feature), keep near-miss rows as realistic user phrasing. Glossary redefined (7fc7d2f3: golden set / test case / eval suite / must-not-do → .feature model). pnpm verify fixed (b731db0f — a Unit-1 regression: run.feature scenario missing its scenario-map row; NOW 34/34 green). ZERO frozen re-opens needed: all frozen 'golden set' usages are valid under the redefinition (compare/eval-loop/improve/scenario-writer) or consistent with local node vocabulary. judge.feature:118 ('must-not-do list') VERIFIED consistent with its own node (README:39 'must-not-do lists', :71 'live in its Then steps' = the set of must-not-do Then steps) — NOT the retired file-format, so NOT stale; a trial edit broke check:spec and was reverted. Near-miss rows kept per owner."
     status: completed
-  - content: "Docs + fixtures (Quill domain): ~140 golden-set/*.md fixtures + website/docs advertising the retired 1-5 scalar contract (apps/website .../aced/{run,report,overview,add-scenario}.md, docs/specs/aced/design.md, artifacts/specs/aced-plugin/spec.md) — tracked in github-263-op6-m3; likely a Quill node."
-    status: pending
-  - content: "Retire artifacts/specs/: once every target's eval.md + .feature live in project-spec nodes, remove the artifacts/specs/*/ dirs (legacy golden-set/, trigger/, eval.md). Confirm nothing in the ACED runtime still reads that tree."
-    status: pending
+  - content: "[DONE] Docs migration (Quill domain). Fixtures already gone (0 golden-set/*.md — retired with the eval-target dirs in Gap B). 8 website/design docs migrated to the new model (d674d9d0): golden-set/ dir → .feature scenarios; eval.md+golden-set/ → eval.md (subject+run policy); artifacts/ paths → node + .agents/aced/results/<target>/; 1-5 scalar → per-dimension scores; caps-at-3 → must-not-do fails outright. 'golden set' kept as redefined term. Then design.md §5-§8 retired INTERNAL ARCHITECTURE (create-spec, 5-agent pipeline, eval_queries/benchmark/feedback json, artifacts/aced tree) TRIMMED per owner (d8d32c98: -529/+46, compact accurate §7/§8 tables from current agent specs, zero retired markers). Scope: website apps/website/aced/* + docs/specs/aced/design.md only (owner: leave the 3 legacy artifacts/specs/*.md). verify 34/34."
+    status: completed
+  - content: "[DONE via Gap B] Retire artifacts/specs/ EVAL TARGETS: both dirs with eval.md (aced-create-spec, sdd-orchestrator) retired in Gap B (a2e3fdee, 93cca442). The other artifacts/specs/*/ dirs carry NO eval.md and are OUT of M3 scope (owner confirmed). Nothing in the ACED runtime reads the retired tree."
+    status: completed
 ---
 
 # CR 304-M3 — ACED eval-artifact migration to the project-spec model
@@ -205,7 +205,19 @@ manage-model-runners, manage-skill-dirs, repair-private-skills, impl-judge, judg
 spec-validator. (Excluded: ignore-run-output = wrong-squad/node:test; workflows ×2 = orchestration, no Fit;
 extract-situation = MISSING Fit line — classify before binding, side-gap.)
 
-## GAP A COMPLETE (2026-07-21) — all 21 gradable ACED nodes bound
+## M3 COMPLETE (2026-07-22) — all units done, ready to land
+
+Every M3 unit is done and committed on branch `sdd/304-m3-eval-artifact-migration`:
+- Unit 1 results-location infra (991b526c..804c64a7) — RATIFIED
+- Gap B retire both orphaned eval targets + port real coverage (beaab080, fadb5dbf, a2e3fdee, 93cca442)
+- Vocab redefine + verify fix (7fc7d2f3, b731db0f); frozen-suite vocab audited NO-OP (451bbf9b)
+- Gap A eval.md on all 21 gradable ACED nodes (b8aaf466 pilot, 902209d3 batch)
+- Docs migration: 8 website/design docs → new model (d674d9d0); design.md §5-§8 retired-architecture trim (d8d32c98)
+
+verify 34/34 green throughout. NEXT: land as ONE PR referencing #304 (does NOT close it — #304 is the
+M1-M6 umbrella), per M2's model (PR #355). No PR opened yet — awaiting owner go-ahead / review.
+
+## (historical) GAP A COMPLETE (2026-07-21) — all 21 gradable ACED nodes bound
 
 Every strong+partial ACED node now carries a colocated `eval.md` (subject + run policy). Layers derived
 per-node from actual scenario-layer tags (NOT prose mentions): 18 behavior-only, 3 trigger+behavior+quality
@@ -224,8 +236,28 @@ Gap A + Gap B + Unit 1 + vocab-redefine all DONE. Remaining M3:
   scenarios that ENFORCE the new model (:5/:26/:29 rubric-inline-no-separate-golden-set, :74 "retired golden
   set" legacy framing, :111 boolean-Then-not-golden-set-must-list). Rewriting the scenario-writer ones would
   BREAK the enforcement. No Clearance-bound re-open needed. Confirms the completed vocab-redefine conclusion.
-- **Docs + fixtures (Quill domain)** — ~140 golden-set/*.md fixtures + website/docs advertising the retired
-  1-5 scalar contract (github-263-op6-m3). Likely a Quill node / separate mission. THE ONLY M3 UNIT LEFT.
+- **Docs migration (Quill domain) — IN PROGRESS.** OWNER DECIDED (2026-07-21): run NOW on this branch via
+  the Quill chain; scope = website `apps/website/src/content/docs/aced/*` + `docs/specs/aced/design.md` ONLY
+  (leave the 3 legacy `artifacts/specs/*.md` — out of M3 scope). Fixtures already GONE (0 golden-set/*.md
+  remain — went with the retired eval-target dirs in Gap B). 8 stale files: add-scenario(4), compare(2),
+  define-agent(1), define-skill(2), improve(1), overview(3), run(3), design.md(33). Docs are hand-authored
+  (no generator). SURGICAL migration — "golden set" is a KEPT redefined term (= the scenarios in the frozen
+  .feature); fix only: the separate `golden-set/` DIRECTORY model → scenarios in the .feature; `eval.md +
+  golden-set/` → `eval.md` (subject + run policy only); `artifacts/specs/<feature>/` + `artifacts/aced/
+  <subject>/` paths → `.agents/specs/<project>/…/<node>/` (node) and `.agents/aced/results/<target>/`
+  (results); the 1-5 scalar rubric → per-dimension scores (named dims, each own `max`, one `threshold`,
+  pass = total ≥ threshold); "caps the score at 3" → a violated must-not-do (boolean Then) fails outright.
+  Authoritative source = each skill's CURRENT SKILL.md + the ACED glossary. Delegated to quill-doc-writer.
+  DONE + COMMITTED d674d9d0: all 8 files' EVAL-CONTRACT mechanics migrated (golden-set/ dir, eval.md+golden-set/
+  pairing, artifacts/ paths, 1-5 scalar, caps-at-3 → new model). 7 website docs 0 residual + verify 34/34.
+  Website docs mirror current SKILL.md (verified run.md/overview.md by hand). "golden set" kept as redefined term.
+  MATERIAL DISCOVERY (owner decision pending): design.md §5-§8 carry a SECOND staleness layer OUT of M3 scope —
+  a RETIRED INTERNAL-AGENT ARCHITECTURE (create-spec skill [deleted], 5-agent pipeline aced-spec-designer/
+  executor/grader/analyzer/comparator [now aced-scenario-writer/aced-case-judge/aced-impl-judge/aced-spec-validator],
+  eval_queries.json train/validation splits, benchmark.json, artifacts/aced/<subject>/ tree). ~15 hits (§5.1,
+  §6.2-6.8, §7, §8). quill-doc-writer correctly FLAGGED not fabricated — faithful rewrite = spec-producer-scale
+  architecture narrative. This is the ACES→ACED refactor's doc debt, NOT the eval-artifact migration. Recommend
+  filing as a tracked follow-up (keeps M3 scoped, matches Gap B / vocab follow-up pattern).
 
 Landing: accumulate all M3 units on this branch, then ONE PR referencing #304 (does NOT close it — #304 is
 the M1-M6 umbrella). No PR yet.
