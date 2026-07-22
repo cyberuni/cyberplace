@@ -3,8 +3,8 @@ cr-ref: 304-m3-eval-artifact-migration
 source: https://github.com/cyberuni/cyberplace/issues/304
 status: draft
 todos:
-  - content: "DESIGN DECISION (owner): which project-spec behavioral-leaf nodes are runnable ACED eval targets and so get a colocated eval.md? All ACED skill nodes (self-dogfood)? Only real external subjects? Decide the population before creating any eval.md. INPUT from PR #355 review (issue #356): (a) `results/` is NOT a reserved spec-tree dir — decide where run-output lives (in-tree with reserved/ignored status vs out-of-tree; run/SKILL.md:89 currently writes results/ inside the node dir); (b) do NOT hard-restrict eval-target discovery to `.agents/specs` — owner: 'for known case we are ok' but it could backfire, define the discovery contract without pinning that path. Both are enhancements, not blockers for #355."
-    status: pending
+  - content: "[SETTLED by owner] DESIGN DECISION (todo 1). (1) Population = external subjects + self-dogfood ACED skill nodes, delivered ONE NODE AT A TIME (304-M2 cadence). (2) Run output at .agents/aced/results/<target>/ — OUT of the spec tree, git-ignored, ignore rule written idempotently by init-aced (issue #356 a). (3) Discovery reuses SDD spec-location conventions (ADR-0019 anchors) + eval.md marker; no ACED-specific path constant (issue #356 b). Recorded in ledger 304-m3-eval-artifact-migration.7935ff.jsonl."
+    status: completed
   - content: "Gap A — colocate eval.md per eval-target node: create .agents/specs/<project>/…/<node>/eval.md (subject = the target config's path; run policy = eval.layers / judge.model / judge.default_threshold / trigger.{activation_threshold,runs}). Default run-policy template from the two legacy targets: layers [trigger, behavior], judge sonnet, default_threshold 4, trigger.runs 3 — confirm per node."
     status: pending
   - content: "Gap B — migrate the 2 legacy eval targets out of artifacts/specs into project-spec nodes: aced-create-spec (subject plugins/aced/skills/create-spec/SKILL.md) and sdd-orchestrator (subject plugins/sdd/agents/sdd-orchestrator.md). Move eval.md into the node dir, port/retire golden-set/ + trigger/ into the frozen .feature (@rubric inline + @trigger Examples), retire the artifacts/specs dir."
@@ -50,15 +50,24 @@ work here. The two are disjoint populations today:
 
 So `eval.md` is not created "along the way" by M2; M3 owns it.
 
+## Unit sequence (each its own explore → spec gate → deliver → impl gate; ONE at a time)
+
+1. **results-location infra** — `run` node (`.agents/specs/aced/eval-run/run`) revise output path from
+   `results/<ts>.json` in the node dir → `.agents/aced/results/<target>/`; `init-aced` gains the
+   idempotent `.gitignore` write. NOTE: `init-aced` has NO spec node yet — explore decides scaffold vs
+   not-behaviorally-spec'd.
+2. **Gap B: migrate `aced-create-spec`** — eval.md colocated in project-spec node; golden-set/ + trigger/
+   → frozen `.feature` (@rubric inline + @trigger Examples); retire `artifacts/specs/aced-create-spec/`.
+3. **Gap B: migrate `sdd-orchestrator`** — same shape.
+4. **Gap A: colocate eval.md** on the chosen self-dogfood ACED skill nodes (population per decision).
+5. **vocab/glossary cleanup** → retire `artifacts/specs/`.
+
+Gap-B migrations and frozen-suite vocab rewrites are Clearance-bound re-opens; surface each to the owner.
+
 ## NEXT — resume here
 
-**Do not start until the DESIGN DECISION (todo 1) is answered by the owner:** which nodes are runnable
-eval targets. That population determines Gap A's scope. Until then, M3 stays `status: draft`.
+**Unit 1 (results-location infra), explore phase.** Nodes: `run` (revise), `init-aced` (scaffold-or-not
+open question). Run resolve-governances (ACED plugin chain: aced-scenario-writer / aced-spec-validator /
+aced-impl-judge). Collect seed intent, then grill.
 
-Sequence once unblocked: design decision → Gap A (colocate eval.md on the chosen targets) → Gap B
-(migrate the 2 legacy targets, retire their golden-set) → vocab/glossary + docs cleanup → retire
-`artifacts/specs/`. Gap-B target migration and the frozen-suite vocab rewrites are Clearance-bound
-re-opens; surface each to the owner.
-
-Leash: unset (inherits `auto-spec` from the CR umbrella when started). No ledger shard yet — create
-`.agents/specs/aced/ledger/304-m3-eval-artifact-migration.<hash>.jsonl` at mission start.
+Leash: `auto-spec`, by user (ledger `304-m3-eval-artifact-migration.7935ff.jsonl`). Ledger shard created.
