@@ -9,8 +9,8 @@ todos:
     status: pending
   - content: "[DONE] Gap B (RETIRE-not-migrate; both subjects DELETED). Of the owner's 'port all 7', rigorous PER-NODE verification found only 3 genuinely uncovered → ported+ratified: 005 explore-from-freeze + 009 observation-aggregation → conductor.feature; 010 present-registry-no-match → resolution.feature (commits beaab080 spec gate, fadb5dbf impl gate). Dropped: 002/003 (verbatim dups of resolution.feature, caught by cold spec-judge), 007 (obsolete — aligned/domain-plugin retired ADR-0017). aced-create-spec 008/017 BOTH already frozen (017→discovery.feature:85,136 + cr-lifecycle:21; 008→backfill cr-lifecycle:27) → nothing to port. Both dirs retired (a2e3fdee sdd-orchestrator, 93cca442 aced-create-spec). LESSON: the coverage audit missed sibling nodes (resolution/discovery/cr-lifecycle) TWICE — always run check-scenario-overlap / scan ALL nodes, not one file."
     status: completed
-  - content: "Vocabulary/glossary cleanup: .agents/specs/aced/glossary.md still defines 'eval suite' as eval.md + golden-set/ (rewrite to the .feature model). Frozen suites carrying golden-set near-miss vocab (define-agent:36, define-skill:52/58, define-governance:31, scenario-writer:29/91, skillify:27/37, contribute-skill:29/48, improve:22, workflows/eval-loop:8) — each a Clearance-bound re-open."
-    status: pending
+  - content: "[DONE] Vocab cleanup. Owner confirmed: REDEFINE 'golden set' (= the scenarios in the frozen .feature), keep near-miss rows as realistic user phrasing. Glossary redefined (7fc7d2f3: golden set / test case / eval suite / must-not-do → .feature model). pnpm verify fixed (b731db0f — a Unit-1 regression: run.feature scenario missing its scenario-map row; NOW 34/34 green). ZERO frozen re-opens needed: all frozen 'golden set' usages are valid under the redefinition (compare/eval-loop/improve/scenario-writer) or consistent with local node vocabulary. judge.feature:118 ('must-not-do list') VERIFIED consistent with its own node (README:39 'must-not-do lists', :71 'live in its Then steps' = the set of must-not-do Then steps) — NOT the retired file-format, so NOT stale; a trial edit broke check:spec and was reverted. Near-miss rows kept per owner."
+    status: completed
   - content: "Docs + fixtures (Quill domain): ~140 golden-set/*.md fixtures + website/docs advertising the retired 1-5 scalar contract (apps/website .../aced/{run,report,overview,add-scenario}.md, docs/specs/aced/design.md, artifacts/specs/aced-plugin/spec.md) — tracked in github-263-op6-m3; likely a Quill node."
     status: pending
   - content: "Retire artifacts/specs/: once every target's eval.md + .feature live in project-spec nodes, remove the artifacts/specs/*/ dirs (legacy golden-set/, trigger/, eval.md). Confirm nothing in the ACED runtime still reads that tree."
@@ -182,7 +182,13 @@ Material deviation to surface: the owner authorized "port all 7" but per-node ve
 3 were genuinely uncovered (the other 4 were duplicates/obsolete/already-frozen) — forcing the other 4
 would recreate the duplication the cold spec-judge rejected. Nothing real was lost.
 
-## NEXT — resume here — Gap A + vocab + docs remain (surface deviation to owner first)
+## VOCAB CLEANUP DONE + verify FIXED (2026-07-21) — commits b731db0f, 7fc7d2f3
+
+pnpm verify now 34/34 green (was red since Unit 1). Glossary redefined; no frozen re-opens (owner
+confirmed redefine + keep near-miss phrasing; judge.feature:118 verified NOT stale). Remaining M3: Gap A
++ docs/fixtures (Quill). Owner ordered vocab BEFORE Gap A — vocab now done, so Gap A is next on resume.
+
+## NEXT — resume here — Gap A (eval.md colocation on ACED self-dogfood nodes)
 
 Remaining M3 units (each still its own explore→spec gate→deliver→impl gate):
 - **Gap A** — colocate `eval.md` (subject + run policy only) on the chosen self-dogfood ACED skill nodes
