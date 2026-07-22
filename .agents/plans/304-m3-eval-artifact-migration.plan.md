@@ -7,8 +7,8 @@ todos:
     status: completed
   - content: "Gap A — colocate eval.md per eval-target node: create .agents/specs/<project>/…/<node>/eval.md (subject = the target config's path; run policy = eval.layers / judge.model / judge.default_threshold / trigger.{activation_threshold,runs}). Default run-policy template from the two legacy targets: layers [trigger, behavior], judge sonnet, default_threshold 4, trigger.runs 3 — confirm per node."
     status: pending
-  - content: "[REFRAMED — subjects DELETED, owner chose PORT-ALL (B)] Gap B is RETIRE-not-migrate. Unit 2 = sdd-orchestrator: port 6 uncovered behaviors (002 missing-key fallback, 003 explicit-null degeneration, 005 MODE-from-freeze, 007-reframe domain-plugin write-boundary, 009 observation aggregation, 010 zero-domain-match) into FROZEN .agents/specs/sdd/mission/conductor/conductor.feature via SDD spec gate + impl gate, then retire artifacts/specs/sdd-orchestrator/. Unit 3 = aced-create-spec: port 2 (008 artifact-not-found, 017 multi-file-name-match) into start-mission's frozen SDD suite, then retire artifacts/specs/aced-create-spec/. Impl already conforms (behaviors live in sdd-automaton.md / start-mission SKILL) → impl gate is a conformance close. SDD chain, NOT ACED."
-    status: in_progress
+  - content: "[DONE] Gap B (RETIRE-not-migrate; both subjects DELETED). Of the owner's 'port all 7', rigorous PER-NODE verification found only 3 genuinely uncovered → ported+ratified: 005 explore-from-freeze + 009 observation-aggregation → conductor.feature; 010 present-registry-no-match → resolution.feature (commits beaab080 spec gate, fadb5dbf impl gate). Dropped: 002/003 (verbatim dups of resolution.feature, caught by cold spec-judge), 007 (obsolete — aligned/domain-plugin retired ADR-0017). aced-create-spec 008/017 BOTH already frozen (017→discovery.feature:85,136 + cr-lifecycle:21; 008→backfill cr-lifecycle:27) → nothing to port. Both dirs retired (a2e3fdee sdd-orchestrator, 93cca442 aced-create-spec). LESSON: the coverage audit missed sibling nodes (resolution/discovery/cr-lifecycle) TWICE — always run check-scenario-overlap / scan ALL nodes, not one file."
+    status: completed
   - content: "Vocabulary/glossary cleanup: .agents/specs/aced/glossary.md still defines 'eval suite' as eval.md + golden-set/ (rewrite to the .feature model). Frozen suites carrying golden-set near-miss vocab (define-agent:36, define-skill:52/58, define-governance:31, scenario-writer:29/91, skillify:27/37, contribute-skill:29/48, improve:22, workflows/eval-loop:8) — each a Clearance-bound re-open."
     status: pending
   - content: "Docs + fixtures (Quill domain): ~140 golden-set/*.md fixtures + website/docs advertising the retired 1-5 scalar contract (apps/website .../aced/{run,report,overview,add-scenario}.md, docs/specs/aced/design.md, artifacts/specs/aced-plugin/spec.md) — tracked in github-263-op6-m3; likely a Quill node."
@@ -175,12 +175,27 @@ README stated the full guarantee but that's spec-restating-spec). FIX (impl-gate
 untouched): generalized start-mission/SKILL.md "Route observations" bullet to every producer across a
 segment + explicit no-drop/no-filter/no-self-spawn; sdd-automaton inherits. RE-VERIFY of scn 2 in flight.
 
-## NEXT — resume here — AWAIT scn-2 re-verify, then commit impl-gate unit 2
+## GAP B COMPLETE (2026-07-21) — 5 commits this session (beaab080, fadb5dbf, a2e3fdee, 93cca442, + this)
 
-On PASS: commit the impl unit (start-mission config fix + resolve-governances binding test). Then Unit 3:
-port aced-create-spec 008 + 017 into start-mission's suite — but FIRST run check-scenario-overlap / scan
-ALL sibling nodes (round-1 lesson: the audit missed the resolution node). Then retire
-artifacts/specs/{aced-create-spec,sdd-orchestrator}/ + confirm no ACED runtime reads that tree.
+Both orphaned legacy eval targets retired; all real coverage ported+ratified or confirmed pre-frozen.
+Material deviation to surface: the owner authorized "port all 7" but per-node verification showed only
+3 were genuinely uncovered (the other 4 were duplicates/obsolete/already-frozen) — forcing the other 4
+would recreate the duplication the cold spec-judge rejected. Nothing real was lost.
+
+## NEXT — resume here — Gap A + vocab + docs remain (surface deviation to owner first)
+
+Remaining M3 units (each still its own explore→spec gate→deliver→impl gate):
+- **Gap A** — colocate `eval.md` (subject + run policy only) on the chosen self-dogfood ACED skill nodes
+  (population per the SETTLED design decision, todo 1). This is the FORWARD half of M3 (the two legacy
+  targets are gone; Gap A makes the model real on ACED's OWN nodes). Confirm the node population with owner.
+- **Vocab/glossary cleanup** — glossary.md 'eval suite' def + frozen suites carrying golden-set near-miss
+  vocab (define-agent:36, define-skill:52/58, define-governance:31, scenario-writer:29/91, skillify:27/37,
+  contribute-skill:29/48, improve:22, workflows/eval-loop:8). Each frozen-suite rewrite = Clearance-bound.
+- **Docs + fixtures (Quill)** — ~140 golden-set/*.md + website/docs on the retired 1-5 scalar (github-263-op6-m3).
+
+Note: the "Retire artifacts/specs/" todo (6) was scoped to the EVAL TARGETS only (the 2 with eval.md) — both
+now retired. The other artifacts/specs/*/ dirs (aced-plugin, dag-tooling, etc.) carry NO eval.md and are
+out of M3 scope. Landing: accumulate all M3 units on this branch, then ONE PR referencing #304 (no close).
 
 On ALIGNED: commit the conductor+resolution spec-gate unit (additive port). Then Unit 3: port aced-create-spec
 008 (artifact-not-found/zero-match) + 017 (multi-file-name-match) into start-mission's frozen SDD suite —
