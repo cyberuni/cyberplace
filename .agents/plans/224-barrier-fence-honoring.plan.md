@@ -8,17 +8,19 @@ todos:
     status: completed
   - content: "R''/R'''/R4/R8 all authored and all REFUTED — see the rule ledger below"
     status: completed
-  - content: "HALTED round 4: pick the rule to carry forward (R4-restore recommended); owner call"
+  - content: "Owner call 2026-07-23: R4-restore chosen. Rule re-stated + confirmed over a 4-round adversarial pass (3 defects found+closed; convergence gate SURVIVED)"
+    status: completed
+  - content: "Rewrite the suite from R4-restore; drop R8 coverage scenarios, add empty-touchset/claimed-cap/wedge discriminators (79 scenarios)"
+    status: completed
+  - content: "Deliver: --project/--barrier on append node, 3-clause fence + INV-1/2/3 write guards in the ready fold"
+    status: completed
+  - content: "Impl gate: cold impl-judge conformed (31/31); mutation sweep hardened the suite (2 gaps closed). Committed e2e42856 + 2449dc87"
+    status: completed
+  - content: "Spec gate: cold spec-judge on the re-derived suite + README"
     status: in_progress
-  - content: "Rebuild the falsifier so its generator cannot establish the premise under test"
-    status: pending
-  - content: "Rewrite the suite from the chosen rule; re-judge cold WITHOUT supplying the mutant list"
-    status: pending
-  - content: "Deliver: --project/--barrier on append node, fence in the ready fold"
-    status: pending
-  - content: "Impl gate: cold impl-judge + mutation sweep, then RELAY verdict packet (HITL)"
-    status: pending
-  - content: "Handoff: PR closing #224; route out the ssa-lowering + formation stale-ref follow-ups"
+  - content: "RELAY both verdict packets + the ssa-lowering:116 Clearance ask to the owner (HITL — never self-ratify)"
+    status: in_progress
+  - content: "After ratification: PR closing #224; route out the ssa-lowering:116 + formation stale-ref follow-ups"
     status: pending
 ---
 
@@ -30,12 +32,27 @@ Node: `.agents/specs/sdd/mission-graph/` · engine `plugins/sdd/skills/mission-g
 `formation/` **declares** a barrier · `ssa-lowering/` **detects** one · this node **honors** it.
 Honoring only. hitl · high blast · opus. Never self-ratify.
 
-## STATUS — HALTED at round 4. Four rules authored, four refuted.
+## STATUS — R4-restore chosen (owner, 2026-07-23), built, cold-judged. BLOCKED on HITL ratification.
 
-The suite currently holds **26 additive scenarios written against R8, which is REFUTED**. They are
-NOT safe to freeze. No gate advanced. No ratification written.
+The rule stalemate is resolved: owner picked **R4-restore**. It was re-stated precisely against the real
+engine helpers and survived a **4-round adversarial pass** — 3 real defects found and closed (barriers
+exempt→R‴ hole; edge-time wedge guard→fold-then-check INV-2; open-only cap→count claimed), convergence
+gate SURVIVED and judged narrowing. Rule of record: `scratchpad/r4-restore-rule.md` (this session).
 
-## The rule ledger — read this before proposing a fifth
+**Delivered + committed** (`e2e42856` engine/spec/README, `2449dc87` suite hardening):
+- 3-clause fence in the `ready` fold (exempt non-barriers only / at-most-one-barrier cap over open∪claimed
+  / explicit hold), fold-time; `--project`/`--barrier` on `append node`; INV-1/2/3 fold-then-check write
+  guards. WAW mutex + cycles unchanged. Suite re-derived from R4-restore (79 scenarios); README rewritten
+  from the two-clause R8 model to the three clauses.
+- **Impl gate**: cold sdd-impl-judge IMPLEMENTATION_PASS (31/31 barrier scenarios, independent oracles,
+  every R4-vs-R8 discriminator). Mutation sweep closed 2 suite gaps (mis-bound WAW-tie-break fixture;
+  missing barrier-as-another-barrier's-predecessor discriminator). `pnpm verify` green.
+- **Spec gate**: cold sdd-spec-judge in progress.
+
+**BLOCKED (HITL, leash auto-none — never self-ratify):** both gate verdict packets + the Clearance-floor
+edit to `ssa-lowering.feature:116` need owner ratification. Relayed to handle `homa`.
+
+## The rule ledger — the four earlier rules, all refuted (R4-restore = restore R4's offer clause, hardened)
 
 | rule | idea | refuted by | how |
 |---|---|---|---|
@@ -123,11 +140,20 @@ Every round since the first has been refuted by the round before it — the #192
 
 ## NEXT
 
-**Owner call: which rule to carry forward.** Recommendation: **restore R4's offer clause** — it depends
-on no touch-set invariant and enforces one-barrier-at-a-time in the fold itself. Its residual (a
-barrier beside its project's *exempt* work) is real but bounded, and smaller than a delegation that
-silently stops holding. The starvation defect and the Operation/RAW wedge must be pinned under any
-rule.
+**Blocked on owner (HITL) ratification — relayed to handle `homa`.** Resume once the owner responds:
 
-Before authoring a fifth rule: **rebuild the falsifier so its generator cannot establish the premise**,
-and keep the adversarial pass — it is the only thing that has found a real defect in four rounds.
+1. **Ratify the two gates.** Cold impl-judge PASSED; cold spec-judge verdict attached in the relay. On
+   owner approval, write the `gate:spec` and `gate:impl` `verdict:approve`/`by:<owner>` entries to
+   `ledger/github-224.5293fc.jsonl` (the human's act, not the automaton's).
+2. **Ratify the Clearance edit to `ssa-lowering.feature:116`.** Its line "no other lowered mission is
+   scheduled to start before the barrier retires" is unqualified and false under R4-restore (exempt
+   predecessors + let-through work of the fenced project start before the barrier retires; other
+   projects run freely) — a scheduling guarantee living in the detection node. Recommended fix in the
+   relay. Architect-owned, cross-node → apply only after ratification.
+3. **Handoff.** PR closing #224 / feeding #263 op6-m6; file the `formation/README.md` stale-ref
+   follow-up ("has no barrier semantics; issue #224" goes stale on merge). op6-m7 (seat op5-m2 + retire)
+   follows.
+
+The 4 blocking follow-ups the halt recorded are all addressed by R4-restore: fold-then-check store
+guards → INV-1/2/3; barrier starvation → the bounded transient residual, frozen as a scenario;
+Operation/RAW wedge → INV-2. Confirm-and-close them at ratification.
