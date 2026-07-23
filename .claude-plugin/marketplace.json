@@ -1,5 +1,5 @@
 {
-	"$schema": "https://raw.githubusercontent.com/cyberuni/marketplace/main/schema/claude/marketplace.json",
+	"$schema": "https://json.schemastore.org/claude-code-marketplace.json",
 	"name": "cyberplace",
 	"owner": { "name": "unional" },
 	"plugins": [
@@ -35,13 +35,10 @@
 			"name": "sdd",
 			"description": "Spec-Driven Development. Scaffold, validate, and maintain behavioral specs (spec.md + .feature files) for software features.",
 			"tags": ["spec-driven", "workflow"],
-			"source": "./plugins/sdd"
-		},
-		{
-			"name": "tmux",
-			"description": "tmux workflow skills for Claude Code — fork conversations into panes, manage sessions.",
-			"tags": ["tmux", "terminal"],
-			"source": "./plugins/tmux"
+			"source": {
+				"source": "npm",
+				"package": "cyber-sdd"
+			}
 		}
 	]
 }
