@@ -36,12 +36,6 @@
 			"description": "Spec-Driven Development. Scaffold, validate, and maintain behavioral specs (spec.md + .feature files) for software features.",
 			"tags": ["spec-driven", "workflow"],
 			"source": "./plugins/sdd"
-		},
-		{
-			"name": "tmux",
-			"description": "tmux workflow skills for Claude Code — fork conversations into panes, manage sessions.",
-			"tags": ["tmux", "terminal"],
-			"source": "./plugins/tmux"
 		}
 	]
 }
