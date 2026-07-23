@@ -1,5 +1,5 @@
 {
-	"$schema": "https://raw.githubusercontent.com/cyberuni/marketplace/main/schema/claude/marketplace.json",
+	"$schema": "https://json.schemastore.org/claude-code-marketplace.json",
 	"name": "cyberplace",
 	"owner": { "name": "unional" },
 	"plugins": [
