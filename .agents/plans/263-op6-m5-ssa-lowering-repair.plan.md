@@ -4,24 +4,14 @@ source: https://github.com/cyberuni/cyberplace/issues/263
 node: op6-m5
 touch-set: sdd/ssa-lowering
 blast: medium
-status: in-progress
+status: complete
 todos:
   - content: "Validate the seven against main before scoping (re-measure, never trust the brief)"
     status: completed
-  - content: "#253 — close as absorbed: extract-situation withholds the scenario name (measured)"
-    status: pending
-  - content: "#250 — close as superseded: cohesion is non-substitutable, boolean is terminal"
-    status: pending
-  - content: "#254/#255 — state the two missing doctrine rules abstractly; prove by ablation"
-    status: pending
-  - content: "#241/#256 — ablation sweep: effective vs nominal suite size"
-    status: pending
-  - content: "#249 — Clearance/design call: batch to owner, do not self-assert"
-    status: pending
-  - content: "Structure pass: split the fold-manufactured double-barreled dimensions"
-    status: pending
-  - content: "Spec gate, impl gate, handoff"
-    status: pending
+  - content: "#249 fixed; #253/#250/#254/#255/#241/#256 measured dead-weight/absorbed/superseded — all 7 CLOSED"
+    status: completed
+  - content: "Spec gate, impl gate, handoff — PR #307 MERGED to main"
+    status: completed
 ---
 
 # op6-m5 — repair the ssa-lowering frozen suite
@@ -105,5 +95,9 @@ mistaken for stale — README:260 admits the fold). Structure runs **before** se
 
 ## NEXT
 
-Batch the #249 design call + the Clearance shape to `pod-op6-m5`. Run the ablation sweep for
-#241/#256 concurrently. Then author the two doctrine rules and re-measure.
+**COMPLETE — nothing to resume.** Delivered via **PR #307 (merged to main)**: #249 fixed; the other
+six re-measured and closed (absorbed/superseded/dead-weight — the two "cheap fixes" #254/#255 proved
+Δ=0 by ablation and were not landed). All seven issues CLOSED. The fold finding (double-barreled
+dimensions) was carried out as a follow-up, not this node. Next in the lineage is the **op6-m6**
+capstone (#224 barrier-fence honoring), which is blocked on an owner rule-call (R‴ refuted, suite
+encodes R8). This brief is a finished record; do not re-enter the mission loop on it.
