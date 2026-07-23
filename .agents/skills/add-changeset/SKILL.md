@@ -14,10 +14,20 @@ metadata:
 - Adds a new feature or public API (`minor`)
 - Breaks an existing API or removes something (`major`)
 - Updates a dependency in a way users need to know about (`patch`)
+- **Changes a published package's shipped agent configuration** — a skill (`SKILL.md`), a subagent/agent definition, or a plugin manifest that the package ships (bump per the nature of the change; see below)
+
+**A package's public surface is not only code.** Several packages here ship **agent configuration**
+— skills, subagent/agent definitions, plugin manifests — as their actual product (e.g. `cyber-sdd`
+ships `skills/`, `agents/`, and the `.plugin`/`.claude-plugin`/`.codex-plugin` manifests). Whatever a
+package declares in its `package.json#files` is its **public surface**, so a change to that shipped
+agent configuration is user-facing and needs a changeset **the same as a code change — even though it
+is authored in Markdown, not TypeScript**. A shipped `SKILL.md` or agent definition is the product, not
+documentation *about* it. Bump type still follows the **nature** of the change (see step 3).
 
 **Do nothing when:**
 - The change is `ci:`, `chore:`, `test:`, or an internal refactor with no API/behavior change
 - The only changed files are in `examples/`, `docs/`, or non-published packages (check `private: true` and `"ignore"` in `.changeset/config.json`)
+- The only changed files are **repo-internal agent configuration** — a skill marked `metadata: internal: true`, anything under `.agents/` (contributor tooling, SDD specs, ledgers, plans), or any agent-config file **outside the owning package's `package.json#files` surface**; none of it ships
 - The only changed files are tests or Storybook stories
 - The change is build-process, CI/CD, or development tooling only
 - The only dependency changes are `devDependencies`
@@ -59,6 +69,8 @@ git diff --name-only
 
 In a monorepo (has `pnpm-workspace.yaml`, `workspaces` in root `package.json`, or `bun.workspace.ts`), map changed files to their owning package (find nearest `package.json` above each changed file). Apply `fixed` group rules: if any package in a fixed group is affected, all are.
 
+**Markdown agent-config files count too.** A changed `SKILL.md`, agent definition, or plugin manifest maps to its owning package exactly like a code file — do not skip it because it is Markdown. Then confirm it is on the package's **shipped surface**: it must match a pattern in that package's `package.json#files` (e.g. `cyber-sdd`'s `skills`/`agents`/`.plugin`). A change to an agent-config file **outside** that surface (a repo-internal `.agents/` skill, an `internal: true` skill, a spec/ledger) ships nothing and is a do-nothing case.
+
 In a single-package repo, the root package is always the affected package.
 
 ### 2a. Extract context from commit messages
@@ -86,8 +98,17 @@ Use the commit message body / subject as a starting point for the changeset summ
 | Change type | Bump |
 |---|---|
 | Removes or renames public API, breaks existing usage | `major` |
+| Removes/renames a shipped skill or agent, or breaks its documented behavior contract | `major` |
 | Adds new exported function, class, option, or command | `minor` |
+| Adds a shipped skill/agent, or a new documented behavior to an existing one | `minor` |
 | Bug fix, internal refactor, dependency update | `patch` |
+| Fixes or clarifies a shipped skill/agent's behavior without changing its contract | `patch` |
+
+> **A stricter shipped-agent-config check is not automatically breaking.** Judge it by consumer
+> impact like any change: a new **non-blocking** check, warning, or advisory a shipped skill/agent
+> emits **adds** behavior without breaking existing usage, so it is `minor` (`patch` if it only
+> refines an existing message). Only a change that makes a previously-passing input **fail** — a new
+> hard block, a removed capability, a renamed invocation — is `major` (`minor` pre-1.0).
 
 > **Pre-1.0 rule:** For packages on `0.x`, use `minor` for breaking changes — this is standard semver for pre-release packages. Only assign `major` to packages at `1.0.0` or higher.
 
