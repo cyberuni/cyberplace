@@ -20,15 +20,15 @@ importers:
       '@commitlint/config-conventional':
         specifier: ^21.0.1
         version: 21.0.1
-      '@cyberplace/sdd-plugin':
-        specifier: workspace:*
-        version: link:plugins/sdd
       '@repobuddy/biome':
         specifier: ^2.3.1
         version: 2.3.1(@biomejs/biome@2.4.15)
       '@types/node':
         specifier: ^24.12.4
         version: 24.12.4
+      cyber-sdd:
+        specifier: workspace:*
+        version: link:plugins/sdd
       husky:
         specifier: ^9.1.7
         version: 9.1.7
@@ -183,7 +183,11 @@ importers:
 
   plugins/quill: {}
 
-  plugins/sdd: {}
+  plugins/sdd:
+    dependencies:
+      gherkin-cli:
+        specifier: 0.0.2
+        version: 0.0.2
 
 packages:
 
@@ -516,6 +520,12 @@ packages:
   '@ctrl/tinycolor@4.2.0':
     resolution: {integrity: sha512-kzyuwOAQnXJNLS9PSyrk0CWk35nWJW/zl/6KvnTBMFK65gm7U1/Z5BqjxeapjZCIhQcM/DsrEmcbRwDyXyXK4A==}
     engines: {node: '>=14'}
+
+  '@cucumber/gherkin@41.0.0':
+    resolution: {integrity: sha512-pKGx1EzNjtWbpw74kEevKDMj71dF3ZSaFJpLYuWVvRZKe+Cwoq5iEkuMaELIg1jxIu8jH/A2HPMpMR8UBvdG0w==}
+
+  '@cucumber/messages@33.0.4':
+    resolution: {integrity: sha512-i6P1a0bnmhecOHfvIW0rhMxv/gMKfBKwDMxmD9/Uo1HSqpQ17ocHms1JwWW6uTMLAopqqWlcz7l6Pax+qUOTzg==}
 
   '@emmetio/abbreviation@2.3.3':
     resolution: {integrity: sha512-mgv58UrU3rh4YgbE/TzgLQwJ3pFsHHhCLqY20aJq+9comytTXUDNGG/SMtSeMJdkpxgXSXunBGLD8Boka3JyVA==}
@@ -2741,6 +2751,11 @@ packages:
     resolution: {integrity: sha512-/6gFNr0N04nob252sTQxyFLi3eKFRqIg1I87YcqAMT1i6SQrSF6KujUEQrtrjMV0H/eejTCltLdDSTEMzHbnsQ==}
     engines: {node: '>=20.20.0'}
 
+  gherkin-cli@0.0.2:
+    resolution: {integrity: sha512-6ksmT7N2LxXtWIaT/LhnN4unHK6AcyI6l2AQvYu0goP/2x4zhutkhZpgOOmucbI/J6EITUh+WayvKnoJ4UxXzw==}
+    engines: {node: '>=22'}
+    hasBin: true
+
   git-raw-commits@5.0.1:
     resolution: {integrity: sha512-Y+csSm2GD/PCSh6Isd/WiMjNAydu0VBiG9J7EdQsNA5P9uXvLayqjmTsNlK5Gs9IhblFZqOU0yid5Il5JPoLiQ==}
     engines: {node: '>=18'}
@@ -4889,6 +4904,12 @@ snapshots:
 
   '@ctrl/tinycolor@4.2.0': {}
 
+  '@cucumber/gherkin@41.0.0':
+    dependencies:
+      '@cucumber/messages': 33.0.4
+
+  '@cucumber/messages@33.0.4': {}
+
   '@emmetio/abbreviation@2.3.3':
     dependencies:
       '@emmetio/scanner': 1.0.4
@@ -6859,6 +6880,12 @@ snapshots:
   get-tsconfig@5.0.0-beta.5:
     dependencies:
       resolve-pkg-maps: 1.0.0
+
+  gherkin-cli@0.0.2:
+    dependencies:
+      '@cucumber/gherkin': 41.0.0
+      '@cucumber/messages': 33.0.4
+      commander: 14.0.3
 
   git-raw-commits@5.0.1(conventional-commits-parser@6.4.0):
     dependencies:
