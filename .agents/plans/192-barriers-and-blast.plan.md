@@ -12,10 +12,10 @@ todos:
     status: done
   - content: "deliver — blast-estimate engine + 25 tests; rebased onto main; pnpm verify green"
     status: done
-  - content: "impl gate — sdd-impl-judge PASS 21/21; 7 defects fixed; AWAITING human ratification"
-    status: in_progress
-  - content: "handoff — PR against main, Closes #192; mail legate that PR is ready to ratify"
-    status: pending
+  - content: "impl gate — sdd-impl-judge PASS 21/21; 7 defects fixed; HITL-ratified by unional (ledger seq 3)"
+    status: done
+  - content: "handoff — PR #239 opened + MERGED to main; #192 CLOSED; #224 spawned (fence, now also CLOSED)"
+    status: done
 ---
 
 # CR github-192 — Op5: ★ blast-field auto-compute + formation barrier call-out
@@ -109,8 +109,9 @@ handoff → PR `Closes #192` (noting #224 fence, #238 1-area spec defect).
 - Validate `pnpm verify` in this worktree before any gate commit/push.
 
 ## NEXT
-**STOP — spec gate needs unional's ratification.** Verdict packet mailed to the legate inbox. On approve:
-freeze `blast-estimate.feature`, write the gate line + `status: approved`, then deliver the
-`blast-estimate` engine (`plugins/sdd/skills/blast-estimate/`, self-contained `.mts`, node ≥23.6 / no
-deps, mirroring `touch-set-correction`'s house style) with one verification per frozen scenario —
-delegate the build to sonnet. Then impl gate (STOP again), then PR `Closes #192` (and note #224).
+**COMPLETE — nothing to resume.** Both gates ratified by unional (ledger seq 2 spec, seq 3 impl).
+Handoff done: **PR #239 merged to main**, **#192 CLOSED**. The cut scheduler fence shipped as **#224**
+(now also CLOSED). The Op5 master **#263** carried the barrier-fence + eval-instrument work forward as
+the **Op6** sub-program (op6-m1/m2/m4 done, op6-m5 in-progress, op6-m6 blocked on an owner rule-call) —
+a separate operation, not this plan. This brief is a finished record; do not re-enter the mission loop
+on it.

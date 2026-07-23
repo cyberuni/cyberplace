@@ -11,7 +11,7 @@ const bin = path.resolve('bin/cyberplace.mjs')
 interface MarketplacePluginFixture {
 	name: string
 	description: string
-	source: string
+	source: string | { source: 'npm'; package: string }
 	tags: string[]
 }
 
@@ -300,6 +300,30 @@ test('readCrewPlugins enriches each crew with counts, sourceUrl, and version der
 		expect(navigator?.version).toBe('1.2.3')
 		expect(navigator?.skillCount).toBe(1)
 		expect(navigator?.sourceUrl).toBe('https://github.com/cyberuni/cyberplace/tree/main/plugins/navigator')
+	} finally {
+		fs.rmSync(root, { recursive: true, force: true })
+	}
+})
+
+// Scenario: an npm-sourced plugin (object source) reads without crashing and links to npm
+test('an npm-sourced plugin is read with an npm source display and link', () => {
+	const root = makeMarketplace([
+		{ name: 'aced', description: 'Local crew', source: './plugins/aced', tags: ['crew'] },
+		{ name: 'sdd', description: 'From npm', source: { source: 'npm', package: 'cyber-sdd' }, tags: ['sdd'] },
+	])
+	try {
+		const plugins = readMarketplacePlugins(root)
+		const sdd = plugins.find((p) => p.name === 'sdd')
+		expect(sdd?.source).toBe('npm:cyber-sdd')
+		expect(sdd?.sourceUrl).toBe('https://www.npmjs.com/package/cyber-sdd')
+		// no local directory to enrich from → empty counts, undefined version
+		expect(sdd?.skillCount).toBe(0)
+		expect(sdd?.version).toBeUndefined()
+
+		// the string-source plugin keeps its local-directory GitHub link
+		const aced = plugins.find((p) => p.name === 'aced')
+		expect(aced?.source).toBe('./plugins/aced')
+		expect(aced?.sourceUrl).toBe('https://github.com/cyberuni/cyberplace/tree/main/plugins/aced')
 	} finally {
 		fs.rmSync(root, { recursive: true, force: true })
 	}

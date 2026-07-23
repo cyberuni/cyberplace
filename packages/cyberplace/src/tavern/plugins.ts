@@ -6,10 +6,22 @@ const CREW_TAG = 'crew'
 const GITHUB_OWNER = 'cyberuni'
 const GITHUB_REPO = 'cyberplace'
 
+/**
+ * A plugin's `source` in the marketplace manifest is either a local-directory
+ * path string (e.g. "./plugins/aced") or an npm source descriptor object
+ * (e.g. { source: "npm", package: "cyber-sdd" }).
+ */
+type PluginSource = string | NpmSource
+
+interface NpmSource {
+	source: 'npm'
+	package: string
+}
+
 interface MarketplacePluginEntry {
 	name: string
 	description: string
-	source: string
+	source: PluginSource
 	tags?: string[]
 }
 
@@ -84,6 +96,30 @@ function readPluginManifest(pluginRoot: string): PluginManifest | null {
 	return null
 }
 
+/**
+ * Normalizes a plugin's `source` (a local-directory string or an npm source
+ * descriptor) into the fields the roster needs: the local directory to enrich
+ * from (null for npm-hosted plugins, which have no directory in this repo), a
+ * display string, and the "Source" link target.
+ */
+function resolveSource(
+	source: PluginSource,
+	name: string,
+): { localDir: string | null; display: string; sourceUrl: string } {
+	if (typeof source === 'string') {
+		return {
+			localDir: source.replace(/^\.\//, ''),
+			display: source,
+			sourceUrl: `https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}/tree/main/plugins/${name}`,
+		}
+	}
+	return {
+		localDir: null,
+		display: `npm:${source.package}`,
+		sourceUrl: `https://www.npmjs.com/package/${source.package}`,
+	}
+}
+
 function matchesQuery(plugin: MarketplacePlugin, query: string): boolean {
 	const needle = query.toLowerCase()
 	return (
@@ -118,20 +154,23 @@ export function readMarketplacePlugins(root: string = findRepoRoot(), query?: st
 	const plugins = (manifest.plugins ?? [])
 		.map((plugin): MarketplacePlugin => {
 			const tags = plugin.tags ?? []
-			const pluginRoot = path.join(root, plugin.source.replace(/^\.\//, ''))
-			const pluginManifest = readPluginManifest(pluginRoot)
+			const { localDir, display, sourceUrl } = resolveSource(plugin.source, plugin.name)
+			// npm-hosted plugins have no directory in this repo, so counts and the
+			// locally-derived version stay at their empty defaults.
+			const pluginRoot = localDir === null ? null : path.join(root, localDir)
+			const pluginManifest = pluginRoot === null ? null : readPluginManifest(pluginRoot)
 
 			return {
 				name: plugin.name,
 				description: plugin.description ?? pluginManifest?.description ?? '',
-				source: plugin.source,
+				source: display,
 				tags,
 				recruit: `cyberplace add ${plugin.name}`,
 				version: pluginManifest?.version,
-				skillCount: countEntries(path.join(pluginRoot, 'skills')),
-				agentCount: countEntries(path.join(pluginRoot, 'agents')),
-				commandCount: countEntries(path.join(pluginRoot, 'commands')),
-				sourceUrl: `https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}/tree/main/plugins/${plugin.name}`,
+				skillCount: pluginRoot === null ? 0 : countEntries(path.join(pluginRoot, 'skills')),
+				agentCount: pluginRoot === null ? 0 : countEntries(path.join(pluginRoot, 'agents')),
+				commandCount: pluginRoot === null ? 0 : countEntries(path.join(pluginRoot, 'commands')),
+				sourceUrl,
 				isCrew: tags.includes(CREW_TAG),
 			}
 		})

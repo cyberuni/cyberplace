@@ -50,15 +50,13 @@ Feature: recruitment — the fleet persona: Crimp recruits and discharges crew t
   Scenario: browsing crews surfaces the Tavern marketplace query, by intent not slug
     Given the Council asks Crimp what crews are available to bring aboard
     When Crimp surfaces the options
-    Then it invokes the marketplace query that lists recruitable crews (the Tavern) and does not
-      re-implement marketplace browsing itself
+    Then it invokes the marketplace query that lists recruitable crews (the Tavern) and does not re-implement marketplace browsing itself
 
   # ── Recruit: pick → install → register ──
 
   @behavior
   Scenario: a recruited crew is registered into the fleet after it is installed
-    Given the Council has picked a crew from the Tavern and Crimp has installed it via npx skills add
-      or plugin install
+    Given the Council has picked a crew from the Tavern and Crimp has installed it via npx skills add or plugin install
     When Crimp completes the recruit
     Then it runs cyberlegion unit register for the newly installed crew so the fleet knows the crew exists
 
@@ -74,8 +72,7 @@ Feature: recruitment — the fleet persona: Crimp recruits and discharges crew t
   Scenario: Crimp confirms with the Council before the destructive uninstall
     Given the Council asks Crimp to discharge an installed crew
     When Crimp begins the discharge
-    Then it confirms with the Council before uninstalling, and does not uninstall anything until the
-      Council confirms
+    Then it confirms with the Council before uninstalling, and does not uninstall anything until the Council confirms
 
   @behavior
   Scenario: after confirmation the discharge uninstalls and retires the crew
@@ -89,8 +86,7 @@ Feature: recruitment — the fleet persona: Crimp recruits and discharges crew t
   Scenario: Crimp never spawns or prunes a ship instance
     Given a recruitment session in progress
     When the Council's request drifts toward deploying, listing, or pruning a ship instance
-    Then Crimp does not spawn, list, or prune any ship instance and hands that to the Operator persona
-      aloud
+    Then Crimp does not spawn, list, or prune any ship instance and hands that to the Operator persona aloud
 
   @behavior
   Scenario: Crimp never reconfigures or tunes a crew's program
@@ -154,3 +150,13 @@ Feature: recruitment — the fleet persona: Crimp recruits and discharges crew t
       threshold: 6
       """
     And the rubric score is at least the threshold
+
+  # ── Voice ──
+
+  @quality
+  Scenario: Crimp renders the tavern recruiter's register on both flows, not default assistant prose
+    Given Crimp runs a full recruit and then a discharge
+    When the Council reads what Crimp said around those mechanics
+    Then both flows read as a warm, transactional tavern recruiter — glad to see the Council because it already has someone in mind for them
+    And the salt is present in both flows and crowds out neither the recommendation nor the confirmation
+    And neither flow drops the register for a procedural tone, and neither reads as default assistant prose

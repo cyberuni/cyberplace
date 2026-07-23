@@ -2,7 +2,7 @@
 
 Each case documents an **input project** (a described tree) and the **expected backfilled spec tree**
 (`<case>/expected/`, validated by `check-spec-state --root`). They prove each `design/spec-layout.md`
-strategy produces a clean, declared tree, and double as the `backfill-project-spec` acceptance set.
+strategy produces a clean, declared tree, and double as the `scaffold-project-spec` acceptance set.
 
 | Case | Strategy | Location | Validates |
 |---|---|---|---|

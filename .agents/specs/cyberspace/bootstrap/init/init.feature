@@ -7,7 +7,7 @@ Feature: init — initialize harness-agnostic agent config
   honoring prior declines via harness memory). Registering ACED as an SDD plugin is the ACED registry skill;
   authoring or evaluating agent config is ACED's domain; publishing or upgrading a cross-vendor plugin is
   publish-universal-plugin / upgrade-universal-plugin. Cross-capability e2e scenarios live in
-  ../../acceptance/.
+  ../../workflows/.
 
   # ── Triggering ──
 

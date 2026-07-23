@@ -30,6 +30,7 @@
 	],
 	"scripts": {
 		"build": "tsdown",
+		"check:spec": "sdd-check-specs",
 		"dev": "tsx src/cli.ts",
 		"prepack": "pnpm build",
 		"render:awesome-list": "pnpm build && node bin/cyberplace.mjs awesome render",

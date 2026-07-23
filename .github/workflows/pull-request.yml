@@ -5,7 +5,54 @@ on:
 
 jobs:
   code:
-    uses: cyberuni/.github/.github/workflows/pnpm-verify.yml@main
-    with:
-      os: '["ubuntu-latest"]'
-      skip-playwright: true
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: ['22', '24']
+    steps:
+      - uses: actions/checkout@v5
+      # pnpm must be on PATH BEFORE setup-node: v5 reads `packageManager` from
+      # package.json and invokes that manager, so the reverse order fails with
+      # "Unable to locate executable file: pnpm". v4 did not, hence the old order.
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      # Clear npm exec cache to work around gherkin-cli npm cache corruption
+      - name: Clear npm exec cache
+        run: rm -rf ~/.npm/_npx
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - run: pnpm install
+
+      # Warm the gherkin-cli npx cache serially once, so the parallel `turbo verify`
+      # tasks reuse a single install instead of racing to populate ~/.npm/_npx
+      # concurrently (the ENOTEMPTY cache-corruption the clear step above guards against).
+      - name: Warm gherkin-cli npx cache
+        run: npx -y gherkin-cli@0.0.2 --help > /dev/null 2>&1 || true
+
+      - run: pnpm verify
+
+  all-checks:
+    if: always()
+    needs: code
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          if [[ "${{ needs.code.result }}" != "success" ]]; then
+            exit 1
+          fi

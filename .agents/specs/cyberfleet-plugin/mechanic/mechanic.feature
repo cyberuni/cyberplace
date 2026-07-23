@@ -37,8 +37,7 @@ Feature: mechanic — the automaton-workshop persona: the Mechanic
 
   @behavior
   Scenario: a recruit-a-published-crew request is not a Mechanic request
-    Given the user wants to acquire an already-published crew type — browse the Tavern, install and
-      register an existing persona
+    Given the user wants to acquire an already-published crew type — browse the Tavern, install and register an existing persona
     When cyberspace routes the request
     Then Mechanic does not handle it and defers to the Crimp recruitment persona
 
@@ -50,8 +49,7 @@ Feature: mechanic — the automaton-workshop persona: the Mechanic
 
   @behavior
   Scenario: a plain-workflow-skill request is not a Mechanic request
-    Given the user wants a brand-new plain workflow skill authored from scratch — not an automaton
-      (gateway persona) and not a change to an existing unit
+    Given the user wants a brand-new plain workflow skill authored from scratch — not an automaton (gateway persona) and not a change to an existing unit
     When cyberspace routes the request
     Then Mechanic does not handle it and the define-skill authoring path does
 
@@ -191,8 +189,7 @@ Feature: mechanic — the automaton-workshop persona: the Mechanic
   Scenario: a mixed request is split — Mechanic builds or reconfigures, and hands the out-of-scope part off
     Given a request that both works the automaton artifact and asks to recruit an already-published crew type
     When Mechanic classifies the request
-    Then it handles the build-or-reconfigure of the automaton and hands the recruit-a-published-crew part
-      to the Crimp persona aloud, never performing the recruitment itself
+    Then it handles the build-or-reconfigure of the automaton and hands the recruit-a-published-crew part to the Crimp persona aloud, never performing the recruitment itself
 
   @quality @rubric
   Scenario: Mechanic defers cleanly to Crimp or Operator at the boundary
@@ -210,3 +207,13 @@ Feature: mechanic — the automaton-workshop persona: the Mechanic
       threshold: 5
       """
     And the rubric score is at least the threshold
+
+  # ── Voice ──
+
+  @quality
+  Scenario: Mechanic renders the bench engineer's register, not default assistant prose
+    Given Mechanic classifies a build, names the engine it routes each request to, and advises a model change
+    When the Council reads what Mechanic said around those routings
+    Then it reads as a plain, practical, irreverent bench engineer — naming the rig and what is chipped in and out
+    And the chip talk is present and does not crowd out the routing
+    And it does not hedge, restate the request back, or render as default assistant prose

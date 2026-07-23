@@ -18,10 +18,6 @@
 			"cache": false,
 			"outputs": []
 		},
-		"//#verify:specs": {
-			"cache": false,
-			"outputs": []
-		},
 		"build": {
 			"outputs": ["dist/**"],
 			"dependsOn": ["^build"]
@@ -43,12 +39,16 @@
 				"//#check:skills",
 				"//#check:specs",
 				"//#knip",
-				"//#verify:specs",
 				"build",
 				"typecheck",
 				"lint",
-				"test"
+				"test",
+				"check:spec"
 			]
+		},
+		"check:spec": {
+			"cache": false,
+			"outputs": []
 		}
 	}
 }

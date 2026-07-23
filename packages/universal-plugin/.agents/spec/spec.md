@@ -108,7 +108,7 @@ Where a new concept lives — slot here, do not invent placement (strategy = **c
 - **a new shared output / CLI convention** (TOON shape, aggregate, next-step, empty-state,
   truncation, help, content-first) → `axi/` (the reference contract), plus concrete scenarios in each
   behavioral node that exercises it. Never a per-command copy of the convention.
-- **a cross-capability CLI e2e** (spans ≥2 nodes) → `acceptance/`.
+- **a cross-capability CLI workflow** (spans ≥2 nodes) → `workflows/`.
 - **marketplace / plugin-install / lifecycle-hook op** → **not here** — that is the `cyberplace`
   package.
 - **cross-vendor sync / self-update / publish / asset-store op** → **not a capability here** — the
