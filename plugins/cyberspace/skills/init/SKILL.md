@@ -48,7 +48,7 @@ Offload the cross-vendor wiring to the **`universal-plugin` CLI** rather than wr
 hand — it is faster and spends fewer tokens.
 
 1. Resolve an exact version: `npm view universal-plugin version` (never `@latest`, never a literal placeholder).
-2. Run `npx universal-plugin@<exact> sync` to generate the per-harness config (Claude Code, Cursor, Codex,
+2. Run `npx universal-plugin@0.2.1 sync` to generate the per-harness config (Claude Code, Cursor, Codex,
    Copilot) from `AGENTS.md` and the shared source.
 
 **If the user declines running `npx`:** do not silently skip the wiring — route to the separate direct-write

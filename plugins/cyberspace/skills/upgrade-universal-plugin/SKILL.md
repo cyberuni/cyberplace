@@ -1,6 +1,6 @@
 ---
 name: upgrade-universal-plugin
-description: Use this skill when upgrading pinned `npx universal-plugin@<version>` calls across a project to a newer version.
+description: Use this skill when upgrading pinned `npx universal-plugin@0.2.1` calls across a project to a newer version.
 ---
 
 # Upgrade Universal Plugin
@@ -43,17 +43,17 @@ Show the list of files and the planned replacement, then ask for confirmation be
 Example summary:
 
 ```text
-Found npx universal-plugin@1.2.3 in 4 files:
+Found npx universal-plugin@0.2.1 in 4 files:
   <skill>/SKILL.md (2 occurrences)
   <hooks-file> (1 occurrence)
   <docs-file> (1 occurrence)
 
-Replace all with npx universal-plugin@1.5.0? (y/n)
+Replace all with npx universal-plugin@0.2.1 (y/n)
 ```
 
 ### Step 4 — Apply replacements
 
-For each confirmed file, replace every `npx universal-plugin@<old-version>` with `npx universal-plugin@<target-version>`.
+For each confirmed file, replace every `npx universal-plugin@0.2.1` with `npx universal-plugin@0.2.1`.
 
 Only replace within the same major version by default — cross-major bumps may include breaking changes. Warn the user and ask for explicit confirmation before replacing across major versions.
 
