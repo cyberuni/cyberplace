@@ -4,7 +4,7 @@ source: https://github.com/cyberuni/cyberplace/issues/376
 node: doctrine/scanner
 touch-set: sdd/authoring, sdd/design, sdd/workflows
 blast: medium
-status: in-progress
+status: complete
 todos:
   - content: "Explore: freeze validate-before-draft gate + issue-emission in scanner.feature"
     status: completed
@@ -13,11 +13,11 @@ todos:
   - content: "Spec gate — cold spec-judge ALIGNED (3 rounds); disposition field added to combat-log + gateway; frozen; gate line recorded"
     status: completed
   - content: "Deliver: update doctrine-loop SKILL.md + sdd-scanner.md agent + gateway sdd/SKILL.md against frozen suite"
-    status: in_progress
-  - content: "Impl gate — cold impl-judge; pnpm verify green"
-    status: pending
-  - content: "Handoff — PR, note op6-m14 retired overlap, followups"
-    status: pending
+    status: completed
+  - content: "Impl gate — cold impl-judge IMPLEMENTATION_PASS; pnpm verify green"
+    status: completed
+  - content: "Handoff — PR #379 (Closes #376); op6-m14 retired overlap noted; no followups"
+    status: completed
 ---
 
 # 376 — doctrine loop validates plan/log gaps against current code before drafting
@@ -56,5 +56,5 @@ Surfaced here per brief.
 
 ## NEXT
 
-Run explore: draft the new scenarios (validation gate CUT/keep, issue emission, dedupe) onto
-`scanner.feature` and the matching Use Cases + prose in `scanner/README.md`. Then cold spec-judge.
+Landed as PR #379 (Closes #376). Awaiting human review/merge, then doctrine-distill + plan retirement.
+Nothing left to build.
