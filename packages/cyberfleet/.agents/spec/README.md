@@ -7,7 +7,7 @@ peers, surface mail) into a **fleet** view: ships, missions, and the Council. It
 This project (`packages/cyberfleet`) is the **CLI half** — the deterministic fleet engine. The
 persona layer that decides *when* and *how* an agent reaches for the fleet (the `fleet` gateway
 personas and the `crew` recruit/tune personas) is the sibling `cyberfleet-plugin` project
-(`../../.agents/specs/cyberfleet-plugin`, source `plugins/cyberfleet`), which calls this CLI by
+(`../../../../.agents/specs/cyberfleet-plugin`, source `plugins/cyberfleet`), which calls this CLI by
 **intent**, never by its command slugs.
 
 A **ship** is a working session an agent runs a mission in — not a marked directory. There is no ship

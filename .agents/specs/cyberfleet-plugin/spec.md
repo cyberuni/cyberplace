@@ -34,7 +34,7 @@ approval:
 > distribution at `plugins/cyberfleet`). Behaviors live in the capability folders below. This
 > project was split out of the combined `cyberfleet` project by the `split-cyberfleet-spec` change,
 > so the spec maps one-to-one onto the plugin. The deterministic engine — the `cyberfleet` CLI —
-> lives in the sibling `cyberfleet` project (`../../packages/cyberfleet/.agents/spec`, source
+> lives in the sibling `cyberfleet` project (`../../../packages/cyberfleet/.agents/spec`, source
 > `packages/cyberfleet`).
 
 ## What this is

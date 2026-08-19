@@ -11,9 +11,9 @@ Where a mechanic belongs to neither (the merge backstop's `gh`/git/CI), it is of
 never re-implemented.
 
 This project is the **plugin half**. The deterministic engines are two sibling CLI projects: the
-`cyberfleet` CLI (the SDD-derived mission view + gates — `../../packages/cyberfleet/.agents/spec`,
+`cyberfleet` CLI (the SDD-derived mission view + gates — `../../../packages/cyberfleet/.agents/spec`,
 source `packages/cyberfleet`) and the `cyberlegion` CLI (identity, mail, spawn, mux —
-`../../packages/cyberlegion/.agents/spec`, source `packages/cyberlegion`). These personas depend on
+`../../../packages/cyberlegion/.agents/spec`, source `packages/cyberlegion`). These personas depend on
 both by **intent**, never by their command slugs (ADR-0021); the dependency is one-way.
 
 The end-to-end path the fleet personas orchestrate — register, spawn a peer, message, surface —

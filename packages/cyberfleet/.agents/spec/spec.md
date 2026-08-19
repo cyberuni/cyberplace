@@ -26,7 +26,7 @@ approval:
 > at `packages/cyberfleet`). This project is a thin **fleet layer** built on top of the
 > `cyberlegion` mechanism package. It carries only the fleet-specific verbs; the agent-behavior half
 > — the `fleet` persona gateway and the `crew` personas — lives in the sibling `cyberfleet-plugin`
-> project (`../../.agents/specs/cyberfleet-plugin`, source `plugins/cyberfleet`).
+> project (`../../../../.agents/specs/cyberfleet-plugin`, source `plugins/cyberfleet`).
 
 ## What this is
 
