@@ -1,0 +1,129 @@
+{
+	"name": "cyberplace",
+	"interface": {
+		"displayName": "cyberplace"
+	},
+	"plugins": [
+		{
+			"name": "aced",
+			"description": "Agent Config Evaluation System. Evaluate, test, and improve agent configurations: skills, AGENTS.md sections, subagent definitions, and commands.",
+			"category": "Developer Tools",
+			"policy": { "installation": "AVAILABLE" },
+			"source": {
+				"source": "git-subdir",
+				"url": "https://github.com/cyberuni/cyber-sdd.git",
+				"path": "plugins/aced"
+			}
+		},
+		{
+			"name": "cyber-asana",
+			"description": "Asana CLI and MCP server for AI agents.",
+			"category": "Productivity",
+			"policy": { "installation": "AVAILABLE" },
+			"source": {
+				"source": "npm",
+				"package": "cyber-asana"
+			}
+		},
+		{
+			"name": "cyberfleet",
+			"description": "Fleet persona layer for the cyberfleet CLI. Pod (ship's bridge) and Operator (command center) gateway skills — harness-agnostic, MCP-free.",
+			"category": "Developer Tools",
+			"policy": { "installation": "AVAILABLE" },
+			"source": {
+				"source": "git-subdir",
+				"url": "https://github.com/cyberuni/cyberfleet.git",
+				"path": "plugins/cyberfleet"
+			}
+		},
+		{
+			"name": "cyberlegion",
+			"description": "Agent session spawning, messaging, and dispatch — the Legion and its Legate.",
+			"category": "Developer Tools",
+			"policy": { "installation": "AVAILABLE" },
+			"source": {
+				"source": "git-subdir",
+				"url": "https://github.com/cyberuni/cyberlegion.git",
+				"path": "plugins/cyberlegion"
+			}
+		},
+		{
+			"name": "cyberspace",
+			"description": "Research and design toolkit for building universal AI coding agent plugins that work across Claude Code, Cursor, Codex, and GitHub Copilot CLI.",
+			"category": "Developer Tools",
+			"policy": { "installation": "AVAILABLE" },
+			"source": "./plugins/cyberspace"
+		},
+		{
+			"name": "quill",
+			"description": "Documentation SDD plugin. Verifies guides, tutorials, articles, and reference docs against specs — existence, required headings, completeness, and reader-path continuity.",
+			"category": "Developer Tools",
+			"policy": { "installation": "AVAILABLE" },
+			"source": {
+				"source": "git-subdir",
+				"url": "https://github.com/cyberuni/cyber-sdd.git",
+				"path": "plugins/quill"
+			}
+		},
+		{
+			"name": "sdd",
+			"description": "Spec-Driven Development. Scaffold, validate, and maintain behavioral specs (spec.md + .feature files) for software features.",
+			"category": "Developer Tools",
+			"policy": { "installation": "AVAILABLE" },
+			"source": {
+				"source": "npm",
+				"package": "cyber-sdd"
+			}
+		},
+		{
+			"name": "buddy-codecov",
+			"description": "Codecov coverage comparison skill for AI coding agents.",
+			"category": "Developer Tools",
+			"policy": { "installation": "AVAILABLE" },
+			"source": {
+				"source": "npm",
+				"package": "buddy-codecov"
+			}
+		},
+		{
+			"name": "buddy-agent-harness",
+			"description": "Initialize standards-based agent configuration across coding-agent harnesses.",
+			"category": "Developer Tools",
+			"policy": { "installation": "AVAILABLE" },
+			"source": {
+				"source": "npm",
+				"package": "buddy-agent-harness"
+			}
+		},
+		{
+			"name": "repobuddy",
+			"description": "Repository management skills for AI coding agents — issues, dependency PRs, GitHub Pages, repo setup, npm trusted publishing, and harness permission audits.",
+			"category": "Developer Tools",
+			"policy": { "installation": "AVAILABLE" },
+			"source": {
+				"source": "npm",
+				"package": "repobuddy"
+			}
+		},
+		{
+			"name": "universal-plugin",
+			"description": "Universal AI agent plugin build tool.",
+			"category": "Developer Tools",
+			"policy": { "installation": "AVAILABLE" },
+			"source": {
+				"source": "npm",
+				"package": "universal-plugin"
+			}
+		},
+		{
+			"name": "buddy-changesets",
+			"description": "Changesets skills for AI agents — set up releases and write changeset files.",
+			"category": "Developer Tools",
+			"policy": { "installation": "AVAILABLE" },
+			"source": {
+				"source": "url",
+				"url": "https://github.com/repobuddy/buddy-changesets.git"
+			}
+		}
+	]
+}
