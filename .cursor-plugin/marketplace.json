@@ -77,6 +77,15 @@
 				"source": "github",
 				"repo": "repobuddy/buddy-changesets"
 			}
+		},
+		{
+			"name": "research-workbench",
+			"description": "Durable research workflows and community post authoring for AI coding agents.",
+			"tags": ["research", "skills"],
+			"source": {
+				"source": "github",
+				"repo": "cyberuni/research-workbench"
+			}
 		}
 	]
 }
