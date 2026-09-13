@@ -27,7 +27,6 @@ See [`packages/cyberplace`](packages/cyberplace/readme.md) for the full command 
 | Package                                                   | Description                                                            |
 | --------------------------------------------------------- | --------------------------------------------------------------------- |
 | [`cyberplace`](packages/cyberplace)                       | Opinionated skills, hooks, and workflows for AI agents + the CLI      |
-| [`cyberfleet`](packages/cyberfleet)                       | Harness-agnostic, MCP-free inter-agent sessions and messaging         |
 
 ## Plugins
 
@@ -36,7 +35,6 @@ The repo doubles as a plugin marketplace (`.claude-plugin/marketplace.json`). No
 | Plugin              | Description                                                              |
 | ------------------- | ------------------------------------------------------------------------ |
 | `cyberspace`        | Research and design toolkit for universal plugins                        |
-| `cyberfleet`        | Fleet persona layer (Pod, Operator) for the cyberfleet CLI              |
 | `commit-discipline` | Commit-discipline hooks and workflow                                     |
 
 ### Plugins hosted elsewhere
@@ -50,6 +48,7 @@ references them by `git-subdir`:
 | `aced`        | [cyberuni/cyber-sdd](https://github.com/cyberuni/cyber-sdd)       |
 | `quill`       | [cyberuni/cyber-sdd](https://github.com/cyberuni/cyber-sdd)       |
 | `cyberlegion` | [cyberuni/cyberlegion](https://github.com/cyberuni/cyberlegion)   |
+| `cyberfleet`  | [cyberuni/cyberfleet](https://github.com/cyberuni/cyberfleet)     |
 
 ## Development
 

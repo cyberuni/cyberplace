@@ -4,8 +4,7 @@
 	"type": "module",
 	"scripts": {
 		"build": "turbo build",
-		"bundle": "universal-plugin plugin bundle --root plugins/cyberfleet && universal-plugin plugin bundle --root plugins/cyberspace",
-		"cf": "pnpm run --filter=cyberfleet",
+		"bundle": "universal-plugin plugin bundle --root plugins/cyberspace",
 		"check": "biome check --write",
 		"check:ci": "biome ci",
 		"cp": "pnpm run --filter=cyberplace",
