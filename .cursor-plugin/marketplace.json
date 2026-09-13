@@ -19,7 +19,11 @@
 			"name": "cyberfleet",
 			"description": "Fleet persona layer for the cyberfleet CLI. Pod (ship's bridge) and Operator (command center) gateway skills — harness-agnostic, MCP-free.",
 			"tags": ["fleet", "persona", "crew"],
-			"source": "./plugins/cyberfleet"
+			"source": {
+				"source": "git-subdir",
+				"url": "https://github.com/cyberuni/cyberfleet.git",
+				"path": "plugins/cyberfleet"
+			}
 		},
 		{
 			"name": "cyberlegion",

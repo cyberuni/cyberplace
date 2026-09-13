@@ -1,4 +1,0 @@
-[[source]]
-adapter    = "junit"
-command    = "pnpm exec vitest run src --reporter=junit --outputFile=.agents/.scenario-report.xml"
-reportPath = ".agents/.scenario-report.xml"

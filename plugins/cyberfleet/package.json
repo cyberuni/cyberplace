@@ -1,7 +1,0 @@
-{
-	"name": "@cyberplace/cyberfleet-plugin",
-	"private": true,
-	"version": "0.0.0",
-	"type": "module",
-	"scripts": {}
-}

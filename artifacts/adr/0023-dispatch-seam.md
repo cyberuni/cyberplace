@@ -179,7 +179,7 @@ described runtime spawning behavior. Follow-up (not part of this ADR):
 - [ADR-0021](0021-spec-dependency-kinds.md) — the "depend on intent, never slug/internals; one
   load-bearing site" discipline this ADR applies to a runtime dispatch capability rather than a spec
   reference.
-- [ADR-0022](0022-cyberfleet-persona.md) — the fleet-persona layer this ADR's dependency explicitly
+- [ADR-0022](https://github.com/cyberuni/cyberfleet/blob/main/docs/adr/0022-cyberfleet-persona.md) — the fleet-persona layer this ADR's dependency explicitly
   does **not** couple SDD to; cyberfleet depends on cyberlegion, SDD depends on cyberlegion, SDD never
   depends on cyberfleet.
 
