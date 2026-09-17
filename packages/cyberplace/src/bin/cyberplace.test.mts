@@ -85,45 +85,69 @@ test('hook run --glob emits SessionStart JSON', () => {
 	}
 })
 
-test('governance list includes agent-tool-output', () => {
+test('governance list includes universal-plugin', () => {
 	const result = run('governance', 'list')
 	expect(result.status).toBe(0)
-	expect(result.stdout.trim().split('\n')).toContain('agent-tool-output')
+	expect(result.stdout.trim().split('\n')).toContain('universal-plugin')
+})
+
+test('governance list omits the governances that moved', () => {
+	const result = run('governance', 'list')
+	expect(result.status).toBe(0)
+	const names = result.stdout.trim().split('\n')
+	for (const moved of ['agent-tool-output', 'cli-resolution', 'skill-design', 'skill-repo-structure']) {
+		expect(names, moved).not.toContain(moved)
+	}
 })
 
 test('governance list --json returns structured output', () => {
 	const result = run('governance', 'list', '--json')
 	expect(result.status).toBe(0)
 	const parsed = JSON.parse(result.stdout) as { governances: { name: string; title: string }[] }
-	expect(parsed.governances.some((d) => d.name === 'agent-tool-output')).toBe(true)
+	expect(parsed.governances.some((d) => d.name === 'universal-plugin')).toBe(true)
+	expect(parsed.governances.some((d) => d.name === 'skill-design')).toBe(false)
 })
 
 test('governance show prints markdown body', () => {
-	const result = run('governance', 'show', 'agent-tool-output')
+	const result = run('governance', 'show', 'universal-plugin')
 	expect(result.status).toBe(0)
-	expect(result.stdout).toMatch(/# Agent Tool Output/)
-	expect(result.stdout).toMatch(/Stdout is the machine contract/)
+	expect(result.stdout).toMatch(/# Universal Plugin Format/)
 })
 
 test('governance show accepts normalized name input', () => {
-	const result = run('governance', 'show', 'Agent-Tool-Output')
+	const result = run('governance', 'show', 'Universal-Plugin')
 	expect(result.status).toBe(0)
-	expect(result.stdout).toMatch(/# Agent Tool Output/)
-	expect(result.stdout).toMatch(/Stdout is the machine contract/)
-})
-
-test('governance list includes skill-design', () => {
-	const result = run('governance', 'list')
-	expect(result.status).toBe(0)
-	expect(result.stdout.trim().split('\n')).toContain('skill-design')
+	expect(result.stdout).toMatch(/# Universal Plugin Format/)
 })
 
 test('governance show --json returns structured output', () => {
-	const result = run('governance', 'show', 'agent-tool-output', '--json')
+	const result = run('governance', 'show', 'universal-plugin', '--json')
 	expect(result.status).toBe(0)
 	const parsed = JSON.parse(result.stdout) as { name: string; title: string; body: string }
-	expect(parsed.name).toBe('agent-tool-output')
-	expect(parsed.body).toMatch(/Agent Tool Output/)
+	expect(parsed.name).toBe('universal-plugin')
+	expect(parsed.body).toMatch(/Universal Plugin Format/)
+})
+
+test('governance show forwards a moved governance to its new owner and exits non-zero', () => {
+	const result = run('governance', 'show', 'skill-design')
+	expect(result.status).toBe(1)
+	expect(result.stdout).toBe('')
+	expect(result.stderr.trim().split('\n')).toHaveLength(1)
+	expect(result.stderr).toMatch(/skill-design moved to cyber-aced/)
+	expect(result.stderr).toMatch(/github\.com\/cyberuni\/cyber-sdd/)
+})
+
+test('governance show forwards a moved governance given a denormalized name', () => {
+	const result = run('governance', 'show', 'CLI_Resolution')
+	expect(result.status).toBe(1)
+	expect(result.stderr).toMatch(/cli-resolution moved to cyber-aced/)
+})
+
+test('governance show --json still forwards rather than printing JSON', () => {
+	const result = run('governance', 'show', 'agent-tool-output', '--json')
+	expect(result.status).toBe(1)
+	expect(result.stdout).toBe('')
+	expect(result.stderr).toMatch(/agent-tool-output moved to cyber-aced/)
 })
 
 test('governance show unknown name exits non-zero', () => {

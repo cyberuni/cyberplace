@@ -21,21 +21,30 @@ A governance is a dense, self-contained document:
 Agents load governances via CLI, not by reading files directly:
 
 ```bash
-npx cyberplace@<version> governance show skill-design
-npx cyberplace@<version> governance show skill-design --format agent
+npx cyberplace@<version> governance show universal-plugin
+npx cyberplace@<version> governance show universal-plugin --format agent
 ```
 
 Pinning the version ensures agents always get rules that match the installed tooling.
+
+A governance that has moved to the package owning its subject is read from that package instead — see [Moved governances](#moved-governances).
 
 ## Available governances
 
 | Name | Purpose |
 | ---- | ------- |
-| [skill-design](/governances/skill-design/) | Rules for authoring `SKILL.md` files |
-| [skill-repo-structure](/governances/skill-repo-structure/) | Rules for organizing a skill library repository |
-| [agent-tool-output](/governances/agent-tool-output/) | Output rules for scripts, hooks, and CLIs that agents invoke |
-| [cli-resolution](/governances/cli-resolution/) | Strategy for invoking a Node CLI that may be global, repo-local, or absent |
 | [universal-plugin](/governances/universal-plugin/) | Format spec for plugins that work across multiple agent harnesses |
+
+## Moved governances
+
+These now ship from the package that owns their subject ([repobuddy/buddy-agent-harness#122](https://github.com/repobuddy/buddy-agent-harness/issues/122)). `npx cyberplace governance show <name>` names the new owner and exits non-zero.
+
+| Name | Now owned by | Purpose |
+| ---- | ------------ | ------- |
+| [skill-design](/governances/skill-design/) | `cyber-aced` | Rules for authoring `SKILL.md` files |
+| [skill-repo-structure](/governances/skill-repo-structure/) | `cyber-aced` | Rules for organizing a skill library repository |
+| [agent-tool-output](/governances/agent-tool-output/) | `cyber-aced` | Output rules for scripts, hooks, and CLIs that agents invoke |
+| [cli-resolution](/governances/cli-resolution/) | `cyber-aced` | How a skill runs its own scripts and resolves a released CLI it does not ship |
 
 ## Governance vs Discipline
 

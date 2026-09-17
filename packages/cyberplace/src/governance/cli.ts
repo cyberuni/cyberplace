@@ -1,7 +1,8 @@
 import { Command, Option } from 'commander'
 
 import { output } from '../output.js'
-import { listGovernances, loadGovernance } from './load.js'
+import { listGovernances, loadGovernance, normalizeGovernanceName } from './load.js'
+import { movedGovernance, movedGovernanceNotice } from './moved.js'
 
 export function governanceCommand(): Command {
 	const cmd = new Command('governance').description('Agent-tool governance documents (version-pinned)')
@@ -34,6 +35,12 @@ export function governanceCommand(): Command {
 		.addOption(new Option('--json').hideHelp())
 		.action((name: string) => {
 			try {
+				const normalized = normalizeGovernanceName(name)
+				const moved = movedGovernance(normalized)
+				if (moved) {
+					process.stderr.write(`${movedGovernanceNotice(normalized, moved)}\n`)
+					process.exit(1)
+				}
 				const governance = loadGovernance(name)
 				output(governance, () => {
 					process.stdout.write(governance.body.endsWith('\n') ? governance.body : `${governance.body}\n`)

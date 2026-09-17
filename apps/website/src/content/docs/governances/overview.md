@@ -16,10 +16,10 @@ Do not link to governance files directly from `SKILL.md`. Load them through the 
 npx cyberplace@<version> governance list
 
 # Show a governance (agents read stdout)
-npx cyberplace@<version> governance show skill-design
+npx cyberplace@<version> governance show universal-plugin
 
 # Agent-optimized output (lower token cost)
-npx cyberplace@<version> governance show skill-design --format agent
+npx cyberplace@<version> governance show universal-plugin --format agent
 ```
 
 Always pin an exact version: `npx cyberplace@$(npm view cyberplace version) …`
@@ -28,11 +28,20 @@ Always pin an exact version: `npx cyberplace@$(npm view cyberplace version) …`
 
 | Name | Purpose |
 | ---- | ------- |
-| [skill-design](/governances/skill-design/) | Rules for authoring `SKILL.md` files |
-| [skill-repo-structure](/governances/skill-repo-structure/) | Rules for organizing a skill library repository |
-| [agent-tool-output](/governances/agent-tool-output/) | Output rules for scripts, hooks, and CLIs that agents invoke |
-| [cli-resolution](/governances/cli-resolution/) | Strategy for invoking a Node CLI that may be global, repo-local, or absent |
 | [universal-plugin](/governances/universal-plugin/) | Format spec for plugins that work across Claude Code, Cursor, and Codex |
+
+## Moved governances
+
+Each governance now ships from the package that owns its subject ([repobuddy/buddy-agent-harness#122](https://github.com/repobuddy/buddy-agent-harness/issues/122)). `governance show <name>` prints a one-line notice naming the new owner and exits non-zero for these; the forwarder is kept for one release. `governance list` no longer lists them.
+
+| Name | Now owned by | Purpose |
+| ---- | ------------ | ------- |
+| [skill-design](/governances/skill-design/) | `cyber-aced` | Rules for authoring `SKILL.md` files |
+| [skill-repo-structure](/governances/skill-repo-structure/) | `cyber-aced` | Rules for organizing a skill library repository |
+| [agent-tool-output](/governances/agent-tool-output/) | `cyber-aced` | Output rules for scripts, hooks, and CLIs that agents invoke |
+| [cli-resolution](/governances/cli-resolution/) | `cyber-aced` | How a skill runs its own scripts and resolves a released CLI it does not ship |
+
+A skill no longer reads a moved governance through this CLI. `universal-plugin plugin build` copies it into `<skill>/references/governances/<name>.md` from the owning package, and the skill reads that committed copy.
 
 ## Authoring rules
 

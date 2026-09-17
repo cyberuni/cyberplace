@@ -1,48 +1,40 @@
 import { expect, test } from 'vitest'
 
 import { listGovernances, loadGovernance, normalizeGovernanceName } from './load.js'
+import { MOVED_GOVERNANCES, movedGovernance, movedGovernanceNotice } from './moved.js'
 
-test('listGovernances includes agent-tool-output and skill-design', () => {
+test('listGovernances includes universal-plugin', () => {
 	const names = listGovernances().map((d) => d.name)
-	expect(names).toContain('agent-tool-output')
-	expect(names).toContain('skill-design')
-	expect(names).toContain('skill-repo-structure')
+	expect(names).toContain('universal-plugin')
+})
+
+test('listGovernances omits every moved governance', () => {
+	const names = listGovernances().map((d) => d.name)
+	for (const moved of Object.keys(MOVED_GOVERNANCES)) {
+		expect(names, moved).not.toContain(moved)
+	}
 })
 
 test('loadGovernance returns markdown body with title', () => {
-	const governance = loadGovernance('agent-tool-output')
-	expect(governance.title).toBe('Agent Tool Output')
-	expect(governance.body).toMatch(/Stdout is the machine contract/)
-	expect(governance.body).not.toMatch(/cyberplace package patterns/)
-	expect(governance.body).toMatch(/Default-stdout exception/)
+	const governance = loadGovernance('universal-plugin')
+	expect(governance.title).toBe('Universal Plugin Format')
+	expect(governance.body).toMatch(/maintained by the/)
 })
 
 test('loadGovernance normalizes name casing and separators', () => {
-	const governance = loadGovernance('Agent_Tool_Output')
-	expect(governance.name).toBe('agent-tool-output')
-	expect(governance.title).toBe('Agent Tool Output')
-})
-
-test('loadGovernance loads skill-design', () => {
-	const governance = loadGovernance('skill-design')
-	expect(governance.title).toBe('Skill Design')
-	expect(governance.body).toMatch(/Progressive disclosure/)
-})
-
-test('loadGovernance loads skill-repo-structure', () => {
-	const governance = loadGovernance('skill-repo-structure')
-	expect(governance.title).toBe('Skill Repo Structure')
-	expect(governance.body).toMatch(/Repo archetypes/)
+	const governance = loadGovernance('Universal_Plugin')
+	expect(governance.name).toBe('universal-plugin')
+	expect(governance.title).toBe('Universal Plugin Format')
 })
 
 test('normalizeGovernanceName trims whitespace and lowercases', () => {
-	expect(normalizeGovernanceName(' agent-tool-output ')).toBe('agent-tool-output')
-	expect(normalizeGovernanceName('Agent-Tool-Output')).toBe('agent-tool-output')
-	expect(normalizeGovernanceName('agent_tool_output')).toBe('agent-tool-output')
+	expect(normalizeGovernanceName(' universal-plugin ')).toBe('universal-plugin')
+	expect(normalizeGovernanceName('Universal-Plugin')).toBe('universal-plugin')
+	expect(normalizeGovernanceName('universal_plugin')).toBe('universal-plugin')
 })
 
 test('normalizeGovernanceName collapses repeated hyphens', () => {
-	expect(normalizeGovernanceName('agent--tool--output')).toBe('agent-tool-output')
+	expect(normalizeGovernanceName('universal--plugin')).toBe('universal-plugin')
 })
 
 test('loadGovernance rejects unknown name', () => {
@@ -52,6 +44,32 @@ test('loadGovernance rejects unknown name', () => {
 test('loadGovernance rejects invalid name characters', () => {
 	expect(() => loadGovernance('../escape')).toThrow(/Invalid governance name/)
 	expect(() => normalizeGovernanceName('')).toThrow(/Invalid governance name/)
+})
+
+test('loadGovernance no longer ships a moved governance', () => {
+	for (const moved of Object.keys(MOVED_GOVERNANCES)) {
+		expect(() => loadGovernance(moved), moved).toThrow(/Unknown governance/)
+	}
+})
+
+test('movedGovernance names the owner and where to read it', () => {
+	const moved = movedGovernance('skill-design')
+	expect(moved?.owner).toBe('cyber-aced')
+	expect(moved?.source).toMatch(/^https:\/\//)
+})
+
+test('movedGovernance returns undefined for a governance that stays', () => {
+	expect(movedGovernance('universal-plugin')).toBeUndefined()
+})
+
+test('the moved notice is one line naming the governance, the owner and the source', () => {
+	const moved = movedGovernance('cli-resolution')
+	if (!moved) throw new Error('cli-resolution should be a moved governance')
+	const notice = movedGovernanceNotice('cli-resolution', moved)
+	expect(notice).not.toMatch(/\n/)
+	expect(notice).toContain('cli-resolution')
+	expect(notice).toContain('cyber-aced')
+	expect(notice).toContain(moved.source)
 })
 
 test('shipped governances exclude rationale sections', () => {

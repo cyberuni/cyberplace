@@ -36,9 +36,24 @@ Do not embed reference-repo catalogs, issue surveys, or illustrative examples in
 
 | Name | Purpose |
 | ---- | ------- |
-| `skill-design` | SKILL.md authoring — agent-first structure, placement, patterns, progressive disclosure, deterministic extraction, script placement and bundling, governance lookup order |
-| `skill-repo-structure` | Skill library repo layout — archetypes, manifests, CI, discipline sections, contributor conventions |
-| `agent-tool-output` | General output rules for scripts, hooks, and CLIs that agents invoke |
-| `cli-resolution` | Standard 3-tier strategy for invoking a Node CLI that may be global, repo-local, or absent |
+| `universal-plugin` | Pointer to the universal plugin format, maintained by the `universal-plugin` repository |
+
+## Moved
+
+These governances now ship from the package that owns their subject
+(repobuddy/buddy-agent-harness#122). `governance show <name>` prints a one-line notice naming the
+new owner and exits non-zero; it is a forwarder kept for one release and removed once the callers
+migrate. `governance list` no longer lists them.
+
+| Name | Now owned by | Read it at |
+| ---- | ------------ | ---------- |
+| `skill-design` | `cyber-aced` | [`plugins/aced/governances/skill-design.md`](https://github.com/cyberuni/cyber-sdd/blob/main/plugins/aced/governances/skill-design.md) |
+| `skill-repo-structure` | `cyber-aced` | [`plugins/aced/governances/skill-repo-structure.md`](https://github.com/cyberuni/cyber-sdd/blob/main/plugins/aced/governances/skill-repo-structure.md) |
+| `agent-tool-output` | `cyber-aced` | [`plugins/aced/governances/agent-tool-output.md`](https://github.com/cyberuni/cyber-sdd/blob/main/plugins/aced/governances/agent-tool-output.md) |
+| `cli-resolution` | `cyber-aced` | [`plugins/aced/governances/cli-resolution.md`](https://github.com/cyberuni/cyber-sdd/blob/main/plugins/aced/governances/cli-resolution.md) |
+
+A skill no longer reads a moved governance through this CLI. `universal-plugin plugin build` copies
+it into `<skill>/references/governances/<name>.md` from the owning package, and the skill reads that
+committed copy.
 
 For cyberplace CLI output archetypes (`output()` helper, subcommand inventory, markdown-on-stdout for `governance show`), see [ADR-0004](../../../artifacts/adr/0004-cyberplace-cli-output.md).

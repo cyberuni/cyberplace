@@ -76,11 +76,12 @@ Version-pinned agent-tool contracts. Agents read these at runtime via `governanc
 
 ```sh
 npx cyberplace governance list
-npx cyberplace governance show skill-design
-npx cyberplace governance show agent-tool-output
+npx cyberplace governance show universal-plugin
 ```
 
-Available governances: `agent-tool-output`, `cli-resolution`, `skill-design`, `skill-repo-structure`, `universal-plugin`.
+Available governances: `universal-plugin`.
+
+`skill-design`, `skill-repo-structure`, `agent-tool-output`, and `cli-resolution` moved to `cyber-aced` ([cyberuni/cyber-sdd](https://github.com/cyberuni/cyber-sdd/tree/main/plugins/aced/governances)). `governance show` names the new owner and exits non-zero for those; the forwarder is removed once the callers migrate.
 
 ### Output formats
 

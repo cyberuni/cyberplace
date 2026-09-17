@@ -1,87 +1,18 @@
 ---
 title: CLI Resolution
-description: Rules for invoking a Node CLI that may be installed globally, repo-locally, or not at all.
+description: "Moved to cyber-aced: how a skill runs its own scripts and resolves a released CLI."
 ---
 
-**Load:** `npx cyberplace@<version> governance show cli-resolution`
+:::caution[Moved]
+`cli-resolution` is no longer shipped by `cyberplace`. It now ships from **`cyber-aced`**, the package that owns agent-configuration authoring.
+:::
 
-Rules for invoking a Node CLI that may be installed globally, repo-locally, or not at all. Apply when authoring a skill that depends on a released npm binary.
+Read it at [`plugins/aced/governances/cli-resolution.md`](https://github.com/cyberuni/cyber-sdd/blob/main/plugins/aced/governances/cli-resolution.md).
 
-## Resolution order
+`npx cyberplace@<version> governance show cli-resolution` prints a one-line notice naming the new owner and exits non-zero. That forwarder is kept for one release and removed once the pinned callers migrate.
 
-Resolve the CLI once at the start of the skill workflow. Try each tier in order; stop at the first that succeeds.
+## How a skill reads it now
 
-### Tier 1 — PATH
+A skill no longer calls a CLI at run time. `universal-plugin plugin build` copies the governance into `<skill>/references/governances/cli-resolution.md` from the owning package, and the skill reads that committed copy — after checking `.agents/governances/cli-resolution.md` for a project override. The lookup order is stated in [`skill-design`](https://github.com/cyberuni/cyber-sdd/blob/main/plugins/aced/governances/skill-design.md).
 
-```bash
-command -v <bin> >/dev/null 2>&1 && <bin> --version >/dev/null 2>&1
-```
-
-Use the bare binary name for all subsequent calls if this succeeds.
-
-### Tier 2 — Package manager exec
-
-Detect the package manager from the lock file in the repo root:
-
-| Lock file | Command prefix |
-| --------- | -------------- |
-| `pnpm-lock.yaml` | `pnpm exec <bin>` |
-| `yarn.lock` | `yarn exec <bin>` |
-| `bun.lock` or `bun.lockb` | `bunx <bin>` |
-| none of the above | `npm exec <bin> --` |
-
-Note: `npm exec <bin> --` requires the `--` separator before any arguments.
-
-### Tier 3 — npx bootstrap
-
-Use `npx` only when Tier 1 and Tier 2 both fail. Always pin an exact version:
-
-```bash
-npx --yes <pkg>@<exact-version> <subcommand>
-```
-
-Get the exact version: `npm view <pkg> version`
-
-`npx` at this tier installs once and caches. Do not use it as the steady-state invocation path.
-
-## Error handling
-
-If all three tiers fail, surface a clear error:
-
-```
-Error: <bin> not found. Install with:
-  npm install -g <pkg>          # global
-  pnpm add -D <pkg>             # repo-local devDependency
-```
-
-## Skill authoring pattern
-
-Embed a resolution block at the start of any skill workflow that depends on a Node CLI:
-
-```bash
-# Resolve <bin>
-if command -v <bin> >/dev/null 2>&1 && <bin> --version >/dev/null 2>&1; then
-  CMD="<bin>"
-elif [ -f pnpm-lock.yaml ] && pnpm exec <bin> --version >/dev/null 2>&1; then
-  CMD="pnpm exec <bin>"
-elif [ -f yarn.lock ] && yarn exec <bin> --version >/dev/null 2>&1; then
-  CMD="yarn exec <bin>"
-elif { [ -f bun.lock ] || [ -f bun.lockb ]; } && bunx <bin> --version >/dev/null 2>&1; then
-  CMD="bunx <bin>"
-elif npm exec <bin> -- --version >/dev/null 2>&1; then
-  CMD="npm exec <bin> --"
-else
-  echo "Error: <bin> not found. Install with: npm install -g <pkg>" >&2
-  exit 1
-fi
-$CMD <subcommand>
-```
-
-Replace `<bin>` with the CLI binary name and `<pkg>` with the npm package name.
-
-## Rules
-
-- Never hardcode `node_modules/.bin/<bin>` — breaks across workspaces and package managers
-- Never rely on repo-specific package scripts (e.g. `pnpm cyber-asana`) — local conventions, not portable
-- Always pin an exact version when using Tier 3
-- Prefer Tier 1 or Tier 2 as the steady-state path; treat Tier 3 as one-time bootstrap only
+See [repobuddy/buddy-agent-harness#122](https://github.com/repobuddy/buddy-agent-harness/issues/122) for the migration.
