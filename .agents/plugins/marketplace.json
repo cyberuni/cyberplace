@@ -33,7 +33,7 @@
 			"source": {
 				"source": "git-subdir",
 				"url": "https://github.com/cyberuni/cyberfleet.git",
-				"path": "plugins/cyberfleet"
+				"path": "packages/cyberfleet"
 			}
 		},
 		{
@@ -44,7 +44,7 @@
 			"source": {
 				"source": "git-subdir",
 				"url": "https://github.com/cyberuni/cyberlegion.git",
-				"path": "plugins/cyberlegion"
+				"path": "packages/cyberlegion"
 			}
 		},
 		{
