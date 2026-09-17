@@ -36,7 +36,7 @@ Do not embed reference-repo catalogs, issue surveys, or illustrative examples in
 
 | Name | Purpose |
 | ---- | ------- |
-| `skill-design` | SKILL.md authoring — agent-first structure, placement, patterns, progressive disclosure, deterministic extraction |
+| `skill-design` | SKILL.md authoring — agent-first structure, placement, patterns, progressive disclosure, deterministic extraction, script placement and bundling |
 | `skill-repo-structure` | Skill library repo layout — archetypes, manifests, CI, discipline sections, contributor conventions |
 | `agent-tool-output` | General output rules for scripts, hooks, and CLIs that agents invoke |
 | `cli-resolution` | Standard 3-tier strategy for invoking a Node CLI that may be global, repo-local, or absent |
