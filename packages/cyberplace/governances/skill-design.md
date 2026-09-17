@@ -230,6 +230,18 @@ Deprecated: `metadata.activation` in SKILL.md frontmatter. Use top-level `activa
 - Links to other repository files mid-workflow
 - Mid-body links to sibling skill files (use References at end)
 
+## Governance lookup order
+
+A skill that reads a governance at run time stops at the first hit:
+
+1. `.agents/governances/<name>.md` — project override.
+2. Only when an installed copy exists: `upx --local-only buddy-agent-harness@^<major> governance show <name> --overrides-only` when `upx` is on PATH; else `buddy-agent-harness governance show <name> --overrides-only` when `command -v buddy-agent-harness` finds it. Exit 127 from `upx`, or any non-zero exit, means no override. Never through `npx`.
+3. `references/governances/<name>.md` inside the skill — the default copy, committed to git.
+
+Copies live at `<skill>/references/governances/<name>.md`. A skill copies every governance a copied governance references, and lists every copy in its SKILL.md References, so each stays one level deep. A pointer inside a copy (`governance show <other>`) is read as "load `references/governances/<other>.md`".
+
+`buddy-agent-harness governance` and the copy step in `universal-plugin plugin build` are planned (design note: repobuddy/buddy-agent-harness `.agents/plans/governance-retrieval.design.md`). Until they ship, a skill uses step 3 only.
+
 ## References
 
 Related governances (load on demand; read stdout as authoritative):
