@@ -1,6 +1,6 @@
 {
 	"name": "cyberplace",
-	"version": "0.2.4",
+	"version": "0.2.5",
 	"description": "Opinionated skills, hooks, and workflows for AI agents",
 	"keywords": [
 		"agent-skill",
