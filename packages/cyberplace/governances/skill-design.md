@@ -101,20 +101,20 @@ The skill folder is the unit an installer copies (`skills add --skill <name>` ta
 
 - Put every script the skill runs in its own `scripts/`, and invoke it as `node <skill-dir>/scripts/<file>`.
 - Never reference a path outside the skill folder: a sibling skill, a plugin's `bin/`, or the package root. Standalone copies and symlinked installs break such paths without an error.
-- Use Node built-ins only, or bundle dependencies into the script. Do not make a skill's own script depend on `npx`, `tsx`, or a global install. For a released CLI the skill depends on but does not ship, follow **cli-resolution**.
+- Use Node built-ins only, or bundle dependencies into the script. The script itself never depends on `npx`, `tsx`, or a global install; the pinned `npx` fallback below is the skill's, not the script's. For a released CLI the skill depends on but does not ship, follow **cli-resolution**.
 
 ### Share logic by bundling it into each skill
 
 When several skills, or a skill and a package CLI, need the same logic:
 
 - Author it once in the package source, typed and tested there.
-- Have the build emit a self-contained bundle into the `scripts/` of each skill that uses it. Start the bundle with a header naming its source file and saying it is generated, then the usage comment an agent reads when stuck.
-- Commit the bundles. Skill installers read the repository, not the build output.
-- Add a CI check that rebuilds and fails when a bundle differs (`git diff --exit-code -- <bundle paths>`).
-- Exclude the bundles from lint and formatting.
+- Have the build emit a self-contained bundle into the `scripts/` of each skill that uses it. Start the bundle with a header naming its source file and saying it is generated, then the usage comment an agent reads when stuck. Minify the rest.
+- Do not commit the bundles. Gitignore them, build them in `prepack`, and ship them through the npm package's `files`.
+- Add a CI check that packs the package, unpacks it with no `node_modules`, and runs each bundle from the unpacked skill folder.
 - If the build is cached (for example by Turborepo), list each bundle as a build output by exact path. A glob such as `skills/**` restores cached copies over hand-written scripts.
 - Keep the tests with the source, outside the skill folder, so installs do not copy them.
-- A package CLI may expose the same commands for people and CI; the skill still calls its own bundle.
+- Expose the same commands in the package CLI, and give each such skill a pinned fallback: when `scripts/<file>` is missing or cannot run, call `npx -y <package>@^<version> <command>` with the same arguments. A skill installed from git has no built `scripts/`, and this is how it still works.
+- Distribute the plugin from npm where the harness supports an npm plugin source. Git-sourced installs, including organization-distributed marketplaces that exclude npm sources, use the fallback.
 
 When a skill includes `scripts/` or documents CLI commands agents run, load **agent-tool-output** from References for stdout, JSON, non-interactive, and stderr rules.
 
