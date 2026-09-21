@@ -29,18 +29,16 @@
 			"description": "Fleet persona layer for the cyberfleet CLI. Pod (ship's bridge) and Operator (command center) gateway skills — harness-agnostic, MCP-free.",
 			"tags": ["fleet", "persona", "crew"],
 			"source": {
-				"source": "git-subdir",
-				"url": "https://github.com/cyberuni/cyberfleet.git",
-				"path": "packages/cyberfleet"
+				"source": "npm",
+				"package": "cyberfleet"
 			}
 		},
 		{
 			"name": "cyberlegion",
 			"description": "Agent session spawning, messaging, and dispatch — the Legion and its Legate.",
 			"source": {
-				"source": "git-subdir",
-				"url": "https://github.com/cyberuni/cyberlegion.git",
-				"path": "packages/cyberlegion"
+				"source": "npm",
+				"package": "cyberlegion"
 			}
 		},
 		{
