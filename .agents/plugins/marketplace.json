@@ -121,8 +121,9 @@
 			"category": "Developer Tools",
 			"policy": { "installation": "AVAILABLE" },
 			"source": {
-				"source": "url",
-				"url": "https://github.com/repobuddy/buddy-changesets.git"
+				"source": "git-subdir",
+				"url": "https://github.com/repobuddy/buddy-changesets.git",
+				"path": "packages/buddy-changesets"
 			}
 		}
 	]

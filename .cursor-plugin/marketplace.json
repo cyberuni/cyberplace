@@ -81,8 +81,9 @@
 			"description": "Changesets skills for AI agents — set up releases and write changeset files.",
 			"tags": ["changesets", "release", "versioning"],
 			"source": {
-				"source": "github",
-				"repo": "repobuddy/buddy-changesets"
+				"source": "git-subdir",
+				"url": "https://github.com/repobuddy/buddy-changesets.git",
+				"path": "packages/buddy-changesets"
 			}
 		},
 		{
