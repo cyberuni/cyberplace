@@ -31,9 +31,8 @@
 			"category": "Developer Tools",
 			"policy": { "installation": "AVAILABLE" },
 			"source": {
-				"source": "git-subdir",
-				"url": "https://github.com/cyberuni/cyberfleet.git",
-				"path": "packages/cyberfleet"
+				"source": "npm",
+				"package": "cyberfleet"
 			}
 		},
 		{
@@ -42,9 +41,8 @@
 			"category": "Developer Tools",
 			"policy": { "installation": "AVAILABLE" },
 			"source": {
-				"source": "git-subdir",
-				"url": "https://github.com/cyberuni/cyberlegion.git",
-				"path": "packages/cyberlegion"
+				"source": "npm",
+				"package": "cyberlegion"
 			}
 		},
 		{
