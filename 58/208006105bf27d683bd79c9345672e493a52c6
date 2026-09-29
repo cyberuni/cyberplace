@@ -1,0 +1,19 @@
+AGENTS.md
+  s_c65c893c4d0078::t_ca23f324690558 12-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "58208006105bf27d683bd79c9345672e493a52c6",
+  "prompts": {},
+  "sessions": {
+    "s_c65c893c4d0078": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "66869e79-ba4a-4063-a41c-18f8bb8e9de3",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "unional <homawong@gmail.com>"
+    }
+  }
+}
