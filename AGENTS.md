@@ -9,14 +9,13 @@
 
 ## Delegation
 
-The higher your tier, the more you delegate. Push the work down, keep your own context for judgment. Brief every child: the context, the why, what done looks like. It starts blank and inherits nothing.
+If this harness can spawn subagents, delegate the mechanical work and the research whose answer is far smaller than the reading behind it.
 
-| Model    | Best for             | Delegate?        | Effort |
-| -------- | -------------------- | ---------------- | ------ |
-| Haiku    | bulk mechanical      | never            | low    |
-| Sonnet   | scoped research      | when it helps    | medium |
-| Opus 4.8 | multi-step reasoning | on clear benefit | high   |
-| Fable 5  | judgment, taste      | by default       | medium |
+Size the job, not the step. A job made of many routine steps, or of waiting on something outside you, goes to a subagent as one job, even when each step alone is quicker to do than to brief. Do a job yourself only when the whole of it is quicker than the brief.
+
+Split the job by what each part needs. The routine run goes to a cheaper subagent, told what counts as routine and to stop and report anything else instead of guessing. A hard part, such as a diagnosis, goes to whichever model can do it best, which may be a stronger subagent than you. Keep the decisions, such as what matters most, which option to take, or whether a result is good enough: they rest on what the user asked for and approved, which only you know. While a subagent runs, do not poll it or redo its work; handle its report when it arrives.
+
+A subagent inherits your model if you do not pick one, and none of your context either way. Pick the cheapest, unless you cannot say what a right answer looks like or could not cheaply tell a wrong one. Where you can set its effort, pick the lowest, unless you could not write down the steps that reach that answer. Give it the context, the why, and what done looks like. Name the actions the user has authorized and the ones it must not take, since the subagent never saw the user say either.
 
 ## Architecture
 
