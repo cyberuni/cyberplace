@@ -10,7 +10,7 @@ jobs:
       matrix:
         node-version: ['22', '24']
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       # pnpm must be on PATH BEFORE setup-node: v5 reads `packageManager` from
       # package.json and invokes that manager, so the reverse order fails with
       # "Unable to locate executable file: pnpm". v4 did not, hence the old order.
