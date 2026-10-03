@@ -2,4 +2,4 @@
 'cyberplace': patch
 ---
 
-`skill-design` governance: document the governance lookup order a skill follows at run time — project override, then an installed `buddy-agent-harness` copy when present, then the skill's own committed `references/governances/<name>.md`.
+`skill-design` governance: a skill loads every reference, governances included, through the `load-reference` skill in the `buddy-agent-harness` plugin, with one line naming the references, the skill, and the plugin. The skill may ship default copies under `references/`, read only when no tier holds a name or the loader cannot run.

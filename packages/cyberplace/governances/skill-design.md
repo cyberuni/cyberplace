@@ -9,7 +9,7 @@ SKILL.md must be agent-first: dense normative rules the agent executes without o
 - Do not include `## Why`, `## Rationale`, `## Background`, or `## Context` sections.
 - Do not include causal explanation ("because…") or rationale prose in the body.
 - One-line scope ("Apply when…") is allowed at the top.
-- Put optional depth in `## References` at the end — `governance show` commands, external HTTPS URLs, sibling files in the same skill folder only.
+- Put optional depth in `## References` at the end — a `load-reference` line (see **Loading references**), external HTTPS URLs, sibling files in the same skill folder only.
 
 **SKILL.md structure:**
 
@@ -229,18 +229,22 @@ Deprecated: `metadata.activation` in SKILL.md frontmatter. Use top-level `activa
 - `## Why`, `## Rationale`, `## Background`, or `## Context` sections
 - Links to other repository files mid-workflow
 - Mid-body links to sibling skill files (use References at end)
+- Loading a reference any way but the `load-reference` skill
 
-## Governance lookup order
+## Loading references
 
-A skill that reads a governance at run time stops at the first hit:
+A reference is a Markdown document a skill reads on demand by name: a governance, a style guide, a checklist. A skill loads references **only** through the `load-reference` skill in the `buddy-agent-harness` plugin. There is no other lookup.
 
-1. `.agents/governances/<name>.md` — project override.
-2. Only when an installed copy exists: `upx --local-only buddy-agent-harness@^<major> governance show <name> --overrides-only` when `upx` is on PATH; else `buddy-agent-harness governance show <name> --overrides-only` when `command -v buddy-agent-harness` finds it. Exit 127 from `upx`, or any non-zero exit, means no override. Never through `npx`.
-3. `references/governances/<name>.md` inside the skill — the default copy, committed to git.
+- Write one line naming every reference, the skill, and the plugin: `` Load `skill-design` and `agent-tool-output` with the `load-reference` skill in the `buddy-agent-harness` plugin. ``
+- Name the skill and the plugin in words. Never as a slash command: only Claude Code addresses a plugin's skill as `plugin:skill`, and the other harnesses name skills bare.
+- Name several references in one line, not one line each.
+- Put the line in the step that needs the references, or in `## References` when they are optional depth.
+- Never read `.agents/references/`, `.agents/governances/`, `~/.agents/`, or another package's files from a skill, and never run `reference show`, `governance show`, `upx`, or `npx` to fetch one. `load-reference` runs the resolver from a launcher in its own folder, with no package runner and no network.
+- Where the harness supports plugin dependencies (Claude Code), declare `buddy-agent-harness` as one. Elsewhere the line is what tells the user what to install.
 
-Copies live at `<skill>/references/governances/<name>.md`, and the files in that folder declare which governances the skill uses. A skill copies every governance a copied governance references, and lists every copy in its SKILL.md References, so each stays one level deep. A pointer inside a copy (`governance show <other>`) is read as "load `references/governances/<other>.md`".
+**Default copies.** A skill may ship its own copy of a reference at `<skill>/references/<name>.md`; `references/governances/<name>.md` is still read after it. `load-reference` reads the copy only when no tier holds the name or its launcher cannot run, and tells the user when it did. A skill that ships a copy also ships a copy of every reference that copy names, and loads the pair in the same line.
 
-`buddy-agent-harness governance` and the copy step in `universal-plugin plugin build` are planned (tracked in https://github.com/repobuddy/buddy-agent-harness/issues/122). Until they ship, a skill uses step 3 only.
+Outside a skill, a person or an agent runs `buddy-agent-harness reference show <name>...` directly.
 
 ## References
 
