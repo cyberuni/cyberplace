@@ -11,7 +11,7 @@ description: >
 
 ## Gotchas
 
-- **Never use `@latest`:** Resolve the pinned version first: `npm view cyberplace version`, then use `npx cyberplace@0.2.4`.
+- **Never use `@latest`:** Resolve the pinned version first: `npm view cyberplace version`, then use `npx cyberplace@0.2.5`.
 
 ## Lifecycle
 
