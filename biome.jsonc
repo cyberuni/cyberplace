@@ -15,12 +15,7 @@
 	},
 	"overrides": [
 		{
-			"includes": [
-				"packages/cyberplace/src/**/*.ts",
-				"packages/cyberplace/src/**/*.mts",
-				"packages/cyberfleet/src/**/*.ts",
-				"packages/cyberfleet/src/**/*.mts"
-			],
+			"includes": ["packages/cyberplace/src/**/*.ts", "packages/cyberplace/src/**/*.mts"],
 			"linter": {
 				"rules": {
 					"suspicious": {

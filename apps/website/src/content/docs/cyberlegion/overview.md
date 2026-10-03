@@ -3,7 +3,7 @@ title: cyberlegion Overview
 description: Harness-agnostic, MCP-free agent session spawning, messaging, and dispatch over the filesystem — the foundation SDD and cyberfleet build on.
 ---
 
-**cyberlegion** is harness-agnostic, MCP-free agent session spawning, messaging, and dispatch over the filesystem — Claude Code, Cursor, Codex, all on one **Legion**. It's the foundation both [SDD](/sdd/overview/) and [cyberfleet](/cyberfleet/overview/) build on: addressable agent units, mustered and reaped, commanded and communicating, with no server, port, or daemon to keep alive.
+**cyberlegion** is harness-agnostic, MCP-free agent session spawning, messaging, and dispatch over the filesystem — Claude Code, Cursor, Codex, all on one **Legion**. It's the foundation both [SDD](/sdd/overview/) and [cyberfleet](https://cyberuni.github.io/cyberfleet/overview/) build on: addressable agent units, mustered and reaped, commanded and communicating, with no server, port, or daemon to keep alive.
 
 State lives under a shared hub root (`$CYBERLEGION_ROOT`, else the global hub).
 
@@ -54,5 +54,5 @@ npx cyberlegion@0.3.0 <command>
 
 ## Related
 
-- [cyberfleet Overview](/cyberfleet/overview/) — the fleet-persona layer built on cyberlegion
+- [cyberfleet Overview](https://cyberuni.github.io/cyberfleet/overview/) — the fleet-persona layer built on cyberlegion
 - [SDD Overview](/sdd/overview/) — the spec-driven development process that dispatches over cyberlegion

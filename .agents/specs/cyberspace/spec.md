@@ -68,8 +68,8 @@ Where a new concept lives — slot here, do not invent placement (`../sdd/design
 - **a new *cross-vendor plugin* authoring or lifecycle operation** (scaffold/build, publish, upgrade pinned
   versions — anything backed by the `universal-plugin` CLI) → `plugin/`.
 - **a new *inter-session runtime* operation** (create a peer agent session, message between sessions, surface
-  mail — anything backed by the `cyberfleet` CLI) → the separate `../cyberfleet-plugin/` project spec, not here (this
-  capability relocated out of cyberspace; see `../cyberfleet-plugin/spec.md`).
+  mail — anything backed by the `cyberfleet` CLI) → not here; cyberfleet (plugin, package, and spec corpus) now
+  lives in [cyberuni/cyberfleet](https://github.com/cyberuni/cyberfleet), out of this repo entirely.
 - **a rule or model** (the harness-agnostic mapping, a baseline-config convention) → `design/` (descriptive); a
   **decision + its rationale** → `design/decisions/` (ADR); a **unit's design fork** → that unit's
   `<unit>.solution.md`.

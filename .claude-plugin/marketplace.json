@@ -28,15 +28,17 @@
 			"name": "cyberfleet",
 			"description": "Fleet persona layer for the cyberfleet CLI. Pod (ship's bridge) and Operator (command center) gateway skills — harness-agnostic, MCP-free.",
 			"tags": ["fleet", "persona", "crew"],
-			"source": "./plugins/cyberfleet"
+			"source": {
+				"source": "npm",
+				"package": "cyberfleet"
+			}
 		},
 		{
 			"name": "cyberlegion",
 			"description": "Agent session spawning, messaging, and dispatch — the Legion and its Legate.",
 			"source": {
-				"source": "git-subdir",
-				"url": "https://github.com/cyberuni/cyberlegion.git",
-				"path": "plugins/cyberlegion"
+				"source": "npm",
+				"package": "cyberlegion"
 			}
 		},
 		{
@@ -104,8 +106,18 @@
 			"description": "Changesets skills for AI agents — set up releases and write changeset files.",
 			"tags": ["changesets", "release", "versioning"],
 			"source": {
+				"source": "git-subdir",
+				"url": "https://github.com/repobuddy/buddy-changesets.git",
+				"path": "packages/buddy-changesets"
+			}
+		},
+		{
+			"name": "research-workbench",
+			"description": "Durable research workflows and community post authoring for AI coding agents.",
+			"tags": ["research", "skills"],
+			"source": {
 				"source": "github",
-				"repo": "repobuddy/buddy-changesets"
+				"repo": "cyberuni/research-workbench"
 			}
 		}
 	]

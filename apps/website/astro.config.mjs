@@ -214,16 +214,6 @@ export default defineConfig({
           ],
         },
         {
-          label: "cyberfleet",
-          items: [
-            { label: "Overview", slug: "cyberfleet/overview" },
-            { label: "Pod", slug: "cyberfleet/pod" },
-            { label: "Operator", slug: "cyberfleet/operator" },
-            { label: "Crimp", slug: "cyberfleet/crimp" },
-            { label: "Mechanic", slug: "cyberfleet/mechanic" },
-          ],
-        },
-        {
           label: "Disciplines",
           items: [
             {

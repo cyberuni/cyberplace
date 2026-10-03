@@ -44,7 +44,6 @@ Not every dossier has all five. `conclusion.md` is the file other documents cite
 | [hook-event-survey](hook-event-survey/) | `hook` domain, cross-runtime hook registration |
 | [impl-judge-independence](impl-judge-independence/) | ADR-0016, SDD impl gate, `autonomy-rubric` |
 | [open-plugin-spec-comparison](open-plugin-spec-comparison/) | ADR-0007, `universal-plugin` governance |
-| [operator-test-migration-coverage](operator-test-migration-coverage/) | Decision to skip a follow-up CR for `sdd-operator.test.mts` gaps |
 | [partial-skill-vocabulary](partial-skill-vocabulary/) | ADR-0001, ADR-0013, ADR-0014, ADR-0006 (evidence only — does not reopen them) |
 | [plugin-consumption-leveling](plugin-consumption-leveling/) | Plugin consumption tiers |
 | [plugin-schema](plugin-schema/) | ADR-0007, `universal-plugin` governance |
