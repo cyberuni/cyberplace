@@ -17,6 +17,9 @@
 		"typecheck": {
 			"dependsOn": ["^build"]
 		},
+		"website#typecheck": {
+			"dependsOn": ["^build", "build"]
+		},
 		"lint": {},
 		"test": {
 			"dependsOn": ["^build", "build"]
