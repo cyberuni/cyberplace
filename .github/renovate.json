@@ -6,6 +6,11 @@
 	"rebaseWhen": "behind-base-branch",
 	"packageRules": [
 		{
+			"description": "@astrojs/check drives the TypeScript JS API (ts.sys), which TypeScript 7 does not provide yet; lift when @astrojs/check supports TS 7.",
+			"matchPackageNames": ["typescript"],
+			"allowedVersions": "<7"
+		},
+		{
 			"description": "Auto-merge non-major updates. Majors stay manual.",
 			"matchUpdateTypes": ["minor", "patch", "pin", "digest"],
 			"automerge": true
