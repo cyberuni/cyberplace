@@ -114,6 +114,15 @@
 				"source": "github",
 				"repo": "cyberuni/research-workbench"
 			}
+		},
+		{
+			"name": "cyber-agent-harness",
+			"description": "A toolkit for working with AI agent harnesses: detect which one is running, query its managed-policy locations, plugin storage, enabled plugins, and skill naming, and resolve layered reference documents.",
+			"tags": ["agent-harness", "claude-code", "cursor", "codex", "copilot-cli"],
+			"source": {
+				"source": "npm",
+				"package": "@cyberuni/agent-harness"
+			}
 		}
 	]
 }
