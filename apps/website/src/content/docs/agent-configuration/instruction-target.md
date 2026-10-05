@@ -39,9 +39,9 @@ Description matching reaches what a path cannot. An agent configuration file —
 
 This is what reaches inside a mixed-target file. What the agent matches is its own situation rather than the file's path, so a TypeScript convention loads while it writes a TypeScript block inside an MDX page whose prose answers to something else entirely.
 
-File type matching and description matching both gate loading, and neither settles what an instruction covers once it is loaded. Prose matching does: the body names the target, so one loaded file carries a different value per target. The `article-writer-voice` skill states six rules that hold for all prose, then splits — **Personal** for blog posts and newsletter issues, **Docs** for project documentation and READMEs. The file loads once; the agent matches its situation against the branch and takes that value.
+File type matching and description matching both gate loading, and neither settles what an instruction covers once it is loaded. Prose matching does: the body names the target, so one loaded file carries a different value per target. The `technical-writer` skill shows the move: after its rules for how prose reads, one line — "These rules cover prose you write. Leave code samples, command output, and quoted material unchanged." — divides a single page into the prose those rules govern and the embedded content they must not touch. The file loads once; the agent matches each block it writes against that line and applies the rules or withholds them.
 
-Reach for prose matching when the variants are too minor to separate. The two registers above share all six rules and diverge only in delivery, so a file per target would duplicate more than it distinguishes. A mixed-target file does not by itself call for prose matching: where a target's rules can stand as their own unit, split them out and let description matching load each on its own situation. Prose matching is for the case where splitting would copy more than it separates.
+Reach for prose matching when the variants are too minor to separate. The code samples above need no rules of their own, only exclusion from the prose rules, so a separate file for them would hold nothing but that exclusion. A mixed-target file does not by itself call for prose matching: where a target's rules can stand as their own unit, split them out and let description matching load each on its own situation. Prose matching is for the case where splitting would copy more than it separates.
 
 Prose matching costs a **scope statement** — a line naming the target that its neighboring rules govern. Where a target needs only a scope statement rather than a substantial body of instruction, writing the target into the instruction body is the whole of specifying it, and you write that line yourself: no harness setting enforces that boundary. Once the boundary is explicit, an instruction can carry rules that hold for one kind of output and reach nothing else — a convention for your Python modules that never touches how the agent talks to you.
 
@@ -53,8 +53,8 @@ There are three kinds of targets, and the forms within each kind are open-ended:
 
 | Target       | Where the output goes                 | Forms it covers                                     | Example                                                                              |
 | ------------ | ------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| **Artifact** | Into a file that outlives the session | every kind of content the agent can write           | `article-writer-voice` shapes a draft's voice without changing how the agent replies |
-| **User**     | Into this session's conversation      | a live reply, and a question carrying its reasoning | `i-have-adhd` shapes how the agent talks without touching anything it produces       |
+| **Artifact** | Into a file that outlives the session | every kind of content the agent can write           | `technical-writer` shapes how your docs read without changing how the agent replies  |
+| **User**     | Into this session's conversation      | a live reply, and a question carrying its reasoning | `caveman` shapes how the agent talks without touching anything it produces           |
 | **Agent**    | Into another agent's context          | a spawn-time brief, and mail to a peer session      | cyberlegion mail sent to a peer session                                              |
 
 ## Artifact: the only target with a path
@@ -69,7 +69,7 @@ The user receives whatever the agent neither writes to a file nor addresses to a
 
 No file path corresponds to the User target. A reply is not a file, so file type matching has nothing to match on, and description matching or prose matching carries the target instead.
 
-Every purpose applies here, not only Tone — the [purpose](/agent-configuration/instruction-purpose/) that governs how a thing is said rather than what it conveys. Tone comes to mind first — the caveman register above and `i-have-adhd` in the table are both Tone instructions — because the user already holds the session's context, so it looks as though nothing is left to convey and only the manner of conveying it is in play. Shared context is not shared reasoning: "when you need user input, state the reasoning that led to the question" targets the user and is pure Procedure, an instruction about what to do rather than how to say it, sparing the user from reconstructing the question's origin out of the session history.
+Every purpose applies here, not only Tone — the [purpose](/agent-configuration/instruction-purpose/) that governs how a thing is said rather than what it conveys. Tone comes to mind first — `caveman`, both in the opening example and in the table, is a Tone instruction — because the user already holds the session's context, so it looks as though nothing is left to convey and only the manner of conveying it is in play. Shared context is not shared reasoning: "when you need user input, state the reasoning that led to the question" targets the user and is pure Procedure, an instruction about what to do rather than how to say it, sparing the user from reconstructing the question's origin out of the session history.
 
 The user can also respond, which no other target can. An instruction here may leave a detail to a later turn. A brief must instead anticipate what would have been asked, because the subagent has no way to ask it.
 
@@ -97,7 +97,7 @@ When you install it, the rule from the opening answers in advance whether two un
 | different targets    | never meet — enable both |
 | the same target      | one has to win           |
 
-Two contradicting units whose targets differ never meet, so both may be in force at once. `article-writer-voice` and `i-have-adhd` are exactly that pair: one governs Artifact, the other User. Enable both and neither has to give way, because they never touch the same output — your documentation comes out in careful, structured prose while your replies stay short and front-loaded.
+Two contradicting units whose targets differ never meet, so both may be in force at once. `technical-writer` and `caveman` are exactly that pair: one governs Artifact, the other User. Enable both and neither has to give way, because they never touch the same output — your documentation comes out in careful, plain prose while your replies stay terse.
 
 Two contradicting units governing the same target are a genuine conflict rather than a coexistence. One of them has to win, because there is no second target to separate them onto.
 

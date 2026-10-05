@@ -45,7 +45,7 @@ A gateway's operation menu ("create, backfill, validate, implement, or manage?")
 
 A section is **Tone** or **Structure** if you could replace it with a different one and change only how the agent sounds or how its response is laid out — never what it does or concludes.
 
-`i-have-adhd` and `caveman` pass this test for both at once: swap one for the other and every decision the agent makes is identical, but the wording changes (Tone) and often the layout does too — numbered steps, capped list length, no preamble (Structure). They're two different questions that happen to share one test, not one purpose:
+`caveman` passes this test for both at once: switch it on and every decision the agent makes is identical, but the wording changes (Tone) and so does the layout — fragments instead of full sentences, no preamble (Structure). They're two different questions that happen to share one test, not one purpose:
 
 - **Tone** answers *how does it sound* — register, word choice, degree of formality.
 - **Structure** answers *how is the response shaped* — length limits, ordering, prose vs. list, headers.
