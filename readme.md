@@ -34,7 +34,6 @@ The repo doubles as a plugin marketplace (`.claude-plugin/marketplace.json`). No
 
 | Plugin              | Description                                                              |
 | ------------------- | ------------------------------------------------------------------------ |
-| `cyberspace`        | Research and design toolkit for universal plugins                        |
 | `commit-discipline` | Commit-discipline hooks and workflow                                     |
 
 ### Plugins hosted elsewhere

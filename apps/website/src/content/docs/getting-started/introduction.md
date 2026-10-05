@@ -14,7 +14,7 @@ A skill is a `SKILL.md` file that an AI agent loads on demand. It encodes a work
 | Layer | Purpose |
 | ----- | ------- |
 | **CLI** | The `cyberplace` binary — install and manage skills (`add` / `find` / `list` / `update`), register hooks, and show governances |
-| **Plugins** | Bundles of skills, hooks, and governances shipped under [`plugins/`](https://github.com/cyberuni/cyberplace/tree/main/plugins) and listed in the [Marketplace](/marketplace/) — `sdd`, `aced`, `quill`, `cyberspace`, `cyberfleet`, `cyberlegion`, `commit-discipline`, and more |
+| **Plugins** | Bundles of skills, hooks, and governances shipped under [`plugins/`](https://github.com/cyberuni/cyberplace/tree/main/plugins) and listed in the [Marketplace](/marketplace/) — `sdd`, `aced`, `quill`, `cyberfleet`, `cyberlegion`, `commit-discipline`, and more |
 | **Hooks** | SessionStart instruction hooks (e.g. commit discipline) — `hook register` / `hook run` |
 | **Governances** | Version-pinned agent-tool contracts (`governance list` / `governance show`) |
 

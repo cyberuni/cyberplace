@@ -196,9 +196,6 @@ importers:
       typescript:
         specifier: ^6.0.0
         version: 6.0.3
-      universal-plugin:
-        specifier: 0.11.2
-        version: 0.11.2
 
   apps/website:
     dependencies:
@@ -258,8 +255,6 @@ importers:
       vitest:
         specifier: ^5.0.0
         version: 5.0.3(@types/node@24.12.4)(vite@8.0.14(@types/node@24.12.4)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0))
-
-  plugins/cyberspace: {}
 
 packages:
 
@@ -694,10 +689,6 @@ packages:
   '@ctrl/tinycolor@4.2.0':
     resolution: {integrity: sha512-kzyuwOAQnXJNLS9PSyrk0CWk35nWJW/zl/6KvnTBMFK65gm7U1/Z5BqjxeapjZCIhQcM/DsrEmcbRwDyXyXK4A==}
     engines: {node: '>=14'}
-
-  '@cyberuni/agent-harness@0.3.0':
-    resolution: {integrity: sha512-o1q19ZWll8IMpIdUwOZy0ETxryOQvCI3R56lAPOxrBKx/iabxrmZkhRdooDAlnYcny243GR/mkfrqm5e4DrpRg==}
-    engines: {node: '>=22'}
 
   '@emmetio/abbreviation@2.3.3':
     resolution: {integrity: sha512-mgv58UrU3rh4YgbE/TzgLQwJ3pFsHHhCLqY20aJq+9comytTXUDNGG/SMtSeMJdkpxgXSXunBGLD8Boka3JyVA==}
@@ -1430,11 +1421,6 @@ packages:
     peerDependencies:
       '@biomejs/biome': '>= 2'
 
-  '@repobuddy/upx@0.2.0':
-    resolution: {integrity: sha512-uoiPhl9RkZGH9DqIZbsFDdcljmmZEemLNwSB0ZJFcqYs/rq86kFZEb//YFw9NNmHt+jlHtSCwIoAGAaIe4q0Vw==}
-    engines: {node: '>=22'}
-    hasBin: true
-
   '@rolldown/binding-android-arm-eabi@1.2.12':
     resolution: {integrity: sha512-dB/a1214qKfHMXCpgqR4OZT+jS4kTyEXbQGJPqzobt5EwH5rX080pxE37alt3RzvR1bf1Yz/yGqRfrYAxuPw0A==}
     engines: {node: ^20.19.0 || >=22.12.0}
@@ -1761,9 +1747,6 @@ packages:
     resolution: {integrity: sha512-eHpMeX4JXfVNJDEcsouTeCBubJBTcTLigeaw/NTUW6PB5ATKKXdyonnXgTBX2VuRbjz1hjfz6C5XAhr52ImQXA==}
     peerDependencies:
       vite: ^5.2.0 || ^6 || ^7 || ^8
-
-  '@toon-format/toon@4.1.1':
-    resolution: {integrity: sha512-SGCkS7IjVpwRmGPgnY8ENKpAf0EdAnZDOQkvFW0d2cgOpdn9FEFl7sTgryESyypXrWr0YajHGpwsAUX4zw9ZvA==}
 
   '@turbo/darwin-64@2.9.14':
     resolution: {integrity: sha512-t7QiPflaEyBE4oayeZtSmu4mEfjgIrcNlNNl1z1dmIVPqEdtA7+CfTf8d7KXsOGPh6aNgWjKxyvQg9uGfDQF+A==}
@@ -3704,11 +3687,6 @@ packages:
   unist-util-visit@5.1.0:
     resolution: {integrity: sha512-m+vIdyeCOpdr/QeQCu2EzxX/ohgS8KbnPDgFni4dQsfSCtpz8UqDyY5GjRru8PDKuYn7Fq19j1CQ+nJSsGKOzg==}
 
-  universal-plugin@0.11.2:
-    resolution: {integrity: sha512-OPoC9alNe7U+Vc/rJNNNxsIdMr+hB9OUjz4TIphTjTWdeHlMdNGT9kVDmTw4rQBUEod8Y62nLl60Wbj4jinJiA==}
-    engines: {node: '>=22'}
-    hasBin: true
-
   unstorage@1.17.5:
     resolution: {integrity: sha512-0i3iqvRfx29hkNntHyQvJTpf5W9dQ9ZadSoRU8+xVlhVtT7jAX57fazYO9EHvcRCfBCyi5YRya7XCDOsbTgkPg==}
     peerDependencies:
@@ -4567,8 +4545,6 @@ snapshots:
 
   '@ctrl/tinycolor@4.2.0': {}
 
-  '@cyberuni/agent-harness@0.3.0': {}
-
   '@emmetio/abbreviation@2.3.3':
     dependencies:
       '@emmetio/scanner': 1.0.4
@@ -5098,10 +5074,6 @@ snapshots:
     dependencies:
       '@biomejs/biome': 2.4.15
 
-  '@repobuddy/upx@0.2.0':
-    dependencies:
-      semver: 7.8.1
-
   '@rolldown/binding-android-arm-eabi@1.2.12':
     optional: true
 
@@ -5311,8 +5283,6 @@ snapshots:
       '@tailwindcss/oxide': 4.3.2
       tailwindcss: 4.3.2
       vite: 8.0.14(@types/node@24.12.4)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0)
-
-  '@toon-format/toon@4.1.1': {}
 
   '@turbo/darwin-64@2.9.14':
     optional: true
@@ -7482,14 +7452,6 @@ snapshots:
       '@types/unist': 3.0.3
       unist-util-is: 6.0.1
       unist-util-visit-parents: 6.0.2
-
-  universal-plugin@0.11.2:
-    dependencies:
-      '@cyberuni/agent-harness': 0.3.0
-      '@repobuddy/upx': 0.2.0
-      '@toon-format/toon': 4.1.1
-      commander: 14.0.3
-      semver: 7.8.1
 
   unstorage@1.17.5:
     dependencies:

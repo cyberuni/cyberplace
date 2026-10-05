@@ -46,13 +46,6 @@
 			}
 		},
 		{
-			"name": "cyberspace",
-			"description": "Research and design toolkit for building universal AI coding agent plugins that work across Claude Code, Cursor, Codex, and GitHub Copilot CLI.",
-			"category": "Developer Tools",
-			"policy": { "installation": "AVAILABLE" },
-			"source": "./plugins/cyberspace"
-		},
-		{
 			"name": "quill",
 			"description": "Documentation SDD plugin. Verifies guides, tutorials, articles, and reference docs against specs — existence, required headings, completeness, and reader-path continuity.",
 			"category": "Developer Tools",
