@@ -239,7 +239,7 @@ A reference is a Markdown document a skill reads on demand by name: a governance
 - Name the skill and the plugin in words. Never as a slash command: only Claude Code addresses a plugin's skill as `plugin:skill`, and the other harnesses name skills bare.
 - Name several references in one line, not one line each.
 - Put the line in the step that needs the references, or in `## References` when they are optional depth.
-- Never read `.agents/references/`, `.agents/governances/`, `~/.agents/`, or another package's files from a skill, and never run `reference show`, `governance show`, `upx`, or `npx` to fetch one. the `reference` skill runs the resolver from a launcher in its own folder, with no package runner and no network.
+- Never read `.agents/references/`, `.agents/governances/`, `~/.agents/`, or another package's files from a skill, and never run `reference show`, `governance show`, `upx`, or `npx` to fetch one. The `reference` skill runs the resolver from a launcher in its own folder, with no package runner and no network.
 - Where the harness supports plugin dependencies (Claude Code), declare `cyber-agent-harness` as one. Elsewhere the line is what tells the user what to install.
 
 **Default copies.** A skill may ship its own copy of a reference at `<skill>/references/<name>.md`; `references/governances/<name>.md` is still read after it. The `reference` skill reads the copy only when no tier holds the name or its launcher cannot run, and tells the user when it did. A skill that ships a copy also ships a copy of every reference that copy names, and loads the pair in the same line.
