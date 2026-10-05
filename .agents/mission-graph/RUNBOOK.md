@@ -27,9 +27,6 @@ change, so there is nothing to `git commit` after an append.
 > If it **refuses**, the list was appended to from two places — reconcile by hand (see the spec node's
 > *Getting out of a refusal*); never force it.
 
-> If you drive via the marketplace-installed SDD skills rather than the loop below, first run the
-> `resync-local-plugins` skill so they reflect merged HEAD. Not needed to run the engine directly.
-
 ## The loop — once per mission
 
 **0. Pick up anything other clones published:**
