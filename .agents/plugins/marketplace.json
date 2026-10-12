@@ -126,6 +126,16 @@
 				"source": "npm",
 				"package": "@cyberuni/agent-harness"
 			}
+		},
+		{
+			"name": "cyber-mux",
+			"description": "Cross-multiplexer pane control: open, send, read, focus, and close panes over tmux, herdr, wezterm, and more.",
+			"category": "Developer Tools",
+			"policy": { "installation": "AVAILABLE" },
+			"source": {
+				"source": "npm",
+				"package": "cyber-mux"
+			}
 		}
 	]
 }
