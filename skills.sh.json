@@ -3,12 +3,6 @@
 	"notGrouped": "bottom",
 	"groupings": [
 		{
-			"title": "Skill Discovery",
-			"description": "Find and evaluate skills before installing.",
-			"installScope": "global",
-			"skills": ["find-awesome-skill"]
-		},
-		{
 			"title": "Skill Authoring",
 			"description": "Generalize and patch agent skills.",
 			"installScope": "global",
@@ -18,21 +12,13 @@
 			"title": "Agent Initialization",
 			"description": "One-time repository setup for AI agent workflows. init and init-commit-discipline: global; commit: project.",
 			"skills": ["init", "init-commit-discipline", "commit"]
-		},
-		{
-			"title": "Awesome List Maintenance",
-			"description": "Manage the curated awesome-list sources and entries.",
-			"skills": ["configure-awesome-sources", "update-awesome-list"]
 		}
 	],
 	"scopes": {
-		"find-awesome-skill": "global",
 		"skillify": "global",
 		"patch-skill": "global",
 		"init": "global",
 		"init-commit-discipline": "global",
-		"commit": "project",
-		"configure-awesome-sources": "global",
-		"update-awesome-list": "project"
+		"commit": "project"
 	}
 }
