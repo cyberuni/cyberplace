@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import { Command } from 'commander'
 
-import { awesomeCommand } from './awesome/cli.js'
 import { commitCommand } from './commit/cli.js'
 import { governanceCommand } from './governance/cli.js'
 import { hookCommand } from './hook/cli.js'
@@ -20,7 +19,6 @@ const program = new Command()
 
 program.name('cyberplace').description('Skills, hooks, and workflows for AI agents').version('0.0.0')
 
-program.addCommand(awesomeCommand())
 program.addCommand(commitCommand())
 program.addCommand(governanceCommand())
 program.addCommand(hookCommand())

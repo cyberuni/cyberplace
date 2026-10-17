@@ -6,7 +6,7 @@ Feature: tavern — browse and recruit crews
   website storefront (a Starlight section rendering the same roster as cards). cyberfleet's Crimp
   recruits crews through this CLI. The Tavern lists and points to recruit only; deploying, tuning,
   and recruiting-through-the-persona are cyberfleet concerns (Operator / Mechanic / Crimp), out of scope
-  here. General skill discovery lives in awesome-list. Output follows the shared AXI contract
+  here. Output follows the shared AXI contract
   (../../axi/README.md): TOON by default, a pre-computed aggregate, a definitive empty state,
   next-step on stderr, and fail-loud errors.
 

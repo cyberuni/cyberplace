@@ -25,12 +25,12 @@ This repo is a skill library and CLI tool for AI agents (Claude Code, Cursor, Co
 
 - `packages/cyberplace/skills/` — public skills shipped with the package; users install via `npx skills add cyberuni/cyberplace`
 - `.agents/skills/` — repo-internal skills for contributor workflows (changesets, security PRs, repo renames); all must have `metadata: internal: true`
-- `packages/cyberplace/src/` — TypeScript source; domain folders: `audit/`, `awesome/`, `commit/`, `governance/`, `hook/`, `skill/`
+- `packages/cyberplace/src/` — TypeScript source; domain folders: `audit/`, `commit/`, `governance/`, `hook/`, `skill/`
 - `packages/cyberplace/governances/` — version-pinned agent-tool contracts shipped with the npm package; load via `cyberplace governance show <name>`
 - `artifacts/adr/` — architecture decision records
 - `.research/<topic>/` — background research dossiers (`topic` / `evidence` / `conclusion` / `changes`) linked from ADRs and governances (not loaded via CLI); `conclusion.md` is the file other documents cite
 - `packages/cyberplace/bin/cyberplace.mjs` — slim tracked shim; delegates to `dist/cli.mjs`
-- `packages/cyberplace/dist/cli.mjs` — single bundled CLI (gitignored, built by tsdown); commands: `audit`, `awesome`, `commit`, `governance`, `hook`, `skill`
+- `packages/cyberplace/dist/cli.mjs` — single bundled CLI (gitignored, built by tsdown); commands: `audit`, `commit`, `governance`, `hook`, `skill`
 
 **Skill lifecycle:** Skills are authored in `packages/cyberplace/skills/<name>/SKILL.md`, validated by `improve-skill`, and surfaced to agents via the `skills` CLI or `npx skills add`. Runtime behavior (commit discipline) is handled by instruction hooks registered in `.claude/settings.json` and `.cursor/hooks.json`.
 
