@@ -1,5 +1,4 @@
 {
-	"$schema": "https://raw.githubusercontent.com/cyberuni/marketplace/main/schema/cursor/marketplace.json",
 	"name": "cyberplace",
 	"owner": {
 		"name": "unional"
