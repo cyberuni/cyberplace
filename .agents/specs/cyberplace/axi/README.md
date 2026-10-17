@@ -12,8 +12,7 @@ principles treat the agent's token budget as a first-class constraint. `cyberpla
 almost entirely by AI agents (find/add in an agent's install loop, tavern to point at a crew), yet
 its output today is human-prose-first with `--format json` as the escape — the inverse of what an
 agent wants. This node states the cross-cutting conventions **once**; each behavioral node
-([`marketplace/awesome-list/`](../marketplace/awesome-list/README.md),
-[`marketplace/registry/`](../marketplace/registry/README.md),
+([`marketplace/registry/`](../marketplace/registry/README.md),
 [`marketplace/tavern/`](../marketplace/tavern/README.md)) references this contract and carries the
 concrete scenarios that exercise it.
 
@@ -61,7 +60,7 @@ concrete scenarios that exercise it.
    flag) rather than being silently ignored.
 7. *(#7 ambient context — deferred, see Scope of adoption above.)*
 8. **Content-first (#8)** — a **command group** invoked with no subcommand shows live data, not help:
-   `cyberplace awesome` shows the effective sources; `cyberplace config` runs `config provider list`;
+   `cyberplace config` runs `config provider list`;
    `cyberplace tavern` shows the crew roster. (Bare `cyberplace` is a pure dispatcher with no single
    live view — it shows help.)
 9. **Next-step suggestions (#9)** — every command ends with a next-step line naming the natural

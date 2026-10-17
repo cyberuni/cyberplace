@@ -16,7 +16,7 @@ storefront, Crimp is the buyer.
 
 A crew is a **plugin listed in the cyberplace marketplace manifest** (`.claude-plugin/marketplace.json`)
 marked by a **reserved `crew` tag** in the entry's `tags[]`. The marketplace manifest is the roster
-source (not the awesome catalog — that is general skill discovery, `awesome-list`); the `crew` tag is
+source; the `crew` tag is
 the convention the Tavern keys on, so a marketplace plugin is a crew iff it is tagged. The tag is
 author-asserted; the crew's defining trait is that it ships a persona gateway skill, but the Tavern
 does not deep-validate the persona this CR (a possible later hardening).

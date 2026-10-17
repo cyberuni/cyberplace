@@ -42,7 +42,7 @@ lifecycle. One published package (`packages/cyberplace`, `bin: cyberplace`) ship
 ## Backfill scope note (flagged)
 
 This project had no project spec. It is backfilled **narrow**: only the **`marketplace`**
-capability — the curated awesome-list discovery plus the **Tavern** crew storefront — is scaffolded,
+capability — skill acquisition (registry) plus the **Tavern** crew storefront — is scaffolded,
 because that is where the requested change landed; the `marketplace/tavern` node has since carried a
 frozen `.feature` through two mission CRs to `status: implemented`. The remaining source domains
 (`packages/cyberplace/src/`: `audit/`, `commit/`, `governance/`, `hook/`, `registry/`, `skill/`, plus
@@ -51,8 +51,7 @@ the placement map as **planned** capabilities to backfill by demand.
 
 ## Project-path note
 
-`project-path: packages/cyberplace` — the published CLI package and its awesome catalog
-(`awesome-skills.json`, the source for general discovery, `awesome-list`). The **Tavern** capability
+`project-path: packages/cyberplace` — the published CLI package. The **Tavern** capability
 additionally surfaces on the docs site (`apps/website/src/content/docs/tavern/`); that website page is
 a rendered projection of the **marketplace manifest** (`.claude-plugin/marketplace.json`, the crew
 roster source), read at build time — not a second governed source dir. Flag for the user if the
@@ -62,7 +61,7 @@ website should instead be its own backfilled project.
 
 | Folder | Type | What |
 |---|---|---|
-| [`marketplace/`](./marketplace/README.md) | descriptive | skill/plugin discovery, the curated awesome-list, and the Tavern crew storefront |
+| [`marketplace/`](./marketplace/README.md) | descriptive | skill/plugin acquisition and the Tavern crew storefront |
 
 **Planned (not yet backfilled)** — named here so a later mission slots them without re-deriving:
 `audit/` (skill S/Q/E audit), `commit-discipline/` (Conventional-Commits staging + messages),
@@ -98,7 +97,7 @@ capability is a `concept:` tag recovered by the by-concept index, not a third fo
 | Concept | Facets |
 |---|---|
 | `acquire` | `marketplace/registry/` (behavior) |
-| `axi` | `axi/` (reference) · `marketplace/awesome-list/` (behavior) · `marketplace/registry/` (behavior) · `marketplace/tavern/` (behavior) |
-| `discovery` | `marketplace/awesome-list/` (behavior) · `marketplace/tavern/` (behavior) |
+| `axi` | `axi/` (reference) · `marketplace/registry/` (behavior) · `marketplace/tavern/` (behavior) |
+| `discovery` | `marketplace/tavern/` (behavior) |
 
 <!-- END generated: by-concept -->

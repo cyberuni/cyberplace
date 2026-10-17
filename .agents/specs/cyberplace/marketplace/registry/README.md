@@ -18,8 +18,7 @@ lock file into the cyberplace lock. Source: `packages/cyberplace/src/registry/`.
 marketplaces for candidates; configuring the source providers a spec resolves against; migrating a
 legacy lock file.
 
-**Non-goals (boundaries):** curated catalog search of the awesome list is `../awesome-list/`; the
-crew storefront is `../tavern/`; #7 ambient-context (an auto session-hook and registry-as-
+**Non-goals (boundaries):** the crew storefront is `../tavern/`; #7 ambient-context (an auto session-hook and registry-as-
 installable-skill) is **deferred**, not this node; this node freezes the AXI output contract for
 registry — actually making the shipped CLI emit it (and stop prompting) is impl-deferred (see
 below).
