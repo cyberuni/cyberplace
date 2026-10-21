@@ -132,6 +132,15 @@
 			},
 			"description": "Cross-multiplexer pane control: open, send, read, focus, and close panes over tmux, herdr, wezterm, and more.",
 			"tags": ["tmux", "herdr", "multiplexer", "terminal", "pane", "agent"]
+		},
+		{
+			"name": "cyber-agentkit",
+			"description": "An agent-harness-agnostic toolkit: detect the running harness, check plugin dependencies, resolve layered reference documents, and lease git worktrees.",
+			"tags": ["agent-harness", "claude-code", "cursor", "codex", "copilot-cli"],
+			"source": {
+				"source": "npm",
+				"package": "cyber-agentkit"
+			}
 		}
 	]
 }
