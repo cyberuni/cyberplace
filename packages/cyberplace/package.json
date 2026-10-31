@@ -27,7 +27,8 @@
 		"bin",
 		"dist",
 		"governances",
-		"src/tavern"
+		"src/tavern",
+		"CHANGELOG.md"
 	],
 	"scripts": {
 		"build": "tsdown",
