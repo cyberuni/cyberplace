@@ -118,16 +118,6 @@
 			}
 		},
 		{
-			"name": "cyber-agent-harness",
-			"description": "A toolkit for working with AI agent harnesses: detect which one is running, query its managed-policy locations, plugin storage, enabled plugins, and skill naming, and resolve layered reference documents.",
-			"category": "Developer Tools",
-			"policy": { "installation": "AVAILABLE" },
-			"source": {
-				"source": "npm",
-				"package": "@cyberuni/agent-harness"
-			}
-		},
-		{
 			"name": "cyber-mux",
 			"description": "Cross-multiplexer pane control: open, send, read, focus, and close panes over tmux, herdr, wezterm, and more.",
 			"category": "Developer Tools",
