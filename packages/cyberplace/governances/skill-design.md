@@ -233,18 +233,18 @@ Deprecated: `metadata.activation` in SKILL.md frontmatter. Use top-level `activa
 
 ## Loading references
 
-A reference is a Markdown document a skill reads on demand by name: a governance, a style guide, a checklist. A skill loads references **only** through the `reference` skill in the `cyber-agent-harness` plugin. There is no other lookup.
+A reference is a Markdown document a skill reads on demand by name: a governance, a style guide, a checklist. A skill loads references **only** through the `reference` skill in the `cyber-agentkit` plugin. There is no other lookup.
 
-- Write one line naming every reference, the skill, and the plugin: `` Load `skill-design` and `agent-tool-output` with the `reference` skill in the `cyber-agent-harness` plugin. ``
+- Write one line naming every reference, the skill, and the plugin: `` Load `skill-design` and `agent-tool-output` with the `reference` skill in the `cyber-agentkit` plugin. ``
 - Name the skill and the plugin in words. Never as a slash command: only Claude Code addresses a plugin's skill as `plugin:skill`, and the other harnesses name skills bare.
 - Name several references in one line, not one line each.
 - Put the line in the step that needs the references, or in `## References` when they are optional depth.
-- Never read `.agents/references/`, `.agents/governances/`, `~/.agents/`, or another package's files from a skill, and never run `reference show`, `governance show`, `upx`, or `npx` to fetch one. The `reference` skill runs the resolver from a launcher in its own folder, with no package runner and no network.
-- Where the harness supports plugin dependencies (Claude Code), declare `cyber-agent-harness` as one. Elsewhere the line is what tells the user what to install.
+- Never read `.agents/references/`, `.agents/governances/`, `~/.agents/`, or another package's files from a skill, and never run `reference load`, `governance show`, `upx`, or `npx` to fetch one. The `reference` skill runs the resolver from a launcher in its own folder, with no package runner and no network.
+- Where the harness supports plugin dependencies (Claude Code), declare `cyber-agentkit` as one. Elsewhere the line is what tells the user what to install.
 
 **Default copies.** A skill may ship its own copy of a reference at `<skill>/references/<name>.md`; `references/governances/<name>.md` is still read after it. The `reference` skill reads the copy only when no tier holds the name or its launcher cannot run, and tells the user when it did. A skill that ships a copy also ships a copy of every reference that copy names, and loads the pair in the same line.
 
-Outside a skill, a person or an agent runs `agent-harness reference show <name>...` (from the `@cyberuni/agent-harness` package) directly.
+Outside a skill, a person or an agent runs `cyber-agentkit reference load <name>...` directly.
 
 ## References
 
