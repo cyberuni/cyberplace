@@ -1,5 +1,15 @@
 # cyberplace
 
+## 0.3.0
+
+### Minor Changes
+
+- 42a907b: Remove the `cyberplace awesome` command group (`find`, `inspect`, `render`, `sources`) and the curated `awesome-skills.json` catalog it read. The feature had no remaining users after the awesome-skills plugins were dropped. Use `cyberplace find` to search marketplaces for skills. Skill installs from other repos still read a repo's own `awesome-skills.json` skill index when it has one.
+
+### Patch Changes
+
+- ec91ed6: `skill-design` governance: load references with the `reference` skill in the `cyber-agentkit` plugin (it moved out of `buddy-agent-harness`), declare `cyber-agentkit` as the plugin dependency, and run `cyber-agentkit reference load` from the `cyber-agentkit` package outside a skill. A skill's default copy of a reference now lives at `references/<name>.default.md` and loads below every other contribution; `references/<name>.md` and `references/governances/` are no longer read.
+
 ## 0.2.4
 
 ### Patch Changes
