@@ -242,7 +242,7 @@ A reference is a Markdown document a skill reads on demand by name: a governance
 - Never read `.agents/references/`, `.agents/governances/`, `~/.agents/`, or another package's files from a skill, and never run `reference load`, `governance show`, `upx`, or `npx` to fetch one. The `reference` skill runs the resolver from a launcher in its own folder, with no package runner and no network.
 - Where the harness supports plugin dependencies (Claude Code), declare `cyber-agentkit` as one. Elsewhere the line is what tells the user what to install.
 
-**Default copies.** A skill may ship its own copy of a reference at `<skill>/references/<name>.md`; `references/governances/<name>.md` is still read after it. The `reference` skill reads the copy only when no tier holds the name or its launcher cannot run, and tells the user when it did. A skill that ships a copy also ships a copy of every reference that copy names, and loads the pair in the same line.
+**Default copies.** A skill may ship its own default of a reference at `<skill>/references/<name>.default.md`. The `reference` skill loads it below every other contribution, so plugin, user, repository, and managed text all apply over it. It reads the default on its own only when its launcher cannot run, and tells the user when it did. A copy at `<skill>/references/<name>.md` is not a default, and `references/governances/` is not read; `cyber-agentkit reference migrate --default <skill folder>` finds a copy left at the old path. A skill that ships a default also ships a default of every reference that default names, and loads the pair in the same line.
 
 Outside a skill, a person or an agent runs `cyber-agentkit reference load <name>...` (from the `cyber-agentkit` package) directly.
 
