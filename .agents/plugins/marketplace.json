@@ -136,6 +136,16 @@
 				"source": "npm",
 				"package": "cyber-mux"
 			}
+		},
+		{
+			"name": "cyber-agentkit",
+			"description": "An agent-harness-agnostic toolkit: detect the running harness, check plugin dependencies, resolve layered reference documents, and lease git worktrees.",
+			"category": "Developer Tools",
+			"policy": { "installation": "AVAILABLE" },
+			"source": {
+				"source": "npm",
+				"package": "cyber-agentkit"
+			}
 		}
 	]
 }
