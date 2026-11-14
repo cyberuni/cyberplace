@@ -18,7 +18,7 @@ npx skills add cyberuni/cyberplace --skill init -g
 npx skills add cyberuni/cyberplace --skill init -a claude-code -g
 
 # Team: project-scoped (commit skills-lock.json after install)
-npx skills add cyberuni/cyberplace --skill init --skill init-commit-discipline
+npx skills add cyberuni/cyberplace --skill init
 ```
 
 ## CLI
@@ -35,25 +35,24 @@ npx cyberplace@latest --help
 | Use case | Pinning |
 | -------- | ------- |
 | **Scripts / manual CLI** | `npx cyberplace@$(npm view cyberplace version) <subcommand>` |
-| **`init` / `init-commit-discipline` skills** | The skill resolves semver on first use and pins it. Re-run `init-commit-discipline` to bump after upgrades. |
+| **`init` skill** | The skill resolves semver on first use and pins it. |
 | **Skill content (`SKILL.md`)** | Not pinned by the CLI — see [Supply Chain](/getting-started/supply-chain/). |
 
-## Getting started with `init` and `init-commit-discipline`
+## Getting started with `init`
 
-Install both skills, then run them from your agent chat:
+Install the skill, then run it from your agent chat:
 
 ```bash
 # Solo: globally
-npx skills add cyberuni/cyberplace --skill init --skill init-commit-discipline -g
+npx skills add cyberuni/cyberplace --skill init -g
 
 # Team: project-scoped
-npx skills add cyberuni/cyberplace --skill init --skill init-commit-discipline
+npx skills add cyberuni/cyberplace --skill init
 ```
 
 | Skill | When to run |
 | ----- | ----------- |
 | **`init`** | First time in a repo, or when `AGENTS.md` needs a refresh |
-| **`init-commit-discipline`** | After `init`, when you want commit rules enforced every session |
 
 ### 1. Run `init`
 
@@ -66,17 +65,6 @@ In Claude Code, Cursor, or another agent, ask to **run the `init` skill**. It wi
 
 If `AGENTS.md` already exists, the skill compares proposed changes and asks before overwriting.
 
-### 2. Run `init-commit-discipline`
+### 2. Commit discipline
 
-Run this **after `init`**. Ask your agent to **run the `init-commit-discipline` skill**. It will:
-
-1. **Resolve a commit helper skill** — checks for `commit-work`, the bundled `commit`, etc.
-2. **Ask about auto-commit** — whether the agent should commit each completed unit without waiting
-3. **Inject `## Commit Discipline` into `AGENTS.md`** — rules, Conventional Commits, staging guidance
-4. **Register a SessionStart hook** — on Claude Code, Cursor, and Codex, reinjects the rules every session
-
-If you choose the bundled fallback commit helper, install it project-scoped:
-
-```bash
-npx skills add cyberuni/cyberplace --skill commit
-```
+The `init-commit-discipline` and `commit` skills are retired. For commit rules enforced every session, install the [`repobuddy`](https://github.com/repobuddy/repobuddy) plugin (4.6.0+) and run `/repobuddy:repo enhance`; use `repobuddy:commit` as the commit helper. See [Commit Discipline](/disciplines/commit-discipline/).

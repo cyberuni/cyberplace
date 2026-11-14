@@ -13,7 +13,7 @@ No install required — run the CLI with `npx`:
 npx cyberplace add cyberuni/cyberplace
 
 # Install one skill by name
-npx cyberplace add cyberuni/cyberplace:commit
+npx cyberplace add <owner>/<repo>:<skill>
 
 # Search, list, and update
 npx cyberplace find commit
@@ -30,11 +30,16 @@ See [`packages/cyberplace`](packages/cyberplace/readme.md) for the full command 
 
 ## Plugins
 
-The repo doubles as a plugin marketplace (`.claude-plugin/marketplace.json`). Notable plugins in [`plugins/`](plugins):
+The repo doubles as a plugin marketplace (`.claude-plugin/marketplace.json`).
 
-| Plugin              | Description                                                              |
-| ------------------- | ------------------------------------------------------------------------ |
-| `commit-discipline` | Commit-discipline hooks and workflow                                     |
+### Retired
+
+| Retired                                     | Use instead                                                                           |
+| ------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `commit` skill (`commit-discipline`)        | [`repobuddy:commit`](https://github.com/repobuddy/repobuddy) (repobuddy 4.6.0+)        |
+| `init-commit-discipline` skill              | `/repobuddy:repo enhance` — offers the `## Commit Discipline` section for `AGENTS.md` |
+
+The `cyberplace hook register` / `hook run` commands are unchanged, so existing SessionStart hooks keep working.
 
 ### Plugins hosted elsewhere
 

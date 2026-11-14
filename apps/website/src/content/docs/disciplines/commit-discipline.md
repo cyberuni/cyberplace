@@ -30,7 +30,7 @@ When opted in, the auto-commit rule adds:
 
 > When a unit of work is complete and verified, commit it immediately — do not wait for the user to ask. Batching multiple units into one commit, or finishing all work before committing, are both violations of this rule.
 
-Auto-commit is opt-in — the `init-commit-discipline` skill (`commit-discipline` plugin) asks before injecting this rule.
+Auto-commit is opt-in — `/repobuddy:repo enhance` asks before adding this rule.
 
 ## Conventional Commits reference
 
@@ -47,20 +47,19 @@ Scopes are optional: `feat(auth):`, `fix(cli):`. Subject line: imperative mood, 
 
 ## Setting it up
 
-Run `init-commit-discipline` to inject the rules and register the SessionStart hook:
+:::note[Moved to repobuddy]
+The `commit-discipline` plugin's `init-commit-discipline` and `commit` skills are retired. Install the [`repobuddy`](https://github.com/repobuddy/repobuddy) plugin (4.6.0+) instead.
+:::
+
+Run `/repobuddy:repo enhance` in your agent. It offers the `## Commit Discipline` section for the repo's `AGENTS.md`, or hands it to you for the global `~/.agents/AGENTS.md`. Use `repobuddy:commit` as the commit helper.
+
+To reinject the section at every session start, register a SessionStart hook yourself:
 
 ```bash
-# Install the skill (solo, globally)
-npx skills add cyberuni/cyberplace --skill init-commit-discipline -g
+npx cyberplace@<exact> hook register \
+  --name commit-discipline --event SessionStart \
+  --extract AGENTS.md --heading "Commit Discipline"
 ```
-
-Then in your agent: **run the `init-commit-discipline` skill**.
-
-The skill:
-1. Resolves a commit helper skill
-2. Asks about auto-commit opt-in
-3. Injects `## Commit Discipline` into `AGENTS.md`
-4. Registers a SessionStart hook — reinjects the rules at every session start
 
 ## How it works at runtime
 
@@ -78,10 +77,10 @@ For agents without hook support, the `AGENTS.md` section alone carries the rules
 
 ## Upgrading
 
-After upgrading `cyberplace`, re-run `init-commit-discipline` to bump the pinned version in the SessionStart hook command.
+After upgrading `cyberplace`, re-run `hook register` with the new exact version to bump the pin in the SessionStart hook command.
 
 ## Related
 
-- the `init-commit-discipline` skill (`commit-discipline` plugin) — sets up commit discipline in a repo
-- the `commit` skill (`commit-discipline` plugin) — minimal commit helper
+- `/repobuddy:repo enhance` ([repobuddy](https://github.com/repobuddy/repobuddy)) — adds the Commit Discipline section to `AGENTS.md`
+- `repobuddy:commit` ([repobuddy](https://github.com/repobuddy/repobuddy)) — commit helper
 - [hook CLI](/cli/hook/) — `hook register` and `hook run` commands

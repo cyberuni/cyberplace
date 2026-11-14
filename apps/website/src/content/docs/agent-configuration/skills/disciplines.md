@@ -76,7 +76,6 @@ The hook re-injects the named section from `AGENTS.md` at the start of every ses
 ## Related
 
 - [Commit Discipline](/disciplines/commit-discipline/) — the canonical example
-- [Commit Discipline](/disciplines/commit-discipline/) — how the `commit-discipline` plugin sets this up in a repo
 - [Governances](/agent-configuration/skills/governances/) — on-demand domain standards; the complementary concept
 - [Agent Configuration](/agent-configuration/overview/) — full picture of what shapes agent behavior
 - [ADR-0001](/concepts/adrs/) — the decision that split governance and discipline into separate terms

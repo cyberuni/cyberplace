@@ -26,7 +26,7 @@ Pulls from the live default branch. Convenient; no lock file. Acceptable for per
 
 ```bash
 # Install project-scoped
-npx skills add cyberuni/cyberplace --skill init --skill init-commit-discipline
+npx skills add cyberuni/cyberplace --skill init
 
 # Commit the lock file
 git add skills-lock.json && git commit -m "chore: pin cyberplace skill versions"
@@ -43,7 +43,7 @@ npx skills experimental_install
 
 ```bash
 pnpm add -D cyberplace
-npx skills add ./node_modules/cyberplace --skill init --skill init-commit-discipline
+npx skills add ./node_modules/cyberplace --skill init
 ```
 
 Skill files and the CLI come from the same npm release. The `package.json` version is your lock. Use this when you want a single audit surface.
@@ -60,7 +60,7 @@ npx cyberplace@latest hook run …
 npx cyberplace@0.2.1 hook run …
 ```
 
-The `init-commit-discipline` skill resolves the current npm version and writes it into the hook. Re-run the skill after upgrading to bump the pin.
+Resolve the exact version once (`npm view cyberplace version`) and write it into the hook command. Re-register the hook after upgrading to bump the pin.
 
 ## Threat model
 

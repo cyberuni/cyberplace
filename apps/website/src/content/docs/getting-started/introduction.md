@@ -14,7 +14,7 @@ A skill is a `SKILL.md` file that an AI agent loads on demand. It encodes a work
 | Layer | Purpose |
 | ----- | ------- |
 | **CLI** | The `cyberplace` binary — install and manage skills (`add` / `find` / `list` / `update`), register hooks, and show governances |
-| **Plugins** | Bundles of skills, hooks, and governances shipped under [`plugins/`](https://github.com/cyberuni/cyberplace/tree/main/plugins) and listed in the [Marketplace](/marketplace/) — `sdd`, `aced`, `quill`, `cyberfleet`, `cyberlegion`, `commit-discipline`, and more |
+| **Plugins** | Bundles of skills, hooks, and governances shipped under [`plugins/`](https://github.com/cyberuni/cyberplace/tree/main/plugins) and listed in the [Marketplace](/marketplace/) — `sdd`, `aced`, `quill`, `cyberfleet`, `cyberlegion`, and more |
 | **Hooks** | SessionStart instruction hooks (e.g. commit discipline) — `hook register` / `hook run` |
 | **Governances** | Version-pinned agent-tool contracts (`governance list` / `governance show`) |
 
@@ -25,6 +25,6 @@ Plugins and skills install from **GitHub**; the CLI installs from **npm**. These
 ## Quick orientation
 
 - **New here?** Start with [Installation](/getting-started/installation/), then browse the [Marketplace](/marketplace/).
-- **Want disciplined commits?** Install the `commit-discipline` plugin and see [Commit Discipline](/disciplines/commit-discipline/).
+- **Want disciplined commits?** Install the [`repobuddy`](https://github.com/repobuddy/repobuddy) plugin, run `/repobuddy:repo enhance`, and see [Commit Discipline](/disciplines/commit-discipline/).
 - **Authoring skills?** Read the [Skill Design governance](/governances/skill-design/).
 - **Advanced scripting?** See the [CLI Reference](/cli/overview/).
