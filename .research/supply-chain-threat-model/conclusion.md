@@ -10,7 +10,7 @@ Background research for install, pinning, and runtime trust boundaries when cons
 | --- | --- |
 | Installing skills via [Skills CLI](https://github.com/vercel-labs/skills) | npm CVE audit of cyberplace dependencies |
 | Running `cyberplace` via npx or local bin | Compromise of the user's machine or agent product |
-| SessionStart hooks written by `init-commit-discipline` | Malicious code in the consumer application repo |
+| SessionStart hooks written by `hook register` | Malicious code in the consumer application repo |
 | `skills-lock.json` restore flows | Full Agent Skills specification threat model |
 
 ## Assets and trust boundaries
@@ -70,7 +70,7 @@ Two **independent** supply chains: skill content (GitHub) and CLI (npm). Pinning
 
 ### T3 — npm registry compromise at init time (Medium)
 
-**Scenario:** During `init` / `init-commit-discipline`, the agent runs `npm view cyberplace version` and `npx cyberplace@<exact> …`. A bad publish at that moment gets pinned into hooks.
+**Scenario:** During `init` or `hook register`, the agent runs `npm view cyberplace version` and `npx cyberplace@<exact> …`. A bad publish at that moment gets pinned into hooks.
 
 **Impact:** SessionStart hooks and one-off CLI runs execute compromised package code on every session until hooks are re-registered.
 
@@ -78,7 +78,7 @@ Two **independent** supply chains: skill content (GitHub) and CLI (npm). Pinning
 
 - Exact semver in hook commands (not `@latest`).
 - [`publishConfig.provenance`](../../package.json) on npm publishes.
-- Re-run `init-commit-discipline` or `hook register` after upgrading; as of 0.3.x, `hook register` **replaces** stale semver when `--name` and hook flags match.
+- Re-run `hook register` after upgrading; as of 0.3.x, `hook register` **replaces** stale semver when `--name` and hook flags match.
 
 **Gaps:** No digest/SRI beyond npm tooling. User must consciously upgrade after security releases.
 
@@ -96,7 +96,7 @@ Two **independent** supply chains: skill content (GitHub) and CLI (npm). Pinning
 
 **Impact:** Old CLI behavior persists every session.
 
-**Mitigations:** Re-run `init-commit-discipline`; `hook register` upgrades in-place when hook identity matches but semver differs (see T3).
+**Mitigations:** Re-run `hook register`; it upgrades in-place when hook identity matches but semver differs (see T3).
 
 **Gaps:** Legacy shell-script hooks are replaced only when register runs; no automatic semver bump.
 
@@ -144,12 +144,6 @@ After a trusted project-scoped install, commit entries similar to:
       "source": "cyberuni/cyberplace",
       "sourceType": "github",
       "skillPath": "skills/init/SKILL.md",
-      "computedHash": "<from skills add>"
-    },
-    "init-commit-discipline": {
-      "source": "cyberuni/cyberplace",
-      "sourceType": "github",
-      "skillPath": "skills/init-commit-discipline/SKILL.md",
       "computedHash": "<from skills add>"
     }
   }
