@@ -2,14 +2,6 @@ function printJson(data: unknown) {
 	console.log(JSON.stringify(data, null, 2))
 }
 
-export function printFields(fields: Record<string, string | null | undefined>) {
-	const entries = Object.entries(fields).filter(([, v]) => v != null) as [string, string][]
-	const width = Math.max(...entries.map(([k]) => k.length))
-	for (const [key, val] of entries) {
-		console.log(`${key.padEnd(width)}  ${val}`)
-	}
-}
-
 export function printTable<T>(items: T[], cols: { label: string; get: (item: T) => string }[]) {
 	if (items.length === 0) {
 		console.log('(none)')

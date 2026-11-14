@@ -36,7 +36,7 @@ approval:
 cyberplace is the CLI and curated catalog behind the cyberuni skill/plugin marketplace: agents
 **discover, install, and share** skills and plugins across harnesses (Claude Code, Cursor, Codex).
 The same `npx cyberplace` binary also carries the authoring/quality tooling the library depends on —
-skill audit, commit discipline, version-pinned governance contracts, agent hooks, and the skill
+skill audit, version-pinned governance contracts, agent hooks, and the skill
 lifecycle. One published package (`packages/cyberplace`, `bin: cyberplace`) ships all of it.
 
 ## Backfill scope note (flagged)
@@ -45,7 +45,7 @@ This project had no project spec. It is backfilled **narrow**: only the **`marke
 capability — skill acquisition (registry) plus the **Tavern** crew storefront — is scaffolded,
 because that is where the requested change landed; the `marketplace/tavern` node has since carried a
 frozen `.feature` through two mission CRs to `status: implemented`. The remaining source domains
-(`packages/cyberplace/src/`: `audit/`, `commit/`, `governance/`, `hook/`, `registry/`, `skill/`, plus
+(`packages/cyberplace/src/`: `audit/`, `governance/`, `hook/`, `registry/`, `skill/`, plus
 the CLI shell) stay unbackfilled — no node's `.feature` is authored for them yet — and are listed in
 the placement map as **planned** capabilities to backfill by demand.
 
@@ -64,7 +64,7 @@ website should instead be its own backfilled project.
 | [`marketplace/`](./marketplace/README.md) | descriptive | skill/plugin acquisition and the Tavern crew storefront |
 
 **Planned (not yet backfilled)** — named here so a later mission slots them without re-deriving:
-`audit/` (skill S/Q/E audit), `commit-discipline/` (Conventional-Commits staging + messages),
+`audit/` (skill S/Q/E audit),
 `governance/` (version-pinned agent-tool contracts, `governance show`), `hooks/` (hook register /
 run), `registry/` (skill registry ops), `skill-authoring/` (scaffold + lifecycle), and a CLI/tooling
 home (the `cyberplace` bin shell, build, packaging).
@@ -77,7 +77,6 @@ here; do not invent placement:
 - a new **discovery / catalog / storefront** behavior (find, inspect, render, source config, the
   crew filter, the Tavern) → **`marketplace/`**.
 - a new **skill-audit** behavior (S/Q/E checks) → future `audit/`.
-- a new **commit-discipline** behavior (staging, message shape) → future `commit-discipline/`.
 - a new **governance-contract** behavior (`governance show`, version pinning) → future `governance/`.
 - a new **hook** behavior (register, run, extract) → future `hooks/`.
 - a new **registry** behavior → future `registry/`.

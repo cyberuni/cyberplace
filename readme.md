@@ -38,6 +38,7 @@ The repo doubles as a plugin marketplace (`.claude-plugin/marketplace.json`).
 | ------------------------------------------- | ------------------------------------------------------------------------------------- |
 | `commit` skill (`commit-discipline`)        | [`repobuddy:commit`](https://github.com/repobuddy/repobuddy) (repobuddy 4.6.0+)        |
 | `init-commit-discipline` skill              | `/repobuddy:repo enhance` — offers the `## Commit Discipline` section for `AGENTS.md` |
+| `cyberplace commit inject` / `commit resolve-skill` | `/repobuddy:repo enhance`                                                     |
 
 The `cyberplace hook register` / `hook run` commands are unchanged, so existing SessionStart hooks keep working.
 
