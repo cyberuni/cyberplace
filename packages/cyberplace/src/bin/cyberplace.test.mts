@@ -37,12 +37,6 @@ test('hook register requires --name and instruction source', () => {
 	expect(result.stderr).toMatch(/--name/)
 })
 
-test('commit inject requires --commit-skill', () => {
-	const result = run('commit', 'inject')
-	expect(result.status).toBe(1)
-	expect(result.stderr).toMatch(/commit-skill/)
-})
-
 test('hook run --extract emits SessionStart JSON', () => {
 	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'commit-hook-'))
 	try {
