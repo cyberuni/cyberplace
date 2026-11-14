@@ -53,7 +53,7 @@ Not every dossier has all five. `conclusion.md` is the file other documents cite
 | [skill-ecosystem-landscape](skill-ecosystem-landscape/) | `skill-repo-structure` governance, ADR-0002, future `init-skill-repo` |
 | [skill-kind-axes](skill-kind-axes/) | Issue #380, ADR-0031 (`user-invocable: false` ≠ partial skill) |
 | [skill-package-manifest](skill-package-manifest/) | `skill-repo-structure` governance; draft proposal to `vercel-labs/open-plugin-spec` |
-| [supply-chain-threat-model](supply-chain-threat-model/) | README install guidance, `init` / `init-commit-discipline` skills, hook register |
+| [supply-chain-threat-model](supply-chain-threat-model/) | README install guidance, `init` skill, hook register |
 | [terminal-multiplexers](terminal-multiplexers/) | cyberlegion multiplexer backend selection |
 | [universal-plugin](universal-plugin/) | `universal-plugin` governance, ADR-0007, `create-universal-plugin` skill |
 | [use-case-elicitation](use-case-elicitation/) | SDD `spec-format-governance` (`## Use Cases` naming), `spec-producer-governance` (discovery step design) |

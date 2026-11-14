@@ -4,6 +4,8 @@
 
 Accepted
 
+> **Later change (2026-11):** the `commit` and `init-commit-discipline` skills and the `commit inject` / `commit resolve-skill` CLI commands were retired. Their successors are `repobuddy:commit` and `/repobuddy:repo enhance` in [repobuddy](https://github.com/repobuddy/repobuddy). `hook register` / `hook run` are unchanged.
+
 ## Context
 
 [ADR-0001](0001-governance-vs-discipline-taxonomy.md) requires governances to stay **normative and concise** because they load into agent context via `governance show`. That policy covers version-pinned standards only. It does not name **Discipline** (AGENTS.md sections injected by hooks) or **Skill** (`SKILL.md`) explicitly, and it does not define a shared document shape.
