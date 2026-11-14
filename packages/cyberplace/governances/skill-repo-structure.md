@@ -111,7 +111,7 @@ AGENTS.md **Discipline** sections (for example `## Commit Discipline` injected b
 - **`### References` at section bottom** — commit-helper skill name, `governance show` one-liners only.
 - **Do not** paste full governance bodies or ecosystem surveys into AGENTS.md.
 
-Use **`init-commit-discipline`** to inject commit discipline for this profile.
+Use **`/repobuddy:repo enhance`** (repobuddy plugin) to inject commit discipline for this profile.
 
 ## Optional manifests (do not require all)
 

@@ -10,15 +10,13 @@
 		},
 		{
 			"title": "Agent Initialization",
-			"description": "One-time repository setup for AI agent workflows. init and init-commit-discipline: global; commit: project.",
-			"skills": ["init", "init-commit-discipline", "commit"]
+			"description": "One-time repository setup for AI agent workflows.",
+			"skills": ["init"]
 		}
 	],
 	"scopes": {
 		"skillify": "global",
 		"patch-skill": "global",
-		"init": "global",
-		"init-commit-discipline": "global",
-		"commit": "project"
+		"init": "global"
 	}
 }

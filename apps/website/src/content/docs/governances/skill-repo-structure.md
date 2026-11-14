@@ -82,7 +82,7 @@ plugins/
 - `### References` at section bottom — commit-helper skill name and `governance show` one-liners only
 - Do not paste full governance bodies into `AGENTS.md`
 
-Use `init-commit-discipline` to inject commit discipline.
+Use `/repobuddy:repo enhance` ([repobuddy](https://github.com/repobuddy/repobuddy)) to inject commit discipline.
 
 ## Optional manifests
 
