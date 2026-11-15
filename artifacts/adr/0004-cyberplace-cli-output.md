@@ -4,6 +4,8 @@
 
 Accepted
 
+> **Later change (2026-11):** the `commit` and `init-commit-discipline` skills and the `commit inject` / `commit resolve-skill` CLI commands were retired. Their successors are `repobuddy:commit` and `/repobuddy:repo enhance` in [repobuddy](https://github.com/repobuddy/repobuddy). `hook register` / `hook run` are unchanged.
+
 ## Context
 
 The `cyberplace` CLI serves both terminal users and agents invoking subcommands from skills. Agents parse stdout programmatically; humans expect tables, aligned fields, and prose summaries.
