@@ -1,7 +1,9 @@
 name: pull-request
 on:
   pull_request:
-    types: [opened, synchronize]
+    # `reopened`, `labeled`, `unlabeled`: the dep-changeset gate reads Renovate's labels,
+    # which arrive in a second API call after the PR opens.
+    types: [opened, synchronize, reopened, labeled, unlabeled]
 
 jobs:
   code:
@@ -47,12 +49,37 @@ jobs:
 
       - run: pnpm verify
 
+  # Renovate PRs: writes a patch changeset when the leak checks pass, or fails until a
+  # person commits one. Passes on every other PR.
+  dep-changeset:
+    uses: repobuddy/.github/.github/workflows/dep-changeset.yml@v2
+    permissions:
+      contents: read
+      pull-requests: write
+    secrets: inherit
+    with:
+      # Only packages/cyberplace is published; the root `pnpm build` would also build the
+      # docs site for nothing.
+      build-command: pnpm --filter cyberplace build
+
+  # The Version Packages PR: fails when a package major goes up with no person-written
+  # changeset asking for it. Skipped on every other PR.
+  release-guard:
+    uses: repobuddy/.github/.github/workflows/dep-changeset-release-guard.yml@v2
+    permissions:
+      contents: read
+      pull-requests: read
+
   all-checks:
     if: always()
-    needs: code
+    needs: [code, dep-changeset, release-guard]
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          if [[ "${{ needs.code.result }}" != "success" ]]; then
-            exit 1
-          fi
+      - env:
+          CODE: ${{ needs.code.result }}
+          GATE: ${{ needs.dep-changeset.result }}
+          GUARD: ${{ needs.release-guard.result }}
+        run: |
+          [ "$CODE" = success ] || exit 1
+          [ "$GATE" = success ] || exit 1
+          [ "$GUARD" = success ] || [ "$GUARD" = skipped ] || exit 1
